@@ -1442,6 +1442,7 @@
     "roseDesc": "Elegant & stylish"
   },
   "common": {
+    "clear": "Clear",
     "save": "Save",
     "cancel": "Cancel",
     "close": "Close",
@@ -3651,6 +3652,200 @@
     }
   },
   "expenses": {
+    "v2": {
+      "common": {
+        "save": "Save",
+        "close": "Close",
+        "cancel": "Cancel",
+        "saving": "Saving …",
+        "loading": "Loading …",
+        "sum": "Total",
+        "you": "(You)",
+        "person": "Person",
+        "date": "Date",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "settledLabel": "settled",
+        "openLabel": "open"
+      },
+      "add": {
+        "srTitle": "Add expense",
+        "title": "New expense",
+        "listening": "Listening …",
+        "descriptionPlaceholder": "What for? e.g. pizza, petrol, Airbnb",
+        "voiceStart": "Start voice input",
+        "voiceStop": "Stop recording",
+        "suggestion": "Suggestion:",
+        "tapToApply": "Tap to apply",
+        "noteOptional": "Note (optional)",
+        "notePlaceholder": "Extra info, e.g. “tip already included”",
+        "receiptOptional": "Receipt (optional)",
+        "showDetails": "Add details",
+        "hideDetails": "Hide details",
+        "hideSplit": "Hide split",
+        "adjustSplit": "Adjust split ({{amount}})"
+      },
+      "split": {
+        "mode": {
+          "equal": {
+            "label": "Equal",
+            "hint": "same for all"
+          },
+          "shares": {
+            "label": "Shares",
+            "hint": "1×/2×"
+          },
+          "percentage": {
+            "label": "Percent",
+            "hint": "% per person"
+          },
+          "custom": {
+            "label": "Amounts",
+            "hint": "{{symbol}} per person"
+          }
+        },
+        "tapToToggle": "Participants · tap to include or exclude",
+        "includePerson": "Include {{name}}",
+        "excludePerson": "Exclude {{name}}",
+        "equalSummary": "{{n}} people share {{total}}",
+        "perHead": "{{amount}} each",
+        "needOnePerson": "At least one person has to be included",
+        "sharesHeader": "Shares · e.g. 2× pays double",
+        "decreaseShare": "Decrease share",
+        "increaseShare": "Increase share",
+        "percentFor": "Percentage for {{name}}",
+        "amountFor": "Amount for {{name}}",
+        "distributeRest": "Spread the rest ({{amount}})"
+      },
+      "payer": {
+        "multiple": "Several",
+        "single": "Single",
+        "multiTitle": "Paid by · several",
+        "paidByPerson": "Paid by {{name}}"
+      },
+      "row": {
+        "hasReceipt": "Receipt attached",
+        "paidByName": "{{name}} paid",
+        "unknownPayer": "Unknown payer",
+        "peopleCount": "People: {{n}}"
+      },
+      "balance": {
+        "aria": "Balance overview",
+        "allSettled": "All settled",
+        "owedToYou": "You are owed",
+        "youOwe": "You owe",
+        "stillOpen": "Still open",
+        "allSettledHint": "Nothing outstanding — all clear.",
+        "owedHint": "That much is coming back to your account in total.",
+        "oweHint": "That is what you owe the others.",
+        "idleHint": "No activity yet."
+      },
+      "stats": {
+        "empty": "No expenses yet — the charts appear as soon as the first one is recorded.",
+        "budget": "Budget",
+        "ofBudget": "of {{amount}}",
+        "paidVsShare": "Paid vs. share",
+        "paid": "Paid",
+        "share": "Share",
+        "trend": "Over time",
+        "totalLine": "Total: {{amount}}",
+        "uncategorized": "No category"
+      },
+      "settle": {
+        "allSettledTitle": "All settled",
+        "noOpenAmounts": "Nothing outstanding between the participants.",
+        "referenceNote": "Settlement {{name}}",
+        "copyFailed": "Could not copy to the clipboard — the details are in the activity feed.",
+        "ibanCopied": "IBAN and amount copied — open your banking app to paste them.",
+        "minimalTransfers": "Minimum settlement transfers ({{n}})",
+        "yourTransfer": "Your transfer",
+        "paymentMethod": "Payment method",
+        "linkBadge": "LINK",
+        "copyToClipboard": "Copy to clipboard"
+      },
+      "settled": {
+        "empty": "No payments recorded yet.",
+        "pendingHeader": "Awaiting confirmation ({{n}})",
+        "doneHeader": "Done ({{n}})",
+        "confirmPrompt": "Did you receive the money? Please confirm.",
+        "waitingForPayee": "Waiting for the recipient to confirm",
+        "confirm": "Confirm"
+      },
+      "detail": {
+        "title": "Expense",
+        "srTitle": "Expense: {{description}}",
+        "deleteConfirm": "Really delete this expense?",
+        "allSharesSettled": "All shares settled",
+        "openShares": "Shares still open",
+        "noShares": "No shares saved",
+        "amountPaid": "{{amount}} paid",
+        "note": "Note",
+        "receipt": "Receipt",
+        "openReceipt": "Open receipt",
+        "details": "Details",
+        "createdAt": "Created",
+        "updatedAt": "Updated",
+        "source": "Source",
+        "tags": "Tags",
+        "deleteExpense": "Delete expense",
+        "via": {
+          "manual": "Manual",
+          "camera": "Camera OCR",
+          "voice": "Voice input",
+          "import": "Import",
+          "template": "Template"
+        }
+      },
+      "activity": {
+        "emptyTitle": "Nothing has happened yet",
+        "emptyText": "Every change to expenses and payments shows up here.",
+        "loadOlder": "Show older",
+        "someone": "Someone",
+        "created": "added an expense",
+        "amountChanged": "changed the amount from {{from}} to",
+        "deleted": "deleted an expense",
+        "settlementConfirmed": "confirmed a payment",
+        "receiptUploaded": "added a receipt",
+        "viaMethod": "via {{method}}"
+      },
+      "recurring": {
+        "title": "Recurring expenses",
+        "subtitle": "Rent, groceries, subscriptions — created automatically",
+        "new": "New",
+        "activeHeader": "Active ({{n}})",
+        "pausedHeader": "Paused ({{n}})",
+        "next": "Next: {{date}}",
+        "activate": "Activate",
+        "pause": "Pause",
+        "emptyTitle": "No templates yet",
+        "emptyText": "Set up recurring expenses like rent, streaming or the weekly shop once — the rest happens automatically.",
+        "createFirst": "Create the first template",
+        "sheetTitle": "New recurring expense",
+        "newTemplate": "New template",
+        "changeEmoji": "Change emoji",
+        "titlePlaceholder": "Title, e.g. rent",
+        "frequency": "Frequency",
+        "startDate": "Start date",
+        "splitInfo": "Split: equally between all participants ({{n}}).",
+        "splitInfoSoon": "Percentage and custom splits for templates are on the way.",
+        "freq": {
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "biweekly": "Every 2 weeks",
+          "monthly": "Monthly"
+        }
+      },
+      "method": {
+        "paypal": "PayPal",
+        "revolut": "Revolut",
+        "bank": "Bank transfer",
+        "wise": "Wise",
+        "apple_pay": "Apple Pay",
+        "google_pay": "Google Pay",
+        "cash": "Cash",
+        "other": "Other"
+      }
+    },
     "button": "Expenses",
     "title": "Expenses",
     "addExpense": "Add Expense",
@@ -3783,7 +3978,20 @@
     "invalidEmail": "Invalid email address",
     "minLength": "At least {{count}} characters required",
     "maxLength": "Maximum {{count}} characters allowed",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "survey": {
+      "participant": "Please select your name",
+      "attendance": "Please tell us whether you can make it",
+      "duration": "Please pick how long you'd like it to be",
+      "budget": "Please pick your budget",
+      "destination": "Please pick a destination",
+      "travel": "Please tell us how far you'd travel",
+      "activities": "Please pick at least one activity",
+      "fitness": "Please pick your fitness level",
+      "groupCode": "Group code is required",
+      "groupCodeTooLong": "Group code is too long",
+      "maxChars": "Maximum {{max}} characters"
+    }
   },
   "planner": {
     "title": "Weekend Planner",
@@ -6100,6 +6308,12 @@
       "yourTurn": "Your Turn"
     },
     "results": {
+      "winnerPoints": "{{n}} points",
+      "toParty": "To the party",
+      "rounds": "Rounds",
+      "bestPoints": "Best score",
+      "longestStreak": "Longest streak",
+      "streakBadge": "{{n}}× streak",
       "gameOver": "Game Over!",
       "winner": "Winner",
       "leaderboard": "Leaderboard",
@@ -6431,6 +6645,10 @@
       "votingPhase": "Voting · {{current}}/{{total}}"
     },
     "ohrwurm": {
+      "leaveTitle": "Leave the game?",
+      "leaveSub": "You will lose the current progress.",
+      "leaveStay": "Keep playing",
+      "leaveConfirm": "Leave",
       "back": "Back",
       "target": "Goal {{count}}",
       "spotifyOk": "✓ Spotify · full song after reveal (in game: preview)",
@@ -6602,6 +6820,8 @@
       "title": "Split Quiz"
     },
     "truthdare": {
+      "yes": "Yes",
+      "no": "No",
       "gameTitle": "Truth or Dare 2.0",
       "timerLabel": "Dare Timer (Sec.)",
       "roundHeader": "Round {{current}}/{{total}}",
@@ -6685,6 +6905,7 @@
         "anotherGame": "Another game"
       },
       "setup": {
+        "defaultPlayerName": "You",
         "heading": "Game setup",
         "title": "Who will you be today?",
         "subtitle": "Choose your players and a category — the rest happens in the game.",
@@ -6888,6 +7109,12 @@
       "startGame": "Start Game"
     },
     "wordpress": {
+      "modes": {
+        "kategorie": "Category",
+        "stroop": "Stroop",
+        "verboten": "Forbidden",
+        "speedRush": "Speed Rush"
+      },
       "title": "Press the Word",
       "tagline": "Tap fast, think fast!",
       "defaultPlayer1": "Player 1",
@@ -7368,6 +7595,16 @@
       "pantomime": "Act it out in silence, your team guesses — with challenges for double points"
     },
     "events": {
+      "actionError": "That didn't work.",
+      "archived": "Archived",
+      "restored": "Restored",
+      "deleted": "Event deleted",
+      "manage": "Manage",
+      "manageSub": "Manage event",
+      "restore": "Restore",
+      "archive": "Archive",
+      "delete": "Delete",
+      "deleteConfirm": "Really delete this event? This cannot be undone.",
       "title": "Events",
       "countSummary": "{{active}} active · {{archived}} archived",
       "searchPlaceholder": "Search events...",
@@ -7956,6 +8193,8 @@
   },
   "woIstWas": {
     "modes": {
+      "unterschiede": "Differences",
+      "karte": "Map",
       "memory": "Memory",
       "memoryDesc": "Memorize the scene and answer questions",
       "speed": "Speed",
@@ -8427,6 +8666,7 @@
     "no": "No"
   },
   "nativeResponses": {
+    "customAnswers": "Custom answers",
     "stats": {
       "responses": "Responses",
       "responseRate": "Response Rate",
@@ -9346,6 +9586,48 @@
     "aiLimitReached": "Maximum of {{max}} generations per session reached"
   },
   "tv": {
+    "partyNight": {
+      "title": "Party Night",
+      "standingsEyebrow": "Current standings",
+      "afterGame": "After {{game}}",
+      "leadChange": "New leader: {{name}}",
+      "tonightTotal": "Total tonight",
+      "noStandings": "No points yet",
+      "roadmapTitle": "The evening",
+      "nextUp": "Now",
+      "upNext": "Up next",
+      "gameXofY": "Game {{current}} of {{total}}",
+      "finaleEyebrow": "Party Night is over",
+      "champion": "Champion of the evening",
+      "championLine": "{{name}} wins with {{points}} points",
+      "finalTable": "Final standings",
+      "gamesPlayed": "Games",
+      "totalPoints": "Total points",
+      "awardsTitle": "Awards",
+      "noAwards": "Not enough games played for awards",
+      "award": {
+        "comeback": {
+          "title": "Comeback of the evening",
+          "detail": "From place {{from}} to place {{to}}"
+        },
+        "mostWins": {
+          "title": "Serial winner",
+          "detail": "{{n}} wins"
+        },
+        "consistency": {
+          "title": "King of consistency",
+          "detail": "Avg. place {{value}}"
+        },
+        "bestGame": {
+          "title": "Best run of the evening",
+          "detail": "Record: {{value}} points in {{game}}"
+        },
+        "unlucky": {
+          "title": "Hard luck",
+          "detail": "{{n}}× last"
+        }
+      }
+    },
     "connectTitle": "Connect TV",
     "openOnTv": "Open on your TV:",
     "copied": "Copied!",

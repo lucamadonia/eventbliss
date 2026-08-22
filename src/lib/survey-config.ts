@@ -205,6 +205,58 @@ export interface EventSettings extends SurveyConfig {
   branding?: BrandingConfig;
 }
 
+/**
+ * tOption group name + the settings field holding the defaults, per core
+ * question key. Note `activities` maps to the group `activity` — that is the
+ * name the surveyOptions tree uses in every locale file.
+ */
+const OPTION_GROUP_META: Partial<Record<keyof QuestionConfigs, {
+  group: string;
+  optionsKey: 'attendance_options' | 'duration_options' | 'budget_options'
+    | 'destination_options' | 'travel_options' | 'activity_options'
+    | 'fitness_options' | 'alcohol_options';
+}>> = {
+  attendance:  { group: 'attendance',  optionsKey: 'attendance_options' },
+  duration:    { group: 'duration',    optionsKey: 'duration_options' },
+  budget:      { group: 'budget',      optionsKey: 'budget_options' },
+  destination: { group: 'destination', optionsKey: 'destination_options' },
+  travel:      { group: 'travel',      optionsKey: 'travel_options' },
+  activities:  { group: 'activity',    optionsKey: 'activity_options' },
+  fitness:     { group: 'fitness',     optionsKey: 'fitness_options' },
+  alcohol:     { group: 'alcohol',     optionsKey: 'alcohol_options' },
+  // date_blocks has no option set — callers get the label back verbatim.
+};
+
+/**
+ * Label to DISPLAY in an organizer-facing option editor.
+ *
+ * The guest form already translates built-in options via tOption(); the editors
+ * showed the raw German label instead. The catch is that these editors render
+ * the label into an editable <Input>, so translating unconditionally would put
+ * translated text into a field whose next keystroke overwrites the organizer's
+ * own wording.
+ *
+ * The rule: translate ONLY while the stored label is still byte-identical to the
+ * German default in DEFAULT_SURVEY_CONFIG for that value. The first time the
+ * organizer types, the label stops matching the default and is from then on
+ * rendered verbatim, in every language, forever. Options the organizer added
+ * themselves have no default to match and are likewise never touched.
+ */
+export function tEditableOptionLabel(
+  t: (key: string, defaultValue?: string) => string,
+  key: keyof QuestionConfigs,
+  option: SelectOption,
+): string {
+  const meta = OPTION_GROUP_META[key];
+  if (!meta) return option.label;
+  const def = (DEFAULT_SURVEY_CONFIG[meta.optionsKey] as SelectOption[])
+    .find((o) => o.value === option.value);
+  // No default for this value (organizer-added), or the label was edited away
+  // from the default → the stored text is authored content, show it as-is.
+  if (!def || def.label !== option.label) return option.label;
+  return tOption(t, meta.group, option.value, option.label);
+}
+
 // Default configuration for new events
 export const DEFAULT_SURVEY_CONFIG: SurveyConfig = {
   form_locked: false,

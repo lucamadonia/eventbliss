@@ -1442,6 +1442,7 @@
     "roseDesc": "Elegant & stilvoll"
   },
   "common": {
+    "clear": "Löschen",
     "save": "Speichern",
     "cancel": "Abbrechen",
     "close": "Schließen",
@@ -3651,6 +3652,200 @@
     }
   },
   "expenses": {
+    "v2": {
+      "common": {
+        "save": "Speichern",
+        "close": "Schließen",
+        "cancel": "Abbrechen",
+        "saving": "Wird gespeichert …",
+        "loading": "Lädt …",
+        "sum": "Summe",
+        "you": "(Du)",
+        "person": "Person",
+        "date": "Datum",
+        "today": "Heute",
+        "yesterday": "Gestern",
+        "settledLabel": "beglichen",
+        "openLabel": "offen"
+      },
+      "add": {
+        "srTitle": "Ausgabe hinzufügen",
+        "title": "Neue Ausgabe",
+        "listening": "Hört zu …",
+        "descriptionPlaceholder": "Wofür? z. B. Pizza, Tankstelle, Airbnb",
+        "voiceStart": "Spracheingabe starten",
+        "voiceStop": "Aufnahme stoppen",
+        "suggestion": "Vorschlag:",
+        "tapToApply": "Tippen zum Übernehmen",
+        "noteOptional": "Notiz (optional)",
+        "notePlaceholder": "Zusatzinfo, z. B. „Trinkgeld schon drin“",
+        "receiptOptional": "Beleg (optional)",
+        "showDetails": "Details hinzufügen",
+        "hideDetails": "Details verbergen",
+        "hideSplit": "Aufteilung verbergen",
+        "adjustSplit": "Aufteilung anpassen ({{amount}})"
+      },
+      "split": {
+        "mode": {
+          "equal": {
+            "label": "Gleich",
+            "hint": "alle gleich"
+          },
+          "shares": {
+            "label": "Anteile",
+            "hint": "1×/2×"
+          },
+          "percentage": {
+            "label": "Prozent",
+            "hint": "% pro Person"
+          },
+          "custom": {
+            "label": "Beträge",
+            "hint": "{{symbol}} pro Person"
+          }
+        },
+        "tapToToggle": "Teilnehmer · tippen zum Aus- oder Einschließen",
+        "includePerson": "{{name}} einschließen",
+        "excludePerson": "{{name}} ausschließen",
+        "equalSummary": "{{n}} Personen teilen sich {{total}}",
+        "perHead": "{{amount}} pro Kopf",
+        "needOnePerson": "Mindestens eine Person muss beteiligt sein",
+        "sharesHeader": "Anteile · z. B. 2× zahlt doppelt",
+        "decreaseShare": "Anteil verringern",
+        "increaseShare": "Anteil erhöhen",
+        "percentFor": "Prozent für {{name}}",
+        "amountFor": "Betrag für {{name}}",
+        "distributeRest": "Rest verteilen ({{amount}})"
+      },
+      "payer": {
+        "multiple": "Mehrere",
+        "single": "Einzeln",
+        "multiTitle": "Gezahlt von · mehrere",
+        "paidByPerson": "Gezahlt von {{name}}"
+      },
+      "row": {
+        "hasReceipt": "Beleg vorhanden",
+        "paidByName": "{{name}} zahlte",
+        "unknownPayer": "Unbekannter Zahler",
+        "peopleCount": "Personen: {{n}}"
+      },
+      "balance": {
+        "aria": "Saldo-Übersicht",
+        "allSettled": "Alles beglichen",
+        "owedToYou": "Dir wird geschuldet",
+        "youOwe": "Du schuldest",
+        "stillOpen": "Noch offen",
+        "allSettledHint": "Keine offenen Beträge — saubere Sache.",
+        "owedHint": "Kommt insgesamt wieder auf dein Konto zurück.",
+        "oweHint": "Das schuldest du den anderen Teilnehmern.",
+        "idleHint": "Noch keine Aktivität."
+      },
+      "stats": {
+        "empty": "Noch keine Ausgaben — sobald die erste erfasst ist, erscheinen hier die Statistiken.",
+        "budget": "Budget",
+        "ofBudget": "von {{amount}}",
+        "paidVsShare": "Bezahlt vs. Anteil",
+        "paid": "Bezahlt",
+        "share": "Anteil",
+        "trend": "Verlauf",
+        "totalLine": "Gesamt: {{amount}}",
+        "uncategorized": "Ohne Kategorie"
+      },
+      "settle": {
+        "allSettledTitle": "Alles beglichen",
+        "noOpenAmounts": "Keine offenen Beträge zwischen den Teilnehmern.",
+        "referenceNote": "Ausgleich {{name}}",
+        "copyFailed": "Kopieren in die Zwischenablage fehlgeschlagen — die Details stehen im Verlauf.",
+        "ibanCopied": "IBAN und Betrag kopiert — zum Einfügen die Banking-App öffnen.",
+        "minimalTransfers": "Minimale Ausgleichs-Überweisungen ({{n}})",
+        "yourTransfer": "Deine Überweisung",
+        "paymentMethod": "Zahlungsmethode",
+        "linkBadge": "LINK",
+        "copyToClipboard": "In die Zwischenablage kopieren"
+      },
+      "settled": {
+        "empty": "Noch keine Zahlungen erfasst.",
+        "pendingHeader": "Warten auf Bestätigung ({{n}})",
+        "doneHeader": "Erledigt ({{n}})",
+        "confirmPrompt": "Du hast das Geld erhalten? Bitte bestätigen.",
+        "waitingForPayee": "Warten auf Bestätigung durch den Empfänger",
+        "confirm": "Bestätigen"
+      },
+      "detail": {
+        "title": "Ausgabe",
+        "srTitle": "Ausgabe: {{description}}",
+        "deleteConfirm": "Ausgabe wirklich löschen?",
+        "allSharesSettled": "Alle Anteile beglichen",
+        "openShares": "Noch offene Anteile",
+        "noShares": "Keine Anteile gespeichert",
+        "amountPaid": "{{amount}} gezahlt",
+        "note": "Notiz",
+        "receipt": "Beleg",
+        "openReceipt": "Beleg öffnen",
+        "details": "Details",
+        "createdAt": "Erfasst",
+        "updatedAt": "Aktualisiert",
+        "source": "Quelle",
+        "tags": "Tags",
+        "deleteExpense": "Ausgabe löschen",
+        "via": {
+          "manual": "Manuell",
+          "camera": "Kamera-OCR",
+          "voice": "Spracheingabe",
+          "import": "Import",
+          "template": "Vorlage"
+        }
+      },
+      "activity": {
+        "emptyTitle": "Noch nichts passiert",
+        "emptyText": "Alle Änderungen an Ausgaben und Zahlungen landen hier im Verlauf.",
+        "loadOlder": "Ältere anzeigen",
+        "someone": "Jemand",
+        "created": "hat eine Ausgabe angelegt",
+        "amountChanged": "hat den Betrag geändert von {{from}} auf",
+        "deleted": "hat eine Ausgabe gelöscht",
+        "settlementConfirmed": "hat eine Zahlung bestätigt",
+        "receiptUploaded": "hat einen Beleg hinzugefügt",
+        "viaMethod": "über {{method}}"
+      },
+      "recurring": {
+        "title": "Wiederkehrende Ausgaben",
+        "subtitle": "Miete, Einkäufe, Abos — werden automatisch angelegt",
+        "new": "Neu",
+        "activeHeader": "Aktiv ({{n}})",
+        "pausedHeader": "Pausiert ({{n}})",
+        "next": "Nächste: {{date}}",
+        "activate": "Aktivieren",
+        "pause": "Pausieren",
+        "emptyTitle": "Noch keine Vorlagen",
+        "emptyText": "Leg wiederkehrende Ausgaben wie Miete, Streaming oder den Wocheneinkauf einmal an — der Rest passiert automatisch.",
+        "createFirst": "Erste Vorlage anlegen",
+        "sheetTitle": "Neue wiederkehrende Ausgabe",
+        "newTemplate": "Neue Vorlage",
+        "changeEmoji": "Emoji wechseln",
+        "titlePlaceholder": "Titel, z. B. Miete",
+        "frequency": "Häufigkeit",
+        "startDate": "Start-Datum",
+        "splitInfo": "Aufteilung: gleichmäßig auf alle Teilnehmer ({{n}}).",
+        "splitInfoSoon": "Prozent- und Individual-Aufteilungen für Vorlagen folgen.",
+        "freq": {
+          "daily": "Täglich",
+          "weekly": "Wöchentlich",
+          "biweekly": "Alle 2 Wochen",
+          "monthly": "Monatlich"
+        }
+      },
+      "method": {
+        "paypal": "PayPal",
+        "revolut": "Revolut",
+        "bank": "Überweisung",
+        "wise": "Wise",
+        "apple_pay": "Apple Pay",
+        "google_pay": "Google Pay",
+        "cash": "Bar",
+        "other": "Sonstiges"
+      }
+    },
     "button": "Kosten",
     "title": "Ausgaben",
     "addExpense": "Ausgabe hinzufügen",
@@ -3783,7 +3978,20 @@
     "invalidEmail": "Ungültige E-Mail-Adresse",
     "minLength": "Mindestens {{count}} Zeichen erforderlich",
     "maxLength": "Maximal {{count}} Zeichen erlaubt",
-    "passwordMismatch": "Passwörter stimmen nicht überein"
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "survey": {
+      "participant": "Bitte wähle deinen Namen aus",
+      "attendance": "Bitte gib an, ob du dabei sein kannst",
+      "duration": "Bitte wähle deine bevorzugte Dauer",
+      "budget": "Bitte wähle dein Budget",
+      "destination": "Bitte wähle eine Destination",
+      "travel": "Bitte wähle deine Reisebereitschaft",
+      "activities": "Bitte wähle mindestens eine Aktivität",
+      "fitness": "Bitte wähle dein Fitness-Level",
+      "groupCode": "Gruppencode ist erforderlich",
+      "groupCodeTooLong": "Gruppencode zu lang",
+      "maxChars": "Maximal {{max}} Zeichen"
+    }
   },
   "planner": {
     "title": "Wochenend-Planer",
@@ -6100,6 +6308,12 @@
       "yourTurn": "Du bist dran"
     },
     "results": {
+      "winnerPoints": "{{n}} Punkte",
+      "toParty": "Zur Party",
+      "rounds": "Runden",
+      "bestPoints": "Beste Punkte",
+      "longestStreak": "Längste Serie",
+      "streakBadge": "{{n}}× Serie",
       "gameOver": "Spiel vorbei!",
       "winner": "Gewinner",
       "leaderboard": "Bestenliste",
@@ -6431,6 +6645,10 @@
       "votingPhase": "Abstimmung · {{current}}/{{total}}"
     },
     "ohrwurm": {
+      "leaveTitle": "Spiel verlassen?",
+      "leaveSub": "Der aktuelle Spielstand geht dabei verloren.",
+      "leaveStay": "Weiterspielen",
+      "leaveConfirm": "Verlassen",
       "back": "Zurück",
       "target": "Ziel {{count}}",
       "spotifyOk": "✓ Spotify · voller Song nach Auflösung (im Spiel: Vorschau)",
@@ -6602,6 +6820,8 @@
       "title": "Split Quiz"
     },
     "truthdare": {
+      "yes": "Ja",
+      "no": "Nein",
       "gameTitle": "Wahrheit oder Pflicht 2.0",
       "timerLabel": "Pflicht-Timer (Sek.)",
       "roundHeader": "Runde {{current}}/{{total}}",
@@ -6685,6 +6905,7 @@
         "anotherGame": "Anderes Spiel"
       },
       "setup": {
+        "defaultPlayerName": "Du",
         "heading": "Spielvorbereitung",
         "title": "Wer wirst du heute sein?",
         "subtitle": "Wähle deine Mitspieler und eine Kategorie — der Rest passiert im Spiel.",
@@ -6888,6 +7109,12 @@
       "startGame": "Start Game"
     },
     "wordpress": {
+      "modes": {
+        "kategorie": "Kategorie",
+        "stroop": "Stroop",
+        "verboten": "Verboten",
+        "speedRush": "Speed Rush"
+      },
       "title": "Drück das Wort",
       "tagline": "Schnell tippen, schnell denken!",
       "defaultPlayer1": "Spieler 1",
@@ -7368,6 +7595,16 @@
       "pantomime": "Stumm vormachen, das Team rät — mit Herausforderungen für doppelte Punkte"
     },
     "events": {
+      "actionError": "Das hat nicht geklappt.",
+      "archived": "Archiviert",
+      "restored": "Wiederhergestellt",
+      "deleted": "Event gelöscht",
+      "manage": "Verwalten",
+      "manageSub": "Event verwalten",
+      "restore": "Wiederherstellen",
+      "archive": "Archivieren",
+      "delete": "Löschen",
+      "deleteConfirm": "Event wirklich löschen? Das kann nicht rückgängig gemacht werden.",
       "title": "Events",
       "countSummary": "{{active}} aktive · {{archived}} archiviert",
       "searchPlaceholder": "Event suchen...",
@@ -7956,6 +8193,8 @@
   },
   "woIstWas": {
     "modes": {
+      "unterschiede": "Unterschiede",
+      "karte": "Karte",
       "memory": "Memory",
       "memoryDesc": "Merke dir die Szene und beantworte Fragen",
       "speed": "Speed",
@@ -8427,6 +8666,7 @@
     "no": "Nein"
   },
   "nativeResponses": {
+    "customAnswers": "Eigene Antworten",
     "stats": {
       "responses": "Antworten",
       "responseRate": "Rücklaufquote",
@@ -9346,6 +9586,48 @@
     "aiLimitReached": "Maximal {{max}} Generierungen pro Sitzung erreicht"
   },
   "tv": {
+    "partyNight": {
+      "title": "Party Night",
+      "standingsEyebrow": "Zwischenstand",
+      "afterGame": "Nach {{game}}",
+      "leadChange": "Führungswechsel: {{name}}",
+      "tonightTotal": "Gesamt heute Abend",
+      "noStandings": "Noch keine Punkte",
+      "roadmapTitle": "Der Abend",
+      "nextUp": "Jetzt",
+      "upNext": "Als Nächstes",
+      "gameXofY": "Spiel {{current}} von {{total}}",
+      "finaleEyebrow": "Die Party Night ist vorbei",
+      "champion": "Champion des Abends",
+      "championLine": "{{name}} gewinnt mit {{points}} Punkten",
+      "finalTable": "Endstand",
+      "gamesPlayed": "Spiele",
+      "totalPoints": "Punkte gesamt",
+      "awardsTitle": "Auszeichnungen",
+      "noAwards": "Zu wenig gespielt für Auszeichnungen",
+      "award": {
+        "comeback": {
+          "title": "Comeback des Abends",
+          "detail": "Von Platz {{from}} auf Platz {{to}}"
+        },
+        "mostWins": {
+          "title": "Seriensieger",
+          "detail": "{{n}} Siege"
+        },
+        "consistency": {
+          "title": "Konstanz-König",
+          "detail": "Ø Platz {{value}}"
+        },
+        "bestGame": {
+          "title": "Bestleistung des Abends",
+          "detail": "Rekord: {{value}} Punkte in {{game}}"
+        },
+        "unlucky": {
+          "title": "Pechvogel",
+          "detail": "{{n}}× Letzter"
+        }
+      }
+    },
     "connectTitle": "TV verbinden",
     "openOnTv": "Öffne auf deinem TV:",
     "copied": "Kopiert!",

@@ -317,6 +317,7 @@
     "roseDesc": "أنيق وراقي"
   },
   "common": {
+    "clear": "مسح",
     "save": "حفظ",
     "cancel": "إلغاء",
     "close": "إغلاق",
@@ -2596,6 +2597,200 @@
     }
   },
   "expenses": {
+    "v2": {
+      "common": {
+        "save": "حفظ",
+        "close": "إغلاق",
+        "cancel": "إلغاء",
+        "saving": "جارٍ الحفظ …",
+        "loading": "جارٍ التحميل …",
+        "sum": "المجموع",
+        "you": "(أنت)",
+        "person": "شخص",
+        "date": "التاريخ",
+        "today": "اليوم",
+        "yesterday": "أمس",
+        "settledLabel": "مُسوّى",
+        "openLabel": "غير مسدَّد"
+      },
+      "add": {
+        "srTitle": "إضافة مصروف",
+        "title": "مصروف جديد",
+        "listening": "يستمع …",
+        "descriptionPlaceholder": "لأي شيء؟ مثل بيتزا أو وقود أو Airbnb",
+        "voiceStart": "بدء الإدخال الصوتي",
+        "voiceStop": "إيقاف التسجيل",
+        "suggestion": "اقتراح:",
+        "tapToApply": "اضغط للتطبيق",
+        "noteOptional": "ملاحظة (اختياري)",
+        "notePlaceholder": "معلومة إضافية، مثل «البقشيش مشمول»",
+        "receiptOptional": "إيصال (اختياري)",
+        "showDetails": "إضافة تفاصيل",
+        "hideDetails": "إخفاء التفاصيل",
+        "hideSplit": "إخفاء التقسيم",
+        "adjustSplit": "تعديل التقسيم ({{amount}})"
+      },
+      "split": {
+        "mode": {
+          "equal": {
+            "label": "بالتساوي",
+            "hint": "الجميع بالتساوي"
+          },
+          "shares": {
+            "label": "حصص",
+            "hint": "1×/2×"
+          },
+          "percentage": {
+            "label": "نسبة مئوية",
+            "hint": "% لكل شخص"
+          },
+          "custom": {
+            "label": "مبالغ",
+            "hint": "{{symbol}} لكل شخص"
+          }
+        },
+        "tapToToggle": "المشاركون · اضغط للتضمين أو الاستبعاد",
+        "includePerson": "تضمين {{name}}",
+        "excludePerson": "استبعاد {{name}}",
+        "equalSummary": "عدد الأشخاص: {{n}} · يتقاسمون {{total}}",
+        "perHead": "{{amount}} لكل شخص",
+        "needOnePerson": "يجب أن يشارك شخص واحد على الأقل",
+        "sharesHeader": "حصص · مثلاً 2× يدفع الضعف",
+        "decreaseShare": "تقليل الحصة",
+        "increaseShare": "زيادة الحصة",
+        "percentFor": "النسبة لـ {{name}}",
+        "amountFor": "المبلغ لـ {{name}}",
+        "distributeRest": "توزيع الباقي ({{amount}})"
+      },
+      "payer": {
+        "multiple": "عدة أشخاص",
+        "single": "شخص واحد",
+        "multiTitle": "دفع بواسطة · عدة أشخاص",
+        "paidByPerson": "دفع بواسطة {{name}}"
+      },
+      "row": {
+        "hasReceipt": "يوجد إيصال",
+        "paidByName": "دفع {{name}}",
+        "unknownPayer": "الدافع غير معروف",
+        "peopleCount": "الأشخاص: {{n}}"
+      },
+      "balance": {
+        "aria": "نظرة عامة على الأرصدة",
+        "allSettled": "تمت تسوية كل شيء",
+        "owedToYou": "لك مستحقات",
+        "youOwe": "عليك مستحقات",
+        "stillOpen": "ما زال مفتوحاً",
+        "allSettledHint": "لا يوجد شيء معلَّق — كل شيء واضح.",
+        "owedHint": "هذا المبلغ يعود إلى حسابك في المجموع.",
+        "oweHint": "هذا ما تدين به للآخرين.",
+        "idleHint": "لا يوجد نشاط بعد."
+      },
+      "stats": {
+        "empty": "لا توجد مصروفات بعد — تظهر الإحصاءات هنا بمجرد تسجيل أول مصروف.",
+        "budget": "الميزانية",
+        "ofBudget": "من {{amount}}",
+        "paidVsShare": "المدفوع مقابل الحصة",
+        "paid": "المدفوع",
+        "share": "الحصة",
+        "trend": "التطور",
+        "totalLine": "المجموع: {{amount}}",
+        "uncategorized": "بدون فئة"
+      },
+      "settle": {
+        "allSettledTitle": "تمت تسوية كل شيء",
+        "noOpenAmounts": "لا توجد مبالغ معلَّقة بين المشاركين.",
+        "referenceNote": "تسوية {{name}}",
+        "copyFailed": "تعذَّر النسخ إلى الحافظة — التفاصيل موجودة في السجل.",
+        "ibanCopied": "تم نسخ الآيبان والمبلغ — افتح تطبيق البنك للصقهما.",
+        "minimalTransfers": "أقل عدد من التحويلات للتسوية ({{n}})",
+        "yourTransfer": "تحويلك",
+        "paymentMethod": "طريقة الدفع",
+        "linkBadge": "رابط",
+        "copyToClipboard": "نسخ إلى الحافظة"
+      },
+      "settled": {
+        "empty": "لم تُسجَّل أي دفعة بعد.",
+        "pendingHeader": "بانتظار التأكيد ({{n}})",
+        "doneHeader": "منتهية ({{n}})",
+        "confirmPrompt": "هل استلمت المبلغ؟ يرجى التأكيد.",
+        "waitingForPayee": "بانتظار تأكيد المستلم",
+        "confirm": "تأكيد"
+      },
+      "detail": {
+        "title": "المصروف",
+        "srTitle": "المصروف: {{description}}",
+        "deleteConfirm": "هل تريد فعلاً حذف هذا المصروف؟",
+        "allSharesSettled": "تمت تسوية كل الحصص",
+        "openShares": "ما زالت هناك حصص معلَّقة",
+        "noShares": "لا توجد حصص محفوظة",
+        "amountPaid": "تم دفع {{amount}}",
+        "note": "ملاحظة",
+        "receipt": "إيصال",
+        "openReceipt": "فتح الإيصال",
+        "details": "التفاصيل",
+        "createdAt": "أُنشئ",
+        "updatedAt": "حُدِّث",
+        "source": "المصدر",
+        "tags": "الوسوم",
+        "deleteExpense": "حذف المصروف",
+        "via": {
+          "manual": "يدوي",
+          "camera": "قراءة ضوئية بالكاميرا",
+          "voice": "إدخال صوتي",
+          "import": "استيراد",
+          "template": "قالب"
+        }
+      },
+      "activity": {
+        "emptyTitle": "لم يحدث شيء بعد",
+        "emptyText": "كل تغيير في المصروفات والدفعات يظهر هنا في السجل.",
+        "loadOlder": "عرض الأقدم",
+        "someone": "شخص ما",
+        "created": "أضاف مصروفاً",
+        "amountChanged": "غيَّر المبلغ من {{from}} إلى",
+        "deleted": "حذف مصروفاً",
+        "settlementConfirmed": "أكَّد دفعة",
+        "receiptUploaded": "أضاف إيصالاً",
+        "viaMethod": "عبر {{method}}"
+      },
+      "recurring": {
+        "title": "مصروفات متكررة",
+        "subtitle": "الإيجار والتسوق والاشتراكات — تُنشأ تلقائياً",
+        "new": "جديد",
+        "activeHeader": "نشطة ({{n}})",
+        "pausedHeader": "متوقفة ({{n}})",
+        "next": "التالي: {{date}}",
+        "activate": "تفعيل",
+        "pause": "إيقاف مؤقت",
+        "emptyTitle": "لا توجد قوالب بعد",
+        "emptyText": "أعِدّ المصروفات المتكررة مثل الإيجار أو الاشتراكات أو تسوق الأسبوع مرة واحدة — والباقي يحدث تلقائياً.",
+        "createFirst": "إنشاء أول قالب",
+        "sheetTitle": "مصروف متكرر جديد",
+        "newTemplate": "قالب جديد",
+        "changeEmoji": "تغيير الرمز التعبيري",
+        "titlePlaceholder": "العنوان، مثل الإيجار",
+        "frequency": "التكرار",
+        "startDate": "تاريخ البدء",
+        "splitInfo": "التقسيم: بالتساوي بين كل المشاركين ({{n}}).",
+        "splitInfoSoon": "التقسيم بالنسبة المئوية أو المخصص للقوالب قادم قريباً.",
+        "freq": {
+          "daily": "يومي",
+          "weekly": "أسبوعي",
+          "biweekly": "كل أسبوعين",
+          "monthly": "شهري"
+        }
+      },
+      "method": {
+        "paypal": "PayPal",
+        "revolut": "Revolut",
+        "bank": "تحويل بنكي",
+        "wise": "Wise",
+        "apple_pay": "Apple Pay",
+        "google_pay": "Google Pay",
+        "cash": "نقداً",
+        "other": "أخرى"
+      }
+    },
     "button": "المصاريف",
     "title": "النفقات",
     "addExpense": "إضافة نفقة",
@@ -2728,7 +2923,20 @@
     "invalidEmail": "عنوان بريد إلكتروني غير صالح",
     "minLength": "مطلوب {{count}} حرف على الأقل",
     "maxLength": "الحد الأقصى {{count}} حرف مسموح",
-    "passwordMismatch": "كلمات المرور غير متطابقة"
+    "passwordMismatch": "كلمات المرور غير متطابقة",
+    "survey": {
+      "participant": "اختر اسمك",
+      "attendance": "حدّد ما إذا كنت تستطيع الحضور",
+      "duration": "اختر المدة التي تفضّلها",
+      "budget": "اختر ميزانيتك",
+      "destination": "اختر وجهة",
+      "travel": "حدّد المسافة التي أنت مستعد لقطعها",
+      "activities": "اختر نشاطًا واحدًا على الأقل",
+      "fitness": "اختر مستوى لياقتك",
+      "groupCode": "رمز المجموعة مطلوب",
+      "groupCodeTooLong": "رمز المجموعة طويل جدًا",
+      "maxChars": "الحد الأقصى {{max}} حرفًا"
+    }
   },
   "planner": {
     "title": "مخطط نهاية الأسبوع",
@@ -5907,6 +6115,12 @@
       "yourTurn": "دورك"
     },
     "results": {
+      "winnerPoints": "{{n}} نقطة",
+      "toParty": "إلى الحفلة",
+      "rounds": "الجولات",
+      "bestPoints": "أفضل نتيجة",
+      "longestStreak": "أطول سلسلة",
+      "streakBadge": "سلسلة {{n}}×",
       "gameOver": "!انتهت اللعبة",
       "winner": "الفائز",
       "leaderboard": "لوحة المتصدرين",
@@ -6238,6 +6452,10 @@
       "votingPhase": "التصويت · {{current}}/{{total}}"
     },
     "ohrwurm": {
+      "leaveTitle": "مغادرة اللعبة؟",
+      "leaveSub": "ستفقد نتيجة الجولة الحالية.",
+      "leaveStay": "متابعة اللعب",
+      "leaveConfirm": "مغادرة",
       "back": "رجوع",
       "target": "الهدف {{count}}",
       "spotifyOk": "✓ Spotify · الأغنية كاملة بعد الكشف (في اللعبة: معاينة)",
@@ -6409,6 +6627,8 @@
       "title": "Split Quiz"
     },
     "truthdare": {
+      "yes": "نعم",
+      "no": "لا",
       "gameTitle": "صدق أو جرؤ 2.0",
       "timerLabel": "مؤقت التحدي (ث)",
       "roundHeader": "جولة {{current}}/{{total}}",
@@ -6492,6 +6712,7 @@
         "anotherGame": "لعبة أخرى"
       },
       "setup": {
+        "defaultPlayerName": "أنت",
         "heading": "تحضير اللعبة",
         "title": "من ستكون اليوم؟",
         "subtitle": "اختر لاعبيك وفئة — الباقي يحدث في اللعبة.",
@@ -6695,6 +6916,12 @@
       "startGame": "ابدأ اللعبة"
     },
     "wordpress": {
+      "modes": {
+        "kategorie": "الفئة",
+        "stroop": "ستروب",
+        "verboten": "ممنوع",
+        "speedRush": "سباق السرعة"
+      },
       "title": "اضغط على الكلمة",
       "tagline": "اضغط بسرعة، فكّر بسرعة!",
       "defaultPlayer1": "لاعب 1",
@@ -7282,6 +7509,16 @@
       "pantomime": "مثّل بصمت وفريقك يخمّن — مع تحديات لنقاط مضاعفة"
     },
     "events": {
+      "actionError": "لم ينجح ذلك.",
+      "archived": "تمت الأرشفة",
+      "restored": "تمت الاستعادة",
+      "deleted": "تم حذف الفعالية",
+      "manage": "إدارة",
+      "manageSub": "إدارة الفعالية",
+      "restore": "استعادة",
+      "archive": "أرشفة",
+      "delete": "حذف",
+      "deleteConfirm": "هل تريد فعلاً حذف هذه الفعالية؟ لا يمكن التراجع عن ذلك.",
       "title": "الأحداث",
       "countSummary": "{{active}} نشط · {{archived}} مؤرشف",
       "searchPlaceholder": "ابحث عن أحداث...",
@@ -7649,6 +7886,7 @@
     }
   },
   "nativeResponses": {
+    "customAnswers": "إجابات مخصصة",
     "stats": {
       "responses": "الردود",
       "responseRate": "معدل الاستجابة",
@@ -8136,6 +8374,8 @@
   },
   "woIstWas": {
     "modes": {
+      "unterschiede": "اختلافات",
+      "karte": "خريطة",
       "memory": "ذاكرة",
       "memoryDesc": "احفظ المشهد وأجب عن الأسئلة",
       "speed": "سرعة",
@@ -9468,6 +9708,48 @@
     "aiLimitReached": "تم الوصول إلى الحد الأقصى {{max}} عمليات إنشاء لكل جلسة"
   },
   "tv": {
+    "partyNight": {
+      "title": "Party Night",
+      "standingsEyebrow": "الترتيب المؤقت",
+      "afterGame": "بعد {{game}}",
+      "leadChange": "تغيّر الصدارة: {{name}}",
+      "tonightTotal": "إجمالي هذه الليلة",
+      "noStandings": "لا توجد نقاط بعد",
+      "roadmapTitle": "السهرة",
+      "nextUp": "الآن",
+      "upNext": "التالي",
+      "gameXofY": "اللعبة {{current}} من {{total}}",
+      "finaleEyebrow": "انتهت Party Night",
+      "champion": "بطل السهرة",
+      "championLine": "{{name}} يفوز بـ {{points}} نقطة",
+      "finalTable": "الترتيب النهائي",
+      "gamesPlayed": "الألعاب",
+      "totalPoints": "مجموع النقاط",
+      "awardsTitle": "الجوائز",
+      "noAwards": "عدد الألعاب غير كافٍ لمنح الجوائز",
+      "award": {
+        "comeback": {
+          "title": "عودة السهرة",
+          "detail": "من المركز {{from}} إلى المركز {{to}}"
+        },
+        "mostWins": {
+          "title": "الفائز المتكرر",
+          "detail": "{{n}} انتصارات"
+        },
+        "consistency": {
+          "title": "ملك الثبات",
+          "detail": "متوسط المركز {{value}}"
+        },
+        "bestGame": {
+          "title": "أفضل أداء في السهرة",
+          "detail": "رقم قياسي: {{value}} نقطة في {{game}}"
+        },
+        "unlucky": {
+          "title": "سيّئ حظ السهرة",
+          "detail": "{{n}}× في المركز الأخير"
+        }
+      }
+    },
     "connectTitle": "توصيل التلفاز",
     "openOnTv": "افتح على تلفازك:",
     "copied": "تم النسخ!",

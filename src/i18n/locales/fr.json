@@ -1442,6 +1442,7 @@
     "roseDesc": "Élégant & raffiné"
   },
   "common": {
+    "clear": "Effacer",
     "save": "Enregistrer",
     "cancel": "Annuler",
     "close": "Fermer",
@@ -3671,6 +3672,200 @@
     }
   },
   "expenses": {
+    "v2": {
+      "common": {
+        "save": "Enregistrer",
+        "close": "Fermer",
+        "cancel": "Annuler",
+        "saving": "Enregistrement …",
+        "loading": "Chargement …",
+        "sum": "Total",
+        "you": "(Toi)",
+        "person": "Personne",
+        "date": "Date",
+        "today": "Aujourd'hui",
+        "yesterday": "Hier",
+        "settledLabel": "réglé",
+        "openLabel": "en attente"
+      },
+      "add": {
+        "srTitle": "Ajouter une dépense",
+        "title": "Nouvelle dépense",
+        "listening": "À l'écoute …",
+        "descriptionPlaceholder": "Pour quoi ? p. ex. pizza, essence, Airbnb",
+        "voiceStart": "Démarrer la dictée",
+        "voiceStop": "Arrêter l'enregistrement",
+        "suggestion": "Suggestion :",
+        "tapToApply": "Touche pour appliquer",
+        "noteOptional": "Note (facultatif)",
+        "notePlaceholder": "Info complémentaire, p. ex. « pourboire compris »",
+        "receiptOptional": "Reçu (facultatif)",
+        "showDetails": "Ajouter des détails",
+        "hideDetails": "Masquer les détails",
+        "hideSplit": "Masquer le partage",
+        "adjustSplit": "Ajuster le partage ({{amount}})"
+      },
+      "split": {
+        "mode": {
+          "equal": {
+            "label": "Égal",
+            "hint": "pareil pour tous"
+          },
+          "shares": {
+            "label": "Parts",
+            "hint": "1×/2×"
+          },
+          "percentage": {
+            "label": "Pourcentage",
+            "hint": "% par personne"
+          },
+          "custom": {
+            "label": "Montants",
+            "hint": "{{symbol}} par personne"
+          }
+        },
+        "tapToToggle": "Participants · touche pour inclure ou exclure",
+        "includePerson": "Inclure {{name}}",
+        "excludePerson": "Exclure {{name}}",
+        "equalSummary": "{{n}} personnes partagent {{total}}",
+        "perHead": "{{amount}} chacune",
+        "needOnePerson": "Au moins une personne doit participer",
+        "sharesHeader": "Parts · p. ex. 2× paie le double",
+        "decreaseShare": "Diminuer la part",
+        "increaseShare": "Augmenter la part",
+        "percentFor": "Pourcentage pour {{name}}",
+        "amountFor": "Montant pour {{name}}",
+        "distributeRest": "Répartir le reste ({{amount}})"
+      },
+      "payer": {
+        "multiple": "Plusieurs",
+        "single": "Une seule",
+        "multiTitle": "Payé par · plusieurs",
+        "paidByPerson": "Payé par {{name}}"
+      },
+      "row": {
+        "hasReceipt": "Reçu joint",
+        "paidByName": "{{name}} a payé",
+        "unknownPayer": "Payeur inconnu",
+        "peopleCount": "Personnes : {{n}}"
+      },
+      "balance": {
+        "aria": "Aperçu des soldes",
+        "allSettled": "Tout est réglé",
+        "owedToYou": "On te doit",
+        "youOwe": "Tu dois",
+        "stillOpen": "Encore en attente",
+        "allSettledHint": "Plus rien en attente — c'est propre.",
+        "owedHint": "Ce montant revient au total sur ton compte.",
+        "oweHint": "Voilà ce que tu dois aux autres.",
+        "idleHint": "Pas encore d'activité."
+      },
+      "stats": {
+        "empty": "Pas encore de dépenses — les statistiques apparaissent dès la première saisie.",
+        "budget": "Budget",
+        "ofBudget": "sur {{amount}}",
+        "paidVsShare": "Payé et part",
+        "paid": "Payé",
+        "share": "Part",
+        "trend": "Évolution",
+        "totalLine": "Total : {{amount}}",
+        "uncategorized": "Sans catégorie"
+      },
+      "settle": {
+        "allSettledTitle": "Tout est réglé",
+        "noOpenAmounts": "Plus rien en attente entre les participants.",
+        "referenceNote": "Remboursement {{name}}",
+        "copyFailed": "Impossible de copier dans le presse-papiers — les détails sont dans l'activité.",
+        "ibanCopied": "IBAN et montant copiés — ouvre ton appli bancaire pour les coller.",
+        "minimalTransfers": "Virements de remboursement minimaux ({{n}})",
+        "yourTransfer": "Ton virement",
+        "paymentMethod": "Moyen de paiement",
+        "linkBadge": "LIEN",
+        "copyToClipboard": "Copier dans le presse-papiers"
+      },
+      "settled": {
+        "empty": "Aucun paiement enregistré pour l'instant.",
+        "pendingHeader": "En attente de confirmation ({{n}})",
+        "doneHeader": "Terminés ({{n}})",
+        "confirmPrompt": "Tu as bien reçu l'argent ? Merci de confirmer.",
+        "waitingForPayee": "En attente de la confirmation du destinataire",
+        "confirm": "Confirmer"
+      },
+      "detail": {
+        "title": "Dépense",
+        "srTitle": "Dépense : {{description}}",
+        "deleteConfirm": "Vraiment supprimer cette dépense ?",
+        "allSharesSettled": "Toutes les parts sont réglées",
+        "openShares": "Des parts restent en attente",
+        "noShares": "Aucune part enregistrée",
+        "amountPaid": "{{amount}} payé",
+        "note": "Note",
+        "receipt": "Reçu",
+        "openReceipt": "Ouvrir le reçu",
+        "details": "Détails",
+        "createdAt": "Créée",
+        "updatedAt": "Modifiée",
+        "source": "Source",
+        "tags": "Étiquettes",
+        "deleteExpense": "Supprimer la dépense",
+        "via": {
+          "manual": "Manuelle",
+          "camera": "OCR de l'appareil photo",
+          "voice": "Dictée",
+          "import": "Import",
+          "template": "Modèle"
+        }
+      },
+      "activity": {
+        "emptyTitle": "Rien ne s'est encore passé",
+        "emptyText": "Toutes les modifications des dépenses et des paiements apparaissent ici.",
+        "loadOlder": "Afficher plus ancien",
+        "someone": "Quelqu'un",
+        "created": "a ajouté une dépense",
+        "amountChanged": "a changé le montant de {{from}} à",
+        "deleted": "a supprimé une dépense",
+        "settlementConfirmed": "a confirmé un paiement",
+        "receiptUploaded": "a ajouté un reçu",
+        "viaMethod": "via {{method}}"
+      },
+      "recurring": {
+        "title": "Dépenses récurrentes",
+        "subtitle": "Loyer, courses, abonnements — créés automatiquement",
+        "new": "Nouveau",
+        "activeHeader": "Actives ({{n}})",
+        "pausedHeader": "En pause ({{n}})",
+        "next": "Prochaine : {{date}}",
+        "activate": "Activer",
+        "pause": "Mettre en pause",
+        "emptyTitle": "Pas encore de modèles",
+        "emptyText": "Crée une fois les dépenses récurrentes comme le loyer, le streaming ou les courses de la semaine — le reste se fait tout seul.",
+        "createFirst": "Créer le premier modèle",
+        "sheetTitle": "Nouvelle dépense récurrente",
+        "newTemplate": "Nouveau modèle",
+        "changeEmoji": "Changer l'emoji",
+        "titlePlaceholder": "Titre, p. ex. loyer",
+        "frequency": "Fréquence",
+        "startDate": "Date de début",
+        "splitInfo": "Partage : à parts égales entre tous les participants ({{n}}).",
+        "splitInfoSoon": "Les partages en pourcentage ou personnalisés pour les modèles arrivent bientôt.",
+        "freq": {
+          "daily": "Quotidien",
+          "weekly": "Hebdomadaire",
+          "biweekly": "Toutes les 2 semaines",
+          "monthly": "Mensuel"
+        }
+      },
+      "method": {
+        "paypal": "PayPal",
+        "revolut": "Revolut",
+        "bank": "Virement",
+        "wise": "Wise",
+        "apple_pay": "Apple Pay",
+        "google_pay": "Google Pay",
+        "cash": "Espèces",
+        "other": "Autre"
+      }
+    },
     "button": "Dépenses",
     "title": "Dépenses",
     "addExpense": "Ajouter une Dépense",
@@ -3803,7 +3998,20 @@
     "invalidEmail": "Adresse e-mail invalide",
     "minLength": "Au moins {{count}} caractères requis",
     "maxLength": "Maximum {{count}} caractères autorisés",
-    "passwordMismatch": "Les mots de passe ne correspondent pas"
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "survey": {
+      "participant": "Choisis ton nom",
+      "attendance": "Indique si tu peux venir",
+      "duration": "Choisis la durée que tu préfères",
+      "budget": "Choisis ton budget",
+      "destination": "Choisis une destination",
+      "travel": "Indique jusqu'où tu es prêt à voyager",
+      "activities": "Choisis au moins une activité",
+      "fitness": "Choisis ton niveau de forme",
+      "groupCode": "Le code de groupe est obligatoire",
+      "groupCodeTooLong": "Le code de groupe est trop long",
+      "maxChars": "Maximum {{max}} caractères"
+    }
   },
   "planner": {
     "title": "Planificateur de Weekend",
@@ -6065,6 +6273,12 @@
       "yourTurn": "À ton tour"
     },
     "results": {
+      "winnerPoints": "{{n}} points",
+      "toParty": "Retour à la soirée",
+      "rounds": "Manches",
+      "bestPoints": "Meilleur score",
+      "longestStreak": "Plus longue série",
+      "streakBadge": "Série {{n}}×",
       "gameOver": "Fin de la Partie !",
       "winner": "Gagnant",
       "leaderboard": "Classement",
@@ -6396,6 +6610,10 @@
       "votingPhase": "Vote · {{current}}/{{total}}"
     },
     "ohrwurm": {
+      "leaveTitle": "Quitter la partie ?",
+      "leaveSub": "La partie en cours sera perdue.",
+      "leaveStay": "Continuer à jouer",
+      "leaveConfirm": "Quitter",
       "back": "Retour",
       "target": "Objectif {{count}}",
       "spotifyOk": "✓ Spotify · chanson complète après le reveal (en jeu : aperçu)",
@@ -6567,6 +6785,8 @@
       "title": "Split Quiz"
     },
     "truthdare": {
+      "yes": "Oui",
+      "no": "Non",
       "gameTitle": "Vérité ou Défi 2.0",
       "timerLabel": "Minuterie Défi (sec.)",
       "roundHeader": "Manche {{current}}/{{total}}",
@@ -6650,6 +6870,7 @@
         "anotherGame": "Autre jeu"
       },
       "setup": {
+        "defaultPlayerName": "Toi",
         "heading": "Préparation du jeu",
         "title": "Qui seras-tu aujourd'hui ?",
         "subtitle": "Choisis tes joueurs et une catégorie — le reste se passe dans le jeu.",
@@ -6853,6 +7074,12 @@
       "startGame": "Lancer le jeu"
     },
     "wordpress": {
+      "modes": {
+        "kategorie": "Catégorie",
+        "stroop": "Stroop",
+        "verboten": "Interdit",
+        "speedRush": "Speed Rush"
+      },
       "title": "Appuie sur le Mot",
       "tagline": "Tapez vite, pensez vite !",
       "defaultPlayer1": "Joueur 1",
@@ -7392,6 +7619,16 @@
       "pantomime": "Mime en silence, ton équipe devine — avec des défis pour doubler les points"
     },
     "events": {
+      "actionError": "Ça n'a pas marché.",
+      "archived": "Archivé",
+      "restored": "Restauré",
+      "deleted": "Événement supprimé",
+      "manage": "Gérer",
+      "manageSub": "Gérer l'événement",
+      "restore": "Restaurer",
+      "archive": "Archiver",
+      "delete": "Supprimer",
+      "deleteConfirm": "Vraiment supprimer cet événement ? C'est irréversible.",
       "title": "Événements",
       "countSummary": "{{active}} actifs · {{archived}} archivés",
       "searchPlaceholder": "Rechercher des événements...",
@@ -7980,6 +8217,8 @@
   },
   "woIstWas": {
     "modes": {
+      "unterschiede": "Différences",
+      "karte": "Carte",
       "memory": "Mémoire",
       "memoryDesc": "Mémorisez la scène et répondez aux questions",
       "speed": "Vitesse",
@@ -8451,6 +8690,7 @@
     "no": "Non"
   },
   "nativeResponses": {
+    "customAnswers": "Réponses personnalisées",
     "stats": {
       "responses": "Réponses",
       "responseRate": "Taux de réponse",
@@ -9370,6 +9610,48 @@
     "aiLimitReached": "Maximum de {{max}} générations par session atteint"
   },
   "tv": {
+    "partyNight": {
+      "title": "Party Night",
+      "standingsEyebrow": "Classement provisoire",
+      "afterGame": "Après {{game}}",
+      "leadChange": "Changement de leader : {{name}}",
+      "tonightTotal": "Total de la soirée",
+      "noStandings": "Pas encore de points",
+      "roadmapTitle": "La soirée",
+      "nextUp": "Maintenant",
+      "upNext": "Ensuite",
+      "gameXofY": "Jeu {{current}} sur {{total}}",
+      "finaleEyebrow": "La Party Night est terminée",
+      "champion": "Champion de la soirée",
+      "championLine": "{{name}} gagne avec {{points}} points",
+      "finalTable": "Classement final",
+      "gamesPlayed": "Jeux",
+      "totalPoints": "Points au total",
+      "awardsTitle": "Récompenses",
+      "noAwards": "Pas assez de parties pour des récompenses",
+      "award": {
+        "comeback": {
+          "title": "Remontée de la soirée",
+          "detail": "De la place {{from}} à la place {{to}}"
+        },
+        "mostWins": {
+          "title": "Vainqueur en série",
+          "detail": "{{n}} victoires"
+        },
+        "consistency": {
+          "title": "Roi de la régularité",
+          "detail": "Place moy. {{value}}"
+        },
+        "bestGame": {
+          "title": "Meilleure performance de la soirée",
+          "detail": "Record : {{value}} points à {{game}}"
+        },
+        "unlucky": {
+          "title": "Poisse de la soirée",
+          "detail": "{{n}}× dernier"
+        }
+      }
+    },
     "connectTitle": "Connecter la TV",
     "openOnTv": "Ouvre sur ta TV :",
     "copied": "Copié !",

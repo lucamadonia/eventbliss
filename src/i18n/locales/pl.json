@@ -1442,6 +1442,7 @@
     "roseDesc": "Elegancki i stylowy"
   },
   "common": {
+    "clear": "Wyczyść",
     "save": "Zapisz",
     "cancel": "Anuluj",
     "close": "Zamknij",
@@ -3721,6 +3722,200 @@
     }
   },
   "expenses": {
+    "v2": {
+      "common": {
+        "save": "Zapisz",
+        "close": "Zamknij",
+        "cancel": "Anuluj",
+        "saving": "Zapisywanie …",
+        "loading": "Wczytywanie …",
+        "sum": "Suma",
+        "you": "(Ty)",
+        "person": "Osoba",
+        "date": "Data",
+        "today": "Dzisiaj",
+        "yesterday": "Wczoraj",
+        "settledLabel": "rozliczone",
+        "openLabel": "otwarte"
+      },
+      "add": {
+        "srTitle": "Dodaj wydatek",
+        "title": "Nowy wydatek",
+        "listening": "Słucham …",
+        "descriptionPlaceholder": "Na co? np. pizza, paliwo, Airbnb",
+        "voiceStart": "Zacznij dyktowanie",
+        "voiceStop": "Zatrzymaj nagrywanie",
+        "suggestion": "Propozycja:",
+        "tapToApply": "Dotknij, aby przyjąć",
+        "noteOptional": "Notatka (opcjonalnie)",
+        "notePlaceholder": "Dodatkowa informacja, np. „napiwek już wliczony”",
+        "receiptOptional": "Paragon (opcjonalnie)",
+        "showDetails": "Dodaj szczegóły",
+        "hideDetails": "Ukryj szczegóły",
+        "hideSplit": "Ukryj podział",
+        "adjustSplit": "Dostosuj podział ({{amount}})"
+      },
+      "split": {
+        "mode": {
+          "equal": {
+            "label": "Po równo",
+            "hint": "wszyscy tyle samo"
+          },
+          "shares": {
+            "label": "Udziały",
+            "hint": "1×/2×"
+          },
+          "percentage": {
+            "label": "Procent",
+            "hint": "% na osobę"
+          },
+          "custom": {
+            "label": "Kwoty",
+            "hint": "{{symbol}} na osobę"
+          }
+        },
+        "tapToToggle": "Uczestnicy · dotknij, aby dodać lub pominąć",
+        "includePerson": "Dolicz: {{name}}",
+        "excludePerson": "Pomiń: {{name}}",
+        "equalSummary": "Osoby: {{n}} · dzielą {{total}}",
+        "perHead": "{{amount}} na osobę",
+        "needOnePerson": "Musi uczestniczyć co najmniej jedna osoba",
+        "sharesHeader": "Udziały · np. 2× płaci podwójnie",
+        "decreaseShare": "Zmniejsz udział",
+        "increaseShare": "Zwiększ udział",
+        "percentFor": "Procent dla: {{name}}",
+        "amountFor": "Kwota dla: {{name}}",
+        "distributeRest": "Rozdziel resztę ({{amount}})"
+      },
+      "payer": {
+        "multiple": "Kilka osób",
+        "single": "Jedna osoba",
+        "multiTitle": "Zapłacone przez · kilka osób",
+        "paidByPerson": "Zapłacone przez: {{name}}"
+      },
+      "row": {
+        "hasReceipt": "Jest paragon",
+        "paidByName": "Zapłacone przez: {{name}}",
+        "unknownPayer": "Nieznany płatnik",
+        "peopleCount": "Osoby: {{n}}"
+      },
+      "balance": {
+        "aria": "Przegląd sald",
+        "allSettled": "Wszystko rozliczone",
+        "owedToYou": "Tobie się należy",
+        "youOwe": "Jesteś winien",
+        "stillOpen": "Jeszcze otwarte",
+        "allSettledHint": "Nic nie zostało do rozliczenia — czysta sprawa.",
+        "owedHint": "Łącznie wróci na twoje konto.",
+        "oweHint": "Tyle jesteś winien pozostałym.",
+        "idleHint": "Jeszcze nic się nie wydarzyło."
+      },
+      "stats": {
+        "empty": "Jeszcze nie ma wydatków — statystyki pojawią się po pierwszym wpisie.",
+        "budget": "Budżet",
+        "ofBudget": "z {{amount}}",
+        "paidVsShare": "Zapłacone a udział",
+        "paid": "Zapłacone",
+        "share": "Udział",
+        "trend": "Przebieg",
+        "totalLine": "Łącznie: {{amount}}",
+        "uncategorized": "Bez kategorii"
+      },
+      "settle": {
+        "allSettledTitle": "Wszystko rozliczone",
+        "noOpenAmounts": "Między uczestnikami nie ma nic do rozliczenia.",
+        "referenceNote": "Rozliczenie {{name}}",
+        "copyFailed": "Nie udało się skopiować do schowka — szczegóły są w historii.",
+        "ibanCopied": "Skopiowano IBAN i kwotę — otwórz aplikację banku i wklej.",
+        "minimalTransfers": "Minimalne przelewy rozliczeniowe ({{n}})",
+        "yourTransfer": "Twój przelew",
+        "paymentMethod": "Sposób płatności",
+        "linkBadge": "LINK",
+        "copyToClipboard": "Kopiuj do schowka"
+      },
+      "settled": {
+        "empty": "Nie zapisano jeszcze żadnej płatności.",
+        "pendingHeader": "Czeka na potwierdzenie ({{n}})",
+        "doneHeader": "Załatwione ({{n}})",
+        "confirmPrompt": "Pieniądze dotarły? Potwierdź, proszę.",
+        "waitingForPayee": "Czekamy na potwierdzenie odbiorcy",
+        "confirm": "Potwierdź"
+      },
+      "detail": {
+        "title": "Wydatek",
+        "srTitle": "Wydatek: {{description}}",
+        "deleteConfirm": "Na pewno usunąć ten wydatek?",
+        "allSharesSettled": "Wszystkie udziały rozliczone",
+        "openShares": "Są jeszcze otwarte udziały",
+        "noShares": "Nie zapisano udziałów",
+        "amountPaid": "zapłacono {{amount}}",
+        "note": "Notatka",
+        "receipt": "Paragon",
+        "openReceipt": "Otwórz paragon",
+        "details": "Szczegóły",
+        "createdAt": "Dodano",
+        "updatedAt": "Zaktualizowano",
+        "source": "Źródło",
+        "tags": "Tagi",
+        "deleteExpense": "Usuń wydatek",
+        "via": {
+          "manual": "Ręcznie",
+          "camera": "OCR z aparatu",
+          "voice": "Dyktowanie",
+          "import": "Import",
+          "template": "Szablon"
+        }
+      },
+      "activity": {
+        "emptyTitle": "Jeszcze nic się nie wydarzyło",
+        "emptyText": "Wszystkie zmiany wydatków i płatności trafiają tutaj.",
+        "loadOlder": "Pokaż starsze",
+        "someone": "Ktoś",
+        "created": "dodał(a) wydatek",
+        "amountChanged": "zmienił(a) kwotę z {{from}} na",
+        "deleted": "usunął(-ęła) wydatek",
+        "settlementConfirmed": "potwierdził(a) płatność",
+        "receiptUploaded": "dodał(a) paragon",
+        "viaMethod": "przez {{method}}"
+      },
+      "recurring": {
+        "title": "Wydatki cykliczne",
+        "subtitle": "Czynsz, zakupy, abonamenty — powstają automatycznie",
+        "new": "Nowy",
+        "activeHeader": "Aktywne ({{n}})",
+        "pausedHeader": "Wstrzymane ({{n}})",
+        "next": "Następny: {{date}}",
+        "activate": "Włącz",
+        "pause": "Wstrzymaj",
+        "emptyTitle": "Nie ma jeszcze szablonów",
+        "emptyText": "Ustaw raz wydatki cykliczne, takie jak czynsz, streaming czy cotygodniowe zakupy — reszta dzieje się sama.",
+        "createFirst": "Utwórz pierwszy szablon",
+        "sheetTitle": "Nowy wydatek cykliczny",
+        "newTemplate": "Nowy szablon",
+        "changeEmoji": "Zmień emoji",
+        "titlePlaceholder": "Tytuł, np. czynsz",
+        "frequency": "Częstotliwość",
+        "startDate": "Data startu",
+        "splitInfo": "Podział: po równo na wszystkich uczestników ({{n}}).",
+        "splitInfoSoon": "Podział procentowy i własny dla szablonów pojawi się wkrótce.",
+        "freq": {
+          "daily": "Codziennie",
+          "weekly": "Co tydzień",
+          "biweekly": "Co 2 tygodnie",
+          "monthly": "Co miesiąc"
+        }
+      },
+      "method": {
+        "paypal": "PayPal",
+        "revolut": "Revolut",
+        "bank": "Przelew",
+        "wise": "Wise",
+        "apple_pay": "Apple Pay",
+        "google_pay": "Google Pay",
+        "cash": "Gotówka",
+        "other": "Inne"
+      }
+    },
     "button": "Wydatki",
     "title": "Wydatki",
     "addExpense": "Dodaj Wydatek",
@@ -3853,7 +4048,20 @@
     "invalidEmail": "Nieprawidłowy adres email",
     "minLength": "Wymagane minimum {{count}} znaków",
     "maxLength": "Maksymalnie {{count}} znaków dozwolone",
-    "passwordMismatch": "Hasła nie są zgodne"
+    "passwordMismatch": "Hasła nie są zgodne",
+    "survey": {
+      "participant": "Wybierz swoje imię",
+      "attendance": "Zaznacz, czy możesz przyjść",
+      "duration": "Wybierz preferowany czas trwania",
+      "budget": "Wybierz swój budżet",
+      "destination": "Wybierz cel podróży",
+      "travel": "Zaznacz, jak daleko możesz pojechać",
+      "activities": "Wybierz co najmniej jedną aktywność",
+      "fitness": "Wybierz swój poziom kondycji",
+      "groupCode": "Kod grupy jest wymagany",
+      "groupCodeTooLong": "Kod grupy jest za długi",
+      "maxChars": "Maksymalna liczba znaków: {{max}}"
+    }
   },
   "planner": {
     "title": "Planer Weekendowy",
@@ -6115,6 +6323,12 @@
       "yourTurn": "Twoja Kolej"
     },
     "results": {
+      "winnerPoints": "Punkty: {{n}}",
+      "toParty": "Do imprezy",
+      "rounds": "Rundy",
+      "bestPoints": "Najlepszy wynik",
+      "longestStreak": "Najdłuższa seria",
+      "streakBadge": "Seria {{n}}×",
       "gameOver": "Koniec Gry!",
       "winner": "Zwycięzca",
       "leaderboard": "Ranking",
@@ -6446,6 +6660,10 @@
       "votingPhase": "Głosowanie · {{current}}/{{total}}"
     },
     "ohrwurm": {
+      "leaveTitle": "Opuścić grę?",
+      "leaveSub": "Bieżący wynik zostanie utracony.",
+      "leaveStay": "Graj dalej",
+      "leaveConfirm": "Wyjdź",
       "back": "Wstecz",
       "target": "Cel {{count}}",
       "spotifyOk": "✓ Spotify · pełna piosenka po ujawnieniu (w grze: podgląd)",
@@ -6617,6 +6835,8 @@
       "title": "Split Quiz"
     },
     "truthdare": {
+      "yes": "Tak",
+      "no": "Nie",
       "gameTitle": "Prawda czy Wyzwanie 2.0",
       "timerLabel": "Timer Wyzwania (sek.)",
       "roundHeader": "Runda {{current}}/{{total}}",
@@ -6700,6 +6920,7 @@
         "anotherGame": "Inna gra"
       },
       "setup": {
+        "defaultPlayerName": "Ty",
         "heading": "Przygotowanie gry",
         "title": "Kim będziesz dzisiaj?",
         "subtitle": "Wybierz graczy i kategorię — reszta dzieje się w grze.",
@@ -6903,6 +7124,12 @@
       "startGame": "Rozpocznij grę"
     },
     "wordpress": {
+      "modes": {
+        "kategorie": "Kategoria",
+        "stroop": "Stroop",
+        "verboten": "Zakazane",
+        "speedRush": "Speed Rush"
+      },
       "title": "Naciśnij Słowo",
       "tagline": "Szybko stukaj, szybko myśl!",
       "defaultPlayer1": "Gracz 1",
@@ -7466,6 +7693,16 @@
       "pantomime": "Pokazuj bez słów, drużyna zgaduje — z wyzwaniami za podwójne punkty"
     },
     "events": {
+      "actionError": "Nie udało się.",
+      "archived": "Zarchiwizowano",
+      "restored": "Przywrócono",
+      "deleted": "Wydarzenie usunięte",
+      "manage": "Zarządzaj",
+      "manageSub": "Zarządzaj wydarzeniem",
+      "restore": "Przywróć",
+      "archive": "Archiwizuj",
+      "delete": "Usuń",
+      "deleteConfirm": "Na pewno usunąć to wydarzenie? Tego nie da się cofnąć.",
       "title": "Wydarzenia",
       "countSummary": "{{active}} aktywne · {{archived}} zarchiwizowane",
       "searchPlaceholder": "Szukaj wydarzeń...",
@@ -8054,6 +8291,8 @@
   },
   "woIstWas": {
     "modes": {
+      "unterschiede": "Różnice",
+      "karte": "Mapa",
       "memory": "Pamięć",
       "memoryDesc": "Zapamiętaj scenę i odpowiedz na pytania",
       "speed": "Szybkość",
@@ -8525,6 +8764,7 @@
     "no": "Nie"
   },
   "nativeResponses": {
+    "customAnswers": "Własne odpowiedzi",
     "stats": {
       "responses": "Odpowiedzi",
       "responseRate": "Wskaźnik odpowiedzi",
@@ -9444,6 +9684,48 @@
     "aiLimitReached": "Osiągnięto maksymalnie {{max}} generowań na sesję"
   },
   "tv": {
+    "partyNight": {
+      "title": "Party Night",
+      "standingsEyebrow": "Wyniki na teraz",
+      "afterGame": "Po grze {{game}}",
+      "leadChange": "Zmiana lidera: {{name}}",
+      "tonightTotal": "Razem dziś wieczorem",
+      "noStandings": "Jeszcze nie ma punktów",
+      "roadmapTitle": "Wieczór",
+      "nextUp": "Teraz",
+      "upNext": "Następnie",
+      "gameXofY": "Gra {{current}} z {{total}}",
+      "finaleEyebrow": "Party Night dobiegła końca",
+      "champion": "Mistrz wieczoru",
+      "championLine": "{{name}} wygrywa z wynikiem {{points}}",
+      "finalTable": "Wyniki końcowe",
+      "gamesPlayed": "Gry",
+      "totalPoints": "Punkty razem",
+      "awardsTitle": "Wyróżnienia",
+      "noAwards": "Za mało gier na wyróżnienia",
+      "award": {
+        "comeback": {
+          "title": "Powrót wieczoru",
+          "detail": "Z miejsca {{from}} na miejsce {{to}}"
+        },
+        "mostWins": {
+          "title": "Seryjny zwycięzca",
+          "detail": "Zwycięstwa: {{n}}"
+        },
+        "consistency": {
+          "title": "Król równej formy",
+          "detail": "Śr. miejsce {{value}}"
+        },
+        "bestGame": {
+          "title": "Najlepszy wynik wieczoru",
+          "detail": "Rekord: {{value}} pkt w grze {{game}}"
+        },
+        "unlucky": {
+          "title": "Pechowiec wieczoru",
+          "detail": "Ostatnie miejsce: {{n}}×"
+        }
+      }
+    },
     "connectTitle": "Połącz TV",
     "openOnTv": "Otwórz na swoim TV:",
     "copied": "Skopiowano!",

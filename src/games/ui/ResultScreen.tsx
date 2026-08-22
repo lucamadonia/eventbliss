@@ -1,4 +1,5 @@
 import { useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Trophy, Medal, ArrowLeft, Play, PartyPopper } from "lucide-react";
@@ -69,6 +70,7 @@ export function ResultScreen({
   totalRounds,
   gameId,
 }: ResultScreenProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const partyActive = isPartySessionActive();
   const sorted = useMemo(
@@ -124,7 +126,9 @@ export function ResultScreen({
             </div>
             <div>
               <h2 className="text-2xl font-bold text-white">{winner?.name}</h2>
-              <p className="text-yellow-400 font-semibold">{winner?.score} Punkte</p>
+              <p className="text-yellow-400 font-semibold">
+                {t("games.results.winnerPoints", { n: winner?.score ?? 0 })}
+              </p>
             </div>
           </div>
         </motion.div>
@@ -137,7 +141,7 @@ export function ResultScreen({
           transition={{ delay: 0.7 }}
         >
           <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
-            Rangliste
+            {t("games.results.leaderboard")}
           </h3>
           <div className="space-y-2">
             {sorted.map((player, i) => (
@@ -169,7 +173,7 @@ export function ResultScreen({
                 </span>
                 {player.streak >= 3 && (
                   <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full font-semibold">
-                    {player.streak}x Streak
+                    {t("games.results.streakBadge", { n: player.streak })}
                   </span>
                 )}
                 <span className="text-sm font-bold text-gray-300 min-w-[40px] text-right">
@@ -188,9 +192,9 @@ export function ResultScreen({
           transition={{ delay: 1.2 }}
         >
           {[
-            { label: "Runden", value: totalRounds ?? "-" },
-            { label: "Beste Punkte", value: bestRound },
-            { label: "Langster Streak", value: longestStreak },
+            { label: t("games.results.rounds"), value: totalRounds ?? "-" },
+            { label: t("games.results.bestPoints"), value: bestRound },
+            { label: t("games.results.longestStreak"), value: longestStreak },
           ].map((stat) => (
             <div
               key={stat.label}
@@ -224,12 +228,12 @@ export function ResultScreen({
             {partyActive ? (
               <>
                 <PartyPopper className="w-4 h-4" />
-                Zur Party
+                {t("games.results.toParty")}
               </>
             ) : (
               <>
                 <ArrowLeft className="w-4 h-4" />
-                Anderes Spiel
+                {t("games.results.otherGame")}
               </>
             )}
           </motion.button>
@@ -240,7 +244,7 @@ export function ResultScreen({
             whileTap={{ scale: 0.97 }}
           >
             <Play className="w-4 h-4" />
-            Nochmal spielen
+            {t("games.results.playAgain")}
           </motion.button>
         </motion.div>
       </div>

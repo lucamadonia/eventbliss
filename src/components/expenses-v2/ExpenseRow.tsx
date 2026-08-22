@@ -1,11 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { CheckCircle2, Circle, Receipt as ReceiptIcon, Trash2, Pencil, MoreVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatMoney } from "@/lib/expenses-v2/types";
 import type { Expense } from "@/lib/expenses-v2/types";
 import { useHaptics } from "@/hooks/useHaptics";
 import { CategoryIcon, type CategoryLike } from "./CategoryIcon";
+import { useExpenseFormat } from "./useExpenseFormat";
 
 interface Participant {
   id: string;
@@ -36,6 +37,8 @@ export function ExpenseRow({
   onEdit,
   onDelete,
 }: ExpenseRowProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const haptics = useHaptics();
   const [isDragging, setIsDragging] = useState(false);
   const x = useMotionValue(0);
@@ -132,25 +135,27 @@ export function ExpenseRow({
           <div className="flex items-center gap-1.5 mb-0.5">
             <h3 className="text-sm font-semibold text-foreground truncate">{expense.description}</h3>
             {expense.receipt_url && (
-              <ReceiptIcon className="w-3 h-3 text-cyan-600 dark:text-cyan-400 flex-shrink-0" aria-label="Beleg vorhanden" />
+              <ReceiptIcon
+                className="w-3 h-3 text-cyan-600 dark:text-cyan-400 flex-shrink-0"
+                aria-label={t("expenses.v2.row.hasReceipt")}
+              />
             )}
           </div>
           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <span className="truncate">
-              {payerName ? `${payerName} zahlte` : "Unbekannter Zahler"}
+              {payerName
+                ? t("expenses.v2.row.paidByName", { name: payerName })
+                : t("expenses.v2.row.unknownPayer")}
             </span>
             <span className="text-muted-foreground">·</span>
             <span className="text-muted-foreground shrink-0">
-              {new Date(expense.expense_date).toLocaleDateString("de-DE", {
-                day: "2-digit",
-                month: "short",
-              })}
+              {fmt.shortDate(expense.expense_date)}
             </span>
             {expense.shares && expense.shares.length > 0 && (
               <>
                 <span className="text-muted-foreground">·</span>
                 <span className="text-muted-foreground shrink-0">
-                  {expense.shares.length} {expense.shares.length === 1 ? "Person" : "Personen"}
+                  {t("expenses.v2.row.peopleCount", { n: expense.shares.length })}
                 </span>
               </>
             )}
@@ -160,23 +165,23 @@ export function ExpenseRow({
         {/* Amount + my-share badge */}
         <div className="flex flex-col items-end gap-0.5 flex-shrink-0">
           <div className="text-sm font-bold text-foreground tabular-nums tracking-tight">
-            {formatMoney(expense.amount, expense.currency ?? currency)}
+            {fmt.money(expense.amount, expense.currency ?? currency)}
           </div>
           {iAmPayer && myAmount > 0 ? (
             <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold tabular-nums">
-              +{formatMoney(expense.amount - myAmount, currency)}
+              +{fmt.money(expense.amount - myAmount)}
             </div>
           ) : iOwe ? (
             <div className="text-[10px] text-rose-600 dark:text-rose-400 font-semibold tabular-nums">
-              –{formatMoney(myAmount - myPaid, currency)}
+              –{fmt.money(myAmount - myPaid)}
             </div>
           ) : expense.is_settled_cached ? (
             <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-0.5">
-              <CheckCircle2 className="w-2.5 h-2.5" /> beglichen
+              <CheckCircle2 className="w-2.5 h-2.5" /> {t("expenses.v2.common.settledLabel")}
             </div>
           ) : (
             <div className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-              <Circle className="w-2.5 h-2.5" /> offen
+              <Circle className="w-2.5 h-2.5" /> {t("expenses.v2.common.openLabel")}
             </div>
           )}
         </div>

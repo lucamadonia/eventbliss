@@ -16,7 +16,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { SelectOption, QuestionConfig } from "@/lib/survey-config";
+import {
+  SelectOption,
+  QuestionConfig,
+  QuestionConfigs,
+  tEditableOptionLabel,
+} from "@/lib/survey-config";
 import { cn } from "@/lib/utils";
 
 interface CoreQuestionEditorProps {
@@ -45,6 +50,12 @@ interface CoreQuestionEditorProps {
   allowAddRemove?: boolean;
   allowMultiToggle?: boolean;
   allowDisable?: boolean;
+  /**
+   * Which core question these options belong to. Set it and the built-in
+   * options are shown in the viewer's language (via tEditableOptionLabel);
+   * omit it and labels render exactly as stored, as they always did.
+   */
+  optionGroup?: keyof QuestionConfigs;
 }
 
 export const CoreQuestionEditor = ({
@@ -62,6 +73,7 @@ export const CoreQuestionEditor = ({
   allowAddRemove = true,
   allowMultiToggle = true,
   allowDisable = true,
+  optionGroup,
 }: CoreQuestionEditorProps) => {
   const { t } = useTranslation();
   const [newLabel, setNewLabel] = useState("");
@@ -78,6 +90,22 @@ export const CoreQuestionEditor = ({
       return translated === label ? label.split('.').pop() || label : translated;
     }
     return label;
+  };
+
+  /**
+   * What the editable label <Input> shows. Built-in options are translated
+   * while they still carry their German default text; the moment the organizer
+   * edits one, tEditableOptionLabel returns their wording verbatim so a later
+   * render can never overwrite it.
+   */
+  const displayLabel = (option: SelectOption): string => {
+    if (option.label.startsWith('templates.')) return translateLabel(option.label);
+    if (!optionGroup) return option.label;
+    return tEditableOptionLabel(
+      t as unknown as (key: string, defaultValue?: string) => string,
+      optionGroup,
+      option,
+    );
   };
 
   const toggleEnabled = () => {
@@ -231,7 +259,7 @@ export const CoreQuestionEditor = ({
               )}
               
               <Input
-                value={translateLabel(option.label)}
+                value={displayLabel(option)}
                 onChange={(e) => updateOption(option.value, { label: e.target.value })}
                 className="flex-1"
               />
@@ -255,7 +283,10 @@ export const CoreQuestionEditor = ({
       {/* Locked value set (DB CHECK constraints) — labels/emojis stay editable */}
       {!allowAddRemove && (
         <p className="text-xs text-muted-foreground">
-          {t('dashboard.form.valuesLocked', 'Antwort-Werte sind bei dieser Frage fest — Text & Emoji kannst du frei anpassen')}
+          {/* formStudio.valuesLocked, not dashboard.form.valuesLocked — the latter
+              was never added to any locale file, so this sentence was German in
+              all ten languages. Same sentence, one key. */}
+          {t('formStudio.valuesLocked', 'Antwort-Werte sind bei dieser Frage fest — Text & Emoji kannst du frei anpassen')}
         </p>
       )}
 

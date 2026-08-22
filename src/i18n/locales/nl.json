@@ -1442,6 +1442,7 @@
     "roseDesc": "Elegant & stijlvol"
   },
   "common": {
+    "clear": "Wissen",
     "save": "Opslaan",
     "cancel": "Annuleren",
     "close": "Sluiten",
@@ -3721,6 +3722,200 @@
     }
   },
   "expenses": {
+    "v2": {
+      "common": {
+        "save": "Opslaan",
+        "close": "Sluiten",
+        "cancel": "Annuleren",
+        "saving": "Bezig met opslaan …",
+        "loading": "Laden …",
+        "sum": "Totaal",
+        "you": "(Jij)",
+        "person": "Persoon",
+        "date": "Datum",
+        "today": "Vandaag",
+        "yesterday": "Gisteren",
+        "settledLabel": "vereffend",
+        "openLabel": "open"
+      },
+      "add": {
+        "srTitle": "Uitgave toevoegen",
+        "title": "Nieuwe uitgave",
+        "listening": "Luistert …",
+        "descriptionPlaceholder": "Waarvoor? bijv. pizza, benzine, Airbnb",
+        "voiceStart": "Spraakinvoer starten",
+        "voiceStop": "Opname stoppen",
+        "suggestion": "Suggestie:",
+        "tapToApply": "Tik om over te nemen",
+        "noteOptional": "Notitie (optioneel)",
+        "notePlaceholder": "Extra info, bijv. ‘fooi zit er al bij’",
+        "receiptOptional": "Bon (optioneel)",
+        "showDetails": "Details toevoegen",
+        "hideDetails": "Details verbergen",
+        "hideSplit": "Verdeling verbergen",
+        "adjustSplit": "Verdeling aanpassen ({{amount}})"
+      },
+      "split": {
+        "mode": {
+          "equal": {
+            "label": "Gelijk",
+            "hint": "voor iedereen gelijk"
+          },
+          "shares": {
+            "label": "Delen",
+            "hint": "1×/2×"
+          },
+          "percentage": {
+            "label": "Procent",
+            "hint": "% per persoon"
+          },
+          "custom": {
+            "label": "Bedragen",
+            "hint": "{{symbol}} per persoon"
+          }
+        },
+        "tapToToggle": "Deelnemers · tik om mee te doen of over te slaan",
+        "includePerson": "{{name}} meenemen",
+        "excludePerson": "{{name}} overslaan",
+        "equalSummary": "{{n}} personen delen {{total}}",
+        "perHead": "{{amount}} per persoon",
+        "needOnePerson": "Er moet minstens één persoon meedoen",
+        "sharesHeader": "Delen · bijv. 2× betaalt dubbel",
+        "decreaseShare": "Deel verlagen",
+        "increaseShare": "Deel verhogen",
+        "percentFor": "Percentage voor {{name}}",
+        "amountFor": "Bedrag voor {{name}}",
+        "distributeRest": "Rest verdelen ({{amount}})"
+      },
+      "payer": {
+        "multiple": "Meerdere",
+        "single": "Eén",
+        "multiTitle": "Betaald door · meerdere",
+        "paidByPerson": "Betaald door {{name}}"
+      },
+      "row": {
+        "hasReceipt": "Bon aanwezig",
+        "paidByName": "{{name}} betaalde",
+        "unknownPayer": "Onbekende betaler",
+        "peopleCount": "Personen: {{n}}"
+      },
+      "balance": {
+        "aria": "Overzicht van de saldo's",
+        "allSettled": "Alles vereffend",
+        "owedToYou": "Je krijgt nog",
+        "youOwe": "Je moet nog betalen",
+        "stillOpen": "Nog open",
+        "allSettledHint": "Niets meer openstaand — helemaal rond.",
+        "owedHint": "Dit komt in totaal weer op je rekening terug.",
+        "oweHint": "Dit ben je de anderen nog schuldig.",
+        "idleHint": "Nog geen activiteit."
+      },
+      "stats": {
+        "empty": "Nog geen uitgaven — zodra de eerste erin staat, verschijnen hier de statistieken.",
+        "budget": "Budget",
+        "ofBudget": "van {{amount}}",
+        "paidVsShare": "Betaald en aandeel",
+        "paid": "Betaald",
+        "share": "Aandeel",
+        "trend": "Verloop",
+        "totalLine": "Totaal: {{amount}}",
+        "uncategorized": "Zonder categorie"
+      },
+      "settle": {
+        "allSettledTitle": "Alles vereffend",
+        "noOpenAmounts": "Niets meer openstaand tussen de deelnemers.",
+        "referenceNote": "Verrekening {{name}}",
+        "copyFailed": "Kopiëren naar het klembord is mislukt — de gegevens staan in het logboek.",
+        "ibanCopied": "IBAN en bedrag gekopieerd — open je bankapp om ze te plakken.",
+        "minimalTransfers": "Minimale overboekingen om te vereffenen ({{n}})",
+        "yourTransfer": "Jouw overboeking",
+        "paymentMethod": "Betaalmethode",
+        "linkBadge": "LINK",
+        "copyToClipboard": "Naar het klembord kopiëren"
+      },
+      "settled": {
+        "empty": "Nog geen betalingen vastgelegd.",
+        "pendingHeader": "Wacht op bevestiging ({{n}})",
+        "doneHeader": "Afgerond ({{n}})",
+        "confirmPrompt": "Heb je het geld ontvangen? Bevestig het even.",
+        "waitingForPayee": "Wacht op bevestiging door de ontvanger",
+        "confirm": "Bevestigen"
+      },
+      "detail": {
+        "title": "Uitgave",
+        "srTitle": "Uitgave: {{description}}",
+        "deleteConfirm": "Deze uitgave echt verwijderen?",
+        "allSharesSettled": "Alle aandelen vereffend",
+        "openShares": "Nog openstaande aandelen",
+        "noShares": "Geen aandelen opgeslagen",
+        "amountPaid": "{{amount}} betaald",
+        "note": "Notitie",
+        "receipt": "Bon",
+        "openReceipt": "Bon openen",
+        "details": "Details",
+        "createdAt": "Vastgelegd",
+        "updatedAt": "Bijgewerkt",
+        "source": "Bron",
+        "tags": "Labels",
+        "deleteExpense": "Uitgave verwijderen",
+        "via": {
+          "manual": "Handmatig",
+          "camera": "Camera-OCR",
+          "voice": "Spraakinvoer",
+          "import": "Import",
+          "template": "Sjabloon"
+        }
+      },
+      "activity": {
+        "emptyTitle": "Er is nog niets gebeurd",
+        "emptyText": "Elke wijziging aan uitgaven en betalingen komt hier in het logboek.",
+        "loadOlder": "Oudere tonen",
+        "someone": "Iemand",
+        "created": "heeft een uitgave toegevoegd",
+        "amountChanged": "heeft het bedrag gewijzigd van {{from}} naar",
+        "deleted": "heeft een uitgave verwijderd",
+        "settlementConfirmed": "heeft een betaling bevestigd",
+        "receiptUploaded": "heeft een bon toegevoegd",
+        "viaMethod": "via {{method}}"
+      },
+      "recurring": {
+        "title": "Terugkerende uitgaven",
+        "subtitle": "Huur, boodschappen, abonnementen — worden automatisch aangemaakt",
+        "new": "Nieuw",
+        "activeHeader": "Actief ({{n}})",
+        "pausedHeader": "Gepauzeerd ({{n}})",
+        "next": "Volgende: {{date}}",
+        "activate": "Activeren",
+        "pause": "Pauzeren",
+        "emptyTitle": "Nog geen sjablonen",
+        "emptyText": "Zet terugkerende uitgaven zoals huur, streaming of de weekboodschappen één keer klaar — de rest gaat vanzelf.",
+        "createFirst": "Eerste sjabloon aanmaken",
+        "sheetTitle": "Nieuwe terugkerende uitgave",
+        "newTemplate": "Nieuw sjabloon",
+        "changeEmoji": "Emoji wisselen",
+        "titlePlaceholder": "Titel, bijv. huur",
+        "frequency": "Frequentie",
+        "startDate": "Startdatum",
+        "splitInfo": "Verdeling: gelijk over alle deelnemers ({{n}}).",
+        "splitInfoSoon": "Verdelen op procent of op maat komt binnenkort ook voor sjablonen.",
+        "freq": {
+          "daily": "Dagelijks",
+          "weekly": "Wekelijks",
+          "biweekly": "Om de 2 weken",
+          "monthly": "Maandelijks"
+        }
+      },
+      "method": {
+        "paypal": "PayPal",
+        "revolut": "Revolut",
+        "bank": "Overboeking",
+        "wise": "Wise",
+        "apple_pay": "Apple Pay",
+        "google_pay": "Google Pay",
+        "cash": "Contant",
+        "other": "Overig"
+      }
+    },
     "button": "Kosten",
     "title": "Uitgaven",
     "addExpense": "Uitgave Toevoegen",
@@ -3853,7 +4048,20 @@
     "invalidEmail": "Ongeldig e-mailadres",
     "minLength": "Minimaal {{count}} tekens vereist",
     "maxLength": "Maximaal {{count}} tekens toegestaan",
-    "passwordMismatch": "Wachtwoorden komen niet overeen"
+    "passwordMismatch": "Wachtwoorden komen niet overeen",
+    "survey": {
+      "participant": "Kies je naam",
+      "attendance": "Geef aan of je erbij kunt zijn",
+      "duration": "Kies de duur die jij het liefst hebt",
+      "budget": "Kies je budget",
+      "destination": "Kies een bestemming",
+      "travel": "Geef aan hoe ver je wilt reizen",
+      "activities": "Kies minstens één activiteit",
+      "fitness": "Kies je fitheidsniveau",
+      "groupCode": "Groepscode is verplicht",
+      "groupCodeTooLong": "Groepscode is te lang",
+      "maxChars": "Maximaal {{max}} tekens"
+    }
   },
   "planner": {
     "title": "Weekend Planner",
@@ -6115,6 +6323,12 @@
       "yourTurn": "Jouw Beurt"
     },
     "results": {
+      "winnerPoints": "{{n}} punten",
+      "toParty": "Naar de party",
+      "rounds": "Rondes",
+      "bestPoints": "Beste score",
+      "longestStreak": "Langste reeks",
+      "streakBadge": "Reeks {{n}}×",
       "gameOver": "Spel Afgelopen!",
       "winner": "Winnaar",
       "leaderboard": "Ranglijst",
@@ -6446,6 +6660,10 @@
       "votingPhase": "Stemming · {{current}}/{{total}}"
     },
     "ohrwurm": {
+      "leaveTitle": "Spel verlaten?",
+      "leaveSub": "De huidige stand gaat verloren.",
+      "leaveStay": "Blijf spelen",
+      "leaveConfirm": "Verlaten",
       "back": "Terug",
       "target": "Doel {{count}}",
       "spotifyOk": "✓ Spotify · volledig nummer na onthulling (in spel: preview)",
@@ -6617,6 +6835,8 @@
       "title": "Split Quiz"
     },
     "truthdare": {
+      "yes": "Ja",
+      "no": "Nee",
       "gameTitle": "Waarheid of Durf 2.0",
       "timerLabel": "Durftimer (sec.)",
       "roundHeader": "Ronde {{current}}/{{total}}",
@@ -6700,6 +6920,7 @@
         "anotherGame": "Ander spel"
       },
       "setup": {
+        "defaultPlayerName": "Jij",
         "heading": "Spelvoorbereiding",
         "title": "Wie ben jij vandaag?",
         "subtitle": "Kies je spelers en een categorie — de rest gebeurt in het spel.",
@@ -6903,6 +7124,12 @@
       "startGame": "Spel starten"
     },
     "wordpress": {
+      "modes": {
+        "kategorie": "Categorie",
+        "stroop": "Stroop",
+        "verboten": "Verboden",
+        "speedRush": "Speed Rush"
+      },
       "title": "Druk op het Woord",
       "tagline": "Snel tikken, snel denken!",
       "defaultPlayer1": "Speler 1",
@@ -7442,6 +7669,16 @@
       "pantomime": "Zwijgend uitbeelden, je team raadt — met uitdagingen voor dubbele punten"
     },
     "events": {
+      "actionError": "Dat is niet gelukt.",
+      "archived": "Gearchiveerd",
+      "restored": "Teruggezet",
+      "deleted": "Evenement verwijderd",
+      "manage": "Beheren",
+      "manageSub": "Evenement beheren",
+      "restore": "Terugzetten",
+      "archive": "Archiveren",
+      "delete": "Verwijderen",
+      "deleteConfirm": "Dit evenement echt verwijderen? Dit kan niet ongedaan worden gemaakt.",
       "title": "Evenementen",
       "countSummary": "{{active}} actief · {{archived}} gearchiveerd",
       "searchPlaceholder": "Evenementen zoeken...",
@@ -8030,6 +8267,8 @@
   },
   "woIstWas": {
     "modes": {
+      "unterschiede": "Verschillen",
+      "karte": "Kaart",
       "memory": "Geheugen",
       "memoryDesc": "Onthoud de scène en beantwoord vragen",
       "speed": "Snelheid",
@@ -8501,6 +8740,7 @@
     "no": "Nee"
   },
   "nativeResponses": {
+    "customAnswers": "Eigen antwoorden",
     "stats": {
       "responses": "Antwoorden",
       "responseRate": "Responspercentage",
@@ -9420,6 +9660,48 @@
     "aiLimitReached": "Maximaal {{max}} generaties per sessie bereikt"
   },
   "tv": {
+    "partyNight": {
+      "title": "Party Night",
+      "standingsEyebrow": "Tussenstand",
+      "afterGame": "Na {{game}}",
+      "leadChange": "Nieuwe koploper: {{name}}",
+      "tonightTotal": "Totaal vanavond",
+      "noStandings": "Nog geen punten",
+      "roadmapTitle": "De avond",
+      "nextUp": "Nu",
+      "upNext": "Hierna",
+      "gameXofY": "Spel {{current}} van {{total}}",
+      "finaleEyebrow": "De Party Night is voorbij",
+      "champion": "Kampioen van de avond",
+      "championLine": "{{name}} wint met {{points}} punten",
+      "finalTable": "Eindstand",
+      "gamesPlayed": "Spellen",
+      "totalPoints": "Punten totaal",
+      "awardsTitle": "Onderscheidingen",
+      "noAwards": "Te weinig gespeeld voor onderscheidingen",
+      "award": {
+        "comeback": {
+          "title": "Comeback van de avond",
+          "detail": "Van plek {{from}} naar plek {{to}}"
+        },
+        "mostWins": {
+          "title": "Seriewinnaar",
+          "detail": "{{n}} overwinningen"
+        },
+        "consistency": {
+          "title": "Koning van de constantheid",
+          "detail": "Gem. plek {{value}}"
+        },
+        "bestGame": {
+          "title": "Beste prestatie van de avond",
+          "detail": "Record: {{value}} punten bij {{game}}"
+        },
+        "unlucky": {
+          "title": "Ongeluksvogel",
+          "detail": "{{n}}× laatste"
+        }
+      }
+    },
     "connectTitle": "TV verbinden",
     "openOnTv": "Open op je tv:",
     "copied": "Gekopieerd!",

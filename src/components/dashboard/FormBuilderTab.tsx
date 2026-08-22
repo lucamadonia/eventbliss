@@ -399,6 +399,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       placeholder={t('dashboard.form.newOption')}
                       questionConfig={questionConfig.attendance}
                       onConfigChange={(c) => updateQuestionConfig('attendance', c)}
+                      optionGroup="attendance"
                       allowAddRemove={CORE_META_BY_KEY.attendance.policy.canEditValues}
                       allowMultiToggle={CORE_META_BY_KEY.attendance.policy.canMultiSelect}
                       allowDisable={CORE_META_BY_KEY.attendance.policy.canDisable}
@@ -414,6 +415,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         placeholder={t('dashboard.form.newOption')}
                         questionConfig={questionConfig.duration}
                         onConfigChange={(c) => updateQuestionConfig('duration', c)}
+                        optionGroup="duration"
                         allowAddRemove={CORE_META_BY_KEY.duration.policy.canEditValues}
                         allowMultiToggle={CORE_META_BY_KEY.duration.policy.canMultiSelect}
                         allowDisable={CORE_META_BY_KEY.duration.policy.canDisable}
@@ -452,6 +454,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                       placeholder={t('dashboard.form.newOption')}
                       questionConfig={questionConfig.travel}
                       onConfigChange={(c) => updateQuestionConfig('travel', c)}
+                      optionGroup="travel"
                       allowAddRemove={CORE_META_BY_KEY.travel.policy.canEditValues}
                       allowMultiToggle={CORE_META_BY_KEY.travel.policy.canMultiSelect}
                       allowDisable={CORE_META_BY_KEY.travel.policy.canDisable}
@@ -467,6 +470,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         placeholder={t('dashboard.form.newOption')}
                         questionConfig={questionConfig.fitness}
                         onConfigChange={(c) => updateQuestionConfig('fitness', c)}
+                        optionGroup="fitness"
                         allowAddRemove={CORE_META_BY_KEY.fitness.policy.canEditValues}
                         allowMultiToggle={CORE_META_BY_KEY.fitness.policy.canMultiSelect}
                         allowDisable={CORE_META_BY_KEY.fitness.policy.canDisable}
@@ -483,6 +487,7 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
                         placeholder={t('dashboard.form.newOption')}
                         questionConfig={questionConfig.alcohol}
                         onConfigChange={(c) => updateQuestionConfig('alcohol', c)}
+                        optionGroup="alcohol"
                         allowAddRemove={CORE_META_BY_KEY.alcohol.policy.canEditValues}
                         allowMultiToggle={CORE_META_BY_KEY.alcohol.policy.canMultiSelect}
                         allowDisable={CORE_META_BY_KEY.alcohol.policy.canDisable}

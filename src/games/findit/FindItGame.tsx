@@ -16,6 +16,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
+import { hasShellBackButton } from '@/games/ui/shell-back';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -789,7 +790,16 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
         {/* Header bar */}
         <div className="flex items-center justify-between">
-          <button onClick={exitGuard.request} className="text-gray-400 hover:text-white transition-colors">
+          {/* In der App liegt der FloatingBackButton genau auf diesem Pfeil und
+              öffnet über den Back-Guard denselben Dialog — dort nur unsichtbar
+              schalten, nicht entfernen: der Platzhalter hält die Kopfzeile im
+              Gleichgewicht und den Platz unter dem schwebenden Pfeil frei. */}
+          <button
+            onClick={exitGuard.request}
+            className={`text-gray-400 hover:text-white transition-colors${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
+            aria-hidden={hasShellBackButton()}
+            tabIndex={hasShellBackButton() ? -1 : undefined}
+          >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="text-center">
@@ -1288,14 +1298,16 @@ function GameOverScreen({ players, onRestart, onBack, totalRounds }: {
 
         {/* Actions */}
         <motion.div className="flex gap-3 pt-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}>
-          <motion.button
-            onClick={onBack}
-            className="flex-1 py-3.5 rounded-2xl border-2 border-gray-600 text-gray-300 font-semibold flex items-center justify-center gap-2 hover:border-gray-500 transition-colors text-sm"
-            whileTap={{ scale: 0.97 }}
-          >
-            <ArrowLeft className="w-4 h-4" />
-            {t('games.findit.btnOtherGame')}
-          </motion.button>
+          {!hasShellBackButton() && (
+            <motion.button
+              onClick={onBack}
+              className="flex-1 py-3.5 rounded-2xl border-2 border-gray-600 text-gray-300 font-semibold flex items-center justify-center gap-2 hover:border-gray-500 transition-colors text-sm"
+              whileTap={{ scale: 0.97 }}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              {t('games.findit.btnOtherGame')}
+            </motion.button>
+          )}
           <motion.button
             onClick={onRestart}
             className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(6,182,212,0.4)] text-sm"

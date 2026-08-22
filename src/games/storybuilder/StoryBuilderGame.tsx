@@ -17,6 +17,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
+import { hasShellBackButton } from '@/games/ui/shell-back';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -580,12 +581,15 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
                   >
                     <RotateCcw className="w-4 h-4" /> {t('games.storybuilder.playAgain')}
                   </motion.button>
-                  <button
-                    onClick={() => navigate('/games')}
-                    className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors"
-                  >
-                    {t('games.storybuilder.otherGame')}
-                  </button>
+                  {/* Nur im Web. In der App macht das der FloatingBackButton. */}
+                  {!hasShellBackButton() && (
+                    <button
+                      onClick={() => navigate('/games')}
+                      className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors"
+                    >
+                      {t('games.storybuilder.otherGame')}
+                    </button>
+                  )}
                 </div>
               )}
             </div>

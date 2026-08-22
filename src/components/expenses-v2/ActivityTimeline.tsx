@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -11,8 +13,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useExpenseActivity } from "@/hooks/expenses";
-import { formatMoney } from "@/lib/expenses-v2/types";
 import type { ExpenseActivityEntry } from "@/lib/expenses-v2/types";
+import { useExpenseFormat, type ExpenseFormat } from "./useExpenseFormat";
 
 interface Participant {
   id: string;
@@ -32,6 +34,8 @@ interface ActivityTimelineProps {
  * Gruppiert nach Tag, nutzt Verb-spezifische Icons + Farben.
  */
 export function ActivityTimeline({ eventId, currency = "EUR", participants }: ActivityTimelineProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const { data, fetchNextPage, hasNextPage, isFetching, isLoading } = useExpenseActivity(eventId, 30);
 
   const flat = data?.pages.flat() ?? [];
@@ -55,10 +59,10 @@ export function ActivityTimeline({ eventId, currency = "EUR", participants }: Ac
         <div className="w-12 h-12 mx-auto rounded-2xl bg-gradient-to-br from-violet-500/20 to-cyan-500/15 border border-violet-500/20 flex items-center justify-center mb-3">
           <ArrowRightLeft className="w-5 h-5 text-violet-600 dark:text-violet-300" />
         </div>
-        <h3 className="text-sm font-semibold text-foreground mb-1">Noch nichts passiert</h3>
-        <p className="text-xs text-muted-foreground">
-          Alle Änderungen an Ausgaben & Zahlungen landen hier im Verlauf.
-        </p>
+        <h3 className="text-sm font-semibold text-foreground mb-1">
+          {t("expenses.v2.activity.emptyTitle")}
+        </h3>
+        <p className="text-xs text-muted-foreground">{t("expenses.v2.activity.emptyText")}</p>
       </div>
     );
   }
@@ -78,7 +82,7 @@ export function ActivityTimeline({ eventId, currency = "EUR", participants }: Ac
       {groups.map(([day, entries]) => (
         <div key={day}>
           <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-3 px-1">
-            {formatDayLabel(day)}
+            {formatDayLabel(day, t, fmt)}
           </div>
           <div className="relative space-y-0">
             {/* Timeline line */}
@@ -108,10 +112,10 @@ export function ActivityTimeline({ eventId, currency = "EUR", participants }: Ac
             {isFetching ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
-                Lade…
+                {t("expenses.v2.common.loading")}
               </>
             ) : (
-              "Ältere anzeigen"
+              t("expenses.v2.activity.loadOlder")
             )}
           </Button>
         </div>
@@ -130,13 +134,13 @@ interface ActivityItemProps {
 }
 
 function ActivityItem({ entry, participants, currency }: ActivityItemProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const actorName =
-    participants.find((p) => p.user_id === entry.actor_user_id)?.name ?? "Jemand";
-  const verbInfo = describeAction(entry);
-  const time = new Date(entry.created_at).toLocaleTimeString("de-DE", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+    participants.find((p) => p.user_id === entry.actor_user_id)?.name ??
+    t("expenses.v2.activity.someone");
+  const verbInfo = describeAction(entry, t, fmt);
+  const time = fmt.time(entry.created_at);
 
   return (
     <motion.div
@@ -170,7 +174,7 @@ function ActivityItem({ entry, participants, currency }: ActivityItemProps) {
             <>
               {" "}
               <span className="font-mono tabular-nums text-foreground">
-                ({formatMoney(verbInfo.amount, currency)})
+                ({fmt.money(verbInfo.amount)})
               </span>
             </>
           )}
@@ -183,13 +187,13 @@ function ActivityItem({ entry, participants, currency }: ActivityItemProps) {
 
 // -----------------------------------------------------------------------------
 
-function describeAction(entry: ExpenseActivityEntry) {
+function describeAction(entry: ExpenseActivityEntry, t: TFunction, fmt: ExpenseFormat) {
   const payload = entry.payload as Record<string, unknown>;
   switch (entry.action) {
     case "expense.created":
       return {
         Icon: Plus,
-        verb: "hat eine Ausgabe angelegt",
+        verb: t("expenses.v2.activity.created"),
         subject: (payload.description as string) ?? undefined,
         amount: typeof payload.amount === "number" ? payload.amount : undefined,
         bg: "bg-violet-500/15",
@@ -199,8 +203,10 @@ function describeAction(entry: ExpenseActivityEntry) {
     case "expense.amount_changed":
       return {
         Icon: Pencil,
-        verb: `hat den Betrag geändert von ${typeof payload.from === "number" ? formatMoney(payload.from, "EUR") : "?"} auf`,
-        subject: typeof payload.to === "number" ? formatMoney(payload.to, "EUR") : undefined,
+        verb: t("expenses.v2.activity.amountChanged", {
+          from: typeof payload.from === "number" ? fmt.money(payload.from) : "?",
+        }),
+        subject: typeof payload.to === "number" ? fmt.money(payload.to) : undefined,
         amount: undefined,
         bg: "bg-amber-500/15",
         border: "border-amber-500/25",
@@ -209,7 +215,7 @@ function describeAction(entry: ExpenseActivityEntry) {
     case "expense.deleted":
       return {
         Icon: Trash2,
-        verb: "hat eine Ausgabe gelöscht",
+        verb: t("expenses.v2.activity.deleted"),
         subject: (payload.reason as string) ?? undefined,
         amount: undefined,
         bg: "bg-rose-500/15",
@@ -219,8 +225,11 @@ function describeAction(entry: ExpenseActivityEntry) {
     case "settlement.confirmed":
       return {
         Icon: CheckCircle2,
-        verb: "hat eine Zahlung bestätigt",
-        subject: typeof payload.method === "string" ? `via ${payload.method}` : undefined,
+        verb: t("expenses.v2.activity.settlementConfirmed"),
+        subject:
+          typeof payload.method === "string"
+            ? t("expenses.v2.activity.viaMethod", { method: payload.method })
+            : undefined,
         amount: typeof payload.amount === "number" ? payload.amount : undefined,
         bg: "bg-emerald-500/15",
         border: "border-emerald-500/25",
@@ -229,7 +238,7 @@ function describeAction(entry: ExpenseActivityEntry) {
     case "expense.receipt_uploaded":
       return {
         Icon: ReceiptIcon,
-        verb: "hat einen Beleg hinzugefügt",
+        verb: t("expenses.v2.activity.receiptUploaded"),
         subject: undefined,
         amount: undefined,
         bg: "bg-cyan-500/15",
@@ -249,16 +258,12 @@ function describeAction(entry: ExpenseActivityEntry) {
   }
 }
 
-function formatDayLabel(iso: string): string {
+function formatDayLabel(iso: string, t: TFunction, fmt: ExpenseFormat): string {
   const d = new Date(iso);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const diff = Math.round((today.getTime() - d.getTime()) / 86400000);
-  if (diff === 0) return "Heute";
-  if (diff === 1) return "Gestern";
-  return d.toLocaleDateString("de-DE", {
-    weekday: "long",
-    day: "2-digit",
-    month: "long",
-  });
+  if (diff === 0) return t("expenses.v2.common.today");
+  if (diff === 1) return t("expenses.v2.common.yesterday");
+  return fmt.weekdayDate(d);
 }

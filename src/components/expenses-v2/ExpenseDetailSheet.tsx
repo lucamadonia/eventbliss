@@ -1,4 +1,6 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { motion } from "framer-motion";
 import {
   X,
@@ -13,11 +15,11 @@ import {
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { formatMoney } from "@/lib/expenses-v2/types";
 import { useDeleteExpenseV2 } from "@/hooks/expenses";
 import { useHaptics } from "@/hooks/useHaptics";
 import type { Expense } from "@/lib/expenses-v2/types";
 import { CategoryIcon, type CategoryLike } from "./CategoryIcon";
+import { useExpenseFormat } from "./useExpenseFormat";
 
 interface Participant {
   id: string;
@@ -49,6 +51,8 @@ export function ExpenseDetailSheet({
   currentParticipantId,
   currency = "EUR",
 }: ExpenseDetailSheetProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const haptics = useHaptics();
   const deleteExpense = useDeleteExpenseV2(expense?.event_id ?? "");
 
@@ -64,7 +68,7 @@ export function ExpenseDetailSheet({
   const iAmPayer = payers.some((p) => p.participant_id === currentParticipantId);
 
   const handleDelete = async () => {
-    if (!confirm("Ausgabe wirklich löschen?")) return;
+    if (!confirm(t("expenses.v2.detail.deleteConfirm"))) return;
     await haptics.warning();
     await deleteExpense.mutateAsync({ id: expense.id });
     onClose();
@@ -76,7 +80,9 @@ export function ExpenseDetailSheet({
         side="bottom"
         className="bg-background border-t border-border text-foreground p-0 h-[92vh] max-h-[92vh] rounded-t-3xl flex flex-col"
       >
-        <SheetTitle className="sr-only">Ausgabe: {expense.description}</SheetTitle>
+        <SheetTitle className="sr-only">
+          {t("expenses.v2.detail.srTitle", { description: expense.description })}
+        </SheetTitle>
 
         {/* Drag handle */}
         <div className="flex items-center justify-center pt-3 pb-1">
@@ -88,11 +94,13 @@ export function ExpenseDetailSheet({
           <button
             onClick={onClose}
             className="w-9 h-9 rounded-full bg-muted hover:bg-white/[0.1] flex items-center justify-center cursor-pointer"
-            aria-label="Schließen"
+            aria-label={t("expenses.v2.common.close")}
           >
             <X className="w-4 h-4 text-muted-foreground" />
           </button>
-          <h2 className="text-sm font-semibold text-muted-foreground">Ausgabe</h2>
+          <h2 className="text-sm font-semibold text-muted-foreground">
+            {t("expenses.v2.detail.title")}
+          </h2>
           <div className="w-9 h-9" />
         </div>
 
@@ -111,7 +119,7 @@ export function ExpenseDetailSheet({
               {expense.description}
             </h1>
             <div className="text-4xl sm:text-5xl font-black text-foreground tracking-[-0.02em] tabular-nums mt-3">
-              {formatMoney(expense.amount, expense.currency ?? currency)}
+              {fmt.money(expense.amount, expense.currency ?? currency)}
             </div>
             {expense.original_currency && expense.original_currency !== expense.currency && (
               <div className="text-xs text-muted-foreground mt-1">
@@ -120,31 +128,26 @@ export function ExpenseDetailSheet({
             )}
             <div className="flex items-center justify-center gap-2 mt-3 text-[11px] text-muted-foreground">
               <Calendar className="w-3 h-3" />
-              {new Date(expense.expense_date).toLocaleDateString("de-DE", {
-                weekday: "long",
-                day: "2-digit",
-                month: "long",
-                year: "numeric",
-              })}
+              {fmt.longDate(expense.expense_date)}
             </div>
             {expense.is_settled_cached ? (
               <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-600 dark:text-emerald-300 text-[11px] font-semibold">
                 <CheckCircle2 className="w-3 h-3" />
-                Alle Anteile beglichen
+                {t("expenses.v2.detail.allSharesSettled")}
               </div>
             ) : (
               <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/25 text-amber-600 dark:text-amber-300 text-[11px] font-semibold">
                 <Circle className="w-3 h-3" />
-                Noch offene Anteile
+                {t("expenses.v2.detail.openShares")}
               </div>
             )}
           </div>
 
           {/* Payers */}
-          <Section title="Gezahlt von">
+          <Section title={t("expenses.paidBy")}>
             <div className="space-y-1.5">
               {payers.length === 0 ? (
-                <div className="text-xs text-muted-foreground italic">Unbekannt</div>
+                <div className="text-xs text-muted-foreground italic">{t("expenses.unknown")}</div>
               ) : (
                 payers.map((p) => (
                   <PersonRow
@@ -161,9 +164,11 @@ export function ExpenseDetailSheet({
           </Section>
 
           {/* Shares — who owes what */}
-          <Section title="Aufteilung">
+          <Section title={t("expenses.splitTitle")}>
             {shares.length === 0 ? (
-              <div className="text-xs text-muted-foreground italic">Keine Anteile gespeichert</div>
+              <div className="text-xs text-muted-foreground italic">
+                {t("expenses.v2.detail.noShares")}
+              </div>
             ) : (
               <div className="space-y-1.5">
                 {shares.map((s) => {
@@ -193,7 +198,9 @@ export function ExpenseDetailSheet({
                         <div className="text-sm text-foreground truncate flex items-center gap-1.5">
                           {nameOf(s.participant_id)}
                           {s.participant_id === currentParticipantId && (
-                            <span className="text-[10px] text-violet-300 font-medium">(Du)</span>
+                            <span className="text-[10px] text-violet-300 font-medium">
+                              {t("expenses.v2.common.you")}
+                            </span>
                           )}
                         </div>
                         {s.paid_amount > 0 && s.paid_amount < s.amount && (
@@ -212,19 +219,20 @@ export function ExpenseDetailSheet({
                             paid ? "text-emerald-600 dark:text-emerald-300" : "text-foreground",
                           )}
                         >
-                          {formatMoney(s.amount, currency)}
+                          {fmt.money(s.amount)}
                         </div>
                         {paid ? (
                           <div className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-0.5 justify-end">
-                            <CheckCircle2 className="w-2.5 h-2.5" /> beglichen
+                            <CheckCircle2 className="w-2.5 h-2.5" />{" "}
+                            {t("expenses.v2.common.settledLabel")}
                           </div>
                         ) : s.paid_amount > 0 ? (
                           <div className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold tabular-nums">
-                            {formatMoney(s.paid_amount, currency)} gezahlt
+                            {t("expenses.v2.detail.amountPaid", { amount: fmt.money(s.paid_amount) })}
                           </div>
                         ) : (
                           <div className="text-[10px] text-muted-foreground flex items-center gap-0.5 justify-end">
-                            <Circle className="w-2.5 h-2.5" /> offen
+                            <Circle className="w-2.5 h-2.5" /> {t("expenses.v2.common.openLabel")}
                           </div>
                         )}
                       </div>
@@ -237,7 +245,7 @@ export function ExpenseDetailSheet({
 
           {/* Notes */}
           {expense.notes && (
-            <Section title="Notiz" icon={StickyNote}>
+            <Section title={t("expenses.v2.detail.note")} icon={StickyNote}>
               <div className="rounded-2xl bg-muted border border-border p-3 text-sm text-muted-foreground whitespace-pre-wrap">
                 {expense.notes}
               </div>
@@ -246,7 +254,7 @@ export function ExpenseDetailSheet({
 
           {/* Receipt */}
           {expense.receipt_url && (
-            <Section title="Beleg" icon={ReceiptIcon}>
+            <Section title={t("expenses.v2.detail.receipt")} icon={ReceiptIcon}>
               <a
                 href={expense.receipt_url}
                 target="_blank"
@@ -255,28 +263,30 @@ export function ExpenseDetailSheet({
               >
                 <img
                   src={expense.receipt_url}
-                  alt="Beleg"
+                  alt={t("expenses.v2.detail.receipt")}
                   className="w-full max-h-64 object-contain bg-black/20"
                   onError={(e) => {
                     // If it's a non-image (PDF), fall back to filename
                     (e.currentTarget.style.display = "none");
                   }}
                 />
-                <div className="p-2 text-[11px] text-cyan-600 dark:text-cyan-300 text-center">Beleg öffnen</div>
+                <div className="p-2 text-[11px] text-cyan-600 dark:text-cyan-300 text-center">
+                  {t("expenses.v2.detail.openReceipt")}
+                </div>
               </a>
             </Section>
           )}
 
           {/* Metadata */}
-          <Section title="Details" icon={UserIcon}>
+          <Section title={t("expenses.v2.detail.details")} icon={UserIcon}>
             <dl className="rounded-2xl bg-muted border border-border p-3 text-xs space-y-1.5">
-              <Row k="Erfasst">{formatDateTime(expense.created_at)}</Row>
+              <Row k={t("expenses.v2.detail.createdAt")}>{fmt.dateTime(expense.created_at)}</Row>
               {expense.updated_at !== expense.created_at && (
-                <Row k="Aktualisiert">{formatDateTime(expense.updated_at)}</Row>
+                <Row k={t("expenses.v2.detail.updatedAt")}>{fmt.dateTime(expense.updated_at)}</Row>
               )}
-              <Row k="Quelle">{labelCreatedVia(expense.created_via)}</Row>
+              <Row k={t("expenses.v2.detail.source")}>{labelCreatedVia(expense.created_via, t)}</Row>
               {expense.tags && expense.tags.length > 0 && (
-                <Row k="Tags">{expense.tags.join(", ")}</Row>
+                <Row k={t("expenses.v2.detail.tags")}>{expense.tags.join(", ")}</Row>
               )}
             </dl>
           </Section>
@@ -290,7 +300,7 @@ export function ExpenseDetailSheet({
               className="w-full h-11 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 border border-rose-500/20"
             >
               <Trash2 className="w-4 h-4 mr-2" />
-              Ausgabe löschen
+              {t("expenses.v2.detail.deleteExpense")}
             </Button>
           </div>
         </div>
@@ -332,6 +342,8 @@ function PersonRow({
   tone: "emerald" | "rose" | "slate";
   isCurrentUser?: boolean;
 }) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const tonal = {
     emerald: "text-emerald-600 dark:text-emerald-300",
     rose: "text-rose-600 dark:text-rose-300",
@@ -353,13 +365,13 @@ function PersonRow({
         <div className="text-sm text-foreground truncate">
           {name}
           {isCurrentUser && (
-            <span className="ml-1.5 text-[10px] text-violet-300 font-medium">(Du)</span>
+            <span className="ms-1.5 text-[10px] text-violet-300 font-medium">
+              {t("expenses.v2.common.you")}
+            </span>
           )}
         </div>
       </div>
-      <div className={cn("text-sm font-bold tabular-nums", tonal)}>
-        {formatMoney(amount, currency)}
-      </div>
+      <div className={cn("text-sm font-bold tabular-nums", tonal)}>{fmt.money(amount)}</div>
     </div>
   );
 }
@@ -373,18 +385,9 @@ function Row({ k, children }: { k: string; children: React.ReactNode }) {
   );
 }
 
-function formatDateTime(iso: string) {
-  return new Date(iso).toLocaleString("de-DE", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+const CREATED_VIA_KEYS = ["manual", "camera", "voice", "import", "template"] as const;
 
-function labelCreatedVia(v: string | null | undefined) {
-  return (
-    { manual: "Manuell", camera: "Kamera-OCR", voice: "Spracheingabe", import: "Import", template: "Vorlage" } as Record<string, string>
-  )[v ?? "manual"] ?? v ?? "Manuell";
+function labelCreatedVia(v: string | null | undefined, t: TFunction) {
+  const key = (CREATED_VIA_KEYS as readonly string[]).includes(v ?? "") ? v : null;
+  return key ? t(`expenses.v2.detail.via.${key}`) : v ?? t("expenses.v2.detail.via.manual");
 }

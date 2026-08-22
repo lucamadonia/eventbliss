@@ -46,6 +46,8 @@ import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
 import { ActivePlayerBanner } from '../ui/ActivePlayerBanner';
 import { useTVGameBridge } from '@/hooks/useTVGameBridge';
 import { useBackGuard } from '@/lib/back-guard';
+import { GameSetupBackLink } from '../ui/GameSetupBackLink';
+import { hasShellBackButton } from '../ui/shell-back';
 import { saveSnapshot, loadSnapshot, clearSnapshot } from '../ui/useGameSnapshot';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import {
@@ -657,9 +659,14 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     <div className="min-h-[100dvh] relative" style={{ background: PM.bg, color: PM.text }}>
       {/* Kopf */}
       <div className="relative z-10 px-4 pt-14 pb-3 flex items-center justify-between">
+        {/* In der App löst der FloatingBackButton über den Back-Guard denselben
+            Dialog aus — dort nur unsichtbar schalten, nicht entfernen, damit
+            Runde und Punkte in der Kopfzeile stehen bleiben, wo sie waren. */}
         <button
           onClick={() => setConfirmExit(true)}
-          className="text-xs font-bold"
+          className={`text-xs font-bold${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
+          aria-hidden={hasShellBackButton()}
+          tabIndex={hasShellBackButton() ? -1 : undefined}
           style={{ color: PM.dim }}
         >
           ← {t('games.pantomime.leave')}
@@ -1012,16 +1019,18 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
             >
               {t('games.pantomime.playAgain')}
             </button>
-            <button
-              onClick={() => {
-                clearSnapshot('pantomime');
-                navigate('/games');
-              }}
-              className="mt-2 w-full h-12 rounded-2xl font-bold"
-              style={{ background: PM.surface, color: PM.dim }}
-            >
-              {t('games.pantomime.backToGames')}
-            </button>
+            {!hasShellBackButton() && (
+              <button
+                onClick={() => {
+                  clearSnapshot('pantomime');
+                  navigate('/games');
+                }}
+                className="mt-2 w-full h-12 rounded-2xl font-bold"
+                style={{ background: PM.surface, color: PM.dim }}
+              >
+                {t('games.pantomime.backToGames')}
+              </button>
+            )}
           </motion.div>
         )}
 
@@ -1155,13 +1164,13 @@ function PantomimeSetup({
   return (
     <div className="min-h-[100dvh]" style={{ background: PM.bg, color: PM.text }}>
       <main className="relative z-10 pt-14 px-5 max-w-2xl mx-auto pb-16">
-        <button
+        <GameSetupBackLink
           onClick={() => navigate('/games')}
-          className="mb-5 inline-flex items-center gap-1.5 text-xs font-bold"
+          className="mb-5"
           style={{ color: PM.dim }}
         >
           ← {t('games.pantomime.backToGames')}
-        </button>
+        </GameSetupBackLink>
 
         <h1 className="text-3xl font-black flex items-center gap-2">
           <Drama className="w-7 h-7" style={{ color: PM.gold }} />

@@ -1442,6 +1442,7 @@
     "roseDesc": "Zarif ve şık"
   },
   "common": {
+    "clear": "Temizle",
     "save": "Kaydet",
     "cancel": "İptal",
     "close": "Kapat",
@@ -3721,6 +3722,200 @@
     }
   },
   "expenses": {
+    "v2": {
+      "common": {
+        "save": "Kaydet",
+        "close": "Kapat",
+        "cancel": "İptal",
+        "saving": "Kaydediliyor …",
+        "loading": "Yükleniyor …",
+        "sum": "Toplam",
+        "you": "(Sen)",
+        "person": "Kişi",
+        "date": "Tarih",
+        "today": "Bugün",
+        "yesterday": "Dün",
+        "settledLabel": "ödendi",
+        "openLabel": "açık"
+      },
+      "add": {
+        "srTitle": "Harcama ekle",
+        "title": "Yeni harcama",
+        "listening": "Dinliyor …",
+        "descriptionPlaceholder": "Ne için? örn. pizza, benzin, Airbnb",
+        "voiceStart": "Sesli girişi başlat",
+        "voiceStop": "Kaydı durdur",
+        "suggestion": "Öneri:",
+        "tapToApply": "Uygulamak için dokun",
+        "noteOptional": "Not (isteğe bağlı)",
+        "notePlaceholder": "Ek bilgi, örn. „bahşiş dahil”",
+        "receiptOptional": "Fiş (isteğe bağlı)",
+        "showDetails": "Ayrıntı ekle",
+        "hideDetails": "Ayrıntıları gizle",
+        "hideSplit": "Paylaşımı gizle",
+        "adjustSplit": "Paylaşımı düzenle ({{amount}})"
+      },
+      "split": {
+        "mode": {
+          "equal": {
+            "label": "Eşit",
+            "hint": "herkes eşit"
+          },
+          "shares": {
+            "label": "Paylar",
+            "hint": "1×/2×"
+          },
+          "percentage": {
+            "label": "Yüzde",
+            "hint": "kişi başı %"
+          },
+          "custom": {
+            "label": "Tutarlar",
+            "hint": "kişi başı {{symbol}}"
+          }
+        },
+        "tapToToggle": "Katılımcılar · dahil etmek veya çıkarmak için dokun",
+        "includePerson": "{{name}} dahil edilsin",
+        "excludePerson": "{{name}} çıkarılsın",
+        "equalSummary": "{{n}} kişi {{total}} tutarını paylaşıyor",
+        "perHead": "kişi başı {{amount}}",
+        "needOnePerson": "En az bir kişi dahil olmalı",
+        "sharesHeader": "Paylar · örn. 2× iki katını öder",
+        "decreaseShare": "Payı azalt",
+        "increaseShare": "Payı artır",
+        "percentFor": "{{name}} için yüzde",
+        "amountFor": "{{name}} için tutar",
+        "distributeRest": "Kalanı dağıt ({{amount}})"
+      },
+      "payer": {
+        "multiple": "Birden fazla",
+        "single": "Tek kişi",
+        "multiTitle": "Ödeyen · birden fazla",
+        "paidByPerson": "Ödeyen: {{name}}"
+      },
+      "row": {
+        "hasReceipt": "Fiş var",
+        "paidByName": "{{name}} ödedi",
+        "unknownPayer": "Ödeyen bilinmiyor",
+        "peopleCount": "Kişi: {{n}}"
+      },
+      "balance": {
+        "aria": "Bakiye özeti",
+        "allSettled": "Her şey ödendi",
+        "owedToYou": "Sana borçlular",
+        "youOwe": "Borcun var",
+        "stillOpen": "Hâlâ açık",
+        "allSettledHint": "Açık kalan bir şey yok — tertemiz.",
+        "owedHint": "Toplamda hesabına geri dönüyor.",
+        "oweHint": "Diğerlerine bu kadar borçlusun.",
+        "idleHint": "Henüz hareket yok."
+      },
+      "stats": {
+        "empty": "Henüz harcama yok — ilki girildiği anda istatistikler burada belirir.",
+        "budget": "Bütçe",
+        "ofBudget": "/ {{amount}}",
+        "paidVsShare": "Ödenen ve pay",
+        "paid": "Ödenen",
+        "share": "Pay",
+        "trend": "Zaman içinde",
+        "totalLine": "Toplam: {{amount}}",
+        "uncategorized": "Kategorisiz"
+      },
+      "settle": {
+        "allSettledTitle": "Her şey ödendi",
+        "noOpenAmounts": "Katılımcılar arasında açık tutar kalmadı.",
+        "referenceNote": "Ödeme {{name}}",
+        "copyFailed": "Panoya kopyalanamadı — ayrıntılar hareket akışında.",
+        "ibanCopied": "IBAN ve tutar kopyalandı — yapıştırmak için banka uygulamanı aç.",
+        "minimalTransfers": "En az sayıda denkleştirme transferi ({{n}})",
+        "yourTransfer": "Senin transferin",
+        "paymentMethod": "Ödeme yöntemi",
+        "linkBadge": "BAĞLANTI",
+        "copyToClipboard": "Panoya kopyala"
+      },
+      "settled": {
+        "empty": "Henüz kayıtlı ödeme yok.",
+        "pendingHeader": "Onay bekliyor ({{n}})",
+        "doneHeader": "Tamamlandı ({{n}})",
+        "confirmPrompt": "Parayı aldın mı? Lütfen onayla.",
+        "waitingForPayee": "Alıcının onayı bekleniyor",
+        "confirm": "Onayla"
+      },
+      "detail": {
+        "title": "Harcama",
+        "srTitle": "Harcama: {{description}}",
+        "deleteConfirm": "Bu harcama gerçekten silinsin mi?",
+        "allSharesSettled": "Bütün paylar ödendi",
+        "openShares": "Hâlâ açık paylar var",
+        "noShares": "Kayıtlı pay yok",
+        "amountPaid": "{{amount}} ödendi",
+        "note": "Not",
+        "receipt": "Fiş",
+        "openReceipt": "Fişi aç",
+        "details": "Ayrıntılar",
+        "createdAt": "Oluşturuldu",
+        "updatedAt": "Güncellendi",
+        "source": "Kaynak",
+        "tags": "Etiketler",
+        "deleteExpense": "Harcamayı sil",
+        "via": {
+          "manual": "Elle",
+          "camera": "Kamera OCR",
+          "voice": "Sesli giriş",
+          "import": "İçe aktarma",
+          "template": "Şablon"
+        }
+      },
+      "activity": {
+        "emptyTitle": "Henüz bir şey olmadı",
+        "emptyText": "Harcamalarda ve ödemelerde yapılan her değişiklik burada görünür.",
+        "loadOlder": "Daha eskileri göster",
+        "someone": "Biri",
+        "created": "bir harcama ekledi",
+        "amountChanged": "tutarı {{from}} değerinden şuna değiştirdi:",
+        "deleted": "bir harcamayı sildi",
+        "settlementConfirmed": "bir ödemeyi onayladı",
+        "receiptUploaded": "bir fiş ekledi",
+        "viaMethod": "{{method}} ile"
+      },
+      "recurring": {
+        "title": "Yinelenen harcamalar",
+        "subtitle": "Kira, market, abonelikler — otomatik oluşturulur",
+        "new": "Yeni",
+        "activeHeader": "Etkin ({{n}})",
+        "pausedHeader": "Duraklatıldı ({{n}})",
+        "next": "Sıradaki: {{date}}",
+        "activate": "Etkinleştir",
+        "pause": "Duraklat",
+        "emptyTitle": "Henüz şablon yok",
+        "emptyText": "Kira, dijital abonelik veya haftalık market gibi yinelenen harcamaları bir kez kur — gerisi kendiliğinden olur.",
+        "createFirst": "İlk şablonu oluştur",
+        "sheetTitle": "Yeni yinelenen harcama",
+        "newTemplate": "Yeni şablon",
+        "changeEmoji": "Emojiyi değiştir",
+        "titlePlaceholder": "Başlık, örn. kira",
+        "frequency": "Sıklık",
+        "startDate": "Başlangıç tarihi",
+        "splitInfo": "Paylaşım: bütün katılımcılar arasında eşit ({{n}}).",
+        "splitInfoSoon": "Şablonlar için yüzdeli ve özel paylaşım yakında geliyor.",
+        "freq": {
+          "daily": "Her gün",
+          "weekly": "Her hafta",
+          "biweekly": "2 haftada bir",
+          "monthly": "Her ay"
+        }
+      },
+      "method": {
+        "paypal": "PayPal",
+        "revolut": "Revolut",
+        "bank": "Havale",
+        "wise": "Wise",
+        "apple_pay": "Apple Pay",
+        "google_pay": "Google Pay",
+        "cash": "Nakit",
+        "other": "Diğer"
+      }
+    },
     "button": "Harcamalar",
     "title": "Harcamalar",
     "addExpense": "Harcama Ekle",
@@ -3853,7 +4048,20 @@
     "invalidEmail": "Geçersiz e-posta adresi",
     "minLength": "En az {{count}} karakter gerekli",
     "maxLength": "Maksimum {{count}} karakter izin verilir",
-    "passwordMismatch": "Şifreler eşleşmiyor"
+    "passwordMismatch": "Şifreler eşleşmiyor",
+    "survey": {
+      "participant": "Adını seç",
+      "attendance": "Katılıp katılamayacağını belirt",
+      "duration": "Tercih ettiğin süreyi seç",
+      "budget": "Bütçeni seç",
+      "destination": "Bir destinasyon seç",
+      "travel": "Ne kadar yol gitmeye hazır olduğunu belirt",
+      "activities": "En az bir aktivite seç",
+      "fitness": "Kondisyon seviyeni seç",
+      "groupCode": "Grup kodu zorunlu",
+      "groupCodeTooLong": "Grup kodu çok uzun",
+      "maxChars": "En fazla {{max}} karakter"
+    }
   },
   "planner": {
     "title": "Hafta Sonu Planlayıcısı",
@@ -6115,6 +6323,12 @@
       "yourTurn": "Senin Sıran"
     },
     "results": {
+      "winnerPoints": "{{n}} puan",
+      "toParty": "Partiye dön",
+      "rounds": "Turlar",
+      "bestPoints": "En iyi puan",
+      "longestStreak": "En uzun seri",
+      "streakBadge": "{{n}}× seri",
       "gameOver": "Oyun Bitti!",
       "winner": "Kazanan",
       "leaderboard": "Sıralama",
@@ -6446,6 +6660,10 @@
       "votingPhase": "Oylama · {{current}}/{{total}}"
     },
     "ohrwurm": {
+      "leaveTitle": "Oyundan çıkılsın mı?",
+      "leaveSub": "Mevcut oyun ilerlemesi kaybolacak.",
+      "leaveStay": "Oynamaya devam et",
+      "leaveConfirm": "Çık",
       "back": "Geri",
       "target": "Hedef {{count}}",
       "spotifyOk": "✓ Spotify · açıklamadan sonra tam şarkı (oyunda: önizleme)",
@@ -6617,6 +6835,8 @@
       "title": "Split Quiz"
     },
     "truthdare": {
+      "yes": "Evet",
+      "no": "Hayır",
       "gameTitle": "Doğru mu Cesaret mi 2.0",
       "timerLabel": "Cesaret Sayacı (san.)",
       "roundHeader": "Tur {{current}}/{{total}}",
@@ -6700,6 +6920,7 @@
         "anotherGame": "Başka bir oyun"
       },
       "setup": {
+        "defaultPlayerName": "Sen",
         "heading": "Oyun hazırlığı",
         "title": "Bugün kim olacaksın?",
         "subtitle": "Oyuncularını ve bir kategori seç — gerisi oyunda gerçekleşir.",
@@ -6903,6 +7124,12 @@
       "startGame": "Oyunu Başlat"
     },
     "wordpress": {
+      "modes": {
+        "kategorie": "Kategori",
+        "stroop": "Stroop",
+        "verboten": "Yasak",
+        "speedRush": "Speed Rush"
+      },
       "title": "Kelimeye Bas",
       "tagline": "Hızlı dokun, hızlı düşün!",
       "defaultPlayer1": "Oyuncu 1",
@@ -7442,6 +7669,16 @@
       "pantomime": "Sessizce canlandır, takımın bilsin — çift puan için meydan okumalarla"
     },
     "events": {
+      "actionError": "Bu işe yaramadı.",
+      "archived": "Arşivlendi",
+      "restored": "Geri alındı",
+      "deleted": "Etkinlik silindi",
+      "manage": "Yönet",
+      "manageSub": "Etkinliği yönet",
+      "restore": "Geri al",
+      "archive": "Arşivle",
+      "delete": "Sil",
+      "deleteConfirm": "Bu etkinlik gerçekten silinsin mi? Bu geri alınamaz.",
       "title": "Etkinlikler",
       "countSummary": "{{active}} aktif · {{archived}} arşivlenmiş",
       "searchPlaceholder": "Etkinlik ara...",
@@ -8030,6 +8267,8 @@
   },
   "woIstWas": {
     "modes": {
+      "unterschiede": "Farklar",
+      "karte": "Harita",
       "memory": "Hafıza",
       "memoryDesc": "Sahneyi ezberle ve soruları cevapla",
       "speed": "Hız",
@@ -8501,6 +8740,7 @@
     "no": "Hayır"
   },
   "nativeResponses": {
+    "customAnswers": "Kendi yanıtları",
     "stats": {
       "responses": "Yanıtlar",
       "responseRate": "Yanıt oranı",
@@ -9420,6 +9660,48 @@
     "aiLimitReached": "Oturum başına en fazla {{max}} oluşturmaya ulaşıldı"
   },
   "tv": {
+    "partyNight": {
+      "title": "Party Night",
+      "standingsEyebrow": "Ara sıralama",
+      "afterGame": "{{game}} sonrası",
+      "leadChange": "Lider değişti: {{name}}",
+      "tonightTotal": "Bu geceki toplam",
+      "noStandings": "Henüz puan yok",
+      "roadmapTitle": "Gece",
+      "nextUp": "Şimdi",
+      "upNext": "Sırada",
+      "gameXofY": "Oyun {{current}} / {{total}}",
+      "finaleEyebrow": "Party Night sona erdi",
+      "champion": "Gecenin şampiyonu",
+      "championLine": "{{name}} {{points}} puanla kazanıyor",
+      "finalTable": "Son sıralama",
+      "gamesPlayed": "Oyunlar",
+      "totalPoints": "Toplam puan",
+      "awardsTitle": "Ödüller",
+      "noAwards": "Ödüller için yeterince oynanmadı",
+      "award": {
+        "comeback": {
+          "title": "Gecenin geri dönüşü",
+          "detail": "{{from}}. sıradan {{to}}. sıraya"
+        },
+        "mostWins": {
+          "title": "Seri kazanan",
+          "detail": "{{n}} galibiyet"
+        },
+        "consistency": {
+          "title": "İstikrar kralı",
+          "detail": "Ort. sıra {{value}}"
+        },
+        "bestGame": {
+          "title": "Gecenin en iyi performansı",
+          "detail": "Rekor: {{game}} oyununda {{value}} puan"
+        },
+        "unlucky": {
+          "title": "Gecenin şanssızı",
+          "detail": "{{n}}× sonuncu"
+        }
+      }
+    },
     "connectTitle": "TV'yi bağla",
     "openOnTv": "TV'nde aç:",
     "copied": "Kopyalandı!",

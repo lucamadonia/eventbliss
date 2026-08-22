@@ -9,6 +9,7 @@
  * muted grid. Dark mode uses its own validated steps, not a flipped palette.
  */
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useTheme } from "next-themes";
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis,
@@ -16,11 +17,11 @@ import {
 } from "recharts";
 import { PiggyBank, TrendingUp, Users, HandCoins, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatMoney } from "@/lib/expenses-v2/types";
 import type { Expense, ExpensesSummary, ExpenseCategory } from "@/lib/expenses-v2/types";
-import { categoryKeyFromName, categoryDisplayName, type CategoryAssetKey } from "@/lib/expenses-v2/category-assets";
+import { categoryKeyFromName, type CategoryAssetKey } from "@/lib/expenses-v2/category-assets";
 import { CategoryIcon } from "./CategoryIcon";
 import { CountUp } from "./CountUp";
+import { useExpenseFormat, useCategoryName } from "./useExpenseFormat";
 
 interface Participant {
   id: string;
@@ -88,6 +89,9 @@ function Panel({ title, icon: Icon, children }: { title: string; icon: typeof Us
 }
 
 export function ExpenseStats({ items, summary, participants, categoriesById, currency, budget }: ExpenseStatsProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
+  const categoryName = useCategoryName();
   const theme = useChartTheme();
   const nameOf = useMemo(() => {
     const m = new Map(participants.map((p) => [p.id, p.name ?? "?"]));
@@ -102,7 +106,7 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
       const cat = categoriesById.get(id) ?? null;
       const rawName = cat?.name ?? (id === "uncategorized" ? null : id);
       const catKey = categoryKeyFromName(rawName);
-      const display = rawName ? categoryDisplayName(rawName) : "Ohne Kategorie";
+      const display = rawName ? categoryName(rawName) : t("expenses.v2.stats.uncategorized");
       const mapKey = catKey ?? display;
       const prev = byKey.get(mapKey);
       if (prev) prev.value += amount;
@@ -114,7 +118,7 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
         color: e.catKey ? CAT_COLORS[e.catKey][theme.mode] : FALLBACK_COLOR[theme.mode],
       }))
       .sort((a, b) => b.value - a.value);
-  }, [summary.byCategoryId, categoriesById, theme.mode]);
+  }, [summary.byCategoryId, categoriesById, theme.mode, categoryName, t]);
 
   // ── Who paid ──
   const payerData = useMemo(
@@ -135,10 +139,10 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
     return Array.from(ids)
       .map((id) => ({
         name: nameOf(id),
-        bezahlt: Math.round((summary.byPayerId[id] ?? 0) * 100) / 100,
-        anteil: Math.round((share.get(id) ?? 0) * 100) / 100,
+        paid: Math.round((summary.byPayerId[id] ?? 0) * 100) / 100,
+        share: Math.round((share.get(id) ?? 0) * 100) / 100,
       }))
-      .sort((a, b) => b.bezahlt - a.bezahlt);
+      .sort((a, b) => b.paid - a.paid);
   }, [items, summary.byPayerId, nameOf]);
 
   // ── Cumulative spend over time ──
@@ -154,11 +158,11 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
       acc += amount;
       return {
         date,
-        label: new Date(date).toLocaleDateString("de-DE", { day: "2-digit", month: "short" }),
+        label: fmt.shortDate(date),
         total: Math.round(acc * 100) / 100,
       };
     });
-  }, [items]);
+  }, [items, fmt]);
 
   const budgetPct = budget && budget > 0 ? Math.min(150, (summary.totalAmount / budget) * 100) : null;
   const budgetTone = budgetPct == null ? null : budgetPct >= 100 ? "critical" : budgetPct >= 90 ? "warning" : "good";
@@ -167,9 +171,7 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
     return (
       <div className="rounded-2xl bg-card border border-border p-8 text-center">
         <TrendingUp className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">
-          Noch keine Ausgaben — sobald die erste erfasst ist, erscheinen hier die Statistiken.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("expenses.v2.stats.empty")}</p>
       </div>
     );
   }
@@ -178,11 +180,14 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
     <div className="space-y-4">
       {/* Budget progress (only when a planning budget is set) */}
       {budget != null && budget > 0 && budgetPct != null && (
-        <Panel title="Budget" icon={PiggyBank}>
+        <Panel title={t("expenses.v2.stats.budget")} icon={PiggyBank}>
           <div className="flex items-baseline justify-between text-sm">
             <span className="font-semibold text-foreground tabular-nums">
-              {formatMoney(summary.totalAmount, currency)}
-              <span className="text-muted-foreground font-normal"> von {formatMoney(budget, currency)}</span>
+              {fmt.money(summary.totalAmount)}
+              <span className="text-muted-foreground font-normal">
+                {" "}
+                {t("expenses.v2.stats.ofBudget", { amount: fmt.money(budget) })}
+              </span>
             </span>
             <span
               className={cn(
@@ -209,7 +214,7 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
       )}
 
       {/* Category donut + legend */}
-      <Panel title="Nach Kategorie" icon={TrendingUp}>
+      <Panel title={t("expenses.byCategory")} icon={TrendingUp}>
         <div className="relative">
           <ResponsiveContainer width="100%" height={190}>
             <PieChart>
@@ -232,7 +237,7 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
                     <GlassTooltip
                       title={payload[0].payload.name}
                       lines={[
-                        `${formatMoney(payload[0].payload.value, currency)} · ${Math.round((payload[0].payload.value / summary.totalAmount) * 100)}%`,
+                        `${fmt.money(payload[0].payload.value)} · ${Math.round((payload[0].payload.value / summary.totalAmount) * 100)}%`,
                       ]}
                     />
                   ) : null
@@ -242,7 +247,9 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
           </ResponsiveContainer>
           {/* Center total */}
           <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">Gesamt</span>
+            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+              {t("expenses.total")}
+            </span>
             <span className="text-lg font-bold tabular-nums text-foreground">
               <CountUp value={summary.totalAmount} currency={currency} />
             </span>
@@ -256,7 +263,7 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
               <CategoryIcon category={c.raw ?? { name: c.name }} size="row" className="w-5 h-5" />
               <span className="min-w-0 flex-1 truncate text-foreground/90">{c.name}</span>
               <span className="tabular-nums text-muted-foreground">
-                {formatMoney(c.value, currency)} · {Math.round((c.value / summary.totalAmount) * 100)}%
+                {fmt.money(c.value)} · {Math.round((c.value / summary.totalAmount) * 100)}%
               </span>
             </li>
           ))}
@@ -264,7 +271,7 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
       </Panel>
 
       {/* Who paid */}
-      <Panel title="Wer hat gezahlt" icon={HandCoins}>
+      <Panel title={t("expenses.whoPaid")} icon={HandCoins}>
         <ResponsiveContainer width="100%" height={Math.max(120, payerData.length * 38)}>
           <BarChart data={payerData} layout="vertical" margin={{ left: 0, right: 48, top: 0, bottom: 0 }}>
             <XAxis type="number" hide />
@@ -277,21 +284,21 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
               cursor={{ fill: theme.grid }}
               content={({ active, payload }) =>
                 active && payload?.length ? (
-                  <GlassTooltip title={String(payload[0].payload.name)} lines={[formatMoney(Number(payload[0].value), currency)]} />
+                  <GlassTooltip title={String(payload[0].payload.name)} lines={[fmt.money(Number(payload[0].value))]} />
                 ) : null
               }
             />
             <Bar
               dataKey="value" barSize={14} radius={[0, 4, 4, 0]}
               fill={SERIES_BLUE[theme.mode]} isAnimationActive={false}
-              label={{ position: "right", fill: theme.axis, fontSize: 11, formatter: (v: number) => formatMoney(v, currency) }}
+              label={{ position: "right", fill: theme.axis, fontSize: 11, formatter: (v: number) => fmt.money(v) }}
             />
           </BarChart>
         </ResponsiveContainer>
       </Panel>
 
       {/* Paid vs. share */}
-      <Panel title="Bezahlt vs. Anteil" icon={Users}>
+      <Panel title={t("expenses.v2.stats.paidVsShare")} icon={Users}>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={paidVsShare} margin={{ left: 0, right: 8, top: 8, bottom: 0 }} barGap={2}>
             <CartesianGrid vertical={false} stroke={theme.grid} />
@@ -303,29 +310,34 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
                 active && payload?.length ? (
                   <GlassTooltip
                     title={String(label)}
-                    lines={payload.map((p) => `${p.name === "bezahlt" ? "Bezahlt" : "Anteil"}: ${formatMoney(Number(p.value), currency)}`)}
+                    lines={payload.map(
+                      (p) =>
+                        `${p.name === "paid" ? t("expenses.v2.stats.paid") : t("expenses.v2.stats.share")}: ${fmt.money(Number(p.value))}`,
+                    )}
                   />
                 ) : null
               }
             />
-            <Bar dataKey="bezahlt" barSize={12} radius={[4, 4, 0, 0]} fill={SERIES_BLUE[theme.mode]} isAnimationActive={false} />
-            <Bar dataKey="anteil" barSize={12} radius={[4, 4, 0, 0]} fill={SERIES_YELLOW[theme.mode]} isAnimationActive={false} />
+            <Bar dataKey="paid" barSize={12} radius={[4, 4, 0, 0]} fill={SERIES_BLUE[theme.mode]} isAnimationActive={false} />
+            <Bar dataKey="share" barSize={12} radius={[4, 4, 0, 0]} fill={SERIES_YELLOW[theme.mode]} isAnimationActive={false} />
           </BarChart>
         </ResponsiveContainer>
         {/* Legend (2 series) — swatch + text token, not colored text */}
         <div className="mt-2 flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: SERIES_BLUE[theme.mode] }} /> Bezahlt
+            <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: SERIES_BLUE[theme.mode] }} />{" "}
+            {t("expenses.v2.stats.paid")}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: SERIES_YELLOW[theme.mode] }} /> Anteil
+            <span className="h-2.5 w-2.5 rounded-[3px]" style={{ background: SERIES_YELLOW[theme.mode] }} />{" "}
+            {t("expenses.v2.stats.share")}
           </span>
         </div>
       </Panel>
 
       {/* Cumulative timeline (needs ≥ 2 days) */}
       {timeline.length >= 2 && (
-        <Panel title="Verlauf" icon={TrendingUp}>
+        <Panel title={t("expenses.v2.stats.trend")} icon={TrendingUp}>
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={timeline} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
               <defs>
@@ -340,7 +352,10 @@ export function ExpenseStats({ items, summary, participants, categoriesById, cur
               <Tooltip
                 content={({ active, payload, label }) =>
                   active && payload?.length ? (
-                    <GlassTooltip title={String(label)} lines={[`Gesamt: ${formatMoney(Number(payload[0].value), currency)}`]} />
+                    <GlassTooltip
+                      title={String(label)}
+                      lines={[t("expenses.v2.stats.totalLine", { amount: fmt.money(Number(payload[0].value)) })]}
+                    />
                   ) : null
                 }
               />

@@ -18,6 +18,7 @@ import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getBOTTLE_CARDS, getCATEGORY_META, type BottleCard, type BottleCategory } from './bottlespin-content';
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
+import { hasShellBackButton } from '@/games/ui/shell-back';
 
 type Phase = 'setup' | 'spinning' | 'card' | 'vote' | 'gameOver';
 interface Player { id: string; name: string; color: string; avatar: string; score: number; }
@@ -277,7 +278,16 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b border-[#df8eff]/[0.06]">
-        <button onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())} className="p-2 text-white/40 hover:text-[#df8eff] transition-colors">
+        {/* In der App liegt der FloatingBackButton genau auf diesem Pfeil und
+            tut über den Back-Guard dasselbe — dort nur unsichtbar schalten,
+            nicht entfernen: der Platzhalter hält die Kopfzeile im Gleichgewicht
+            und den Platz unter dem schwebenden Pfeil frei. */}
+        <button
+          onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())}
+          className={`p-2 text-white/40 hover:text-[#df8eff] transition-colors${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
+          aria-hidden={hasShellBackButton()}
+          tabIndex={hasShellBackButton() ? -1 : undefined}
+        >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#8ff5ff]/60">
@@ -569,10 +579,12 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white py-4 rounded-2xl h-14 font-extrabold btn-glow">
                 <RotateCcw className="w-4 h-4" /> {t('games.bottlespin.playAgain')}
               </motion.button>
-              <button onClick={() => navigate('/games')}
-                className="w-full py-3.5 rounded-2xl border border-[#df8eff]/10 text-white/40 text-sm font-semibold hover:bg-white/[0.02] hover:border-[#df8eff]/20 transition-all">
-                {t('games.bottlespin.otherGame')}
-              </button>
+              {!hasShellBackButton() && (
+                <button onClick={() => navigate('/games')}
+                  className="w-full py-3.5 rounded-2xl border border-[#df8eff]/10 text-white/40 text-sm font-semibold hover:bg-white/[0.02] hover:border-[#df8eff]/20 transition-all">
+                  {t('games.bottlespin.otherGame')}
+                </button>
+              )}
             </div>
           </motion.div>
         )}

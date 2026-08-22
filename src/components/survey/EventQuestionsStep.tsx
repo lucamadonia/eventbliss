@@ -279,6 +279,7 @@ export function EventQuestionsStep({
         title={t(`native.create.questions.q.${key}.title`, key)}
         options={options[optKey] as SelectOption[]}
         onChange={(o) => setOptions(optKey, o)}
+        optionGroup={key}
         showVisibilityToggle={false}
         allowAddRemove={CORE_META_BY_KEY[key].policy.canEditValues}
         allowMultiToggle={CORE_META_BY_KEY[key].policy.canMultiSelect}

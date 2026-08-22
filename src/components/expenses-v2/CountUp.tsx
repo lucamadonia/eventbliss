@@ -1,11 +1,14 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { animate, useMotionValue, useReducedMotion } from "framer-motion";
+import { intlLocaleFor } from "./useExpenseFormat";
 
 interface CountUpProps {
   value: number;
   decimals?: number;
   duration?: number;
   currency?: string;
+  /** Überschreibt die Sprache; ohne Angabe zählt die aktive UI-Sprache. */
   locale?: string;
   className?: string;
 }
@@ -19,9 +22,11 @@ export function CountUp({
   decimals = 2,
   duration = 0.9,
   currency = "EUR",
-  locale = "de-DE",
+  locale: localeProp,
   className,
 }: CountUpProps) {
+  const { i18n } = useTranslation();
+  const locale = localeProp ?? intlLocaleFor(i18n.language);
   const mv = useMotionValue(value);
   const ref = useRef<HTMLSpanElement>(null);
   const reduced = useReducedMotion();

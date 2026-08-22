@@ -175,12 +175,20 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
   const [enhancedText, setEnhancedText] = useState("");
   const [isEnhancing, setIsEnhancing] = useState(false);
 
+  // Base language of the UI ("en-GB" → "en") — message_templates.locale stores
+  // the bare two-letter code.
+  const uiLocale = (i18n.language || "de").split("-")[0];
   const currentLocale = localeMap[i18n.language] || de;
   const surveyLink = `${getBaseUrl()}/e/${slug || event.slug}`;
   const accessCode = event.access_code || "STAG2025";
   const totalCount = participants.length;
 
-  // Load DB templates for this event
+  // Load DB templates for this event, IN THE LANGUAGE CURRENTLY BEING VIEWED.
+  //
+  // The rows are seeded once at event creation in a single language (see
+  // create-event); without this filter that one language's text overrode the
+  // fully translated i18n templates in all ten. Filtering in the query means a
+  // row in another language is never even fetched, so it cannot win.
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
@@ -188,22 +196,27 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
           .from('message_templates')
           .select('id, template_key, title, content_template, emoji_prefix, sort_order, locale')
           .eq('event_id', event.id)
+          .eq('locale', uiLocale)
           .order('sort_order', { ascending: true });
 
         if (error) {
           console.error('Error loading message templates:', error);
-        } else if (data && data.length > 0) {
-          setDbTemplates(data);
+          setDbTemplates([]);
+        } else {
+          // Always replace, never merge: switching language must drop the
+          // previous language's rows instead of leaving them in place.
+          setDbTemplates(data ?? []);
         }
       } catch (err) {
         console.error('Failed to fetch templates:', err);
+        setDbTemplates([]);
       } finally {
         setLoadingTemplates(false);
       }
     };
 
     fetchTemplates();
-  }, [event.id]);
+  }, [event.id, uiLocale]);
 
   // Format event date if available
   const formattedEventDate = event.event_date 
@@ -241,9 +254,13 @@ export const MessagesTab = ({ event, slug, participants = [], responseCount = 0 
 
   // Get template text - prioritize DB templates, fallback to i18n
   const getTemplateTextForId = (templateId: string, templateKey: string): string => {
-    // Check if we have a DB template for this key
-    const dbTemplate = dbTemplates.find(t => t.template_key === templateId);
-    
+    // Check if we have a DB template for this key. The locale check repeats the
+    // query filter on purpose: an in-flight fetch from the previous language
+    // must not be able to land a foreign-language override between renders.
+    const dbTemplate = dbTemplates.find(
+      t => t.template_key === templateId && t.locale === uiLocale
+    );
+
     if (dbTemplate) {
       // Replace placeholders in DB template
       return dbTemplate.content_template

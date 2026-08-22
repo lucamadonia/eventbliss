@@ -4,11 +4,12 @@
  * live sum validation. Always emits PayerConfig[] summing to the total.
  */
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Users, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatMoney } from "@/lib/expenses-v2/types";
 import type { PayerConfig } from "@/lib/expenses-v2/types";
 import { DecimalInput } from "./SplitConfigurator";
+import { useExpenseFormat } from "./useExpenseFormat";
 
 interface Participant {
   id: string;
@@ -34,6 +35,8 @@ export function PayerSelector({
   multi,
   onMultiChange,
 }: PayerSelectorProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const sum = useMemo(() => value.reduce((s, p) => s + p.amount, 0), [value]);
   const delta = Math.round((amount - sum) * 100) / 100;
 
@@ -72,14 +75,14 @@ export function PayerSelector({
       <div>
         <div className="flex items-center justify-between mb-2">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
-            Gezahlt von
+            {t("expenses.paidBy")}
           </div>
           <button
             type="button"
             onClick={enableMulti}
             className="inline-flex items-center gap-1 text-[11px] font-semibold text-violet-600 dark:text-violet-300 cursor-pointer hover:opacity-80"
           >
-            <Users className="w-3.5 h-3.5" /> Mehrere
+            <Users className="w-3.5 h-3.5" /> {t("expenses.v2.payer.multiple")}
           </button>
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
@@ -119,14 +122,14 @@ export function PayerSelector({
     <div>
       <div className="flex items-center justify-between mb-2">
         <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
-          Gezahlt von · mehrere
+          {t("expenses.v2.payer.multiTitle")}
         </div>
         <button
           type="button"
           onClick={disableMulti}
           className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground cursor-pointer hover:text-foreground"
         >
-          <User className="w-3.5 h-3.5" /> Einzeln
+          <User className="w-3.5 h-3.5" /> {t("expenses.v2.payer.single")}
         </button>
       </div>
       <div className="p-3 rounded-2xl bg-muted border border-border space-y-2">
@@ -153,8 +156,10 @@ export function PayerSelector({
                 <DecimalInput
                   value={row?.amount ?? 0}
                   onCommit={(n) => setPayerAmount(p.id, n)}
-                  suffix="€"
-                  ariaLabel={`Gezahlt von ${p.name ?? "Person"}`}
+                  suffix={fmt.currencySymbol()}
+                  ariaLabel={t("expenses.v2.payer.paidByPerson", {
+                    name: p.name ?? t("expenses.v2.common.person"),
+                  })}
                 />
               )}
             </div>
@@ -166,7 +171,7 @@ export function PayerSelector({
             Math.abs(delta) < 0.005 ? "border-emerald-500/20" : "border-amber-500/20",
           )}
         >
-          <span className="text-muted-foreground">Summe</span>
+          <span className="text-muted-foreground">{t("expenses.v2.common.sum")}</span>
           <span
             className={cn(
               "font-mono tabular-nums font-semibold",
@@ -175,11 +180,11 @@ export function PayerSelector({
                 : "text-amber-600 dark:text-amber-300",
             )}
           >
-            {formatMoney(sum, currency)}
+            {fmt.money(sum)}
             {Math.abs(delta) >= 0.005 && (
-              <span className="ml-2 text-xs">
+              <span className="ms-2 text-xs">
                 ({delta > 0 ? "+" : ""}
-                {formatMoney(delta, currency)})
+                {fmt.money(delta)})
               </span>
             )}
           </span>

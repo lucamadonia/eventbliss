@@ -18,6 +18,8 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { PlayerSetup } from '../ui/PlayerSetup';
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
+import { GameSetupBackLink } from '@/games/ui/GameSetupBackLink';
+import { hasShellBackButton } from '@/games/ui/shell-back';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -410,9 +412,15 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
+        {/* In der App liegt der FloatingBackButton genau auf diesem Pfeil und
+            tut über den Back-Guard dasselbe — dort nur unsichtbar schalten,
+            nicht entfernen: der Platzhalter hält die Kopfzeile im Gleichgewicht
+            und den Platz unter dem schwebenden Pfeil frei. */}
         <button
           onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())}
-          className="p-2 text-[#a8abb3] hover:text-white"
+          className={`p-2 text-[#a8abb3] hover:text-white${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
+          aria-hidden={hasShellBackButton()}
+          tabIndex={hasShellBackButton() ? -1 : undefined}
           aria-label={t('common.back')}
         >
           <ArrowLeft className="w-5 h-5" />
@@ -872,10 +880,12 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_25px_rgba(207,150,255,0.25)]">
                 <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
               </motion.button>
-              <button onClick={() => navigate('/games')}
-                className="w-full py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
-                {t('games.results.otherGame')}
-              </button>
+              {!hasShellBackButton() && (
+                <button onClick={() => navigate('/games')}
+                  className="w-full py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
+                  {t('games.results.otherGame')}
+                </button>
+              )}
             </div>
           </motion.div>
         )}
@@ -1032,13 +1042,13 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
 
       <main className="relative z-10 pt-10 px-6 max-w-2xl mx-auto">
         {/* Back + hero */}
-        <button
+        <GameSetupBackLink
           onClick={() => navigate('/games')}
-          className="mb-6 inline-flex items-center gap-1.5 text-xs font-bold text-[#a8abb3] hover:text-white transition-colors"
+          className="mb-6 text-[#a8abb3] hover:text-white transition-colors"
           aria-label={t('common.back')}
         >
           <ArrowLeft className="w-3.5 h-3.5" /> {t('common.back')}
-        </button>
+        </GameSetupBackLink>
 
         <section className="relative mb-10">
           <p className="text-[#8ff5ff] font-bold tracking-[0.25em] text-[11px] uppercase mb-2">

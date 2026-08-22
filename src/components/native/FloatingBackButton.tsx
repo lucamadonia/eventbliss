@@ -6,7 +6,7 @@
  *
  * Positioned top-left, respects safe-area-top, high z-index.
  */
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -17,8 +17,38 @@ interface Props {
   label?: string;
 }
 
+/**
+ * Wohin ein Zurück führt, für das sich sonst niemand zuständig fühlt.
+ *
+ * Hier stand `navigate(-1)` — der EINZIGE Weg in der nativen Hülle, der auf
+ * dem Dashboard landen konnte. Tabwechsel sind in `TabsLayer` reine
+ * Sichtbarkeitswechsel, der Verlauf lautet nach einem Start über den
+ * Spiele-Tab deshalb `[/, /games/ohrwurm]`, und ein Schritt zurück warf den
+ * Nutzer mitten aus dem Spiel auf die Startseite.
+ *
+ * Dieselbe Regel wie `GameBackTarget` in `NativeApp.tsx` — aber unabhängig
+ * davon, ob dessen Handler greift. Warum er auf dem Gerät nicht griff, ist
+ * ungeklärt; die `console.warn` unten liefert dafür die fehlende Spur.
+ */
+function resolveBackTarget(pathname: string, search: string): string {
+  if (pathname === "/games" || pathname.startsWith("/games/")) {
+    // Ausnahme Party-Abend: Dort ist das Spiel Teil eines laufenden Abends,
+    // die Spieleübersicht wäre ein Bruch im Ablauf.
+    return new URLSearchParams(search).get("party") === "true" ? "/party" : "/games";
+  }
+  // Der große Bildschirm: aus dem Raum zurück zur Code-Eingabe, von dort
+  // dorthin, wo er angeboten wird (GamesHub).
+  if (pathname.startsWith("/tv/")) return "/tv";
+  if (pathname === "/tv") return "/games";
+  return "/";
+}
+
+/** Nur einmal je Pfad melden — die Meldung ist Diagnose, kein Dauerlärm. */
+const warnedPaths = new Set<string>();
+
 export function FloatingBackButton({ onClick, label }: Props) {
   const navigate = useNavigate();
+  const location = useLocation();
   const haptics = useHaptics();
 
   const handleBack = () => {
@@ -29,8 +59,18 @@ export function FloatingBackButton({ onClick, label }: Props) {
     // gelöscht. Hat sich jemand registriert (z. B. „einen Schritt zurück" oder
     // „Spiel wirklich verlassen?"), gehört das Zurück ihm.
     if (runBackGuards()) return;
-    if (onClick) onClick();
-    else navigate(-1);
+    if (onClick) {
+      onClick();
+      return;
+    }
+    const to = resolveBackTarget(location.pathname, location.search);
+    if (!warnedPaths.has(location.pathname)) {
+      warnedPaths.add(location.pathname);
+      console.warn(
+        `[back-guard] Kein Handler zuständig auf ${location.pathname} — Rückfall auf ${to}`,
+      );
+    }
+    navigate(to);
   };
 
   return (

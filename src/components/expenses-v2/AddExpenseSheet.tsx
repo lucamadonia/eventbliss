@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Save, Loader2, Calendar, StickyNote, Receipt as ReceiptIcon,
@@ -10,10 +11,10 @@ import { cn } from "@/lib/utils";
 import { SplitConfigurator } from "./SplitConfigurator";
 import { PayerSelector } from "./PayerSelector";
 import { CategoryIcon } from "./CategoryIcon";
-import { categoryDisplayName } from "@/lib/expenses-v2/category-assets";
 import { ReceiptAttach } from "./ReceiptAttach";
+import { useExpenseFormat, useCategoryName } from "./useExpenseFormat";
 import { useAddExpenseV2, useExpenseCategories, useReceiptUpload } from "@/hooks/expenses";
-import { computeShares, formatMoney } from "@/lib/expenses-v2/types";
+import { computeShares } from "@/lib/expenses-v2/types";
 import type { SplitType, ReceiptOcrResult, PayerConfig } from "@/lib/expenses-v2/types";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useKeyboardInset } from "@/hooks/useKeyboardInset";
@@ -56,6 +57,9 @@ export function AddExpenseSheet({
   currency = "EUR",
   defaultPayerId,
 }: AddExpenseSheetProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
+  const categoryName = useCategoryName();
   const [amount, setAmount] = useState<string>("");
   const [description, setDescription] = useState("");
   const [payers, setPayers] = useState<PayerConfig[]>([]);
@@ -199,7 +203,7 @@ export function AddExpenseSheet({
   }, [receiptFile, eventId]);
 
   const applyOcr = (ocr: ReceiptOcrResult) => {
-    if (ocr.total != null) setAmount(String(ocr.total).replace(".", ","));
+    if (ocr.total != null) setAmount(fmt.toInput(ocr.total));
     if (ocr.merchant && !description) {
       setDescription(ocr.merchant);
       lastTranscriptRef.current = ocr.merchant;
@@ -276,7 +280,7 @@ export function AddExpenseSheet({
   const toggleVoice = async () => {
     await haptics.light();
     if (voice.isListening) voice.stop();
-    else voice.start({ lang: "de-DE" });
+    else voice.start({ lang: fmt.speechLocale });
   };
 
   return (
@@ -287,7 +291,7 @@ export function AddExpenseSheet({
         side="bottom"
         className="bg-background border-t border-border text-foreground p-0 h-[92vh] max-h-[92vh] w-full max-w-full rounded-t-3xl flex flex-col overflow-hidden overscroll-contain [touch-action:pan-y] [&>button]:hidden"
       >
-        <SheetTitle className="sr-only">Ausgabe hinzufügen</SheetTitle>
+        <SheetTitle className="sr-only">{t("expenses.v2.add.srTitle")}</SheetTitle>
 
         {/* Drag handle */}
         <div className="flex items-center justify-center pt-3 pb-1">
@@ -299,12 +303,12 @@ export function AddExpenseSheet({
           <button
             onClick={onClose}
             className="w-9 h-9 rounded-full bg-muted hover:bg-white/[0.1] flex items-center justify-center cursor-pointer transition-colors"
-            aria-label="Schließen"
+            aria-label={t("expenses.v2.common.close")}
           >
             <X className="w-4 h-4 text-muted-foreground" />
           </button>
           <div className="flex-1 text-center">
-            <h2 className="text-base font-bold text-foreground">Neue Ausgabe</h2>
+            <h2 className="text-base font-bold text-foreground">{t("expenses.v2.add.title")}</h2>
           </div>
           <Button
             onClick={handleSave}
@@ -317,7 +321,7 @@ export function AddExpenseSheet({
             ) : (
               <>
                 <Save className="w-3.5 h-3.5 mr-1.5" />
-                Speichern
+                {t("expenses.v2.common.save")}
               </>
             )}
           </Button>
@@ -338,7 +342,7 @@ export function AddExpenseSheet({
             {/* Big amount input */}
             <div className="text-center mb-6">
               <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-semibold mb-2">
-                Betrag
+                {t("expenses.amount")}
               </div>
               <div className="relative inline-flex items-baseline gap-1">
                 <input
@@ -347,11 +351,13 @@ export function AddExpenseSheet({
                   autoFocus
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
-                  placeholder="0,00"
+                  placeholder={fmt.amountPlaceholder}
                   className="w-64 max-w-full text-center text-6xl sm:text-7xl font-black bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground tabular-nums tracking-tighter"
-                  aria-label="Betrag"
+                  aria-label={t("expenses.amount")}
                 />
-                <span className="text-2xl sm:text-3xl font-bold text-muted-foreground">€</span>
+                <span className="text-2xl sm:text-3xl font-bold text-muted-foreground">
+                  {fmt.currencySymbol()}
+                </span>
               </div>
             </div>
 
@@ -364,7 +370,11 @@ export function AddExpenseSheet({
                   setDescription(e.target.value);
                   lastTranscriptRef.current = e.target.value;
                 }}
-                placeholder={voice.isListening ? "Hört zu …" : "Wofür? z. B. Pizza, Tankstelle, Airbnb"}
+                placeholder={
+                  voice.isListening
+                    ? t("expenses.v2.add.listening")
+                    : t("expenses.v2.add.descriptionPlaceholder")
+                }
                 className={cn(
                   "w-full h-12 pl-4 pr-12 rounded-2xl bg-muted border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none transition-colors",
                   voice.isListening
@@ -376,7 +386,11 @@ export function AddExpenseSheet({
                 <button
                   type="button"
                   onClick={toggleVoice}
-                  aria-label={voice.isListening ? "Aufnahme stoppen" : "Spracheingabe starten"}
+                  aria-label={
+                    voice.isListening
+                      ? t("expenses.v2.add.voiceStop")
+                      : t("expenses.v2.add.voiceStart")
+                  }
                   className={cn(
                     "absolute top-1/2 -translate-y-1/2 right-2 w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition-colors",
                     voice.isListening
@@ -408,10 +422,12 @@ export function AddExpenseSheet({
                     className="mt-2 w-full h-10 rounded-xl bg-gradient-to-r from-violet-500/15 to-cyan-500/10 border border-violet-400/30 flex items-center gap-2 px-3 text-xs text-violet-700 dark:text-violet-100 hover:border-violet-400/60 cursor-pointer transition-colors"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-300" />
-                    <span className="opacity-80">Vorschlag:</span>
+                    <span className="opacity-80">{t("expenses.v2.add.suggestion")}</span>
                     <CategoryIcon category={c} size="row" className="!w-5 !h-5" />
-                    <span className="font-semibold">{categoryDisplayName(c.name)}</span>
-                    <span className="ml-auto text-[10px] uppercase tracking-widest text-violet-600 dark:text-violet-300/80">Tippen zum Übernehmen</span>
+                    <span className="font-semibold">{categoryName(c.name)}</span>
+                    <span className="ms-auto text-[10px] uppercase tracking-widest text-violet-600 dark:text-violet-300/80">
+                      {t("expenses.v2.add.tapToApply")}
+                    </span>
                   </motion.button>
                 );
               })()}
@@ -420,7 +436,7 @@ export function AddExpenseSheet({
             {/* Category picker — always visible image-tile grid */}
             <div className="mt-4">
               <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
-                Kategorie
+                {t("expenses.category")}
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {categories.map((c) => {
@@ -452,7 +468,7 @@ export function AddExpenseSheet({
                       )}
                       <CategoryIcon category={c} size="tile" selected={active} className="w-12 h-12 relative z-10" />
                       <span className="relative z-10 text-[10px] font-medium text-foreground/90 text-center leading-tight max-w-full break-words">
-                        {categoryDisplayName(c.name)}
+                        {categoryName(c.name)}
                       </span>
                     </motion.button>
                   );
@@ -486,7 +502,7 @@ export function AddExpenseSheet({
                 {/* Date */}
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
-                    <Calendar className="w-3 h-3" /> Datum
+                    <Calendar className="w-3 h-3" /> {t("expenses.v2.common.date")}
                   </div>
                   <input
                     type="date"
@@ -499,13 +515,13 @@ export function AddExpenseSheet({
                 {/* Notes */}
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
-                    <StickyNote className="w-3 h-3" /> Notiz (optional)
+                    <StickyNote className="w-3 h-3" /> {t("expenses.v2.add.noteOptional")}
                   </div>
                   <textarea
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
-                    placeholder="Zusatzinfo, z. B. 'Trinkgeld schon drin'"
+                    placeholder={t("expenses.v2.add.notePlaceholder")}
                     className="w-full px-3 py-2 rounded-xl bg-muted border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:border-violet-400/40 resize-none"
                   />
                 </div>
@@ -513,7 +529,7 @@ export function AddExpenseSheet({
                 {/* Receipt + OCR */}
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
-                    <ReceiptIcon className="w-3 h-3" /> Beleg (optional)
+                    <ReceiptIcon className="w-3 h-3" /> {t("expenses.v2.add.receiptOptional")}
                   </div>
                   <ReceiptAttach
                     onFile={setReceiptFile}
@@ -538,7 +554,7 @@ export function AddExpenseSheet({
                 className="px-5 pb-4"
               >
                 <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
-                  Aufteilung
+                  {t("expenses.splitTitle")}
                 </div>
                 <SplitConfigurator
                   amount={amountNum}
@@ -562,7 +578,9 @@ export function AddExpenseSheet({
               onClick={() => setStep(step === "quick" ? "detail" : "quick")}
               className="w-full h-11 rounded-xl bg-muted border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.05] cursor-pointer transition-colors flex items-center justify-center gap-2"
             >
-              {step === "quick" ? "Details hinzufügen" : "Details verbergen"}
+              {step === "quick"
+                ? t("expenses.v2.add.showDetails")
+                : t("expenses.v2.add.hideDetails")}
             </button>
             <button
               type="button"
@@ -570,8 +588,8 @@ export function AddExpenseSheet({
               className="w-full h-11 rounded-xl bg-muted border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.05] cursor-pointer transition-colors flex items-center justify-center gap-2"
             >
               {step === "split"
-                ? "Aufteilung verbergen"
-                : `Aufteilung anpassen (${formatMoney(sumShares, currency)})`}
+                ? t("expenses.v2.add.hideSplit")
+                : t("expenses.v2.add.adjustSplit", { amount: fmt.money(sumShares) })}
             </button>
           </div>
         </div>

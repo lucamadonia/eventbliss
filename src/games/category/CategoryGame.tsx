@@ -30,6 +30,7 @@ import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
+import { hasShellBackButton } from '@/games/ui/shell-back';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -969,22 +970,35 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
         <div className="mx-auto max-w-lg px-4 py-6">
           {/* Header */}
           <div className="mb-6 flex items-center justify-between">
-            <button
-              onClick={() =>
-                phase === "setup"
-                  ? navigate("/games")
-                  : phase === "gameOver"
-                    ? handleRestart()
-                    : exitGuard.request()
-              }
-              className="flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors"
-              aria-label={phase === "setup" ? t('common.back') : t('games.category.quit')}
-            >
-              <ArrowLeft className="h-5 w-5" />
-              <span className="text-sm font-medium">
-                {phase === "setup" ? t('common.back') : t('games.category.quit')}
-              </span>
-            </button>
+            {/* Im Setup ist der Pfeil ein reines „raus hier" — das macht in der
+                App der FloatingBackButton, der genau darüber liegt. In allen
+                anderen Phasen führt er NICHT hinaus, sondern zurück ins Setup
+                (handleRestart), und bleibt deshalb stehen. Unsichtbar statt
+                entfernt, damit der Titel rechts bleibt und nicht unter den
+                schwebenden Pfeil rutscht. */}
+            {(() => {
+              const hidden = hasShellBackButton() && phase === "setup";
+              return (
+                <button
+                  onClick={() =>
+                    phase === "setup"
+                      ? navigate("/games")
+                      : phase === "gameOver"
+                        ? handleRestart()
+                        : exitGuard.request()
+                  }
+                  className={`flex items-center gap-2 text-white/40 hover:text-white/60 transition-colors${hidden ? ' invisible pointer-events-none' : ''}`}
+                  aria-hidden={hidden}
+                  tabIndex={hidden ? -1 : undefined}
+                  aria-label={phase === "setup" ? t('common.back') : t('games.category.quit')}
+                >
+                  <ArrowLeft className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    {phase === "setup" ? t('common.back') : t('games.category.quit')}
+                  </span>
+                </button>
+              );
+            })()}
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-[0.5rem] bg-[#1b2028] border border-[#df8eff]/20 flex items-center justify-center">
                 <Timer className="h-4 w-4 text-[#df8eff]" />

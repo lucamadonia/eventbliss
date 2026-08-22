@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Trophy, Crown, RotateCcw, Gamepad2, Share2, Bomb, Zap, Globe } from 'lucide-react';
+import { hasShellBackButton } from '@/games/ui/shell-back';
 import type { GameState } from './BombGame';
 
 interface ResultsScreenProps {
@@ -209,14 +210,17 @@ export default function BombResultsScreen({ state, onRestart, onExit }: ResultsS
             <RotateCcw className="w-4 h-4" />
             {t('games.results.playAgain')}
           </motion.button>
-          <motion.button
-            onClick={onExit}
-            className="flex-1 h-14 rounded-2xl font-bold text-sm text-white flex items-center justify-center gap-2 bg-transparent border border-white/10 hover:bg-white/5 transition-colors"
-            whileTap={{ scale: 0.97 }}
-          >
-            <Gamepad2 className="w-4 h-4" />
-            {t('games.results.otherGame')}
-          </motion.button>
+          {/* Nur im Web. In der App macht das der FloatingBackButton. */}
+          {!hasShellBackButton() && (
+            <motion.button
+              onClick={onExit}
+              className="flex-1 h-14 rounded-2xl font-bold text-sm text-white flex items-center justify-center gap-2 bg-transparent border border-white/10 hover:bg-white/5 transition-colors"
+              whileTap={{ scale: 0.97 }}
+            >
+              <Gamepad2 className="w-4 h-4" />
+              {t('games.results.otherGame')}
+            </motion.button>
+          )}
           <motion.button
             onClick={handleShare}
             className="w-14 h-14 rounded-2xl flex items-center justify-center bg-[#1f1f29] border border-white/[0.06] hover:bg-[#262630] transition-colors flex-shrink-0"

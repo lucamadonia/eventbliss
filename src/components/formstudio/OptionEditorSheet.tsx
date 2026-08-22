@@ -30,6 +30,7 @@ import {
   type SelectOption,
   type ActivityOption,
   type QuestionConfigs,
+  tEditableOptionLabel,
 } from "@/lib/survey-config";
 import {
   ACTIVITIES_LIBRARY,
@@ -103,8 +104,22 @@ export function OptionEditorSheet({
   const { canEditValues, canMultiSelect } = meta.policy;
   const maxOptions = isPremium ? meta.maxOptionsPremium : meta.maxOptionsFree;
 
-  const translateLabel = (label: string): string =>
-    label.startsWith("templates.") && i18n.exists(label) ? t(label) : label;
+  /**
+   * What the editable label <Input> shows. Built-in options are translated
+   * while they still carry their German default text; once the organizer edits
+   * one, tEditableOptionLabel gives their wording back verbatim so no later
+   * render can overwrite it.
+   */
+  const displayLabel = (option: SelectOption): string => {
+    if (option.label.startsWith("templates.")) {
+      return i18n.exists(option.label) ? t(option.label) : option.label;
+    }
+    return tEditableOptionLabel(
+      t as unknown as (key: string, defaultValue?: string) => string,
+      coreKey,
+      option,
+    );
+  };
 
   const commit = (next: SelectOption[]) => {
     if (!optionsKey) return;
@@ -227,7 +242,7 @@ export function OptionEditorSheet({
                     {o.emoji || <Smile className="h-4 w-4 text-muted-foreground/50" />}
                   </button>
                   <Input
-                    value={translateLabel(o.label)}
+                    value={displayLabel(o)}
                     onChange={(e) => updateOption(o.value, { label: e.target.value })}
                     className="h-9 flex-1"
                   />

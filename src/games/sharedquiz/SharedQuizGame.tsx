@@ -19,6 +19,7 @@ import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getActivePartySession } from "@/hooks/usePartySession";
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
+import { hasShellBackButton } from '@/games/ui/shell-back';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -344,7 +345,10 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
                 className="w-full py-4 rounded-full bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] text-base font-extrabold font-[Plus_Jakarta_Sans] uppercase tracking-wide shadow-[0_0_20px_rgba(143,245,255,0.3)] flex items-center justify-center gap-2">
                 <Play className="w-5 h-5" /> {t('games.setup.startGame')}
               </motion.button>
-              <button onClick={() => navigate('/games')} className="w-full py-3 text-white/30 text-sm hover:text-white/50 transition">{t('games.sharedquiz.back')}</button>
+              {/* Nur im Web. In der App macht das der FloatingBackButton. */}
+              {!hasShellBackButton() && (
+                <button onClick={() => navigate('/games')} className="w-full py-3 text-white/30 text-sm hover:text-white/50 transition">{t('games.sharedquiz.back')}</button>
+              )}
             </div>
           </div>
         </motion.div>
@@ -514,10 +518,12 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
               className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(143,245,255,0.25)]">
               <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
             </motion.button>
-            <button onClick={() => navigate('/games')}
-              className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
-              {t('games.results.otherGame')}
-            </button>
+            {!hasShellBackButton() && (
+              <button onClick={() => navigate('/games')}
+                className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
+                {t('games.results.otherGame')}
+              </button>
+            )}
           </div>
         </motion.div>
       )}

@@ -1,9 +1,10 @@
+import { useTranslation } from "react-i18next";
 import { motion, useReducedMotion } from "framer-motion";
 import { TrendingUp, TrendingDown, CheckCircle2, Wallet, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatMoney } from "@/lib/expenses-v2/types";
 import type { ParticipantBalance } from "@/lib/expenses-v2/types";
 import { CountUp } from "./CountUp";
+import { useExpenseFormat } from "./useExpenseFormat";
 
 interface Participant {
   id: string;
@@ -37,6 +38,8 @@ export function BalanceCard({
   expanded = false,
   onToggle,
 }: BalanceCardProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const reduced = useReducedMotion();
   const byId = new Map(balances.map((b) => [b.participant_id, b.net_balance]));
   const me = currentParticipantId ? byId.get(currentParticipantId) ?? 0 : 0;
@@ -76,12 +79,12 @@ export function BalanceCard({
 
   const Icon = allSettled ? CheckCircle2 : me > 0 ? TrendingUp : me < 0 ? TrendingDown : Wallet;
   const label = allSettled
-    ? "Alles beglichen"
+    ? t("expenses.v2.balance.allSettled")
     : me > 0
-    ? "Dir wird geschuldet"
+    ? t("expenses.v2.balance.owedToYou")
     : me < 0
-    ? "Du schuldest"
-    : "Noch offen";
+    ? t("expenses.v2.balance.youOwe")
+    : t("expenses.v2.balance.stillOpen");
 
   const maxAbs = Math.max(...balances.map((b) => Math.abs(b.net_balance)), 1);
 
@@ -97,7 +100,7 @@ export function BalanceCard({
       onClick={onToggle}
       role={onToggle ? "button" : undefined}
       aria-expanded={expanded}
-      aria-label="Balance-Übersicht"
+      aria-label={t("expenses.v2.balance.aria")}
     >
       {/* Ambient glow behind amount */}
       <motion.div
@@ -143,12 +146,12 @@ export function BalanceCard({
 
         <p className="text-xs text-muted-foreground mt-1.5">
           {allSettled
-            ? "Keine offenen Beträge — saubere Sache."
+            ? t("expenses.v2.balance.allSettledHint")
             : me > 0
-            ? "Kommt insgesamt wieder auf dein Konto zurück."
+            ? t("expenses.v2.balance.owedHint")
             : me < 0
-            ? "Das schuldest du den anderen Teilnehmern."
-            : "Noch keine Aktivität."}
+            ? t("expenses.v2.balance.oweHint")
+            : t("expenses.v2.balance.idleHint")}
         </p>
 
         {/* Expanded — per-member bars */}
@@ -193,7 +196,9 @@ export function BalanceCard({
                       <div className="text-sm text-foreground truncate">
                         {name}
                         {b.participant_id === currentParticipantId && (
-                          <span className="ml-1.5 text-[10px] text-violet-300 font-medium">(Du)</span>
+                          <span className="ms-1.5 text-[10px] text-violet-300 font-medium">
+                            {t("expenses.v2.common.you")}
+                          </span>
                         )}
                       </div>
                       <div className="h-1 rounded-full bg-muted overflow-hidden mt-1">
@@ -219,7 +224,7 @@ export function BalanceCard({
                       )}
                     >
                       {pos ? "+" : ""}
-                      {formatMoney(b.net_balance, currency)}
+                      {fmt.money(b.net_balance)}
                     </div>
                   </motion.div>
                 );

@@ -20,6 +20,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
+import { hasShellBackButton } from '@/games/ui/shell-back';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -357,7 +358,16 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#ff6b98]/8 rounded-full blur-[120px] pointer-events-none" />
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
-        <button onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())} className="p-2 text-[#a8abb3] hover:text-white">
+        {/* In der App liegt der FloatingBackButton genau auf diesem Pfeil und
+            tut über den Back-Guard dasselbe — dort nur unsichtbar schalten,
+            nicht entfernen: der Platzhalter hält die Kopfzeile im Gleichgewicht
+            und den Platz unter dem schwebenden Pfeil frei. */}
+        <button
+          onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())}
+          className={`p-2 text-[#a8abb3] hover:text-white${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
+          aria-hidden={hasShellBackButton()}
+          tabIndex={hasShellBackButton() ? -1 : undefined}
+        >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div className="text-xs font-bold uppercase tracking-widest text-[#a8abb3]">
@@ -764,10 +774,12 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
                 <RotateCcw className="w-4 h-4" /> {t('games.truthdare.playAgain')}
               </motion.button>
-              <button onClick={() => navigate('/games')}
-                className="w-full py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
-                {t('games.truthdare.otherGame')}
-              </button>
+              {!hasShellBackButton() && (
+                <button onClick={() => navigate('/games')}
+                  className="w-full py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
+                  {t('games.truthdare.otherGame')}
+                </button>
+              )}
             </div>
           </motion.div>
         )}

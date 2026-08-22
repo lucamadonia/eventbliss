@@ -27,6 +27,8 @@ import { useTranslation } from 'react-i18next';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from '@/hooks/useTVGameBridge';
 import { useBackGuard } from '@/lib/back-guard';
+import { GameSetupBackLink } from '../ui/GameSetupBackLink';
+import { hasShellBackButton } from '../ui/shell-back';
 import { loadSnapshot, saveSnapshot, clearSnapshot } from '../ui/useGameSnapshot';
 import { setReportContext } from '../ui/useReportContext';
 import { TV_STALE_MS } from '../tv/useTVConnection';
@@ -1326,9 +1328,11 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
                   style={{ background: `linear-gradient(135deg, ${OW.primary}, ${OW.secondary})`, color: OW.bg }}>
                   <RotateCcw className="w-4 h-4" /> {t('games.ohrwurm.playAgain')}
                 </motion.button>
-                <button onClick={() => navigate('/games')} className="w-full py-3.5 rounded-2xl text-sm font-semibold" style={{ border: '1px solid rgba(255,255,255,0.1)', color: OW.dim }}>
-                  {t('games.ohrwurm.otherGame')}
-                </button>
+                {!hasShellBackButton() && (
+                  <button onClick={() => navigate('/games')} className="w-full py-3.5 rounded-2xl text-sm font-semibold" style={{ border: '1px solid rgba(255,255,255,0.1)', color: OW.dim }}>
+                    {t('games.ohrwurm.otherGame')}
+                  </button>
+                )}
               </div>
             </motion.div>
           )}
@@ -1801,9 +1805,9 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
       </div>
 
       <main className="relative z-10 pt-10 px-6 max-w-2xl mx-auto">
-        <button onClick={() => navigate('/games')} className="mb-6 inline-flex items-center gap-1.5 text-xs font-bold" style={{ color: OW.dim }}>
+        <GameSetupBackLink onClick={() => navigate('/games')} className="mb-6" style={{ color: OW.dim }}>
           <ArrowLeft className="w-3.5 h-3.5" /> {t('games.ohrwurm.back')}
-        </button>
+        </GameSetupBackLink>
 
         {/* Hero */}
         <section className="mb-9">

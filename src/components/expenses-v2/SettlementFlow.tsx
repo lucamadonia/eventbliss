@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Check, Loader2, X, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { formatMoney } from "@/lib/expenses-v2/types";
+import { useExpenseFormat } from "./useExpenseFormat";
 import { useSettleDebt } from "@/hooks/expenses";
 import type { SettlementMethod, SimplifiedDebt } from "@/lib/expenses-v2/types";
 import { buildSettlementAction, hasDeepLink } from "@/lib/expenses-v2/paymentLinks";
@@ -28,15 +29,20 @@ interface SettlementFlowProps {
   onSettled?: () => void;
 }
 
-const METHOD_LABELS: Record<SettlementMethod, { label: string; emoji: string }> = {
-  paypal: { label: "PayPal", emoji: "💙" },
-  revolut: { label: "Revolut", emoji: "🟣" },
-  bank: { label: "Überweisung", emoji: "🏦" },
-  wise: { label: "Wise", emoji: "🟢" },
-  apple_pay: { label: "Apple Pay", emoji: "" },
-  google_pay: { label: "Google Pay", emoji: "G" },
-  cash: { label: "Bar", emoji: "💶" },
-  other: { label: "Sonstiges", emoji: "↗" },
+/** Reihenfolge der Kacheln im Methoden-Raster — unabhängig von der Sprache. */
+const METHOD_ORDER: SettlementMethod[] = [
+  "paypal", "revolut", "bank", "wise", "apple_pay", "google_pay", "cash", "other",
+];
+
+const METHOD_EMOJI: Record<SettlementMethod, string> = {
+  paypal: "💙",
+  revolut: "🟣",
+  bank: "🏦",
+  wise: "🟢",
+  apple_pay: "",
+  google_pay: "G",
+  cash: "💶",
+  other: "↗",
 };
 
 /**
@@ -52,6 +58,8 @@ export function SettlementFlow({
   currency = "EUR",
   onSettled,
 }: SettlementFlowProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const [activeDebtKey, setActiveDebtKey] = useState<string | null>(null);
   const settle = useSettleDebt();
 
@@ -64,10 +72,10 @@ export function SettlementFlow({
         <div className="w-14 h-14 mx-auto rounded-full bg-emerald-500/15 flex items-center justify-center mb-3">
           <Check className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
         </div>
-        <h3 className="text-lg font-bold text-foreground mb-1">Alles beglichen</h3>
-        <p className="text-sm text-muted-foreground">
-          Keine offenen Beträge zwischen den Teilnehmern.
-        </p>
+        <h3 className="text-lg font-bold text-foreground mb-1">
+          {t("expenses.v2.settle.allSettledTitle")}
+        </h3>
+        <p className="text-sm text-muted-foreground">{t("expenses.v2.settle.noOpenAmounts")}</p>
       </div>
     );
   }
@@ -75,7 +83,12 @@ export function SettlementFlow({
   const handleSettle = async (debt: SimplifiedDebt, method: SettlementMethod) => {
     const toParticipant = participants.find((p) => p.id === debt.to_participant_id);
     const action = toParticipant
-      ? buildSettlementAction(method, toParticipant, debt.amount, `Ausgleich ${nameOf(debt.from_participant_id)}`)
+      ? buildSettlementAction(
+          method,
+          toParticipant,
+          debt.amount,
+          t("expenses.v2.settle.referenceNote", { name: nameOf(debt.from_participant_id) }),
+        )
       : null;
 
     await settle.mutateAsync({
@@ -95,9 +108,9 @@ export function SettlementFlow({
     } else if (action?.kind === "copy") {
       try {
         await navigator.clipboard.writeText(action.value);
-        toast.success(action.hint);
+        toast.success(t("expenses.v2.settle.ibanCopied"));
       } catch {
-        toast.info("In die Zwischenablage kopieren fehlgeschlagen — Details in der Aktivität.");
+        toast.info(t("expenses.v2.settle.copyFailed"));
       }
     }
 
@@ -107,7 +120,7 @@ export function SettlementFlow({
   return (
     <div className="space-y-3">
       <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-semibold">
-        Minimale Ausgleichs-Überweisungen ({debts.length})
+        {t("expenses.v2.settle.minimalTransfers", { n: debts.length })}
       </div>
       {debts.map((d) => {
         const key = `${d.from_participant_id}:${d.to_participant_id}`;
@@ -152,7 +165,9 @@ export function SettlementFlow({
                     </span>
                   </div>
                   {isMine && (
-                    <div className="text-[10px] text-rose-600 dark:text-rose-300/80 mt-0.5">Deine Überweisung</div>
+                    <div className="text-[10px] text-rose-600 dark:text-rose-300/80 mt-0.5">
+                      {t("expenses.v2.settle.yourTransfer")}
+                    </div>
                   )}
                 </div>
               </div>
@@ -162,7 +177,7 @@ export function SettlementFlow({
                   isMine ? "text-rose-600 dark:text-rose-200" : "text-foreground",
                 )}
               >
-                {formatMoney(d.amount, currency)}
+                {fmt.money(d.amount)}
               </div>
             </button>
 
@@ -176,11 +191,10 @@ export function SettlementFlow({
                 >
                   <div className="p-4 pt-0 border-t border-border mt-1">
                     <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2">
-                      Zahlungsmethode
+                      {t("expenses.v2.settle.paymentMethod")}
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {(Object.keys(METHOD_LABELS) as SettlementMethod[]).map((m) => {
-                        const cfg = METHOD_LABELS[m];
+                      {METHOD_ORDER.map((m) => {
                         const to = participants.find((p) => p.id === d.to_participant_id);
                         const action = to ? buildSettlementAction(m, to, d.amount) : null;
                         const linkable = to ? hasDeepLink(m, to, d.amount) : false;
@@ -193,13 +207,18 @@ export function SettlementFlow({
                             disabled={settle.isPending}
                             className="h-11 px-3 rounded-xl bg-muted border border-border hover:border-violet-400/40 hover:bg-white/[0.06] text-sm font-medium text-foreground disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
                           >
-                            <span className="text-lg">{cfg.emoji}</span>
-                            <span className="flex-1 text-left">{cfg.label}</span>
+                            <span className="text-lg">{METHOD_EMOJI[m]}</span>
+                            <span className="flex-1 text-start">{t(`expenses.v2.method.${m}`)}</span>
                             {linkable && (
-                              <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">LINK</span>
+                              <span className="text-[9px] text-emerald-600 dark:text-emerald-400 font-bold">
+                                {t("expenses.v2.settle.linkBadge")}
+                              </span>
                             )}
                             {copyable && (
-                              <Copy className="w-3 h-3 text-muted-foreground" aria-label="Kopiert in Zwischenablage" />
+                              <Copy
+                                className="w-3 h-3 text-muted-foreground"
+                                aria-label={t("expenses.v2.settle.copyToClipboard")}
+                              />
                             )}
                           </button>
                         );
@@ -212,7 +231,7 @@ export function SettlementFlow({
                       className="w-full mt-3 text-muted-foreground"
                     >
                       <X className="w-3.5 h-3.5 mr-1" />
-                      Abbrechen
+                      {t("expenses.v2.common.cancel")}
                     </Button>
                   </div>
                 </motion.div>
@@ -225,7 +244,7 @@ export function SettlementFlow({
       {settle.isPending && (
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground pt-2">
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          Wird gespeichert…
+          {t("expenses.v2.common.saving")}
         </div>
       )}
     </div>

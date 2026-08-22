@@ -34,6 +34,8 @@ import { getPlayerColor } from '../ui/PlayerAvatars';
 import { ResultScreen } from '../ui/ResultScreen';
 import { useTVGameBridge } from '@/hooks/useTVGameBridge';
 import { useBackGuard } from '@/lib/back-guard';
+import { GameSetupBackLink } from '../ui/GameSetupBackLink';
+import { hasShellBackButton } from '../ui/shell-back';
 import { saveSnapshot, loadSnapshot, clearSnapshot } from '../ui/useGameSnapshot';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { formatNumber, parseRaw, compactWords } from './number-format';
@@ -707,9 +709,14 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
 
       {/* Kopf: Runde, Uhr, Ausstieg */}
       <div className="relative z-10 px-4 pt-14 pb-3 flex items-center justify-between">
+        {/* In der App löst der FloatingBackButton über den Back-Guard denselben
+            Dialog aus — dort nur unsichtbar schalten, nicht entfernen, damit
+            Runde und Punkte in der Kopfzeile stehen bleiben, wo sie waren. */}
         <button
           onClick={() => setConfirmExit(true)}
-          className="text-xs font-bold"
+          className={`text-xs font-bold${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
+          aria-hidden={hasShellBackButton()}
+          tabIndex={hasShellBackButton() ? -1 : undefined}
           style={{ color: CE.dim }}
         >
           ← {t('games.closeenough.leave')}
@@ -1201,13 +1208,13 @@ function CloseEnoughSetup({
       <CloseEnoughAtmosphere warm={CE.accent} cool={CE.truth} />
 
       <main className="relative z-10 pt-14 px-5 max-w-2xl mx-auto pb-16">
-        <button
+        <GameSetupBackLink
           onClick={() => navigate('/games')}
-          className="mb-5 inline-flex items-center gap-1.5 text-xs font-bold"
+          className="mb-5"
           style={{ color: CE.dim }}
         >
           ← {t('games.closeenough.backToGames')}
-        </button>
+        </GameSetupBackLink>
 
         <motion.h1
           className="text-3xl font-black flex items-center gap-2"

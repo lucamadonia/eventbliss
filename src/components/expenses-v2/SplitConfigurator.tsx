@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Check, Minus, Plus, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { computeShares, formatMoney } from "@/lib/expenses-v2/types";
+import { computeShares } from "@/lib/expenses-v2/types";
 import type { SplitType } from "@/lib/expenses-v2/types";
+import { useExpenseFormat } from "./useExpenseFormat";
 
 /**
  * DecimalInput — phone-friendly money/percent field:
@@ -25,9 +27,10 @@ export function DecimalInput({
   className?: string;
   ariaLabel?: string;
 }) {
+  const fmt = useExpenseFormat();
   const [text, setText] = useState("");
   const [focused, setFocused] = useState(false);
-  const fromNumber = (n: number) => (n ? String(Math.round(n * 100) / 100).replace(".", ",") : "");
+  const fromNumber = fmt.toInput;
   const display = focused ? text : fromNumber(value);
   return (
     <div className="relative">
@@ -78,12 +81,7 @@ interface SplitConfiguratorProps {
   onWeightsChange?: (weights: Record<string, number>) => void;
 }
 
-const MODES: Array<{ value: SplitType; label: string; sub: string }> = [
-  { value: "equal", label: "Gleich", sub: "alle gleich" },
-  { value: "shares", label: "Anteile", sub: "1×/2×" },
-  { value: "percentage", label: "Prozent", sub: "%/Person" },
-  { value: "custom", label: "Beträge", sub: "€/Person" },
-];
+const MODE_ORDER: SplitType[] = ["equal", "shares", "percentage", "custom"];
 
 /**
  * SplitConfigurator — the heart of every expense entry.
@@ -103,8 +101,20 @@ export function SplitConfigurator({
   weights,
   onWeightsChange,
 }: SplitConfiguratorProps) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const [localMode, setLocalMode] = useState<SplitType>(mode);
   useEffect(() => setLocalMode(mode), [mode]);
+
+  const modes = useMemo(
+    () =>
+      MODE_ORDER.map((value) => ({
+        value,
+        label: t(`expenses.v2.split.mode.${value}.label`),
+        sub: t(`expenses.v2.split.mode.${value}.hint`, { symbol: fmt.currencySymbol() }),
+      })),
+    [t, fmt],
+  );
 
   // Weights for "shares" mode; default 1× each. Seeded from a passed-in map.
   const [localWeights, setLocalWeights] = useState<Record<string, number>>(() => {
@@ -247,7 +257,7 @@ export function SplitConfigurator({
     <div className="space-y-3">
       {/* Mode segmented control */}
       <div className="relative grid grid-cols-4 gap-1 p-1 rounded-2xl bg-muted border border-border">
-        {MODES.map((m) => {
+        {modes.map((m) => {
           const active = localMode === m.value;
           return (
             <button
@@ -276,7 +286,7 @@ export function SplitConfigurator({
       {localMode === "equal" && (
         <div className="p-4 rounded-2xl bg-muted border border-border">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-3">
-            Teilnehmer · tap um aus-/einzuschließen
+            {t("expenses.v2.split.tapToToggle")}
           </div>
           <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
             {participants.map((p) => {
@@ -293,7 +303,15 @@ export function SplitConfigurator({
                       : "bg-gradient-to-br from-violet-500/30 to-cyan-500/20 border-violet-400/50 text-foreground shadow-lg shadow-violet-500/10",
                   )}
                   aria-pressed={!isExcluded}
-                  aria-label={isExcluded ? `${p.name} einschließen` : `${p.name} ausschließen`}
+                  aria-label={
+                    isExcluded
+                      ? t("expenses.v2.split.includePerson", {
+                          name: p.name ?? t("expenses.v2.common.person"),
+                        })
+                      : t("expenses.v2.split.excludePerson", {
+                          name: p.name ?? t("expenses.v2.common.person"),
+                        })
+                  }
                 >
                   {(p.name ?? "?").slice(0, 1).toUpperCase()}
                   {!isExcluded && (
@@ -306,14 +324,16 @@ export function SplitConfigurator({
           <div className="text-[11px] text-muted-foreground mt-3 text-center">
             {value.length > 0 ? (
               <>
-                {value.length}&nbsp;Personen teilen sich {formatMoney(amount, currency)} —&nbsp;
-                <span className="font-semibold text-foreground">
-                  {formatMoney(value[0]?.amount ?? 0, currency)}
+                {t("expenses.v2.split.equalSummary", {
+                  n: value.length,
+                  total: fmt.money(amount),
+                })}
+                <span className="block font-semibold text-foreground">
+                  {t("expenses.v2.split.perHead", { amount: fmt.money(value[0]?.amount ?? 0) })}
                 </span>
-                &nbsp;pro Kopf
               </>
             ) : (
-              "Mindestens eine Person muss beteiligt sein"
+              t("expenses.v2.split.needOnePerson")
             )}
           </div>
         </div>
@@ -323,7 +343,7 @@ export function SplitConfigurator({
       {localMode === "shares" && (
         <div className="p-4 rounded-2xl bg-muted border border-border space-y-2">
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-1">
-            Anteile · z. B. 2× zahlt doppelt
+            {t("expenses.v2.split.sharesHeader")}
           </div>
           {participants.map((p) => {
             const row = value.find((v) => v.participant_id === p.id);
@@ -334,8 +354,8 @@ export function SplitConfigurator({
                   {(p.name ?? "?").slice(0, 1).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0 text-sm text-foreground truncate">{p.name ?? "—"}</div>
-                <div className="text-xs font-mono tabular-nums text-muted-foreground w-16 text-right">
-                  {formatMoney(row?.amount ?? 0, currency)}
+                <div className="text-xs font-mono tabular-nums text-muted-foreground w-16 text-end">
+                  {fmt.money(row?.amount ?? 0)}
                 </div>
                 <div className="flex items-center gap-1.5">
                   <button
@@ -343,7 +363,7 @@ export function SplitConfigurator({
                     onClick={() => setWeight(p.id, w - 1)}
                     disabled={w <= 0}
                     className="w-8 h-8 rounded-lg bg-muted border border-border flex items-center justify-center text-foreground disabled:opacity-30 cursor-pointer hover:bg-white/[0.06]"
-                    aria-label="Anteil verringern"
+                    aria-label={t("expenses.v2.split.decreaseShare")}
                   >
                     <Minus className="w-3.5 h-3.5" />
                   </button>
@@ -354,7 +374,7 @@ export function SplitConfigurator({
                     type="button"
                     onClick={() => setWeight(p.id, w + 1)}
                     className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500/25 to-cyan-500/20 border border-violet-400/40 flex items-center justify-center text-foreground cursor-pointer hover:from-violet-500/35"
-                    aria-label="Anteil erhöhen"
+                    aria-label={t("expenses.v2.split.increaseShare")}
                   >
                     <Plus className="w-3.5 h-3.5" />
                   </button>
@@ -363,9 +383,9 @@ export function SplitConfigurator({
             );
           })}
           <div className="flex items-center justify-between pt-3 mt-2 border-t border-border text-sm">
-            <span className="text-muted-foreground">Summe</span>
+            <span className="text-muted-foreground">{t("expenses.v2.common.sum")}</span>
             <span className="font-mono tabular-nums font-semibold text-foreground">
-              {formatMoney(sum, currency)}
+              {fmt.money(sum)}
             </span>
           </div>
         </div>
@@ -390,14 +410,18 @@ export function SplitConfigurator({
                     onCommit={(n) => setPercentage(p.id, n)}
                     suffix="%"
                     className="w-24"
-                    ariaLabel={`Prozent für ${p.name ?? "Person"}`}
+                    ariaLabel={t("expenses.v2.split.percentFor", {
+                      name: p.name ?? t("expenses.v2.common.person"),
+                    })}
                   />
                 ) : (
                   <DecimalInput
                     value={rowAmount}
                     onCommit={(n) => setCustomAmount(p.id, n)}
-                    suffix="€"
-                    ariaLabel={`Betrag für ${p.name ?? "Person"}`}
+                    suffix={fmt.currencySymbol()}
+                    ariaLabel={t("expenses.v2.split.amountFor", {
+                      name: p.name ?? t("expenses.v2.common.person"),
+                    })}
                   />
                 )}
               </div>
@@ -411,18 +435,18 @@ export function SplitConfigurator({
               valid ? "border-emerald-500/20" : "border-amber-500/20",
             )}
           >
-            <span className="text-muted-foreground">Summe</span>
+            <span className="text-muted-foreground">{t("expenses.v2.common.sum")}</span>
             <span
               className={cn(
                 "font-mono tabular-nums font-semibold",
                 valid ? "text-emerald-600 dark:text-emerald-300" : "text-amber-600 dark:text-amber-300",
               )}
             >
-              {formatMoney(sum, currency)}
+              {fmt.money(sum)}
               {!valid && (
-                <span className="ml-2 text-xs text-amber-600 dark:text-amber-300/80">
+                <span className="ms-2 text-xs text-amber-600 dark:text-amber-300/80">
                   ({delta > 0 ? "+" : ""}
-                  {formatMoney(delta, currency)})
+                  {fmt.money(delta)})
                 </span>
               )}
             </span>
@@ -436,7 +460,7 @@ export function SplitConfigurator({
               className="mt-1 w-full h-10 rounded-xl border border-primary/30 bg-primary/5 text-sm font-semibold text-primary flex items-center justify-center gap-1.5 cursor-pointer active:bg-primary/10"
             >
               <Wand2 className="w-3.5 h-3.5" />
-              Rest verteilen ({formatMoney(delta, currency)})
+              {t("expenses.v2.split.distributeRest", { amount: fmt.money(delta) })}
             </button>
           )}
         </div>

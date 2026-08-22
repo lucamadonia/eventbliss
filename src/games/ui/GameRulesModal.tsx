@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { HelpCircle, Lightbulb, Sparkles, X, ChevronRight } from "lucide-react";
+import { useBackGuard } from "@/lib/back-guard";
 import { cn } from "@/lib/utils";
 
 const GAME_ICONS: Record<string, string> = {
@@ -84,7 +85,29 @@ export function GameRulesModal({ gameId, open, onClose }: GameRulesModalProps) {
     if (s) steps.push(s);
   }
 
-  if (!title && !steps.length) return null;
+  // Ohne Text gibt es nichts zu zeigen — und dann darf der Dialog auch kein
+  // Zurück verschlucken (siehe Rang unten).
+  const renderable = !!title || steps.length > 0;
+
+  /**
+   * Zurück schließt die Regeln, statt die Seite darunter zu verlassen.
+   *
+   * Der schwebende Pfeil und die Android-Hardware-Taste fragen beide
+   * `runBackGuards()`. Ohne diesen Eintrag lief das Zurück an den offenen
+   * Regeln vorbei und navigierte die Route darunter weg — mitten im Spiel.
+   *
+   * Rang `overlay` ist zwingend: `route` ist systemweit für genau einen
+   * Anmelder reserviert (`GameBackTarget`), siehe `src/lib/back-guard.ts`.
+   */
+  useBackGuard(
+    () => {
+      onClose();
+      return true;
+    },
+    open && renderable,
+  );
+
+  if (!renderable) return null;
 
   return (
     <AnimatePresence>

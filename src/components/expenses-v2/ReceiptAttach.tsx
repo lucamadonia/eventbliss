@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Image as ImageIcon, X, Loader2, Sparkles, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatMoney } from "@/lib/expenses-v2/types";
 import type { ReceiptOcrResult } from "@/lib/expenses-v2/types";
+import { useExpenseFormat } from "./useExpenseFormat";
 import { useHaptics } from "@/hooks/useHaptics";
 
 interface ReceiptAttachProps {
@@ -33,6 +33,7 @@ export function ReceiptAttach({
   compact,
 }: ReceiptAttachProps) {
   const { t } = useTranslation();
+  const fmt = useExpenseFormat(ocr?.currency ?? "EUR");
   const cameraInput = useRef<HTMLInputElement>(null);
   const galleryInput = useRef<HTMLInputElement>(null);
   const haptics = useHaptics();
@@ -159,9 +160,7 @@ export function ReceiptAttach({
               <div className="flex justify-between gap-3">
                 <span className="text-muted-foreground">{t("nativeExtra.receipt.amount", "Betrag")}</span>
                 <span className="font-mono font-semibold text-foreground">
-                  {ocr.total != null
-                    ? formatMoney(ocr.total, ocr.currency ?? "EUR")
-                    : "—"}
+                  {ocr.total != null ? fmt.money(ocr.total) : "—"}
                 </span>
               </div>
               <div className="flex justify-between gap-3">
@@ -177,7 +176,7 @@ export function ReceiptAttach({
                     {ocr.line_items.slice(0, 12).map((li, i) => (
                       <div key={i} className="flex justify-between gap-2 text-muted-foreground">
                         <span className="truncate">{li.qty ? `${li.qty}× ` : ""}{li.label}</span>
-                        <span>{formatMoney(li.amount, ocr.currency ?? "EUR")}</span>
+                        <span>{fmt.money(li.amount)}</span>
                       </div>
                     ))}
                   </div>

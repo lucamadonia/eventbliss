@@ -17,6 +17,7 @@ import { getActivePartySession } from "@/hooks/usePartySession";
 import { useNavigate } from 'react-router-dom';
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
+import { hasShellBackButton } from '@/games/ui/shell-back';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -564,7 +565,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
         <div className="mx-auto max-w-lg space-y-6">
           {/* Header */}
           <div className="text-center space-y-1">
-            {onClose && (
+            {/* top-4 left-4 ist in der App exakt die Stelle, an der der
+                FloatingBackButton liegt — dort nur einer von beiden. */}
+            {onClose && !hasShellBackButton() && (
               <button onClick={onClose} className="absolute top-4 left-4 text-[#a8abb3] hover:text-white">
                 <ArrowLeft className="w-5 h-5" />
               </button>
@@ -1195,7 +1198,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             animate={{ opacity: 1 }}
             transition={{ delay: 1.5 }}
           >
-            {onClose && (
+            {onClose && !hasShellBackButton() && (
               <motion.button
                 onClick={onClose}
                 className="flex-1 py-3.5 rounded-2xl border-2 border-[#44484f]/60 text-[#f1f3fc] font-semibold flex items-center justify-center gap-2 hover:border-[#44484f] transition-colors text-sm"

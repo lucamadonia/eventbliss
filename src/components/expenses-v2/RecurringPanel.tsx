@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   Plus,
@@ -21,8 +22,9 @@ import {
   useToggleRecurringTemplate,
 } from "@/hooks/expenses";
 import { useHaptics } from "@/hooks/useHaptics";
-import { formatMoney, computeShares } from "@/lib/expenses-v2/types";
+import { computeShares } from "@/lib/expenses-v2/types";
 import type { RecurringFrequency } from "@/lib/expenses-v2/types";
+import { useExpenseFormat } from "./useExpenseFormat";
 
 interface Participant {
   id: string;
@@ -37,11 +39,14 @@ interface RecurringPanelProps {
   defaultPayerId?: string;
 }
 
-const FREQ_LABELS: Record<RecurringFrequency, { label: string; emoji: string }> = {
-  daily: { label: "Täglich", emoji: "🔁" },
-  weekly: { label: "Wöchentlich", emoji: "📅" },
-  biweekly: { label: "Alle 2 Wochen", emoji: "↔️" },
-  monthly: { label: "Monatlich", emoji: "📆" },
+/** Reihenfolge der Häufigkeits-Kacheln — unabhängig von der Sprache. */
+const FREQ_ORDER: RecurringFrequency[] = ["daily", "weekly", "biweekly", "monthly"];
+
+const FREQ_EMOJI: Record<RecurringFrequency, string> = {
+  daily: "🔁",
+  weekly: "📅",
+  biweekly: "↔️",
+  monthly: "📆",
 };
 
 /**
@@ -55,6 +60,7 @@ export function RecurringPanel({
   currency = "EUR",
   defaultPayerId,
 }: RecurringPanelProps) {
+  const { t } = useTranslation();
   const { data: templates = [], isLoading } = useRecurringTemplates(eventId);
   const toggle = useToggleRecurringTemplate(eventId);
   const haptics = useHaptics();
@@ -70,10 +76,10 @@ export function RecurringPanel({
         <div>
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <CalendarClock className="w-4 h-4 text-violet-600 dark:text-violet-300" />
-            Wiederkehrende Ausgaben
+            {t("expenses.v2.recurring.title")}
           </h2>
           <p className="text-[11px] text-muted-foreground mt-0.5">
-            Miete, Groceries, Abos — werden automatisch angelegt
+            {t("expenses.v2.recurring.subtitle")}
           </p>
         </div>
         <Button
@@ -85,7 +91,7 @@ export function RecurringPanel({
           className="bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-400 hover:to-cyan-400 text-white"
         >
           <Plus className="w-3.5 h-3.5 mr-1" />
-          Neu
+          {t("expenses.v2.recurring.new")}
         </Button>
       </div>
 
@@ -105,7 +111,7 @@ export function RecurringPanel({
           {active.length > 0 && (
             <section>
               <div className="text-[10px] uppercase tracking-[0.25em] text-emerald-600 dark:text-emerald-300 font-bold mb-2 px-1">
-                Aktiv ({active.length})
+                {t("expenses.v2.recurring.activeHeader", { n: active.length })}
               </div>
               <div className="space-y-2">
                 {active.map((t) => (
@@ -125,7 +131,7 @@ export function RecurringPanel({
           {paused.length > 0 && (
             <section>
               <div className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground font-bold mb-2 px-1">
-                Pausiert ({paused.length})
+                {t("expenses.v2.recurring.pausedHeader", { n: paused.length })}
               </div>
               <div className="space-y-2">
                 {paused.map((t) => (
@@ -173,7 +179,9 @@ function TemplateCard({
   paused?: boolean;
   onToggle: () => void;
 }) {
-  const freq = FREQ_LABELS[t.frequency] ?? FREQ_LABELS.monthly;
+  const { t: translate } = useTranslation();
+  const fmt = useExpenseFormat(currency);
+  const freqKey: RecurringFrequency = FREQ_ORDER.includes(t.frequency) ? t.frequency : "monthly";
   return (
     <motion.div
       initial={{ opacity: 0, y: 6 }}
@@ -199,17 +207,17 @@ function TemplateCard({
       <div className="flex-1 min-w-0">
         <div className="text-sm font-semibold text-foreground truncate">{t.title}</div>
         <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-0.5">
-          <span>{freq.emoji}</span>
-          <span>{freq.label}</span>
+          <span>{FREQ_EMOJI[freqKey]}</span>
+          <span>{translate(`expenses.v2.recurring.freq.${freqKey}`)}</span>
           <span className="text-muted-foreground/60">·</span>
           <span className="text-muted-foreground">
-            Nächste: {new Date(t.next_run_date).toLocaleDateString("de-DE", { day: "2-digit", month: "short" })}
+            {translate("expenses.v2.recurring.next", { date: fmt.shortDate(t.next_run_date) })}
           </span>
         </div>
       </div>
       <div className="flex items-center gap-2 shrink-0">
         <div className="text-sm font-bold tabular-nums text-foreground">
-          {formatMoney(t.amount, t.currency ?? currency)}
+          {fmt.money(t.amount, t.currency ?? currency)}
         </div>
         <button
           type="button"
@@ -220,7 +228,11 @@ function TemplateCard({
               ? "bg-emerald-500/15 border-emerald-500/25 text-emerald-600 dark:text-emerald-300 hover:bg-emerald-500/25"
               : "bg-muted border-border text-muted-foreground hover:bg-white/[0.1]",
           )}
-          aria-label={paused ? "Aktivieren" : "Pausieren"}
+          aria-label={
+            paused
+              ? translate("expenses.v2.recurring.activate")
+              : translate("expenses.v2.recurring.pause")
+          }
         >
           {paused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}
         </button>
@@ -232,6 +244,7 @@ function TemplateCard({
 // -----------------------------------------------------------------------------
 
 function EmptyRecurring({ onAdd }: { onAdd: () => void }) {
+  const { t } = useTranslation();
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -241,16 +254,18 @@ function EmptyRecurring({ onAdd }: { onAdd: () => void }) {
       <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center mb-3 shadow-lg shadow-violet-500/30">
         <CalendarClock className="w-7 h-7 text-white" />
       </div>
-      <h3 className="text-base font-bold text-foreground mb-1">Noch keine Vorlagen</h3>
+      <h3 className="text-base font-bold text-foreground mb-1">
+        {t("expenses.v2.recurring.emptyTitle")}
+      </h3>
       <p className="text-xs text-muted-foreground mb-4 max-w-xs mx-auto leading-relaxed">
-        Leg wiederkehrende Ausgaben wie Miete, Streaming oder Wochenend-Groceries einmal an — der Rest passiert automatisch.
+        {t("expenses.v2.recurring.emptyText")}
       </p>
       <Button
         onClick={onAdd}
         className="bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-400 hover:to-cyan-400 text-white"
       >
         <Plus className="w-4 h-4 mr-1.5" />
-        Erste Vorlage anlegen
+        {t("expenses.v2.recurring.createFirst")}
       </Button>
     </motion.div>
   );
@@ -275,6 +290,8 @@ function CreateRecurringSheet({
   currency: string;
   defaultPayerId?: string;
 }) {
+  const { t } = useTranslation();
+  const fmt = useExpenseFormat(currency);
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [emoji, setEmoji] = useState<string>("🔁");
@@ -321,7 +338,7 @@ function CreateRecurringSheet({
         side="bottom"
         className="bg-background border-t border-border text-foreground p-0 h-[80vh] max-h-[80vh] rounded-t-3xl flex flex-col"
       >
-        <SheetTitle className="sr-only">Neue wiederkehrende Ausgabe</SheetTitle>
+        <SheetTitle className="sr-only">{t("expenses.v2.recurring.sheetTitle")}</SheetTitle>
 
         <div className="flex items-center justify-center pt-3 pb-1">
           <div className="w-10 h-1.5 rounded-full bg-muted-foreground/30" />
@@ -331,11 +348,13 @@ function CreateRecurringSheet({
           <button
             onClick={onClose}
             className="w-9 h-9 rounded-full bg-muted hover:bg-white/[0.1] flex items-center justify-center cursor-pointer"
-            aria-label="Schließen"
+            aria-label={t("expenses.v2.common.close")}
           >
             <X className="w-4 h-4 text-muted-foreground" />
           </button>
-          <h2 className="text-base font-bold text-foreground">Neue Vorlage</h2>
+          <h2 className="text-base font-bold text-foreground">
+            {t("expenses.v2.recurring.newTemplate")}
+          </h2>
           <Button
             onClick={handleSave}
             disabled={!canSave || create.isPending}
@@ -347,7 +366,7 @@ function CreateRecurringSheet({
             ) : (
               <>
                 <Save className="w-3.5 h-3.5 mr-1" />
-                Speichern
+                {t("expenses.v2.common.save")}
               </>
             )}
           </Button>
@@ -363,14 +382,14 @@ function CreateRecurringSheet({
                 setEmoji(picks[(picks.indexOf(emoji) + 1) % picks.length]);
               }}
               className="w-12 h-12 rounded-2xl bg-muted border border-border flex items-center justify-center text-2xl cursor-pointer hover:border-violet-400/40"
-              aria-label="Emoji wechseln"
+              aria-label={t("expenses.v2.recurring.changeEmoji")}
             >
               {emoji}
             </button>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Titel, z. B. Miete"
+              placeholder={t("expenses.v2.recurring.titlePlaceholder")}
               className="flex-1 h-12 bg-muted border-border text-foreground placeholder:text-muted-foreground"
             />
           </div>
@@ -378,7 +397,7 @@ function CreateRecurringSheet({
           {/* Amount */}
           <div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">
-              Betrag
+              {t("expenses.amount")}
             </div>
             <div className="relative">
               <input
@@ -386,22 +405,23 @@ function CreateRecurringSheet({
                 inputMode="decimal"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
-                placeholder="0,00"
+                placeholder={fmt.amountPlaceholder}
                 className="w-full h-14 px-4 pr-10 rounded-2xl bg-muted border border-border text-foreground text-2xl font-bold placeholder:text-muted-foreground tabular-nums focus:outline-none focus:border-violet-400/40"
               />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">€</span>
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">
+                {fmt.currencySymbol()}
+              </span>
             </div>
           </div>
 
           {/* Frequency */}
           <div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">
-              Häufigkeit
+              {t("expenses.v2.recurring.frequency")}
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {(Object.keys(FREQ_LABELS) as RecurringFrequency[]).map((f) => {
+              {FREQ_ORDER.map((f) => {
                 const active = frequency === f;
-                const cfg = FREQ_LABELS[f];
                 return (
                   <button
                     key={f}
@@ -414,8 +434,8 @@ function CreateRecurringSheet({
                         : "bg-muted border-border text-muted-foreground hover:text-foreground",
                     )}
                   >
-                    <span>{cfg.emoji}</span>
-                    {cfg.label}
+                    <span>{FREQ_EMOJI[f]}</span>
+                    {t(`expenses.v2.recurring.freq.${f}`)}
                   </button>
                 );
               })}
@@ -425,7 +445,7 @@ function CreateRecurringSheet({
           {/* Next run */}
           <div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">
-              Start-Datum
+              {t("expenses.v2.recurring.startDate")}
             </div>
             <input
               type="date"
@@ -439,7 +459,7 @@ function CreateRecurringSheet({
           {/* Payer */}
           <div>
             <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mb-2">
-              Gezahlt von
+              {t("expenses.paidBy")}
             </div>
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               {participants.map((p) => {
@@ -475,8 +495,8 @@ function CreateRecurringSheet({
             <p className="text-[11px] text-violet-600 dark:text-violet-300/80 leading-relaxed flex items-start gap-2">
               <Sparkles className="w-3 h-3 mt-0.5 flex-shrink-0" />
               <span>
-                Aufteilung: <strong>gleichmäßig</strong> auf alle {participants.length} Teilnehmer.
-                Ab Phase 5b sind Prozent/Custom-Splits für Vorlagen möglich.
+                <strong>{t("expenses.v2.recurring.splitInfo", { n: participants.length })}</strong>{" "}
+                {t("expenses.v2.recurring.splitInfoSoon")}
               </span>
             </p>
           </div>

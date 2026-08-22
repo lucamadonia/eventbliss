@@ -28,7 +28,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { makeDynamicResponseSchema, type DynamicResponseFormData } from "@/lib/schemas";
+import {
+  makeDynamicResponseSchema,
+  type DynamicResponseFormData,
+  type SchemaTranslate,
+} from "@/lib/schemas";
 import {
   type EventSettings,
   mergeWithDefaults,
@@ -116,8 +120,13 @@ const DynamicSurveyForm = ({
   const config = mergeWithDefaults(previewSettings ?? settings);
   const dateBlocks = getDateBlocksArray(config.date_blocks, config.date_warnings);
   const questionConfig = config.question_config;
-  // Only require the questions the organizer actually enabled.
-  const responseSchema = useMemo(() => makeDynamicResponseSchema(questionConfig), [questionConfig]);
+  // Only require the questions the organizer actually enabled. `t` goes in so the
+  // validation messages reach guests in their own language; i18n.language is a dep
+  // so switching language rebuilds the schema instead of freezing the old strings.
+  const responseSchema = useMemo(
+    () => makeDynamicResponseSchema(t as unknown as SchemaTranslate, questionConfig),
+    [t, i18n.language, questionConfig],
+  );
 
   // Event branding → CSS vars for the whole form body (selected states, submit,
   // progress). Fallback to the theme tokens when no branding is set.
