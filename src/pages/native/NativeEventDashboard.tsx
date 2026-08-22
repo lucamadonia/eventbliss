@@ -882,6 +882,11 @@ export default function NativeEventDashboard() {
             return (
               <motion.button
                 key={tab.id}
+                // Stabiler Griff fuer die Store-Aufnahmen: Ohne ihn muss
+                // scripts/_capture_native.mjs die Reiter ueber ihre Position
+                // ansteuern — und trifft nach jedem Umsortieren lautlos den
+                // falschen, ohne dass irgendetwas fehlschlaegt.
+                data-tab={tab.id}
                 whileTap={{ scale: 0.94 }}
                 onClick={() => switchTab(tab.id)}
                 className={cn(
