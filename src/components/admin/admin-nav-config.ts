@@ -79,6 +79,9 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { key: "feature-flags", labelKey: "admin.tabs.featureFlags", defaultLabel: "Feature Flags", icon: Flag },
       { key: "audit-log", labelKey: "admin.tabs.auditLog", defaultLabel: "Audit Log", icon: Scroll },
       { key: "games", labelKey: "admin.tabs.games", defaultLabel: "Games Content", icon: Gamepad2, href: "/admin/games" },
+      // Meldungen der Spieler. Bewusst neben "Games Content": Von hier springt
+      // man direkt zu der Frage bzw. dem Song, der beanstandet wurde.
+      { key: "game-reports", labelKey: "admin.tabs.gameReports", defaultLabel: "Meldungen", icon: Flag, href: "/admin/game-reports" },
     ],
   },
 ];

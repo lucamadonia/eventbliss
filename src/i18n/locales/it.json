@@ -7285,6 +7285,20 @@
       "skipsUnlimited": "Libero",
       "skipsLeft": "{{count}} rimasti",
       "skipsNone": "nessuno rimasto"
+    },
+    "report": {
+      "title": "Segnala un problema",
+      "submit": "Segnala",
+      "sending": "Invio…",
+      "thanks": "Grazie, ci diamo un'occhiata.",
+      "placeholder": "Cosa non va? (facoltativo)",
+      "noContext": "Nessun contenuto rilevato — descrivilo brevemente.",
+      "types": {
+        "wrongAnswer": "La risposta è sbagliata",
+        "notLoading": "Il contenuto non si carica",
+        "inappropriate": "Contenuto inappropriato",
+        "other": "Altro"
+      }
     }
   },
   "native": {

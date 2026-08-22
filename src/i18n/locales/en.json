@@ -7261,6 +7261,20 @@
       "skipsUnlimited": "Free",
       "skipsLeft": "{{count}} left",
       "skipsNone": "none left"
+    },
+    "report": {
+      "title": "Report a problem",
+      "submit": "Report",
+      "sending": "Sending…",
+      "thanks": "Thanks — we'll take a look.",
+      "placeholder": "What's wrong? (optional)",
+      "noContext": "No content detected — please describe it briefly.",
+      "types": {
+        "wrongAnswer": "Answer is wrong",
+        "notLoading": "Content won't load",
+        "inappropriate": "Inappropriate content",
+        "other": "Something else"
+      }
     }
   },
   "native": {

@@ -42,6 +42,7 @@ import { anchorKeyFor } from './closeenough-anchors';
 import { NumberEntry } from './NumberEntry';
 import { RevealChart, type RevealMark } from './RevealChart';
 import { CloseEnoughAtmosphere, BullseyeBurst, CountUp } from './CloseEnoughAtmosphere';
+import { setReportContext, clearReportContext } from '@/games/ui/useReportContext';
 import {
   loadQuestions,
   questionText,
@@ -226,6 +227,25 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
     (d: CeQuestion[], idx: number, ps: Player[]) => {
       const next = d[idx];
       setQuestion(next ?? null);
+      // Damit der Melde-Knopf in der Titelleiste weiss, worauf er sich bezieht.
+      // NAH DRAN ist hier der beste Fall im ganzen Projekt: Es liefert die
+      // Datenbank-ID, den Antwortwert UND die Quelle mit — eine Meldung ist
+      // damit ohne Rueckfrage pruefbar.
+      setReportContext(
+        next
+          ? {
+              gameId: "closeenough",
+              contentId: next.id,
+              label: next.question || next.name || "",
+              extra: {
+                antwort: next.answer,
+                einheit: next.unitKey,
+                quelle: next.sourceLabel,
+                quelleUrl: next.sourceUrl,
+              },
+            }
+          : null
+      );
       setRound(idx);
       setGuesses({});
       setRemoteSubmitted([]);

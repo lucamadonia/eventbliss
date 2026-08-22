@@ -7335,6 +7335,20 @@
       "skipsUnlimited": "Vrij",
       "skipsLeft": "{{count}} over",
       "skipsNone": "geen over"
+    },
+    "report": {
+      "title": "Probleem melden",
+      "submit": "Melden",
+      "sending": "Versturen…",
+      "thanks": "Bedankt — we kijken ernaar.",
+      "placeholder": "Wat klopt er niet? (optioneel)",
+      "noContext": "Geen inhoud herkend — beschrijf het kort.",
+      "types": {
+        "wrongAnswer": "Antwoord klopt niet",
+        "notLoading": "Inhoud laadt niet",
+        "inappropriate": "Ongepaste inhoud",
+        "other": "Iets anders"
+      }
     }
   },
   "native": {

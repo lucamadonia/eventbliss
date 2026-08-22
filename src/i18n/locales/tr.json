@@ -7335,6 +7335,20 @@
       "skipsUnlimited": "Sınırsız",
       "skipsLeft": "{{count}} kaldı",
       "skipsNone": "kalmadı"
+    },
+    "report": {
+      "title": "Sorun bildir",
+      "submit": "Bildir",
+      "sending": "Gönderiliyor…",
+      "thanks": "Teşekkürler — inceleyeceğiz.",
+      "placeholder": "Sorun nedir? (isteğe bağlı)",
+      "noContext": "İçerik algılanmadı — kısaca anlat.",
+      "types": {
+        "wrongAnswer": "Cevap yanlış",
+        "notLoading": "İçerik yüklenmiyor",
+        "inappropriate": "Uygunsuz içerik",
+        "other": "Başka bir şey"
+      }
     }
   },
   "native": {

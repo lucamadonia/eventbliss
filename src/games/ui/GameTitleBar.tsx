@@ -3,7 +3,7 @@
  * Rendered by GamesHub for ALL games at the same position.
  */
 import { motion } from 'framer-motion';
-import { HelpCircle } from 'lucide-react';
+import { Flag, HelpCircle } from 'lucide-react';
 
 const GAME_NAMES: Record<string, string> = {
   bomb: 'Tickende Bombe',
@@ -42,9 +42,14 @@ const GAME_ICONS: Record<string, string> = {
 interface GameTitleBarProps {
   gameId: string;
   onHelpClick: () => void;
+  /**
+   * Meldung öffnen. Optional, damit bestehende Aufrufe gültig bleiben — der
+   * Knopf erscheint nur, wenn ein Rückruf da ist.
+   */
+  onReportClick?: () => void;
 }
 
-export function GameTitleBar({ gameId, onHelpClick }: GameTitleBarProps) {
+export function GameTitleBar({ gameId, onHelpClick, onReportClick }: GameTitleBarProps) {
   const name = GAME_NAMES[gameId] || gameId;
   const icon = GAME_ICONS[gameId] || '🎮';
 
@@ -68,6 +73,23 @@ export function GameTitleBar({ gameId, onHelpClick }: GameTitleBarProps) {
         >
           <HelpCircle className="w-3.5 h-3.5 text-white/30" />
         </motion.button>
+        {/*
+          Melden. Bewusst so zurückhaltend wie der Hilfe-Knopf: Er soll da sein,
+          wenn etwas nicht stimmt, und sonst nicht auffallen. Weil er hier in der
+          Leiste sitzt, wirkt er in allen rund zwanzig Spielen, ohne dass eine
+          einzige Spieldatei angefasst werden muss.
+        */}
+        {onReportClick && (
+          <motion.button
+            whileTap={{ scale: 0.8 }}
+            onClick={(e) => { e.stopPropagation(); onReportClick(); }}
+            className="w-6 h-6 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center hover:bg-white/10 transition-colors"
+            title="Fehler melden"
+            aria-label="Fehler melden"
+          >
+            <Flag className="w-3 h-3 text-white/30" />
+          </motion.button>
+        )}
       </div>
     </motion.div>
   );

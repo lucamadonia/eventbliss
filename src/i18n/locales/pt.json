@@ -7335,6 +7335,20 @@
       "skipsUnlimited": "Livre",
       "skipsLeft": "faltam {{count}}",
       "skipsNone": "nenhum"
+    },
+    "report": {
+      "title": "Comunicar um problema",
+      "submit": "Comunicar",
+      "sending": "A enviar…",
+      "thanks": "Obrigado — vamos ver isso.",
+      "placeholder": "O que está errado? (opcional)",
+      "noContext": "Nenhum conteúdo detetado — descreve brevemente.",
+      "types": {
+        "wrongAnswer": "A resposta está errada",
+        "notLoading": "O conteúdo não carrega",
+        "inappropriate": "Conteúdo inadequado",
+        "other": "Outra coisa"
+      }
     }
   },
   "native": {

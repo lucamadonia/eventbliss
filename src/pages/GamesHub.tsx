@@ -6,6 +6,7 @@ import { usePremium } from "@/hooks/usePremium";
 import { GAME_TIERS, isGamePremium, getFreePlaysUsed, recordFreePlay } from "@/games/premium/gameConfig";
 import { TVBroadcastProvider, useTVContext } from "@/contexts/TVBroadcastContext";
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from "@/games/ui/GameRulesModal";
+import { GameReportModal } from "@/games/ui/GameReportModal";
 import { GameTitleBar } from "@/games/ui/GameTitleBar";
 import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
@@ -272,6 +273,9 @@ const GamesHubInner = () => {
 
   // Auto-show game rules on first play
   const { showRules, openRules, closeRules } = useAutoShowRules(gameId || '');
+  // Melde-Dialog. Bewusst hier und nicht in den Spielen: Die Titelleiste, an
+  // der der Knopf haengt, wird ebenfalls von dieser Ebene gerendert.
+  const [showReport, setShowReport] = useState(false);
 
   const filteredGames = useMemo(() => {
     if (activeCategory === "alle") return allGames;
@@ -381,8 +385,22 @@ const GamesHubInner = () => {
   // Rules overlay + unified title bar for ALL games (must be defined before early returns)
   const rulesOverlay = gameId ? (
     <>
-      <GameTitleBar gameId={gameId} onHelpClick={openRules} />
+      <GameTitleBar
+        gameId={gameId}
+        onHelpClick={openRules}
+        onReportClick={() => setShowReport(true)}
+      />
       <GameRulesModal gameId={gameId} open={showRules} onClose={closeRules} />
+      {/*
+        Der Melde-Dialog haengt hier, weil dieses Fragment in JEDEM der rund
+        zwanzig Routing-Zweige unten mitgerendert wird. Eine Zeile hier ersetzt
+        zwanzig Aenderungen in den Spieldateien.
+      */}
+      <GameReportModal
+        gameId={gameId}
+        open={showReport}
+        onClose={() => setShowReport(false)}
+      />
     </>
   ) : null;
 

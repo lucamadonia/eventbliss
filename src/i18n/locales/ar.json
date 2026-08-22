@@ -7175,6 +7175,20 @@
       "skipsUnlimited": "بلا حد",
       "skipsLeft": "بقي {{count}}",
       "skipsNone": "لم يتبق شيء"
+    },
+    "report": {
+      "title": "الإبلاغ عن مشكلة",
+      "submit": "إبلاغ",
+      "sending": "جارٍ الإرسال…",
+      "thanks": "شكرًا — سنتحقق من ذلك.",
+      "placeholder": "ما الخطأ؟ (اختياري)",
+      "noContext": "لم يتم التعرف على المحتوى — يرجى وصفه باختصار.",
+      "types": {
+        "wrongAnswer": "الإجابة خاطئة",
+        "notLoading": "المحتوى لا يتحمّل",
+        "inappropriate": "محتوى غير مناسب",
+        "other": "شيء آخر"
+      }
     }
   },
   "native": {

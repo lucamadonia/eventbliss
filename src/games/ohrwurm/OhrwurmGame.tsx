@@ -28,6 +28,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from '@/hooks/useTVGameBridge';
 import { useBackGuard } from '@/lib/back-guard';
 import { loadSnapshot, saveSnapshot, clearSnapshot } from '../ui/useGameSnapshot';
+import { setReportContext } from '../ui/useReportContext';
 import { TV_STALE_MS } from '../tv/useTVConnection';
 
 const ROUND_SECONDS = 60;      // Zeit zum Einordnen (Speed-Regel)
@@ -292,6 +293,18 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     setDeck(rest);
     setTurn(idx);
     setSong(card);
+    // Meldekontext mitführen — bei OHRWURM ist das der von dir genannte Fall:
+    // Song spielt nicht, weil ein Vorschau-Link tot ist. Ohne die Song-ID wäre
+    // eine solche Meldung wertlos.
+    setReportContext(
+      card
+        ? {
+            gameId: "ohrwurm",
+            contentId: card.id,
+            label: `${card.artist} — ${card.title} (${card.year})`,
+          }
+        : null
+    );
     setPlacement(null);
     setCounter(null);
     setCounteringId(null);
@@ -399,6 +412,18 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     setParticipants((prev) => prev.map((p, i) => (i === turn ? { ...p, hooks: p.hooks - 1 } : p)));
     setDeck(rest);
     setSong(card);
+    // Meldekontext mitführen — bei OHRWURM ist das der von dir genannte Fall:
+    // Song spielt nicht, weil ein Vorschau-Link tot ist. Ohne die Song-ID wäre
+    // eine solche Meldung wertlos.
+    setReportContext(
+      card
+        ? {
+            gameId: "ohrwurm",
+            contentId: card.id,
+            label: `${card.artist} — ${card.title} (${card.year})`,
+          }
+        : null
+    );
     setSwapUsed(true);
     setBonusClaimed(false); // neue Karte → ggf. erneut Titel+Interpret ansagen
     // neuer Song → Wiedergabe/Timer zurücksetzen, neue Vorschau laden
