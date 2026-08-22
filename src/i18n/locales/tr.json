@@ -7376,6 +7376,7 @@
       }
     },
     "gameNames": {
+      "pixeljagd": "Pixeljagd",
       "bomb": "Saatli Bomba",
       "headup": "Alında Tahmin",
       "taboo": "Yasak Kelime",
@@ -7398,6 +7399,7 @@
       "pantomime": "Tek Kelime Yok"
     },
     "gameDescs": {
+      "pixeljagd": "Görüntü saniye saniye netleşir — ilk bilen kazanır",
       "bomb": "Kimde patlar?",
       "headup": "Alınla tahmin et",
       "taboo": "Yasak kelimesiz anlat",
@@ -7787,180 +7789,194 @@
     }
   },
   "gameModes": {
+    "pixeljagd": {
+      "klassisch": {
+        "name": "Klasik",
+        "desc": "30 sn., yanlışta −25"
+      },
+      "blitz": {
+        "name": "Şimşek",
+        "desc": "15 sn., yanlışta −15"
+      },
+      "profi": {
+        "name": "Profesyonel",
+        "desc": "45 sn., çok iri piksel, −40"
+      }
+    },
     "bomb": {
       "kategorie": {
-        "name": "Category",
-        "desc": "Name items in a category starting with a specific letter"
+        "name": "Kategori",
+        "desc": "Belirli bir harfle başlayan kategori kelimeleri söyle"
       },
       "quiz": {
         "name": "Quiz",
-        "desc": "Answer trivia questions under time pressure"
+        "desc": "Zamana karşı bilgi sorularını yanıtla"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "Fastest answer wins — no time to think!"
+        "name": "Hız",
+        "desc": "En hızlı yanıt kazanır — düşünmeye vakit yok!"
       },
       "alle": {
-        "name": "All Modes",
-        "desc": "Random mix of all categories and quiz"
+        "name": "Tüm modlar",
+        "desc": "Tüm kategorilerden ve quizden rastgele karışım"
       }
     },
     "category": {
       "classic": {
-        "name": "Classic",
-        "desc": "Take turns naming items — hesitate and you lose"
+        "name": "Klasik",
+        "desc": "Sırayla kelime söyle — duraklayan kaybeder"
       },
       "rapid": {
-        "name": "Rapid",
-        "desc": "Quick round — only 5 seconds per answer!"
+        "name": "Hızlı",
+        "desc": "Hızlı tur — her yanıt için sadece 5 saniye!"
       },
       "letter": {
-        "name": "Letter",
-        "desc": "All items must start with the same letter"
+        "name": "Harf",
+        "desc": "Tüm kelimeler aynı harfle başlamalı"
       }
     },
     "emojiguess": {
       "classic": {
-        "name": "Classic",
-        "desc": "30 seconds per round"
+        "name": "Klasik",
+        "desc": "Tur başına 30 saniye"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "10 seconds per round"
+        "name": "Hız",
+        "desc": "Tur başına 10 saniye"
       },
       "team": {
-        "name": "Team",
-        "desc": "Teams take turns"
+        "name": "Takım",
+        "desc": "Takımlar sırayla oynar"
       }
     },
     "fakeorfact": {
       "classic": {
-        "name": "Classic",
-        "desc": "True or False — one statement, you decide"
+        "name": "Klasik",
+        "desc": "Doğru mu yanlış mı — bir ifade, karar senin"
       },
       "three": {
-        "name": "Two Lies",
-        "desc": "Three statements — find the truth!"
+        "name": "İki yalan",
+        "desc": "Üç ifade — doğruyu bul!"
       }
     },
     "truthdare": {
       "classic": {
-        "name": "Classic",
-        "desc": "All categories mixed"
+        "name": "Klasik",
+        "desc": "Tüm kategoriler karışık"
       },
       "eskalation": {
-        "name": "Escalation",
-        "desc": "Gets wilder every round!"
+        "name": "Kızışma",
+        "desc": "Her turda daha çılgın!"
       },
       "nur-wahrheit": {
-        "name": "Truth Only",
-        "desc": "Only questions, no dares"
+        "name": "Sadece doğruluk",
+        "desc": "Sadece sorular, cesaret yok"
       },
       "nur-pflicht": {
-        "name": "Dare Only",
-        "desc": "Only challenges, no questions"
+        "name": "Sadece cesaret",
+        "desc": "Sadece görevler, soru yok"
       }
     },
     "thisorthat": {
       "classic": {
-        "name": "Classic",
-        "desc": "No time pressure, everyone votes"
+        "name": "Klasik",
+        "desc": "Zaman baskısı yok, herkes oy verir"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "5 seconds per player!"
+        "name": "Hız",
+        "desc": "Oyuncu başına 5 saniye!"
       },
       "debatte": {
-        "name": "Debate",
-        "desc": "After results: 30s discussion"
+        "name": "Tartışma",
+        "desc": "Sonuçtan sonra: 30 sn tartışma"
       }
     },
     "whoami": {
       "prominente": {
-        "name": "Celebrities",
-        "desc": "Famous personalities"
+        "name": "Ünlüler",
+        "desc": "Meşhur kişiler"
       },
       "tiere": {
-        "name": "Animals",
-        "desc": "Guess the animal!"
+        "name": "Hayvanlar",
+        "desc": "Hayvanı tahmin et!"
       },
       "berufe": {
-        "name": "Jobs",
-        "desc": "What job are you?"
+        "name": "Meslekler",
+        "desc": "Hangi meslek sensin?"
       },
       "filme": {
-        "name": "Movies",
-        "desc": "Guess film characters"
+        "name": "Filmler",
+        "desc": "Film karakterlerini tahmin et"
       }
     },
     "bottlespin": {
       "fragen": {
-        "name": "With Questions",
-        "desc": "Bottle + questions & challenges"
+        "name": "Sorularla",
+        "desc": "Şişe + sorular ve görevler"
       },
       "nur-flasche": {
-        "name": "Bottle Only",
-        "desc": "Pure spin the bottle"
+        "name": "Sadece şişe",
+        "desc": "Sade şişe çevirmece"
       }
     },
     "storybuilder": {
       "classic": {
-        "name": "Classic",
-        "desc": "Free text — write whatever you want"
+        "name": "Klasik",
+        "desc": "Serbest metin — ne istersen yaz"
       },
       "vorgabe": {
-        "name": "Prompt",
-        "desc": "With sentence starters as help"
+        "name": "Şablon",
+        "desc": "Yardımcı cümle başlangıçlarıyla"
       },
       "reimzeit": {
-        "name": "Rhyme Time",
-        "desc": "Sentences must rhyme!"
+        "name": "Kafiye zamanı",
+        "desc": "Cümleler kafiyeli olmalı!"
       }
     },
     "sharedquiz": {
       "trio": {
-        "name": "Trio Challenge",
-        "desc": "Question, answers & hint distributed"
+        "name": "Üçlü meydan okuma",
+        "desc": "Soru, yanıtlar ve ipucu dağıtılır"
       },
       "chain": {
-        "name": "Chain Quiz",
-        "desc": "Hint chain from player to player"
+        "name": "Zincir quiz",
+        "desc": "Oyuncudan oyuncuya ipucu zinciri"
       },
       "allornothing": {
-        "name": "All or Nothing",
-        "desc": "Points only if everyone is right"
+        "name": "Ya hep ya hiç",
+        "desc": "Sadece herkes doğru bilirse puan"
       }
     },
     "quickdraw": {
       "classic": {
-        "name": "Classic",
-        "desc": "60 seconds to draw"
+        "name": "Klasik",
+        "desc": "Çizmek için 60 saniye"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "Only 30 seconds!"
+        "name": "Hız",
+        "desc": "Sadece 30 saniye!"
       },
       "blind": {
-        "name": "Blind",
-        "desc": "Drawing becomes invisible after 5s"
+        "name": "Kör",
+        "desc": "Çizim 5 sn sonra görünmez olur"
       }
     },
     "wordpress": {
       "kategorie": {
-        "name": "Category Filter",
-        "desc": "Only tap words from one category!"
+        "name": "Kategori filtresi",
+        "desc": "Sadece bir kategorinin kelimelerine dokun!"
       },
       "stroop": {
-        "name": "Color Word Chaos",
-        "desc": "Color must match the word"
+        "name": "Renk-kelime kaosu",
+        "desc": "Renk kelimeye uymalı"
       },
       "verboten": {
-        "name": "Forbidden Word",
-        "desc": "Tap everything EXCEPT the forbidden word"
+        "name": "Yasak kelime",
+        "desc": "Yasak kelime DIŞINDA her şeye dokun"
       },
       "speed-rush": {
-        "name": "Speed Rush",
-        "desc": "Words get faster and faster!"
+        "name": "Hız koşusu",
+        "desc": "Kelimeler giderek hızlanıyor!"
       }
     },
     "closeenough": {
@@ -7974,7 +7990,7 @@
       },
       "blitz": {
         "name": "Şimşek",
-        "desc": "20 sn. — içgüdüyle"
+        "desc": "20 sn. — içgüdüne güven"
       }
     },
     "pantomime": {
@@ -7988,7 +8004,7 @@
       },
       "blitz": {
         "name": "Şimşek",
-        "desc": "60 sn. — nabız yükselsin"
+        "desc": "60 sn. — nabız yükseliyor"
       }
     }
   },
@@ -8012,132 +8028,132 @@
   },
   "nativeDashboard": {
     "eventTypes": {
-      "bachelor": "Despedida de soltero",
-      "bachelorette": "Despedida de soltera",
-      "birthday": "Cumpleaños",
-      "wedding": "Boda",
-      "other": "Evento"
+      "bachelor": "Bekarlığa veda",
+      "bachelorette": "Kına gecesi",
+      "birthday": "Doğum günü",
+      "wedding": "Düğün",
+      "other": "Etkinlik"
     },
     "tabs": {
-      "overview": "Resumen",
-      "guests": "Invitados",
-      "schedule": "Horario",
-      "expenses": "Gastos",
+      "overview": "Genel bakış",
+      "guests": "Misafirler",
+      "schedule": "Program",
+      "expenses": "Giderler",
       "marketplace": "Marketplace",
-      "services": "Servicios",
-      "form": "Formulario",
-      "responses": "Respuestas",
+      "services": "Hizmetler",
+      "form": "Form",
+      "responses": "Yanıtlar",
       "messages": "Mesajlar",
-      "ai": "IA",
-      "settings": "Ajustes",
+      "ai": "AI",
+      "settings": "Ayarlar",
       "ideaboard": "Fikir panosu"
     },
-    "honoree": "Homenajeado",
-    "noDate": "Sin fecha",
-    "participants": "Participantes",
-    "confirmed": "Confirmados",
-    "maybe": "Quizás",
-    "guest": "Invitado",
-    "loading": "Cargando...",
-    "notFound": "Evento no encontrado",
-    "notFoundDesc": "No se pudo cargar.",
-    "back": "Volver",
+    "honoree": "Onur konuğu",
+    "noDate": "Tarih yok",
+    "participants": "Katılımcılar",
+    "confirmed": "Onaylayan",
+    "maybe": "Belki",
+    "guest": "Misafir",
+    "loading": "Panel yükleniyor...",
+    "notFound": "Etkinlik bulunamadı",
+    "notFoundDesc": "Etkinlik yüklenemedi.",
+    "back": "Geri",
     "countdown": {
-      "today": "¡Hoy!",
-      "tomorrow": "¡Mañana!",
-      "inDays": "En {{count}} días"
+      "today": "Bugün!",
+      "tomorrow": "Yarın!",
+      "inDays": "{{count}} gün kaldı"
     },
-    "confirmedOf": "{{yes}} de {{total}} confirmados",
+    "confirmedOf": "{{total}} kişiden {{yes}} tanesi onayladı",
     "quickActions": {
-      "inviteGuests": "Invitar",
-      "planActivity": "Planificar",
-      "addExpense": "Añadir gasto",
-      "aiAssistant": "Asistente IA",
+      "inviteGuests": "Misafir davet et",
+      "planActivity": "Aktivite planla",
+      "addExpense": "Gider ekle",
+      "aiAssistant": "AI asistan",
       "browseMarketplace": "Marketplace"
     },
-    "recentActivity": "Actividad reciente",
-    "noActivity": "Sin actividad",
+    "recentActivity": "Son hareketler",
+    "noActivity": "Henüz hareket yok",
     "activity": {
-      "rsvpConfirmed": "{{name}} confirmó",
-      "rsvpDeclined": "{{name}} declinó",
-      "surveyResponse": "{{name}} votó",
-      "expenseCreated": "Gasto: {{title}}",
-      "budgetUpdated": "Presupuesto actualizado",
-      "guestInvited": "{{name}} invitado",
-      "scheduleUpdated": "Horario actualizado"
+      "rsvpConfirmed": "{{name}} katılıyor",
+      "rsvpDeclined": "{{name}} katılmıyor",
+      "surveyResponse": "{{name}} oy verdi",
+      "expenseCreated": "Gider: {{title}}",
+      "budgetUpdated": "Bütçe güncellendi",
+      "guestInvited": "{{name}} davet edildi",
+      "scheduleUpdated": "Program güncellendi"
     },
     "timeAgo": {
-      "justNow": "ahora mismo",
-      "minutesAgo": "hace {{count}} min",
-      "hoursAgo": "hace {{count}} h",
-      "yesterday": "ayer",
-      "daysAgo": "hace {{count}} días"
+      "justNow": "az önce",
+      "minutesAgo": "{{count}} dk önce",
+      "hoursAgo": "{{count}} sa önce",
+      "yesterday": "dün",
+      "daysAgo": "{{count}} gün önce"
     },
     "status": {
-      "active": "Activo",
-      "planning": "Planificación",
-      "draft": "Borrador"
+      "active": "Aktif",
+      "planning": "Planlama",
+      "draft": "Taslak"
     },
     "services": {
-      "openMarketplace": "Abrir Marketplace",
-      "openMarketplaceSub": "Descubre y reserva servicios",
-      "bookedServices": "Servicios reservados",
-      "noBookings": "Sin servicios reservados",
-      "details": "Detalles",
-      "cancel": "Cancelar",
-      "statusPending": "Pendiente",
-      "statusConfirmed": "Confirmado",
-      "statusCompleted": "Completado",
-      "statusCancelled": "Cancelado"
+      "openMarketplace": "Marketplace'i aç",
+      "openMarketplaceSub": "Etkinliğin için hizmetleri keşfet ve rezerve et",
+      "bookedServices": "Rezerve edilen hizmetler",
+      "noBookings": "Henüz hizmet rezerve edilmedi",
+      "details": "Ayrıntılar",
+      "cancel": "İptal et",
+      "statusPending": "Bekliyor",
+      "statusConfirmed": "Onaylandı",
+      "statusCompleted": "Tamamlandı",
+      "statusCancelled": "İptal edildi"
     }
   },
   "nativeGuests": {
     "status": {
-      "confirmed": "Confirmado",
-      "maybe": "Quizás",
-      "declined": "Rechazado",
-      "invited": "Invitado"
+      "confirmed": "Katılıyor",
+      "maybe": "Belki",
+      "declined": "Katılmıyor",
+      "invited": "Davet edildi"
     },
-    "organizer": "Organizador",
-    "guestRole": "Invitado",
-    "searchPlaceholder": "Buscar invitados...",
-    "noGuests": "Sin invitados",
-    "noGuestsDesc": "Invita a amigos y familiares.",
-    "noResults": "Sin resultados",
-    "noResultsFor": "Ningún invitado coincide con \"{{query}}\"",
-    "inviteGuests": "Invitar",
-    "inviteLink": "Enlace de invitación",
-    "eventCode": "Código del evento",
-    "copied": "¡Copiado!",
-    "copyLink": "Copiar enlace",
-    "host": "Anfitrión"
+    "organizer": "Organizatör",
+    "guestRole": "Misafir",
+    "searchPlaceholder": "Misafir ara...",
+    "noGuests": "Henüz misafir yok",
+    "noGuestsDesc": "Etkinliği birlikte planlamak için arkadaşlarını ve aileni davet et.",
+    "noResults": "Sonuç yok",
+    "noResultsFor": "\"{{query}}\" ile eşleşen misafir yok",
+    "inviteGuests": "Misafir davet et",
+    "inviteLink": "Davet linki",
+    "eventCode": "Etkinlik kodu",
+    "copied": "Kopyalandı!",
+    "copyLink": "Linki kopyala",
+    "host": "Ev sahibi"
   },
   "nativeSchedule": {
     "categories": {
-      "food": "Comida y bebida",
-      "activity": "Actividad",
-      "transport": "Transporte",
-      "party": "Fiesta",
-      "sightseeing": "Turismo",
-      "accommodation": "Alojamiento",
-      "relaxation": "Relajación",
-      "other": "Otro"
+      "food": "Yeme ve içme",
+      "activity": "Aktivite",
+      "transport": "Ulaşım",
+      "party": "Parti",
+      "sightseeing": "Gezi",
+      "accommodation": "Konaklama",
+      "relaxation": "Dinlenme",
+      "other": "Diğer"
     },
-    "noActivities": "Sin actividades",
-    "noActivitiesDesc": "Planifica el horario perfecto",
-    "addActivity": "Añadir actividad",
-    "day": "Día {{num}}",
+    "noActivities": "Henüz aktivite planlanmadı",
+    "noActivitiesDesc": "Etkinliğin için mükemmel akışı planla",
+    "addActivity": "Aktivite ekle",
+    "day": "{{num}}. gün",
     "form": {
-      "title": "Título",
-      "time": "Hora",
-      "category": "Categoría",
-      "notes": "Notas",
-      "location": "Lugar",
-      "duration": "Duración",
-      "cost": "Coste",
-      "responsible": "Responsable",
-      "add": "Añadir",
-      "titlePlaceholder": "p.ej. Desayuno"
+      "title": "Başlık",
+      "time": "Saat",
+      "category": "Kategori",
+      "notes": "Notlar",
+      "location": "Yer",
+      "duration": "Süre",
+      "cost": "Maliyet",
+      "responsible": "Sorumlu",
+      "add": "Ekle",
+      "titlePlaceholder": "örn. Otelde kahvaltı"
     }
   },
   "nativeJoinRoom": {
@@ -8163,25 +8179,34 @@
     "profile": "Perfil"
   },
   "nativeDrinks": {
-    "title": "Party Stats",
-    "yourRank": "Tu rango esta noche",
-    "nextRank": "Siguiente rango",
-    "waterReminder": "¡No olvides el agua!",
-    "waterReminderDesc": "Un vaso de agua por cada bebida.",
-    "resetSession": "Reiniciar",
-    "confirmReset": "Sí, reiniciar",
-    "cancel": "Cancelar",
+    "title": "Parti istatistikleri",
+    "yourRank": "Bu geceki parti rütben",
+    "nextRank": "Sonraki rütbe",
+    "waterReminder": "Su içmeyi unutma!",
+    "waterReminderDesc": "Her içki için en az bir bardak su iç — vücudun sana teşekkür edecek.",
+    "resetSession": "Oturumu sıfırla",
+    "confirmReset": "Evet, sıfırla",
+    "cancel": "İptal",
     "ranks": {
-      "legend": "Leyenda",
-      "champion": "Campeón",
-      "partyAnimal": "Fiestero",
-      "pro": "Pro",
-      "enthusiast": "Entusiasta",
-      "beginner": "Principiante",
-      "sober": "Sobrio"
+      "legend": "Efsane",
+      "champion": "Şampiyon",
+      "partyAnimal": "Parti canavarı",
+      "pro": "Profesyonel",
+      "enthusiast": "Meraklı",
+      "beginner": "Acemi",
+      "sober": "Ayık"
     }
   },
   "gameRules": {
+    "pixeljagd": {
+      "title": "Pixeljagd",
+      "tagline": "Önce bir renk lekesi, sonra bir resim — ama bekleyen daha az puan alır.",
+      "step1": "Bir görsel aşırı pikselli belirir ve saniye saniye netleşir.",
+      "step2": "Çözümü gören buzzerına basar — çevrimiçi odada ise cevabı yazar.",
+      "step3": "Ne kadar erken bilirsen o kadar çok puan: 100'den 10'a kadar iner.",
+      "step4": "Yanlış tahmin puan kaybettirir ve seni o tur boyunca kilitler.",
+      "tip": "Çok erken tahmin etmek pahalıya patlar, çok geç de öyle — oyunun bütün meselesi tam olarak bu."
+    },
     "howToPlay": "Nasıl oynanır",
     "understood": "Anladım — hadi başlayalım!",
     "bomb": {
@@ -8372,56 +8397,56 @@
     }
   },
   "nativeAdmin": {
-    "title": "Panel Admin",
-    "areas": "{{count}} áreas",
+    "title": "Admin Paneli",
+    "areas": "{{count}} alan",
     "cards": {
       "stats": {
-        "label": "Dashboard",
-        "desc": "Usuarios, Eventos"
+        "label": "Panel",
+        "desc": "Kullanıcılar, etkinlikler, gelir"
       },
       "games": {
-        "label": "Contenido",
-        "desc": "Preguntas"
+        "label": "Oyun içerikleri",
+        "desc": "Sorular ve içerikler"
       },
       "users": {
-        "label": "Usuarios",
-        "desc": "Roles"
+        "label": "Kullanıcılar",
+        "desc": "Roller ve şifreler"
       },
       "credits": {
-        "label": "AI Credits",
-        "desc": "Límites"
+        "label": "AI kredileri",
+        "desc": "Limitler ve düzenlemeler"
       },
       "subscriptions": {
-        "label": "Suscripciones",
-        "desc": "Planes"
+        "label": "Abonelikler",
+        "desc": "Planları yönet"
       },
       "vouchers": {
-        "label": "Cupones",
-        "desc": "Códigos"
+        "label": "Kuponlar",
+        "desc": "Kodlar ve indirimler"
       },
       "affiliates": {
-        "label": "Afiliados",
-        "desc": "Socios"
+        "label": "Ortaklar",
+        "desc": "Ortaklık programı"
       },
       "commissions": {
-        "label": "Comisiones",
-        "desc": "Pagos"
+        "label": "Komisyonlar",
+        "desc": "Durum ve ödeme"
       },
       "payouts": {
-        "label": "Pagos",
-        "desc": "Historial"
+        "label": "Ödemeler",
+        "desc": "Bekleyen ve geçmiş"
       },
       "analytics": {
-        "label": "Analíticas",
-        "desc": "Interacciones"
+        "label": "Ajans analitiği",
+        "desc": "Etkileşimler"
       },
       "agencies": {
-        "label": "Agencias",
-        "desc": "Multi-agencia"
+        "label": "Ajans ortakları",
+        "desc": "Çoklu ajans"
       },
       "settings": {
-        "label": "Configuración",
-        "desc": "Precios"
+        "label": "Plan ayarları",
+        "desc": "Özellikler ve fiyatlar"
       }
     }
   },
@@ -8457,52 +8482,52 @@
   },
   "nativeResponses": {
     "stats": {
-      "responses": "Respuestas",
-      "responseRate": "Tasa de respuesta",
-      "latestResponse": "Última respuesta"
+      "responses": "Yanıtlar",
+      "responseRate": "Yanıt oranı",
+      "latestResponse": "Son yanıt"
     },
-    "attendanceOverview": "Resumen de asistencia",
+    "attendanceOverview": "Katılım özeti",
     "attendance": {
-      "confirmed": "Confirmado",
-      "maybe": "Quizás",
-      "declined": "Rechazado"
+      "confirmed": "Katılıyor",
+      "maybe": "Belki",
+      "declined": "Katılmıyor"
     },
-    "categoryAnalysis": "Análisis por categoría",
+    "categoryAnalysis": "Kategoriye göre analiz",
     "categories": {
-      "attendance": "Asistencia",
-      "budget": "Presupuesto",
-      "destination": "Destino",
-      "duration_pref": "Duración",
-      "travel_pref": "Viaje",
-      "fitness_level": "Fitness",
-      "alcohol": "Alcohol"
+      "attendance": "Katılım",
+      "budget": "Bütçe",
+      "destination": "Hedef",
+      "duration_pref": "Süre",
+      "travel_pref": "Ulaşım",
+      "fitness_level": "Kondisyon",
+      "alcohol": "Alkol"
     },
-    "activitiesAndPreferences": "Actividades y preferencias",
-    "preferences": "Preferencias",
-    "availableDates": "Fechas disponibles",
-    "noAnswer": "N/D",
-    "option": "{{count}} opción",
-    "option_plural": "{{count}} opciones",
-    "individualResponses": "Respuestas individuales",
-    "searchParticipants": "Buscar...",
-    "noFilterResults": "Sin respuestas para este filtro",
-    "filterAll": "Todos",
-    "filterYes": "Confirmados",
-    "filterMaybe": "Quizás",
-    "filterNo": "Rechazados",
+    "activitiesAndPreferences": "Aktiviteler ve tercihler",
+    "preferences": "Tercihler",
+    "availableDates": "Uygun tarihler",
+    "noAnswer": "Yanıt yok",
+    "option": "{{count}} seçenek",
+    "option_plural": "{{count}} seçenek",
+    "individualResponses": "Bireysel yanıtlar",
+    "searchParticipants": "Katılımcı ara...",
+    "noFilterResults": "Bu filtre için yanıt yok",
+    "filterAll": "Tümü",
+    "filterYes": "Katılıyor",
+    "filterMaybe": "Belki",
+    "filterNo": "Katılmıyor",
     "sections": {
-      "suggestions": "Sugerencias y deseos",
-      "restrictions": "Restricciones",
-      "partialAvailability": "Disponibilidad parcial",
-      "entries": "{{count}} entrada",
-      "entries_plural": "{{count}} entradas"
+      "suggestions": "Öneriler ve istekler",
+      "restrictions": "Kısıtlamalar",
+      "partialAvailability": "Kısmi uygunluk",
+      "entries": "{{count}} kayıt",
+      "entries_plural": "{{count}} kayıt"
     },
     "timeAgo": {
-      "justNow": "ahora mismo",
-      "minutesAgo": "hace {{count}} min",
-      "hoursAgo": "hace {{count}} h",
-      "yesterday": "ayer",
-      "daysAgo": "hace {{count}} días"
+      "justNow": "az önce",
+      "minutesAgo": "{{count}} dk önce",
+      "hoursAgo": "{{count}} sa önce",
+      "yesterday": "dün",
+      "daysAgo": "{{count}} gün önce"
     }
   },
   "marketplaceService": {

@@ -7216,6 +7216,7 @@
       }
     },
     "gameNames": {
+      "pixeljagd": "Pixeljagd",
       "bomb": "القنبلة الموقوتة",
       "headup": "خمّن على الجبين",
       "taboo": "الكلمة المحظورة",
@@ -7238,6 +7239,7 @@
       "pantomime": "بلا كلمات"
     },
     "gameDescs": {
+      "pixeljagd": "الصورة تزداد وضوحًا ثانية بعد ثانية — من يخمّن أولًا يفوز",
       "bomb": "عند من تنفجر؟",
       "headup": "خمّن بالجبين",
       "taboo": "اشرح بدون كلمات محظورة",
@@ -7914,6 +7916,15 @@
     "openMarketplace": "افتح السوق"
   },
   "gameRules": {
+    "pixeljagd": {
+      "title": "Pixeljagd",
+      "tagline": "في البداية بقعة ألوان، ثم صورة — لكن الانتظار يكلّفك نقاطًا.",
+      "step1": "تظهر الصورة مبكسلة بشدة ثم تزداد وضوحًا ثانية بعد ثانية.",
+      "step2": "من يعرف الحل يضغط الجرس — أما في الغرفة على الإنترنت فيكتبه بدلًا من ذلك.",
+      "step3": "كلما أصبت مبكرًا زادت نقاطك: من 100 نزولًا إلى 10.",
+      "step4": "التخمين الخاطئ يكلّفك نقاطًا ويقفل هذه الجولة في وجهك.",
+      "tip": "التخمين المبكر مكلف، والمتأخر كذلك — وهنا تكمن اللعبة كلها."
+    },
     "howToPlay": "كيف تلعب",
     "understood": "فهمت — هيا نبدأ!",
     "bomb": {
@@ -8122,180 +8133,194 @@
     }
   },
   "gameModes": {
+    "pixeljagd": {
+      "klassisch": {
+        "name": "كلاسيكي",
+        "desc": "30 ثانية، −25 عند الخطأ"
+      },
+      "blitz": {
+        "name": "خاطف",
+        "desc": "15 ثانية، −15 عند الخطأ"
+      },
+      "profi": {
+        "name": "محترف",
+        "desc": "45 ثانية، تبكسل شديد، −40"
+      }
+    },
     "bomb": {
       "kategorie": {
-        "name": "Category",
-        "desc": "Name items in a category starting with a specific letter"
+        "name": "الفئات",
+        "desc": "اذكر كلمات من فئة معيّنة تبدأ بحرف محدّد"
       },
       "quiz": {
-        "name": "Quiz",
-        "desc": "Answer trivia questions under time pressure"
+        "name": "أسئلة",
+        "desc": "أجب عن أسئلة المعرفة تحت ضغط الوقت"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "Fastest answer wins — no time to think!"
+        "name": "سرعة",
+        "desc": "أسرع إجابة تفوز — لا وقت للتفكير!"
       },
       "alle": {
-        "name": "All Modes",
-        "desc": "Random mix of all categories and quiz"
+        "name": "كل الأوضاع",
+        "desc": "مزيج عشوائي من كل الفئات والأسئلة"
       }
     },
     "category": {
       "classic": {
-        "name": "Classic",
-        "desc": "Take turns naming items — hesitate and you lose"
+        "name": "كلاسيكي",
+        "desc": "اذكروا الكلمات بالتناوب — من يتردّد يخسر"
       },
       "rapid": {
-        "name": "Rapid",
-        "desc": "Quick round — only 5 seconds per answer!"
+        "name": "سريع",
+        "desc": "جولة خاطفة — 5 ثوانٍ فقط لكل إجابة!"
       },
       "letter": {
-        "name": "Letter",
-        "desc": "All items must start with the same letter"
+        "name": "حرف",
+        "desc": "كل الكلمات يجب أن تبدأ بالحرف نفسه"
       }
     },
     "emojiguess": {
       "classic": {
-        "name": "Classic",
-        "desc": "30 seconds per round"
+        "name": "كلاسيكي",
+        "desc": "30 ثانية لكل جولة"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "10 seconds per round"
+        "name": "سرعة",
+        "desc": "10 ثوانٍ لكل جولة"
       },
       "team": {
-        "name": "Team",
-        "desc": "Teams take turns"
+        "name": "فرق",
+        "desc": "الفرق تتناوب"
       }
     },
     "fakeorfact": {
       "classic": {
-        "name": "Classic",
-        "desc": "True or False — one statement, you decide"
+        "name": "كلاسيكي",
+        "desc": "صح أم خطأ — عبارة واحدة وأنت تقرّر"
       },
       "three": {
-        "name": "Two Lies",
-        "desc": "Three statements — find the truth!"
+        "name": "كذبتان",
+        "desc": "ثلاث عبارات — اعثر على الحقيقة!"
       }
     },
     "truthdare": {
       "classic": {
-        "name": "Classic",
-        "desc": "All categories mixed"
+        "name": "كلاسيكي",
+        "desc": "كل الفئات مختلطة"
       },
       "eskalation": {
-        "name": "Escalation",
-        "desc": "Gets wilder every round!"
+        "name": "تصعيد",
+        "desc": "يزداد جنونًا كل جولة!"
       },
       "nur-wahrheit": {
-        "name": "Truth Only",
-        "desc": "Only questions, no dares"
+        "name": "صدق فقط",
+        "desc": "أسئلة فقط، بلا تحدّيات"
       },
       "nur-pflicht": {
-        "name": "Dare Only",
-        "desc": "Only challenges, no questions"
+        "name": "جرأة فقط",
+        "desc": "مهام فقط، بلا أسئلة"
       }
     },
     "thisorthat": {
       "classic": {
-        "name": "Classic",
-        "desc": "No time pressure, everyone votes"
+        "name": "كلاسيكي",
+        "desc": "بلا ضغط وقت، الجميع يصوّت"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "5 seconds per player!"
+        "name": "سرعة",
+        "desc": "5 ثوانٍ لكل لاعب!"
       },
       "debatte": {
-        "name": "Debate",
-        "desc": "After results: 30s discussion"
+        "name": "نقاش",
+        "desc": "بعد النتيجة: 30 ثانية للنقاش"
       }
     },
     "whoami": {
       "prominente": {
-        "name": "Celebrities",
-        "desc": "Famous personalities"
+        "name": "مشاهير",
+        "desc": "شخصيات مشهورة"
       },
       "tiere": {
-        "name": "Animals",
-        "desc": "Guess the animal!"
+        "name": "حيوانات",
+        "desc": "خمّن الحيوان!"
       },
       "berufe": {
-        "name": "Jobs",
-        "desc": "What job are you?"
+        "name": "مهن",
+        "desc": "أي مهنة أنت؟"
       },
       "filme": {
-        "name": "Movies",
-        "desc": "Guess film characters"
+        "name": "أفلام",
+        "desc": "خمّن شخصيات الأفلام"
       }
     },
     "bottlespin": {
       "fragen": {
-        "name": "With Questions",
-        "desc": "Bottle + questions & challenges"
+        "name": "مع أسئلة",
+        "desc": "الزجاجة + أسئلة ومهام"
       },
       "nur-flasche": {
-        "name": "Bottle Only",
-        "desc": "Pure spin the bottle"
+        "name": "الزجاجة فقط",
+        "desc": "دوران الزجاجة فقط"
       }
     },
     "storybuilder": {
       "classic": {
-        "name": "Classic",
-        "desc": "Free text — write whatever you want"
+        "name": "كلاسيكي",
+        "desc": "نص حر — اكتب ما تشاء"
       },
       "vorgabe": {
-        "name": "Prompt",
-        "desc": "With sentence starters as help"
+        "name": "بدايات جاهزة",
+        "desc": "مع بدايات جُمَل للمساعدة"
       },
       "reimzeit": {
-        "name": "Rhyme Time",
-        "desc": "Sentences must rhyme!"
+        "name": "وقت القافية",
+        "desc": "يجب أن تكون الجمل مقفّاة!"
       }
     },
     "sharedquiz": {
       "trio": {
-        "name": "Trio Challenge",
-        "desc": "Question, answers & hint distributed"
+        "name": "تحدّي الثلاثي",
+        "desc": "السؤال والإجابات والتلميح موزّعة"
       },
       "chain": {
-        "name": "Chain Quiz",
-        "desc": "Hint chain from player to player"
+        "name": "أسئلة متسلسلة",
+        "desc": "سلسلة تلميحات من لاعب إلى آخر"
       },
       "allornothing": {
-        "name": "All or Nothing",
-        "desc": "Points only if everyone is right"
+        "name": "الكل أو لا شيء",
+        "desc": "نقاط فقط إذا أصاب الجميع"
       }
     },
     "quickdraw": {
       "classic": {
-        "name": "Classic",
-        "desc": "60 seconds to draw"
+        "name": "كلاسيكي",
+        "desc": "60 ثانية للرسم"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "Only 30 seconds!"
+        "name": "سرعة",
+        "desc": "30 ثانية فقط!"
       },
       "blind": {
-        "name": "Blind",
-        "desc": "Drawing becomes invisible after 5s"
+        "name": "أعمى",
+        "desc": "الرسم يختفي بعد 5 ثوانٍ"
       }
     },
     "wordpress": {
       "kategorie": {
-        "name": "Category Filter",
-        "desc": "Only tap words from one category!"
+        "name": "فلتر الفئات",
+        "desc": "اضغط على كلمات فئة واحدة فقط!"
       },
       "stroop": {
-        "name": "Color Word Chaos",
-        "desc": "Color must match the word"
+        "name": "فوضى اللون والكلمة",
+        "desc": "يجب أن يطابق اللون الكلمة"
       },
       "verboten": {
-        "name": "Forbidden Word",
-        "desc": "Tap everything EXCEPT the forbidden word"
+        "name": "الكلمة الممنوعة",
+        "desc": "اضغط كل شيء ما عدا الكلمة الممنوعة"
       },
       "speed-rush": {
-        "name": "Speed Rush",
-        "desc": "Words get faster and faster!"
+        "name": "اندفاع السرعة",
+        "desc": "الكلمات تتسارع باستمرار!"
       }
     },
     "closeenough": {

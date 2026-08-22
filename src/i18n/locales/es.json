@@ -7326,6 +7326,7 @@
       }
     },
     "gameNames": {
+      "pixeljagd": "Pixeljagd",
       "bomb": "Bomba de Tiempo",
       "headup": "Adivina en la Frente",
       "taboo": "Palabra Prohibida",
@@ -7348,6 +7349,7 @@
       "pantomime": "Sin Palabras"
     },
     "gameDescs": {
+      "pixeljagd": "La imagen se vuelve más nítida segundo a segundo: gana quien acierte primero",
       "bomb": "¿A quién le explota?",
       "headup": "Adivina con la frente",
       "taboo": "Explica sin palabras tabú",
@@ -7770,180 +7772,194 @@
     "newListing": "Nuevo"
   },
   "gameModes": {
+    "pixeljagd": {
+      "klassisch": {
+        "name": "Clásico",
+        "desc": "30 s, −25 si fallas"
+      },
+      "blitz": {
+        "name": "Relámpago",
+        "desc": "15 s, −15 si fallas"
+      },
+      "profi": {
+        "name": "Experto",
+        "desc": "45 s, muy pixelado, −40"
+      }
+    },
     "bomb": {
       "kategorie": {
-        "name": "Category",
-        "desc": "Name items in a category starting with a specific letter"
+        "name": "Categoría",
+        "desc": "Di palabras de una categoría que empiecen por una letra concreta"
       },
       "quiz": {
-        "name": "Quiz",
-        "desc": "Answer trivia questions under time pressure"
+        "name": "Trivia",
+        "desc": "Responde preguntas de cultura general contrarreloj"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "Fastest answer wins — no time to think!"
+        "name": "Rápido",
+        "desc": "Gana la respuesta más rápida: ¡no hay tiempo para pensar!"
       },
       "alle": {
-        "name": "All Modes",
-        "desc": "Random mix of all categories and quiz"
+        "name": "Todos los modos",
+        "desc": "Mezcla aleatoria de todas las categorías y del quiz"
       }
     },
     "category": {
       "classic": {
-        "name": "Classic",
-        "desc": "Take turns naming items — hesitate and you lose"
+        "name": "Clásico",
+        "desc": "Decir palabras por turnos: quien duda, pierde"
       },
       "rapid": {
-        "name": "Rapid",
-        "desc": "Quick round — only 5 seconds per answer!"
+        "name": "Rápido",
+        "desc": "Ronda exprés: ¡solo 5 segundos por respuesta!"
       },
       "letter": {
-        "name": "Letter",
-        "desc": "All items must start with the same letter"
+        "name": "Letra",
+        "desc": "Todas las palabras tienen que empezar por la misma letra"
       }
     },
     "emojiguess": {
       "classic": {
-        "name": "Classic",
-        "desc": "30 seconds per round"
+        "name": "Clásico",
+        "desc": "30 segundos por ronda"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "10 seconds per round"
+        "name": "Rápido",
+        "desc": "10 segundos por ronda"
       },
       "team": {
-        "name": "Team",
-        "desc": "Teams take turns"
+        "name": "Equipos",
+        "desc": "Los equipos se turnan"
       }
     },
     "fakeorfact": {
       "classic": {
-        "name": "Classic",
-        "desc": "True or False — one statement, you decide"
+        "name": "Clásico",
+        "desc": "Verdadero o falso: una afirmación y tú decides"
       },
       "three": {
-        "name": "Two Lies",
-        "desc": "Three statements — find the truth!"
+        "name": "Dos mentiras",
+        "desc": "Tres afirmaciones: ¡encuentra la verdad!"
       }
     },
     "truthdare": {
       "classic": {
-        "name": "Classic",
-        "desc": "All categories mixed"
+        "name": "Clásico",
+        "desc": "Todas las categorías mezcladas"
       },
       "eskalation": {
-        "name": "Escalation",
-        "desc": "Gets wilder every round!"
+        "name": "Escalada",
+        "desc": "¡Cada ronda se pone más salvaje!"
       },
       "nur-wahrheit": {
-        "name": "Truth Only",
-        "desc": "Only questions, no dares"
+        "name": "Solo verdad",
+        "desc": "Solo preguntas, sin retos"
       },
       "nur-pflicht": {
-        "name": "Dare Only",
-        "desc": "Only challenges, no questions"
+        "name": "Solo reto",
+        "desc": "Solo retos, sin preguntas"
       }
     },
     "thisorthat": {
       "classic": {
-        "name": "Classic",
-        "desc": "No time pressure, everyone votes"
+        "name": "Clásico",
+        "desc": "Sin prisas, vota todo el mundo"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "5 seconds per player!"
+        "name": "Rápido",
+        "desc": "¡5 segundos por jugador!"
       },
       "debatte": {
         "name": "Debate",
-        "desc": "After results: 30s discussion"
+        "desc": "Tras el resultado: 30 s de discusión"
       }
     },
     "whoami": {
       "prominente": {
-        "name": "Celebrities",
-        "desc": "Famous personalities"
+        "name": "Famosos",
+        "desc": "Personajes célebres"
       },
       "tiere": {
-        "name": "Animals",
-        "desc": "Guess the animal!"
+        "name": "Animales",
+        "desc": "¡Adivina el animal!"
       },
       "berufe": {
-        "name": "Jobs",
-        "desc": "What job are you?"
+        "name": "Profesiones",
+        "desc": "¿Qué profesión eres?"
       },
       "filme": {
-        "name": "Movies",
-        "desc": "Guess film characters"
+        "name": "Películas",
+        "desc": "Adivina personajes de películas"
       }
     },
     "bottlespin": {
       "fragen": {
-        "name": "With Questions",
-        "desc": "Bottle + questions & challenges"
+        "name": "Con preguntas",
+        "desc": "Botella + preguntas y retos"
       },
       "nur-flasche": {
-        "name": "Bottle Only",
-        "desc": "Pure spin the bottle"
+        "name": "Solo botella",
+        "desc": "Girar la botella sin más"
       }
     },
     "storybuilder": {
       "classic": {
-        "name": "Classic",
-        "desc": "Free text — write whatever you want"
+        "name": "Clásico",
+        "desc": "Texto libre: escribe lo que quieras"
       },
       "vorgabe": {
-        "name": "Prompt",
-        "desc": "With sentence starters as help"
+        "name": "Con pistas",
+        "desc": "Con comienzos de frase como ayuda"
       },
       "reimzeit": {
-        "name": "Rhyme Time",
-        "desc": "Sentences must rhyme!"
+        "name": "Hora de rimar",
+        "desc": "¡Las frases tienen que rimar!"
       }
     },
     "sharedquiz": {
       "trio": {
-        "name": "Trio Challenge",
-        "desc": "Question, answers & hint distributed"
+        "name": "Desafío en trío",
+        "desc": "Pregunta, respuestas y pista repartidas"
       },
       "chain": {
-        "name": "Chain Quiz",
-        "desc": "Hint chain from player to player"
+        "name": "Quiz en cadena",
+        "desc": "Cadena de pistas de jugador a jugador"
       },
       "allornothing": {
-        "name": "All or Nothing",
-        "desc": "Points only if everyone is right"
+        "name": "Todo o nada",
+        "desc": "Solo hay puntos si aciertan todos"
       }
     },
     "quickdraw": {
       "classic": {
-        "name": "Classic",
-        "desc": "60 seconds to draw"
+        "name": "Clásico",
+        "desc": "60 segundos para dibujar"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "Only 30 seconds!"
+        "name": "Rápido",
+        "desc": "¡Solo 30 segundos!"
       },
       "blind": {
-        "name": "Blind",
-        "desc": "Drawing becomes invisible after 5s"
+        "name": "A ciegas",
+        "desc": "El dibujo se vuelve invisible tras 5 s"
       }
     },
     "wordpress": {
       "kategorie": {
-        "name": "Category Filter",
-        "desc": "Only tap words from one category!"
+        "name": "Filtro de categoría",
+        "desc": "¡Toca solo palabras de una categoría!"
       },
       "stroop": {
-        "name": "Color Word Chaos",
-        "desc": "Color must match the word"
+        "name": "Caos de color y palabra",
+        "desc": "El color tiene que coincidir con la palabra"
       },
       "verboten": {
-        "name": "Forbidden Word",
-        "desc": "Tap everything EXCEPT the forbidden word"
+        "name": "Palabra prohibida",
+        "desc": "Toca todo MENOS la palabra prohibida"
       },
       "speed-rush": {
-        "name": "Speed Rush",
-        "desc": "Words get faster and faster!"
+        "name": "Ráfaga veloz",
+        "desc": "¡Las palabras van cada vez más rápido!"
       }
     },
     "closeenough": {
@@ -8165,6 +8181,15 @@
     }
   },
   "gameRules": {
+    "pixeljagd": {
+      "title": "Pixeljagd",
+      "tagline": "Primero una mancha de color, luego una imagen: pero quien espera se lleva menos puntos.",
+      "step1": "Aparece una imagen muy pixelada que se vuelve más nítida segundo a segundo.",
+      "step2": "Quien reconozca la solución pulsa su botón; en la sala online se escribe en su lugar.",
+      "step3": "Cuanto antes aciertes, más puntos: de 100 hasta 10.",
+      "step4": "Fallar cuesta puntos y te deja bloqueado durante esa ronda.",
+      "tip": "Adivinar demasiado pronto sale caro, y demasiado tarde también: ahí está la gracia del juego."
+    },
     "howToPlay": "Cómo jugar",
     "understood": "¡Entendido — vamos!",
     "bomb": {

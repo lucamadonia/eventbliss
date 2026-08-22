@@ -7326,6 +7326,7 @@
       }
     },
     "gameNames": {
+      "pixeljagd": "Pixeljagd",
       "bomb": "Bomba a Orologeria",
       "headup": "Indovina in Fronte",
       "taboo": "Parola Vietata",
@@ -7348,6 +7349,7 @@
       "pantomime": "Senza parole"
     },
     "gameDescs": {
+      "pixeljagd": "L'immagine diventa più nitida secondo dopo secondo — chi indovina per primo vince",
       "bomb": "A chi esplode?",
       "headup": "Indovina con la fronte",
       "taboo": "Spiega senza parole tabù",
@@ -7737,180 +7739,194 @@
     }
   },
   "gameModes": {
+    "pixeljagd": {
+      "klassisch": {
+        "name": "Classico",
+        "desc": "30 sec., −25 se sbagli"
+      },
+      "blitz": {
+        "name": "Lampo",
+        "desc": "15 sec., −15 se sbagli"
+      },
+      "profi": {
+        "name": "Esperto",
+        "desc": "45 sec., molto pixelato, −40"
+      }
+    },
     "bomb": {
       "kategorie": {
-        "name": "Category",
-        "desc": "Name items in a category starting with a specific letter"
+        "name": "Categoria",
+        "desc": "Dì parole di una categoria che iniziano con una lettera precisa"
       },
       "quiz": {
         "name": "Quiz",
-        "desc": "Answer trivia questions under time pressure"
+        "desc": "Rispondi a domande di cultura generale contro il tempo"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "Fastest answer wins — no time to think!"
+        "name": "Veloce",
+        "desc": "Vince la risposta più veloce — niente tempo per pensare!"
       },
       "alle": {
-        "name": "All Modes",
-        "desc": "Random mix of all categories and quiz"
+        "name": "Tutte le modalità",
+        "desc": "Mix casuale di categorie e quiz"
       }
     },
     "category": {
       "classic": {
-        "name": "Classic",
-        "desc": "Take turns naming items — hesitate and you lose"
+        "name": "Classico",
+        "desc": "A turno si dicono parole — chi esita, perde"
       },
       "rapid": {
-        "name": "Rapid",
-        "desc": "Quick round — only 5 seconds per answer!"
+        "name": "Rapido",
+        "desc": "Giro veloce — solo 5 secondi a risposta!"
       },
       "letter": {
-        "name": "Letter",
-        "desc": "All items must start with the same letter"
+        "name": "Lettera",
+        "desc": "Tutte le parole devono iniziare con la stessa lettera"
       }
     },
     "emojiguess": {
       "classic": {
-        "name": "Classic",
-        "desc": "30 seconds per round"
+        "name": "Classico",
+        "desc": "30 secondi a round"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "10 seconds per round"
+        "name": "Veloce",
+        "desc": "10 secondi a round"
       },
       "team": {
-        "name": "Team",
-        "desc": "Teams take turns"
+        "name": "Squadre",
+        "desc": "Le squadre si alternano"
       }
     },
     "fakeorfact": {
       "classic": {
-        "name": "Classic",
-        "desc": "True or False — one statement, you decide"
+        "name": "Classico",
+        "desc": "Vero o falso — un'affermazione, decidi tu"
       },
       "three": {
-        "name": "Two Lies",
-        "desc": "Three statements — find the truth!"
+        "name": "Due bugie",
+        "desc": "Tre affermazioni — trova la verità!"
       }
     },
     "truthdare": {
       "classic": {
-        "name": "Classic",
-        "desc": "All categories mixed"
+        "name": "Classico",
+        "desc": "Tutte le categorie mescolate"
       },
       "eskalation": {
-        "name": "Escalation",
-        "desc": "Gets wilder every round!"
+        "name": "Crescendo",
+        "desc": "Ogni round diventa più spinto!"
       },
       "nur-wahrheit": {
-        "name": "Truth Only",
-        "desc": "Only questions, no dares"
+        "name": "Solo verità",
+        "desc": "Solo domande, nessuna sfida"
       },
       "nur-pflicht": {
-        "name": "Dare Only",
-        "desc": "Only challenges, no questions"
+        "name": "Solo sfide",
+        "desc": "Solo sfide, nessuna domanda"
       }
     },
     "thisorthat": {
       "classic": {
-        "name": "Classic",
-        "desc": "No time pressure, everyone votes"
+        "name": "Classico",
+        "desc": "Niente fretta, votano tutti"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "5 seconds per player!"
+        "name": "Veloce",
+        "desc": "5 secondi a giocatore!"
       },
       "debatte": {
-        "name": "Debate",
-        "desc": "After results: 30s discussion"
+        "name": "Dibattito",
+        "desc": "Dopo il risultato: 30s di discussione"
       }
     },
     "whoami": {
       "prominente": {
-        "name": "Celebrities",
-        "desc": "Famous personalities"
+        "name": "Celebrità",
+        "desc": "Personaggi famosi"
       },
       "tiere": {
-        "name": "Animals",
-        "desc": "Guess the animal!"
+        "name": "Animali",
+        "desc": "Indovina l'animale!"
       },
       "berufe": {
-        "name": "Jobs",
-        "desc": "What job are you?"
+        "name": "Professioni",
+        "desc": "Che professione sei?"
       },
       "filme": {
-        "name": "Movies",
-        "desc": "Guess film characters"
+        "name": "Film",
+        "desc": "Indovina i personaggi dei film"
       }
     },
     "bottlespin": {
       "fragen": {
-        "name": "With Questions",
-        "desc": "Bottle + questions & challenges"
+        "name": "Con domande",
+        "desc": "Bottiglia + domande e sfide"
       },
       "nur-flasche": {
-        "name": "Bottle Only",
-        "desc": "Pure spin the bottle"
+        "name": "Solo bottiglia",
+        "desc": "Solo il gioco della bottiglia"
       }
     },
     "storybuilder": {
       "classic": {
-        "name": "Classic",
-        "desc": "Free text — write whatever you want"
+        "name": "Classico",
+        "desc": "Testo libero — scrivi quello che vuoi"
       },
       "vorgabe": {
-        "name": "Prompt",
-        "desc": "With sentence starters as help"
+        "name": "Con spunti",
+        "desc": "Con inizi di frase come aiuto"
       },
       "reimzeit": {
-        "name": "Rhyme Time",
-        "desc": "Sentences must rhyme!"
+        "name": "In rima",
+        "desc": "Le frasi devono fare rima!"
       }
     },
     "sharedquiz": {
       "trio": {
-        "name": "Trio Challenge",
-        "desc": "Question, answers & hint distributed"
+        "name": "Sfida in trio",
+        "desc": "Domanda, risposte e indizio divisi"
       },
       "chain": {
-        "name": "Chain Quiz",
-        "desc": "Hint chain from player to player"
+        "name": "Quiz a catena",
+        "desc": "Catena di indizi da giocatore a giocatore"
       },
       "allornothing": {
-        "name": "All or Nothing",
-        "desc": "Points only if everyone is right"
+        "name": "Tutti o nessuno",
+        "desc": "Punti solo se indovinano tutti"
       }
     },
     "quickdraw": {
       "classic": {
-        "name": "Classic",
-        "desc": "60 seconds to draw"
+        "name": "Classico",
+        "desc": "60 secondi per disegnare"
       },
       "speed": {
-        "name": "Speed",
-        "desc": "Only 30 seconds!"
+        "name": "Veloce",
+        "desc": "Solo 30 secondi!"
       },
       "blind": {
-        "name": "Blind",
-        "desc": "Drawing becomes invisible after 5s"
+        "name": "Alla cieca",
+        "desc": "Il disegno sparisce dopo 5s"
       }
     },
     "wordpress": {
       "kategorie": {
-        "name": "Category Filter",
-        "desc": "Only tap words from one category!"
+        "name": "Filtro categoria",
+        "desc": "Tocca solo le parole di una categoria!"
       },
       "stroop": {
-        "name": "Color Word Chaos",
-        "desc": "Color must match the word"
+        "name": "Caos colore-parola",
+        "desc": "Il colore deve corrispondere alla parola"
       },
       "verboten": {
-        "name": "Forbidden Word",
-        "desc": "Tap everything EXCEPT the forbidden word"
+        "name": "Parola vietata",
+        "desc": "Tocca tutto TRANNE la parola vietata"
       },
       "speed-rush": {
-        "name": "Speed Rush",
-        "desc": "Words get faster and faster!"
+        "name": "Corsa veloce",
+        "desc": "Le parole diventano sempre più veloci!"
       }
     },
     "closeenough": {
@@ -7962,132 +7978,132 @@
   },
   "nativeDashboard": {
     "eventTypes": {
-      "bachelor": "Despedida de soltero",
-      "bachelorette": "Despedida de soltera",
-      "birthday": "Cumpleaños",
-      "wedding": "Boda",
+      "bachelor": "Addio al Celibato",
+      "bachelorette": "Addio al Nubilato",
+      "birthday": "Compleanno",
+      "wedding": "Matrimonio",
       "other": "Evento"
     },
     "tabs": {
-      "overview": "Resumen",
-      "guests": "Invitados",
-      "schedule": "Horario",
-      "expenses": "Gastos",
+      "overview": "Panoramica",
+      "guests": "Ospiti",
+      "schedule": "Programma",
+      "expenses": "Spese",
       "marketplace": "Marketplace",
-      "services": "Servicios",
-      "form": "Formulario",
-      "responses": "Respuestas",
+      "services": "Servizi",
+      "form": "Modulo",
+      "responses": "Risposte",
       "messages": "Messaggi",
       "ai": "IA",
-      "settings": "Ajustes",
+      "settings": "Impostazioni",
       "ideaboard": "Bacheca di idee"
     },
-    "honoree": "Homenajeado",
-    "noDate": "Sin fecha",
-    "participants": "Participantes",
-    "confirmed": "Confirmados",
-    "maybe": "Quizás",
-    "guest": "Invitado",
-    "loading": "Cargando...",
-    "notFound": "Evento no encontrado",
-    "notFoundDesc": "No se pudo cargar.",
-    "back": "Volver",
+    "honoree": "Festeggiato",
+    "noDate": "Nessuna data",
+    "participants": "Partecipanti",
+    "confirmed": "Conferme",
+    "maybe": "Forse",
+    "guest": "Ospite",
+    "loading": "Caricamento della dashboard...",
+    "notFound": "Evento non trovato",
+    "notFoundDesc": "Non è stato possibile caricare l'evento.",
+    "back": "Indietro",
     "countdown": {
-      "today": "¡Hoy!",
-      "tomorrow": "¡Mañana!",
-      "inDays": "En {{count}} días"
+      "today": "Oggi!",
+      "tomorrow": "Domani!",
+      "inDays": "Tra {{count}} giorni"
     },
-    "confirmedOf": "{{yes}} de {{total}} confirmados",
+    "confirmedOf": "{{yes}} su {{total}} hanno confermato",
     "quickActions": {
-      "inviteGuests": "Invitar",
-      "planActivity": "Planificar",
-      "addExpense": "Añadir gasto",
-      "aiAssistant": "Asistente IA",
+      "inviteGuests": "Invita ospiti",
+      "planActivity": "Pianifica attività",
+      "addExpense": "Aggiungi spesa",
+      "aiAssistant": "Assistente IA",
       "browseMarketplace": "Marketplace"
     },
-    "recentActivity": "Actividad reciente",
-    "noActivity": "Sin actividad",
+    "recentActivity": "Attività recenti",
+    "noActivity": "Ancora nessuna attività",
     "activity": {
-      "rsvpConfirmed": "{{name}} confirmó",
-      "rsvpDeclined": "{{name}} declinó",
-      "surveyResponse": "{{name}} votó",
-      "expenseCreated": "Gasto: {{title}}",
-      "budgetUpdated": "Presupuesto actualizado",
-      "guestInvited": "{{name}} invitado",
-      "scheduleUpdated": "Horario actualizado"
+      "rsvpConfirmed": "{{name}} ha confermato",
+      "rsvpDeclined": "{{name}} ha rifiutato",
+      "surveyResponse": "{{name}} ha votato",
+      "expenseCreated": "Spesa: {{title}}",
+      "budgetUpdated": "Budget aggiornato",
+      "guestInvited": "{{name}} invitato/a",
+      "scheduleUpdated": "Programma aggiornato"
     },
     "timeAgo": {
-      "justNow": "ahora mismo",
-      "minutesAgo": "hace {{count}} min",
-      "hoursAgo": "hace {{count}} h",
-      "yesterday": "ayer",
-      "daysAgo": "hace {{count}} días"
+      "justNow": "proprio ora",
+      "minutesAgo": "{{count}} min fa",
+      "hoursAgo": "{{count}} ore fa",
+      "yesterday": "ieri",
+      "daysAgo": "{{count}} giorni fa"
     },
     "status": {
-      "active": "Activo",
-      "planning": "Planificación",
-      "draft": "Borrador"
+      "active": "Attivo",
+      "planning": "In pianificazione",
+      "draft": "Bozza"
     },
     "services": {
-      "openMarketplace": "Abrir Marketplace",
-      "openMarketplaceSub": "Descubre y reserva servicios",
-      "bookedServices": "Servicios reservados",
-      "noBookings": "Sin servicios reservados",
-      "details": "Detalles",
-      "cancel": "Cancelar",
-      "statusPending": "Pendiente",
-      "statusConfirmed": "Confirmado",
-      "statusCompleted": "Completado",
-      "statusCancelled": "Cancelado"
+      "openMarketplace": "Apri il Marketplace",
+      "openMarketplaceSub": "Scopri e prenota servizi per il tuo evento",
+      "bookedServices": "Servizi prenotati",
+      "noBookings": "Nessun servizio prenotato",
+      "details": "Dettagli",
+      "cancel": "Annulla",
+      "statusPending": "In attesa",
+      "statusConfirmed": "Confermato",
+      "statusCompleted": "Completato",
+      "statusCancelled": "Annullato"
     }
   },
   "nativeGuests": {
     "status": {
-      "confirmed": "Confirmado",
-      "maybe": "Quizás",
-      "declined": "Rechazado",
-      "invited": "Invitado"
+      "confirmed": "Confermato",
+      "maybe": "Forse",
+      "declined": "Rifiutato",
+      "invited": "Invitato"
     },
-    "organizer": "Organizador",
-    "guestRole": "Invitado",
-    "searchPlaceholder": "Buscar invitados...",
-    "noGuests": "Sin invitados",
-    "noGuestsDesc": "Invita a amigos y familiares.",
-    "noResults": "Sin resultados",
-    "noResultsFor": "Ningún invitado coincide con \"{{query}}\"",
-    "inviteGuests": "Invitar",
-    "inviteLink": "Enlace de invitación",
-    "eventCode": "Código del evento",
-    "copied": "¡Copiado!",
-    "copyLink": "Copiar enlace",
-    "host": "Anfitrión"
+    "organizer": "Organizzatore",
+    "guestRole": "Ospite",
+    "searchPlaceholder": "Cerca ospiti...",
+    "noGuests": "Ancora nessun ospite",
+    "noGuestsDesc": "Invita amici e familiari per organizzare insieme l'evento.",
+    "noResults": "Nessun risultato",
+    "noResultsFor": "Nessun ospite corrisponde a \"{{query}}\"",
+    "inviteGuests": "Invita ospiti",
+    "inviteLink": "Link d'invito",
+    "eventCode": "Codice evento",
+    "copied": "Copiato!",
+    "copyLink": "Copia link",
+    "host": "Host"
   },
   "nativeSchedule": {
     "categories": {
-      "food": "Comida y bebida",
-      "activity": "Actividad",
-      "transport": "Transporte",
-      "party": "Fiesta",
+      "food": "Cibo e Bevande",
+      "activity": "Attività",
+      "transport": "Trasporto",
+      "party": "Festa",
       "sightseeing": "Turismo",
-      "accommodation": "Alojamiento",
-      "relaxation": "Relajación",
-      "other": "Otro"
+      "accommodation": "Alloggio",
+      "relaxation": "Relax",
+      "other": "Altro"
     },
-    "noActivities": "Sin actividades",
-    "noActivitiesDesc": "Planifica el horario perfecto",
-    "addActivity": "Añadir actividad",
-    "day": "Día {{num}}",
+    "noActivities": "Ancora nessuna attività in programma",
+    "noActivitiesDesc": "Pianifica lo svolgimento perfetto per il vostro evento",
+    "addActivity": "Aggiungi attività",
+    "day": "Giorno {{num}}",
     "form": {
-      "title": "Título",
-      "time": "Hora",
-      "category": "Categoría",
-      "notes": "Notas",
-      "location": "Lugar",
-      "duration": "Duración",
-      "cost": "Coste",
-      "responsible": "Responsable",
-      "add": "Añadir",
-      "titlePlaceholder": "p.ej. Desayuno"
+      "title": "Titolo",
+      "time": "Ora",
+      "category": "Categoria",
+      "notes": "Note",
+      "location": "Luogo",
+      "duration": "Durata",
+      "cost": "Costo",
+      "responsible": "Responsabile",
+      "add": "Aggiungi",
+      "titlePlaceholder": "es. Colazione in hotel"
     }
   },
   "nativeJoinRoom": {
@@ -8114,24 +8130,33 @@
   },
   "nativeDrinks": {
     "title": "Party Stats",
-    "yourRank": "Tu rango esta noche",
-    "nextRank": "Siguiente rango",
-    "waterReminder": "¡No olvides el agua!",
-    "waterReminderDesc": "Un vaso de agua por cada bebida.",
-    "resetSession": "Reiniciar",
-    "confirmReset": "Sí, reiniciar",
-    "cancel": "Cancelar",
+    "yourRank": "Il tuo rango party di stasera",
+    "nextRank": "Prossimo rango",
+    "waterReminder": "Non dimenticare l'acqua!",
+    "waterReminderDesc": "Bevi almeno un bicchiere d'acqua per ogni drink — il tuo corpo ti ringrazierà.",
+    "resetSession": "Azzera la sessione",
+    "confirmReset": "Sì, azzera",
+    "cancel": "Annulla",
     "ranks": {
-      "legend": "Leyenda",
-      "champion": "Campeón",
-      "partyAnimal": "Fiestero",
-      "pro": "Pro",
-      "enthusiast": "Entusiasta",
+      "legend": "Leggenda",
+      "champion": "Campione",
+      "partyAnimal": "Animale da festa",
+      "pro": "Esperto",
+      "enthusiast": "Appassionato",
       "beginner": "Principiante",
       "sober": "Sobrio"
     }
   },
   "gameRules": {
+    "pixeljagd": {
+      "title": "Pixeljagd",
+      "tagline": "Prima una macchia di colore, poi un'immagine — ma chi aspetta prende meno punti.",
+      "step1": "Appare un'immagine molto pixelata che diventa più nitida secondo dopo secondo.",
+      "step2": "Chi riconosce la soluzione preme il buzzer — nella stanza online la si scrive invece.",
+      "step3": "Prima indovini, più punti prendi: da 100 fino a 10.",
+      "step4": "Sbagliare costa punti e ti blocca per questo round.",
+      "tip": "Indovinare troppo presto costa caro, troppo tardi anche — il gioco sta tutto lì."
+    },
     "howToPlay": "Come si gioca",
     "understood": "Capito — andiamo!",
     "bomb": {
@@ -8322,56 +8347,56 @@
     }
   },
   "nativeAdmin": {
-    "title": "Panel Admin",
-    "areas": "{{count}} áreas",
+    "title": "Pannello Admin",
+    "areas": "{{count}} aree",
     "cards": {
       "stats": {
         "label": "Dashboard",
-        "desc": "Usuarios, Eventos"
+        "desc": "Utenti, eventi, ricavi"
       },
       "games": {
-        "label": "Contenido",
-        "desc": "Preguntas"
+        "label": "Contenuti giochi",
+        "desc": "Domande e contenuti"
       },
       "users": {
-        "label": "Usuarios",
-        "desc": "Roles"
+        "label": "Utenti",
+        "desc": "Ruoli e password"
       },
       "credits": {
-        "label": "AI Credits",
-        "desc": "Límites"
+        "label": "Crediti IA",
+        "desc": "Limiti e regolazioni"
       },
       "subscriptions": {
-        "label": "Suscripciones",
-        "desc": "Planes"
+        "label": "Abbonamenti",
+        "desc": "Gestisci i piani"
       },
       "vouchers": {
-        "label": "Cupones",
-        "desc": "Códigos"
+        "label": "Voucher",
+        "desc": "Codici e sconti"
       },
       "affiliates": {
-        "label": "Afiliados",
-        "desc": "Socios"
+        "label": "Affiliati",
+        "desc": "Programma partner"
       },
       "commissions": {
-        "label": "Comisiones",
-        "desc": "Pagos"
+        "label": "Commissioni",
+        "desc": "Stato e pagamento"
       },
       "payouts": {
-        "label": "Pagos",
-        "desc": "Historial"
+        "label": "Pagamenti",
+        "desc": "In sospeso e storico"
       },
       "analytics": {
-        "label": "Analíticas",
-        "desc": "Interacciones"
+        "label": "Analytics agenzie",
+        "desc": "Interazioni"
       },
       "agencies": {
-        "label": "Agencias",
-        "desc": "Multi-agencia"
+        "label": "Affiliati agenzie",
+        "desc": "Multi-agenzia"
       },
       "settings": {
-        "label": "Configuración",
-        "desc": "Precios"
+        "label": "Impostazioni piani",
+        "desc": "Funzioni e prezzi"
       }
     }
   },
@@ -8407,52 +8432,52 @@
   },
   "nativeResponses": {
     "stats": {
-      "responses": "Respuestas",
-      "responseRate": "Tasa de respuesta",
-      "latestResponse": "Última respuesta"
+      "responses": "Risposte",
+      "responseRate": "Tasso di risposta",
+      "latestResponse": "Ultima risposta"
     },
-    "attendanceOverview": "Resumen de asistencia",
+    "attendanceOverview": "Panoramica partecipazione",
     "attendance": {
-      "confirmed": "Confirmado",
-      "maybe": "Quizás",
-      "declined": "Rechazado"
+      "confirmed": "Confermato",
+      "maybe": "Forse",
+      "declined": "Rifiutato"
     },
-    "categoryAnalysis": "Análisis por categoría",
+    "categoryAnalysis": "Analisi per categoria",
     "categories": {
-      "attendance": "Asistencia",
-      "budget": "Presupuesto",
-      "destination": "Destino",
-      "duration_pref": "Duración",
-      "travel_pref": "Viaje",
+      "attendance": "Partecipazione",
+      "budget": "Budget",
+      "destination": "Destinazione",
+      "duration_pref": "Durata",
+      "travel_pref": "Arrivo",
       "fitness_level": "Fitness",
-      "alcohol": "Alcohol"
+      "alcohol": "Alcol"
     },
-    "activitiesAndPreferences": "Actividades y preferencias",
-    "preferences": "Preferencias",
-    "availableDates": "Fechas disponibles",
-    "noAnswer": "N/D",
-    "option": "{{count}} opción",
-    "option_plural": "{{count}} opciones",
-    "individualResponses": "Respuestas individuales",
-    "searchParticipants": "Buscar...",
-    "noFilterResults": "Sin respuestas para este filtro",
-    "filterAll": "Todos",
-    "filterYes": "Confirmados",
-    "filterMaybe": "Quizás",
-    "filterNo": "Rechazados",
+    "activitiesAndPreferences": "Attività e preferenze",
+    "preferences": "Preferenze",
+    "availableDates": "Date disponibili",
+    "noAnswer": "n.d.",
+    "option": "{{count}} opzione",
+    "option_plural": "{{count}} opzioni",
+    "individualResponses": "Risposte singole",
+    "searchParticipants": "Cerca partecipanti...",
+    "noFilterResults": "Nessuna risposta per questo filtro",
+    "filterAll": "Tutte",
+    "filterYes": "Conferme",
+    "filterMaybe": "Forse",
+    "filterNo": "Rifiuti",
     "sections": {
-      "suggestions": "Sugerencias y deseos",
-      "restrictions": "Restricciones",
-      "partialAvailability": "Disponibilidad parcial",
-      "entries": "{{count}} entrada",
-      "entries_plural": "{{count}} entradas"
+      "suggestions": "Proposte e desideri",
+      "restrictions": "Limitazioni",
+      "partialAvailability": "Disponibilità parziale",
+      "entries": "{{count}} voce",
+      "entries_plural": "{{count}} voci"
     },
     "timeAgo": {
-      "justNow": "ahora mismo",
-      "minutesAgo": "hace {{count}} min",
-      "hoursAgo": "hace {{count}} h",
-      "yesterday": "ayer",
-      "daysAgo": "hace {{count}} días"
+      "justNow": "proprio ora",
+      "minutesAgo": "{{count}} min fa",
+      "hoursAgo": "{{count}} ore fa",
+      "yesterday": "ieri",
+      "daysAgo": "{{count}} giorni fa"
     }
   },
   "marketplaceService": {

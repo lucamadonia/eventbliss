@@ -7376,6 +7376,7 @@
       }
     },
     "gameNames": {
+      "pixeljagd": "Pixeljagd",
       "bomb": "Tikkende Bom",
       "headup": "Voorhoofd Raden",
       "taboo": "Woordverbod",
@@ -7398,6 +7399,7 @@
       "pantomime": "Zonder Woorden"
     },
     "gameDescs": {
+      "pixeljagd": "De afbeelding wordt seconde na seconde scherper — wie het eerst raadt, wint",
       "bomb": "Bij wie knalt het?",
       "headup": "Raad met je voorhoofd",
       "taboo": "Uitleggen zonder taboewoorden",
@@ -7787,180 +7789,194 @@
     }
   },
   "gameModes": {
+    "pixeljagd": {
+      "klassisch": {
+        "name": "Klassiek",
+        "desc": "30 sec., −25 bij fout"
+      },
+      "blitz": {
+        "name": "Bliksem",
+        "desc": "15 sec., −15 bij fout"
+      },
+      "profi": {
+        "name": "Prof",
+        "desc": "45 sec., zeer grof, −40"
+      }
+    },
     "bomb": {
       "kategorie": {
-        "name": "Category",
-        "desc": "Name items in a category starting with a specific letter"
+        "name": "Categorie",
+        "desc": "Noem begrippen uit een categorie met een bepaalde letter"
       },
       "quiz": {
         "name": "Quiz",
-        "desc": "Answer trivia questions under time pressure"
+        "desc": "Beantwoord kennisvragen onder tijdsdruk"
       },
       "speed": {
         "name": "Speed",
-        "desc": "Fastest answer wins — no time to think!"
+        "desc": "Snelste antwoord wint — geen tijd om na te denken!"
       },
       "alle": {
-        "name": "All Modes",
-        "desc": "Random mix of all categories and quiz"
+        "name": "Alle modi",
+        "desc": "Willekeurige mix van alle categorieën en quiz"
       }
     },
     "category": {
       "classic": {
-        "name": "Classic",
-        "desc": "Take turns naming items — hesitate and you lose"
+        "name": "Klassiek",
+        "desc": "Om de beurt begrippen noemen — wie aarzelt, verliest"
       },
       "rapid": {
         "name": "Rapid",
-        "desc": "Quick round — only 5 seconds per answer!"
+        "desc": "Snelle ronde — slechts 5 seconden per antwoord!"
       },
       "letter": {
         "name": "Letter",
-        "desc": "All items must start with the same letter"
+        "desc": "Alle begrippen moeten met dezelfde letter beginnen"
       }
     },
     "emojiguess": {
       "classic": {
-        "name": "Classic",
-        "desc": "30 seconds per round"
+        "name": "Klassiek",
+        "desc": "30 seconden per ronde"
       },
       "speed": {
         "name": "Speed",
-        "desc": "10 seconds per round"
+        "desc": "10 seconden per ronde"
       },
       "team": {
         "name": "Team",
-        "desc": "Teams take turns"
+        "desc": "Teams wisselen elkaar af"
       }
     },
     "fakeorfact": {
       "classic": {
-        "name": "Classic",
-        "desc": "True or False — one statement, you decide"
+        "name": "Klassiek",
+        "desc": "Waar of niet waar — één stelling, jij beslist"
       },
       "three": {
-        "name": "Two Lies",
-        "desc": "Three statements — find the truth!"
+        "name": "Twee leugens",
+        "desc": "Drie stellingen — vind de waarheid!"
       }
     },
     "truthdare": {
       "classic": {
-        "name": "Classic",
-        "desc": "All categories mixed"
+        "name": "Klassiek",
+        "desc": "Alle categorieën gemengd"
       },
       "eskalation": {
-        "name": "Escalation",
-        "desc": "Gets wilder every round!"
+        "name": "Escalatie",
+        "desc": "Wordt elke ronde wilder!"
       },
       "nur-wahrheit": {
-        "name": "Truth Only",
-        "desc": "Only questions, no dares"
+        "name": "Alleen waarheid",
+        "desc": "Alleen vragen, geen opdrachten"
       },
       "nur-pflicht": {
-        "name": "Dare Only",
-        "desc": "Only challenges, no questions"
+        "name": "Alleen durven",
+        "desc": "Alleen opdrachten, geen vragen"
       }
     },
     "thisorthat": {
       "classic": {
-        "name": "Classic",
-        "desc": "No time pressure, everyone votes"
+        "name": "Klassiek",
+        "desc": "Geen tijdsdruk, iedereen stemt"
       },
       "speed": {
         "name": "Speed",
-        "desc": "5 seconds per player!"
+        "desc": "5 seconden per speler!"
       },
       "debatte": {
-        "name": "Debate",
-        "desc": "After results: 30s discussion"
+        "name": "Debat",
+        "desc": "Na de uitslag: 30s discussie"
       }
     },
     "whoami": {
       "prominente": {
-        "name": "Celebrities",
-        "desc": "Famous personalities"
+        "name": "Beroemdheden",
+        "desc": "Bekende persoonlijkheden"
       },
       "tiere": {
-        "name": "Animals",
-        "desc": "Guess the animal!"
+        "name": "Dieren",
+        "desc": "Raad het dier!"
       },
       "berufe": {
-        "name": "Jobs",
-        "desc": "What job are you?"
+        "name": "Beroepen",
+        "desc": "Welk beroep ben jij?"
       },
       "filme": {
-        "name": "Movies",
-        "desc": "Guess film characters"
+        "name": "Films",
+        "desc": "Raad filmpersonages"
       }
     },
     "bottlespin": {
       "fragen": {
-        "name": "With Questions",
-        "desc": "Bottle + questions & challenges"
+        "name": "Met vragen",
+        "desc": "Fles + vragen & opdrachten"
       },
       "nur-flasche": {
-        "name": "Bottle Only",
-        "desc": "Pure spin the bottle"
+        "name": "Alleen fles",
+        "desc": "Puur flesje draaien"
       }
     },
     "storybuilder": {
       "classic": {
-        "name": "Classic",
-        "desc": "Free text — write whatever you want"
+        "name": "Klassiek",
+        "desc": "Vrije tekst — schrijf wat je wilt"
       },
       "vorgabe": {
-        "name": "Prompt",
-        "desc": "With sentence starters as help"
+        "name": "Aanzet",
+        "desc": "Met beginzinnen als hulp"
       },
       "reimzeit": {
-        "name": "Rhyme Time",
-        "desc": "Sentences must rhyme!"
+        "name": "Rijmtijd",
+        "desc": "Zinnen moeten rijmen!"
       }
     },
     "sharedquiz": {
       "trio": {
-        "name": "Trio Challenge",
-        "desc": "Question, answers & hint distributed"
+        "name": "Trio-uitdaging",
+        "desc": "Vraag, antwoorden & hint verdeeld"
       },
       "chain": {
-        "name": "Chain Quiz",
-        "desc": "Hint chain from player to player"
+        "name": "Kettingquiz",
+        "desc": "Hintketting van speler naar speler"
       },
       "allornothing": {
-        "name": "All or Nothing",
-        "desc": "Points only if everyone is right"
+        "name": "Alles of niets",
+        "desc": "Alleen punten als iedereen goed zit"
       }
     },
     "quickdraw": {
       "classic": {
-        "name": "Classic",
-        "desc": "60 seconds to draw"
+        "name": "Klassiek",
+        "desc": "60 seconden om te tekenen"
       },
       "speed": {
         "name": "Speed",
-        "desc": "Only 30 seconds!"
+        "desc": "Slechts 30 seconden!"
       },
       "blind": {
         "name": "Blind",
-        "desc": "Drawing becomes invisible after 5s"
+        "desc": "Tekening verdwijnt na 5s"
       }
     },
     "wordpress": {
       "kategorie": {
-        "name": "Category Filter",
-        "desc": "Only tap words from one category!"
+        "name": "Categoriefilter",
+        "desc": "Tik alleen woorden uit één categorie!"
       },
       "stroop": {
-        "name": "Color Word Chaos",
-        "desc": "Color must match the word"
+        "name": "Kleur-woordchaos",
+        "desc": "Kleur moet bij het woord passen"
       },
       "verboten": {
-        "name": "Forbidden Word",
-        "desc": "Tap everything EXCEPT the forbidden word"
+        "name": "Verboden woord",
+        "desc": "Tik alles BEHALVE het verboden woord"
       },
       "speed-rush": {
         "name": "Speed Rush",
-        "desc": "Words get faster and faster!"
+        "desc": "Woorden gaan steeds sneller!"
       }
     },
     "closeenough": {
@@ -8012,132 +8028,132 @@
   },
   "nativeDashboard": {
     "eventTypes": {
-      "bachelor": "Despedida de soltero",
-      "bachelorette": "Despedida de soltera",
-      "birthday": "Cumpleaños",
-      "wedding": "Boda",
-      "other": "Evento"
+      "bachelor": "Vrijgezellenfeest",
+      "bachelorette": "Vrijgezellinnenfeest",
+      "birthday": "Verjaardag",
+      "wedding": "Bruiloft",
+      "other": "Evenement"
     },
     "tabs": {
-      "overview": "Resumen",
-      "guests": "Invitados",
-      "schedule": "Horario",
-      "expenses": "Gastos",
+      "overview": "Overzicht",
+      "guests": "Gasten",
+      "schedule": "Tijdlijn",
+      "expenses": "Uitgaven",
       "marketplace": "Marketplace",
-      "services": "Servicios",
-      "form": "Formulario",
-      "responses": "Respuestas",
+      "services": "Services",
+      "form": "Formulier",
+      "responses": "Antwoorden",
       "messages": "Berichten",
-      "ai": "IA",
-      "settings": "Ajustes",
+      "ai": "AI",
+      "settings": "Instellingen",
       "ideaboard": "Ideeënbord"
     },
-    "honoree": "Homenajeado",
-    "noDate": "Sin fecha",
-    "participants": "Participantes",
-    "confirmed": "Confirmados",
-    "maybe": "Quizás",
-    "guest": "Invitado",
-    "loading": "Cargando...",
-    "notFound": "Evento no encontrado",
-    "notFoundDesc": "No se pudo cargar.",
-    "back": "Volver",
+    "honoree": "Eregast",
+    "noDate": "Geen datum",
+    "participants": "Deelnemers",
+    "confirmed": "Toegezegd",
+    "maybe": "Misschien",
+    "guest": "Gast",
+    "loading": "Dashboard wordt geladen...",
+    "notFound": "Evenement niet gevonden",
+    "notFoundDesc": "Het evenement kon niet worden geladen.",
+    "back": "Terug",
     "countdown": {
-      "today": "¡Hoy!",
-      "tomorrow": "¡Mañana!",
-      "inDays": "En {{count}} días"
+      "today": "Vandaag!",
+      "tomorrow": "Morgen!",
+      "inDays": "Over {{count}} dagen"
     },
-    "confirmedOf": "{{yes}} de {{total}} confirmados",
+    "confirmedOf": "{{yes}} van {{total}} hebben toegezegd",
     "quickActions": {
-      "inviteGuests": "Invitar",
-      "planActivity": "Planificar",
-      "addExpense": "Añadir gasto",
-      "aiAssistant": "Asistente IA",
+      "inviteGuests": "Gasten uitnodigen",
+      "planActivity": "Activiteit plannen",
+      "addExpense": "Uitgave vastleggen",
+      "aiAssistant": "AI-assistent",
       "browseMarketplace": "Marketplace"
     },
-    "recentActivity": "Actividad reciente",
-    "noActivity": "Sin actividad",
+    "recentActivity": "Recente activiteit",
+    "noActivity": "Nog geen activiteit",
     "activity": {
-      "rsvpConfirmed": "{{name}} confirmó",
-      "rsvpDeclined": "{{name}} declinó",
-      "surveyResponse": "{{name}} votó",
-      "expenseCreated": "Gasto: {{title}}",
-      "budgetUpdated": "Presupuesto actualizado",
-      "guestInvited": "{{name}} invitado",
-      "scheduleUpdated": "Horario actualizado"
+      "rsvpConfirmed": "{{name}} heeft toegezegd",
+      "rsvpDeclined": "{{name}} heeft afgezegd",
+      "surveyResponse": "{{name}} heeft gestemd",
+      "expenseCreated": "Uitgave: {{title}}",
+      "budgetUpdated": "Budget bijgewerkt",
+      "guestInvited": "{{name}} uitgenodigd",
+      "scheduleUpdated": "Tijdlijn bijgewerkt"
     },
     "timeAgo": {
-      "justNow": "ahora mismo",
-      "minutesAgo": "hace {{count}} min",
-      "hoursAgo": "hace {{count}} h",
-      "yesterday": "ayer",
-      "daysAgo": "hace {{count}} días"
+      "justNow": "zojuist",
+      "minutesAgo": "{{count}} min. geleden",
+      "hoursAgo": "{{count}} uur geleden",
+      "yesterday": "gisteren",
+      "daysAgo": "{{count}} dagen geleden"
     },
     "status": {
-      "active": "Activo",
-      "planning": "Planificación",
-      "draft": "Borrador"
+      "active": "Actief",
+      "planning": "Planning",
+      "draft": "Concept"
     },
     "services": {
-      "openMarketplace": "Abrir Marketplace",
-      "openMarketplaceSub": "Descubre y reserva servicios",
-      "bookedServices": "Servicios reservados",
-      "noBookings": "Sin servicios reservados",
-      "details": "Detalles",
-      "cancel": "Cancelar",
-      "statusPending": "Pendiente",
-      "statusConfirmed": "Confirmado",
-      "statusCompleted": "Completado",
-      "statusCancelled": "Cancelado"
+      "openMarketplace": "Marketplace openen",
+      "openMarketplaceSub": "Ontdek & boek services voor je evenement",
+      "bookedServices": "Geboekte diensten",
+      "noBookings": "Nog geen diensten geboekt",
+      "details": "Details",
+      "cancel": "Annuleren",
+      "statusPending": "In behandeling",
+      "statusConfirmed": "Bevestigd",
+      "statusCompleted": "Voltooid",
+      "statusCancelled": "Geannuleerd"
     }
   },
   "nativeGuests": {
     "status": {
-      "confirmed": "Confirmado",
-      "maybe": "Quizás",
-      "declined": "Rechazado",
-      "invited": "Invitado"
+      "confirmed": "Toegezegd",
+      "maybe": "Misschien",
+      "declined": "Afgezegd",
+      "invited": "Uitgenodigd"
     },
-    "organizer": "Organizador",
-    "guestRole": "Invitado",
-    "searchPlaceholder": "Buscar invitados...",
-    "noGuests": "Sin invitados",
-    "noGuestsDesc": "Invita a amigos y familiares.",
-    "noResults": "Sin resultados",
-    "noResultsFor": "Ningún invitado coincide con \"{{query}}\"",
-    "inviteGuests": "Invitar",
-    "inviteLink": "Enlace de invitación",
-    "eventCode": "Código del evento",
-    "copied": "¡Copiado!",
-    "copyLink": "Copiar enlace",
-    "host": "Anfitrión"
+    "organizer": "Organisator",
+    "guestRole": "Gast",
+    "searchPlaceholder": "Gasten zoeken...",
+    "noGuests": "Nog geen gasten",
+    "noGuestsDesc": "Nodig vrienden en familie uit om het evenement samen te plannen.",
+    "noResults": "Geen resultaat",
+    "noResultsFor": "Geen gast past bij \"{{query}}\"",
+    "inviteGuests": "Gasten uitnodigen",
+    "inviteLink": "Uitnodigingslink",
+    "eventCode": "Evenementcode",
+    "copied": "Gekopieerd!",
+    "copyLink": "Link kopiëren",
+    "host": "Host"
   },
   "nativeSchedule": {
     "categories": {
-      "food": "Comida y bebida",
-      "activity": "Actividad",
-      "transport": "Transporte",
-      "party": "Fiesta",
-      "sightseeing": "Turismo",
-      "accommodation": "Alojamiento",
-      "relaxation": "Relajación",
-      "other": "Otro"
+      "food": "Eten & drinken",
+      "activity": "Activiteit",
+      "transport": "Vervoer",
+      "party": "Feest",
+      "sightseeing": "Bezienswaardigheden",
+      "accommodation": "Accommodatie",
+      "relaxation": "Ontspanning",
+      "other": "Overig"
     },
-    "noActivities": "Sin actividades",
-    "noActivitiesDesc": "Planifica el horario perfecto",
-    "addActivity": "Añadir actividad",
-    "day": "Día {{num}}",
+    "noActivities": "Nog geen activiteiten gepland",
+    "noActivitiesDesc": "Plan het perfecte verloop voor jullie evenement",
+    "addActivity": "Activiteit toevoegen",
+    "day": "Dag {{num}}",
     "form": {
-      "title": "Título",
-      "time": "Hora",
-      "category": "Categoría",
-      "notes": "Notas",
-      "location": "Lugar",
-      "duration": "Duración",
-      "cost": "Coste",
-      "responsible": "Responsable",
-      "add": "Añadir",
-      "titlePlaceholder": "p.ej. Desayuno"
+      "title": "Titel",
+      "time": "Tijd",
+      "category": "Categorie",
+      "notes": "Notities",
+      "location": "Locatie",
+      "duration": "Duur",
+      "cost": "Kosten",
+      "responsible": "Verantwoordelijke",
+      "add": "Toevoegen",
+      "titlePlaceholder": "bijv. Ontbijt in het hotel"
     }
   },
   "nativeJoinRoom": {
@@ -8163,25 +8179,34 @@
     "profile": "Perfil"
   },
   "nativeDrinks": {
-    "title": "Party Stats",
-    "yourRank": "Tu rango esta noche",
-    "nextRank": "Siguiente rango",
-    "waterReminder": "¡No olvides el agua!",
-    "waterReminderDesc": "Un vaso de agua por cada bebida.",
-    "resetSession": "Reiniciar",
-    "confirmReset": "Sí, reiniciar",
-    "cancel": "Cancelar",
+    "title": "Feeststatistieken",
+    "yourRank": "Jouw feestrang vanavond",
+    "nextRank": "Volgende rang",
+    "waterReminder": "Water niet vergeten!",
+    "waterReminderDesc": "Drink per drankje minstens één glas water — je lichaam zal je dankbaar zijn.",
+    "resetSession": "Sessie resetten",
+    "confirmReset": "Ja, resetten",
+    "cancel": "Annuleren",
     "ranks": {
-      "legend": "Leyenda",
-      "champion": "Campeón",
-      "partyAnimal": "Fiestero",
-      "pro": "Pro",
-      "enthusiast": "Entusiasta",
-      "beginner": "Principiante",
-      "sober": "Sobrio"
+      "legend": "Legende",
+      "champion": "Kampioen",
+      "partyAnimal": "Feestbeest",
+      "pro": "Prof",
+      "enthusiast": "Enthousiast",
+      "beginner": "Beginner",
+      "sober": "Nuchter"
     }
   },
   "gameRules": {
+    "pixeljagd": {
+      "title": "Pixeljagd",
+      "tagline": "Eerst een kleurvlek, dan een beeld — maar wie wacht, krijgt minder punten.",
+      "step1": "Er verschijnt een sterk gepixelde afbeelding die seconde na seconde scherper wordt.",
+      "step2": "Wie de oplossing herkent, drukt op de buzzer — in de online room typ je hem in plaats daarvan in.",
+      "step3": "Hoe eerder je goed zit, hoe meer punten: van 100 omlaag tot 10.",
+      "step4": "Fout raden kost punten en blokkeert je voor deze ronde.",
+      "tip": "Te vroeg raden is duur, te laat ook — precies daarin zit het spel."
+    },
     "howToPlay": "Hoe te spelen",
     "understood": "Begrepen — laten we gaan!",
     "bomb": {
@@ -8372,56 +8397,56 @@
     }
   },
   "nativeAdmin": {
-    "title": "Panel Admin",
-    "areas": "{{count}} áreas",
+    "title": "Adminpaneel",
+    "areas": "{{count}} onderdelen",
     "cards": {
       "stats": {
         "label": "Dashboard",
-        "desc": "Usuarios, Eventos"
+        "desc": "Gebruikers, evenementen, omzet"
       },
       "games": {
-        "label": "Contenido",
-        "desc": "Preguntas"
+        "label": "Gamecontent",
+        "desc": "Vragen & content"
       },
       "users": {
-        "label": "Usuarios",
-        "desc": "Roles"
+        "label": "Gebruikers",
+        "desc": "Rollen & wachtwoorden"
       },
       "credits": {
-        "label": "AI Credits",
-        "desc": "Límites"
+        "label": "AI-credits",
+        "desc": "Limieten & aanpassingen"
       },
       "subscriptions": {
-        "label": "Suscripciones",
-        "desc": "Planes"
+        "label": "Abonnementen",
+        "desc": "Abonnementen beheren"
       },
       "vouchers": {
-        "label": "Cupones",
-        "desc": "Códigos"
+        "label": "Kortingscodes",
+        "desc": "Codes & kortingen"
       },
       "affiliates": {
-        "label": "Afiliados",
-        "desc": "Socios"
+        "label": "Affiliates",
+        "desc": "Partnerprogramma"
       },
       "commissions": {
-        "label": "Comisiones",
-        "desc": "Pagos"
+        "label": "Commissies",
+        "desc": "Status & uitbetaling"
       },
       "payouts": {
-        "label": "Pagos",
-        "desc": "Historial"
+        "label": "Uitbetalingen",
+        "desc": "Openstaand & historie"
       },
       "analytics": {
-        "label": "Analíticas",
-        "desc": "Interacciones"
+        "label": "Bureau-analyses",
+        "desc": "Interacties"
       },
       "agencies": {
-        "label": "Agencias",
-        "desc": "Multi-agencia"
+        "label": "Bureaupartners",
+        "desc": "Multi-bureau"
       },
       "settings": {
-        "label": "Configuración",
-        "desc": "Precios"
+        "label": "Abonnementsinstellingen",
+        "desc": "Functies & prijzen"
       }
     }
   },
@@ -8457,52 +8482,52 @@
   },
   "nativeResponses": {
     "stats": {
-      "responses": "Respuestas",
-      "responseRate": "Tasa de respuesta",
-      "latestResponse": "Última respuesta"
+      "responses": "Antwoorden",
+      "responseRate": "Responspercentage",
+      "latestResponse": "Laatste antwoord"
     },
-    "attendanceOverview": "Resumen de asistencia",
+    "attendanceOverview": "Aanwezigheidsoverzicht",
     "attendance": {
-      "confirmed": "Confirmado",
-      "maybe": "Quizás",
-      "declined": "Rechazado"
+      "confirmed": "Toegezegd",
+      "maybe": "Misschien",
+      "declined": "Afgezegd"
     },
-    "categoryAnalysis": "Análisis por categoría",
+    "categoryAnalysis": "Analyse per categorie",
     "categories": {
-      "attendance": "Asistencia",
-      "budget": "Presupuesto",
-      "destination": "Destino",
-      "duration_pref": "Duración",
-      "travel_pref": "Viaje",
+      "attendance": "Aanwezigheid",
+      "budget": "Budget",
+      "destination": "Bestemming",
+      "duration_pref": "Duur",
+      "travel_pref": "Reizen",
       "fitness_level": "Fitness",
       "alcohol": "Alcohol"
     },
-    "activitiesAndPreferences": "Actividades y preferencias",
-    "preferences": "Preferencias",
-    "availableDates": "Fechas disponibles",
-    "noAnswer": "N/D",
-    "option": "{{count}} opción",
-    "option_plural": "{{count}} opciones",
-    "individualResponses": "Respuestas individuales",
-    "searchParticipants": "Buscar...",
-    "noFilterResults": "Sin respuestas para este filtro",
-    "filterAll": "Todos",
-    "filterYes": "Confirmados",
-    "filterMaybe": "Quizás",
-    "filterNo": "Rechazados",
+    "activitiesAndPreferences": "Activiteiten & voorkeuren",
+    "preferences": "Voorkeuren",
+    "availableDates": "Beschikbare data",
+    "noAnswer": "n.v.t.",
+    "option": "{{count}} optie",
+    "option_plural": "{{count}} opties",
+    "individualResponses": "Individuele antwoorden",
+    "searchParticipants": "Deelnemers zoeken...",
+    "noFilterResults": "Geen antwoorden voor dit filter",
+    "filterAll": "Alle",
+    "filterYes": "Toegezegd",
+    "filterMaybe": "Misschien",
+    "filterNo": "Afgezegd",
     "sections": {
-      "suggestions": "Sugerencias y deseos",
-      "restrictions": "Restricciones",
-      "partialAvailability": "Disponibilidad parcial",
-      "entries": "{{count}} entrada",
-      "entries_plural": "{{count}} entradas"
+      "suggestions": "Suggesties & wensen",
+      "restrictions": "Beperkingen",
+      "partialAvailability": "Gedeeltelijk beschikbaar",
+      "entries": "{{count}} item",
+      "entries_plural": "{{count}} items"
     },
     "timeAgo": {
-      "justNow": "ahora mismo",
-      "minutesAgo": "hace {{count}} min",
-      "hoursAgo": "hace {{count}} h",
-      "yesterday": "ayer",
-      "daysAgo": "hace {{count}} días"
+      "justNow": "zojuist",
+      "minutesAgo": "{{count}} min. geleden",
+      "hoursAgo": "{{count}} uur geleden",
+      "yesterday": "gisteren",
+      "daysAgo": "{{count}} dagen geleden"
     }
   },
   "marketplaceService": {
