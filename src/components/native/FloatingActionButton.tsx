@@ -76,7 +76,8 @@ export function FloatingActionButton() {
       </AnimatePresence>
 
       {/* FAB + action stack */}
-      <div className="fixed z-50 right-5 pointer-events-none" style={{ bottom: "calc(86px + env(safe-area-inset-bottom))" }}>
+      {/* 10px Luft ueber der Tab-Leiste - Hoehe kommt aus --tabbar-space. */}
+      <div className="fixed z-50 right-5 pointer-events-none" style={{ bottom: "calc(var(--tabbar-space) + 10px)" }}>
         <AnimatePresence>
           {open && (
             <motion.div

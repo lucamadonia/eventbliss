@@ -227,7 +227,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
       </div>
 
       {/* Fixed Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-[#0d0d15] via-[#0d0d15]/95 to-transparent">
+      <div className="fixed bottom-0 left-0 right-0 z-20 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0d0d15] via-[#0d0d15]/95 to-transparent">
         <div className="max-w-md mx-auto">
           <motion.button
             onClick={onStart}

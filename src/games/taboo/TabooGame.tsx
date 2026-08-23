@@ -426,7 +426,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
               ))}</div>
             </div>
           </div>
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
+          <div className="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
             <div className="max-w-lg mx-auto space-y-3">
               <motion.button
                 whileTap={canStart ? { scale: 0.97 } : undefined}

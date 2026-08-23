@@ -49,7 +49,7 @@ export default function JoinRoomScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-background safe-top safe-bottom flex flex-col">
+    <div className="h-full bg-background safe-top flex flex-col">
       {/* Header */}
       <div className="px-5 pt-4 pb-3 flex items-center gap-3">
         <motion.button
@@ -67,116 +67,118 @@ export default function JoinRoomScreen() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 -mt-16">
-        {/* Icon */}
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={spring.bouncy}
-          className="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(139,92,246,0.4)]"
-        >
-          <Wifi className="w-10 h-10 text-white" />
-        </motion.div>
+      <div className="flex-1 overflow-y-auto native-scroll">
+        <div className="min-h-full flex flex-col items-center justify-center px-8 -mt-16 pb-tabbar">
+          {/* Icon */}
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={spring.bouncy}
+            className="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(139,92,246,0.4)]"
+          >
+            <Wifi className="w-10 h-10 text-white" />
+          </motion.div>
 
-        {/* Title */}
-        <motion.h2
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ ...spring.soft, delay: 0.1 }}
-          className="text-2xl font-display font-bold text-foreground text-center mb-2"
-        >
-          {t("nativeJoinRoom.title")}
-        </motion.h2>
-        <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ ...spring.soft, delay: 0.15 }}
-          className="text-muted-foreground text-center mb-8"
-        >
-          {t("nativeJoinRoom.hint")}
-        </motion.p>
+          {/* Title */}
+          <motion.h2
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ ...spring.soft, delay: 0.1 }}
+            className="text-2xl font-display font-bold text-foreground text-center mb-2"
+          >
+            {t("nativeJoinRoom.title")}
+          </motion.h2>
+          <motion.p
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ ...spring.soft, delay: 0.15 }}
+            className="text-muted-foreground text-center mb-8"
+          >
+            {t("nativeJoinRoom.hint")}
+          </motion.p>
 
-        {/* Code Input — native input, no overlay, no portal */}
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ ...spring.soft, delay: 0.2 }}
-          className="w-full max-w-xs"
-        >
-          <input
-            ref={inputRef}
-            value={code}
-            onChange={(e) => handleCodeChange(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleJoin()}
-            placeholder="ABC123"
-            maxLength={6}
-            inputMode="text"
-            autoComplete="off"
-            autoCapitalize="characters"
-            autoCorrect="off"
-            spellCheck={false}
-            className={cn(
-              "w-full h-20 px-5 rounded-2xl text-center text-4xl font-display font-bold tracking-[0.4em] transition-all",
-              "bg-foreground/[0.06] border-2 text-foreground",
-              "placeholder:text-muted-foreground/30 placeholder:tracking-[0.3em] placeholder:text-2xl",
-              "focus:outline-none focus:ring-0",
-              error
-                ? "border-red-500/60 focus:border-red-500"
-                : code.length === 6
-                  ? "border-emerald-500/60 focus:border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-                  : "border-border focus:border-primary/60 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]",
+          {/* Code Input — native input, no overlay, no portal */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ ...spring.soft, delay: 0.2 }}
+            className="w-full max-w-xs"
+          >
+            <input
+              ref={inputRef}
+              value={code}
+              onChange={(e) => handleCodeChange(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleJoin()}
+              placeholder="ABC123"
+              maxLength={6}
+              inputMode="text"
+              autoComplete="off"
+              autoCapitalize="characters"
+              autoCorrect="off"
+              spellCheck={false}
+              className={cn(
+                "w-full h-20 px-5 rounded-2xl text-center text-4xl font-display font-bold tracking-[0.4em] transition-all",
+                "bg-foreground/[0.06] border-2 text-foreground",
+                "placeholder:text-muted-foreground/30 placeholder:tracking-[0.3em] placeholder:text-2xl",
+                "focus:outline-none focus:ring-0",
+                error
+                  ? "border-red-500/60 focus:border-red-500"
+                  : code.length === 6
+                    ? "border-emerald-500/60 focus:border-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                    : "border-border focus:border-primary/60 focus:shadow-[0_0_20px_rgba(139,92,246,0.2)]",
+              )}
+            />
+
+            {/* Character dots indicator */}
+            <div className="flex justify-center gap-3 mt-4">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <motion.div
+                  key={i}
+                  className={cn(
+                    "w-3 h-3 rounded-full transition-all duration-200",
+                    i < code.length
+                      ? code.length === 6
+                        ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                        : "bg-primary shadow-[0_0_8px_rgba(139,92,246,0.5)]"
+                      : "bg-foreground/10",
+                  )}
+                  animate={i < code.length ? { scale: [1, 1.3, 1] } : {}}
+                  transition={{ duration: 0.2 }}
+                />
+              ))}
+            </div>
+
+            {/* Error */}
+            {error && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-sm text-red-400 text-center mt-3"
+              >
+                {error}
+              </motion.p>
             )}
-          />
+          </motion.div>
 
-          {/* Character dots indicator */}
-          <div className="flex justify-center gap-3 mt-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <motion.div
-                key={i}
-                className={cn(
-                  "w-3 h-3 rounded-full transition-all duration-200",
-                  i < code.length
-                    ? code.length === 6
-                      ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                      : "bg-primary shadow-[0_0_8px_rgba(139,92,246,0.5)]"
-                    : "bg-foreground/10",
-                )}
-                animate={i < code.length ? { scale: [1, 1.3, 1] } : {}}
-                transition={{ duration: 0.2 }}
-              />
-            ))}
-          </div>
-
-          {/* Error */}
-          {error && (
-            <motion.p
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-sm text-red-400 text-center mt-3"
-            >
-              {error}
-            </motion.p>
-          )}
-        </motion.div>
-
-        {/* Join Button */}
-        <motion.button
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ ...spring.soft, delay: 0.3 }}
-          onClick={handleJoin}
-          disabled={code.length < 6}
-          whileTap={code.length === 6 ? { scale: 0.96 } : {}}
-          className={cn(
-            "w-full max-w-xs h-14 rounded-2xl font-display font-bold text-base flex items-center justify-center gap-2 mt-8 transition-all",
-            code.length === 6
-              ? "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_8px_30px_-6px_rgba(139,92,246,0.5)]"
-              : "bg-foreground/[0.08] text-muted-foreground/60",
-          )}
-        >
-          <ArrowRight className="w-5 h-5" />
-          {t("nativeJoinRoom.join")}
-        </motion.button>
+          {/* Join Button */}
+          <motion.button
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ ...spring.soft, delay: 0.3 }}
+            onClick={handleJoin}
+            disabled={code.length < 6}
+            whileTap={code.length === 6 ? { scale: 0.96 } : {}}
+            className={cn(
+              "w-full max-w-xs h-14 rounded-2xl font-display font-bold text-base flex items-center justify-center gap-2 mt-8 transition-all",
+              code.length === 6
+                ? "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-[0_8px_30px_-6px_rgba(139,92,246,0.5)]"
+                : "bg-foreground/[0.08] text-muted-foreground/60",
+            )}
+          >
+            <ArrowRight className="w-5 h-5" />
+            {t("nativeJoinRoom.join")}
+          </motion.button>
+        </div>
       </div>
     </div>
   );

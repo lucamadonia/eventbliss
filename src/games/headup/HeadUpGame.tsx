@@ -421,7 +421,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
             </div>
 
             {/* Start Button */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
+            <div className="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
               <div className="max-w-lg mx-auto text-center">
                 <motion.button whileTap={{ scale: 0.97 }} onClick={handleStartRound} disabled={!selectedCategory}
                   className={`w-full py-4 rounded-full text-base font-extrabold uppercase tracking-wide transition-all flex items-center justify-center gap-2 ${

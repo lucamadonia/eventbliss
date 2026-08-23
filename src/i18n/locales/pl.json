@@ -9570,6 +9570,7 @@
       "gamesPlayedHeading": "Rozegrane gry",
       "needTwoPlayers": "Dodaj co najmniej 2 graczy",
       "endParty": "Zakończ imprezę",
+      "endConfirm": "Tak, zakończ imprezę",
       "finalSummary": "Gry: {{games}} · Gracze: {{players}}",
       "done": "Gotowe"
     },

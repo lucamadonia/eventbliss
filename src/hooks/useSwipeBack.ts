@@ -6,6 +6,13 @@
  *
  * Only active on iOS native. Disabled on specific routes (games).
  *
+ * Fragt vor dem Zurueckgehen `runBackGuards()` — genau wie die Android-
+ * Hardware-Taste (native-setup.ts) und der FloatingBackButton. Vorher war die
+ * Wische der EINZIGE Zurueck-Weg, der die Guard-Kette uebersprungen hat: Ein
+ * laufendes Spiel oder ein offener Dialog wurde damit ohne Nachfrage
+ * weggewischt, und auf /party landete ein rohes navigate(-1) irgendwo in der
+ * Verlaufsgeschichte statt bei der Spieleuebersicht.
+ *
  * Usage:
  *   const swipeRef = useSwipeBack();
  *   <div ref={swipeRef}>...</div>
@@ -13,6 +20,7 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { isIOS, isNative } from "@/lib/platform";
+import { runBackGuards } from "@/lib/back-guard";
 import { haptics } from "@/hooks/useHaptics";
 
 const EDGE_ZONE = 24; // px from left edge
@@ -51,6 +59,7 @@ export function useSwipeBack() {
       // Must be mostly horizontal and past threshold
       if (dx > THRESHOLD && dy < dx * 0.5) {
         haptics.light();
+        if (runBackGuards()) return;
         navigate(-1);
       }
     },

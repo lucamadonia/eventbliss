@@ -9472,6 +9472,7 @@
       "gamesPlayedHeading": "Games played",
       "needTwoPlayers": "Add at least 2 players",
       "endParty": "End party",
+      "endConfirm": "Yes, end party",
       "finalSummary": "Games: {{games}} · Players: {{players}}",
       "done": "Done"
     },

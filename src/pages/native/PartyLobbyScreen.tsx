@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePartySession } from "@/hooks/usePartySession";
+import { useBackGuard } from "@/lib/back-guard";
 import { PartyGamePicker, type PartyPickerMode } from "@/components/native/PartyGamePicker";
 import { PartyFinaleOverlay } from "@/components/native/party/PartyFinaleOverlay";
 import { PartySetlistStrip } from "@/components/native/party/PartySetlistStrip";
@@ -44,9 +45,26 @@ export default function PartyLobbyScreen() {
   const [showEventPicker, setShowEventPicker] = useState(false);
   const [showFinalLeaderboard, setShowFinalLeaderboard] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [confirmEnd, setConfirmEnd] = useState(false);
 
   const startSession = party.startSession;
   const isPartyActive = party.isPartyActive;
+
+  /**
+   * Zurueck fuehrt hier bewusst zur Spieleuebersicht statt navigate(-1) in die
+   * Verlaufsgeschichte: Die Lobby wird aus Spielen heraus wieder betreten
+   * (GameBackTarget schickt ?party=true hierher), ein blindes Zurueck landete
+   * deshalb schnell in einem gerade beendeten Spiel. Rang "route", damit der
+   * Rueckfall NACH Overlays wie Picker oder Finale gefragt wird.
+   *
+   * Die Sitzung bleibt dabei absichtlich am Leben — beendet wird sie nur ueber
+   * "Party beenden". Wer nur kurz wegschaut, findet sie im Fortsetzen-Banner.
+   */
+  useBackGuard(
+    useCallback(() => { navigate("/games"); return true; }, [navigate]),
+    true,
+    "route",
+  );
 
   // Ohne laufende Sitzung gibt es nichts zu planen — genau einmal beim Betreten.
   useEffect(() => {
@@ -132,14 +150,25 @@ export default function PartyLobbyScreen() {
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams, haptics]);
 
+  /**
+   * Ohne gespieltes Spiel gibt es nichts zu feiern — die Zeremonie ueber eine
+   * leere Tabelle waere Hohn. Dann fragt der Knopf direkt an Ort und Stelle
+   * nach, statt das Finale-Overlay aufzuziehen.
+   */
   const handleEndParty = useCallback(() => {
+    if (history.length === 0) {
+      haptics.light();
+      setConfirmEnd(true);
+      return;
+    }
     haptics.celebrate();
     setShowFinalLeaderboard(true);
-  }, [haptics]);
+  }, [haptics, history.length]);
 
   const handleConfirmEnd = useCallback(() => {
     party.resetSession();
     setShowFinalLeaderboard(false);
+    setConfirmEnd(false);
     navigate("/games");
   }, [party, navigate]);
 
@@ -156,7 +185,7 @@ export default function PartyLobbyScreen() {
   }, [party.tvCode, haptics]);
 
   return (
-    <div className="relative min-h-screen bg-background safe-top">
+    <div className="relative h-full overflow-y-auto native-scroll bg-background safe-top">
       {/* Ambiente */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden>
         <div className="absolute -top-32 -start-32 w-64 h-64 bg-[#df8eff]/10 rounded-full blur-[100px]" />
@@ -164,7 +193,7 @@ export default function PartyLobbyScreen() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#8ff5ff]/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative z-10 pb-32">
+      <div className="relative z-10 pb-tabbar">
         {/* Kopf */}
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center justify-between gap-3">
@@ -446,7 +475,35 @@ export default function PartyLobbyScreen() {
             </p>
           )}
 
-          {history.length > 0 && (
+          {/*
+            Bewusst NICHT hinter history.length > 0: Eine Party mit Spielern,
+            aber noch ohne Spiel, war sonst gar nicht mehr zu beenden — die
+            Sitzung ueberlebte im localStorage und kam ueber das Fortsetzen-
+            Banner sofort zurueck.
+          */}
+          {confirmEnd ? (
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={spring.snappy}
+              className="flex gap-2"
+            >
+              <button
+                type="button"
+                onClick={handleConfirmEnd}
+                className="cursor-pointer flex-1 min-h-[48px] rounded-2xl bg-red-500/15 border border-red-400/30 text-red-500 dark:text-red-400 font-semibold text-sm"
+              >
+                {t('nativeExtra.partyLobby.endConfirm')}
+              </button>
+              <button
+                type="button"
+                onClick={() => { haptics.light(); setConfirmEnd(false); }}
+                className="cursor-pointer flex-1 min-h-[48px] rounded-2xl bg-foreground/5 border border-border text-muted-foreground font-semibold text-sm"
+              >
+                {t('common.cancel')}
+              </button>
+            </motion.div>
+          ) : (
             <motion.button
               type="button"
               whileTap={{ scale: 0.97 }}

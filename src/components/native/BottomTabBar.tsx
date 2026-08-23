@@ -76,6 +76,12 @@ export function BottomTabBar() {
           exit={{ y: 100, opacity: 0 }}
           transition={spring.soft}
         >
+          {/*
+            ACHTUNG: Diese Geometrie ist die Quelle fuer spacing.tabbar in
+            tailwind.config.ts (64px Pille + 12px mb-3 + Safe-Area = pb-tabbar).
+            Wer h-[64px] oder mb-3 aendert, muss das Token mitziehen - sonst
+            liegen app-weit Knoepfe wieder halb unter der Leiste.
+          */}
           <div className="pointer-events-auto mx-3 mb-3 safe-bottom">
             <div className="relative flex items-center justify-around h-[64px] rounded-[28px] bg-background/70 backdrop-blur-2xl border border-border shadow-[0_-8px_32px_rgba(0,0,0,0.4)] px-2">
               {/* Ambient glow strip at top */}

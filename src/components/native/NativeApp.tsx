@@ -10,7 +10,7 @@
  * Desktop / mobile web continue using the original <AppContent /> tree.
  */
 import { lazy, Suspense, useEffect, type ReactNode } from "react";
-import { Routes, Route, Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { isNative } from "@/lib/platform";
 import { useBackGuard } from "@/lib/back-guard";
@@ -30,6 +30,7 @@ import PageLoader from "@/components/ui/PageLoader";
 // the whole session). Their loader factories are re-used here to warm the
 // chunks during the splash animation.
 import { TabsLayer, TAB_SCREEN_LOADERS } from "./TabsLayer";
+import { TABS } from "./BottomTabBar";
 
 const loadCreateEventFlow = () => import("@/pages/native/CreateEventFlow");
 const CreateEventFlow = lazy(loadCreateEventFlow);
@@ -159,6 +160,25 @@ function GameBackTarget({ children }: { children: ReactNode }) {
 function ExpensesGate() {
   const { enabled: off } = useFeatureFlag("expenses_v2_off");
   return off ? <EventExpenses /> : <EventExpensesV2 />;
+}
+
+const TAB_PATHS = TABS.map((t) => t.to);
+
+/**
+ * Auffang-Route — darf waehrend einer Ausblend-Animation NICHT feuern.
+ *
+ * AnimatePresence haelt die verlassene Seite fuer die Dauer der Animation im
+ * Baum, und die rendert mit der bereits NEUEN Adresse neu. Zeigt die auf eine
+ * Tab-Wurzel, findet dieses <Routes> nichts (Tab-Wurzeln leben in TabsLayer,
+ * nicht hier) — und das blanke <Navigate to="/"> warf den Nutzer auf die
+ * Startseite. Damit landete JEDE programmatische Navigation von einer
+ * Stack-Seite auf einen Tab auf Home statt am Ziel: navigate("/games")
+ * beim Beenden einer Party ebenso wie das X in der Party-Lobby.
+ */
+function RouteFallback() {
+  const { pathname } = useLocation();
+  if (TAB_PATHS.includes(pathname)) return null;
+  return <Navigate to="/" replace />;
 }
 
 export function NativeApp() {
@@ -333,7 +353,7 @@ export function NativeApp() {
               <Route path="/support" element={wrap(<Support />, "Support")} />
 
               {/* Fallback */}
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<RouteFallback />} />
             </Routes>
           </PageTransition>
         </NativeShell>

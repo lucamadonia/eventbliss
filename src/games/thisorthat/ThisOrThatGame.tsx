@@ -1181,7 +1181,7 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
       </main>
 
       {/* Floating start CTA */}
-      <div className="fixed bottom-6 inset-x-0 px-6 flex justify-center z-40 pointer-events-none">
+      <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] inset-x-0 px-6 flex justify-center z-40 pointer-events-none">
         <motion.button
           type="button"
           onClick={handleStart}

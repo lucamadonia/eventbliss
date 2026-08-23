@@ -9496,6 +9496,7 @@
       "gamesPlayedHeading": "Parties jouées",
       "needTwoPlayers": "Ajoute au moins 2 joueurs",
       "endParty": "Terminer la soirée",
+      "endConfirm": "Oui, terminer la soirée",
       "finalSummary": "Parties : {{games}} · Joueurs : {{players}}",
       "done": "Terminé"
     },

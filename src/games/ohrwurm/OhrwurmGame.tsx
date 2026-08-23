@@ -1917,7 +1917,7 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
 
       {/* Start CTA — bei offener Tastatur ausblenden, damit das Namensfeld frei bleibt */}
       {!keyboardVisible && (
-        <div className="fixed bottom-6 inset-x-0 px-6 flex justify-center z-40 pointer-events-none">
+        <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] inset-x-0 px-6 flex justify-center z-40 pointer-events-none">
           <motion.button onClick={start} disabled={!canStart} whileTap={canStart ? { scale: 0.97 } : {}}
             className="w-full max-w-md h-16 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 pointer-events-auto transition-all"
             style={canStart

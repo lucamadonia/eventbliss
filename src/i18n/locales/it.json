@@ -9496,6 +9496,7 @@
       "gamesPlayedHeading": "Partite giocate",
       "needTwoPlayers": "Aggiungi almeno 2 giocatori",
       "endParty": "Termina la festa",
+      "endConfirm": "Sì, termina la festa",
       "finalSummary": "Partite: {{games}} · Giocatori: {{players}}",
       "done": "Fatto"
     },

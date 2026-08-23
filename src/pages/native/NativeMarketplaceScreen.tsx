@@ -474,8 +474,6 @@ export default function NativeMarketplaceScreen() {
       {/* Partner agencies (collapsed by default) */}
       <PartnerAgenciesSection cityFilter={cityFilter} />
 
-      {/* Bottom spacing for tabbar */}
-      <div className="h-8" />
     </div>
   );
 }

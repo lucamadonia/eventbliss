@@ -90,7 +90,7 @@ export default function DrinkTrackerScreen() {
     <div className="h-full flex flex-col bg-background">
       <MobileHeader title="🍺 Party Stats" showBack />
 
-      <div className="flex-1 overflow-y-auto native-scroll overflow-x-hidden px-5 pb-8">
+      <div className="flex-1 overflow-y-auto native-scroll overflow-x-hidden px-5 pb-tabbar">
         {/* Hero — current rank */}
         <motion.div
           className="relative mt-4 mb-6 rounded-3xl overflow-hidden p-6 text-center"

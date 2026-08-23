@@ -14,6 +14,22 @@
 
 @layer base {
   :root {
+    /*
+      Platz, den die untere Tab-Leiste WIRKLICH belegt: 64px Pille + 12px
+      mb-3 + Safe-Area. EINZIGE Quelle der Wahrheit — die Geometrie steht in
+      BottomTabBar.tsx:79-80. Wer sich daran ausrichtet (z. B. der FAB),
+      rechnet mit dieser Variable.
+    */
+    --tabbar-space: calc(76px + env(safe-area-inset-bottom));
+
+    /*
+      Abstand fuer Seiteninhalt (spacing.tabbar -> pb-tabbar). Bewusst 12px
+      mehr als --tabbar-space: mit dem blanken Wert endet der letzte Knopf
+      exakt auf der Kante der Leiste — nachgemessen, kein Ueberlappen, aber
+      auch kein Finger dazwischen.
+    */
+    --tabbar-clearance: calc(var(--tabbar-space) + 12px);
+
     /* Light — "Studio Daylight": luminous, brand-violet undertone, not sterile grey */
     --background: 265 30% 98%;
     --foreground: 250 22% 13%;
@@ -635,11 +651,6 @@ html.capacitor-native select {
 html.capacitor-native ::-webkit-scrollbar {
   width: 0;
   height: 0;
-}
-
-/* Extra bottom padding for pages that need to clear the tab bar */
-html.capacitor-native .pb-tabbar {
-  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 /* Rendering-only optimization for long native lists: offscreen cards skip

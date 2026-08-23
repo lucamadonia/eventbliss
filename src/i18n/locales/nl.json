@@ -9546,6 +9546,7 @@
       "gamesPlayedHeading": "Gespeelde spellen",
       "needTwoPlayers": "Voeg minstens 2 spelers toe",
       "endParty": "Feest beëindigen",
+      "endConfirm": "Ja, feest beëindigen",
       "finalSummary": "Spellen: {{games}} · Spelers: {{players}}",
       "done": "Klaar"
     },

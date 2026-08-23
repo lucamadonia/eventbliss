@@ -89,7 +89,9 @@ export default {
       spacing: {
         "safe-top": "env(safe-area-inset-top)",
         "safe-bottom": "env(safe-area-inset-bottom)",
-        tabbar: "72px",
+        // Abstand, den Seiteninhalt zur Tab-Leiste braucht (-> pb-tabbar).
+        // Definiert als --tabbar-clearance in src/index.css (:root).
+        tabbar: "var(--tabbar-clearance)",
       },
       height: {
         dvh: "100dvh",
