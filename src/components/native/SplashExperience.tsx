@@ -89,6 +89,20 @@ export function SplashExperience({ onComplete }: Props) {
   const { t } = useTranslation();
   const haptics = useHaptics();
   const splashBg = getSplashBg();
+  /**
+   * Traegt die Neon-Handschrift hier ueberhaupt?
+   *
+   * Ein Bloom braucht Dunkelheit. Auf hellem Grund wird aus dem Gluehen ein
+   * rosa Dunst ohne Form — im Geraetetest sah der Splash im hellen Modus
+   * genau so aus. Den Splash IMMER dunkel zu machen waere falsch: Die native
+   * Grafik hat eine eigene helle Fassung (Splash.imageset, appearance
+   * luminosity/dark), ein dunkler JS-Splash erzeugte im hellen Modus also das
+   * Aufblitzen, vor dem der Kopfkommentar warnt.
+   *
+   * Also dieselbe Choreografie, andere Mittel: im Hellen gesaettigte Kanten
+   * und ein Schlagschatten statt Schein.
+   */
+  const isLight = splashBg !== "#1a1625";
 
   // `useReducedMotion()` liefert beim allerersten Render `null` (SSR-sicher)
   // und loest sich erst per Effekt auf — genau in diesem einen Frame wuerde
@@ -232,9 +246,13 @@ export function SplashExperience({ onComplete }: Props) {
                 aria-hidden
                 className="absolute inset-0 rounded-full pointer-events-none"
                 style={{
-                  background: `radial-gradient(circle, ${ACCENT[ring]}55 0%, transparent 70%)`,
-                  filter: `blur(${28 + ring * 18}px)`,
-                  transform: `scale(${1.4 + ring * 0.35})`,
+                  // Im Hellen kraeftiger, kleiner und weniger weich: So bleibt
+                  // eine erkennbare Form statt eines Dunstes.
+                  background: isLight
+                    ? `radial-gradient(circle, ${ACCENT[ring]}40 0%, transparent 58%)`
+                    : `radial-gradient(circle, ${ACCENT[ring]}55 0%, transparent 70%)`,
+                  filter: `blur(${(isLight ? 14 : 28) + ring * (isLight ? 9 : 18)}px)`,
+                  transform: `scale(${(isLight ? 1.12 : 1.4) + ring * (isLight ? 0.18 : 0.35)})`,
                 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: phase === "pre" ? 0 : phase === "dissolve" ? 0 : 0.85 - ring * 0.15 }}
@@ -255,7 +273,22 @@ export function SplashExperience({ onComplete }: Props) {
               src={eventBlissLogo}
               alt="EventBliss"
               className="relative object-contain"
-              style={{ width: "min(65vw, 320px)", height: "min(65vw, 320px)" }}
+              /*
+               * QUADRAT war falsch. Die Logodatei ist ein liegendes
+               * Wortzeichen; in einem quadratischen Kasten mit `object-contain`
+               * bestimmt die HOEHE die Groesse, und 65vw Breite ergaben eine
+               * Darstellung, die viel kleiner wirkte als die Zahl verspricht.
+               * Breite vorgeben, Hoehe folgen lassen — dann fuellt der
+               * Schriftzug den Bildschirm wirklich.
+               *
+               * Im Hellen ein Schlagschatten: Der Bloom dahinter traegt dort
+               * nicht, das Wortzeichen braucht trotzdem Halt gegen den Grund.
+               */
+              style={{
+                width: "min(78vw, 420px)",
+                height: "auto",
+                filter: isLight ? "drop-shadow(0 10px 26px rgba(88,28,135,0.28))" : undefined,
+              }}
               /* `entranceReduced.initial` ist als `Variant` typisiert und darf auch
                  eine Funktion sein — `initial` nimmt das nicht. Derselbe Wert,
                  nur direkt hingeschrieben. */
@@ -304,9 +337,10 @@ export function SplashExperience({ onComplete }: Props) {
                   : entrance.bloom
             }
           >
-            <p className="text-3xl font-display font-semibold text-foreground tracking-tight">
-              EventBliss
-            </p>
+            {/* Kein zweiter Schriftzug: Die Logodatei IST ein Wortzeichen und
+                traegt "EventBliss" bereits. Frueher stand der Name dadurch
+                zweimal untereinander, und das Wortzeichen wirkte neben seiner
+                eigenen Wiederholung klein. */}
             <p className="text-sm text-muted-foreground mt-1 font-body">
               {t('native.splash.tagline')}
             </p>
