@@ -92,9 +92,12 @@ export function GameSetup({
   const hasOnline = (autoOnlinePlayers && autoOnlinePlayers.length > 0) || (partyPlayers && partyPlayers.length > 0);
   const allAutoPlayers = autoOnlinePlayers || partyPlayers;
 
+  // Vorbelegte Namen ueber i18n — hartkodiertes "Spieler N" erschien sonst
+  // auch in einer englischen Oberflaeche.
+  const nameFor = (n: number) => t("games.setup.playerN", { n });
   const [players, setPlayers] = useState<SetupPlayer[]>(() => [
-    createPlayer("Spieler 1"),
-    createPlayer("Spieler 2"),
+    createPlayer(nameFor(1)),
+    createPlayer(nameFor(2)),
   ]);
 
   // Auto-populate players from online room or party
@@ -110,7 +113,7 @@ export function GameSetup({
   const addPlayer = useCallback(() => {
     setPlayers((prev) => {
       if (prev.length >= maxPlayers) return prev;
-      return [...prev, createPlayer(`Spieler ${prev.length + 1}`)];
+      return [...prev, createPlayer(nameFor(prev.length + 1))];
     });
   }, [maxPlayers]);
 
@@ -134,7 +137,7 @@ export function GameSetup({
   const handleImportNames = useCallback((names: string[]) => {
     setPlayers(() => {
       const merged = names.slice(0, maxPlayers).map((n) => createPlayer(n));
-      while (merged.length < minPlayers) merged.push(createPlayer(`Spieler ${merged.length + 1}`));
+      while (merged.length < minPlayers) merged.push(createPlayer(nameFor(merged.length + 1)));
       return merged;
     });
   }, [maxPlayers, minPlayers]);

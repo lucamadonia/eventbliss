@@ -17,6 +17,12 @@ import { useNavigate } from "react-router-dom";
 import { usePartySession } from "@/hooks/usePartySession";
 
 import { PartyInterstitial } from "./PartyInterstitial";
+import { useTVContext } from "@/contexts/TVBroadcastContext";
+import { buildPartyNightState } from "@/games/party/standings";
+import { playerFitFor } from "./setlist";
+import { playableGames } from "@/lib/playable-games";
+import { partyGameName } from "@/hooks/useTVGameBridge";
+import { useTranslation } from "react-i18next";
 
 /**
  * Was bereits gezeigt wurde — in `localStorage`, nicht in `sessionStorage`.
@@ -46,6 +52,8 @@ function writeSeen(token: string): void {
 export function PartyNightFlow() {
   const navigate = useNavigate();
   const party = usePartySession();
+  const tv = useTVContext();
+  const { i18n } = useTranslation();
   const session = party.session;
   const [seenToken, setSeenToken] = useState<string | null>(readSeen);
 
@@ -100,15 +108,41 @@ export function PartyNightFlow() {
     [party, navigate]
   );
 
+  /**
+   * Ueberspringt Eintraege, die zur aktuellen Runde nicht mehr passen.
+   *
+   * Die Set-Liste wird zu Beginn geplant, aber Leute kommen und gehen. Ohne
+   * das hier liefe der Abend in ein Spiel, das mit der jetzigen Gruppengroesse
+   * gar nicht startet. Bewusst UEBERSPRINGEN statt loeschen: Kommt die Person
+   * zurueck, ist das Spiel wieder da.
+   */
+  const fits = useCallback(
+    (gameId: string) => {
+      const count = session?.players.length ?? 0;
+      const game = playableGames.find((g) => g.id === gameId);
+      return !game || playerFitFor(game, count) === "ok";
+    },
+    [session?.players.length]
+  );
+
   const handleContinue = useCallback(
     (nextGameId: string) => {
       markSeen();
       // Der Rueckgabewert von `advancePlaylist` ist massgeblich — er kennt den
       // frisch geschriebenen Zustand, die uebergebene Kennung nur den alten.
-      const next = party.advancePlaylist() ?? nextGameId;
+      let next = party.advancePlaylist() ?? nextGameId;
+      // Hoechstens so viele Schritte wie Eintraege — nie eine Endlosschleife,
+      // auch wenn gar kein Spiel mehr passt.
+      let guard = party.session?.playlist.length ?? 0;
+      while (next && !fits(next) && guard-- > 0) {
+        const after = party.advancePlaylist();
+        if (!after) { navigate("/party?finale=1"); return; }
+        next = after;
+      }
+      if (!next || !fits(next)) { navigate("/party?finale=1"); return; }
       goToGame(next);
     },
-    [markSeen, party, goToGame]
+    [markSeen, party, goToGame, fits, navigate]
   );
 
   /** Letztes Spiel gespielt: Playlist schliessen und die Zeremonie oeffnen. */
@@ -117,6 +151,32 @@ export function PartyNightFlow() {
     party.advancePlaylist();
     navigate("/party?finale=1");
   }, [markSeen, party, navigate]);
+
+  /**
+   * Den Zwischenstand bewusst auf den Fernseher holen.
+   *
+   * Zwischen zwei Spielen laeuft keine Spiel-Bruecke mehr — der Zustand muss
+   * also von hier aus auf die Leitung. `phase: 'between'` loest drueben die
+   * Nacht-Route aus.
+   */
+  const handleShowOnTv = useCallback(() => {
+    if (!tv?.isActive || !session) return;
+    const partyNight = buildPartyNightState(
+      session,
+      (id) => partyGameName(id, i18n.language),
+      "between",
+    );
+    tv.broadcastTV("tv-state", {
+      game: "lobby",
+      phase: "idle",
+      lang: i18n.language,
+      players: partyNight.standings.map((p) => ({
+        name: p.name, score: p.points, color: p.color, avatar: p.avatar,
+      })),
+      gameHistory: session.gameHistory,
+      partyNight,
+    });
+  }, [tv, session, i18n.language]);
 
   const handlePause = useCallback(() => {
     markSeen();
@@ -142,6 +202,7 @@ export function PartyNightFlow() {
       onPause={handlePause}
       onFinish={handleFinish}
       onSkipNext={handleSkipNext}
+      onShowOnTv={handleShowOnTv}
     />
   );
 }

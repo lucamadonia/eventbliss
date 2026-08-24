@@ -32,6 +32,7 @@ import { hasShellBackButton } from '../ui/shell-back';
 import { loadSnapshot, saveSnapshot, clearSnapshot } from '../ui/useGameSnapshot';
 import { setReportContext } from '../ui/useReportContext';
 import { TV_STALE_MS } from '../tv/useTVConnection';
+import { useInitialRoster } from '@/games/ui/useInitialRoster';
 
 const ROUND_SECONDS = 60;      // Zeit zum Einordnen (Speed-Regel)
 const SPEED_BONUS_MS = 10_000; // innerhalb 10s → Speed-Bonus (+2 🎣)
@@ -111,6 +112,13 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   // send their inputs back as actions.
   const isOnline = !!online;
   const isHost = !online || online.isHost;
+  /**
+   * Party-Besetzung uebernehmen. Bisher kannte dieser Bildschirm nur den
+   * Online-Raum, weshalb eine laufende Party hier mit zwei Platzhaltern statt
+   * ihren echten Gaesten begann. OHRWURM ist auf hoechstens vier Personen
+   * ausgelegt (Spec 2.1) — eine groessere Party wird gekappt statt abgelehnt.
+   */
+  const partyRoster = useInitialRoster({ min: 2 });
   const myId = online?.myPlayerId ?? null;
   // Whether a TV is connected to the room (host learns this via the 'tv-ready'
   // event and shares it in the snapshot). When a TV is present it is the
@@ -893,7 +901,12 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
           color: PLAYER_COLORS[i % PLAYER_COLORS.length],
           avatar: (p.name?.trim().slice(0, 1) || '?').toUpperCase(),
         }))
-      : undefined;
+      : partyRoster?.slice(0, 4).map((p, i) => ({
+          id: p.id,
+          name: p.name,
+          color: PLAYER_COLORS[i % PLAYER_COLORS.length],
+          avatar: p.avatar,
+        }));
     return <OhrwurmSetup onStart={handleStart} haptics={haptics} initialPlayers={onlineRoster} lockRoster={isOnline} />;
   }
 

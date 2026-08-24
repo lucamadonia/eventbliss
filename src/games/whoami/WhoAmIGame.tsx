@@ -17,6 +17,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
 import { hasShellBackButton } from '@/games/ui/shell-back';
+import { useInitialRoster } from '@/games/ui/useInitialRoster';
 
 type Phase = 'setup' | 'assign' | 'asking' | 'answerVote' | 'guessing' | 'guessResult' | 'gameOver';
 interface Player {
@@ -858,6 +859,12 @@ const TONE_CLASSES: Record<'primary' | 'secondary' | 'tertiary' | 'accent', { ri
 
 function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
   const isOnline = (onlinePlayers?.length ?? 0) > 0;
+  /**
+   * Party-Besetzung uebernehmen. Dieser eigene Setup-Bildschirm kannte bisher
+   * nur den Online-Raum — eine laufende Party begann hier mit Platzhaltern
+   * statt mit ihren echten Gaesten.
+   */
+  const partyRoster = useInitialRoster({ onlinePlayers, min: 2 });
   const [players, setPlayers] = useState<{ id: string; name: string; color: string; avatar: string }[]>(() => {
     if (isOnline && onlinePlayers) {
       return onlinePlayers.map((p, i) => ({
@@ -865,6 +872,14 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
         name: p.name,
         color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length],
         avatar: p.avatar ?? p.name.slice(0, 1).toUpperCase(),
+      }));
+    }
+    if (partyRoster) {
+      return partyRoster.map((p, i) => ({
+        id: p.id,
+        name: p.name,
+        color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length],
+        avatar: p.avatar,
       }));
     }
     return [

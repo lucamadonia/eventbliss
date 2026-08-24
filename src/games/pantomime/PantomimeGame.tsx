@@ -58,6 +58,7 @@ import {
   type PantomimeCategoryId,
 } from '../content/pantomime-words';
 import { drawExtra, scoreTurn, FETCH_SECONDS, type Extra } from './pantomime-extras';
+import { useInitialRoster } from '@/games/ui/useInitialRoster';
 import {
   assignTeams,
   shuffleTeams,
@@ -1104,10 +1105,18 @@ function PantomimeSetup({
   const { t } = useTranslation();
   const navigate = useNavigate();
 
+  /**
+   * Party-Besetzung uebernehmen. Dieser eigene Setup-Bildschirm kannte bisher
+   * nur den Online-Raum — eine laufende Party begann hier mit Platzhaltern
+   * statt mit ihren echten Gaesten.
+   */
+  const partyRoster = useInitialRoster({ onlinePlayers, min: 4 });
+
   const [list, setList] = useState<PlayerSetupPlayer[]>(
     onlinePlayers?.length
       ? onlinePlayers.map((p) => ({ id: p.id, name: p.name, readOnly: true }))
-      : [
+      : partyRoster?.map((p) => ({ id: p.id, name: p.name }))
+        ?? [
           { id: 'p1', name: '' },
           { id: 'p2', name: '' },
           { id: 'p3', name: '' },

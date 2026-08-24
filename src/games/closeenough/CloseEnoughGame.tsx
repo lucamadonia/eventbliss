@@ -45,6 +45,7 @@ import { NumberEntry } from './NumberEntry';
 import { RevealChart, type RevealMark } from './RevealChart';
 import { CloseEnoughAtmosphere, BullseyeBurst, CountUp } from './CloseEnoughAtmosphere';
 import { setReportContext, clearReportContext } from '@/games/ui/useReportContext';
+import { useInitialRoster } from '@/games/ui/useInitialRoster';
 import {
   loadQuestions,
   questionText,
@@ -1165,10 +1166,18 @@ function CloseEnoughSetup({
   const navigate = useNavigate();
   const lang = (i18n.language || 'de').split('-')[0];
 
+  /**
+   * Party-Besetzung uebernehmen. Dieser eigene Setup-Bildschirm kannte bisher
+   * nur den Online-Raum — eine laufende Party begann hier mit Platzhaltern
+   * statt mit ihren echten Gaesten.
+   */
+  const partyRoster = useInitialRoster({ onlinePlayers, min: 2 });
+
   const [list, setList] = useState<PlayerSetupPlayer[]>(
     onlinePlayers?.length
       ? onlinePlayers.map((p) => ({ id: p.id, name: p.name, readOnly: true }))
-      : [
+      : partyRoster?.map((p) => ({ id: p.id, name: p.name }))
+        ?? [
           { id: 'p1', name: '' },
           { id: 'p2', name: '' },
         ],

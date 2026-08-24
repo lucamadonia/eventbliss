@@ -225,6 +225,29 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // Hard mode: hide the category everywhere it would normally appear as a clue
   // (reveal cards + discussion timer + bonus guess) so the impostor flies blind.
   const [hideCategory, setHideCategory] = useState(false);
+  /**
+   * Reihenfolge zufaellig.
+   *
+   * Bisher gab es hier gar keinen Zufall: Das `shuffle` weiter unten bestimmt
+   * nur, WER Hochstapler wird, und mappt danach positionsgetreu zurueck.
+   * Wort-Anzeige, Sprechen und Abstimmen liefen immer stur in der
+   * Setup-Reihenfolge — bei jeder Runde dieselbe Abfolge.
+   */
+  const [randomOrder, setRandomOrder] = useState(false);
+  /**
+   * Die Abfolge als eigene Indexliste, NICHT durch Umsortieren von `players`:
+   * `revealIndex`, `currentSpeaker` und `votingPlayer` greifen an rund acht
+   * Stellen direkt per Index auf `players` zu, und die Punkteliste wuerde bei
+   * jedem Mischen umspringen. So bleibt die Anzeige ruhig und nur die Abfolge
+   * wechselt.
+   */
+  const [order, setOrder] = useState<number[]>([]);
+  /**
+   * Abfolge-Position -> Index in `players`. Ohne gesetzte Reihenfolge (erste
+   * Runde, oder Schalter aus) ist es die Identitaet — dann verhaelt sich alles
+   * exakt wie vorher.
+   */
+  const seat = useCallback((i: number) => order[i] ?? i, [order]);
 
   // --- Game state ---
   const [phase, setPhase] = useState<Phase>('setup');
@@ -379,6 +402,9 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
     const shuffledIndices = shuffle(players.map((_, i) => i));
     const impostorIndices = new Set(shuffledIndices.slice(0, impostorCount));
+    // Bei aktivem Schalter jede Runde neu mischen, sonst die Setup-Reihenfolge.
+    const seats = players.map((_, i) => i);
+    setOrder(randomOrder ? shuffle(seats) : seats);
 
     setPlayers((prev) =>
       prev.map((p, i) => ({
@@ -456,7 +482,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     // Mid-animation "crack" haptic
     window.setTimeout(() => { void haptics.heavy(); }, 500);
     // Final reveal haptic — gentler if safe word, sharper for impostor
-    const isImpostor = players[revealIndex]?.isImpostor;
+    const isImpostor = players[seat(revealIndex)]?.isImpostor;
     window.setTimeout(() => {
       if (isImpostor) void haptics.warning();
       else void haptics.success();
@@ -466,9 +492,15 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   };
 
   // --- Mark spoken ---
+  /**
+   * `index` ist die Position in der ABFOLGE, nicht in `players`. Bei gemischter
+   * Reihenfolge sind das zwei verschiedene Dinge — der Haken muss beim
+   * richtigen Menschen landen, weitergeschaltet wird aber entlang der Abfolge.
+   */
   const markSpoken = (index: number) => {
+    const player = seat(index);
     setPlayers((prev) =>
-      prev.map((p, i) => (i === index ? { ...p, hasSpoken: true } : p))
+      prev.map((p, i) => (i === player ? { ...p, hasSpoken: true } : p))
     );
     if (index < players.length - 1) {
       setCurrentSpeaker(index + 1);
@@ -484,7 +516,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
   // --- Cast vote ---
   const castVote = (targetId: string) => {
-    const voter = players[votingPlayer];
+    const voter = players[seat(votingPlayer)];
     if (targetId === voter.id) return;
 
     setPlayers((prev) =>
@@ -549,6 +581,9 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
     const shuffledIndices = shuffle(players.map((_, i) => i));
     const impostorIndices = new Set(shuffledIndices.slice(0, impostorCount));
+    // Bei aktivem Schalter jede Runde neu mischen, sonst die Setup-Reihenfolge.
+    const seats = players.map((_, i) => i);
+    setOrder(randomOrder ? shuffle(seats) : seats);
 
     setPlayers((prev) =>
       prev.map((p, i) => ({
@@ -731,6 +766,40 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                 />
               </span>
             </button>
+
+            <button
+              type="button"
+              onClick={() => setRandomOrder((v) => !v)}
+              aria-pressed={randomOrder}
+              className={cn(
+                'w-full flex items-center gap-3 py-3 px-4 rounded-2xl border-2 text-left transition-colors',
+                randomOrder
+                  ? 'border-[#df8eff] bg-[#df8eff]/10'
+                  : 'border-[#44484f] bg-[#151a21]/40 hover:border-[#44484f]/60'
+              )}
+            >
+              <div className="flex-1 min-w-0">
+                <p className={cn('text-sm font-semibold', randomOrder ? 'text-[#df8eff]' : 'text-[#f1f3fc]')}>
+                  {t('games.impostor.randomOrder')}
+                </p>
+                <p className="text-xs text-[#a8abb3] mt-0.5">
+                  {t('games.impostor.randomOrderHint')}
+                </p>
+              </div>
+              <span
+                className={cn(
+                  'shrink-0 w-12 h-7 rounded-full p-0.5 transition-colors',
+                  randomOrder ? 'bg-[#df8eff]' : 'bg-[#44484f]'
+                )}
+              >
+                <span
+                  className={cn(
+                    'block w-6 h-6 rounded-full bg-white transition-transform',
+                    randomOrder ? 'translate-x-5' : 'translate-x-0'
+                  )}
+                />
+              </span>
+            </button>
           </section>
 
           {/* Start */}
@@ -756,7 +825,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
   // --- WORD REVEAL ---
   if (phase === 'wordReveal') {
-    const currentPlayer = players[revealIndex];
+    const currentPlayer = players[seat(revealIndex)];
     const phaseNum = String(revealIndex + 1).padStart(2, '0');
     const totalPhases = String(players.length).padStart(2, '0');
     return (
@@ -1153,7 +1222,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
             {/* Players ready mini grid */}
             <div className="grid grid-cols-4 gap-3 pt-4">
-              {players.map((p, i) => {
+              {(order.length ? order : players.map((_, i) => i)).map((pi, i) => {
+                const p = players[pi];
                 const done = i < revealIndex;
                 const current = i === revealIndex;
                 return (
@@ -1277,7 +1347,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               />
             </div>
             <div className="space-y-2">
-              {players.map((player, i) => {
+              {(order.length ? order : players.map((_, i) => i)).map((pi, i) => {
+                const player = players[pi];
                 const isActive = i === currentSpeaker && !player.hasSpoken;
                 return (
                   <motion.button
@@ -1339,7 +1410,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
   // --- VOTING ---
   if (phase === 'voting') {
-    const voter = players[votingPlayer];
+    const voter = players[seat(votingPlayer)];
     return (
       <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
         {exitDialog}

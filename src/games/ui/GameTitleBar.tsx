@@ -4,6 +4,7 @@
  */
 import { motion } from 'framer-motion';
 import { Flag, HelpCircle } from 'lucide-react';
+import { useTranslation } from "react-i18next";
 
 const GAME_NAMES: Record<string, string> = {
   bomb: 'Tickende Bombe',
@@ -50,6 +51,7 @@ interface GameTitleBarProps {
 }
 
 export function GameTitleBar({ gameId, onHelpClick, onReportClick }: GameTitleBarProps) {
+  const { t } = useTranslation();
   const name = GAME_NAMES[gameId] || gameId;
   const icon = GAME_ICONS[gameId] || '🎮';
 
@@ -69,7 +71,7 @@ export function GameTitleBar({ gameId, onHelpClick, onReportClick }: GameTitleBa
           whileTap={{ scale: 0.8 }}
           onClick={(e) => { e.stopPropagation(); onHelpClick(); }}
           className="w-6 h-6 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center hover:bg-white/10 transition-colors ml-0.5"
-          title="Spielregeln"
+          title={t('gameRules.howToPlay')}
         >
           <HelpCircle className="w-3.5 h-3.5 text-white/30" />
         </motion.button>
@@ -84,8 +86,8 @@ export function GameTitleBar({ gameId, onHelpClick, onReportClick }: GameTitleBa
             whileTap={{ scale: 0.8 }}
             onClick={(e) => { e.stopPropagation(); onReportClick(); }}
             className="w-6 h-6 rounded-full bg-white/[0.06] border border-white/[0.08] flex items-center justify-center hover:bg-white/10 transition-colors"
-            title="Fehler melden"
-            aria-label="Fehler melden"
+            title={t('games.report.title')}
+            aria-label={t('games.report.title')}
           >
             <Flag className="w-3 h-3 text-white/30" />
           </motion.button>

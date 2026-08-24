@@ -112,6 +112,38 @@ export interface SetlistGame extends PlayableGame {
   locked: boolean;
   /** Geschaetzte Dauer bei der aktuellen Spielerzahl. */
   minutes: number;
+  /**
+   * Passt die Gruppengroesse? `'tooFew'`/`'tooMany'` heisst: waehlbar ist es
+   * jetzt nicht, aber es bleibt sichtbar — wer ein bekanntes Spiel vermisst,
+   * soll den Grund sehen statt zu raten.
+   */
+  playerFit: PlayerFit;
+}
+
+export type PlayerFit = "ok" | "tooFew" | "tooMany";
+
+/**
+ * Passt ein Spiel zur aktuellen Runde?
+ *
+ * Bewusst KEINE reine Mindestpruefung: OHRWURM ist auf hoechstens vier
+ * Personen ausgelegt, bei acht Gaesten passt es nach oben nicht.
+ * `playerCount === 0` (noch niemand eingetragen) sperrt nichts — sonst waere
+ * beim Planen zuerst alles grau.
+ */
+export function playerFitFor(game: PlayableGame, playerCount: number): PlayerFit {
+  if (playerCount <= 0) return "ok";
+  if (playerCount < game.minPlayers) return "tooFew";
+  if (playerCount > game.maxPlayers) return "tooMany";
+  return "ok";
+}
+
+/** Wie `findLockedSetlistEntries`, aber fuer die Gruppengroesse. */
+export function findUnfitSetlistEntries(gameIds: string[], playerCount: number): string[] {
+  if (playerCount <= 0) return [];
+  return gameIds.filter((id) => {
+    const game = playableGames.find((g) => g.id === id);
+    return !!game && playerFitFor(game, playerCount) !== "ok";
+  });
 }
 
 export interface SetlistCatalogOptions {
@@ -141,6 +173,7 @@ export function buildSetlistCatalog(options: SetlistCatalogOptions): SetlistGame
       freePlaysLeft,
       locked: isPremiumGame && !premiumUnknown && !isPremium && freePlaysLeft <= 0,
       minutes: estimateGameMinutes(game.id, playerCount),
+      playerFit: playerFitFor(game, playerCount),
     };
   });
 }

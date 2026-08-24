@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Pause } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
@@ -13,6 +14,7 @@ interface GameHUDProps {
 }
 
 export function GameHUD({ round, maxRounds, score, timer, currentPlayer, onPause }: GameHUDProps) {
+  const { t } = useTranslation();
   const color = getPlayerColor(currentPlayer.index);
   const timerUrgent = timer <= 5;
   const minutes = Math.floor(timer / 60);
@@ -29,7 +31,7 @@ export function GameHUD({ round, maxRounds, score, timer, currentPlayer, onPause
       <div className="mx-auto max-w-lg flex items-center justify-between rounded-b-2xl bg-gray-900/80 backdrop-blur-md border border-gray-700/50 px-4 py-2 shadow-lg">
         {/* Round indicator */}
         <div className="flex flex-col items-center min-w-[60px]">
-          <span className="text-[10px] uppercase tracking-wider text-gray-400">Runde</span>
+          <span className="text-[10px] uppercase tracking-wider text-gray-400">{t('tv.round')}</span>
           <span className="text-sm font-bold text-white">
             {round}/{maxRounds}
           </span>
@@ -62,7 +64,7 @@ export function GameHUD({ round, maxRounds, score, timer, currentPlayer, onPause
 
         {/* Score */}
         <div className="flex flex-col items-center min-w-[50px]">
-          <span className="text-[10px] uppercase tracking-wider text-gray-400">Punkte</span>
+          <span className="text-[10px] uppercase tracking-wider text-gray-400">{t('games.setup.pointsLabel')}</span>
           <span className="text-sm font-bold text-yellow-400">{score}</span>
         </div>
 

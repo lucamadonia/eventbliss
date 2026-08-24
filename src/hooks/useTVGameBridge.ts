@@ -51,7 +51,7 @@ const emptyPartySession = () => null;
  * `lng` wird ausdruecklich mitgegeben, damit ein Sprachwechsel die Namen auf
  * dem Fernseher neu uebersetzt statt die zwischengespeicherten zu behalten.
  */
-function partyGameName(gameId: string, lng?: string): string {
+export function partyGameName(gameId: string, lng?: string): string {
   const game = playableGames.find((g) => g.id === gameId);
   if (!game) return gameId;
   const translated = i18n.t(game.nameKey, { lng });
@@ -106,6 +106,10 @@ export function useTVGameBridge(
     // Broadcast to TV
     tv.broadcastTV("tv-state", {
       game: gameId,
+      // Die Sprache des TELEFONS. Der Fernseher ist ein fremdes Geraet und
+      // wuerde sonst seine eigene Browsersprache nehmen — bei einem deutschen
+      // Fernseher also Deutsch, egal was der Gastgeber eingestellt hat.
+      lang: i18n.language,
       ...state,
       // Fehlt die Party, fehlt auch der Schluessel — der Vertrag sieht ein
       // `tv-state` ohne `partyNight` ausdruecklich als unveraendert vor.

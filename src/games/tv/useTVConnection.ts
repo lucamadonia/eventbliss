@@ -2,6 +2,51 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/i18n';
 
+/**
+ * Uebernimmt die Sprache des Telefons.
+ *
+ * Der Fernseher laeuft auf einem FREMDEN Geraet: ohne diese Uebernahme
+ * ermittelt i18next seine Sprache aus dessen `navigator.language` — bei einem
+ * deutschen Fernseher also Deutsch, egal was der Gastgeber eingestellt hat.
+ * Genau das war der Grund, warum auf dem Fernseher alles deutsch erschien,
+ * obwohl kein einziger Uebersetzungsschluessel fehlte.
+ *
+ * Das Nachladen des Sprachpakets passiert von selbst — src/i18n/index.ts
+ * haengt `loadLocale` an das `languageChanged`-Ereignis.
+ */
+function applyPhoneLanguage(payload: unknown): void {
+  const lang = (payload as { lang?: unknown } | null)?.lang;
+  if (typeof lang !== 'string' || !lang) return;
+  if (lang.split('-')[0] === i18n.language?.split('-')[0]) return;
+  // Abgeschirmt und IMMER nach `setGameState`: `changeLanguage` stoesst einen
+  // Nachlade- und Rerender-Vorgang an, der den Ereignis-Handler verlassen
+  // kann. Stand die Zeile vorher, kam der Zustand nie an und der Fernseher
+  // blieb in der Lobby stehen — mit korrekt uebersetzter Lobby, was die
+  // Fehlersuche zusaetzlich in die Irre fuehrte. Das Bild darf nie an der
+  // Uebersetzung haengen.
+  try {
+    void i18n.changeLanguage(lang);
+  } catch {
+    // Sprache nicht ladbar: der Fernseher bleibt bei seiner — kein Grund,
+    // die Uebertragung zu verlieren.
+  }
+}
+
+/**
+ * Zuletzt empfangener Zustand je Raum, ABSICHTLICH ausserhalb von React.
+ *
+ * Ein Sprachwechsel laesst den Baum ueber `TVScreen` suspendieren; die
+ * Komponente wird dabei neu gemountet und verlor bisher den gesamten
+ * Uebertragungszustand. Sichtbar wurde das als Fernseher, der nach dem ersten
+ * Zustand in die Lobby zurueckfiel — in der richtigen Sprache, was die
+ * Fehlersuche in die Irre fuehrte.
+ *
+ * Der Fernseher soll einen Neuaufbau ueberstehen, ohne auf den naechsten
+ * Broadcast zu warten: zwischen zwei Spielen kann Minuten lang keiner kommen.
+ */
+const lastStateByRoom = new Map<string, TVState>();
+const startedRooms = new Set<string>();
+
 /** Takt, in dem der TV seine Anwesenheit erneut meldet (siehe Heartbeat unten). */
 export const TV_HEARTBEAT_MS = 15_000;
 /** Nach so langer Stille gilt der TV als weg. Bewusst ein Vielfaches des
@@ -15,13 +60,19 @@ export interface TVScore { name: string; score: number; color: string; }
 export function useTVConnection(roomCode: string) {
   const [isConnected, setIsConnected] = useState(false);
   const [players, setPlayers] = useState<TVPlayer[]>([]);
-  const [gameState, setGameState] = useState<TVState | null>(null);
+  const [gameState, setGameStateRaw] = useState<TVState | null>(
+    () => lastStateByRoom.get(roomCode) ?? null
+  );
+  const setGameState = (next: TVState) => {
+    lastStateByRoom.set(roomCode, next);
+    setGameStateRaw(next);
+  };
   const [leaderboard, setLeaderboard] = useState<TVScore[]>([]);
   const [drawing, setDrawing] = useState<unknown[]>([]);
-  const [gameStarted, setGameStarted] = useState(false);
+  const [gameStarted, setGameStarted] = useState(() => startedRooms.has(roomCode));
   const [gameEnded, setGameEnded] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const gameStartedRef = useRef(false);
+  const gameStartedRef = useRef(startedRooms.has(roomCode));
 
   useEffect(() => {
     let bothSubscribed = 0;
@@ -47,6 +98,7 @@ export function useTVConnection(roomCode: string) {
     const markGameStarted = () => {
       if (!gameStartedRef.current) {
         gameStartedRef.current = true;
+        startedRooms.add(roomCode);
         setGameStarted(true);
         // Re-announce TV presence now that a game is actively broadcasting.
         // Covers the common case where the TV joined during the lobby (before
@@ -66,6 +118,7 @@ export function useTVConnection(roomCode: string) {
 
     channel.on('broadcast', { event: 'tv-state' }, ({ payload }) => {
       setGameState(payload as TVState);
+      applyPhoneLanguage(payload);
       // Auto-set gameStarted if we receive any tv-state — handles case where
       // TV connected AFTER game-start was broadcast (timing issue)
       markGameStarted();
@@ -101,6 +154,7 @@ export function useTVConnection(roomCode: string) {
     // Mirror all TV events from the tv-room channel (offline TV mode)
     tvChannel.on('broadcast', { event: 'tv-state' }, ({ payload }) => {
       setGameState(payload as TVState);
+      applyPhoneLanguage(payload);
       markGameStarted();
     });
     tvChannel.on('broadcast', { event: 'tv-leaderboard' }, ({ payload }) => { setLeaderboard(((payload as any).scores || []) as TVScore[]); });

@@ -36,6 +36,7 @@ import {
   type PixelPuzzle,
 } from './pixeljagd-content';
 import { loadExtraPuzzles } from './pixeljagd-extra';
+import { useInitialRoster } from '@/games/ui/useInitialRoster';
 
 // Design-Tokens — eigene Farbwelt, gleiche Struktur wie OW in OhrwurmGame.
 const PJ = {
@@ -671,10 +672,18 @@ function PixeljagdSetup({ onStart, onlinePlayers, contentReady, allowText, toast
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  /**
+   * Party-Besetzung uebernehmen. Dieser eigene Setup-Bildschirm kannte bisher
+   * nur den Online-Raum — eine laufende Party begann hier mit Platzhaltern
+   * statt mit ihren echten Gaesten.
+   */
+  const partyRoster = useInitialRoster({ onlinePlayers, min: 2 });
+
   const [list, setList] = useState<PlayerSetupPlayer[]>(
     onlinePlayers?.length
       ? onlinePlayers.map((p) => ({ id: p.id, name: p.name, readOnly: true }))
-      : [{ id: 'p1', name: '' }, { id: 'p2', name: '' }],
+      : partyRoster?.map((p) => ({ id: p.id, name: p.name }))
+        ?? [{ id: 'p1', name: '' }, { id: 'p2', name: '' }],
   );
   const [mode, setMode] = useState<ModeId>('klassisch');
   const [answerMode, setAnswerMode] = useState<AnswerMode>('buzzer');

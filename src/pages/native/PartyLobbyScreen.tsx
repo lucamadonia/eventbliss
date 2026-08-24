@@ -34,7 +34,7 @@ import { getBaseUrl } from "@/lib/platform";
 const MAX_PLAYERS = 12;
 
 export default function PartyLobbyScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
   const party = usePartySession();
@@ -176,7 +176,7 @@ export default function PartyLobbyScreen() {
     if (!party.tvCode) return;
     haptics.success();
     try {
-      await navigator.clipboard.writeText(`${getBaseUrl()}/tv/${party.tvCode}`);
+      await navigator.clipboard.writeText(`${getBaseUrl()}/tv/${party.tvCode}?lang=${i18n.language}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {

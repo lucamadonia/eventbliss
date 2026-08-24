@@ -51,12 +51,18 @@ export function PlayerSetup({
   min = 2,
   max = 20,
   accent = DEFAULT_ACCENT,
-  label = 'Spieler',
+  // KEIN Vorgabewert mehr: Ein hartkodiertes 'Spieler' landete ueber
+  // games.setup.addEntity ("Add {{label}}") als "Add Spieler" in JEDER
+  // Sprache. Im Deutschen fiel es nicht auf, weil dort zufaellig
+  // "Spieler hinzufuegen" herauskam. Der Rueckfall unten ist uebersetzt.
+  label,
   hint,
   maxNameLength = 20,
   onImportNames,
 }: PlayerSetupProps) {
   const { t } = useTranslation();
+  // Faellt der Aufrufer nichts mit, gilt das uebersetzte "Spieler"/"Players".
+  const entity = label ?? t('games.setup.players');
   const haptics = useHaptics();
   const reduce = useReducedMotion();
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -82,7 +88,7 @@ export function PlayerSetup({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
-          {label} ({players.length})
+          {entity} ({players.length})
         </h2>
         {hint}
       </div>
@@ -109,14 +115,14 @@ export function PlayerSetup({
                   type="text"
                   value={player.name}
                   onChange={(e) => onRename(player.id, e.target.value)}
-                  placeholder={`${label} ${i + 1}`}
+                  placeholder={`${entity} ${i + 1}`}
                   maxLength={maxNameLength}
                   inputMode="text"
                   autoCorrect="off"
                   autoCapitalize="words"
                   spellCheck={false}
                   readOnly={player.readOnly}
-                  aria-label={`Name ${label} ${i + 1}`}
+                  aria-label={t('games.setup.nameOf', { label: entity, n: i + 1 })}
                   className={cn(
                     'flex-1 min-w-0 rounded-xl px-3.5 py-2.5 text-base text-white bg-gray-800/60 border border-gray-700',
                     'placeholder:text-gray-500 transition-[border-color,box-shadow] duration-150',
@@ -140,7 +146,7 @@ export function PlayerSetup({
                     type="button"
                     onClick={() => { if (canRemove) handleRemove(player.id); }}
                     disabled={!canRemove}
-                    aria-label={`${t('games.setup.removePlayer')}: ${label} ${i + 1}`}
+                    aria-label={`${t('games.setup.removePlayer')}: ${entity} ${i + 1}`}
                     title={!canRemove ? t('games.setup.minPlayers', { count: min }) : undefined}
                     className={cn(
                       'shrink-0 grid place-items-center w-11 h-11 rounded-xl transition-colors duration-150',
@@ -172,7 +178,7 @@ export function PlayerSetup({
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-gray-700 text-gray-400 text-sm font-medium transition-colors duration-150 hover:border-[var(--accent)] hover:text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/45"
             >
               <Plus className="w-4 h-4" />
-              {t('games.setup.addEntity', { label })}
+              {t('games.setup.addEntity', { label: entity })}
             </motion.button>
           )}
         </AnimatePresence>

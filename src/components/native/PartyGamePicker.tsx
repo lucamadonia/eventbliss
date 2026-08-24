@@ -25,6 +25,7 @@ import { SetlistTray } from "@/components/native/party/SetlistTray";
 import {
   buildSetlistCatalog,
   findLockedSetlistEntries,
+  findUnfitSetlistEntries,
   moveSetlistEntry,
   setlistCatalogIndex,
   toggleSetlistEntry,
@@ -77,7 +78,13 @@ export function PartyGamePicker({
    * ("start").
    */
   const [gate, setGate] = useState<
-    { kind: "card"; id: string } | { kind: "start"; ids: string[] } | null
+    | { kind: "card"; id: string }
+    | { kind: "start"; ids: string[] }
+    // Dritter Grund: die Gruppengroesse passt nicht. Bewusst eine eigene
+    // Variante — bei zu wenigen Leuten waere "Premium freischalten" die
+    // falsche Antwort.
+    | { kind: "players"; id: string; fit: "tooFew" | "tooMany" }
+    | null
   >(null);
 
   // Beim Oeffnen frisch aufsetzen: Die Gratis-Runden koennen sich seit dem
@@ -110,6 +117,11 @@ export function PartyGamePicker({
   }, [search, catalog, t]);
 
   const handleTap = (game: SetlistGame) => {
+    if (game.playerFit !== "ok") {
+      haptics.warning();
+      setGate({ kind: "players", id: game.id, fit: game.playerFit });
+      return;
+    }
     if (game.locked) {
       haptics.warning();
       setGate({ kind: "card", id: game.id });
@@ -143,6 +155,15 @@ export function PartyGamePicker({
       setGate({ kind: "start", ids: blocked });
       return;
     }
+    // Dieselbe zweite Pruefung fuer die Gruppengroesse: Zwischen dem Planen
+    // und dem Startknopf kann jemand die Party verlassen haben.
+    const unfit = findUnfitSetlistEntries(ids, playerCount);
+    if (unfit.length > 0) {
+      haptics.warning();
+      const first = catalog.find((g) => g.id === unfit[0]);
+      setGate({ kind: "players", id: unfit[0], fit: first?.playerFit === "tooMany" ? "tooMany" : "tooFew" });
+      return;
+    }
     onStartSetlist(ids);
   };
 
@@ -157,12 +178,18 @@ export function PartyGamePicker({
     }
   };
 
-  const gateNames = gate
-    ? (gate.kind === "card" ? [gate.id] : gate.ids).map((id) => {
-        const game = catalogIndex.get(id);
-        return game ? t(game.nameKey) : id;
-      })
-    : [];
+  const gateIds = gate ? (gate.kind === "start" ? gate.ids : [gate.id]) : [];
+  const gateNames = gateIds.map((id) => {
+    const game = catalogIndex.get(id);
+    return game ? t(game.nameKey) : id;
+  });
+  /** Die Grenze, um die es geht — fuer den Satz "Ab 4 Spielern". */
+  const gateLimit =
+    gate?.kind === "players"
+      ? gate.fit === "tooFew"
+        ? catalogIndex.get(gate.id)?.minPlayers ?? 0
+        : catalogIndex.get(gate.id)?.maxPlayers ?? 0
+      : 0;
 
   return (
     <NativeOverlayPortal>
@@ -280,7 +307,7 @@ export function PartyGamePicker({
                       key={game.id}
                       type="button"
                       variants={staggerItem}
-                      whileTap={{ scale: game.locked ? 1 : 0.96 }}
+                      whileTap={{ scale: game.locked || game.playerFit !== "ok" ? 1 : 0.96 }}
                       transition={spring.snappy}
                       onClick={() => handleTap(game)}
                       aria-pressed={planning ? picked : undefined}
@@ -289,7 +316,7 @@ export function PartyGamePicker({
                         picked
                           ? "border-[#df8eff] ring-2 ring-[#df8eff]/60 shadow-[0_0_22px_rgba(223,142,255,0.35)]"
                           : "border-border",
-                        game.locked && "opacity-50"
+                        (game.locked || game.playerFit !== "ok") && "opacity-50"
                       )}
                     >
                       <div className="absolute inset-0">
@@ -323,7 +350,17 @@ export function PartyGamePicker({
                           </span>
                         ) : <span />}
 
-                        {game.locked ? (
+                        {game.playerFit !== "ok" ? (
+                          /* Eigenes Abzeichen mit der Zahl — nicht das Schloss,
+                             damit "zu wenige Leute" und "Premium" auf einen
+                             Blick unterscheidbar bleiben. */
+                          <span className="px-2 h-7 rounded-full bg-black/60 backdrop-blur flex items-center gap-1 border border-[#8ff5ff]/40">
+                            <Users className="w-3 h-3 text-[#8ff5ff]" aria-hidden />
+                            <span className="text-[10px] font-bold text-[#8ff5ff]">
+                              {game.playerFit === "tooFew" ? `${game.minPlayers}+` : `≤${game.maxPlayers}`}
+                            </span>
+                          </span>
+                        ) : game.locked ? (
                           <span className="w-7 h-7 rounded-full bg-black/60 backdrop-blur flex items-center justify-center border border-amber-400/40">
                             <Lock className="w-3.5 h-3.5 text-amber-300" aria-hidden />
                           </span>
@@ -394,7 +431,10 @@ export function PartyGamePicker({
                   onClick={() => setGate(null)}
                 >
                   <motion.div
-                    className="w-full rounded-t-3xl border-t border-x border-amber-400/25 bg-card p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] space-y-3"
+                    className={cn(
+                      "w-full rounded-t-3xl border-t border-x bg-card p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] space-y-3",
+                      gate.kind === "players" ? "border-[#8ff5ff]/25" : "border-amber-400/25"
+                    )}
                     initial={reduce ? { opacity: 0 } : { y: 220 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={reduce ? { opacity: 0 } : { y: 220 }}
@@ -402,12 +442,21 @@ export function PartyGamePicker({
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex items-center gap-3">
-                      <span className="w-11 h-11 rounded-2xl bg-amber-400/15 border border-amber-400/30 flex items-center justify-center shrink-0">
-                        <Crown className="w-5 h-5 text-amber-400" aria-hidden />
+                      <span className={cn(
+                        "w-11 h-11 rounded-2xl border flex items-center justify-center shrink-0",
+                        gate.kind === "players"
+                          ? "bg-[#8ff5ff]/15 border-[#8ff5ff]/30"
+                          : "bg-amber-400/15 border-amber-400/30"
+                      )}>
+                        {gate.kind === "players"
+                          ? <Users className="w-5 h-5 text-[#8ff5ff]" aria-hidden />
+                          : <Crown className="w-5 h-5 text-amber-400" aria-hidden />}
                       </span>
                       <div className="min-w-0 text-start">
                         <p className="text-sm font-display font-bold text-foreground">
-                          {gate.kind === "start"
+                          {gate.kind === "players"
+                            ? t("nativeExtra.partyNight.playersTitle")
+                            : gate.kind === "start"
                             ? t("nativeExtra.partyNight.blockedTitle")
                             : t("nativeExtra.partyNight.lockedTitle")}
                         </p>
@@ -417,10 +466,18 @@ export function PartyGamePicker({
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {gate.kind === "start"
+                      {gate.kind === "players"
+                        ? t(
+                            gate.fit === "tooFew"
+                              ? "nativeExtra.partyNight.playersTooFew"
+                              : "nativeExtra.partyNight.playersTooMany",
+                            { n: gateLimit, have: playerCount }
+                          )
+                        : gate.kind === "start"
                         ? t("nativeExtra.partyNight.blockedBody")
                         : t("nativeExtra.partyNight.lockedBody")}
                     </p>
+                    {gate.kind !== "players" && (
                     <motion.button
                       type="button"
                       whileTap={{ scale: 0.97 }}
@@ -429,6 +486,7 @@ export function PartyGamePicker({
                     >
                       {t("nativeExtra.partyNight.unlockCta")}
                     </motion.button>
+                    )}
                     {gate.kind === "start" && ids.length > gate.ids.length && (
                       <button
                         type="button"

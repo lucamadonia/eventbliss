@@ -20,6 +20,7 @@ import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
 import { GameSetupBackLink } from '@/games/ui/GameSetupBackLink';
 import { hasShellBackButton } from '@/games/ui/shell-back';
+import { useInitialRoster } from '@/games/ui/useInitialRoster';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -925,6 +926,13 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
   const { t } = useTranslation();
   const navigate = useNavigate();
   const isOnline = (onlinePlayers?.length ?? 0) > 0;
+  /**
+   * Party-Besetzung uebernehmen. Beim Umbau auf dieses eigene Bento-Setup
+   * (Commit 977653d) ging der Party-Zweig verloren, den der geteilte
+   * `GameSetup` mitgebracht hatte — seither begann This or That mitten in
+   * einer Party mit zwei Platzhaltern.
+   */
+  const partyRoster = useInitialRoster({ onlinePlayers, min: 2 });
 
   const [modeId, setModeId] = useState<string>('classic');
   const [rounds, setRounds] = useState<number>(15);
@@ -934,6 +942,13 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
         id: p.id, name: p.name,
         color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length],
         avatar: p.avatar ?? p.name.slice(0, 1).toUpperCase(),
+      }));
+    }
+    if (partyRoster) {
+      return partyRoster.map((p, i) => ({
+        id: p.id, name: p.name,
+        color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length],
+        avatar: p.avatar,
       }));
     }
     return [

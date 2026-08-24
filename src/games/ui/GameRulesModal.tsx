@@ -267,12 +267,13 @@ export function useAutoShowRules(gameId: string) {
  * Compact help button for game headers — shows rules on tap.
  */
 export function RulesHelpButton({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation();
   return (
     <motion.button
       whileTap={{ scale: 0.85 }}
       onClick={(e) => { e.stopPropagation(); onClick(); }}
       className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center hover:bg-white/10 active:bg-white/15 transition-colors"
-      title="Spielregeln"
+      title={t('gameRules.howToPlay')}
     >
       <HelpCircle className="w-[18px] h-[18px] text-white/40" />
     </motion.button>

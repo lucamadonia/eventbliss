@@ -110,12 +110,18 @@ export function derivePartyPlaylist(
 /**
  * Vollstaendiger `partyNight`-Block fuer die laufende `tv-state`-Uebertragung.
  *
- * Immer `phase: 'ingame'` — die Uebergaenge nach `'between'` und `'finale'`
- * gehoeren der Playlist-Steuerung, nicht der Spiel-Bruecke.
+ * `phase` steuert die Szene auf dem Fernseher und wird vom AUFRUFER gesetzt:
+ * die Spiel-Bruecke sendet `'ingame'`, der Uebergang zwischen zwei Spielen
+ * `'between'`, die Schluss-Zeremonie `'finale'`. Frueher stand hier fest
+ * `'ingame'` mit dem Hinweis, die Uebergaenge gehoerten "der Playlist-
+ * Steuerung" — die gab es nie, und damit waren TVPartyStandings und
+ * TVPartyFinale unerreichbar. Der Vorgabewert haelt die Spiel-Bruecke
+ * unveraendert, ohne dass sie den Parameter kennen muss.
  */
 export function buildPartyNightState(
   session: PartySession,
-  nameFor: (gameId: string) => string
+  nameFor: (gameId: string) => string,
+  phase: PartyNightState["phase"] = "ingame"
 ): PartyNightState {
   const lastEntry =
     session.gameHistory.length > 0
@@ -130,7 +136,7 @@ export function buildPartyNightState(
     // `GameHistoryEntry` enthaelt alle Felder von `PartyGameResult` — die
     // Historie geht ohne Umformung auf die Leitung.
     history: session.gameHistory as PartyGameResult[],
-    phase: "ingame",
+    phase,
     ...(lastEntry ? { lastGameName: lastEntry.gameName } : {}),
   };
 }

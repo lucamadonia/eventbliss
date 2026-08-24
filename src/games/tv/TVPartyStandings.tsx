@@ -8,6 +8,7 @@ import { tvGrid, tvPanel, tvType, tvActiveRing } from './tv-tokens';
 import { useTVAudio } from './TVAudioManager';
 import TVPartyPodium from './components/TVPartyPodium';
 import TVPartyRoadmap from './components/TVPartyRoadmap';
+import TVPartyMap from './components/TVPartyMap';
 import TVRankDelta from './components/TVRankDelta';
 import type { PartyNightState, PartyStanding } from './party-types';
 
@@ -147,6 +148,32 @@ export default function TVPartyStandings({ party }: { party: PartyNightState }) 
       />
 
       <ConfettiBurst active={beat >= 1 && leaderChanged && ambient} count={40} />
+
+      {/*
+        Takt 3: Die Nacht-Route uebernimmt den ganzen Bildschirm und die Gruppe
+        springt sichtbar auf das naechste Feld. Bewusst als Ueberblendung UEBER
+        das Raster statt als vierte Spalte darin — der Sprung ist der Moment,
+        auf den der Abend hinlaeuft, und der braucht die volle Flaeche.
+        Die schmale Roadmap links bleibt fuer die Takte davor bestehen.
+      */}
+      {party.playlist.length > 0 && (
+        <motion.div
+          className="absolute inset-0 z-30"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: beat >= 3 ? 1 : 0 }}
+          transition={{ duration: 0.55 }}
+          style={{ pointerEvents: 'none' }}
+        >
+          {beat >= 3 && (
+            <TVPartyMap
+              playlist={party.playlist}
+              index={party.index}
+              standings={party.standings}
+              travel
+            />
+          )}
+        </motion.div>
+      )}
 
       {/* ── Left rail: the evening's roadmap ── */}
       <TVPartyRoadmap

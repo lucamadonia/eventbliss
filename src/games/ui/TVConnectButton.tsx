@@ -18,7 +18,7 @@ interface Props {
 }
 
 export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -30,7 +30,9 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
 
   const handleCopy = async () => {
     haptics.success();
-    const url = `${getBaseUrl()}/tv/${tvCode}`;
+    // ?lang: der Fernseher ist ein fremdes Geraet und kennt die Sprache
+    // des Gastgebers sonst erst nach dem ersten Broadcast.
+    const url = `${getBaseUrl()}/tv/${tvCode}?lang=${i18n.language}`;
     await navigator.clipboard.writeText(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);

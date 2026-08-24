@@ -1,7 +1,8 @@
-import { lazy, Suspense, useMemo, useEffect, useRef } from 'react';
+import { lazy, Suspense, useMemo, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n';
 import TVParticles from './TVParticles';
 import TVLobby from './TVLobby';
 import TVLeaderboard from './TVLeaderboard';
@@ -37,6 +38,7 @@ const TVSmartFallback = lazy(() => import('./games/TVSmartFallback'));
 
 // Party Night scenes — the cross-game evening, not a single game
 const TVPartyStandings = lazy(() => import('./TVPartyStandings'));
+const TVPartyMap = lazy(() => import('./components/TVPartyMap'));
 const TVPartyFinale = lazy(() => import('./TVPartyFinale'));
 
 const TVFallback = (
@@ -81,8 +83,27 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
 export default function TVScreen() {
   const { roomCode } = useParams<{ roomCode: string }>();
   const code = roomCode || '';
+  /**
+   * Sprache aus dem Link, noch bevor das Telefon zum ersten Mal sendet —
+   * sonst steht die TV-Lobby in der Browsersprache des Fernsehers da.
+   * Der Broadcast korrigiert spaeter, falls der Gastgeber umschaltet.
+   */
+  useEffect(() => {
+    const lang = new URLSearchParams(window.location.search).get('lang');
+    if (!lang) return;
+    if (lang.split('-')[0] === i18n.language?.split('-')[0]) return;
+    void i18n.changeLanguage(lang);
+  }, []);
   const { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded, error } = useTVConnection(code);
   const { t } = useTranslation();
+  /**
+   * Manuelle Einblendung der Nacht-Route. Rein oertlich auf dem Fernseher —
+   * der Zwischenstand liegt ohnehin schon im empfangenen Zustand, es braucht
+   * also keine Rueckleitung zum Telefon und es funktioniert auch, waehrend
+   * dort gerade ein Spiel laeuft.
+   */
+  const [manualMap, setManualMap] = useState(false);
+  const [hintSeen, setHintSeen] = useState(false);
 
   const scores = useMemo(() => {
     if (leaderboard.length > 0) return leaderboard;
@@ -149,17 +170,33 @@ export default function TVScreen() {
 
   return (
     <div className="min-h-screen bg-[#060810] text-[#f1f3fc] overflow-hidden font-game">
-      {/* Sound enable overlay */}
-      {!audio.isEnabled && (
-        <div
-          className="fixed inset-0 z-[200] cursor-pointer"
-          onClick={audio.enable}
-        >
+      {/*
+        Eine einzige Klickflaeche fuer beides: solange der Ton nicht frei ist,
+        gibt der erste Klick ihn frei; danach blendet jeder Klick die
+        Nacht-Route ein und aus. Bewusst KEIN schwebender Knopf — die Hausregel
+        weiter unten (kein Chrome ueber dem Spielbild) gilt auch hier.
+      */}
+      <div
+        className="fixed inset-0 z-[200] cursor-pointer"
+        onClick={() => {
+          if (!audio.isEnabled) { audio.enable(); return; }
+          if (!partyActive) return;
+          setHintSeen(true);
+          setManualMap((v) => !v);
+        }}
+        style={{ pointerEvents: !audio.isEnabled || partyActive ? 'auto' : 'none' }}
+      >
+        {!audio.isEnabled && (
           <div className="absolute bottom-6 right-6 px-5 py-3 rounded-full bg-[#151a21]/90 border border-[#df8eff]/30 backdrop-blur-lg">
             <span className="text-lg text-[#a8abb3]">🔊 {t('tv.tapForSound', 'Tap für Sound')}</span>
           </div>
-        </div>
-      )}
+        )}
+        {audio.isEnabled && partyActive && !hintSeen && !manualMap && (
+          <div className="absolute bottom-6 right-6 px-5 py-3 rounded-full bg-[#151a21]/80 border border-[#df8eff]/25 backdrop-blur-lg">
+            <span className="text-lg text-[#a8abb3]">{t('tv.partyNight.tapForMap')}</span>
+          </div>
+        )}
+      </div>
       <TVParticles mood={particleMood} />
       <TVGlowFrame color={glowColor || '#df8eff'} intensity={glowIntensity} rainbow={glowRainbow} />
       <TVVFXLayer gameState={gameState} />
@@ -170,16 +207,40 @@ export default function TVScreen() {
           optional partyRank/partyPoints props on that same TVScoreboard, and
           the only extra chrome is the hairline strip below — a single
           text-height row inside the padding every view already reserves. */}
-      {partyActive && !showPartyStandings && !showPartyFinale && (
+      {partyActive && !showPartyStandings && !showPartyFinale && !manualMap && (
         <TVPartyProgressStrip playlist={partyNight!.playlist} index={partyNight!.index} />
       )}
 
-      {/* Exactly ONE keyed child — AnimatePresence mode="wait" with several
-          conditional children can wedge (view faded out but the next one
-          never mounted) when the exit animation is interrupted, e.g. while
-          the tab is backgrounded/throttled. A single child keyed by the
-          derived view name cannot get stuck between views. */}
-      <AnimatePresence mode="wait">
+      {/*
+        Die manuell gerufene Karte liegt UEBER allem anderen, aber unter der
+        Klickflaeche (z-[200]) — der naechste Klick blendet sie wieder aus.
+        `travel={false}`: Wer sie selbst aufruft, will den Stand sehen, nicht
+        die Reise noch einmal vorgefuehrt bekommen.
+      */}
+      {partyActive && manualMap && (
+        <div className="fixed inset-0 z-[150]">
+          <Suspense fallback={TVFallback}>
+            <TVPartyMap
+              playlist={partyNight!.playlist}
+              index={partyNight!.index}
+              standings={partyNight!.standings}
+              travel={false}
+            />
+          </Suspense>
+        </div>
+      )}
+
+      {/* Genau EIN Kind, ueber den abgeleiteten Ansichtsnamen verschluesselt.
+          Frueher stand hier zusaetzlich `mode="wait"`, mit der Begruendung, ein
+          einzelnes verschluesseltes Kind koenne nicht haengenbleiben. Es kann:
+          Ist das naechste Kind ein `lazy()`-Bauteil, wartet `mode="wait"` auf
+          das Ende der Ausblendung, das Nachladen beginnt aber erst NACH dem
+          Wechsel — nachgemessen blieb der Fernseher beim Sprung auf die
+          Zwischenstands-Szene schwarz: die Lobby auf Deckkraft 0 ausgeblendet,
+          die neue Szene nie gemountet, ihr Chunk nie geladen.
+          Ohne `mode="wait"` ueberblenden beide kurz — die Ansichten liegen
+          ohnehin uebereinander, es sieht als Kreuzblende sogar besser aus. */}
+      <AnimatePresence>
         <motion.div
           key={
             showPartyFinale ? 'partyFinale'

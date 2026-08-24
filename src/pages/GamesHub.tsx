@@ -13,6 +13,9 @@ import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
 import { playableGames } from "@/lib/playable-games";
 import { PartyNightFlow } from "@/components/native/party/PartyNightFlow";
+import { getActivePartySession } from "@/hooks/usePartySession";
+import { partyGameName } from "@/hooks/useTVGameBridge";
+import { buildPartyNightState } from "@/games/party/standings";
 import {
   Gamepad2, Bomb, Brain, MessageSquareOff, Timer, Users, Clock,
   ArrowLeft, Shuffle, Bell, Star, UserX, Type, Search as SearchIcon,
@@ -259,7 +262,7 @@ const GameCard = memo(function GameCard({ game, onClick, onOnline, premiumInfo }
 let clickCountedGameId: string | null = null;
 
 const GamesHubInner = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { gameId } = useParams();
   const roomCode = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("room") : null;
@@ -274,23 +277,41 @@ const GamesHubInner = () => {
   // Sync online room code to TV broadcast for online games
   useEffect(() => { tv?.setOnlineRoom(roomCode || null); }, [roomCode, tv]);
 
-  // Broadcast lobby state between games so TV shows leaderboard
+  /**
+   * Der Zustand ZWISCHEN zwei Spielen — die einzige Stelle, die in diesem
+   * Fenster ueberhaupt sendet, weil `useTVGameBridge` nur in Spielkomponenten
+   * lebt und mit dem Spiel unmountet.
+   *
+   * Frueher schickte das hier eine handgestrickte Parallelstruktur ohne
+   * `partyNight`. Da `useTVConnection` den Zustand vollstaendig ersetzt statt
+   * zu mergen, verlor der Fernseher die Tabelle in genau dem Moment, in dem
+   * er sie zeigen sollte. Jetzt geht derselbe Block wie im Spiel auf die
+   * Leitung, nur mit `phase: 'between'` — das loest die Zwischenstands-Szene
+   * aus, die vorher unerreichbar war.
+   */
   useEffect(() => {
-    if (!gameId && tv?.isActive) {
-      try {
-        const raw = localStorage.getItem("eventbliss_party_session");
-        const session = raw ? JSON.parse(raw) : null;
-        const players = session?.isActive ? session.players : [];
-        const sorted = [...players].sort((a: any, b: any) => (b.totalScore || 0) - (a.totalScore || 0));
-        tv.broadcastTV('tv-state', {
-          game: 'lobby',
-          phase: 'idle',
-          players: sorted.map((p: any) => ({ name: p.name, score: p.totalScore || 0, color: p.color, avatar: p.avatar })),
-          gameHistory: session?.gameHistory || [],
-        });
-      } catch { /* no session */ }
-    }
-  }, [gameId, tv]);
+    if (gameId || !tv?.isActive) return;
+    const session = getActivePartySession();
+    if (!session) return;
+    const partyNight = buildPartyNightState(
+      session,
+      (id) => partyGameName(id, i18n.language),
+      "between",
+    );
+    tv.broadcastTV("tv-state", {
+      game: "lobby",
+      phase: "idle",
+      lang: i18n.language,
+      players: partyNight.standings.map((p) => ({
+        name: p.name,
+        score: p.points,
+        color: p.color,
+        avatar: p.avatar,
+      })),
+      gameHistory: session.gameHistory,
+      partyNight,
+    });
+  }, [gameId, tv, i18n.language]);
 
   // NOTE: /games?room=CODE (share/invite link without a game) is handled
   // below by rendering the GameLobby join flow — the param must NOT be

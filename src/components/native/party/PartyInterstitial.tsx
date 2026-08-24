@@ -12,7 +12,7 @@
  */
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { ChevronRight, Crown, Lock, Pause, PartyPopper, SkipForward, Trophy } from "lucide-react";
+import { ChevronRight, Crown, Lock, Pause, PartyPopper, SkipForward, Trophy, Tv } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
@@ -23,6 +23,7 @@ import { derivePartyStandings } from "@/games/party/standings";
 import type { PartySession } from "@/games/party/session-schema";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
+import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { playableGames } from "@/lib/playable-games";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -50,6 +51,8 @@ export interface PartyInterstitialProps {
    * zweimal `advancePlaylist()`. Fehlt sie, bleibt nur "Premium" oder "Pause".
    */
   onSkipNext?: () => void;
+  /** Optional: den Zwischenstand auf den Fernseher holen. Fehlt sie, bleibt der Knopf aus. */
+  onShowOnTv?: () => void;
 }
 
 function gameNameOf(gameId: string, t: (key: string) => string): string {
@@ -69,8 +72,10 @@ export function PartyInterstitial({
   onPause,
   onFinish,
   onSkipNext,
+  onShowOnTv,
 }: PartyInterstitialProps) {
   const { t } = useTranslation();
+  const tv = useTVContext();
   const navigate = useNavigate();
   const haptics = useHaptics();
   const reduce = useReducedMotion();
@@ -272,6 +277,23 @@ export function PartyInterstitial({
                 >
                   <SkipForward className="w-4 h-4 rtl:rotate-180" aria-hidden />
                   {t("nativeExtra.partyNight.skipNext")}
+                </button>
+              )}
+
+              {/*
+                Den Zwischenstand bewusst auf den Fernseher holen. Der Wert
+                `showMap` reist im naechsten `tv-state` mit; der Fernseher
+                zeigt daraufhin die Nacht-Route. Nur sichtbar, wenn ueberhaupt
+                ein Fernseher verbunden ist.
+              */}
+              {tv?.isActive && (
+                <button
+                  type="button"
+                  onClick={() => { haptics.light(); onShowOnTv?.(); }}
+                  className="cursor-pointer w-full min-h-[44px] rounded-2xl border border-[#df8eff]/30 bg-[#df8eff]/10 text-violet-500 dark:text-[#df8eff] font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
+                >
+                  <Tv className="w-4 h-4" aria-hidden />
+                  {t("nativeExtra.partyNight.showOnTv")}
                 </button>
               )}
 
