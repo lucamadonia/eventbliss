@@ -6744,7 +6744,8 @@
             "label": "المهن",
             "desc": "ما العمل الذي تمارسه الآن؟"
           }
-        }
+        },
+        "noContent": "لا توجد شخصيات لهذه المجموعة حالياً"
       }
     },
     "bottlespin": {
@@ -9478,7 +9479,9 @@
       "continueSetlist": "تابع مع {{game}}",
       "importFromEvent": "أخذ من الفعالية",
       "addPlayer": "إضافة لاعب",
-      "removePlayer": "إزالة {{name}}"
+      "removePlayer": "إزالة {{name}}",
+      "setlistTooFewLabel": "من {{n}} أشخاص",
+      "setlistTooManyLabel": "حتى {{n}} أشخاص"
     },
     "partyLobby": {
       "title": "ليلة الألعاب",
@@ -9914,6 +9917,17 @@
       "accuracy": "الإصابات"
     },
     "standings": "النتيجة الحالية",
-    "tapForSound": "اضغط للصوت"
+    "tapForSound": "اضغط للصوت",
+    "wordLength": "طول الكلمة",
+    "waitingForImage": "في انتظار الصورة التالية …",
+    "explainedBy": "يشرحها:",
+    "remote": {
+      "title": "اعرض على التلفاز",
+      "standings": "الترتيب",
+      "map": "مسار الليلة",
+      "finale": "حفل التتويج",
+      "intro": "شاشة البداية",
+      "game": "العودة إلى اللعبة"
+    }
   }
 }

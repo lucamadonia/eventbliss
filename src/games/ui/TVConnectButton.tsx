@@ -3,13 +3,15 @@
  * Inactive: small 📺 icon button. Active: persistent mini-pill with code.
  * Expanded: full panel with code + instructions + copy link.
  */
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Tv, Copy, Check, X } from "lucide-react";
 import { haptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
 import { getBaseUrl } from "@/lib/platform";
+import { TVRemote } from "@/components/native/party/TVRemote";
+import { getActivePartySession, subscribePartySession } from "@/hooks/usePartySession";
 
 interface Props {
   tvCode: string;
@@ -21,6 +23,8 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
   const { t, i18n } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
+  // Nur waehrend einer Party gibt es Erlebnis-Ansichten zu schalten.
+  const party = useSyncExternalStore(subscribePartySession, getActivePartySession, () => null);
 
   const handleTap = () => {
     haptics.light();
@@ -48,12 +52,12 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
             transition={spring.snappy}
-            className="bg-[#151a21]/95 backdrop-blur-xl border border-[#df8eff]/30 rounded-2xl p-4 shadow-[0_0_30px_rgba(223,142,255,0.2)] max-w-[260px]"
+            className="bg-[#151a21]/95 backdrop-blur-xl border border-[#df8eff]/30 rounded-2xl p-4 shadow-[0_0_30px_rgba(223,142,255,0.2)] w-[280px] max-h-[70vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Tv className="w-4 h-4 text-[#df8eff]" />
-                <span className="text-sm font-semibold text-white">{t("tv.connectTitle", "TV verbinden")}</span>
+                <span className="text-sm font-semibold text-white">{t("tv.connectTitle")}</span>
               </div>
               <button onClick={() => { haptics.light(); setExpanded(false); }}>
                 <X className="w-4 h-4 text-white/40" />
@@ -69,7 +73,7 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
 
             {/* Instructions */}
             <p className="text-[11px] text-white/50 leading-relaxed mb-3">
-              {t("tv.openOnTv", "Öffne auf deinem TV:")}
+              {t("tv.openOnTv")}
               <br />
               <span className="text-[#8ff5ff] font-medium">
                 {getBaseUrl()}/tv/{tvCode}
@@ -83,8 +87,23 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
               className="w-full flex items-center justify-center gap-2 h-9 rounded-xl bg-[#df8eff]/20 border border-[#df8eff]/30 text-[#df8eff] text-sm font-semibold"
             >
               {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied ? t("tv.copied", "Kopiert!") : t("tv.copyLink", "Link kopieren")}
+              {copied ? t("tv.copied") : t("tv.copyLink")}
             </motion.button>
+
+            {/*
+              Die Fernbedienung. Sie sitzt bewusst HIER: Die Pille ist im
+              Spiele-Hub und waehrend jedes Spiels sichtbar, also genau dort,
+              wo man mitten im Abend den Zwischenstand zeigen will. Vorher gab
+              es dafuer ueberhaupt keinen Weg vom Telefon aus.
+            */}
+            {party?.isActive && (
+              <div className="mt-3 pt-3 border-t border-[#df8eff]/15">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/40">
+                  {t("tv.remote.title")}
+                </p>
+                <TVRemote isActive={isActive} />
+              </div>
+            )}
           </motion.div>
         ) : isActive ? (
           /* Active: persistent mini-pill showing TV code */

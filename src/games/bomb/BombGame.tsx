@@ -14,7 +14,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
-import { getActivePartySession } from "@/hooks/usePartySession";
+import { useInitialRoster } from "@/games/ui/useInitialRoster";
 import { useNavigate } from 'react-router-dom';
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
@@ -189,7 +189,10 @@ const defaultState: GameState = {
 
 export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
-  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
+  // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
+  // genau einmal beim Mount und verpassten jede spaetere Aenderung.
+  const partyPlayerNames = (useInitialRoster() ?? []).map((p) => p.name);
   const resolvedPlayerNames = onlinePlayerNames.length >= 2
     ? onlinePlayerNames
     : partyPlayerNames.length >= 2

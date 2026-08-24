@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Trophy, Medal, Crown, ChevronDown } from 'lucide-react';
 import { useGameStats } from './useGameStats';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,6 +35,7 @@ interface LeaderboardProps {
 }
 
 export function Leaderboard({ initialGameId }: LeaderboardProps) {
+  const { t } = useTranslation();
   const [selectedGame, setSelectedGame] = useState(initialGameId ?? GAME_IDS[0]);
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -183,7 +185,7 @@ export function Leaderboard({ initialGameId }: LeaderboardProps) {
                 <div className="flex items-center gap-3 shrink-0">
                   <div className="text-right">
                     <p className="text-sm font-bold text-white">{entry.total_score.toLocaleString()}</p>
-                    <p className="text-[10px] text-gray-500">Punkte</p>
+                    <p className="text-[10px] text-gray-500">{t('tv.points')}</p>
                   </div>
                   <div className="text-right min-w-[40px]">
                     <p className="text-sm font-semibold" style={{ color: '#df8eff' }}>{entry.games_won}</p>

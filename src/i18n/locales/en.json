@@ -6937,7 +6937,8 @@
             "label": "Jobs",
             "desc": "What job are you doing right now?"
           }
-        }
+        },
+        "noContent": "No characters available for this group right now"
       }
     },
     "bottlespin": {
@@ -9467,7 +9468,9 @@
       "continueSetlist": "Continue with {{game}}",
       "importFromEvent": "Take from event",
       "addPlayer": "Add player",
-      "removePlayer": "Remove {{name}}"
+      "removePlayer": "Remove {{name}}",
+      "setlistTooFewLabel": "{{n}}+ people",
+      "setlistTooManyLabel": "Up to {{n}} people"
     },
     "partyLobby": {
       "title": "Party Night",
@@ -9792,6 +9795,17 @@
       "accuracy": "Accuracy"
     },
     "standings": "Standings",
-    "tapForSound": "Tap for sound"
+    "tapForSound": "Tap for sound",
+    "wordLength": "Word length",
+    "waitingForImage": "Waiting for the next picture …",
+    "explainedBy": "Explained by:",
+    "remote": {
+      "title": "Show on the TV",
+      "standings": "Standings",
+      "map": "Night Route",
+      "finale": "Awards",
+      "intro": "Welcome screen",
+      "game": "Back to the game"
+    }
   }
 }

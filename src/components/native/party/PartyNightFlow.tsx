@@ -18,6 +18,7 @@ import { usePartySession } from "@/hooks/usePartySession";
 
 import { PartyInterstitial } from "./PartyInterstitial";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
+import { setTvView } from "@/games/tv/tv-view";
 import { buildPartyNightState } from "@/games/party/standings";
 import { playerFitFor } from "./setlist";
 import { playableGames } from "@/lib/playable-games";
@@ -120,7 +121,9 @@ export function PartyNightFlow() {
     (gameId: string) => {
       const count = session?.players.length ?? 0;
       const game = playableGames.find((g) => g.id === gameId);
-      return !game || playerFitFor(game, count) === "ok";
+      // Nur zu wenige Leute sind ein Grund zu ueberspringen — eine zu grosse
+      // Runde spielt einfach mit, das Spiel kuerzt notfalls selbst.
+      return !game || playerFitFor(game, count) !== "tooFew";
     },
     [session?.players.length]
   );
@@ -160,6 +163,7 @@ export function PartyNightFlow() {
    * Nacht-Route aus.
    */
   const handleShowOnTv = useCallback(() => {
+    setTvView("between");
     if (!tv?.isActive || !session) return;
     const partyNight = buildPartyNightState(
       session,

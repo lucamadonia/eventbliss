@@ -23,6 +23,10 @@ import { useBackGuard } from "@/lib/back-guard";
 import { PartyGamePicker, type PartyPickerMode } from "@/components/native/PartyGamePicker";
 import { PartyFinaleOverlay } from "@/components/native/party/PartyFinaleOverlay";
 import { PartySetlistStrip } from "@/components/native/party/PartySetlistStrip";
+import { nextFittingIndex } from "@/components/native/party/setlist";
+import { TVRemote } from "@/components/native/party/TVRemote";
+import { setTvView, resetTvView } from "@/games/tv/tv-view";
+import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { PartyStandingsList } from "@/components/native/party/PartyStandingsList";
 import { EventParticipantPicker } from "@/games/ui/EventParticipantPicker";
 import { derivePartyStandings } from "@/games/party/standings";
@@ -38,6 +42,8 @@ export default function PartyLobbyScreen() {
   const navigate = useNavigate();
   const haptics = useHaptics();
   const party = usePartySession();
+  // Seit der Provider ueber der ganzen App haengt, kann auch die Lobby senden.
+  const tv = useTVContext();
   const [searchParams, setSearchParams] = useSearchParams();
   const [newName, setNewName] = useState("");
   const [showPicker, setShowPicker] = useState(false);
@@ -86,7 +92,18 @@ export default function PartyLobbyScreen() {
   const playlist = session?.playlist ?? [];
   const playlistIndex = session?.playlistIndex ?? 0;
   const playlistActive = session?.playlistActive ?? false;
-  const currentPlaylistGame = playlistActive ? playlist[playlistIndex] ?? null : null;
+  /**
+   * Der faellige Eintrag — aber der naechste, der zur JETZIGEN Runde passt.
+   *
+   * Ohne diese Pruefung bot die Lobby stur `playlist[playlistIndex]` an. Geht
+   * nach dem Planen jemand, startete der grosse Knopf damit ein Spiel, das mit
+   * der verbliebenen Gruppe gar nicht beginnt. Der Uebersprung-Schutz sass
+   * bisher allein im Zwischenspiel (`PartyNightFlow`) — an der Lobby vorbei.
+   */
+  const currentPlaylistIndex = playlistActive
+    ? nextFittingIndex(playlist, playlistIndex, players.length)
+    : -1;
+  const currentPlaylistGame = currentPlaylistIndex >= 0 ? playlist[currentPlaylistIndex] : null;
   const currentPlaylistName = currentPlaylistGame
     ? t(playableGames.find((g) => g.id === currentPlaylistGame)?.nameKey ?? currentPlaylistGame)
     : null;
@@ -123,6 +140,19 @@ export default function PartyLobbyScreen() {
     navigate(`/games/${gameId}?party=true`);
   }, [party, navigate]);
 
+  /**
+   * Einen Eintrag der Set-Liste starten — und dabei den Zeiger mitnehmen.
+   *
+   * Wurden Eintraege uebersprungen (passen nicht zur Gruppengroesse), muss der
+   * Zeiger nachgezogen werden. Sonst wuerde das Zwischenspiel nach dem Spiel
+   * genau die Eintraege erneut anbieten, die die Lobby gerade uebergangen hat.
+   */
+  const launchPlaylistEntry = useCallback((gameId: string) => {
+    const target = playlist.indexOf(gameId, playlistIndex);
+    for (let i = playlistIndex; i >= 0 && i < target; i++) party.advancePlaylist();
+    launchGame(gameId);
+  }, [playlist, playlistIndex, party, launchGame]);
+
   const handleSelectGame = useCallback((gameId: string) => {
     haptics.medium();
     launchGame(gameId);
@@ -133,6 +163,12 @@ export default function PartyLobbyScreen() {
     if (gameIds.length === 0) return;
     haptics.celebrate();
     party.setPlaylist(gameIds);
+    // Der Abend eroeffnet auf dem Fernseher mit der Nacht-Route: einmal die
+    // ganze Strecke sehen, bevor es losgeht. Danach uebernimmt das Spiel von
+    // selbst — ohne diesen Ruecksprung bliebe die Karte ueber der ersten Runde
+    // liegen.
+    setTvView("map");
+    window.setTimeout(resetTvView, 6000);
     launchGame(gameIds[0]);
   }, [party, haptics, launchGame]);
 
@@ -145,6 +181,10 @@ export default function PartyLobbyScreen() {
     if (searchParams.get("finale") !== "1") return;
     haptics.celebrate();
     setShowFinalLeaderboard(true);
+    // Die Siegerehrung auf den Fernseher holen. `TVPartyFinale` ist seit
+    // Langem fertig gebaut und wurde bis hierher von NIRGENDWO ausgeloest —
+    // dieselbe Luecke, die der Zwischenstand bis 1.3.8 hatte.
+    setTvView("finale");
     const next = new URLSearchParams(searchParams);
     next.delete("finale");
     setSearchParams(next, { replace: true });
@@ -155,6 +195,16 @@ export default function PartyLobbyScreen() {
    * leere Tabelle waere Hohn. Dann fragt der Knopf direkt an Ort und Stelle
    * nach, statt das Finale-Overlay aufzuziehen.
    */
+  /**
+   * Die Zeremonie ist vorbei — der Fernseher darf nicht auf ihr kleben
+   * bleiben. Zurueck auf die Nacht-Route: Sie zeigt den Abend als Ganzes und
+   * ist das schoenere Standbild als eine erloschene Siegerehrung.
+   */
+  useEffect(() => {
+    if (showFinalLeaderboard) return;
+    setTvView("map");
+  }, [showFinalLeaderboard]);
+
   const handleEndParty = useCallback(() => {
     if (history.length === 0) {
       haptics.light();
@@ -233,7 +283,7 @@ export default function PartyLobbyScreen() {
           playlistActive={playlistActive}
           playerCount={players.length}
           onEdit={() => openPicker("setlist")}
-          onPlayCurrent={launchGame}
+          onPlayCurrent={launchPlaylistEntry}
         />
 
         {/* Spieler */}
@@ -369,6 +419,21 @@ export default function PartyLobbyScreen() {
               >
                 {copied ? t('common.copied') : t('nativeExtra.partyLobby.copyTvLink')}
               </motion.button>
+
+              {/*
+                Die Fernbedienung. Bis hierher zeigte diese Karte nur den Code —
+                die Lobby lag ausserhalb des Providers und konnte gar nichts
+                senden. Der Zwischenstand und die fertig gebaute Siegerehrung
+                waren von hier aus unerreichbar.
+              */}
+              {tv?.isActive && (
+                <div className="mt-3 pt-3 border-t border-[#df8eff]/15">
+                  <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    {t('tv.remote.title')}
+                  </p>
+                  <TVRemote isActive variant="card" />
+                </div>
+              )}
             </motion.div>
           </section>
         )}
@@ -420,7 +485,7 @@ export default function PartyLobbyScreen() {
               type="button"
               whileTap={{ scale: 0.97 }}
               transition={spring.snappy}
-              onClick={() => { haptics.medium(); launchGame(currentPlaylistGame); }}
+              onClick={() => { haptics.medium(); launchPlaylistEntry(currentPlaylistGame); }}
               disabled={!canStartGame}
               className={cn(
                 "cursor-pointer w-full min-h-[56px] rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all",

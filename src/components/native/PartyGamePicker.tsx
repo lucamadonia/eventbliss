@@ -117,9 +117,11 @@ export function PartyGamePicker({
   }, [search, catalog, t]);
 
   const handleTap = (game: SetlistGame) => {
-    if (game.playerFit !== "ok") {
+    // Nur zu WENIGE Leute sind ein Hindernis. Zu viele nicht: das Maximum ist
+    // eine Bedien-Obergrenze, kein Spielabbruch (siehe `findUnfitSetlistEntries`).
+    if (game.playerFit === "tooFew") {
       haptics.warning();
-      setGate({ kind: "players", id: game.id, fit: game.playerFit });
+      setGate({ kind: "players", id: game.id, fit: "tooFew" });
       return;
     }
     if (game.locked) {
@@ -160,8 +162,7 @@ export function PartyGamePicker({
     const unfit = findUnfitSetlistEntries(ids, playerCount);
     if (unfit.length > 0) {
       haptics.warning();
-      const first = catalog.find((g) => g.id === unfit[0]);
-      setGate({ kind: "players", id: unfit[0], fit: first?.playerFit === "tooMany" ? "tooMany" : "tooFew" });
+      setGate({ kind: "players", id: unfit[0], fit: "tooFew" });
       return;
     }
     onStartSetlist(ids);
@@ -307,7 +308,7 @@ export function PartyGamePicker({
                       key={game.id}
                       type="button"
                       variants={staggerItem}
-                      whileTap={{ scale: game.locked || game.playerFit !== "ok" ? 1 : 0.96 }}
+                      whileTap={{ scale: game.locked || game.playerFit === "tooFew" ? 1 : 0.96 }}
                       transition={spring.snappy}
                       onClick={() => handleTap(game)}
                       aria-pressed={planning ? picked : undefined}
@@ -316,7 +317,7 @@ export function PartyGamePicker({
                         picked
                           ? "border-[#df8eff] ring-2 ring-[#df8eff]/60 shadow-[0_0_22px_rgba(223,142,255,0.35)]"
                           : "border-border",
-                        (game.locked || game.playerFit !== "ok") && "opacity-50"
+                        (game.locked || game.playerFit === "tooFew") && "opacity-50"
                       )}
                     >
                       <div className="absolute inset-0">

@@ -6952,7 +6952,8 @@
             "label": "Zawody",
             "desc": "Jaki zawód teraz wykonujesz?"
           }
-        }
+        },
+        "noContent": "Brak postaci dla tej grupy"
       }
     },
     "bottlespin": {
@@ -9565,7 +9566,9 @@
       "continueSetlist": "Dalej z {{game}}",
       "importFromEvent": "Przejmij z wydarzenia",
       "addPlayer": "Dodaj gracza",
-      "removePlayer": "Usuń gracza {{name}}"
+      "removePlayer": "Usuń gracza {{name}}",
+      "setlistTooFewLabel": "Od {{n}} osób",
+      "setlistTooManyLabel": "Do {{n}} osób"
     },
     "partyLobby": {
       "title": "Wieczór gier",
@@ -9890,6 +9893,17 @@
       "accuracy": "Trafienia"
     },
     "standings": "Wyniki pośrednie",
-    "tapForSound": "Dotknij, aby włączyć dźwięk"
+    "tapForSound": "Dotknij, aby włączyć dźwięk",
+    "wordLength": "Długość słowa",
+    "waitingForImage": "Czekamy na kolejny obraz …",
+    "explainedBy": "Wyjaśnia:",
+    "remote": {
+      "title": "Pokaż na telewizorze",
+      "standings": "Klasyfikacja",
+      "map": "Nocna trasa",
+      "finale": "Ceremonia",
+      "intro": "Ekran startowy",
+      "game": "Wróć do gry"
+    }
   }
 }

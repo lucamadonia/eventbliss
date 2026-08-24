@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Pencil } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Stroke {
   from: { x: number; y: number };
@@ -11,6 +12,7 @@ interface Stroke {
 }
 
 export default function TVDrawView({ gameState, drawing }: { gameState: any; drawing?: Stroke[] }) {
+  const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const drawnCount = useRef(0);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -233,7 +235,7 @@ export default function TVDrawView({ gameState, drawing }: { gameState: any; dra
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <span className="text-3xl font-black tracking-[0.4em] text-[#f1f3fc]" aria-label="Wortlänge">
+          <span className="text-3xl font-black tracking-[0.4em] text-[#f1f3fc]" aria-label={t('tv.wordLength')}>
             {word.split('').map((ch: string) => (ch === ' ' ? ' ' : '_')).join('')}
           </span>
           <span className="text-sm uppercase tracking-widest text-[#a8abb3]">

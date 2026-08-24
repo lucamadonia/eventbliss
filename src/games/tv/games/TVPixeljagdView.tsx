@@ -13,6 +13,7 @@
  * bekommt dann einen unvollständigen Zustand.
  */
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { PixelCanvas } from '@/games/pixeljagd/PixelCanvas';
 import TVScoreboard from '../components/TVScoreboard';
@@ -27,6 +28,7 @@ interface Props {
 const PJ = { primary: '#38BDF8', accent: '#FDE047', dim: '#94A3B8' };
 
 export default function TVPixeljagdView({ gameState }: Props) {
+  const { t } = useTranslation();
   const reduce = useReducedMotion();
   const s = (gameState ?? {}) as Record<string, unknown>;
 
@@ -81,7 +83,7 @@ export default function TVPixeljagdView({ gameState }: Props) {
               />
             </div>
           ) : (
-            <p style={{ fontSize: tvType.body, color: PJ.dim }}>Warten auf das nächste Motiv …</p>
+            <p style={{ fontSize: tvType.body, color: PJ.dim }}>{t('tv.waitingForImage')}</p>
           )}
 
           <AnimatePresence mode="wait">

@@ -6902,7 +6902,8 @@
             "label": "Métiers",
             "desc": "Quel métier exerces-tu en ce moment ?"
           }
-        }
+        },
+        "noContent": "Aucun personnage disponible pour ce groupe"
       }
     },
     "bottlespin": {
@@ -9491,7 +9492,9 @@
       "continueSetlist": "Continuer avec {{game}}",
       "importFromEvent": "Reprendre de l'événement",
       "addPlayer": "Ajouter un joueur",
-      "removePlayer": "Retirer {{name}}"
+      "removePlayer": "Retirer {{name}}",
+      "setlistTooFewLabel": "Dès {{n}} personnes",
+      "setlistTooManyLabel": "Jusqu'à {{n}} personnes"
     },
     "partyLobby": {
       "title": "Soirée jeux",
@@ -9816,6 +9819,17 @@
       "accuracy": "Réussite"
     },
     "standings": "Classement provisoire",
-    "tapForSound": "Appuyez pour le son"
+    "tapForSound": "Appuyez pour le son",
+    "wordLength": "Longueur du mot",
+    "waitingForImage": "En attente de la prochaine image …",
+    "explainedBy": "Expliqué par :",
+    "remote": {
+      "title": "Afficher sur la TV",
+      "standings": "Classement",
+      "map": "Route nocturne",
+      "finale": "Remise des prix",
+      "intro": "Écran d'accueil",
+      "game": "Retour au jeu"
+    }
   }
 }

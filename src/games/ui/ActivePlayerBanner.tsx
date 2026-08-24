@@ -87,7 +87,7 @@ export function ActivePlayerBanner({
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
             >
-              {subtitle || t("native.games.isUp", "ist dran! 🎯")}
+              {subtitle || t("native.games.isUp")}
             </motion.p>
           </div>
         </motion.div>

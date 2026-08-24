@@ -16,7 +16,7 @@ import { PlayerSetup } from '../ui/PlayerSetup';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
-import { getActivePartySession } from "@/hooks/usePartySession";
+import { useInitialRoster } from "@/games/ui/useInitialRoster";
 import { useAmbientMotion } from "@/lib/useAmbientMotion";
 import { useNavigate } from 'react-router-dom';
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
@@ -203,7 +203,10 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // where endless compositor loops are the main source of jank.
   const ambient = useAmbientMotion();
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
-  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
+  // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
+  // genau einmal beim Mount und verpassten jede spaetere Aenderung.
+  const partyPlayerNames = (useInitialRoster() ?? []).map((p) => p.name);
   const resolvedNames = onlinePlayerNames.length >= 4
     ? onlinePlayerNames
     : partyPlayerNames.length >= 4

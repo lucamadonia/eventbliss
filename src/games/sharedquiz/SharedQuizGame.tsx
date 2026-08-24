@@ -16,7 +16,7 @@ import { PlayerSetup } from '../ui/PlayerSetup';
 import { getSHARED_QUIZ_QUESTIONS, type SharedQuizQuestion } from './sharedquiz-content';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
-import { getActivePartySession } from "@/hooks/usePartySession";
+import { useInitialRoster } from "@/games/ui/useInitialRoster";
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
 import { hasShellBackButton } from '@/games/ui/shell-back';
@@ -72,7 +72,10 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   const gameRecordedRef = useRef(false);
 
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
-  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
+  // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
+  // genau einmal beim Mount und verpassten jede spaetere Aenderung.
+  const partyPlayerNames = (useInitialRoster() ?? []).map((p) => p.name);
   const resolvedNames = onlinePlayerNames.length >= 3
     ? onlinePlayerNames
     : partyPlayerNames.length >= 3

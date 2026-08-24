@@ -108,6 +108,32 @@ export function derivePartyPlaylist(
 }
 
 /**
+ * Wie viele Eintraege der Set-Liste sind FERTIG?
+ *
+ * Der Unterschied ist der Grund, warum der Sprung auf der Nacht-Route eine
+ * Runde hinterherhinkte. `playlistIndex` zeigt auf das Spiel, das laeuft oder
+ * als naechstes kommt — und er rueckt erst weiter, wenn im Zwischenspiel
+ * "Weiter" gedrueckt wird. Der Zwischenstand geht aber VORHER auf die Leitung,
+ * beim Verlassen des Spiels.
+ *
+ * Ergebnis vorher: Nach dem ersten Spiel sprang gar nichts (Start = Ziel),
+ * danach sprang die Gruppe immer in das Feld, das sie gerade verlassen hatte.
+ * Dieselbe Verschiebung fehlte auch dem Haken auf dem gespielten Feld, dem
+ * Fortschrittsstreifen und der Roadmap — drei Anzeigen, ein Ursprung.
+ */
+export function finishedThroughFor(
+  playlistIndex: number,
+  playlistLength: number,
+  phase: PartyNightState["phase"]
+): number {
+  // Zwischen zwei Spielen zaehlt das eben beendete mit. Nach dem letzten
+  // Eintrag nicht weiter hochzaehlen: Die Gruppe bleibt am Ziel stehen,
+  // statt ins Leere zu laufen.
+  const finished = phase === "between" ? playlistIndex + 1 : playlistIndex;
+  return Math.max(0, Math.min(finished, playlistLength));
+}
+
+/**
  * Vollstaendiger `partyNight`-Block fuer die laufende `tv-state`-Uebertragung.
  *
  * `phase` steuert die Szene auf dem Fernseher und wird vom AUFRUFER gesetzt:
@@ -128,10 +154,19 @@ export function buildPartyNightState(
       ? session.gameHistory[session.gameHistory.length - 1]
       : null;
 
+  const finishedThrough = finishedThroughFor(
+    session.playlistIndex,
+    session.playlist.length,
+    phase
+  );
+
   return {
     active: session.isActive === true,
-    playlist: derivePartyPlaylist(session.playlist, session.playlistIndex, nameFor),
+    // Die Haken folgen dem, was FERTIG ist — nicht dem Zeiger. Sonst traegt
+    // das eben gespielte Feld zwischen zwei Spielen keinen Haken.
+    playlist: derivePartyPlaylist(session.playlist, finishedThrough, nameFor),
     index: session.playlistIndex,
+    finishedThrough,
     standings: derivePartyStandings(session.players, session.gameHistory),
     // `GameHistoryEntry` enthaelt alle Felder von `PartyGameResult` — die
     // Historie geht ohne Umformung auf die Leitung.

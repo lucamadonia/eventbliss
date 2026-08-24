@@ -120,7 +120,7 @@ export function GameReportModal({ gameId, open, onClose, presetType }: GameRepor
             <button
               onClick={onClose}
               className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
-              aria-label={t("common.close", "Schließen")}
+              aria-label={t("common.close")}
             >
               <X className="w-4 h-4 text-white/50" />
             </button>
@@ -131,7 +131,7 @@ export function GameReportModal({ gameId, open, onClose, presetType }: GameRepor
                   <Check className="w-7 h-7 text-emerald-400" />
                 </div>
                 <p className="text-white font-semibold">
-                  {t("games.report.thanks", "Danke — wir sehen es uns an.")}
+                  {t("games.report.thanks")}
                 </p>
               </div>
             ) : (
@@ -141,7 +141,7 @@ export function GameReportModal({ gameId, open, onClose, presetType }: GameRepor
                     <Flag className="w-5 h-5 text-amber-400" />
                   </div>
                   <h2 className="text-lg font-bold text-white">
-                    {t("games.report.title", "Fehler melden")}
+                    {t("games.report.title")}
                   </h2>
                 </div>
 
@@ -150,7 +150,7 @@ export function GameReportModal({ gameId, open, onClose, presetType }: GameRepor
                 ) : (
                   <p className="text-xs text-white/30 mb-4 mt-2 flex items-center gap-1.5">
                     <AlertTriangle className="w-3 h-3" />
-                    {t("games.report.noContext", "Kein Inhalt erkannt — bitte kurz beschreiben.")}
+                    {t("games.report.noContext")}
                   </p>
                 )}
 
@@ -175,7 +175,7 @@ export function GameReportModal({ gameId, open, onClose, presetType }: GameRepor
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   rows={3}
-                  placeholder={t("games.report.placeholder", "Was stimmt nicht? (optional)")}
+                  placeholder={t("games.report.placeholder")}
                   className="w-full rounded-xl bg-white/[0.04] border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-amber-400/40 resize-none"
                 />
 
@@ -185,8 +185,8 @@ export function GameReportModal({ gameId, open, onClose, presetType }: GameRepor
                   className="mt-4 w-full h-11 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white font-semibold text-sm disabled:opacity-50 transition-opacity"
                 >
                   {sending
-                    ? t("games.report.sending", "Wird gesendet…")
-                    : t("games.report.submit", "Melden")}
+                    ? t("games.report.sending")
+                    : t("games.report.submit")}
                 </button>
               </>
             )}

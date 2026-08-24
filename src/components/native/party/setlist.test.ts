@@ -15,6 +15,7 @@ import {
   findUnfitSetlistEntries,
   isSetlistEntryLocked,
   playerFitFor,
+  nextFittingIndex,
   moveSetlistEntry,
   toggleSetlistEntry,
 } from "./setlist";
@@ -187,8 +188,17 @@ describe("findUnfitSetlistEntries", () => {
     expect(findUnfitSetlistEntries(list, 2).sort()).toEqual(["hochstapler", "pantomime"]);
   });
 
-  it("nennt bei acht Leuten das Spiel mit Obergrenze", () => {
-    expect(findUnfitSetlistEntries(["taboo", "ohrwurm"], 8)).toEqual(["ohrwurm"]);
+  /**
+   * Die erste Fassung sperrte auch nach oben. Im Geraetetest konnte eine
+   * Runde mit neun Gaesten daraufhin vier Spiele nicht mehr waehlen, die alle
+   * laufen wuerden. Das Maximum ist eine Bedien-Obergrenze: `PlayerSetup`
+   * deaktiviert damit nur den Hinzufuegen-Knopf, OHRWURM kuerzt eine zu
+   * grosse Party. Kein Spiel bricht darueber ab.
+   */
+  it("sperrt NICHT, wenn die Runde zu gross ist", () => {
+    // ohrwurm ist auf hoechstens vier ausgelegt — mit acht spielt man
+    // trotzdem, dann schauen eben vier zu.
+    expect(findUnfitSetlistEntries(["taboo", "ohrwurm"], 8)).toEqual([]);
   });
 
   it("gibt nichts zurueck, solange niemand eingetragen ist", () => {
@@ -197,5 +207,55 @@ describe("findUnfitSetlistEntries", () => {
 
   it("ignoriert unbekannte Kennungen statt zu werfen", () => {
     expect(findUnfitSetlistEntries(["gibtsnicht"], 2)).toEqual([]);
+  });
+});
+
+/**
+ * Die Lobby bot bis hierher stur `playlist[playlistIndex]` an — bei zwei
+ * verbliebenen Gaesten startete ihr grosser Knopf damit IMPOSTOR, das vier
+ * Personen braucht und gar nicht erst beginnt.
+ */
+describe("nextFittingIndex", () => {
+  // Echte Kennungen, damit der Test die Registry mitprueft und nicht nur sich
+  // selbst: hochstapler = ab 4, ohrwurm = bis 4, bomb = 2-x.
+  const LIST = ["bomb", "hochstapler", "taboo", "ohrwurm"];
+
+  it("nimmt den faelligen Eintrag, wenn er passt", () => {
+    expect(nextFittingIndex(LIST, 0, 4)).toBe(0);
+  });
+
+  it("ueberspringt ein Spiel, fuer das die Runde zu klein ist", () => {
+    // Zwei Personen: hochstapler (ab 4) faellt raus, taboo kommt dran.
+    expect(nextFittingIndex(LIST, 1, 2)).toBe(2);
+  });
+
+  it("ueberspringt ein zu grosses Spiel NICHT", () => {
+    // Acht Personen, ohrwurm (bis 4) an Position 3: Der Abend laeuft trotzdem
+    // hinein. Nur zu wenige Leute sind ein Hindernis — siehe
+    // `findUnfitSetlistEntries`.
+    expect(nextFittingIndex(LIST, 3, 8)).toBe(3);
+  });
+
+  it("liefert -1, wenn ab hier gar nichts mehr passt", () => {
+    expect(nextFittingIndex(["hochstapler", "hochstapler"], 0, 2)).toBe(-1);
+  });
+
+  it("findet auch den letzten Eintrag", () => {
+    expect(nextFittingIndex(["hochstapler", "bomb"], 0, 2)).toBe(1);
+  });
+
+  it("sperrt nichts, solange noch niemand eingetragen ist", () => {
+    expect(nextFittingIndex(LIST, 0, 0)).toBe(0);
+  });
+
+  it("verschluckt eine unbekannte Kennung nicht", () => {
+    // Lieber ein Spiel starten, das es nicht gibt (und den Fehler sehen), als
+    // einen Eintrag stillschweigend aus der Set-Liste verschwinden zu lassen.
+    expect(nextFittingIndex(["gibtesnicht"], 0, 2)).toBe(0);
+  });
+
+  it("faengt einen Index jenseits der Liste ab", () => {
+    expect(nextFittingIndex(LIST, 99, 4)).toBe(-1);
+    expect(nextFittingIndex(LIST, -5, 4)).toBe(0);
   });
 });

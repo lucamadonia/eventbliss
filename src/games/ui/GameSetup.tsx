@@ -5,8 +5,7 @@ import { Play, Wifi } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
 import { PlayerSetup, type PlayerSetupPlayer } from "./PlayerSetup";
-import { getOnlineRoomPlayers } from "../multiplayer/useGameRoom";
-import { getActivePartySession } from "@/hooks/usePartySession";
+import { useInitialRoster } from "./useInitialRoster";
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from "./GameRulesModal";
 
 export interface GameMode {
@@ -75,19 +74,14 @@ export function GameSetup({
     return undefined;
   }, [onlinePlayers]);
 
-  // Party session fallback — separate from online (no Globe icon for party players)
-  const partyPlayers = useMemo(() => {
-    if (autoOnlinePlayers) return undefined;
-    const roomPlayers = getOnlineRoomPlayers();
-    if (roomPlayers.length >= 2) {
-      return roomPlayers.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar || p.name.charAt(0) }));
-    }
-    const party = getActivePartySession();
-    if (party?.players && party.players.length >= 2) {
-      return party.players.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar || p.name.charAt(0) }));
-    }
-    return undefined;
-  }, [autoOnlinePlayers]);
+  // Party session fallback — separate from online (no Globe icon for party players).
+  // Die Rangfolge (Raum vor Party, ab zwei Personen) liegt jetzt in
+  // `useInitialRoster` und wird von allen Spielen geteilt. Wichtig: Der Helfer
+  // haengt ueber `useSyncExternalStore` an der Party-Sitzung — kommt jemand
+  // waehrend des Setups dazu, ist er sofort dabei. Die frueher hier stehende
+  // `useMemo`-Fassung las genau einmal beim Mount.
+  const roster = useInitialRoster();
+  const partyPlayers = autoOnlinePlayers ? undefined : roster;
 
   const hasOnline = (autoOnlinePlayers && autoOnlinePlayers.length > 0) || (partyPlayers && partyPlayers.length > 0);
   const allAutoPlayers = autoOnlinePlayers || partyPlayers;
@@ -100,12 +94,17 @@ export function GameSetup({
     createPlayer(nameFor(2)),
   ]);
 
+  const rosterKey = allAutoPlayers?.map((p) => `${p.id}:${p.name}`).join("|");
+
   // Auto-populate players from online room or party
   useEffect(() => {
     if (hasOnline && allAutoPlayers && allAutoPlayers.length >= 2) {
       setPlayers(allAutoPlayers.map(p => ({ id: p.id, name: p.name })));
     }
-  }, [hasOnline, allAutoPlayers?.length]);
+    // Auf Kennung UND Name achten, nicht nur auf die Anzahl: Wird in der Party
+    // jemand umbenannt oder ausgetauscht, bleibt die Anzahl gleich und die
+    // Uebernahme unterblieb still.
+  }, [hasOnline, rosterKey]);
   const [selectedMode, setSelectedMode] = useState(modes[0]?.id ?? "");
   const [timer, setTimer] = useState(settings.timer.default);
   const [rounds, setRounds] = useState(settings.rounds.default);

@@ -6952,7 +6952,8 @@
             "label": "Profissões",
             "desc": "Que trabalho você está fazendo agora?"
           }
-        }
+        },
+        "noContent": "Não há personagens para este grupo neste momento"
       }
     },
     "bottlespin": {
@@ -9541,7 +9542,9 @@
       "continueSetlist": "Continuar com {{game}}",
       "importFromEvent": "Trazer do evento",
       "addPlayer": "Adicionar jogador",
-      "removePlayer": "Remover {{name}}"
+      "removePlayer": "Remover {{name}}",
+      "setlistTooFewLabel": "A partir de {{n}} pessoas",
+      "setlistTooManyLabel": "Até {{n}} pessoas"
     },
     "partyLobby": {
       "title": "Noite de jogos",
@@ -9866,6 +9869,17 @@
       "accuracy": "Acertos"
     },
     "standings": "Parcial",
-    "tapForSound": "Toque para o som"
+    "tapForSound": "Toque para o som",
+    "wordLength": "Comprimento da palavra",
+    "waitingForImage": "À espera da próxima imagem …",
+    "explainedBy": "Explica:",
+    "remote": {
+      "title": "Mostrar na TV",
+      "standings": "Classificação",
+      "map": "Rota noturna",
+      "finale": "Premiação",
+      "intro": "Ecrã inicial",
+      "game": "Voltar ao jogo"
+    }
   }
 }

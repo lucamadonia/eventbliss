@@ -167,7 +167,12 @@ export default function TVPartyStandings({ party }: { party: PartyNightState }) 
           {beat >= 3 && (
             <TVPartyMap
               playlist={party.playlist}
-              index={party.index}
+              /* Der Sprung geht vom eben beendeten Feld auf das naechste.
+                 `party.index` zeigt hier noch auf das beendete Spiel — der
+                 Zeiger rueckt erst mit "Weiter". Ueber `finishedThrough`
+                 stimmt beides. */
+              from={Math.max(0, party.finishedThrough - 1)}
+              index={party.finishedThrough}
               standings={party.standings}
               travel
             />

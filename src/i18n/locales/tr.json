@@ -6952,7 +6952,8 @@
             "label": "Meslekler",
             "desc": "Şu anda hangi işi yapıyorsun?"
           }
-        }
+        },
+        "noContent": "Bu grup için şu anda karakter yok"
       }
     },
     "bottlespin": {
@@ -9541,7 +9542,9 @@
       "continueSetlist": "{{game}} ile devam et",
       "importFromEvent": "Etkinlikten al",
       "addPlayer": "Oyuncu ekle",
-      "removePlayer": "{{name}} oyuncusunu kaldır"
+      "removePlayer": "{{name}} oyuncusunu kaldır",
+      "setlistTooFewLabel": "{{n}} kişiden itibaren",
+      "setlistTooManyLabel": "En fazla {{n}} kişi"
     },
     "partyLobby": {
       "title": "Oyun gecesi",
@@ -9866,6 +9869,17 @@
       "accuracy": "İsabet"
     },
     "standings": "Ara durum",
-    "tapForSound": "Ses için dokun"
+    "tapForSound": "Ses için dokun",
+    "wordLength": "Kelime uzunluğu",
+    "waitingForImage": "Sonraki görsel bekleniyor …",
+    "explainedBy": "Anlatan:",
+    "remote": {
+      "title": "Televizyonda göster",
+      "standings": "Puan durumu",
+      "map": "Gece rotası",
+      "finale": "Ödül töreni",
+      "intro": "Başlangıç ekranı",
+      "game": "Oyuna dön"
+    }
   }
 }

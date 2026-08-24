@@ -48,6 +48,12 @@ interface Props {
   /** 0-basierte Position des Spiels, das gerade laeuft / als naechstes kommt. */
   index: number;
   standings: PartyStanding[];
+  /**
+   * Feld, von dem die Gruppe losspringt. Vorgabe `index - 1`.
+   * Die Zwischenstands-Szene setzt es ausdruecklich, weil dort das eben
+   * beendete Spiel der Startpunkt ist — nicht das davor.
+   */
+  from?: number;
   /** Erst wenn true, loest der Sprung aus — die Szene gibt den Takt vor. */
   travel?: boolean;
   className?: string;
@@ -57,6 +63,7 @@ export default function TVPartyMap({
   playlist,
   index,
   standings,
+  from: fromProp,
   travel = true,
   className,
 }: Props) {
@@ -69,7 +76,7 @@ export default function TVPartyMap({
    * erschiene der Sprung als Schnitt, und genau diese Reise ist der Moment,
    * auf den der Abend hinlaeuft.
    */
-  const from = Math.max(0, index - 1);
+  const from = Math.max(0, Math.min(fromProp ?? index - 1, playlist.length - 1));
   const progress = useMotionValue(route.tAt(from));
   const eased = useSpring(progress, { stiffness: 42, damping: 18, mass: 1.1 });
   const [arrived, setArrived] = useState(index === 0);

@@ -3,7 +3,7 @@ export interface WhoAmICharacter {
   category: string;
 }
 
-export const WHOAMI_CHARACTERS_IT: WhoAmICharacter[] = [
+export const WHOAMI_CHARACTERS: WhoAmICharacter[] = [
   // Celebrita (45)
   { name: 'Albert Einstein', category: 'Celebrita' },
   { name: 'Beyonce', category: 'Celebrita' },

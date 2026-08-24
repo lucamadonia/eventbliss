@@ -6952,7 +6952,8 @@
             "label": "Beroepen",
             "desc": "Welk beroep oefen jij momenteel uit?"
           }
-        }
+        },
+        "noContent": "Er zijn nu geen personages voor deze groep"
       }
     },
     "bottlespin": {
@@ -9541,7 +9542,9 @@
       "continueSetlist": "Verder met {{game}}",
       "importFromEvent": "Uit evenement overnemen",
       "addPlayer": "Speler toevoegen",
-      "removePlayer": "{{name}} verwijderen"
+      "removePlayer": "{{name}} verwijderen",
+      "setlistTooFewLabel": "Vanaf {{n}} personen",
+      "setlistTooManyLabel": "Tot {{n}} personen"
     },
     "partyLobby": {
       "title": "Spelavond",
@@ -9866,6 +9869,17 @@
       "accuracy": "Treffers"
     },
     "standings": "Tussenstand",
-    "tapForSound": "Tik voor geluid"
+    "tapForSound": "Tik voor geluid",
+    "wordLength": "Woordlengte",
+    "waitingForImage": "Wachten op de volgende afbeelding …",
+    "explainedBy": "Uitgelegd door:",
+    "remote": {
+      "title": "Op de tv tonen",
+      "standings": "Tussenstand",
+      "map": "Nachtroute",
+      "finale": "Prijsuitreiking",
+      "intro": "Startscherm",
+      "game": "Terug naar het spel"
+    }
   }
 }

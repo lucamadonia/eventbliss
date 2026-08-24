@@ -12,6 +12,7 @@ import { describe, it, expect } from "vitest";
 
 import {
   buildPartyNightState,
+  finishedThroughFor,
   derivePartyPlaylist,
   derivePartyStandings,
   winStreakFor,
@@ -256,5 +257,44 @@ describe("buildPartyNightState", () => {
       gamesWon: 2,
       streak: 1,
     });
+  });
+});
+
+/**
+ * Der Sprung auf der Nacht-Route hinkte eine Runde hinterher.
+ *
+ * Grund: `playlistIndex` zeigt auf das Spiel, das laeuft oder als naechstes
+ * kommt, und rueckt erst mit "Weiter" weiter. Der Zwischenstand geht aber
+ * schon beim Verlassen des Spiels auf die Leitung. Nach dem ersten Spiel
+ * sprang deshalb gar nichts, danach sprang die Gruppe in das Feld, das sie
+ * gerade verlassen hatte.
+ */
+describe("finishedThroughFor", () => {
+  it("waehrend eines Spiels ist das laufende NICHT fertig", () => {
+    expect(finishedThroughFor(0, 4, "ingame")).toBe(0);
+    expect(finishedThroughFor(2, 4, "ingame")).toBe(2);
+  });
+
+  it("zwischen zwei Spielen zaehlt das eben beendete mit", () => {
+    // Genau der Fall, der vorher keinen Sprung erzeugte.
+    expect(finishedThroughFor(0, 4, "between")).toBe(1);
+    expect(finishedThroughFor(1, 4, "between")).toBe(2);
+  });
+
+  it("laeuft am Ende des Abends nicht ins Leere", () => {
+    expect(finishedThroughFor(3, 4, "between")).toBe(4);
+    // Auch wenn der Zeiger schon am Ende steht, gibt es kein fuenftes Feld.
+    expect(finishedThroughFor(4, 4, "between")).toBe(4);
+  });
+
+  it("kommt mit einer Set-Liste aus einem Eintrag zurecht", () => {
+    expect(finishedThroughFor(0, 1, "ingame")).toBe(0);
+    expect(finishedThroughFor(0, 1, "between")).toBe(1);
+  });
+
+  it("die Siegerehrung zaehlt wie das laufende Spiel", () => {
+    // 'finale' kommt erst, wenn ohnehin alles durch ist — nicht zusaetzlich
+    // hochzaehlen, sonst zeigte die Karte ein Feld zu weit.
+    expect(finishedThroughFor(4, 4, "finale")).toBe(4);
   });
 });

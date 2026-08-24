@@ -37,6 +37,7 @@ const PARTY: PartyNightState = {
   active: true,
   playlist: [],
   index: 0,
+  finishedThrough: 0,
   history: [],
   phase: 'ingame',
   standings: [

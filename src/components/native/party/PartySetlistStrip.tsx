@@ -6,7 +6,7 @@
  * ist genau der Plan das Wertvollste am Anfang des Abends.
  */
 import { motion } from "framer-motion";
-import { Check, Clock, ListOrdered, Pencil, Play } from "lucide-react";
+import { Check, Clock, ListOrdered, Pencil, Play, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { useHaptics } from "@/hooks/useHaptics";
@@ -14,7 +14,7 @@ import { playableGames } from "@/lib/playable-games";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-import { estimateSetlistMinutes, formatSetlistDuration } from "./setlist";
+import { estimateSetlistMinutes, formatSetlistDuration, playerFitFor } from "./setlist";
 
 export interface PartySetlistStripProps {
   playlist: string[];
@@ -70,7 +70,20 @@ export function PartySetlistStrip({
         {playlist.map((gameId, index) => {
           const game = playableGames.find((g) => g.id === gameId);
           const done = index < playlistIndex;
-          const current = playlistActive && index === playlistIndex;
+          /**
+           * Passt der Eintrag noch zur jetzigen Runde? Die Set-Liste wird am
+           * Anfang geplant, aber Leute gehen. Ein Eintrag, der nicht mehr
+           * passt, wird UEBERSPRUNGEN statt geloescht — kommt die Person
+           * zurueck, ist das Spiel wieder da. Sichtbar muss es trotzdem sein,
+           * sonst zeigt die Lobby etwas als naechstes an, das nie drankommt.
+           */
+          const fit = game && !done ? playerFitFor(game, playerCount) : "ok";
+          // `blocked` sperrt, `hint` erklaert nur. Eine zu grosse Runde ist
+          // kein Hindernis — das Maximum begrenzt nur das Hinzufuegen.
+          const blocked = fit === "tooFew";
+          const unfit = blocked;
+          const hint = fit === "tooMany";
+          const current = playlistActive && index === playlistIndex && !unfit;
 
           return (
             <motion.li
@@ -82,6 +95,8 @@ export function PartySetlistStrip({
                   ? "bg-[#df8eff]/10 border-[#df8eff]/30"
                   : done
                   ? "bg-card/50 border-border opacity-55"
+                  : unfit
+                  ? "bg-card border-border opacity-50"
                   : "bg-card border-border"
               )}
             >
@@ -95,7 +110,13 @@ export function PartySetlistStrip({
                     : "bg-foreground/5 text-muted-foreground"
                 )}
               >
-                {done ? <Check className="w-4 h-4" aria-hidden /> : index + 1}
+                {done ? (
+                  <Check className="w-4 h-4" aria-hidden />
+                ) : unfit ? (
+                  <Users className="w-4 h-4" aria-hidden />
+                ) : (
+                  index + 1
+                )}
               </span>
 
               <span className="flex-1 min-w-0 text-start">
@@ -110,6 +131,10 @@ export function PartySetlistStrip({
                 <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">
                   {done
                     ? t("nativeExtra.partyNight.setlistDoneLabel")
+                    : blocked
+                    ? t("nativeExtra.partyNight.setlistTooFewLabel", { n: game!.minPlayers })
+                    : hint
+                    ? t("nativeExtra.partyNight.setlistTooManyLabel", { n: game!.maxPlayers })
                     : current
                     ? t("nativeExtra.partyNight.setlistCurrentLabel")
                     : t("nativeExtra.partyNight.setlistUpcomingLabel")}

@@ -6937,7 +6937,8 @@
             "label": "Berufe",
             "desc": "Welchen Job übst du gerade aus?"
           }
-        }
+        },
+        "noContent": "Für diese Gruppe gibt es gerade keine Figuren"
       }
     },
     "bottlespin": {
@@ -9467,7 +9468,9 @@
       "continueSetlist": "Weiter mit {{game}}",
       "importFromEvent": "Aus Event übernehmen",
       "addPlayer": "Spieler hinzufügen",
-      "removePlayer": "{{name}} entfernen"
+      "removePlayer": "{{name}} entfernen",
+      "setlistTooFewLabel": "Ab {{n}} Personen",
+      "setlistTooManyLabel": "Bis {{n}} Personen"
     },
     "partyLobby": {
       "title": "Party Night",
@@ -9792,6 +9795,17 @@
       "accuracy": "Treffer"
     },
     "standings": "Zwischenstand",
-    "tapForSound": "Tap für Sound"
+    "tapForSound": "Tap für Sound",
+    "wordLength": "Wortlänge",
+    "waitingForImage": "Warten auf das nächste Motiv …",
+    "explainedBy": "Erklärt:",
+    "remote": {
+      "title": "Auf dem Fernseher zeigen",
+      "standings": "Zwischenstand",
+      "map": "Nacht-Route",
+      "finale": "Siegerehrung",
+      "intro": "Startbild",
+      "game": "Zurück zum Spiel"
+    }
   }
 }

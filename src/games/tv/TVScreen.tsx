@@ -10,6 +10,7 @@ import TVGameOver from './TVGameOver';
 import TVVFXLayer from './components/TVVFXLayer';
 import TVGlowFrame from './components/TVGlowFrame';
 import TVPartyProgressStrip from './components/TVPartyProgressStrip';
+import TVViewBar from './components/TVViewBar';
 import { useTVConnection } from './useTVConnection';
 import { useTVAudio } from './TVAudioManager';
 import type { PartyNightState } from './party-types';
@@ -102,8 +103,13 @@ export default function TVScreen() {
    * also keine Rueckleitung zum Telefon und es funktioniert auch, waehrend
    * dort gerade ein Spiel laeuft.
    */
-  const [manualMap, setManualMap] = useState(false);
-  const [hintSeen, setHintSeen] = useState(false);
+  /**
+   * Eine am FERNSEHER gewaehlte Ansicht. Sie gewinnt gegen den Zustand vom
+   * Telefon — aber nur, bis der Gastgeber dort selbst etwas umschaltet. Ohne
+   * diesen Vorrang haette der naechste Broadcast (er kommt im Sekundentakt)
+   * jede Eingabe am Fernseher sofort wieder ueberfahren.
+   */
+  const [localView, setLocalView] = useState<PartyNightState['phase'] | null>(null);
 
   const scores = useMemo(() => {
     if (leaderboard.length > 0) return leaderboard;
@@ -124,8 +130,25 @@ export default function TVScreen() {
   const partyNight = gameState?.partyNight as PartyNightState | undefined;
   const partyActive = !!partyNight?.active && (partyNight.standings?.length ?? 0) > 0;
   // Explicit host intent wins over the derived per-game phases below.
-  const showPartyFinale = partyActive && partyNight!.phase === 'finale';
-  const showPartyStandings = partyActive && partyNight!.phase === 'between';
+  const wirePhase = partyNight?.phase ?? 'ingame';
+  const effectiveView = localView ?? wirePhase;
+  const showPartyFinale = partyActive && effectiveView === 'finale';
+  const showPartyStandings = partyActive && effectiveView === 'between';
+  const showPartyMap = partyActive && effectiveView === 'map';
+  const showPartyIntro = partyActive && effectiveView === 'intro';
+
+  /**
+   * Schaltet der Gastgeber am Telefon um, gibt der Fernseher seine oertliche
+   * Wahl auf — sonst wuerde ein einmal am TV gedruecktes "Zwischenstand" jede
+   * spaetere Fernbedienung blockieren.
+   */
+  const lastWirePhaseRef = useRef(wirePhase);
+  useEffect(() => {
+    if (lastWirePhaseRef.current !== wirePhase) {
+      lastWirePhaseRef.current = wirePhase;
+      setLocalView(null);
+    }
+  }, [wirePhase]);
 
   // Determine phase
   const showLeaderboard = gameState?.phase === 'leaderboard' || gameState?.phase === 'roundEnd';
@@ -176,27 +199,29 @@ export default function TVScreen() {
         Nacht-Route ein und aus. Bewusst KEIN schwebender Knopf — die Hausregel
         weiter unten (kein Chrome ueber dem Spielbild) gilt auch hier.
       */}
-      <div
-        className="fixed inset-0 z-[200] cursor-pointer"
-        onClick={() => {
-          if (!audio.isEnabled) { audio.enable(); return; }
-          if (!partyActive) return;
-          setHintSeen(true);
-          setManualMap((v) => !v);
-        }}
-        style={{ pointerEvents: !audio.isEnabled || partyActive ? 'auto' : 'none' }}
-      >
-        {!audio.isEnabled && (
+      {/*
+        Nur noch zum Ton-Freischalten — das erzwingt der Browser mit einer
+        Nutzergeste. Frueher schaltete dieselbe Flaeche blind die Nacht-Route
+        um: kein Knopf, keine Beschriftung. Wer nicht wusste, dass es sie gibt,
+        hat sie nie gefunden. Das Umschalten macht jetzt `TVViewBar`.
+      */}
+      {!audio.isEnabled && (
+        <div
+          className="fixed inset-0 z-[200] cursor-pointer"
+          onClick={() => audio.enable()}
+        >
           <div className="absolute bottom-6 right-6 px-5 py-3 rounded-full bg-[#151a21]/90 border border-[#df8eff]/30 backdrop-blur-lg">
-            <span className="text-lg text-[#a8abb3]">🔊 {t('tv.tapForSound', 'Tap für Sound')}</span>
+            <span className="text-lg text-[#a8abb3]">🔊 {t('tv.tapForSound')}</span>
           </div>
-        )}
-        {audio.isEnabled && partyActive && !hintSeen && !manualMap && (
-          <div className="absolute bottom-6 right-6 px-5 py-3 rounded-full bg-[#151a21]/80 border border-[#df8eff]/25 backdrop-blur-lg">
-            <span className="text-lg text-[#a8abb3]">{t('tv.partyNight.tapForMap')}</span>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/*
+        Die Knopfreihe. Sie erscheint auf Maus- oder Tastenregung und blendet
+        sich nach vier Sekunden Ruhe aus — die Hausregel weiter unten (nichts
+        liegt dauerhaft ueber dem Spielbild) gilt auch fuer sie.
+      */}
+      <TVViewBar enabled={partyActive} current={effectiveView} onSelect={setLocalView} />
       <TVParticles mood={particleMood} />
       <TVGlowFrame color={glowColor || '#df8eff'} intensity={glowIntensity} rainbow={glowRainbow} />
       <TVVFXLayer gameState={gameState} />
@@ -207,7 +232,7 @@ export default function TVScreen() {
           optional partyRank/partyPoints props on that same TVScoreboard, and
           the only extra chrome is the hairline strip below — a single
           text-height row inside the padding every view already reserves. */}
-      {partyActive && !showPartyStandings && !showPartyFinale && !manualMap && (
+      {partyActive && !showPartyStandings && !showPartyFinale && !showPartyMap && !showPartyIntro && (
         <TVPartyProgressStrip playlist={partyNight!.playlist} index={partyNight!.index} />
       )}
 
@@ -217,14 +242,18 @@ export default function TVScreen() {
         `travel={false}`: Wer sie selbst aufruft, will den Stand sehen, nicht
         die Reise noch einmal vorgefuehrt bekommen.
       */}
-      {partyActive && manualMap && (
+      {showPartyMap && (
         <div className="fixed inset-0 z-[150]">
           <Suspense fallback={TVFallback}>
             <TVPartyMap
               playlist={partyNight!.playlist}
               index={partyNight!.index}
               standings={partyNight!.standings}
-              travel={false}
+              /* Die Reise mitspielen lassen, auch wenn die Karte gerufen wird:
+                 Der Sprung der Figuren IST der Moment, fuer den die Karte
+                 gebaut ist. Sie danach nur als Standbild zu zeigen, waere die
+                 halbe Wirkung. */
+              travel
             />
           </Suspense>
         </div>
@@ -245,20 +274,29 @@ export default function TVScreen() {
           key={
             showPartyFinale ? 'partyFinale'
             : showPartyStandings ? 'partyStandings'
+            // Vom Gastgeber gerufenes Startbild — dieselbe Lobby wie am Anfang
+            // des Abends, damit ein Nachzuegler den Raumcode wiederfindet.
+            : showPartyIntro ? 'lobby'
             : showGameOver ? 'gameover'
             : showLeaderboard ? 'leaderboard'
             : showGame ? 'game'
             : 'lobby'
           }
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
+          /* Kreuzblende mit einem Hauch Tiefe: Die Ansichten liegen ohnehin
+             uebereinander, und auf einer Kinoleinwand wirkt ein blosses
+             Aufblenden billig. Bewusst kurz — der Fernseher soll nicht
+             wirken, als haenge er. */
+          initial={{ opacity: 0, scale: 1.015 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.99 }}
+          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         >
           {showPartyFinale ? (
             <Suspense fallback={TVFallback}><TVPartyFinale party={partyNight!} /></Suspense>
           ) : showPartyStandings ? (
             <Suspense fallback={TVFallback}><TVPartyStandings party={partyNight!} /></Suspense>
+          ) : showPartyIntro ? (
+            <TVLobby roomCode={code} players={players} isConnected={isConnected} error={error} />
           ) : showGameOver ? (
             <TVGameOver scores={scores} />
           ) : showLeaderboard ? (

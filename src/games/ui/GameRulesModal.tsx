@@ -178,7 +178,7 @@ export function GameRulesModal({ gameId, open, onClose }: GameRulesModalProps) {
               {/* Steps */}
               <div className="space-y-3">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold text-center">
-                  {t("gameRules.howToPlay", "So geht's")}
+                  {t("gameRules.howToPlay")}
                 </p>
                 {steps.map((step, i) => (
                   <motion.div
@@ -227,7 +227,7 @@ export function GameRulesModal({ gameId, open, onClose }: GameRulesModalProps) {
                 transition={{ delay: 0.5 }}
               >
                 <Sparkles className="w-4 h-4" />
-                {t("gameRules.understood", "Verstanden — los geht's!")}
+                {t("gameRules.understood")}
               </motion.button>
             </div>
           </motion.div>

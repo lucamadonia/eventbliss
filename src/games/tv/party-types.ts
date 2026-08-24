@@ -51,6 +51,13 @@ export interface PartyNightState {
   playlist: PartyPlaylistItem[];
   /** 0-based position of the game that is current / up next */
   index: number;
+  /**
+   * Wie viele Eintraege sind fertig. Zwischen zwei Spielen ist das EINS mehr
+   * als `index` — der Zeiger rueckt erst weiter, wenn der Gastgeber "Weiter"
+   * drueckt, der Zwischenstand geht aber vorher auf die Leitung. Die
+   * Nacht-Route springt entlang dieser Zahl, nicht entlang `index`.
+   */
+  finishedThrough: number;
   standings: PartyStanding[];
   history: PartyGameResult[];
   /**
@@ -58,8 +65,15 @@ export interface PartyNightState {
    *             progress strip and the inline party rank on every scoreboard.
    * 'between' — the dedicated TVPartyStandings scene.
    * 'finale'  — the end-of-night TVPartyFinale ceremony.
+   * 'map'     — die Nacht-Route als eigene Ansicht.
+   * 'intro'   — der Begruessungsbildschirm mit dem Raumcode.
+   *
+   * Alles ausser 'ingame' wird vom Gastgeber gesetzt (Fernbedienung auf dem
+   * Telefon oder Knopfreihe auf dem Fernseher) und reist in JEDEM Broadcast
+   * mit — sonst wuerde der naechste Spielzustand die Ansicht sofort wieder
+   * ueberschreiben.
    */
-  phase: 'ingame' | 'between' | 'finale';
+  phase: 'ingame' | 'between' | 'finale' | 'map' | 'intro';
   /** name of the game that just finished — headline of the standings scene */
   lastGameName?: string;
 }

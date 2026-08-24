@@ -66,10 +66,10 @@ export function ConfirmExitDialog({
             style={{ background: "#151a21", border: "1px solid rgba(255,255,255,0.1)" }}
           >
             <p className="text-base font-bold mb-1 text-white">
-              {title ?? t("games.common.leaveTitle", "Spiel verlassen?")}
+              {title ?? t("games.common.leaveTitle")}
             </p>
             <p className="text-xs mb-4 text-white/50">
-              {subtitle ?? t("games.common.leaveSub", "Der aktuelle Spielstand geht dabei verloren.")}
+              {subtitle ?? t("games.common.leaveSub")}
             </p>
             <div className="flex flex-col gap-2">
               <button
@@ -77,14 +77,14 @@ export function ConfirmExitDialog({
                 className="w-full py-3 rounded-2xl text-sm font-bold"
                 style={{ background: accent, color: "#0a0e14" }}
               >
-                {t("games.common.leaveStay", "Weiterspielen")}
+                {t("games.common.leaveStay")}
               </button>
               <button
                 onClick={onLeave}
                 className="w-full py-3 rounded-2xl text-sm font-semibold text-white/60"
                 style={{ border: "1px solid rgba(255,255,255,0.1)" }}
               >
-                {t("games.common.leaveConfirm", "Verlassen")}
+                {t("games.common.leaveConfirm")}
               </button>
             </div>
           </motion.div>

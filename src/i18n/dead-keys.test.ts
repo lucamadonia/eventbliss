@@ -84,3 +84,77 @@ describe("i18n — keine toten Keys", () => {
     ).toEqual([]);
   });
 });
+
+/**
+ * Die zweite Haelfte desselben Problems.
+ *
+ * Der Test oben sieht nur `t('…')`-Aufrufe. Ein Text, der GAR NICHT durch
+ * `t()` laeuft, ist fuer ihn unsichtbar — und genau das war der Fehler bei
+ * "Add Spieler": `PlayerSetup` trug ein hartkodiertes deutsches `label`, das
+ * in "Add {{label}}" eingesetzt wurde. Im Deutschen fiel es nie auf, weil
+ * zufaellig "Spieler hinzufuegen" herauskam; in jeder anderen Sprache stand
+ * dort ein deutsches Wort.
+ *
+ * GELTUNGSBEREICH ist bewusst eng: nur Text, der auf dem Bildschirm landet —
+ * JSX-Textknoten und die Beschriftungs-Props. Deutsche KOMMENTARE sind in
+ * diesem Projekt Standard; wuerde der Test sie mitzaehlen, schluege er
+ * tausendfach an und waere binnen einer Woche abgeschaltet.
+ */
+const GERMAN_CHARS = /[äöüßÄÖÜ]/;
+/** Woerter, die auch ohne Umlaut eindeutig deutsch sind. */
+const GERMAN_WORDS = /\b(Spieler|Spielern|Runde|Runden|Punkte|Punkten|Melden|Weiter|Abbrechen|Fehler)\b/;
+/** Props, deren Inhalt der Nutzer liest oder vorgelesen bekommt. */
+const VISIBLE_ATTRS = /\b(?:title|aria-label|placeholder|alt)\s*=\s*"([^"]+)"/g;
+/** JSX-Text zwischen zwei Tags, auf derselben Zeile und ohne Ausdruck darin. */
+const JSX_TEXT = />([^<>{}\n]*[A-Za-zÀ-ÿ][^<>{}\n]*)</g;
+
+/**
+ * Bewusste Ausnahmen — jede mit Grund, damit niemand hier blind ergaenzt.
+ * Ein Spielname ist ein Eigenname: "DRUECK DAS WORT" heisst auf dem englischen
+ * Fernseher genauso, wie EventBliss auch nicht uebersetzt wird.
+ */
+const ALLOWED = new Set<string>([
+  "DRÜCK DAS WORT",
+]);
+
+describe("i18n — kein hartkodiertes Deutsch in der Spiel-Oberflaeche", () => {
+  it("JSX-Text und Beschriftungen laufen durch t()", () => {
+    const files = collectSourceFiles(path.join(SRC, "games"));
+    const offenders: string[] = [];
+
+    for (const file of files) {
+      const raw = fs.readFileSync(file, "utf8");
+      // Kommentare rausnehmen, Zeilennummern erhalten.
+      const noBlocks = raw.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "));
+      const lines = noBlocks
+        .split("\n")
+        .map((line) => (/^\s*(\/\/|\*)/.test(line) ? "" : line));
+
+      lines.forEach((line, i) => {
+        const found: string[] = [];
+        for (const m of line.matchAll(JSX_TEXT)) found.push(m[1].trim());
+        for (const m of line.matchAll(VISIBLE_ATTRS)) found.push(m[1].trim());
+
+        for (const text of found) {
+          if (!text || ALLOWED.has(text)) continue;
+          if (!GERMAN_CHARS.test(text) && !GERMAN_WORDS.test(text)) continue;
+          const rel = path.relative(SRC, file).split(path.sep).join("/");
+          // Ein Text kann von zwei Mustern getroffen werden — jede Fundstelle
+          // soll aber nur einmal in der Meldung stehen.
+          const line_ = `${rel}:${i + 1}   "${text}"`;
+          if (!offenders.includes(line_)) offenders.push(line_);
+        }
+      });
+    }
+
+    expect(
+      offenders,
+      `Diese Texte stehen fest im Code und erscheinen in JEDER Sprache deutsch.\n` +
+        `Richtig ist ein t('…')-Aufruf mit einem Schluessel in allen Sprachdateien.\n` +
+        `Ist der Text ein Eigenname (z.B. ein Spielname), gehoert er mit Begruendung\n` +
+        `in ALLOWED — aber nur dann.\n\n` +
+        offenders.join("\n") +
+        "\n",
+    ).toEqual([]);
+  });
+});

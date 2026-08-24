@@ -22,6 +22,7 @@ import i18n from "i18next";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { extractGameResult, resolvePartyGameId } from "@/games/party/extractResult";
 import { buildPartyNightState } from "@/games/party/standings";
+import { getTvView, subscribeTvView, tvViewServerSnapshot } from "@/games/tv/tv-view";
 import {
   getActivePartySession,
   reportGameResult,
@@ -82,9 +83,16 @@ export function useTVGameBridge(
   );
   const language = i18n.language;
   const nameFor = useMemo(() => (id: string) => partyGameName(id, language), [language]);
+  /**
+   * Die vom Gastgeber gewaehlte Erlebnis-Ansicht reist in JEDEM Broadcast mit.
+   * Ohne das haette der naechste Spielzustand sie nach Millisekunden wieder
+   * auf 'ingame' zurueckgesetzt — ein "zeig die Rangliste" mitten im Spiel
+   * waere nie sichtbar geworden.
+   */
+  const tvView = useSyncExternalStore(subscribeTvView, getTvView, tvViewServerSnapshot);
   const partyNight = useMemo<PartyNightState | null>(
-    () => (partySession ? buildPartyNightState(partySession, nameFor) : null),
-    [partySession, nameFor]
+    () => (partySession ? buildPartyNightState(partySession, nameFor, tvView) : null),
+    [partySession, nameFor, tvView]
   );
   // Vorberechnete Signatur: haelt den Vergleich unten billig und stabil.
   const partyNightJson = useMemo(

@@ -6902,7 +6902,8 @@
             "label": "Professioni",
             "desc": "Che lavoro stai facendo adesso?"
           }
-        }
+        },
+        "noContent": "Al momento non ci sono personaggi per questo gruppo"
       }
     },
     "bottlespin": {
@@ -9491,7 +9492,9 @@
       "continueSetlist": "Continua con {{game}}",
       "importFromEvent": "Prendi dall'evento",
       "addPlayer": "Aggiungi giocatore",
-      "removePlayer": "Rimuovi {{name}}"
+      "removePlayer": "Rimuovi {{name}}",
+      "setlistTooFewLabel": "Da {{n}} persone",
+      "setlistTooManyLabel": "Fino a {{n}} persone"
     },
     "partyLobby": {
       "title": "Serata giochi",
@@ -9816,6 +9819,17 @@
       "accuracy": "Successi"
     },
     "standings": "Punteggio attuale",
-    "tapForSound": "Tocca per l'audio"
+    "tapForSound": "Tocca per l'audio",
+    "wordLength": "Lunghezza della parola",
+    "waitingForImage": "In attesa della prossima immagine …",
+    "explainedBy": "Spiega:",
+    "remote": {
+      "title": "Mostra in TV",
+      "standings": "Classifica",
+      "map": "Percorso notturno",
+      "finale": "Premiazione",
+      "intro": "Schermata iniziale",
+      "game": "Torna al gioco"
+    }
   }
 }

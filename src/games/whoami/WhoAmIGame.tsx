@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
-import { getWHOAMI_CHARACTERS } from './whoami-content';
+import { getWhoAmIPool, type WhoAmICategoryKey } from './whoami-content';
 import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -30,12 +30,31 @@ const MAX_QUESTIONS = 20;
 // Internal sentinel key for the first default player; NOT shown to users directly
 const DEFAULT_PLAYER_SENTINEL = 'Du';
 
-const MODE_TO_CATEGORY: Record<string, string> = {
-  prominente: 'Prominente',
-  tiere: 'Tiere',
-  berufe: 'Berufe',
-  filme: 'Filme',
+/**
+ * Die im Setup waehlbare Kennung. Frueher stand hier eine Tabelle auf die
+ * DEUTSCHEN Kategorie-Beschriftungen — und weil die Inhaltspakete diese
+ * Beschriftung mituebersetzen ("Celebrities", "Ünlüler"), traf der Filter in
+ * neun von zehn Sprachen nichts. Der Pool war leer, `pool[i % 0]` wurde zu
+ * `pool[NaN]`, und der Zugriff auf `.name` liess das Spiel beim Start
+ * abstuerzen. Die Kennungen sind jetzt sprachunabhaengig; die Uebersetzung
+ * findet nur noch in der Anzeige statt.
+ */
+const SETUP_ID_TO_KEY: Record<string, WhoAmICategoryKey> = {
+  prominente: 'prominente',
+  tiere: 'tiere',
+  berufe: 'berufe',
+  filme: 'filme',
 };
+
+/**
+ * Figuren fuer eine Runde ziehen. Gibt `null`, wenn keine da sind — dann darf
+ * NICHT gestartet werden. Ein leerer Pool hat frueher einen Absturz erzeugt,
+ * der wie ein toter Knopf aussah; lieber eine ehrliche Meldung.
+ */
+function drawPool(setupId: string) {
+  const pool = shuffle(getWhoAmIPool(SETUP_ID_TO_KEY[setupId] ?? 'prominente'));
+  return pool.length > 0 ? pool : null;
+}
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -59,6 +78,12 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   const haptics = useHaptics();
 
   const [phase, setPhase] = useState<Phase>('setup');
+  /**
+   * Keine Figuren fuer die gewaehlte Gruppe. Das darf nie wieder als
+   * toter Knopf enden: Frueher lief der Code in `pool[NaN].name` und die
+   * Komponente starb beim Klick, ohne dass irgendetwas sichtbar wurde.
+   */
+  const [contentError, setContentError] = useState(false);
 
   // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
   // liegt über dem Pfeil im Spiel und läuft nicht über dessen onClick.
@@ -98,8 +123,8 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
     selectedMode: string,
     settings: { timer: number; rounds: number },
   ) => {
-    const category = MODE_TO_CATEGORY[selectedMode] ?? 'Prominente';
-    const pool = shuffle(getWHOAMI_CHARACTERS().filter((c) => c.category === category));
+    const pool = drawPool(selectedMode);
+    if (!pool) { setContentError(true); return; }
     const p: Player[] = mapped.map((m, i) => ({
       ...m, color: PLAYER_COLORS[i % PLAYER_COLORS.length],
       score: 0, character: pool[i % pool.length].name,
@@ -227,8 +252,8 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
       } else {
         // next round: reassign
         setCurrentRound((r) => r + 1);
-        const category = MODE_TO_CATEGORY[mode] ?? 'Prominente';
-        const pool = shuffle(getWHOAMI_CHARACTERS().filter((c) => c.category === category));
+        const pool = drawPool(mode);
+        if (!pool) { setContentError(true); return; }
         setPlayers((prev) => prev.map((p, i) => ({
           ...p, character: pool[i % pool.length].name,
           questionsAsked: 0, guessedCorrectly: false, eliminated: false,
@@ -290,8 +315,8 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   // (a new game must reveal new secret roles). Reset per-match counts and
   // go straight into the assign/reveal phase — never back to setup.
   const playAgain = () => {
-    const category = MODE_TO_CATEGORY[mode] ?? 'Prominente';
-    const pool = shuffle(getWHOAMI_CHARACTERS().filter((c) => c.category === category));
+    const pool = drawPool(mode);
+    if (!pool) { setContentError(true); return; }
     setPlayers((prev) => prev.map((p, i) => ({
       ...p,
       character: pool[i % pool.length].name,
@@ -345,6 +370,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   if (phase === 'setup') {
     return (
       <WhoAmISetup
+        contentError={contentError}
         onStart={handleStart}
         onlinePlayers={online?.players}
         t={t}
@@ -376,7 +402,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
           {t('games.whoami.round', { round: currentRound, total: totalRounds })}
         </div>
         <div className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs font-bold text-[#df8eff]">
-          {t(`gameModes.whoami.${mode}.name`, MODE_TO_CATEGORY[mode])}
+          {t(`gameModes.whoami.${mode}.name`)}
         </div>
       </div>
 
@@ -452,7 +478,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                   {t('games.whoami.round', { round: currentRound, total: totalRounds })}
                 </span>
                 <span className="text-[#df8eff] font-black text-sm mt-0.5">
-                  {t(`gameModes.whoami.${mode}.name`, MODE_TO_CATEGORY[mode])}
+                  {t(`gameModes.whoami.${mode}.name`)}
                 </span>
               </div>
               <div className="flex flex-col items-end">
@@ -674,7 +700,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                     <div>
                       <h3 className="text-3xl font-black">{activePlayer.character}</h3>
                       <p className="text-[#a8abb3] font-medium text-sm mt-1">
-                        {t('games.whoami.result.category', { category: t(`gameModes.whoami.${mode}.name`, MODE_TO_CATEGORY[mode]) })}
+                        {t('games.whoami.result.category', { category: t(`gameModes.whoami.${mode}.name`) })}
                       </p>
                     </div>
                   </div>
@@ -828,6 +854,8 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
 // ---------------------------------------------------------------------------
 
 interface WhoAmISetupProps {
+  /** true = fuer diese Gruppe gibt es keine Figuren; Start ist gesperrt. */
+  contentError?: boolean;
   onStart: (
     mapped: { id: string; name: string; color: string; avatar: string }[],
     selectedMode: string,
@@ -857,7 +885,7 @@ const TONE_CLASSES: Record<'primary' | 'secondary' | 'tertiary' | 'accent', { ri
   accent:    { ring: 'border-[#df8eff]', glow: 'shadow-[0_0_24px_rgba(223,142,255,0.22)]', iconBg: 'bg-[#df8eff]', iconFg: 'text-[#0a0e14]', text: 'text-[#df8eff]' },
 };
 
-function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
+function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAmISetupProps) {
   const isOnline = (onlinePlayers?.length ?? 0) > 0;
   /**
    * Party-Besetzung uebernehmen. Dieser eigene Setup-Bildschirm kannte bisher
@@ -941,7 +969,7 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
     });
   };
 
-  const canStart = players.length >= MIN && players.every((p) => p.name.trim().length > 0);
+  const canStart = !contentError && players.length >= MIN && players.every((p) => p.name.trim().length > 0);
 
   const handleStart = () => {
     if (!canStart) return;
@@ -1071,6 +1099,8 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics }: WhoAmISetupProps) {
               {t('games.whoami.setup.startGame')}
               <Play className="w-5 h-5" />
             </>
+          ) : contentError ? (
+            t('games.whoami.setup.noContent')
           ) : (
             t('games.whoami.setup.minPlayers')
           )}

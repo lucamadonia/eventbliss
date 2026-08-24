@@ -182,7 +182,7 @@ export default function TVSmartFallback({ gameState }: Props) {
 
               {/* Explainer sub-label */}
               {tv.explainer && (
-                <span className="text-xl text-[#8ff5ff] mt-2">Erklärt: <b>{tv.explainer}</b></span>
+                <span className="text-xl text-[#8ff5ff] mt-2">{t('tv.explainedBy')} <b>{tv.explainer}</b></span>
               )}
             </motion.div>
           ) : (

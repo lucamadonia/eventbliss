@@ -6902,7 +6902,8 @@
             "label": "Profesiones",
             "desc": "¿Qué trabajo estás haciendo ahora mismo?"
           }
-        }
+        },
+        "noContent": "Ahora mismo no hay personajes para este grupo"
       }
     },
     "bottlespin": {
@@ -9669,7 +9670,9 @@
       "continueSetlist": "Seguir con {{game}}",
       "importFromEvent": "Tomar del evento",
       "addPlayer": "Añadir jugador",
-      "removePlayer": "Quitar a {{name}}"
+      "removePlayer": "Quitar a {{name}}",
+      "setlistTooFewLabel": "Desde {{n}} personas",
+      "setlistTooManyLabel": "Hasta {{n}} personas"
     },
     "partyLobby": {
       "title": "Noche de fiesta",
@@ -9994,6 +9997,17 @@
       "accuracy": "Aciertos"
     },
     "standings": "Clasificación parcial",
-    "tapForSound": "Toca para el sonido"
+    "tapForSound": "Toca para el sonido",
+    "wordLength": "Longitud de la palabra",
+    "waitingForImage": "Esperando la siguiente imagen …",
+    "explainedBy": "Explica:",
+    "remote": {
+      "title": "Mostrar en la tele",
+      "standings": "Clasificación",
+      "map": "Ruta nocturna",
+      "finale": "Premiación",
+      "intro": "Pantalla de inicio",
+      "game": "Volver al juego"
+    }
   }
 }

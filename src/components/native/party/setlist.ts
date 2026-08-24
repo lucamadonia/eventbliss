@@ -137,12 +137,55 @@ export function playerFitFor(game: PlayableGame, playerCount: number): PlayerFit
   return "ok";
 }
 
-/** Wie `findLockedSetlistEntries`, aber fuer die Gruppengroesse. */
+/**
+ * Der naechste Eintrag ab `fromIndex`, der zur aktuellen Runde passt.
+ * `-1` heisst: ab hier passt gar nichts mehr, der Abend ist durch.
+ *
+ * WARUM ES DAS GIBT: Die Set-Liste wird am Anfang geplant, aber Leute gehen.
+ * Die Lobby bot bis hierher den faelligen Eintrag ungeprueft an — bei zwei
+ * verbliebenen Gaesten startete ihr grosser Knopf IMPOSTOR, das mit vier
+ * Personen beginnt und deshalb gar nicht erst laeuft.
+ *
+ * Bewusst als reine Vorausschau: `PartyNightFlow` schaltet stattdessen mit
+ * `advancePlaylist()` Schritt fuer Schritt weiter, weil es den frisch
+ * geschriebenen Zustand braucht. Beide Wege benutzen dieselbe Regel
+ * (`playerFitFor`), nur die Bewegung unterscheidet sich.
+ */
+export function nextFittingIndex(
+  playlist: string[],
+  fromIndex: number,
+  playerCount: number,
+): number {
+  for (let i = Math.max(0, fromIndex); i < playlist.length; i++) {
+    const game = playableGames.find((g) => g.id === playlist[i]);
+    // Unbekannte Kennung nicht verschlucken — sonst verschwindet ein Eintrag
+    // stillschweigend, statt dass jemand den Fehler bemerkt.
+    // Nur `tooFew` ist ein Hindernis; zur Begruendung siehe
+    // `findUnfitSetlistEntries`.
+    if (!game || playerFitFor(game, playerCount) !== "tooFew") return i;
+  }
+  return -1;
+}
+
+/**
+ * Blockiert die Gruppengroesse den Start?
+ *
+ * NUR das Minimum sperrt. Das Maximum tut es ausdruecklich NICHT — es ist eine
+ * Bedien-Obergrenze, keine Spielregel: `PlayerSetup.tsx:70` deaktiviert damit
+ * bloss den Hinzufuegen-Knopf, und OHRWURM kuerzt eine zu grosse Party
+ * (`OhrwurmGame.tsx:1787`), statt sie abzulehnen. Kein Spiel bricht oberhalb
+ * seines Maximums.
+ *
+ * Die erste Fassung sperrte auch nach oben. Ergebnis im Geraetetest: eine
+ * Runde mit neun Gaesten konnte PIXELJAGD, NAH DRAN, DRUECK DAS WORT und
+ * OHRWURM nicht mehr waehlen — vier Spiele, die alle laufen wuerden. Das
+ * Minimum dagegen ist echt: IMPOSTOR startet mit zwei Leuten wirklich nicht.
+ */
 export function findUnfitSetlistEntries(gameIds: string[], playerCount: number): string[] {
   if (playerCount <= 0) return [];
   return gameIds.filter((id) => {
     const game = playableGames.find((g) => g.id === id);
-    return !!game && playerFitFor(game, playerCount) !== "ok";
+    return !!game && playerFitFor(game, playerCount) === "tooFew";
   });
 }
 

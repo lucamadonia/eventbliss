@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
-import { getActivePartySession } from "@/hooks/usePartySession";
+import { useInitialRoster } from "@/games/ui/useInitialRoster";
 import { useNavigate } from 'react-router-dom';
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
@@ -173,7 +173,10 @@ interface SplitQuizGameProps {
 export default function SplitQuizGame({ players: initialPlayers, onClose, online }: SplitQuizGameProps) {
   const { t } = useTranslation();
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
-  const partyPlayerNames = getActivePartySession()?.players?.map(p => p.name) ?? [];
+  // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
+  // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
+  // genau einmal beim Mount und verpassten jede spaetere Aenderung.
+  const partyPlayerNames = (useInitialRoster() ?? []).map((p) => p.name);
   const defaultPlayers = [
     t('games.splitquiz.defaultPlayer', { n: 1 }),
     t('games.splitquiz.defaultPlayer', { n: 2 }),

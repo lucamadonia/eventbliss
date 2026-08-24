@@ -9,7 +9,7 @@
  * This component is only rendered when isNative() === true.
  * Desktop / mobile web continue using the original <AppContent /> tree.
  */
-import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { Routes, Route, Navigate, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { isNative } from "@/lib/platform";
@@ -83,6 +83,8 @@ const NativeServiceDetailScreen = lazy(() => import("@/pages/native/NativeServic
 // Existing desktop pages — wrapped in NativeStackPage at route level
 import Auth from "@/pages/Auth";
 import EventSurvey from "@/pages/EventSurvey";
+import { TVBroadcastProvider } from "@/contexts/TVBroadcastContext";
+import { getActivePartySession, subscribePartySession } from "@/hooks/usePartySession";
 const EventDashboard = lazy(() => import("@/pages/EventDashboard"));
 const EventExpenses = lazy(() => import("@/pages/EventExpenses"));
 const EventExpensesV2 = lazy(() => import("@/pages/EventExpensesV2"));
@@ -183,6 +185,24 @@ function RouteFallback() {
 
 export function NativeApp() {
   const { stage, completeSplash, completeOnboarding } = useLaunchFlow();
+  const { pathname: shellPath } = useLocation();
+  /**
+   * EIN Fernseh-Kanal fuer die ganze App.
+   *
+   * Frueher haing der Provider nur um den Spiele-Hub — die Party-Lobby lag
+   * ausserhalb und konnte gar nichts senden: kein Zwischenstand, keine
+   * Siegerehrung, keine Fernbedienung. Ein ZWEITER Provider an `/party` waere
+   * schlimmer gewesen, weil `supabase.channel()` nach Topic dedupliziert und
+   * der zuerst abgebaute den geteilten Kanal mitgerissen haette.
+   *
+   * Der Provider um den Spiele-Hub bleibt stehen und wird hier drinnen zum
+   * No-Op (Durchreiche-Schutz) — im Web wirkt er unveraendert.
+   */
+  const partySession = useSyncExternalStore(subscribePartySession, getActivePartySession, () => null);
+  const partyTvCode = partySession?.isActive ? partySession.tvCode : undefined;
+  // Die schwebende Pille nur dort, wo sie hingehoert. Die Party-Lobby hat ihre
+  // eigene TV-Karte; zwei Bedienelemente fuer dieselbe Sache verwirren.
+  const showTvPill = shellPath.startsWith("/games");
 
   // Warm all tab chunks while the splash plays (see preloadTabScreens).
   useEffect(() => {
@@ -193,6 +213,7 @@ export function NativeApp() {
     <>
       {/* The main shell is always mounted once stage>=ready so transitions work */}
       {stage === "ready" && (
+        <TVBroadcastProvider sessionCode={partyTvCode} showConnectButton={showTvPill}>
         <NativeShell>
           {/* Keep-alive tab roots — always mounted, visibility-toggled.
               Tab paths are NOT routed through PageTransition (it skips
@@ -357,6 +378,7 @@ export function NativeApp() {
             </Routes>
           </PageTransition>
         </NativeShell>
+        </TVBroadcastProvider>
       )}
 
       {/* Overlay layers (splash + onboarding) — on top of shell */}
