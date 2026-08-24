@@ -10007,7 +10007,9 @@
       "map": "Ruta nocturna",
       "finale": "Premiación",
       "intro": "Pantalla de inicio",
-      "game": "Volver al juego"
+      "game": "Volver al juego",
+      "rules": "Cómo se juega",
+      "menu": "Menú"
     }
   }
 }

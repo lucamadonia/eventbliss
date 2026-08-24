@@ -40,6 +40,7 @@ const TVSmartFallback = lazy(() => import('./games/TVSmartFallback'));
 // Party Night scenes — the cross-game evening, not a single game
 const TVPartyStandings = lazy(() => import('./TVPartyStandings'));
 const TVPartyMap = lazy(() => import('./components/TVPartyMap'));
+const TVRules = lazy(() => import('./TVRules'));
 const TVPartyFinale = lazy(() => import('./TVPartyFinale'));
 
 const TVFallback = (
@@ -136,6 +137,7 @@ export default function TVScreen() {
   const showPartyStandings = partyActive && effectiveView === 'between';
   const showPartyMap = partyActive && effectiveView === 'map';
   const showPartyIntro = partyActive && effectiveView === 'intro';
+  const showPartyRules = partyActive && effectiveView === 'rules';
 
   /**
    * Schaltet der Gastgeber am Telefon um, gibt der Fernseher seine oertliche
@@ -210,7 +212,9 @@ export default function TVScreen() {
           className="fixed inset-0 z-[200] cursor-pointer"
           onClick={() => audio.enable()}
         >
-          <div className="absolute bottom-6 right-6 px-5 py-3 rounded-full bg-[#151a21]/90 border border-[#df8eff]/30 backdrop-blur-lg">
+          {/* Bewusst LINKS: Der Menue-Knopf sitzt unten rechts, beide zusammen
+                 ueberlappten sich sonst. */}
+            <div className="absolute bottom-6 left-6 px-5 py-3 rounded-full bg-[#151a21]/90 border border-[#df8eff]/30 backdrop-blur-lg">
             <span className="text-lg text-[#a8abb3]">🔊 {t('tv.tapForSound')}</span>
           </div>
         </div>
@@ -232,7 +236,7 @@ export default function TVScreen() {
           optional partyRank/partyPoints props on that same TVScoreboard, and
           the only extra chrome is the hairline strip below — a single
           text-height row inside the padding every view already reserves. */}
-      {partyActive && !showPartyStandings && !showPartyFinale && !showPartyMap && !showPartyIntro && (
+      {partyActive && !showPartyStandings && !showPartyFinale && !showPartyMap && !showPartyIntro && !showPartyRules && (
         <TVPartyProgressStrip playlist={partyNight!.playlist} index={partyNight!.index} />
       )}
 
@@ -276,6 +280,7 @@ export default function TVScreen() {
             : showPartyStandings ? 'partyStandings'
             // Vom Gastgeber gerufenes Startbild — dieselbe Lobby wie am Anfang
             // des Abends, damit ein Nachzuegler den Raumcode wiederfindet.
+            : showPartyRules ? 'partyRules'
             : showPartyIntro ? 'lobby'
             : showGameOver ? 'gameover'
             : showLeaderboard ? 'leaderboard'
@@ -295,6 +300,13 @@ export default function TVScreen() {
             <Suspense fallback={TVFallback}><TVPartyFinale party={partyNight!} /></Suspense>
           ) : showPartyStandings ? (
             <Suspense fallback={TVFallback}><TVPartyStandings party={partyNight!} /></Suspense>
+          ) : showPartyRules ? (
+            <Suspense fallback={TVFallback}>
+              <TVRules
+                gameId={partyNight!.playlist[partyNight!.index]?.gameId ?? ''}
+                gameName={partyNight!.playlist[partyNight!.index]?.name}
+              />
+            </Suspense>
           ) : showPartyIntro ? (
             <TVLobby roomCode={code} players={players} isConnected={isConnected} error={error} />
           ) : showGameOver ? (

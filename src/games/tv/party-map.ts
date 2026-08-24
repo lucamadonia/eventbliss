@@ -43,7 +43,27 @@ export interface Route {
  * gleich weit vom Bildrand bleiben.
  */
 const MARGIN_X_RATIO = 0.075;
-const MARGIN_Y_RATIO = 0.2;
+
+/**
+ * Oben und unten BEWUSST verschieden.
+ *
+ * Mit einem gemeinsamen Rand von 20 % landete die zweite Feldreihe bei 80 %
+ * der Hoehe — mitten im Titelband, das schon bei 62 % beginnt. Im Geraetetest
+ * mit dreizehn Spielen lagen PIXELJAGD und OHNE WORTE deshalb unter dem
+ * Verlauf und wirkten ausgegraut. Der Test hier war trotzdem gruen, weil er
+ * nur einen festen Randabstand prueft und 864 innerhalb von 930 liegt.
+ *
+ * Unten muss also Platz fuer Titel und Verlauf bleiben, oben nicht.
+ */
+const MARGIN_TOP_RATIO = 0.19;
+const MARGIN_BOTTOM_RATIO = 0.46;
+
+/**
+ * Oberhalb dieses Anteils der Hoehe muss JEDES Feld liegen — samt Medaillon
+ * und Beschriftung darunter. Der Wert ist die Obergrenze fuer den Test und
+ * zugleich die Begruendung fuer `MARGIN_BOTTOM_RATIO`.
+ */
+export const CONTENT_BOTTOM_RATIO = 0.62;
 
 /**
  * Wie stark die Route zwischen den Feldern ausschwingt. Ohne Ausschlag waere
@@ -64,14 +84,21 @@ function rowsFor(count: number): number {
 /** Feldmittelpunkte in Serpentinen-Anordnung. */
 function layout(count: number, width: number, height: number): MapPoint[] {
   if (count <= 0) return [];
-  if (count === 1) return [{ x: width / 2, y: height / 2 }];
+  if (count === 1) {
+    // In der nutzbaren Flaeche zentrieren, nicht im ganzen Bild — sonst steht
+    // das einzige Feld im Titelband.
+    const top = height * MARGIN_TOP_RATIO;
+    const bottom = height * (1 - MARGIN_BOTTOM_RATIO);
+    return [{ x: width / 2, y: (top + bottom) / 2 }];
+  }
 
   const rows = rowsFor(count);
   const perRow = Math.ceil(count / rows);
   const marginX = width * MARGIN_X_RATIO;
-  const marginY = height * MARGIN_Y_RATIO;
+  const marginTop = height * MARGIN_TOP_RATIO;
+  const marginBottom = height * MARGIN_BOTTOM_RATIO;
   const usableW = width - marginX * 2;
-  const usableH = height - marginY * 2;
+  const usableH = height - marginTop - marginBottom;
 
   const points: MapPoint[] = [];
   for (let i = 0; i < count; i++) {
@@ -82,7 +109,7 @@ function layout(count: number, width: number, height: number): MapPoint[] {
     const dir = row % 2 === 0 ? col : perRow - 1 - col;
     const tx = perRow === 1 ? 0.5 : dir / (perRow - 1);
     const ty = rows === 1 ? 0.5 : row / (rows - 1);
-    points.push({ x: marginX + tx * usableW, y: marginY + ty * usableH });
+    points.push({ x: marginX + tx * usableW, y: marginTop + ty * usableH });
   }
   return points;
 }

@@ -9879,7 +9879,9 @@
       "map": "Nachtroute",
       "finale": "Prijsuitreiking",
       "intro": "Startscherm",
-      "game": "Terug naar het spel"
+      "game": "Terug naar het spel",
+      "rules": "Spelregels",
+      "menu": "Menu"
     }
   }
 }

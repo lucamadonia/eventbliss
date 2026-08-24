@@ -9805,7 +9805,9 @@
       "map": "Nacht-Route",
       "finale": "Siegerehrung",
       "intro": "Startbild",
-      "game": "Zurück zum Spiel"
+      "game": "Zurück zum Spiel",
+      "rules": "Anleitung",
+      "menu": "Menü"
     }
   }
 }

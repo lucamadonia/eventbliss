@@ -9829,7 +9829,9 @@
       "map": "Route nocturne",
       "finale": "Remise des prix",
       "intro": "Écran d'accueil",
-      "game": "Retour au jeu"
+      "game": "Retour au jeu",
+      "rules": "Règles du jeu",
+      "menu": "Menu"
     }
   }
 }

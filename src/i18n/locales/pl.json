@@ -9903,7 +9903,9 @@
       "map": "Nocna trasa",
       "finale": "Ceremonia",
       "intro": "Ekran startowy",
-      "game": "Wróć do gry"
+      "game": "Wróć do gry",
+      "rules": "Zasady gry",
+      "menu": "Menu"
     }
   }
 }

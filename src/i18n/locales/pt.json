@@ -9879,7 +9879,9 @@
       "map": "Rota noturna",
       "finale": "Premiação",
       "intro": "Ecrã inicial",
-      "game": "Voltar ao jogo"
+      "game": "Voltar ao jogo",
+      "rules": "Como se joga",
+      "menu": "Menu"
     }
   }
 }

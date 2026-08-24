@@ -9805,7 +9805,9 @@
       "map": "Night Route",
       "finale": "Awards",
       "intro": "Welcome screen",
-      "game": "Back to the game"
+      "game": "Back to the game",
+      "rules": "How to play",
+      "menu": "Menu"
     }
   }
 }

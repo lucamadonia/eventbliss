@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
-import { Trophy, Map as MapIcon, PartyPopper, Gamepad2, Tv } from "lucide-react";
+import { Trophy, Map as MapIcon, PartyPopper, Gamepad2, Tv, BookOpen } from "lucide-react";
 
 import { useHaptics } from "@/hooks/useHaptics";
 import { cn } from "@/lib/utils";
@@ -31,6 +31,7 @@ export interface TVRemoteProps {
 const VIEWS: { view: TvView; key: string; Icon: typeof Trophy }[] = [
   { view: "between", key: "standings", Icon: Trophy },
   { view: "map", key: "map", Icon: MapIcon },
+  { view: "rules", key: "rules", Icon: BookOpen },
   { view: "finale", key: "finale", Icon: PartyPopper },
   { view: "intro", key: "intro", Icon: Tv },
   { view: "ingame", key: "game", Icon: Gamepad2 },

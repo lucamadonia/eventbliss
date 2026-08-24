@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { HelpCircle, Lightbulb, Sparkles, X, ChevronRight } from "lucide-react";
 import { useBackGuard } from "@/lib/back-guard";
 import { cn } from "@/lib/utils";
+import { normalizeGameId } from "./game-rules";
 
 const GAME_ICONS: Record<string, string> = {
   bomb: "💣", taboo: "🚫", headup: "🧠", category: "⏱️",
@@ -50,17 +51,6 @@ const STEP_COLORS = [
   "from-pink-500 to-rose-500",
 ];
 
-function normalizeGameId(id: string): string {
-  const map: Record<string, string> = {
-    "drueck-das-wort": "drueck-das-wort",
-    "wer-bin-ich": "whoami", "emoji-raten": "emojiguess",
-    "fake-or-fact": "fakeorfact", "this-or-that": "thisorthat",
-    "wahrheit-pflicht": "truthdare", "story-builder": "storybuilder",
-    "geteilt-gequizzt": "sharedquiz", "schnellzeichner": "quickdraw",
-    "split-quiz": "splitquiz",
-  };
-  return map[id] || id;
-}
 
 interface GameRulesModalProps {
   gameId: string;

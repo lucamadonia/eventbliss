@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildRoute } from "./party-map";
+import { buildRoute, CONTENT_BOTTOM_RATIO } from "./party-map";
 
 /**
  * Die Route traegt die Reise der Figuren auf dem Fernseher. Sie ist bewusst
@@ -70,10 +70,44 @@ describe("buildRoute", () => {
     expect(last.y).toBeCloseTo(r.stations[3].y, 6);
   });
 
-  it("stellt ein einzelnes Spiel in die Mitte", () => {
+  it("stellt ein einzelnes Spiel mittig in die NUTZBARE Flaeche", () => {
+    // Bewusst nicht die Bildmitte: Unten liegt das Titelband ("Als Naechstes"
+    // samt Verlauf). Ein Feld genau bei height/2 stuende halb darin.
     const r = buildRoute(1);
-    expect(r.stations[0]).toEqual({ x: r.width / 2, y: r.height / 2 });
+    expect(r.stations[0].x).toBe(r.width / 2);
+    expect(r.stations[0].y).toBeLessThan(r.height / 2);
+    expect(r.stations[0].y).toBeLessThanOrEqual(r.height * CONTENT_BOTTOM_RATIO);
     expect(r.tAt(0)).toBe(0);
+  });
+
+  /**
+   * Die Pruefung, die gefehlt hat.
+   *
+   * Der Randabstand-Test unten liess `y <= height - 150` zu. Bei zwei Reihen
+   * lag die untere aber auf 864 von 1080 — erlaubt, und trotzdem mitten im
+   * Titelband, das bei 62 % beginnt. Im Geraetetest mit dreizehn Spielen
+   * verschwanden PIXELJAGD und OHNE WORTE unter dem Verlauf, waehrend hier
+   * alles gruen blieb.
+   */
+  it("haelt jedes Feld ueber dem Titelband — auch bei zwei Reihen", () => {
+    for (const n of [1, 3, 5, 6, 9, 12, 13]) {
+      const r = buildRoute(n);
+      const grenze = r.height * CONTENT_BOTTOM_RATIO;
+      for (const p of r.stations) {
+        expect(
+          p.y,
+          `Bei ${n} Spielen liegt ein Feld bei y=${Math.round(p.y)} und damit ` +
+            `im Titelband (ab ${Math.round(grenze)}). Es waere verdeckt.`,
+        ).toBeLessThanOrEqual(grenze);
+      }
+    }
+  });
+
+  it("legt bei mehr als fuenf Spielen genau zwei Reihen an", () => {
+    // 13 ist die Zahl aus dem Geraetetest — sieben Felder oben, sechs unten.
+    const r = buildRoute(13);
+    const reihen = new Set(r.stations.map((p) => Math.round(p.y)));
+    expect(reihen.size).toBe(2);
   });
 
   it("bricht ab 6 Spielen in zwei Zeilen um, damit die Felder gross bleiben", () => {

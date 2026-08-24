@@ -9829,7 +9829,9 @@
       "map": "Percorso notturno",
       "finale": "Premiazione",
       "intro": "Schermata iniziale",
-      "game": "Torna al gioco"
+      "game": "Torna al gioco",
+      "rules": "Come si gioca",
+      "menu": "Menu"
     }
   }
 }

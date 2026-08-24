@@ -189,7 +189,10 @@ export default function TVPartyMap({
           const art = artworkFor(item.gameId);
           const done = i < index;
           const active = i === index;
-          const size = active ? 190 : 148;
+          // Mitwachsen statt feste Pixel: Bei dreizehn Spielen stehen sieben
+          // Felder je Reihe, im kleinen Vorschaufenster waeren 148px zu gross.
+          // Dieselbe Technik, die `tv-tokens.ts` fuer die Schrift benutzt.
+          const size = active ? 'clamp(96px, 9.9vw, 190px)' : 'clamp(74px, 7.7vw, 148px)';
           return (
             <div
               key={`${item.gameId}-${i}`}
@@ -254,7 +257,13 @@ export default function TVPartyMap({
         <div
           className="absolute z-20"
           style={{
-            left: `${(head.x / route.width) * 100}%`,
+            /*
+             * Waagerecht im Bild HALTEN statt starr zentrieren. Das erste Feld
+             * liegt bei 7,5 % der Breite; sechs Avatare sind zusammen rund
+             * 312px breit und ragten damit ueber den linken Rand hinaus —
+             * dasselbe rechts beim letzten Feld.
+             */
+            left: `clamp(9rem, ${(head.x / route.width) * 100}%, calc(100% - 9rem))`,
             // Etwas ueber der Linie: sonst stehen die Figuren mitten im
             // Medaillon des aktiven Feldes und sind nicht zu sehen.
             top: `calc(${(head.y / route.height) * 100}% - 5.5rem)`,
@@ -292,7 +301,7 @@ export default function TVPartyMap({
       {/* Abdunkelung unter der Schrift — ohne sie steht "Als Naechstes" mitten
           auf einem Feld der unteren Reihe und ist kaum zu lesen. */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 h-[38%]"
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-[30%]"
         style={{ background: 'linear-gradient(to top, #060810 12%, rgba(6,8,16,0.85) 45%, transparent 100%)' }}
         aria-hidden
       />
