@@ -124,9 +124,21 @@ const Auth = () => {
 
   return (
     <AnimatedBackground>
-      <div className="min-h-screen flex items-center justify-center px-4 py-12">
+      {/*
+        Tastatur-Falle: `Keyboard.resize: "body"` (capacitor.config.ts:29)
+        schrumpft den Body auf den Platz ueber der Tastatur — `100vh` schrumpft
+        aber NICHT mit. Der Kasten blieb also bildschirmhoch und blieb dabei in
+        der Mitte der VOLLEN Hoehe zentriert, also hinter der Tastatur. Und weil
+        `ios.scrollEnabled: false` gesetzt ist, konnte die WebView nicht dorthin
+        scrollen: Die Felder darunter waren schlicht unerreichbar.
+
+        `100dvh` folgt der sichtbaren Hoehe. `items-start` mit `my-auto` am Kind
+        zentriert, solange Platz ist, und laesst scrollen, sobald es eng wird.
+        Der untere Abstand haelt das letzte Feld ueber dem Tastaturrand frei.
+      */}
+      <div className="min-h-[100dvh] flex items-start justify-center overflow-y-auto px-4 py-12 pb-[max(3rem,env(safe-area-inset-bottom))]">
         <AnimatePresence mode="wait">
-          {renderForm()}
+          <div className="my-auto w-full flex justify-center">{renderForm()}</div>
         </AnimatePresence>
       </div>
     </AnimatedBackground>
