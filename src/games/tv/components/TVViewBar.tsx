@@ -48,9 +48,15 @@ export interface TVViewBarProps {
   onSelect: (view: View) => void;
   /** false = keine Party, dann gibt es nichts zu schalten. */
   enabled: boolean;
+  /**
+   * Ansichten, die JETZT keinen Sinn ergeben — vor dem ersten Spiel gibt es
+   * keine Siegerehrung zu zeigen, und ohne naechstes Spiel keine Anleitung.
+   * Ein Knopf, der ins Leere fuehrt, ist schlimmer als keiner.
+   */
+  omit?: View[];
 }
 
-export default function TVViewBar({ current, onSelect, enabled }: TVViewBarProps) {
+export default function TVViewBar({ current, onSelect, enabled, omit }: TVViewBarProps) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [focus, setFocus] = useState(0);
@@ -69,11 +75,11 @@ export default function TVViewBar({ current, onSelect, enabled }: TVViewBarProps
       if (was) return false;
       // Auf der AKTUELLEN Ansicht stehen, damit die erste Pfeiltaste von einer
       // sinnvollen Stelle aus loslaeuft.
-      const i = VIEWS.findIndex((v) => v.view === current);
+      const i = VIEWS.filter((v) => !omit?.includes(v.view)).findIndex((v) => v.view === current);
       setFocus(i >= 0 ? i : 0);
       return true;
     });
-  }, [current]);
+  }, [current, omit]);
 
   /**
    * KEIN `mousemove`-Lauscher.
@@ -122,8 +128,9 @@ export default function TVViewBar({ current, onSelect, enabled }: TVViewBarProps
 
   if (!enabled) return null;
 
+  const views = VIEWS.filter((v) => !omit?.includes(v.view));
   const move = (delta: number) =>
-    setFocus((i) => (i + delta + VIEWS.length) % VIEWS.length);
+    setFocus((i) => (i + delta + views.length) % views.length);
 
   return (
     <>
@@ -164,7 +171,7 @@ export default function TVViewBar({ current, onSelect, enabled }: TVViewBarProps
                 }
               }}
             >
-              {VIEWS.map((v, i) => {
+              {views.map((v, i) => {
                 const active = current === v.view;
                 return (
                   <button

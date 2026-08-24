@@ -225,7 +225,21 @@ export default function TVScreen() {
         sich nach vier Sekunden Ruhe aus — die Hausregel weiter unten (nichts
         liegt dauerhaft ueber dem Spielbild) gilt auch fuer sie.
       */}
-      <TVViewBar enabled={partyActive} current={effectiveView} onSelect={setLocalView} />
+      <TVViewBar
+        enabled={partyActive}
+        current={effectiveView}
+        onSelect={setLocalView}
+        /*
+         * Vor dem ersten Spiel gibt es nichts zu feiern — eine Siegerehrung
+         * ueber eine leere Tabelle waere Hohn (dieselbe Regel wie beim
+         * "Party beenden"-Knopf in der Lobby). Und ohne naechsten Eintrag in
+         * der Set-Liste gibt es keine Anleitung zu zeigen.
+         */
+        omit={[
+          ...((partyNight?.history?.length ?? 0) === 0 ? (['finale'] as const) : []),
+          ...(partyNight?.playlist?.[partyNight.index] ? [] : (['rules'] as const)),
+        ]}
+      />
       <TVParticles mood={particleMood} />
       <TVGlowFrame color={glowColor || '#df8eff'} intensity={glowIntensity} rainbow={glowRainbow} />
       <TVVFXLayer gameState={gameState} />

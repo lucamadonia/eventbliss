@@ -9672,7 +9672,10 @@
       "addPlayer": "Añadir jugador",
       "removePlayer": "Quitar a {{name}}",
       "setlistTooFewLabel": "Desde {{n}} personas",
-      "setlistTooManyLabel": "Hasta {{n}} personas"
+      "setlistTooManyLabel": "Hasta {{n}} personas",
+      "rulesOnTv": "Las reglas están en la tele — leedlas juntos.",
+      "startNow": "¡Vamos!: {{game}}",
+      "rulesIntro": "Reglas antes de cada juego"
     },
     "partyLobby": {
       "title": "Noche de fiesta",

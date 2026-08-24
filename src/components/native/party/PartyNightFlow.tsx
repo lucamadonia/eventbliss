@@ -18,7 +18,7 @@ import { usePartySession } from "@/hooks/usePartySession";
 
 import { PartyInterstitial } from "./PartyInterstitial";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
-import { setTvView } from "@/games/tv/tv-view";
+import { setTvView, getRulesIntro } from "@/games/tv/tv-view";
 import { buildPartyNightState } from "@/games/party/standings";
 import { playerFitFor } from "./setlist";
 import { playableGames } from "@/lib/playable-games";
@@ -128,6 +128,18 @@ export function PartyNightFlow() {
     [session?.players.length]
   );
 
+  /**
+   * Das Spiel, dessen Anleitung gerade auf dem Fernseher steht und auf
+   * "Los geht's" wartet. `null` = kein Bereit-Schritt aktiv.
+   *
+   * WARUM ZWEISTUFIG: Frueher sprang "Weiter" sofort ins Spiel. Wer die Regeln
+   * nicht kannte, hatte keine Gelegenheit, sie zu lesen — die Anleitung war
+   * nur ueber das Menue erreichbar, und dort sucht sie niemand mitten im
+   * Abend. Jetzt bleibt der Fernseher auf der Anleitung stehen, bis die Runde
+   * bereit ist.
+   */
+  const [readyGameId, setReadyGameId] = useState<string | null>(null);
+
   const handleContinue = useCallback(
     (nextGameId: string) => {
       markSeen();
@@ -143,10 +155,25 @@ export function PartyNightFlow() {
         next = after;
       }
       if (!next || !fits(next)) { navigate("/party?finale=1"); return; }
+      // Erst die Anleitung, dann das Spiel — es sei denn, die Runde hat den
+      // Schalter umgelegt.
+      if (getRulesIntro()) {
+        setTvView("rules");
+        setReadyGameId(next);
+        return;
+      }
       goToGame(next);
     },
     [markSeen, party, goToGame, fits, navigate]
   );
+
+  /** "Los geht's" im Bereit-Schritt. */
+  const handleReadyStart = useCallback(() => {
+    if (!readyGameId) return;
+    const id = readyGameId;
+    setReadyGameId(null);
+    goToGame(id);
+  }, [readyGameId, goToGame]);
 
   /** Letztes Spiel gespielt: Playlist schliessen und die Zeremonie oeffnen. */
   const handleFinish = useCallback(() => {
@@ -207,6 +234,8 @@ export function PartyNightFlow() {
       onFinish={handleFinish}
       onSkipNext={handleSkipNext}
       onShowOnTv={handleShowOnTv}
+      readyGameId={readyGameId}
+      onReadyStart={handleReadyStart}
     />
   );
 }

@@ -9544,7 +9544,10 @@
       "addPlayer": "Speler toevoegen",
       "removePlayer": "{{name}} verwijderen",
       "setlistTooFewLabel": "Vanaf {{n}} personen",
-      "setlistTooManyLabel": "Tot {{n}} personen"
+      "setlistTooManyLabel": "Tot {{n}} personen",
+      "rulesOnTv": "De spelregels staan op de tv — lees ze samen.",
+      "startNow": "Starten: {{game}}",
+      "rulesIntro": "Spelregels voor elk spel"
     },
     "partyLobby": {
       "title": "Spelavond",

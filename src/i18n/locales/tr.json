@@ -9544,7 +9544,10 @@
       "addPlayer": "Oyuncu ekle",
       "removePlayer": "{{name}} oyuncusunu kaldır",
       "setlistTooFewLabel": "{{n}} kişiden itibaren",
-      "setlistTooManyLabel": "En fazla {{n}} kişi"
+      "setlistTooManyLabel": "En fazla {{n}} kişi",
+      "rulesOnTv": "Kurallar televizyonda — birlikte okuyun.",
+      "startNow": "Başlıyoruz: {{game}}",
+      "rulesIntro": "Her oyundan önce kurallar"
     },
     "partyLobby": {
       "title": "Oyun gecesi",

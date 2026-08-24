@@ -5,6 +5,7 @@ import { Trophy, Map as MapIcon, PartyPopper, Gamepad2, Tv, BookOpen } from "luc
 import { useHaptics } from "@/hooks/useHaptics";
 import { cn } from "@/lib/utils";
 import { getTvView, setTvView, subscribeTvView, tvViewServerSnapshot, type TvView } from "@/games/tv/tv-view";
+import { getActivePartySession, subscribePartySession } from "@/hooks/usePartySession";
 
 /**
  * TVRemote — die Erlebnis-Ansichten des Fernsehers vom Telefon aus schalten.
@@ -41,12 +42,19 @@ export function TVRemote({ isActive, variant = "compact", className }: TVRemoteP
   const { t } = useTranslation();
   const haptics = useHaptics();
   const view = useSyncExternalStore(subscribeTvView, getTvView, tvViewServerSnapshot);
+  const session = useSyncExternalStore(subscribePartySession, getActivePartySession, () => null);
+  // Dieselbe Regel wie auf dem Fernseher: Was jetzt keinen Sinn ergibt, wird
+  // nicht angeboten. Ein Knopf, der ins Leere fuehrt, ist schlimmer als keiner.
+  const nothingPlayed = (session?.gameHistory.length ?? 0) === 0;
+  const noNextGame = !session?.playlist?.[session.playlistIndex];
 
   if (!isActive) return null;
 
   return (
     <div className={cn("grid grid-cols-2 gap-2", className)}>
-      {VIEWS.map(({ view: v, key, Icon }) => {
+      {VIEWS.filter(({ view: v }) =>
+        !((v === 'finale' && nothingPlayed) || (v === 'rules' && noNextGame))
+      ).map(({ view: v, key, Icon }) => {
         const active = view === v;
         return (
           <button

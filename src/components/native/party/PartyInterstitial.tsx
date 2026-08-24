@@ -53,6 +53,13 @@ export interface PartyInterstitialProps {
   onSkipNext?: () => void;
   /** Optional: den Zwischenstand auf den Fernseher holen. Fehlt sie, bleibt der Knopf aus. */
   onShowOnTv?: () => void;
+  /**
+   * Gesetzt = die Anleitung dieses Spiels steht auf dem Fernseher und die
+   * Runde soll sie lesen. Dann zeigt das Zwischenspiel statt "Weiter" den
+   * Startknopf.
+   */
+  readyGameId?: string | null;
+  onReadyStart?: () => void;
 }
 
 function gameNameOf(gameId: string, t: (key: string) => string): string {
@@ -73,6 +80,8 @@ export function PartyInterstitial({
   onFinish,
   onSkipNext,
   onShowOnTv,
+  readyGameId,
+  onReadyStart,
 }: PartyInterstitialProps) {
   const { t } = useTranslation();
   const tv = useTVContext();
@@ -134,7 +143,10 @@ export function PartyInterstitial({
       return;
     }
     haptics.success();
-    if (nextGameId) onContinue(nextGameId);
+    // Im Bereit-Schritt startet derselbe Knopf das Spiel, statt ein zweites
+    // Mal weiterzuschalten — sonst ruecke der Playlist-Zeiger doppelt.
+    if (readyGameId && onReadyStart) onReadyStart();
+    else if (nextGameId) onContinue(nextGameId);
     else if (onFinish) onFinish();
     else onPause();
   };
@@ -260,7 +272,9 @@ export function PartyInterstitial({
                   </span>
                 )}
                 <span className="flex-1 min-w-0 truncate text-[15px]">
-                  {nextLocked
+                  {readyGameId
+                    ? t("nativeExtra.partyNight.startNow", { game: gameNameOf(readyGameId, t) })
+                    : nextLocked
                     ? t("nativeExtra.partyNight.unlockCta")
                     : nextGameId
                     ? t("nativeExtra.partyNight.continueTo", { game: gameNameOf(nextGameId, t) })
@@ -268,6 +282,18 @@ export function PartyInterstitial({
                 </span>
                 <ChevronRight className="w-5 h-5 shrink-0 rtl:rotate-180" aria-hidden />
               </motion.button>
+
+              {/*
+                Bereit-Schritt: Die Anleitung steht auf dem Fernseher, die
+                Runde liest mit. Erst der Knopf oben startet — vorher sprang
+                "Weiter" sofort ins Spiel, und wer die Regeln nicht kannte,
+                hatte keine Gelegenheit sie zu lesen.
+              */}
+              {readyGameId && onReadyStart && (
+                <div className="w-full rounded-2xl border border-[#df8eff]/30 bg-[#df8eff]/10 px-4 py-3 text-center text-xs text-violet-500 dark:text-[#df8eff]">
+                  {t("nativeExtra.partyNight.rulesOnTv")}
+                </div>
+              )}
 
               {nextLocked && onSkipNext && (
                 <button

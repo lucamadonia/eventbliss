@@ -9568,7 +9568,10 @@
       "addPlayer": "Dodaj gracza",
       "removePlayer": "Usuń gracza {{name}}",
       "setlistTooFewLabel": "Od {{n}} osób",
-      "setlistTooManyLabel": "Do {{n}} osób"
+      "setlistTooManyLabel": "Do {{n}} osób",
+      "rulesOnTv": "Zasady są na telewizorze — przeczytajcie je razem.",
+      "startNow": "Zaczynamy: {{game}}",
+      "rulesIntro": "Zasady przed każdą grą"
     },
     "partyLobby": {
       "title": "Wieczór gier",

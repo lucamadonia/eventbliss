@@ -46,3 +46,37 @@ export function subscribeTvView(listener: () => void): () => void {
 export function tvViewServerSnapshot(): TvView {
   return "ingame";
 }
+
+/**
+ * Soll vor jedem Spiel die Anleitung auf dem Fernseher stehen?
+ *
+ * Bewusst hier und nicht in der Party-Sitzung: Es ist eine Vorliebe der
+ * Gruppe, keine Eigenschaft des Abends — wer die Spiele kennt, will sie
+ * dauerhaft aus haben, nicht bei jeder neuen Party erneut abschalten.
+ *
+ * Vorgabe AN: Der haeufigere Fall ist die Runde, die ein Spiel zum ersten Mal
+ * spielt. Wer es kennt, drueckt "Ueberspringen" oder legt den Schalter um.
+ */
+const RULES_KEY = "eb.party-rules-intro";
+
+export function getRulesIntro(): boolean {
+  try {
+    return localStorage.getItem(RULES_KEY) !== "0";
+  } catch {
+    return true;
+  }
+}
+
+export function setRulesIntro(on: boolean): void {
+  try {
+    localStorage.setItem(RULES_KEY, on ? "1" : "0");
+  } catch {
+    /* Privater Modus — dann gilt eben die Vorgabe. */
+  }
+  listeners.forEach((l) => l());
+}
+
+/** Stabile Funktion fuer `useSyncExternalStore` im Prerender. */
+export function rulesIntroServerSnapshot(): boolean {
+  return true;
+}

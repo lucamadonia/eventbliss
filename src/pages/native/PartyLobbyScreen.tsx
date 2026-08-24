@@ -9,7 +9,7 @@
  * Tabelle, Set-Liste und Abschluss liegen in `@/components/native/party/*`,
  * damit diese Datei uebersichtlich bleibt.
  */
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -25,7 +25,8 @@ import { PartyFinaleOverlay } from "@/components/native/party/PartyFinaleOverlay
 import { PartySetlistStrip } from "@/components/native/party/PartySetlistStrip";
 import { nextFittingIndex } from "@/components/native/party/setlist";
 import { TVRemote } from "@/components/native/party/TVRemote";
-import { setTvView, resetTvView } from "@/games/tv/tv-view";
+import { setTvView, resetTvView, getRulesIntro, setRulesIntro,
+         subscribeTvView, rulesIntroServerSnapshot } from "@/games/tv/tv-view";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { PartyStandingsList } from "@/components/native/party/PartyStandingsList";
 import { EventParticipantPicker } from "@/games/ui/EventParticipantPicker";
@@ -44,6 +45,9 @@ export default function PartyLobbyScreen() {
   const party = usePartySession();
   // Seit der Provider ueber der ganzen App haengt, kann auch die Lobby senden.
   const tv = useTVContext();
+  // Vorliebe der Gruppe, nicht Eigenschaft des Abends — wer die Spiele kennt,
+  // will die Anleitungen dauerhaft aus haben.
+  const rulesIntro = useSyncExternalStore(subscribeTvView, getRulesIntro, rulesIntroServerSnapshot);
   const [searchParams, setSearchParams] = useSearchParams();
   const [newName, setNewName] = useState("");
   const [showPicker, setShowPicker] = useState(false);
@@ -135,6 +139,10 @@ export default function PartyLobbyScreen() {
   }, [haptics]);
 
   const launchGame = useCallback((gameId: string) => {
+    // Riegel gegen den haengenden Fernseher: Die Lobby setzt beim Erscheinen
+    // die Nacht-Route. Ohne diesen Ruecksprung liefe ein einzeln gestartetes
+    // Spiel die ganze Runde ueber mit der Karte auf dem Schirm.
+    resetTvView();
     party.startGame(gameId);
     setShowPicker(false);
     navigate(`/games/${gameId}?party=true`);
@@ -167,8 +175,11 @@ export default function PartyLobbyScreen() {
     // ganze Strecke sehen, bevor es losgeht. Danach uebernimmt das Spiel von
     // selbst — ohne diesen Ruecksprung bliebe die Karte ueber der ersten Runde
     // liegen.
+    // Der Abend eroeffnet mit der Nacht-Route. Frueher stand hier zusaetzlich
+    // ein 6-Sekunden-Zeitgeber, der sie wieder wegnahm — leicht zu verpassen
+    // und nicht anhaltbar. Aufgeraeumt wird jetzt beim Spielstart selbst
+    // (`useTVGameBridge`), also bleibt die Route stehen, bis es losgeht.
     setTvView("map");
-    window.setTimeout(resetTvView, 6000);
     launchGame(gameIds[0]);
   }, [party, haptics, launchGame]);
 
@@ -426,6 +437,31 @@ export default function PartyLobbyScreen() {
                 senden. Der Zwischenstand und die fertig gebaute Siegerehrung
                 waren von hier aus unerreichbar.
               */}
+              {tv?.isActive && (
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={rulesIntro}
+                  onClick={() => { haptics.light(); setRulesIntro(!rulesIntro); }}
+                  className="cursor-pointer mt-3 w-full min-h-[44px] rounded-xl border border-border bg-foreground/5 px-3 flex items-center justify-between gap-3 text-xs font-semibold text-foreground"
+                >
+                  <span className="text-start">{t('nativeExtra.partyNight.rulesIntro')}</span>
+                  <span
+                    className={cn(
+                      'shrink-0 w-10 h-6 rounded-full transition-colors relative',
+                      rulesIntro ? 'bg-[#df8eff]' : 'bg-foreground/20'
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'absolute top-1 w-4 h-4 rounded-full bg-white transition-all',
+                        rulesIntro ? 'start-5' : 'start-1'
+                      )}
+                    />
+                  </span>
+                </button>
+              )}
+
               {tv?.isActive && (
                 <div className="mt-3 pt-3 border-t border-[#df8eff]/15">
                   <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">

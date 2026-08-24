@@ -9470,7 +9470,10 @@
       "addPlayer": "Add player",
       "removePlayer": "Remove {{name}}",
       "setlistTooFewLabel": "{{n}}+ people",
-      "setlistTooManyLabel": "Up to {{n}} people"
+      "setlistTooManyLabel": "Up to {{n}} people",
+      "rulesOnTv": "The rules are on the TV — read them together.",
+      "startNow": "Start: {{game}}",
+      "rulesIntro": "Show rules before each game"
     },
     "partyLobby": {
       "title": "Party Night",

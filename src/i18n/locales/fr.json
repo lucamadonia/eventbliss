@@ -9494,7 +9494,10 @@
       "addPlayer": "Ajouter un joueur",
       "removePlayer": "Retirer {{name}}",
       "setlistTooFewLabel": "Dès {{n}} personnes",
-      "setlistTooManyLabel": "Jusqu'à {{n}} personnes"
+      "setlistTooManyLabel": "Jusqu'à {{n}} personnes",
+      "rulesOnTv": "Les règles sont à la télé — lisez-les ensemble.",
+      "startNow": "C'est parti : {{game}}",
+      "rulesIntro": "Règles avant chaque jeu"
     },
     "partyLobby": {
       "title": "Soirée jeux",

@@ -22,7 +22,7 @@ import i18n from "i18next";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { extractGameResult, resolvePartyGameId } from "@/games/party/extractResult";
 import { buildPartyNightState } from "@/games/party/standings";
-import { getTvView, subscribeTvView, tvViewServerSnapshot } from "@/games/tv/tv-view";
+import { getTvView, resetTvView, subscribeTvView, tvViewServerSnapshot } from "@/games/tv/tv-view";
 import {
   getActivePartySession,
   reportGameResult,
@@ -141,6 +141,16 @@ export function useTVGameBridge(
     if (phase && !startedRef.current) {
       startedRef.current = true;
       endedRef.current = false;
+      /*
+       * Der sicherste Ort, die Erlebnis-Ansicht zurueckzusetzen: JEDES Spiel
+       * laeuft hier durch. Vorher raeumte nur ein 6-Sekunden-Zeitgeber in der
+       * Lobby auf — wer ein einzelnes Spiel aus der Auswahl startete, sah die
+       * ganze Runde ueber die Nacht-Route auf dem Fernseher.
+       *
+       * Bewusst NUR beim Spielstart, nicht bei jedem Zustand: Sonst liesse
+       * sich mitten im Spiel kein Zwischenstand mehr einblenden.
+       */
+      resetTvView();
       tv.broadcastTV("game-start", { game: gameId, ...state });
     }
   }, [tv, gameId, state.phase]); // eslint-disable-line react-hooks/exhaustive-deps

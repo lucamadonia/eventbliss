@@ -9481,7 +9481,10 @@
       "addPlayer": "إضافة لاعب",
       "removePlayer": "إزالة {{name}}",
       "setlistTooFewLabel": "من {{n}} أشخاص",
-      "setlistTooManyLabel": "حتى {{n}} أشخاص"
+      "setlistTooManyLabel": "حتى {{n}} أشخاص",
+      "rulesOnTv": "القواعد معروضة على التلفاز — اقرأوها معاً.",
+      "startNow": "لنبدأ: {{game}}",
+      "rulesIntro": "القواعد قبل كل لعبة"
     },
     "partyLobby": {
       "title": "ليلة الألعاب",

@@ -9470,7 +9470,10 @@
       "addPlayer": "Spieler hinzufügen",
       "removePlayer": "{{name}} entfernen",
       "setlistTooFewLabel": "Ab {{n}} Personen",
-      "setlistTooManyLabel": "Bis {{n}} Personen"
+      "setlistTooManyLabel": "Bis {{n}} Personen",
+      "rulesOnTv": "Die Anleitung läuft auf dem Fernseher — lest sie gemeinsam.",
+      "startNow": "Los geht's: {{game}}",
+      "rulesIntro": "Anleitung vor jedem Spiel"
     },
     "partyLobby": {
       "title": "Party Night",
