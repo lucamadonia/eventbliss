@@ -7514,6 +7514,13 @@
         "inappropriate": "Unpassender Inhalt",
         "other": "Etwas anderes"
       }
+    },
+    "premium": {
+      "badge": "Premium",
+      "freeLeft": "{{n}} kostenlos"
+    },
+    "multiplayer": {
+      "inviteEventGuests": "Event-Gäste einladen"
     }
   },
   "native": {
@@ -7535,7 +7542,24 @@
       "findInspiration": "Inspirationen finden",
       "findInspirationSub": "Themen, Games & Ideen für dein Event",
       "marketplace": "Marketplace",
-      "marketplaceSub": "Services & Erlebnisse"
+      "marketplaceSub": "Services & Erlebnisse",
+      "guest": {
+        "eyebrow": "Willkommen bei EventBliss",
+        "heroTitle": "Leg direkt los —",
+        "heroHighlight": "ohne Umwege.",
+        "heroSubtitle": "Event anlegen, Spiele starten oder Dienstleister finden: alles funktioniert sofort.",
+        "createEyebrow": "Neues Event",
+        "createTitle": "Event anlegen",
+        "createSub": "Lade Gäste ein und sammle Antworten — dein Event ist sofort startklar, ganz ohne Konto.",
+        "playEyebrow": "Sofort spielbar",
+        "playTitle": "Jetzt spielen",
+        "playSub": "21 Party-Spiele für Handy und Fernseher — ganz ohne Anmeldung.",
+        "marketplaceEyebrow": "Marketplace",
+        "marketplaceTitle": "Dienstleister finden",
+        "marketplaceSub": "Fotografen, Locations und mehr für dein Event entdecken.",
+        "noAccountNote": "Alles ohne Konto.",
+        "signInLink": "Melde dich an, wenn du es behalten willst."
+      }
     },
     "games": {
       "subtitle": "Party Games",
@@ -7869,17 +7893,64 @@
       "joinButton": "Beitreten"
     },
     "onboarding": {
-      "slide1Title": "Plan epic events",
-      "slide1Subtitle": "Bachelor parties, birthdays, group trips — all from one place.",
-      "slide2Title": "Play 24+ party games",
-      "slide2Subtitle": "Taboo, Bomb, Headup, Truth or Dare, Impostor and more.",
-      "slide3Title": "Split the costs",
-      "slide3Subtitle": "Track expenses and settle up without awkward conversations.",
-      "slide4Title": "Invite everyone",
-      "slide4Subtitle": "Share a link, collect RSVPs, and keep your crew in the loop.",
+      "slide1Title": "Plane den Abend",
+      "slide1Subtitle": "Datum, Gäste und Ort — dein Event steht in einer Minute.",
+      "slide2Title": "Frag deine Gäste",
+      "slide2Subtitle": "Eine Umfrage klärt Termin, Budget und Wünsche, bevor du buchst.",
+      "slide3Title": "Buch die Dienstleister",
+      "slide3Subtitle": "Fotografen, Locations und Catering aus deiner Stadt — direkt buchbar.",
+      "slide4Title": "Teilt die Kosten",
+      "slide4Subtitle": "Ausgaben landen automatisch beim Richtigen — ohne peinliche Rechnerei.",
+      "slide5Title": "Party-Modus",
+      "slide5Subtitle": "Eine Set-Liste aus echten Spielen, Punkte laufen den ganzen Abend mit.",
+      "slide6Title": "Der Fernseher wird zur Bühne",
+      "slide6Subtitle": "Die Gruppe wandert live die Nacht-Route entlang — für alle sichtbar.",
+      "slide7Title": "Siegerehrung",
+      "slide7Subtitle": "Am Ende steht ein Podium — mit echten Punkten aus dem ganzen Abend.",
       "skip": "Überspringen",
       "next": "Weiter",
-      "getStarted": "Los geht’s"
+      "getStarted": "Los geht’s",
+      "skipToStart": "Direkt loslegen",
+      "scene": {
+        "eventCard": {
+          "statusBadge": "Geplant",
+          "title": "Junggesellinnenabschied Lissabon",
+          "dateValue": "12.–14.09.",
+          "location": "Lissabon",
+          "locationLabel": "Ort"
+        },
+        "survey": {
+          "heading": "Umfrage",
+          "question": "Bist du am Wochenende dabei?",
+          "optionYes": "Ja! 🎉",
+          "optionMaybe": "Vielleicht",
+          "optionNo": "Nein",
+          "respondedCount": "{{count}} von {{total}} haben geantwortet"
+        },
+        "marketplace": {
+          "catPhoto": "Fotografie",
+          "catVenue": "Location",
+          "catCatering": "Catering"
+        },
+        "expenses": {
+          "totalLabel": "Gesamt",
+          "perPersonLabel": "Pro Person",
+          "settledLabel": "Alle Salden ausgeglichen",
+          "catTransport": "Transport",
+          "catFood": "Essen",
+          "catFun": "Aktivitäten",
+          "catDrinks": "Getränke"
+        },
+        "partyMode": {
+          "scoreLabel": "Punkte"
+        },
+        "podium": {
+          "heading": "Endstand des Abends"
+        }
+      }
+    },
+    "splash": {
+      "tagline": "Plane Events, an die man sich erinnert"
     }
   },
   "marketplace": {
@@ -9473,7 +9544,10 @@
       "setlistTooManyLabel": "Bis {{n}} Personen",
       "rulesOnTv": "Die Anleitung läuft auf dem Fernseher — lest sie gemeinsam.",
       "startNow": "Los geht's: {{game}}",
-      "rulesIntro": "Anleitung vor jedem Spiel"
+      "rulesIntro": "Anleitung vor jedem Spiel",
+      "lengthTitle": "Nur {{n}} Spiele gratis",
+      "lengthBody": "Der Gratis-Plan erlaubt {{n}} Spiele pro Abend. Ihr habt schon {{count}} geplant — mit Premium plant ihr beliebig viele.",
+      "lengthDropCta": "Nur die ersten {{n}} Spiele starten"
     },
     "partyLobby": {
       "title": "Party Night",

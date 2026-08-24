@@ -7588,6 +7588,13 @@
         "inappropriate": "Conteúdo inadequado",
         "other": "Outra coisa"
       }
+    },
+    "premium": {
+      "badge": "Premium",
+      "freeLeft": "{{n}} grátis"
+    },
+    "multiplayer": {
+      "inviteEventGuests": "Convidar os convidados"
     }
   },
   "native": {
@@ -7609,7 +7616,24 @@
       "findInspiration": "Encontra inspiração",
       "findInspirationSub": "Temas, jogos e ideias para o teu evento",
       "marketplace": "Marketplace",
-      "marketplaceSub": "Serviços e experiências"
+      "marketplaceSub": "Serviços e experiências",
+      "guest": {
+        "eyebrow": "Bem-vindo ao EventBliss",
+        "heroTitle": "Comece ja —",
+        "heroHighlight": "sem rodeios.",
+        "heroSubtitle": "Criar um evento, comecar a jogar ou encontrar fornecedores: tudo funciona ja.",
+        "createEyebrow": "Novo evento",
+        "createTitle": "Criar um evento",
+        "createSub": "Convida os teus convidados e recolhe respostas — o evento fica pronto, sem conta.",
+        "playEyebrow": "Jogavel ja",
+        "playTitle": "Jogar agora",
+        "playSub": "21 jogos de festa para telemovel e TV — sem registo.",
+        "marketplaceEyebrow": "Marketplace",
+        "marketplaceTitle": "Encontrar fornecedores",
+        "marketplaceSub": "Fotografos, espacos e muito mais para o teu evento.",
+        "noAccountNote": "Tudo sem conta.",
+        "signInLink": "Inicia sessao se quiseres guardar."
+      }
     },
     "games": {
       "subtitle": "Jogos de Festa",
@@ -7953,7 +7977,54 @@
       "slide4Subtitle": "Partilha um link, recolhe confirmações e mantém todos informados.",
       "skip": "Saltar",
       "next": "Seguinte",
-      "getStarted": "Vamos lá"
+      "getStarted": "Vamos lá",
+      "slide5Title": "Modo Festa",
+      "slide5Subtitle": "Uma setlist de jogos a serio, com pontos a contar a noite toda.",
+      "slide6Title": "A TV torna-se o palco",
+      "slide6Subtitle": "O grupo avanca ao vivo pela rota noturna — a vista de todos.",
+      "slide7Title": "Premiacao",
+      "slide7Subtitle": "A noite termina num podio — com os pontos de toda a noite.",
+      "skipToStart": "Comecar ja",
+      "scene": {
+        "eventCard": {
+          "statusBadge": "Planeado",
+          "title": "Despedida de solteira em Lisboa",
+          "dateValue": "12–14 set.",
+          "location": "Lisboa",
+          "locationLabel": "Local"
+        },
+        "survey": {
+          "heading": "Sondagem",
+          "question": "Alinhas no fim de semana?",
+          "optionYes": "Sim! 🎉",
+          "optionMaybe": "Talvez",
+          "optionNo": "Nao",
+          "respondedCount": "{{count}} de {{total}} responderam"
+        },
+        "marketplace": {
+          "catPhoto": "Fotografia",
+          "catVenue": "Espaco",
+          "catCatering": "Catering"
+        },
+        "expenses": {
+          "totalLabel": "Total",
+          "perPersonLabel": "Por pessoa",
+          "settledLabel": "Todos os saldos acertados",
+          "catTransport": "Transporte",
+          "catFood": "Comida",
+          "catFun": "Atividades",
+          "catDrinks": "Bebidas"
+        },
+        "partyMode": {
+          "scoreLabel": "pontos"
+        },
+        "podium": {
+          "heading": "Classificacao final"
+        }
+      }
+    },
+    "splash": {
+      "tagline": "Eventos memoráveis"
     }
   },
   "marketplace": {
@@ -9547,7 +9618,10 @@
       "setlistTooManyLabel": "Até {{n}} pessoas",
       "rulesOnTv": "As regras estão na TV — leiam juntos.",
       "startNow": "Vamos: {{game}}",
-      "rulesIntro": "Regras antes de cada jogo"
+      "rulesIntro": "Regras antes de cada jogo",
+      "lengthTitle": "Apenas {{n}} jogos gratis",
+      "lengthBody": "O plano gratis permite {{n}} jogos por noite. Ja planearam {{count}} — com Premium, quantos quiserem.",
+      "lengthDropCta": "Comecar so com os primeiros {{n}} jogos"
     },
     "partyLobby": {
       "title": "Noite de jogos",

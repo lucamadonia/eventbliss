@@ -7538,6 +7538,13 @@
         "inappropriate": "Contenuto inappropriato",
         "other": "Altro"
       }
+    },
+    "premium": {
+      "badge": "Premium",
+      "freeLeft": "{{n}} gratis"
+    },
+    "multiplayer": {
+      "inviteEventGuests": "Invita gli ospiti"
     }
   },
   "native": {
@@ -7559,7 +7566,24 @@
       "findInspiration": "Trova ispirazione",
       "findInspirationSub": "Temi, giochi e idee per il tuo evento",
       "marketplace": "Marketplace",
-      "marketplaceSub": "Servizi ed esperienze"
+      "marketplaceSub": "Servizi ed esperienze",
+      "guest": {
+        "eyebrow": "Benvenuto su EventBliss",
+        "heroTitle": "Inizia subito —",
+        "heroHighlight": "senza giri di parole.",
+        "heroSubtitle": "Crea un evento, avvia i giochi o trova fornitori: tutto funziona subito.",
+        "createEyebrow": "Nuovo evento",
+        "createTitle": "Crea un evento",
+        "createSub": "Invita gli ospiti e raccogli le risposte — il tuo evento e pronto, senza account.",
+        "playEyebrow": "Giocabile subito",
+        "playTitle": "Gioca ora",
+        "playSub": "21 giochi di gruppo per telefono e TV — senza registrazione.",
+        "marketplaceEyebrow": "Marketplace",
+        "marketplaceTitle": "Trova fornitori",
+        "marketplaceSub": "Fotografi, location e molto altro per il tuo evento.",
+        "noAccountNote": "Tutto senza account.",
+        "signInLink": "Accedi se vuoi conservarlo."
+      }
     },
     "games": {
       "subtitle": "Giochi di Gruppo",
@@ -7903,7 +7927,54 @@
       "slide4Subtitle": "Condividi un link, raccogli le conferme e tieni tutti aggiornati.",
       "skip": "Salta",
       "next": "Avanti",
-      "getStarted": "Iniziamo"
+      "getStarted": "Iniziamo",
+      "slide5Title": "Modalita Festa",
+      "slide5Subtitle": "Una scaletta di giochi veri, i punti corrono tutta la sera.",
+      "slide6Title": "La TV diventa il palco",
+      "slide6Subtitle": "Il gruppo avanza dal vivo lungo il percorso notturno — visibile a tutti.",
+      "slide7Title": "Premiazione",
+      "slide7Subtitle": "La serata finisce sul podio — con i punti di tutta la sera.",
+      "skipToStart": "Inizia subito",
+      "scene": {
+        "eventCard": {
+          "statusBadge": "In programma",
+          "title": "Addio al nubilato a Lisbona",
+          "dateValue": "12–14 set.",
+          "location": "Lisbona",
+          "locationLabel": "Luogo"
+        },
+        "survey": {
+          "heading": "Sondaggio",
+          "question": "Ci sei nel weekend?",
+          "optionYes": "Si! 🎉",
+          "optionMaybe": "Forse",
+          "optionNo": "No",
+          "respondedCount": "{{count}} su {{total}} hanno risposto"
+        },
+        "marketplace": {
+          "catPhoto": "Fotografia",
+          "catVenue": "Location",
+          "catCatering": "Catering"
+        },
+        "expenses": {
+          "totalLabel": "Totale",
+          "perPersonLabel": "A persona",
+          "settledLabel": "Tutti i conti in pari",
+          "catTransport": "Trasporti",
+          "catFood": "Cibo",
+          "catFun": "Attivita",
+          "catDrinks": "Bevande"
+        },
+        "partyMode": {
+          "scoreLabel": "punti"
+        },
+        "podium": {
+          "heading": "Classifica finale"
+        }
+      }
+    },
+    "splash": {
+      "tagline": "Eventi da ricordare"
     }
   },
   "marketplace": {
@@ -9497,7 +9568,10 @@
       "setlistTooManyLabel": "Fino a {{n}} persone",
       "rulesOnTv": "Le regole sono in TV — leggetele insieme.",
       "startNow": "Si parte: {{game}}",
-      "rulesIntro": "Regole prima di ogni gioco"
+      "rulesIntro": "Regole prima di ogni gioco",
+      "lengthTitle": "Solo {{n}} giochi gratis",
+      "lengthBody": "Il piano gratuito consente {{n}} giochi a serata. Ne avete gia previsti {{count}} — con Premium quanti volete.",
+      "lengthDropCta": "Avvia solo i primi {{n}} giochi"
     },
     "partyLobby": {
       "title": "Serata giochi",

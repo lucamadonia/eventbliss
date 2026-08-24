@@ -7514,6 +7514,13 @@
         "inappropriate": "Inappropriate content",
         "other": "Something else"
       }
+    },
+    "premium": {
+      "badge": "Premium",
+      "freeLeft": "{{n}} free"
+    },
+    "multiplayer": {
+      "inviteEventGuests": "Invite event guests"
     }
   },
   "native": {
@@ -7535,7 +7542,24 @@
       "findInspiration": "Find inspiration",
       "findInspirationSub": "Themes, games & ideas for your event",
       "marketplace": "Marketplace",
-      "marketplaceSub": "Services & Experiences"
+      "marketplaceSub": "Services & Experiences",
+      "guest": {
+        "eyebrow": "Welcome to EventBliss",
+        "heroTitle": "Jump right in —",
+        "heroHighlight": "no detours.",
+        "heroSubtitle": "Create an event, start playing, or find a service provider: it all works right away.",
+        "createEyebrow": "New Event",
+        "createTitle": "Create an event",
+        "createSub": "Invite guests and collect answers — your event is ready to go, no account needed.",
+        "playEyebrow": "Play instantly",
+        "playTitle": "Play now",
+        "playSub": "21 party games for phone and TV — no sign-up required.",
+        "marketplaceEyebrow": "Marketplace",
+        "marketplaceTitle": "Find a service provider",
+        "marketplaceSub": "Discover photographers, locations and more for your event.",
+        "noAccountNote": "No account needed.",
+        "signInLink": "Sign in if you want to keep it."
+      }
     },
     "games": {
       "subtitle": "Party Games",
@@ -7869,17 +7893,64 @@
       "joinButton": "Join"
     },
     "onboarding": {
-      "slide1Title": "Plan epic events",
-      "slide1Subtitle": "Bachelor parties, birthdays, group trips — all from one place.",
-      "slide2Title": "Play 24+ party games",
-      "slide2Subtitle": "Taboo, Bomb, Headup, Truth or Dare, Impostor and more.",
-      "slide3Title": "Split the costs",
-      "slide3Subtitle": "Track expenses and settle up without awkward conversations.",
-      "slide4Title": "Invite everyone",
-      "slide4Subtitle": "Share a link, collect RSVPs, and keep your crew in the loop.",
+      "slide1Title": "Plan the evening",
+      "slide1Subtitle": "Date, guests and location — your event is set in a minute.",
+      "slide2Title": "Ask your guests",
+      "slide2Subtitle": "A poll settles the date, budget and wishes before you book anything.",
+      "slide3Title": "Book the vendors",
+      "slide3Subtitle": "Photographers, venues and catering from your city — bookable right away.",
+      "slide4Title": "Split the costs",
+      "slide4Subtitle": "Expenses land with the right person automatically — no awkward math.",
+      "slide5Title": "Party Mode",
+      "slide5Subtitle": "A set list of real games, with points running all night long.",
+      "slide6Title": "The TV becomes the stage",
+      "slide6Subtitle": "The group travels the night route live — everyone can see it.",
+      "slide7Title": "Awards Ceremony",
+      "slide7Subtitle": "The night ends on a podium — with real points from the whole evening.",
       "skip": "Skip",
       "next": "Next",
-      "getStarted": "Let's go"
+      "getStarted": "Let's go",
+      "skipToStart": "Jump right in",
+      "scene": {
+        "eventCard": {
+          "statusBadge": "Planned",
+          "title": "Bachelorette Weekend Lisbon",
+          "dateValue": "Sep 12–14",
+          "location": "Lisbon",
+          "locationLabel": "Location"
+        },
+        "survey": {
+          "heading": "Poll",
+          "question": "Are you in for the weekend?",
+          "optionYes": "Yes! 🎉",
+          "optionMaybe": "Maybe",
+          "optionNo": "No",
+          "respondedCount": "{{count}} of {{total}} answered"
+        },
+        "marketplace": {
+          "catPhoto": "Photography",
+          "catVenue": "Venue",
+          "catCatering": "Catering"
+        },
+        "expenses": {
+          "totalLabel": "Total",
+          "perPersonLabel": "Per person",
+          "settledLabel": "All balances settled",
+          "catTransport": "Transport",
+          "catFood": "Food",
+          "catFun": "Activities",
+          "catDrinks": "Drinks"
+        },
+        "partyMode": {
+          "scoreLabel": "points"
+        },
+        "podium": {
+          "heading": "Final standings"
+        }
+      }
+    },
+    "splash": {
+      "tagline": "Plan events worth remembering"
     }
   },
   "marketplace": {
@@ -9473,7 +9544,10 @@
       "setlistTooManyLabel": "Up to {{n}} people",
       "rulesOnTv": "The rules are on the TV — read them together.",
       "startNow": "Start: {{game}}",
-      "rulesIntro": "Show rules before each game"
+      "rulesIntro": "Show rules before each game",
+      "lengthTitle": "Only {{n}} free games",
+      "lengthBody": "The free plan allows {{n}} games per night. You've already planned {{count}} — with Premium you can plan as many as you like.",
+      "lengthDropCta": "Start with just the first {{n}} games"
     },
     "partyLobby": {
       "title": "Party Night",

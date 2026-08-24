@@ -106,7 +106,28 @@ const GERMAN_WORDS = /\b(Spieler|Spielern|Runde|Runden|Punkte|Punkten|Melden|Wei
 /** Props, deren Inhalt der Nutzer liest oder vorgelesen bekommt. */
 const VISIBLE_ATTRS = /\b(?:title|aria-label|placeholder|alt)\s*=\s*"([^"]+)"/g;
 /** JSX-Text zwischen zwei Tags, auf derselben Zeile und ohne Ausdruck darin. */
-const JSX_TEXT = />([^<>{}\n]*[A-Za-zÀ-ÿ][^<>{}\n]*)</g;
+/** JSX-Text zwischen zwei Tags, auf derselben Zeile und ohne Ausdruck darin. */
+const JSX_TEXT = />([^<>{}\\n]*[A-Za-zÀ-ÿ][^<>{}\\n]*)</g;
+/**
+ * Nackter JSX-Text auf einer EIGENEN Zeile.
+ *
+ * Die blinde Stelle, die `PremiumBadge` zweimal durchrutschen liess: Das
+ * Muster oben verlangt oeffnendes UND schliessendes Tag auf derselben Zeile.
+ * Steht der Text formatiert auf einer eigenen Zeile —
+ *
+ *     <span>
+ *       {freePlaysLeft} kostenlos
+ *     </span>
+ *
+ * — greift es nicht. Genau so stand dort "kostenlos" in allen zehn Sprachen.
+ * Ein erster Nachbesserungsversuch (Text NACH einer Klammer bis zum naechsten
+ * `<`) traf ebenfalls nicht, weil das `<` erst in der Folgezeile steht.
+ *
+ * Deshalb hier bewusst grob: eine Zeile, die NUR aus Text (und hoechstens
+ * einem Ausdruck) besteht. Fehlalarme sind unwahrscheinlich, weil ohnehin nur
+ * Zeilen mit deutschen Umlauten oder Woertern aus der Liste gemeldet werden.
+ */
+const BARE_JSX_LINE = /^(?:\{[^}]*\}\s*)?([A-Za-zÀ-ÿ][^<>{}=;()]*)$/;
 
 /**
  * Bewusste Ausnahmen — jede mit Grund, damit niemand hier blind ergaenzt.
@@ -133,6 +154,16 @@ describe("i18n — kein hartkodiertes Deutsch in der Spiel-Oberflaeche", () => {
       lines.forEach((line, i) => {
         const found: string[] = [];
         for (const m of line.matchAll(JSX_TEXT)) found.push(m[1].trim());
+        // Nur in .tsx — die .ts-Inhaltspakete tragen bewusst deutsche
+        // Spieldaten ("muenchen", "Hund"), das ist kein Oberflaechentext.
+        // Und Objekt-Eigenschaften ausschliessen: `population: 'muenchen',`
+        // sieht sonst aus wie nackter JSX-Text.
+        const trimmed = line.trim();
+        const isProp = /^[A-Za-z_$][A-Za-z0-9_$]*\s*:/.test(trimmed) || /[,;]$/.test(trimmed);
+        if (file.endsWith(".tsx") && !isProp) {
+          const bare = trimmed.match(BARE_JSX_LINE);
+          if (bare) found.push(bare[1].trim());
+        }
         for (const m of line.matchAll(VISIBLE_ATTRS)) found.push(m[1].trim());
 
         for (const text of found) {

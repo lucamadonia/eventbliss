@@ -7588,6 +7588,13 @@
         "inappropriate": "Uygunsuz içerik",
         "other": "Başka bir şey"
       }
+    },
+    "premium": {
+      "badge": "Premium",
+      "freeLeft": "{{n}} ücretsiz"
+    },
+    "multiplayer": {
+      "inviteEventGuests": "Konukları davet et"
     }
   },
   "native": {
@@ -7609,7 +7616,24 @@
       "findInspiration": "İlham bul",
       "findInspirationSub": "Etkinliğin için temalar, oyunlar ve fikirler",
       "marketplace": "Marketplace",
-      "marketplaceSub": "Hizmetler ve deneyimler"
+      "marketplaceSub": "Hizmetler ve deneyimler",
+      "guest": {
+        "eyebrow": "EventBliss uygulamasina hos geldin",
+        "heroTitle": "Hemen basla —",
+        "heroHighlight": "dolambacsiz.",
+        "heroSubtitle": "Etkinlik olustur, oyunlari baslat veya hizmet saglayici bul: her sey hemen calisir.",
+        "createEyebrow": "Yeni etkinlik",
+        "createTitle": "Etkinlik olustur",
+        "createSub": "Konuklari davet et ve yanitlari topla — etkinligin hazir, hesap gerekmez.",
+        "playEyebrow": "Hemen oynanir",
+        "playTitle": "Simdi oyna",
+        "playSub": "Telefon ve televizyon icin 21 parti oyunu — kayit gerekmez.",
+        "marketplaceEyebrow": "Marketplace",
+        "marketplaceTitle": "Hizmet saglayici bul",
+        "marketplaceSub": "Etkinligin icin fotografcilar, mekanlar ve daha fazlasi.",
+        "noAccountNote": "Her sey hesapsiz.",
+        "signInLink": "Saklamak istersen giris yap."
+      }
     },
     "games": {
       "subtitle": "Parti Oyunları",
@@ -7953,7 +7977,54 @@
       "slide4Subtitle": "Link paylaş, katılım topla ve herkesi bilgilendir.",
       "skip": "Atla",
       "next": "İleri",
-      "getStarted": "Hadi başlayalım"
+      "getStarted": "Hadi başlayalım",
+      "slide5Title": "Parti Modu",
+      "slide5Subtitle": "Gercek oyunlardan bir liste, puanlar tum gece boyunca birikir.",
+      "slide6Title": "Televizyon sahneye donusur",
+      "slide6Subtitle": "Grup gece rotasinda canli ilerler — herkes gorur.",
+      "slide7Title": "Odul toreni",
+      "slide7Subtitle": "Gece bir podyumla biter — tum aksamin puanlariyla.",
+      "skipToStart": "Hemen basla",
+      "scene": {
+        "eventCard": {
+          "statusBadge": "Planlandi",
+          "title": "Lizbon bekarliga veda",
+          "dateValue": "12–14 Eyl.",
+          "location": "Lizbon",
+          "locationLabel": "Yer"
+        },
+        "survey": {
+          "heading": "Anket",
+          "question": "Bu hafta sonu var misin?",
+          "optionYes": "Evet! 🎉",
+          "optionMaybe": "Belki",
+          "optionNo": "Hayir",
+          "respondedCount": "{{total}} kisiden {{count}} yanitladi"
+        },
+        "marketplace": {
+          "catPhoto": "Fotografcilik",
+          "catVenue": "Mekan",
+          "catCatering": "Catering"
+        },
+        "expenses": {
+          "totalLabel": "Toplam",
+          "perPersonLabel": "Kisi basi",
+          "settledLabel": "Tum bakiyeler esitlendi",
+          "catTransport": "Ulasim",
+          "catFood": "Yemek",
+          "catFun": "Aktiviteler",
+          "catDrinks": "Icecekler"
+        },
+        "partyMode": {
+          "scoreLabel": "puan"
+        },
+        "podium": {
+          "heading": "Gecenin sonucu"
+        }
+      }
+    },
+    "splash": {
+      "tagline": "Unutulmayacak etkinlikler"
     }
   },
   "marketplace": {
@@ -9547,7 +9618,10 @@
       "setlistTooManyLabel": "En fazla {{n}} kişi",
       "rulesOnTv": "Kurallar televizyonda — birlikte okuyun.",
       "startNow": "Başlıyoruz: {{game}}",
-      "rulesIntro": "Her oyundan önce kurallar"
+      "rulesIntro": "Her oyundan önce kurallar",
+      "lengthTitle": "Yalnizca {{n}} ucretsiz oyun",
+      "lengthBody": "Ucretsiz plan gecede {{n}} oyuna izin verir. Zaten {{count}} tanesini planladiniz — Premium ile istediginiz kadar.",
+      "lengthDropCta": "Yalnizca ilk {{n}} oyunla basla"
     },
     "partyLobby": {
       "title": "Oyun gecesi",

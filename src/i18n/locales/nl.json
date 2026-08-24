@@ -7588,6 +7588,13 @@
         "inappropriate": "Ongepaste inhoud",
         "other": "Iets anders"
       }
+    },
+    "premium": {
+      "badge": "Premium",
+      "freeLeft": "{{n}} gratis"
+    },
+    "multiplayer": {
+      "inviteEventGuests": "Gasten uitnodigen"
     }
   },
   "native": {
@@ -7609,7 +7616,24 @@
       "findInspiration": "Vind inspiratie",
       "findInspirationSub": "Thema’s, spellen en ideeën voor je evenement",
       "marketplace": "Marketplace",
-      "marketplaceSub": "Diensten & ervaringen"
+      "marketplaceSub": "Diensten & ervaringen",
+      "guest": {
+        "eyebrow": "Welkom bij EventBliss",
+        "heroTitle": "Ga meteen aan de slag —",
+        "heroHighlight": "zonder omwegen.",
+        "heroSubtitle": "Een event aanmaken, spellen starten of dienstverleners vinden: alles werkt meteen.",
+        "createEyebrow": "Nieuw event",
+        "createTitle": "Event aanmaken",
+        "createSub": "Nodig gasten uit en verzamel antwoorden — je event is meteen klaar, zonder account.",
+        "playEyebrow": "Meteen speelbaar",
+        "playTitle": "Nu spelen",
+        "playSub": "21 party-spellen voor telefoon en tv — zonder aanmelden.",
+        "marketplaceEyebrow": "Marketplace",
+        "marketplaceTitle": "Dienstverlener vinden",
+        "marketplaceSub": "Fotografen, locaties en meer voor je event.",
+        "noAccountNote": "Alles zonder account.",
+        "signInLink": "Meld je aan als je het wilt bewaren."
+      }
     },
     "games": {
       "subtitle": "Feestspellen",
@@ -7953,7 +7977,54 @@
       "slide4Subtitle": "Deel een link, verzamel bevestigingen en houd iedereen op de hoogte.",
       "skip": "Overslaan",
       "next": "Volgende",
-      "getStarted": "Laten we gaan"
+      "getStarted": "Laten we gaan",
+      "slide5Title": "Party-modus",
+      "slide5Subtitle": "Een setlist met echte spellen, punten lopen de hele avond door.",
+      "slide6Title": "De tv wordt het podium",
+      "slide6Subtitle": "De groep loopt live over de nachtroute — voor iedereen zichtbaar.",
+      "slide7Title": "Prijsuitreiking",
+      "slide7Subtitle": "De avond eindigt op een podium — met punten van de hele avond.",
+      "skipToStart": "Direct beginnen",
+      "scene": {
+        "eventCard": {
+          "statusBadge": "Gepland",
+          "title": "Vrijgezellenfeest Lissabon",
+          "dateValue": "12–14 sep.",
+          "location": "Lissabon",
+          "locationLabel": "Locatie"
+        },
+        "survey": {
+          "heading": "Peiling",
+          "question": "Ben je er dit weekend bij?",
+          "optionYes": "Ja! 🎉",
+          "optionMaybe": "Misschien",
+          "optionNo": "Nee",
+          "respondedCount": "{{count}} van {{total}} hebben geantwoord"
+        },
+        "marketplace": {
+          "catPhoto": "Fotografie",
+          "catVenue": "Locatie",
+          "catCatering": "Catering"
+        },
+        "expenses": {
+          "totalLabel": "Totaal",
+          "perPersonLabel": "Per persoon",
+          "settledLabel": "Alle saldi vereffend",
+          "catTransport": "Vervoer",
+          "catFood": "Eten",
+          "catFun": "Activiteiten",
+          "catDrinks": "Drankjes"
+        },
+        "partyMode": {
+          "scoreLabel": "punten"
+        },
+        "podium": {
+          "heading": "Eindstand"
+        }
+      }
+    },
+    "splash": {
+      "tagline": "Events om te onthouden"
     }
   },
   "marketplace": {
@@ -9547,7 +9618,10 @@
       "setlistTooManyLabel": "Tot {{n}} personen",
       "rulesOnTv": "De spelregels staan op de tv — lees ze samen.",
       "startNow": "Starten: {{game}}",
-      "rulesIntro": "Spelregels voor elk spel"
+      "rulesIntro": "Spelregels voor elk spel",
+      "lengthTitle": "Slechts {{n}} gratis spellen",
+      "lengthBody": "Het gratis plan staat {{n}} spellen per avond toe. Jullie hebben er al {{count}} gepland — met Premium zoveel je wilt.",
+      "lengthDropCta": "Alleen de eerste {{n}} spellen starten"
     },
     "partyLobby": {
       "title": "Spelavond",

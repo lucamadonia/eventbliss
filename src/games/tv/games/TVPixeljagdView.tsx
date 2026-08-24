@@ -64,7 +64,7 @@ export default function TVPixeljagdView({ gameState }: Props) {
           Runde {round} / {totalRounds}
         </span>
         <span style={{ fontSize: tvType.title, color: PJ.accent, fontWeight: 900 }}>
-          {points} Punkte
+          {t('tv.points')}: {points}
         </span>
       </div>
 

@@ -103,3 +103,60 @@ export const reducedPageVariants: Variants = {
   animate: { opacity: 1, transition: { duration: duration.instant } },
   exit:    { opacity: 0, transition: { duration: duration.instant } },
 };
+
+// ── Einstiegs-Choreografie (Splash, Intro, Gast-Startseite) ──────────
+/**
+ * Die gemeinsame Handschrift des ersten Eindrucks.
+ *
+ * WARUM ZENTRAL: Splash, Intro und Gast-Startseite laufen direkt
+ * hintereinander. Drei eigene Timings lassen den Einstieg zusammengestueckelt
+ * wirken — genau der Eindruck, den die Ueberarbeitung beseitigen soll.
+ *
+ * WICHTIG zur Bewegungsarmut: Diese Bewegungen sind ZWECKGEBUNDEN und duerfen
+ * NICHT an `useAmbientMotion` haengen — das liefert auf nativen Geraeten immer
+ * `false` und ist ausschliesslich fuer Endlosschleifen gedacht (siehe dessen
+ * Kopfkommentar). Der richtige Riegel ist `useReducedMotion()` von
+ * framer-motion: Bei Bewegungsarmut wird `entranceReduced` benutzt, das
+ * denselben Endzustand ohne Weg dorthin zeigt.
+ */
+export const entrance = {
+  /** Etwas zieht aus der Tiefe heran. */
+  approach: { type: "spring", stiffness: 120, damping: 22, mass: 1.2 } as Transition,
+  /** Der Einschlag — kurz und hart, damit er sitzt. */
+  impact: { type: "spring", stiffness: 520, damping: 24, mass: 0.8 } as Transition,
+  /** Aufbluehen nach dem Einschlag. */
+  bloom: { duration: 0.55, ease: ease.out } as Transition,
+  /** Aufloesung nach oben, wenn der naechste Bildschirm nachkommt. */
+  dissolve: { duration: 0.42, ease: ease.in } as Transition,
+} as const;
+
+/** Taktzeiten des Splash in Millisekunden — eine Quelle fuer Bild und Haptik. */
+export const splashBeats = {
+  approach: 180,
+  impact: 620,
+  wordmark: 1040,
+  sparks: 1180,
+  dissolve: 1880,
+  done: 2300,
+} as const;
+
+/**
+ * Endzustand ohne Weg dorthin. Bei Bewegungsarmut sieht der Nutzer dasselbe
+ * Bild — nur ohne Reise. Kein zweitklassiges Erlebnis, ein stilles.
+ */
+export const entranceReduced: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, scale: 1, x: 0, y: 0, transition: { duration: 0.2 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+};
+
+/** Szenen des Intros treten gestaffelt ein — sichtbar geordnet, nicht zufaellig. */
+export const sceneStagger: Variants = {
+  initial: {},
+  animate: { transition: { staggerChildren: 0.09, delayChildren: 0.12 } },
+};
+
+export const sceneItem: Variants = {
+  initial: { opacity: 0, y: 24, scale: 0.96 },
+  animate: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 260, damping: 24 } },
+};

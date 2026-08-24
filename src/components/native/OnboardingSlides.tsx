@@ -1,73 +1,95 @@
 /**
- * OnboardingSlides — 4-slide swipeable first-launch tutorial.
- * Uses embla-carousel-react (already installed).
+ * OnboardingSlides — 7-Folien-Intro, das den Abend als Bogen erzaehlt: von
+ * der Planung ueber die Buchung bis zur Siegerehrung. Jede Folie baut aus
+ * ECHTEN App-Bauteilen eine kleine Vorschau statt sie nur zu behaupten —
+ * Folie 5 nutzt die echten Spiel-Artworks, Folie 6 die echte `TVPartyMap`
+ * (verkleinert), Folie 7 das echte `TVPartyPodium`.
  *
- * Slides:
- *   1. Plan epic events     (CalendarHeart icon + animated gradient)
- *   2. Play 24+ games       (Gamepad2 icon + bounce)
- *   3. Track expenses       (Wallet icon + pulse)
- *   4. Invite friends       (Users icon + orbit)
- *
- * Each slide uses pure CSS/framer-motion animation (no Lottie files needed
- * for first ship — can swap to Lottie later).
+ * Ab Folie 3 bleibt zusaetzlich ein "Loslegen"-Knopf sichtbar: wer schon
+ * ueberzeugt ist, soll nicht erst durch die restlichen Folien swipen muessen.
  */
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type ComponentType } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { CalendarHeart, Gamepad2, Wallet, Users, ArrowRight, Sparkles } from "lucide-react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { ArrowRight, Rocket, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+
+import { SceneEventPlan } from "./onboarding/SceneEventPlan";
+import { SceneSurvey } from "./onboarding/SceneSurvey";
+import { SceneMarketplace } from "./onboarding/SceneMarketplace";
+import { SceneExpenses } from "./onboarding/SceneExpenses";
+import { ScenePartyMode } from "./onboarding/ScenePartyMode";
+import { SceneNightRoute } from "./onboarding/SceneNightRoute";
+import { ScenePodium } from "./onboarding/ScenePodium";
 
 interface Props {
   onComplete: () => void;
 }
 
 interface Slide {
-  icon: typeof CalendarHeart;
   titleKey: string;
   subtitleKey: string;
   gradient: string;
-  accent: string;
+  Scene: ComponentType;
 }
 
 const slides: Slide[] = [
   {
-    icon: CalendarHeart,
     titleKey: "native.onboarding.slide1Title",
     subtitleKey: "native.onboarding.slide1Subtitle",
-    gradient: "from-violet-500/30 via-fuchsia-500/20 to-transparent",
-    accent: "text-violet-500 dark:text-violet-300",
+    gradient: "from-violet-500/25 via-fuchsia-500/15 to-transparent",
+    Scene: SceneEventPlan,
   },
   {
-    icon: Gamepad2,
     titleKey: "native.onboarding.slide2Title",
     subtitleKey: "native.onboarding.slide2Subtitle",
-    gradient: "from-fuchsia-500/30 via-pink-500/20 to-transparent",
-    accent: "text-fuchsia-500 dark:text-fuchsia-300",
+    gradient: "from-fuchsia-500/25 via-pink-500/15 to-transparent",
+    Scene: SceneSurvey,
   },
   {
-    icon: Wallet,
     titleKey: "native.onboarding.slide3Title",
     subtitleKey: "native.onboarding.slide3Subtitle",
-    gradient: "from-cyan-500/30 via-teal-500/20 to-transparent",
-    accent: "text-cyan-500 dark:text-cyan-300",
+    gradient: "from-cyan-500/25 via-teal-500/15 to-transparent",
+    Scene: SceneMarketplace,
   },
   {
-    icon: Users,
     titleKey: "native.onboarding.slide4Title",
     subtitleKey: "native.onboarding.slide4Subtitle",
-    gradient: "from-amber-500/30 via-orange-500/20 to-transparent",
-    accent: "text-amber-500 dark:text-amber-300",
+    gradient: "from-amber-500/25 via-orange-500/15 to-transparent",
+    Scene: SceneExpenses,
+  },
+  {
+    titleKey: "native.onboarding.slide5Title",
+    subtitleKey: "native.onboarding.slide5Subtitle",
+    gradient: "from-[#df8eff]/25 via-[#ff6b98]/15 to-transparent",
+    Scene: ScenePartyMode,
+  },
+  {
+    titleKey: "native.onboarding.slide6Title",
+    subtitleKey: "native.onboarding.slide6Subtitle",
+    gradient: "from-[#1a0f2e]/40 via-[#0b0716]/25 to-transparent",
+    Scene: SceneNightRoute,
+  },
+  {
+    titleKey: "native.onboarding.slide7Title",
+    subtitleKey: "native.onboarding.slide7Subtitle",
+    gradient: "from-amber-400/25 via-yellow-500/15 to-transparent",
+    Scene: ScenePodium,
   },
 ];
+
+/** Ab dieser (0-basierten) Folie bleibt der fruehe Ausstieg staendig sichtbar. */
+const EARLY_EXIT_FROM_INDEX = 2;
 
 export function OnboardingSlides({ onComplete }: Props) {
   const { t } = useTranslation();
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center" });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const haptics = useHaptics();
+  const reduceMotion = useReducedMotion();
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -84,6 +106,7 @@ export function OnboardingSlides({ onComplete }: Props) {
   }, [emblaApi, onSelect]);
 
   const isLast = selectedIndex === slides.length - 1;
+  const showEarlyExit = selectedIndex >= EARLY_EXIT_FROM_INDEX && !isLast;
 
   const handleNext = () => {
     haptics.medium();
@@ -97,6 +120,11 @@ export function OnboardingSlides({ onComplete }: Props) {
 
   const handleSkip = () => {
     haptics.light();
+    onComplete();
+  };
+
+  const handleEarlyExit = () => {
+    haptics.celebrate();
     onComplete();
   };
 
@@ -121,49 +149,37 @@ export function OnboardingSlides({ onComplete }: Props) {
       <div className="flex-1 overflow-hidden" ref={emblaRef}>
         <div className="flex h-full">
           {slides.map((slide, i) => {
-            const Icon = slide.icon;
+            const Scene = slide.Scene;
+            const active = selectedIndex === i;
             return (
               <div
                 key={i}
-                className="flex-[0_0_100%] min-w-0 flex flex-col items-center justify-center px-8"
+                className="flex-[0_0_100%] min-w-0 flex flex-col items-center justify-center px-6 overflow-y-auto"
               >
-                {/* Gradient hero */}
+                {/* Buehne fuer die Szene — ersetzt das fruehere reine Symbol */}
                 <div
                   className={cn(
-                    "relative w-64 h-64 rounded-full bg-gradient-to-br flex items-center justify-center mb-10",
+                    "relative w-full max-w-sm rounded-[32px] bg-gradient-to-br p-4 mb-8",
                     slide.gradient
                   )}
                 >
                   <AnimatePresence mode="wait">
-                    {selectedIndex === i && (
+                    {active && (
                       <motion.div
                         key={i}
-                        initial={{ scale: 0.6, opacity: 0, rotate: -15 }}
-                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                        exit={{ scale: 0.6, opacity: 0 }}
-                        transition={spring.bouncy}
+                        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.92 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={reduceMotion ? { duration: 0.2 } : spring.soft}
                       >
-                        <Icon
-                          className={cn("w-32 h-32", slide.accent)}
-                          strokeWidth={1.5}
-                        />
+                        <Scene />
                       </motion.div>
                     )}
                   </AnimatePresence>
-
-                  {/* Ambient orbit */}
-                  <motion.div
-                    className="absolute inset-0 rounded-full border border-border"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                  >
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-2 h-2 rounded-full bg-foreground/40" />
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1 w-1.5 h-1.5 rounded-full bg-foreground/30" />
-                  </motion.div>
                 </div>
 
                 <AnimatePresence mode="wait">
-                  {selectedIndex === i && (
+                  {active && (
                     <motion.div
                       key={`text-${i}`}
                       className="text-center max-w-sm"
@@ -172,10 +188,10 @@ export function OnboardingSlides({ onComplete }: Props) {
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ ...spring.soft, delay: 0.1 }}
                     >
-                      <h2 className="text-3xl font-display font-bold text-foreground mb-3 tracking-tight">
+                      <h2 className="text-2xl font-display font-bold text-foreground mb-2 tracking-tight">
                         {t(slide.titleKey)}
                       </h2>
-                      <p className="text-base text-muted-foreground font-body leading-relaxed">
+                      <p className="text-sm text-muted-foreground font-body leading-relaxed">
                         {t(slide.subtitleKey)}
                       </p>
                     </motion.div>
@@ -187,8 +203,8 @@ export function OnboardingSlides({ onComplete }: Props) {
         </div>
       </div>
 
-      {/* Progress dots + CTA */}
-      <div className="safe-bottom px-8 pb-6 flex flex-col items-center gap-6">
+      {/* Progress dots + fruehzeitiger Ausstieg + CTA */}
+      <div className="safe-bottom px-8 pb-6 flex flex-col items-center gap-4">
         <div className="flex gap-2">
           {slides.map((_, i) => (
             <motion.div
@@ -203,6 +219,21 @@ export function OnboardingSlides({ onComplete }: Props) {
             />
           ))}
         </div>
+
+        <AnimatePresence>
+          {showEarlyExit && (
+            <motion.button
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              onClick={handleEarlyExit}
+              className="flex items-center gap-1.5 text-sm font-semibold text-violet-500 dark:text-[#df8eff]"
+            >
+              <Rocket className="w-4 h-4" aria-hidden />
+              {t('native.onboarding.skipToStart')}
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         <motion.button
           onClick={handleNext}

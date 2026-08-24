@@ -7538,6 +7538,13 @@
         "inappropriate": "Contenu inapproprié",
         "other": "Autre chose"
       }
+    },
+    "premium": {
+      "badge": "Premium",
+      "freeLeft": "{{n}} gratuites"
+    },
+    "multiplayer": {
+      "inviteEventGuests": "Inviter les invités"
     }
   },
   "native": {
@@ -7559,7 +7566,24 @@
       "findInspiration": "Trouve l’inspiration",
       "findInspirationSub": "Thèmes, jeux et idées pour ton événement",
       "marketplace": "Marketplace",
-      "marketplaceSub": "Services et expériences"
+      "marketplaceSub": "Services et expériences",
+      "guest": {
+        "eyebrow": "Bienvenue sur EventBliss",
+        "heroTitle": "Lance-toi tout de suite —",
+        "heroHighlight": "sans detour.",
+        "heroSubtitle": "Creer un evenement, lancer des jeux ou trouver un prestataire : tout fonctionne immediatement.",
+        "createEyebrow": "Nouvel evenement",
+        "createTitle": "Creer un evenement",
+        "createSub": "Invite tes convives et recueille leurs reponses — ton evenement est pret, sans compte.",
+        "playEyebrow": "Jouable de suite",
+        "playTitle": "Jouer maintenant",
+        "playSub": "21 jeux de soiree pour telephone et tele — sans inscription.",
+        "marketplaceEyebrow": "Marketplace",
+        "marketplaceTitle": "Trouver un prestataire",
+        "marketplaceSub": "Photographes, lieux et bien plus pour ton evenement.",
+        "noAccountNote": "Tout sans compte.",
+        "signInLink": "Connecte-toi si tu veux le garder."
+      }
     },
     "games": {
       "subtitle": "Jeux de Soirée",
@@ -7903,7 +7927,54 @@
       "slide4Subtitle": "Partage un lien, collecte les réponses et tiens tout le monde au courant.",
       "skip": "Passer",
       "next": "Suivant",
-      "getStarted": "C’est parti"
+      "getStarted": "C’est parti",
+      "slide5Title": "Mode Soiree",
+      "slide5Subtitle": "Une set-list de vrais jeux, les points courent toute la soiree.",
+      "slide6Title": "La tele devient la scene",
+      "slide6Subtitle": "Le groupe avance en direct sur la route nocturne — visible par tous.",
+      "slide7Title": "Remise des prix",
+      "slide7Subtitle": "La soiree finit sur un podium — avec les points de toute la soiree.",
+      "skipToStart": "Commencer directement",
+      "scene": {
+        "eventCard": {
+          "statusBadge": "Prevu",
+          "title": "EVJF a Lisbonne",
+          "dateValue": "12–14 sept.",
+          "location": "Lisbonne",
+          "locationLabel": "Lieu"
+        },
+        "survey": {
+          "heading": "Sondage",
+          "question": "Tu es de la partie ce week-end ?",
+          "optionYes": "Oui ! 🎉",
+          "optionMaybe": "Peut-etre",
+          "optionNo": "Non",
+          "respondedCount": "{{count}} sur {{total}} ont repondu"
+        },
+        "marketplace": {
+          "catPhoto": "Photographie",
+          "catVenue": "Lieu",
+          "catCatering": "Traiteur"
+        },
+        "expenses": {
+          "totalLabel": "Total",
+          "perPersonLabel": "Par personne",
+          "settledLabel": "Tous les soldes regles",
+          "catTransport": "Transport",
+          "catFood": "Repas",
+          "catFun": "Activites",
+          "catDrinks": "Boissons"
+        },
+        "partyMode": {
+          "scoreLabel": "points"
+        },
+        "podium": {
+          "heading": "Classement final"
+        }
+      }
+    },
+    "splash": {
+      "tagline": "Des événements dont on se souvient"
     }
   },
   "marketplace": {
@@ -9497,7 +9568,10 @@
       "setlistTooManyLabel": "Jusqu'à {{n}} personnes",
       "rulesOnTv": "Les règles sont à la télé — lisez-les ensemble.",
       "startNow": "C'est parti : {{game}}",
-      "rulesIntro": "Règles avant chaque jeu"
+      "rulesIntro": "Règles avant chaque jeu",
+      "lengthTitle": "Seulement {{n}} jeux gratuits",
+      "lengthBody": "La formule gratuite permet {{n}} jeux par soiree. Vous en avez deja prevu {{count}} — avec Premium, autant que vous voulez.",
+      "lengthDropCta": "Ne lancer que les {{n}} premiers jeux"
     },
     "partyLobby": {
       "title": "Soirée jeux",

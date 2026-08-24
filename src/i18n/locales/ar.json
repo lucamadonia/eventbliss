@@ -7428,6 +7428,13 @@
         "inappropriate": "محتوى غير مناسب",
         "other": "شيء آخر"
       }
+    },
+    "premium": {
+      "badge": "بريميوم",
+      "freeLeft": "{{n}} مجاناً"
+    },
+    "multiplayer": {
+      "inviteEventGuests": "ادعُ ضيوف الحدث"
     }
   },
   "native": {
@@ -7449,7 +7456,24 @@
       "findInspiration": "ابحث عن إلهام",
       "findInspirationSub": "مواضيع وألعاب وأفكار لحدثك",
       "marketplace": "المتجر",
-      "marketplaceSub": "الخدمات والتجارب"
+      "marketplaceSub": "الخدمات والتجارب",
+      "guest": {
+        "eyebrow": "مرحباً بك في EventBliss",
+        "heroTitle": "ابدأ فوراً —",
+        "heroHighlight": "بلا تعقيد.",
+        "heroSubtitle": "أنشئ حدثاً، ابدأ اللعب أو اعثر على مزوّد خدمة: كل شيء يعمل فوراً.",
+        "createEyebrow": "حدث جديد",
+        "createTitle": "أنشئ حدثاً",
+        "createSub": "ادعُ ضيوفك واجمع الردود — حدثك جاهز فوراً، دون حساب.",
+        "playEyebrow": "قابل للعب فوراً",
+        "playTitle": "العب الآن",
+        "playSub": "21 لعبة حفلات للهاتف والتلفاز — دون تسجيل.",
+        "marketplaceEyebrow": "السوق",
+        "marketplaceTitle": "اعثر على مزوّد خدمة",
+        "marketplaceSub": "مصورون وأماكن وأكثر لحدثك.",
+        "noAccountNote": "كل شيء دون حساب.",
+        "signInLink": "سجّل الدخول إن أردت الاحتفاظ به."
+      }
     },
     "games": {
       "subtitle": "ألعاب الحفلات",
@@ -7793,7 +7817,54 @@
       "slide4Subtitle": "شارك رابطًا، اجمع التأكيدات وأبقِ الجميع على اطلاع.",
       "skip": "تخطّي",
       "next": "التالي",
-      "getStarted": "هيا نبدأ"
+      "getStarted": "هيا نبدأ",
+      "slide5Title": "وضع الحفلة",
+      "slide5Subtitle": "قائمة من ألعاب حقيقية، والنقاط تتراكم طوال السهرة.",
+      "slide6Title": "التلفاز يصبح المسرح",
+      "slide6Subtitle": "تتقدم المجموعة مباشرةً على مسار الليلة — أمام الجميع.",
+      "slide7Title": "حفل التتويج",
+      "slide7Subtitle": "تنتهي الليلة بمنصة تتويج — بنقاط السهرة كاملة.",
+      "skipToStart": "ابدأ مباشرة",
+      "scene": {
+        "eventCard": {
+          "statusBadge": "مُخطَّط",
+          "title": "حفلة وداع العزوبية في لشبونة",
+          "dateValue": "12–14 سبتمبر",
+          "location": "لشبونة",
+          "locationLabel": "المكان"
+        },
+        "survey": {
+          "heading": "استطلاع",
+          "question": "هل ستنضم في نهاية الأسبوع؟",
+          "optionYes": "نعم! 🎉",
+          "optionMaybe": "ربما",
+          "optionNo": "لا",
+          "respondedCount": "أجاب {{count}} من {{total}}"
+        },
+        "marketplace": {
+          "catPhoto": "التصوير",
+          "catVenue": "المكان",
+          "catCatering": "التموين"
+        },
+        "expenses": {
+          "totalLabel": "الإجمالي",
+          "perPersonLabel": "للفرد",
+          "settledLabel": "جميع الأرصدة مسوّاة",
+          "catTransport": "المواصلات",
+          "catFood": "الطعام",
+          "catFun": "الأنشطة",
+          "catDrinks": "المشروبات"
+        },
+        "partyMode": {
+          "scoreLabel": "نقطة"
+        },
+        "podium": {
+          "heading": "الترتيب النهائي"
+        }
+      }
+    },
+    "splash": {
+      "tagline": "فعاليات تبقى في الذاكرة"
     }
   },
   "marketplace": {
@@ -9484,7 +9555,10 @@
       "setlistTooManyLabel": "حتى {{n}} أشخاص",
       "rulesOnTv": "القواعد معروضة على التلفاز — اقرأوها معاً.",
       "startNow": "لنبدأ: {{game}}",
-      "rulesIntro": "القواعد قبل كل لعبة"
+      "rulesIntro": "القواعد قبل كل لعبة",
+      "lengthTitle": "{{n}} ألعاب مجانية فقط",
+      "lengthBody": "الخطة المجانية تتيح {{n}} ألعاب في السهرة. خططتم بالفعل لـ {{count}} — مع بريميوم بلا حدود.",
+      "lengthDropCta": "ابدأ بأول {{n}} ألعاب فقط"
     },
     "partyLobby": {
       "title": "ليلة الألعاب",

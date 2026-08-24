@@ -24,8 +24,11 @@ import { NativeOverlayPortal } from "@/components/native/NativeOverlayPortal";
 import { SetlistTray } from "@/components/native/party/SetlistTray";
 import {
   buildSetlistCatalog,
+  findExcessSetlistEntries,
   findLockedSetlistEntries,
   findUnfitSetlistEntries,
+  FREE_SETLIST_LIMIT,
+  isSetlistLengthLocked,
   moveSetlistEntry,
   setlistCatalogIndex,
   toggleSetlistEntry,
@@ -84,6 +87,11 @@ export function PartyGamePicker({
     // Variante — bei zu wenigen Leuten waere "Premium freischalten" die
     // falsche Antwort.
     | { kind: "players"; id: string; fit: "tooFew" | "tooMany" }
+    // Vierter Grund: die Gratis-Grenze der Set-Liste (FREE_SETLIST_LIMIT).
+    // `count` ist die aktuelle Laenge der Liste — sowohl beim geblockten
+    // Hinzufuegen (dann == FREE_SETLIST_LIMIT) als auch beim Start einer
+    // bereits laengeren Liste (dann > FREE_SETLIST_LIMIT, siehe Kuerzen-CTA).
+    | { kind: "length"; count: number }
     | null
   >(null);
 
@@ -134,6 +142,14 @@ export function PartyGamePicker({
       onSelectGame(game.id);
       return;
     }
+    // Die Gratis-Grenze betrifft nur das HINZUFUEGEN — ein bereits
+    // ausgewaehltes Spiel darf immer wieder entfernt werden, auch wenn die
+    // Liste laenger ist, als ein Gratis-Nutzer heute neu planen duerfte.
+    if (!ids.includes(game.id) && isSetlistLengthLocked(ids, { isPremium, premiumUnknown: premiumLoading })) {
+      haptics.warning();
+      setGate({ kind: "length", count: ids.length });
+      return;
+    }
     haptics.select();
     setIds((prev) => toggleSetlistEntry(prev, game.id));
   };
@@ -165,6 +181,16 @@ export function PartyGamePicker({
       setGate({ kind: "players", id: unfit[0], fit: "tooFew" });
       return;
     }
+    // Und dieselbe zweite Pruefung fuer die Laengen-Grenze: `handleTap`
+    // verhindert das Hinzufuegen nur, solange der Premium-Status bekannt ist.
+    // War er beim Planen noch `premiumUnknown` und steht jetzt fest, dass
+    // kein Premium vorliegt, kann die Liste laenger sein, als gratis erlaubt.
+    const excess = findExcessSetlistEntries(ids, { isPremium, premiumUnknown: premiumLoading });
+    if (excess.length > 0) {
+      haptics.warning();
+      setGate({ kind: "length", count: ids.length });
+      return;
+    }
     onStartSetlist(ids);
   };
 
@@ -179,7 +205,25 @@ export function PartyGamePicker({
     }
   };
 
-  const gateIds = gate ? (gate.kind === "start" ? gate.ids : [gate.id]) : [];
+  /**
+   * Auf die ersten `FREE_SETLIST_LIMIT` Spiele kuerzen und trotzdem starten.
+   *
+   * Bewusst NUR hier, als Folge eines Knopfdrucks — nirgendwo sonst wird eine
+   * bestehende Liste automatisch beschnitten (siehe `findExcessSetlistEntries`).
+   */
+  const handleStartWithLimit = () => {
+    const trimmed = ids.slice(0, FREE_SETLIST_LIMIT);
+    setIds(trimmed);
+    setGate(null);
+    if (trimmed.length > 0 && onStartSetlist) {
+      haptics.medium();
+      onStartSetlist(trimmed);
+    }
+  };
+
+  // "length" nennt keine bestimmten Spiele — die Grenze betrifft die Anzahl,
+  // nicht einzelne Eintraege.
+  const gateIds = gate ? (gate.kind === "start" ? gate.ids : gate.kind === "length" ? [] : [gate.id]) : [];
   const gateNames = gateIds.map((id) => {
     const game = catalogIndex.get(id);
     return game ? t(game.nameKey) : id;
@@ -459,11 +503,16 @@ export function PartyGamePicker({
                             ? t("nativeExtra.partyNight.playersTitle")
                             : gate.kind === "start"
                             ? t("nativeExtra.partyNight.blockedTitle")
+                            : gate.kind === "length"
+                            ? t("nativeExtra.partyNight.lengthTitle", { n: FREE_SETLIST_LIMIT })
                             : t("nativeExtra.partyNight.lockedTitle")}
                         </p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {gateNames.join(" · ")}
-                        </p>
+                        {/* "length" nennt keine Spielnamen — der Titel sagt schon alles. */}
+                        {gateNames.length > 0 && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            {gateNames.join(" · ")}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground">
@@ -476,6 +525,8 @@ export function PartyGamePicker({
                           )
                         : gate.kind === "start"
                         ? t("nativeExtra.partyNight.blockedBody")
+                        : gate.kind === "length"
+                        ? t("nativeExtra.partyNight.lengthBody", { n: FREE_SETLIST_LIMIT, count: gate.count })
                         : t("nativeExtra.partyNight.lockedBody")}
                     </p>
                     {gate.kind !== "players" && (
@@ -495,6 +546,18 @@ export function PartyGamePicker({
                         className="cursor-pointer w-full min-h-[48px] rounded-2xl border border-[#df8eff]/40 text-violet-500 dark:text-[#df8eff] font-semibold text-sm active:bg-[#df8eff]/10 transition-colors"
                       >
                         {t("nativeExtra.partyNight.blockedDropCta")}
+                      </button>
+                    )}
+                    {/* Nur sichtbar, wenn wirklich etwas zu kuerzen ist — beim
+                        blockierten Hinzufuegen (count === FREE_SETLIST_LIMIT)
+                        gibt es nichts zu entfernen. */}
+                    {gate.kind === "length" && gate.count > FREE_SETLIST_LIMIT && (
+                      <button
+                        type="button"
+                        onClick={handleStartWithLimit}
+                        className="cursor-pointer w-full min-h-[48px] rounded-2xl border border-[#df8eff]/40 text-violet-500 dark:text-[#df8eff] font-semibold text-sm active:bg-[#df8eff]/10 transition-colors"
+                      >
+                        {t("nativeExtra.partyNight.lengthDropCta", { n: FREE_SETLIST_LIMIT })}
                       </button>
                     )}
                     <button

@@ -11,9 +11,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import {
   estimateGameMinutes,
   estimateSetlistMinutes,
+  findExcessSetlistEntries,
   findLockedSetlistEntries,
   findUnfitSetlistEntries,
+  FREE_SETLIST_LIMIT,
   isSetlistEntryLocked,
+  isSetlistLengthLocked,
   playerFitFor,
   nextFittingIndex,
   moveSetlistEntry,
@@ -147,6 +150,68 @@ describe("Premium-Pruefung", () => {
     const list = [FREE_GAME, PREMIUM_GAME, "taboo"];
     expect(findLockedSetlistEntries(list, free)).toEqual([PREMIUM_GAME]);
     expect(findLockedSetlistEntries(list, { isPremium: true, premiumUnknown: false })).toEqual([]);
+  });
+});
+
+/**
+ * Ein Abend fasst gratis drei Spiele (FREE_SETLIST_LIMIT). Anders als die
+ * Spiel-Sperre oben geht es hier nicht um EIN Spiel, sondern um die Laenge
+ * der ganzen Liste — und darum, dass eine bereits laengere Liste dadurch
+ * nicht rueckwirkend gekuerzt wird.
+ */
+describe("Laengen-Grenze der Set-Liste", () => {
+  const free = { isPremium: false, premiumUnknown: false };
+  const listOf = (n: number) => Array.from({ length: n }, (_, i) => `spiel-${i}`);
+
+  it("blockiert das Hinzufuegen NICHT, solange die Liste unter der Grenze liegt", () => {
+    expect(isSetlistLengthLocked(listOf(FREE_SETLIST_LIMIT - 1), free)).toBe(false);
+  });
+
+  it("blockiert das Hinzufuegen genau an der Grenze — das naechste Spiel waere das vierte", () => {
+    expect(isSetlistLengthLocked(listOf(FREE_SETLIST_LIMIT), free)).toBe(true);
+  });
+
+  it("bleibt blockiert, wenn die Liste schon darueber liegt", () => {
+    expect(isSetlistLengthLocked(listOf(FREE_SETLIST_LIMIT + 2), free)).toBe(true);
+  });
+
+  it("Premium hebt die Grenze komplett auf", () => {
+    expect(isSetlistLengthLocked(listOf(FREE_SETLIST_LIMIT + 5), { isPremium: true, premiumUnknown: false })).toBe(
+      false
+    );
+  });
+
+  it("sperrt nichts, solange der Premium-Status unbekannt ist", () => {
+    expect(
+      isSetlistLengthLocked(listOf(FREE_SETLIST_LIMIT + 5), { isPremium: false, premiumUnknown: true })
+    ).toBe(false);
+  });
+
+  it("findet an der Grenze selbst keine ueberzaehligen Spiele — genau so viele sind ja gratis erlaubt", () => {
+    expect(findExcessSetlistEntries(listOf(FREE_SETLIST_LIMIT), free)).toEqual([]);
+  });
+
+  it("nennt bei einer bereits laengeren Liste genau die ueberzaehligen Spiele", () => {
+    const list = listOf(FREE_SETLIST_LIMIT + 2);
+    expect(findExcessSetlistEntries(list, free)).toEqual(list.slice(FREE_SETLIST_LIMIT));
+  });
+
+  it("laesst eine bereits laengere Liste unangetastet — reine Abfrage, kein Kuerzen", () => {
+    const list = listOf(FREE_SETLIST_LIMIT + 2);
+    const snapshot = [...list];
+    findExcessSetlistEntries(list, free);
+    isSetlistLengthLocked(list, free);
+    expect(list).toEqual(snapshot);
+  });
+
+  it("eine bereits laengere Liste bleibt fuer Premium-Kunden ohne ueberzaehlige Spiele", () => {
+    const list = listOf(FREE_SETLIST_LIMIT + 4);
+    expect(findExcessSetlistEntries(list, { isPremium: true, premiumUnknown: false })).toEqual([]);
+  });
+
+  it("nennt fuer eine laengere Liste nichts ueberzaehliges, solange der Premium-Status unbekannt ist", () => {
+    const list = listOf(FREE_SETLIST_LIMIT + 4);
+    expect(findExcessSetlistEntries(list, { isPremium: false, premiumUnknown: true })).toEqual([]);
   });
 });
 

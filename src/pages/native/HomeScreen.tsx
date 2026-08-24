@@ -23,6 +23,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { spring, stagger, staggerItem, blissBloom } from "@/lib/motion";
 import { FloatingOrbs } from "@/components/vfx/FloatingOrbs";
+import { GuestHomeView } from "@/components/native/guest/GuestHomeView";
 import { cn } from "@/lib/utils";
 
 function useTypewriter(text: string, speed = 40) {
@@ -69,6 +70,15 @@ export default function HomeScreen() {
       await refetch();
     },
   });
+
+  // Ein Gast hat keine Events, aber schon jetzt sehr viel zu tun (Event
+  // anlegen, spielen, Marktplatz durchsuchen) — die angemeldete Ansicht
+  // unten wuerde ihm nur eine leere Startseite zeigen. Alle Hooks oben
+  // laufen trotzdem unveraendert weiter (useMyEvents ist fuer Gaeste
+  // ohnehin per `enabled: !!user` deaktiviert).
+  if (!user) {
+    return <GuestHomeView />;
+  }
 
   return (
     <div

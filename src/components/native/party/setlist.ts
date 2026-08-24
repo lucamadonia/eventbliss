@@ -255,3 +255,44 @@ export function findLockedSetlistEntries(gameIds: string[], ctx: PremiumContext)
   if (ctx.premiumUnknown || ctx.isPremium) return [];
   return gameIds.filter((id) => isSetlistEntryLocked(id, ctx));
 }
+
+// ── Laengen-Grenze der Set-Liste ────────────────────────────────────
+
+/**
+ * Ein Abend fasst gratis drei Spiele. Der Party-Modus selbst bleibt fuer
+ * alle offen — er IST das Produkt, ihn zu sperren wuerde das Unterscheidungs-
+ * merkmal genau vor Unentschlossenen verstecken. Premium hebt stattdessen
+ * die Tiefe auf, nicht den Zugang.
+ */
+export const FREE_SETLIST_LIMIT = 3;
+
+/**
+ * Darf JETZT ein weiteres Spiel eingeplant werden?
+ *
+ * Symmetrisch zu `isSetlistEntryLocked`: `premiumUnknown` sperrt NIE, sonst
+ * flackert die Grenze beim Start, waehrend der Premium-Status noch laedt.
+ * Bewusst `>=` statt `>` — bei bereits drei geplanten Spielen waere das
+ * vierte das erste, das ueber die Gratis-Grenze hinausgeht.
+ */
+export function isSetlistLengthLocked(gameIds: string[], ctx: PremiumContext): boolean {
+  if (ctx.premiumUnknown || ctx.isPremium) return false;
+  return gameIds.length >= FREE_SETLIST_LIMIT;
+}
+
+/**
+ * Die Spiele einer BEREITS geplanten Liste, die ueber das Gratis-Limit
+ * hinausgehen — leer, wenn die Liste passt oder Premium/​unbekannter Status
+ * ohnehin keine Grenze kennt.
+ *
+ * WARUM ES DAS GIBT: `isSetlistLengthLocked` verhindert nur das Hinzufuegen
+ * eines WEITEREN Spiels. Eine schon bestehende laengere Liste — etwa aus
+ * einer bereits laufenden Party oder weil sie waehrend `premiumUnknown`
+ * zusammengestellt wurde — darf dadurch nicht rueckwirkend gekuerzt werden.
+ * Diese Funktion liest nur; gekuerzt wird ausschliesslich durch eine
+ * bewusste Nutzeraktion im Picker (siehe `handleStartWithLimit`).
+ */
+export function findExcessSetlistEntries(gameIds: string[], ctx: PremiumContext): string[] {
+  if (ctx.premiumUnknown || ctx.isPremium) return [];
+  if (gameIds.length <= FREE_SETLIST_LIMIT) return [];
+  return gameIds.slice(FREE_SETLIST_LIMIT);
+}

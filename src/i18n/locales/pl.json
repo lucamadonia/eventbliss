@@ -7612,6 +7612,13 @@
         "inappropriate": "Nieodpowiednia treść",
         "other": "Coś innego"
       }
+    },
+    "premium": {
+      "badge": "Premium",
+      "freeLeft": "{{n}} za darmo"
+    },
+    "multiplayer": {
+      "inviteEventGuests": "Zaproś gości"
     }
   },
   "native": {
@@ -7633,7 +7640,24 @@
       "findInspiration": "Znajdź inspirację",
       "findInspirationSub": "Motywy, gry i pomysły na Twoje wydarzenie",
       "marketplace": "Marketplace",
-      "marketplaceSub": "Usługi i doświadczenia"
+      "marketplaceSub": "Usługi i doświadczenia",
+      "guest": {
+        "eyebrow": "Witaj w EventBliss",
+        "heroTitle": "Zacznij od razu —",
+        "heroHighlight": "bez zbednych krokow.",
+        "heroSubtitle": "Utworz wydarzenie, zacznij grac lub znajdz uslugodawce — wszystko dziala od razu.",
+        "createEyebrow": "Nowe wydarzenie",
+        "createTitle": "Utworz wydarzenie",
+        "createSub": "Zapros gosci i zbierz odpowiedzi — wydarzenie jest gotowe, bez konta.",
+        "playEyebrow": "Zagraj od razu",
+        "playTitle": "Zagraj teraz",
+        "playSub": "21 gier imprezowych na telefon i telewizor — bez rejestracji.",
+        "marketplaceEyebrow": "Marketplace",
+        "marketplaceTitle": "Znajdz uslugodawce",
+        "marketplaceSub": "Fotografowie, lokale i wiecej dla Twojego wydarzenia.",
+        "noAccountNote": "Wszystko bez konta.",
+        "signInLink": "Zaloguj sie, jesli chcesz to zachowac."
+      }
     },
     "games": {
       "subtitle": "Gry Imprezowe",
@@ -7977,7 +8001,54 @@
       "slide4Subtitle": "Udostępnij link, zbierz potwierdzenia i informuj wszystkich na bieżąco.",
       "skip": "Pomiń",
       "next": "Dalej",
-      "getStarted": "Zaczynajmy"
+      "getStarted": "Zaczynajmy",
+      "slide5Title": "Tryb imprezy",
+      "slide5Subtitle": "Lista prawdziwych gier, punkty licza sie przez caly wieczor.",
+      "slide6Title": "Telewizor staje sie scena",
+      "slide6Subtitle": "Grupa wedruje na zywo nocna trasa — widza to wszyscy.",
+      "slide7Title": "Ceremonia",
+      "slide7Subtitle": "Wieczor konczy sie na podium — z punktami z calego wieczoru.",
+      "skipToStart": "Zacznij od razu",
+      "scene": {
+        "eventCard": {
+          "statusBadge": "Zaplanowane",
+          "title": "Wieczor panienski w Lizbonie",
+          "dateValue": "12–14 wrz.",
+          "location": "Lizbona",
+          "locationLabel": "Miejsce"
+        },
+        "survey": {
+          "heading": "Ankieta",
+          "question": "Jestes w ten weekend?",
+          "optionYes": "Tak! 🎉",
+          "optionMaybe": "Moze",
+          "optionNo": "Nie",
+          "respondedCount": "{{count}} z {{total}} odpowiedzialo"
+        },
+        "marketplace": {
+          "catPhoto": "Fotografia",
+          "catVenue": "Lokal",
+          "catCatering": "Catering"
+        },
+        "expenses": {
+          "totalLabel": "Lacznie",
+          "perPersonLabel": "Na osobe",
+          "settledLabel": "Wszystkie salda wyrownane",
+          "catTransport": "Transport",
+          "catFood": "Jedzenie",
+          "catFun": "Atrakcje",
+          "catDrinks": "Napoje"
+        },
+        "partyMode": {
+          "scoreLabel": "pkt"
+        },
+        "podium": {
+          "heading": "Klasyfikacja koncowa"
+        }
+      }
+    },
+    "splash": {
+      "tagline": "Wydarzenia, które się pamięta"
     }
   },
   "marketplace": {
@@ -9571,7 +9642,10 @@
       "setlistTooManyLabel": "Do {{n}} osób",
       "rulesOnTv": "Zasady są na telewizorze — przeczytajcie je razem.",
       "startNow": "Zaczynamy: {{game}}",
-      "rulesIntro": "Zasady przed każdą grą"
+      "rulesIntro": "Zasady przed każdą grą",
+      "lengthTitle": "Tylko {{n}} gry za darmo",
+      "lengthBody": "Plan darmowy pozwala na {{n}} gry na wieczor. Zaplanowaliscie juz {{count}} — z Premium dowolnie wiele.",
+      "lengthDropCta": "Zacznij tylko od pierwszych {{n}} gier"
     },
     "partyLobby": {
       "title": "Wieczór gier",

@@ -4,6 +4,7 @@ import { Users, Crown, Loader2, WifiOff, RefreshCw } from "lucide-react";
 import { useGameRoom, type RoomPlayer } from "./useGameRoom";
 import ConnectionStatus from "./ConnectionStatus";
 import type { OnlineGameProps } from "./OnlineGameTypes";
+import { useTranslation } from "react-i18next";
 
 const EP = {
   bg: "#0a0e14",
@@ -41,6 +42,7 @@ function FloatingPlayerList({
   isExpanded: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <motion.div
       layout
@@ -63,7 +65,7 @@ function FloatingPlayerList({
           className="text-[11px] font-semibold font-['Be_Vietnam_Pro']"
           style={{ color: "rgba(255,255,255,0.6)" }}
         >
-          {players.length} Spieler
+          {t('tv.playersCount', { count: players.length })}
         </span>
       </motion.button>
 
@@ -204,6 +206,7 @@ export default function OnlineGameWrapper({
   playerName,
   children,
 }: OnlineGameWrapperProps) {
+  const { t } = useTranslation();
   const {
     room,
     players,
