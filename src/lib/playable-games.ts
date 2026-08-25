@@ -1,5 +1,5 @@
 /**
- * playable-games.ts — single source of truth for the 21 fully integrated,
+ * playable-games.ts — single source of truth for the 22 fully integrated,
  * playable games. Shared by the native GamesScreen ("Play" tab), the Ideas
  * highlight shelf, and party mode so the registry never drifts apart.
  *
@@ -62,6 +62,11 @@ export const playableGames: PlayableGame[] = [
   { id: "pixeljagd",       nameKey: "native.gameNames.pixeljagd",       descKey: "native.gameDescs.pixeljagd",       image: "/images/games/pixeljagd.webp",       gradient: "from-sky-400 to-violet-500",       minPlayers: 2, maxPlayers:  8, tier: "free",    badge: "Neu", categories: ["quiz", "reaktion"] },
   { id: "closeenough",     nameKey: "native.gameNames.closeenough",     descKey: "native.gameDescs.closeenough",     image: "/images/games/closeenough.webp",     gradient: "from-amber-400 to-emerald-400",     minPlayers: 2, maxPlayers:  8, tier: "free",    badge: "Neu", categories: ["quiz", "party"] },
   { id: "pantomime",       nameKey: "native.gameNames.pantomime",       descKey: "native.gameDescs.pantomime",       image: "/images/games/pantomime.webp",       gradient: "from-amber-400 to-pink-400",        minPlayers: 4, maxPlayers: 16, tier: "free",    badge: "Neu", categories: ["party", "kreativ"] },
+  // GEBRAEU: Aushaengeschild, deshalb "free" statt hinter der Schranke.
+  // "reaktion" statt "kreativ"/"quiz", weil das Spiel keine Kreativ- oder
+  // Wissensaufgabe stellt, sondern staendige schnelle Zieh-Entscheidungen
+  // unter Risiko (Bust-Karten) verlangt.
+  { id: "brew",            nameKey: "native.gameNames.brew",            descKey: "native.gameDescs.brew",            image: "/images/games/brew.webp",            gradient: "from-[#FF9F2E] to-[#9B5DE5]",       minPlayers: 2, maxPlayers:  8, tier: "free",    badge: "Neu", categories: ["party", "reaktion"] },
 ];
 
 /** Set of playable game ids — handy for "is this idea card also playable?" checks. */

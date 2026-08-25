@@ -28,6 +28,7 @@ const GAME_NAMES: Record<string, string> = {
   pixeljagd: 'Pixeljagd',
   closeenough: 'Nah Dran',
   pantomime: 'Ohne Worte',
+  brew: 'Gebräu',
 };
 
 const GAME_ICONS: Record<string, string> = {
@@ -37,7 +38,7 @@ const GAME_ICONS: Record<string, string> = {
   'wahrheit-pflicht': '❤️', 'this-or-that': '↔️', 'wer-bin-ich': '❓',
   'emoji-raten': '😀', 'fake-or-fact': '🎲', 'story-builder': '📖',
   flaschendrehen: '🍾', ohrwurm: '🎵', pixeljagd: '🔍',
-  closeenough: '🎯', pantomime: '🎭',
+  closeenough: '🎯', pantomime: '🎭', brew: '🧪',
 };
 
 interface GameTitleBarProps {

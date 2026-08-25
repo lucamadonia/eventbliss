@@ -44,6 +44,7 @@ const GAME_MINUTES: Record<string, number> = {
   pixeljagd: 7,
   closeenough: 7,
   pantomime: 8,
+  brew: 10,
 };
 
 const DEFAULT_MINUTES = 8;

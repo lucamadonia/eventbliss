@@ -18,6 +18,7 @@ export const GAME_TIERS: GameTier[] = [
   { gameId: 'pixeljagd', tier: 'free' },
   { gameId: 'closeenough', tier: 'free' },
   { gameId: 'pantomime', tier: 'free' },
+  { gameId: 'brew', tier: 'free' },
 
   // PREMIUM GAMES (locked for free users after 2 rounds per day)
   { gameId: 'hochstapler', tier: 'premium', freeRoundsLimit: 2 },

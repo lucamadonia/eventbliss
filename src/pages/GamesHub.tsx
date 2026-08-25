@@ -21,7 +21,7 @@ import {
   ArrowLeft, Shuffle, Bell, Star, UserX, Type, Search as SearchIcon,
   HelpCircle, Palette, Languages, Hand, Dices, Pencil, Link,
   Heart, ArrowLeftRight, Smile, HelpCircle as QuestionMark, BookOpen,
-  Wine, Globe, X, Music2, Eye, Target, Drama,
+  Wine, Globe, X, Music2, Eye, Target, Drama, FlaskConical,
 } from "lucide-react";
 
 const GameLobby = lazy(() => import("@/games/multiplayer/GameLobby"));
@@ -48,6 +48,7 @@ const OhrwurmGame = lazy(() => import("@/games/ohrwurm/OhrwurmGame"));
 const PixeljagdGame = lazy(() => import("@/games/pixeljagd/PixeljagdGame"));
 const CloseEnoughGame = lazy(() => import("@/games/closeenough/CloseEnoughGame"));
 const PantomimeGame = lazy(() => import("@/games/pantomime/PantomimeGame"));
+const BrewGame = lazy(() => import("@/games/brew/BrewGame"));
 
 // Design tokens
 const C = {
@@ -102,6 +103,7 @@ const GAME_PRESENTATION: GamePresentation[] = [
   { id: "pixeljagd", icon: Eye, gradient: "from-[#38BDF8] to-[#A78BFA]", duration: "10-20", badge: "Neu", rating: 4.7, image: "/images/games/pixeljagd.webp" },
   { id: "closeenough", icon: Target, gradient: "from-[#FBBF24] to-[#34D399]", duration: "10-25", badge: "Neu", rating: 4.8, image: "/images/games/closeenough.webp" },
   { id: "pantomime", icon: Drama, gradient: "from-[#FBBF24] to-[#F472B6]", duration: "15-30", badge: "Neu", rating: 4.9, image: "/images/games/pantomime.webp" },
+  { id: "brew", icon: FlaskConical, gradient: "from-[#FF9F2E] to-[#9B5DE5]", duration: "10-20", badge: "Neu", rating: 4.9, image: "/images/games/brew.webp" },
 ];
 
 const PLAYABLE_BY_ID = new Map(playableGames.map((g) => [g.id, g]));
@@ -160,6 +162,7 @@ const GAME_CATEGORIES: Record<string, string[]> = {
   "pixeljagd": ["quiz", "reaktion"],
   "closeenough": ["quiz", "party"],
   "pantomime": ["party", "kreativ"],
+  "brew": ["party", "reaktion"],
 };
 
 const recentGames = [
@@ -514,6 +517,7 @@ const GamesHubInner = () => {
       if (gameId === "pixeljagd") return <PixeljagdGame online={onlineProps} />;
       if (gameId === "closeenough") return <CloseEnoughGame online={onlineProps} />;
       if (gameId === "pantomime") return <PantomimeGame online={onlineProps} />;
+      if (gameId === "brew") return <BrewGame online={onlineProps} />;
       return null;
     };
 
@@ -602,6 +606,7 @@ const GamesHubInner = () => {
   if (gameId === "pixeljagd") return <>{rulesOverlay}<Suspense fallback={GameFallback}><PixeljagdGame /></Suspense></>;
   if (gameId === "closeenough") return <>{rulesOverlay}<Suspense fallback={GameFallback}><CloseEnoughGame /></Suspense></>;
   if (gameId === "pantomime") return <>{rulesOverlay}<Suspense fallback={GameFallback}><PantomimeGame /></Suspense></>;
+  if (gameId === "brew") return <>{rulesOverlay}<Suspense fallback={GameFallback}><BrewGame /></Suspense></>;
 
   // Placeholder for not-yet-implemented games
   if (gameId) {

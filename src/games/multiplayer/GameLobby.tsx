@@ -46,6 +46,7 @@ const GAME_ICONS: Record<string, string> = {
   "pixeljagd": "🔍",
   "closeenough": "🎯",
   "pantomime": "🎭",
+  "brew": "🧪",
 };
 
 const GAME_LIST = playableGames.map((g) => ({

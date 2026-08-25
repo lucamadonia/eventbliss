@@ -38,6 +38,7 @@ const SETUP_FILE: Record<string, string> = {
   pixeljagd: "pixeljagd/PixeljagdGame.tsx",
   closeenough: "closeenough/CloseEnoughGame.tsx",
   pantomime: "pantomime/PantomimeGame.tsx",
+  brew: "brew/BrewGame.tsx",
 };
 
 /**
