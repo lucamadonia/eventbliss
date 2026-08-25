@@ -24,8 +24,20 @@ export interface IngredientIconProps {
   emojiSize?: string;
 }
 
+/**
+ * Welche Bilder in dieser Sitzung schon geladen wurden.
+ *
+ * WARUM MODULWEIT: `loaded` startet sonst bei JEDEM Mounten wieder bei false,
+ * und das Bild blendet 180 ms lang aus dem Emoji auf. Beim fliegenden Klon der
+ * Eingiess-Choreografie mountet dasselbe Bild ein zweites Mal — es wuerde also
+ * MITTEN IM FLUG ueberblenden. Nebenbei verschwindet damit dasselbe Flackern
+ * bei jedem Neuzeichnen des Tabletts.
+ */
+const seen = new Set<string>();
+
 export function IngredientIcon({ id, skin, className, style, emojiSize }: IngredientIconProps) {
-  const [loaded, setLoaded] = useState(false);
+  const src = ingredientImage(id, skin);
+  const [loaded, setLoaded] = useState(() => seen.has(src));
   const [failed, setFailed] = useState(false);
 
   return (
@@ -39,14 +51,14 @@ export function IngredientIcon({ id, skin, className, style, emojiSize }: Ingred
       </span>
       {!failed && (
         <img
-          src={ingredientImage(id, skin)}
+          src={src}
           alt=""
           aria-hidden
           decoding="async"
           draggable={false}
           className="absolute inset-0 w-full h-full object-contain select-none"
           style={{ opacity: loaded ? 1 : 0, transition: "opacity 180ms ease-out" }}
-          onLoad={() => setLoaded(true)}
+          onLoad={() => { seen.add(src); setLoaded(true); }}
           onError={() => setFailed(true)}
         />
       )}

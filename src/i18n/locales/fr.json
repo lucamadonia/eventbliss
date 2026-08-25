@@ -7575,7 +7575,7 @@
       "reshuffled": "La défausse est remélangée …",
       "pourIn": "Verser",
       "turnOf": "C'est à {{name}}",
-      "missingCount": "Il manque encore : {{count}}",
+      "missingCount": "Encore {{count}} ingrédients",
       "recipeComplete": "Recette complète !",
       "roundWinner": "{{name}} a fini de mixer en premier !",
       "bustTitleBrew": "Le chaudron déborde !",
@@ -7702,7 +7702,18 @@
           "l9": "Amber Whiskey Berry Sour",
           "l10": "Tequila Tropical Fizz"
         }
-      }
+      },
+      "hintDraw": "Pioche un ingrédient.",
+      "hintCounter": "Prends 1 carte sur le comptoir — ou pioche directement.",
+      "hintPour": "{{count}} correspondent à ta recette. Verser les fixe et met fin à ton tour.",
+      "hintNoHit": "Rien ne correspond. Continue à piocher — ou verse et termine ton tour.",
+      "hintWait": "C'est à {{name}}.",
+      "pourInCount": "Verser · fixer {{count}}",
+      "missingCount_one": "Plus qu'un seul ingrédient !",
+      "counterLabelBrew": "Étagère",
+      "counterLabelBar": "Comptoir",
+      "trayNote": "pas encore en sécurité",
+      "counterNote": "libre pour tous · 1 carte par tour"
     }
   },
   "native": {
@@ -8845,8 +8856,8 @@
       "title": "Breuvage",
       "tagline": "Tente ta chance. Une pioche de trop et tout le plateau s'envole.",
       "step1": "Chacun reçoit une recette face visible. Le premier à la compléter dans son verre remporte la manche.",
-      "step2": "À ton tour, tu peux prendre au maximum UNE carte sur le comptoir ouvert — celle-là est offerte.",
-      "step3": "Ensuite, pioche dans la pile face cachée aussi souvent que tu l'oses. Chaque ingrédient atterrit sur ton plateau.",
+      "step2": "À ton tour, tu peux prendre au maximum UNE carte sur le comptoir ouvert sans piocher. Elle atterrit elle aussi sur ton plateau — elle n'est donc pas encore en sécurité.",
+      "step3": "Ensuite, pioche dans la pile face cachée aussi souvent que tu l'oses. Environ une carte sur sept fait basculer le plateau.",
       "step4": "Si tu tires la carte fatale, tout le plateau disparaît — et tu écopes d'un gage.",
       "step5": "« Verser » fixe définitivement les ingrédients utiles dans ton verre et met fin à ton tour. Le reste part sur le comptoir, face visible.",
       "tip": "Ce que tu ne peux pas utiliser en versant, tu l'offres aux autres. Un tour anticipé vaut souvent mieux qu'un plateau plein."

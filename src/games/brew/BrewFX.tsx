@@ -49,6 +49,26 @@ function withAlpha(hex: string, alpha: number): string {
 }
 
 /**
+ * Die Kartenplatte einer Zutat — dunkler Grund, in der Zutatenfarbe getoent.
+ *
+ * WARUM ZENTRAL: Vier Stellen zeichnen dieselbe Karte — Tablett und Theke auf
+ * dem Telefon, beide Zonen auf dem Fernseher. Frueher hatte nur der Fernseher
+ * eine Toenung (`cardPlate` dort), das Telefon zeigte ein neutrales
+ * `bg-white/[0.06]`. Damit fehlte auf dem Telefon die Bruecke zwischen der
+ * Karte und der Fluessigkeitsschicht, zu der sie im Glas wird.
+ *
+ * Dunkle Platte statt Vollfarbe, weil vier Zutatenfarben nahezu weiss sind
+ * (#F3E7D3, #E8EEF5, #DCEFF7, #E3D18A) — auf ihnen verschwaende jedes dunkel
+ * gedachte Artwork.
+ */
+export function ingredientPlate(color: string): { background: string; boxShadow: string } {
+  return {
+    background: `linear-gradient(160deg, ${withAlpha(color, 0.34)}, ${withAlpha(color, 0.10)}), #120E1C`,
+    boxShadow: `inset 0 0 0 1px ${withAlpha(color, 0.55)}`,
+  };
+}
+
+/**
  * Feuert fuer `ms` Millisekunden `true`, sobald sich `trigger` aendert —
  * ausdruecklich NICHT beim ersten Rendern. Ohne die Sperre wuerden alle drei
  * Puls-Effekte schon beim Betreten des Spiels einmal abspielen, bevor
@@ -67,6 +87,67 @@ function useTriggerPulse(trigger: number, ms: number): boolean {
     return () => window.clearTimeout(id);
   }, [trigger, ms]);
   return on;
+}
+
+/**
+ * Die Taktzeiten des Eingiessens, in Millisekunden.
+ *
+ * EINE Tabelle fuer alles — nach dem Vorbild von `splashBeats` in motion.ts.
+ * `BrewGame` stellt danach seinen Timer, `Glass` seine Schichtverzoegerung und
+ * `PourFlight` seine Fluege. Zwei getrennte Zahlen waeren zwei Wahrheiten, und
+ * die eine liefe der anderen davon.
+ */
+export const POUR_BEATS = {
+  /** Passende heben sich, Ballast sinkt — die Sortierung wird sichtbar. */
+  sort: 140,
+  /** Standbild. HIER liegt die Erklaerung: man liest ab, was wohin geht. */
+  hold: 160,
+  /** Ab hier fliegt die erste passende Karte. */
+  depart: 300,
+  /** Versatz zwischen zwei passenden Karten. */
+  stagger: 70,
+  /** Ab fuenf passenden Karten enger takten, sonst wird der Guss zaeh. */
+  staggerTight: 45,
+  tightFrom: 5,
+  /** Reisezeit einer passenden Karte zum Glashals. */
+  flight: 420,
+  /** Dauer der Verfluessigung beim Aufprall. */
+  melt: 260,
+  /** Der Ballast startet spaeter — erst die Belohnung, dann die Folge. */
+  leftoverGap: 90,
+  leftoverStagger: 60,
+  leftoverFlight: 380,
+  /** Nachklang, bevor der Zug wechselt. */
+  settle: 220,
+  /** Bei Bewegungsarmut ersetzt eine lange Lesepause die ganze Reise. */
+  reducedHold: 700,
+} as const;
+
+/**
+ * Wie lange ein Guss insgesamt dauert.
+ *
+ * Einzige Quelle fuer den Zugwechsel-Timer und die Schichtverzoegerung im Glas.
+ * Der Zugwechsel MUSS warten: das grosse Glas gehoert der aktiven Person —
+ * wechselt der Zug sofort, wechselt mitten im Flug das Ziel, und die Karten
+ * flogen sichtbar ins Glas der naechsten Person.
+ */
+export function pourDuration(used: number, leftover: number, reduce = false): number {
+  if (reduce) return POUR_BEATS.reducedHold;
+  const stag = used >= POUR_BEATS.tightFrom ? POUR_BEATS.staggerTight : POUR_BEATS.stagger;
+  const upDone = used > 0
+    ? POUR_BEATS.depart + (used - 1) * stag + POUR_BEATS.flight + POUR_BEATS.melt
+    : POUR_BEATS.depart;
+  const downDone = leftover > 0
+    ? POUR_BEATS.depart + POUR_BEATS.leftoverGap
+      + (leftover - 1) * POUR_BEATS.leftoverStagger + POUR_BEATS.leftoverFlight
+    : 0;
+  return Math.max(upDone, downDone) + POUR_BEATS.settle;
+}
+
+/** Wann die i-te passende Karte im Glas ankommt — relativ zum Guss-Beginn. */
+export function arrivalAt(i: number, used: number): number {
+  const stag = used >= POUR_BEATS.tightFrom ? POUR_BEATS.staggerTight : POUR_BEATS.stagger;
+  return POUR_BEATS.depart + i * stag + POUR_BEATS.flight;
 }
 
 interface FxSkinProps {

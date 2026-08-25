@@ -8,8 +8,10 @@
  * Zwei getrennte Komponenten wären hier nur derselbe Kartenkörper zweimal
  * gewesen — die einzig echte Abweichung ist "reagiert die Karte auf Tippen".
  */
+import { useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ingredientKey, type IngredientId, type Skin } from "./brew-content";
+import { INGREDIENTS, ingredientKey, type IngredientId, type Skin } from "./brew-content";
+import { ingredientPlate } from "./BrewFX";
 import { IngredientIcon } from "./IngredientIcon";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -21,11 +23,39 @@ export interface TrayCardsProps {
   onTake?: (id: IngredientId, index: number) => void;
   /** Theke ist pro Zug nur einmal nutzbar — dann bleiben die Karten sichtbar, aber tot. */
   disabled?: boolean;
+  /**
+   * Welche Karte gebraucht wird — eine Angabe pro Karte, in Reihenfolge.
+   *
+   * WARUM: Die zentrale Frage des Spiels lautet "brauche ich das?", und sie war
+   * nirgends beantwortet — man musste 5-7 Rezeptsymbole gegen bis zu sieben
+   * Tablettkarten pixelweise abgleichen, ohne Namen und ohne Farbe.
+   *
+   * BEWUSST VON AUSSEN, nicht hier gerechnet: Auf dem TABLETT konkurrieren die
+   * Karten miteinander — eine doppelt gezogene Zutat ist beim zweiten Mal
+   * Ballast, und diese Regel gehoert `splitTray` in deck.ts, nicht einer
+   * zweiten Fassung in der Darstellung. Auf der THEKE gilt das Gegenteil: man
+   * nimmt nur eine Karte, also ist jede fuer sich zu beurteilen.
+   */
+  marks?: boolean[];
   emptyLabel?: string;
   className?: string;
+  /**
+   * Meldet laufend, wo die Karten gerade liegen.
+   *
+   * WARUM LAUFEND UND NICHT ERST BEIM EINGIESSEN: Danach ist die Reihe leer,
+   * ein Effekt misst also zu spaet. Und online klickt der Gast gar nicht — bei
+   * ihm leert derselbe Schnappschuss das Tablett, der den Guss ankuendigt. Nur
+   * ein staendig aktueller Zwischenspeicher kennt beide Faelle.
+   */
+  onGeometry?: (rects: DOMRect[]) => void;
 }
 
-export function TrayCards({ ids, skin, onTake, disabled, emptyLabel, className }: TrayCardsProps) {
+export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, className, onGeometry }: TrayCardsProps) {
+  const cardRefs = useRef<(HTMLElement | null)[]>([]);
+  useLayoutEffect(() => {
+    if (!onGeometry) return;
+    onGeometry(cardRefs.current.slice(0, ids.length).map((el) => el?.getBoundingClientRect() as DOMRect).filter(Boolean));
+  });
   const { t } = useTranslation();
   const reduce = useReducedMotion();
 
@@ -49,21 +79,31 @@ export function TrayCards({ ids, skin, onTake, disabled, emptyLabel, className }
       <AnimatePresence initial={false}>
         {ids.map((id, i) => {
           const name = t(ingredientKey(id, skin));
+          const wanted = marks?.[i] ?? false;
+          const plate = ingredientPlate(INGREDIENTS[id].color);
           const Comp: typeof motion.div | typeof motion.button = onTake ? motion.button : motion.div;
           return (
             <Comp
               key={`${id}-${i}`}
+              ref={(el: HTMLElement | null) => { cardRefs.current[i] = el; }}
               {...cardMotion}
               layout={!reduce}
               onClick={onTake ? () => onTake(id, i) : undefined}
               disabled={onTake ? disabled : undefined}
               title={name}
               className={cn(
-                "w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0",
-                "bg-white/[0.06] border border-white/10",
-                onTake && !disabled && "cursor-pointer active:scale-90 transition-transform hover:bg-white/10",
+                "relative w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0",
+                onTake && !disabled && "cursor-pointer active:scale-90 transition-transform",
                 onTake && disabled && "opacity-40 cursor-not-allowed",
+                // Ballast tritt zurueck, sobald ueberhaupt markiert wird.
+                marks && !wanted && "opacity-55 saturate-50",
               )}
+              style={{
+                ...plate,
+                ...(wanted
+                  ? { boxShadow: `inset 0 0 0 2px ${INGREDIENTS[id].color}, 0 0 14px -2px ${INGREDIENTS[id].color}` }
+                  : {}),
+              }}
               aria-label={name}
             >
               <IngredientIcon id={id} skin={skin} className="w-9 h-9" emojiSize="1.5rem" />

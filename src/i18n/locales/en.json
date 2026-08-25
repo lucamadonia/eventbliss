@@ -7422,7 +7422,7 @@
       "reshuffled": "Reshuffling the discard pile …",
       "pourIn": "Pour in",
       "turnOf": "{{name}}'s turn",
-      "missingCount": "Still missing: {{count}}",
+      "missingCount": "{{count}} ingredients to go",
       "recipeComplete": "Recipe complete!",
       "roundWinner": "{{name}} mixed it first!",
       "bustTitleBrew": "The cauldron boils over!",
@@ -7549,7 +7549,18 @@
           "l9": "Amber Whiskey Berry Sour",
           "l10": "Tequila Tropical Fizz"
         }
-      }
+      },
+      "hintDraw": "Draw an ingredient from the deck.",
+      "hintCounter": "Take 1 card from the counter — or draw straight away.",
+      "hintPour": "{{count}} match your recipe. Pouring locks them in and ends your turn.",
+      "hintNoHit": "None of these match. Keep drawing — or pour and end your turn.",
+      "hintWait": "{{name}}'s turn.",
+      "pourInCount": "Pour in · lock {{count}}",
+      "missingCount_one": "Just 1 ingredient left!",
+      "counterLabelBrew": "Supply shelf",
+      "counterLabelBar": "Counter",
+      "trayNote": "not safe yet",
+      "counterNote": "free for everyone · 1 card per turn"
     },
     "pantomime": {
       "title": "No Words",
@@ -8821,8 +8832,8 @@
       "title": "Brew",
       "tagline": "Push your luck. One draw too many and the whole tray is gone.",
       "step1": "Everyone gets a face-up recipe. First to complete it in their glass wins the round.",
-      "step2": "On your turn you may take at most ONE card from the open counter — that one is free.",
-      "step3": "After that, draw from the face-down deck as often as you dare. Every ingredient lands on your tray.",
+      "step2": "On your turn you may take at most ONE card from the open counter without drawing. It lands on your tray too — so it isn't safe yet.",
+      "step3": "After that, draw from the face-down deck as often as you dare. Roughly every seventh card tips the tray.",
       "step4": "Draw the bust card and the whole tray is gone — plus a penalty on top.",
       "step5": "“Pour in” locks every matching ingredient into your glass for good and ends your turn. The rest goes face-up onto the counter.",
       "tip": "Whatever you can't use when pouring, you hand to everyone else. An early turn is often worth more than a full tray."

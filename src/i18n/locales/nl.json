@@ -7625,7 +7625,7 @@
       "reshuffled": "De aflegstapel wordt geschud …",
       "pourIn": "Inschenken",
       "turnOf": "{{name}} is aan de beurt",
-      "missingCount": "Nog nodig: {{count}}",
+      "missingCount": "Nog {{count}} ingrediënten te gaan",
       "recipeComplete": "Recept compleet!",
       "roundWinner": "{{name}} was als eerste klaar met mixen!",
       "bustTitleBrew": "De ketel kookt over!",
@@ -7752,7 +7752,18 @@
           "l9": "Amber Whiskey Berry Sour",
           "l10": "Tequila Tropical Fizz"
         }
-      }
+      },
+      "hintDraw": "Trek een ingrediënt van de stapel.",
+      "hintCounter": "Pak 1 kaart van de toonbank — of trek meteen.",
+      "hintPour": "{{count}} passen in je recept. Inschenken zet ze vast en beëindigt je beurt.",
+      "hintNoHit": "Niets past. Doortrekken — of inschenken en je beurt beëindigen.",
+      "hintWait": "{{name}} is aan de beurt.",
+      "pourInCount": "Inschenken · {{count}} vastzetten",
+      "missingCount_one": "Nog maar 1 ingrediënt!",
+      "counterLabelBrew": "Voorraadrek",
+      "counterLabelBar": "Toonbank",
+      "trayNote": "nog niet veilig",
+      "counterNote": "vrij voor iedereen · 1 kaart per beurt"
     }
   },
   "native": {
@@ -8895,8 +8906,8 @@
       "title": "Brouwsel",
       "tagline": "Daag het geluk uit. Eén kaart te veel en je hele blad is weg.",
       "step1": "Iedereen krijgt een open recept. Wie het als eerste in zijn glas compleet heeft, wint de ronde.",
-      "step2": "Als je aan de beurt bent, mag je hooguit ÉÉN kaart van de open toonbank pakken — die is gratis.",
-      "step3": "Daarna trek je zo vaak van de gesloten stapel als je durft. Elk ingrediënt belandt op je blad.",
+      "step2": "Als je aan de beurt bent, mag je hooguit ÉÉN kaart van de open toonbank pakken zonder te trekken. Ook die belandt op je blad — veilig is hij dus nog niet.",
+      "step3": "Daarna trek je zo vaak van de gesloten stapel als je durft. Ongeveer elke zevende kaart doet je blad kantelen.",
       "step4": "Trek je de pechkaart, dan ben je je hele blad kwijt — plus een straf erbovenop.",
       "step5": "„Inschenken“ zet alle passende ingrediënten voorgoed in je glas en beëindigt je beurt. De rest gaat open op de toonbank.",
       "tip": "Wat je bij het inschenken niet kunt gebruiken, geef je aan de anderen. Vroeg stoppen is vaak meer waard dan een vol blad."

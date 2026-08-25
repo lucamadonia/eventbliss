@@ -25,6 +25,14 @@ import { PourStream, Splash, FinishSparkle } from "./BrewFX";
  * die drei Glas-Größen umgerechnet, statt eine vierte Größenskala einzuführen. */
 const FX_SCALE: Record<NonNullable<GlassProps["size"]>, number> = { sm: 0.42, md: 0.7, lg: 1.05 };
 
+/**
+ * Wo der Glashals liegt, als Anteil der Gesamthoehe.
+ *
+ * Exportiert, damit `PourFlight` sein Ziel nicht abschreiben muss — eine
+ * abgeschriebene Zahl laeuft der echten irgendwann davon.
+ */
+export const GLASS_MOUTH_T = 0.14;
+
 export interface GlassProps {
   /** Zutaten des Rezepts in der Reihenfolge, die die Gesamthöhe aufteilt. */
   recipeNeeds: IngredientId[];
@@ -34,6 +42,17 @@ export interface GlassProps {
   /** Für die kleine Wiederverwendung auf dem Fernseher. */
   size?: "sm" | "md" | "lg";
   className?: string;
+  /**
+   * Wie viele Millisekunden vergehen, bis die erste NEUE Schicht zu entstehen
+   * beginnt — die Zeit, die die fliegende Karte bis zum Glashals braucht.
+   *
+   * Kein Aufblitzen trotz Verzoegerung: `motion.path` hat bereits ein
+   * `initial` (am Boden zusammengefallen) und haelt es waehrend der Wartezeit.
+   * Die Schicht existiert also, ist aber flach, bis ihre Karte landet.
+   */
+  arrivalDelay?: number;
+  /** Versatz zwischen zwei neuen Schichten. */
+  layerStagger?: number;
 }
 
 const SIZES: Record<NonNullable<GlassProps["size"]>, { w: number; h: number }> = {
@@ -56,7 +75,7 @@ function layerStops(above: string | null, own: string, below: string | null) {
   return stops;
 }
 
-export function Glass({ recipeNeeds, filled, skin, size = "md", className }: GlassProps) {
+export function Glass({ recipeNeeds, filled, skin, size = "md", className, arrivalDelay = 0, layerStagger = 70 }: GlassProps) {
   const reduceMotion = useReducedMotion();
   const uid = useId();
   const { w, h } = SIZES[size];
@@ -64,7 +83,7 @@ export function Glass({ recipeNeeds, filled, skin, size = "md", className }: Gla
   const isBrew = skin === "brew";
   // Innenraum des Gefäßes — etwas Rand für Wandstärke und den Glanzrand oben.
   const pad = w * 0.1;
-  const innerTop = h * 0.14;
+  const innerTop = h * GLASS_MOUTH_T;
   const innerBottom = h * 0.94;
   const innerHeight = innerBottom - innerTop;
   const innerLeftTop = isBrew ? w * 0.34 : pad;
@@ -119,8 +138,11 @@ export function Glass({ recipeNeeds, filled, skin, size = "md", className }: Gla
   const [splashTrigger, setSplashTrigger] = useState(0);
   const [pouring, setPouring] = useState(false);
   const prevCountRef = useRef(filled.length);
+  /** Index der ersten Schicht, die bei der letzten Aenderung neu hinzukam. */
+  const [newFrom, setNewFrom] = useState(filled.length);
   useEffect(() => {
     if (filled.length > prevCountRef.current) {
+      setNewFrom(prevCountRef.current);
       setSplashTrigger((n) => n + 1);
       setPouring(true);
       const id = window.setTimeout(() => setPouring(false), 500);
@@ -199,23 +221,36 @@ export function Glass({ recipeNeeds, filled, skin, size = "md", className }: Gla
 
         {/* Füllung, an die Gefäßform geklippt. */}
         <g clipPath={`url(#clip-${uid})`}>
-          {layers.map((l) => {
+          {layers.map((l, i) => {
             const tTop = (l.yTop - innerTop) / innerHeight;
             const tBottom = (l.yBottom - innerTop) / innerHeight;
             const top = widthAt(tTop);
             const bottom = widthAt(tBottom);
             const targetD = `M ${top.left} ${l.yTop} L ${top.right} ${l.yTop} L ${bottom.right} ${l.yBottom} L ${bottom.left} ${l.yBottom} Z`;
+            // Schluessel NUR die Zutatenkennung, NICHT zusaetzlich yTop:
+            // `sortGlassOrder` zieht die Basiszutat nach vorn. Kommt sie
+            // nachtraeglich dazu, verschieben sich alle Indizes, yTop aendert
+            // sich — und mit `id + yTop` mounteten ALLE Schichten neu und
+            // liefen von unten wieder hoch, statt sauber nachzuruecken.
+            // Die Kennungen sind eindeutig: `missingFor` schliesst Vorhandenes
+            // aus, `splitTray` loescht Dubletten aus dem Bedarf.
             return reduceMotion ? (
-              <path key={l.id + l.yTop} d={targetD} fill={`url(#${l.gradId})`} />
+              <path key={l.id} d={targetD} fill={`url(#${l.gradId})`} />
             ) : (
               <motion.path
-                key={l.id + l.yTop}
+                key={l.id}
                 fill={`url(#${l.gradId})`}
                 initial={{ d: `M ${bottom.left} ${innerBottom} L ${bottom.right} ${innerBottom} L ${bottom.right} ${innerBottom} L ${bottom.left} ${innerBottom} Z` }}
                 animate={{ d: targetD }}
                 // Federung statt linearem Anstieg: der Pegel schwappt oben
                 // kurz nach, statt wie ein Ladebalken gleichmäßig zu steigen.
-                transition={{ type: "spring", stiffness: 140, damping: 12 }}
+                // Neue Schichten warten, bis ihre Karte oben angekommen ist.
+                transition={{
+                  type: "spring",
+                  stiffness: 140,
+                  damping: 12,
+                  delay: i >= newFrom ? (arrivalDelay + (i - newFrom) * layerStagger) / 1000 : 0,
+                }}
               />
             );
           })}

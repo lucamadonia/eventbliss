@@ -7422,7 +7422,7 @@
       "reshuffled": "Ablage wird neu gemischt …",
       "pourIn": "Eingießen",
       "turnOf": "{{name}} ist dran",
-      "missingCount": "Fehlen noch: {{count}}",
+      "missingCount": "Noch {{count}} Zutaten bis fertig",
       "recipeComplete": "Rezept komplett!",
       "roundWinner": "{{name}} hat zuerst fertig gemixt!",
       "bustTitleBrew": "Der Kessel kocht über!",
@@ -7549,7 +7549,18 @@
           "l9": "Amber Whiskey Berry Sour",
           "l10": "Tequila Tropical Fizz"
         }
-      }
+      },
+      "hintDraw": "Zieh eine Zutat vom Stapel.",
+      "hintCounter": "Nimm dir 1 Karte von der Theke — oder zieh direkt.",
+      "hintPour": "{{count}} passen in dein Rezept. Eingießen sichert sie und beendet den Zug.",
+      "hintNoHit": "Nichts davon passt. Weiterziehen — oder eingießen und den Zug beenden.",
+      "hintWait": "{{name}} ist dran.",
+      "pourInCount": "Eingießen · {{count}} sichern",
+      "missingCount_one": "Nur noch 1 Zutat!",
+      "counterLabelBrew": "Vorratsregal",
+      "counterLabelBar": "Theke",
+      "trayNote": "noch nicht sicher",
+      "counterNote": "frei für alle · 1 Karte pro Zug"
     },
     "pantomime": {
       "title": "Ohne Worte",
@@ -8821,8 +8832,8 @@
       "title": "Gebräu",
       "tagline": "Sammeln, bis es kippt. Ein Zug zu viel, und das Tablett ist weg.",
       "step1": "Jeder bekommt ein offen liegendes Rezept. Wer es zuerst vollständig im Glas hat, gewinnt die Runde.",
-      "step2": "Wer dran ist, darf sich höchstens EINE Karte von der offenen Theke nehmen — die ist geschenkt.",
-      "step3": "Danach so oft vom verdeckten Stapel ziehen, wie du dich traust. Jede Zutat landet auf dem Tablett.",
+      "step2": "Wer dran ist, darf sich höchstens EINE Karte von der offenen Theke nehmen, ohne dafür zu ziehen. Auch sie landet auf dem Tablett — sicher ist sie also noch nicht.",
+      "step3": "Danach so oft vom verdeckten Stapel ziehen, wie du dich traust. Etwa jede siebte Karte lässt das Tablett kippen.",
       "step4": "Kommt die Unglückskarte, ist das ganze Tablett weg — und es gibt eine Strafe obendrauf.",
       "step5": "„Eingießen“ sichert alle passenden Zutaten für immer im Glas und beendet deinen Zug. Der Rest landet offen auf der Theke.",
       "tip": "Was du beim Eingießen nicht brauchst, schenkst du den anderen. Ein früher Zug ist oft mehr wert als ein volles Tablett."

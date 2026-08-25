@@ -52,6 +52,10 @@ const REQUIRED = [
   'counterEmpty', 'trayEmpty', 'drawFromDeck', 'reshuffled', 'pourIn', 'turnOf',
   'missingCount', 'bustTitleBrew', 'bustTitleBar', 'bustBodyBrew', 'bustBodyBar',
   'bustContinue', 'penaltyIntro', 'sipPenalty',
+  // Etappe 1 — Verstaendlichkeit: die Statuszeile und die Zonenrollen.
+  'hintDraw', 'hintCounter', 'hintPour', 'hintNoHit', 'hintWait',
+  'pourInCount', 'missingCount_one',
+  'counterLabelBrew', 'counterLabelBar', 'trayNote', 'counterNote',
 ];
 
 describe('GEBRAEU — Sprachbestand', () => {

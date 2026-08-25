@@ -7575,7 +7575,7 @@
       "reshuffled": "Gli scarti vengono rimescolati …",
       "pourIn": "Versa",
       "turnOf": "Tocca a {{name}}",
-      "missingCount": "Mancano ancora: {{count}}",
+      "missingCount": "Mancano ancora {{count}} ingredienti",
       "recipeComplete": "Ricetta completa!",
       "roundWinner": "{{name}} ha finito di mixare per primo!",
       "bustTitleBrew": "Il calderone trabocca!",
@@ -7702,7 +7702,18 @@
           "l9": "Amber Whiskey Berry Sour",
           "l10": "Tequila Tropical Fizz"
         }
-      }
+      },
+      "hintDraw": "Pesca un ingrediente dal mazzo.",
+      "hintCounter": "Prendi 1 carta dal bancone — oppure pesca subito.",
+      "hintPour": "{{count}} servono alla tua ricetta. Versare le mette al sicuro e chiude il turno.",
+      "hintNoHit": "Nessuna serve. Continua a pescare — oppure versa e chiudi il turno.",
+      "hintWait": "Tocca a {{name}}.",
+      "pourInCount": "Versa · metti al sicuro {{count}}",
+      "missingCount_one": "Manca solo 1 ingrediente!",
+      "counterLabelBrew": "Scaffale",
+      "counterLabelBar": "Bancone",
+      "trayNote": "non ancora al sicuro",
+      "counterNote": "libero per tutti · 1 carta a turno"
     }
   },
   "native": {
@@ -8845,8 +8856,8 @@
       "title": "Intruglio",
       "tagline": "Sfida la sorte. Una pescata di troppo e il vassoio sparisce.",
       "step1": "Ognuno riceve una ricetta scoperta. Chi la completa per primo nel proprio bicchiere vince il round.",
-      "step2": "Al tuo turno puoi prendere al massimo UNA carta dal bancone scoperto — quella è in regalo.",
-      "step3": "Poi pesca dal mazzo coperto quante volte osi. Ogni ingrediente finisce sul tuo vassoio.",
+      "step2": "Al tuo turno puoi prendere al massimo UNA carta dal bancone scoperto senza pescare. Finisce anch'essa sul vassoio, quindi non è ancora al sicuro.",
+      "step3": "Poi pesca dal mazzo coperto quante volte osi. Circa una carta su sette rovescia il vassoio.",
       "step4": "Se esce la carta sfortunata, perdi tutto il vassoio — e in più ti becchi una penitenza.",
       "step5": "«Versa» fissa per sempre nel bicchiere gli ingredienti che ti servono e chiude il turno. Il resto va scoperto sul bancone.",
       "tip": "Quello che non ti serve quando versi lo regali agli altri. Un turno anticipato vale spesso più di un vassoio pieno."

@@ -225,6 +225,54 @@ export function missingFor(recipe: DealtRecipe, glass: IngredientId[]): Ingredie
   return recipe.needs.filter((id) => !have.has(id));
 }
 
+/**
+ * Das Tablett beim Eingiessen aufteilen: Was ins Glas wandert, was auf die Theke.
+ *
+ * WARUM HIER UND NICHT IN BrewGame: Das ist DIE Regel des Spiels — passende
+ * Zutaten sind fuer immer sicher, der Rest wird zum Geschenk an alle anderen.
+ * Als Schleife mitten in einem Klick-Handler war sie weder testbar noch
+ * wiederverwendbar, und genau sie muss spaeter die Eingiess-Animation steuern.
+ *
+ * `needed` schrumpft waehrend des Durchlaufs. Ohne das `delete` zaehlte eine
+ * doppelt gezogene Zutat zweimal als gebraucht — die zweite waere im Glas
+ * wertlos und wuerde allen anderen fehlen, statt auf der Theke zu landen.
+ */
+export function splitTray(
+  recipe: DealtRecipe,
+  glass: IngredientId[],
+  tray: IngredientId[],
+): { used: IngredientId[]; leftover: IngredientId[] } {
+  const needed = new Set(missingFor(recipe, glass));
+  const used: IngredientId[] = [];
+  const leftover: IngredientId[] = [];
+  for (const id of tray) {
+    if (needed.has(id)) { used.push(id); needed.delete(id); }
+    else leftover.push(id);
+  }
+  return { used, leftover };
+}
+
+/**
+ * Wessen Rezept unter "Dein Rezept" stehen muss.
+ *
+ * WARUM ES DIESE FUNKTION GIBT: Hier stand frueher schlicht der aktive
+ * Spieler. Offline stimmt das — das Telefon wandert, "ich" bin immer der, der
+ * dran ist. ONLINE WAR ES FALSCH: jeder Gast sah das Rezept der aktiven
+ * Person, ueberschrieben mit "Dein Rezept", und damit war der Bezugspunkt des
+ * ganzen Bildschirms verkehrt.
+ *
+ * Als reine Funktion, weil der Fall ohne zwei echte Geraete nicht im Browser
+ * nachzustellen ist — pruefbar ist er trotzdem.
+ */
+export function ownPlayer<T extends { id: string }>(
+  players: T[],
+  myId: string | null,
+  active: T | undefined,
+): T | undefined {
+  if (!myId) return active;
+  return players.find((p) => p.id === myId) ?? active;
+}
+
 /** Ist das Rezept mit diesem Glasinhalt fertig? */
 export function isComplete(recipe: DealtRecipe, glass: IngredientId[]): boolean {
   return missingFor(recipe, glass).length === 0;

@@ -7649,7 +7649,7 @@
       "reshuffled": "Odrzucone karty są tasowane …",
       "pourIn": "Nalej",
       "turnOf": "Kolej na {{name}}",
-      "missingCount": "Brakuje jeszcze: {{count}}",
+      "missingCount": "Zostało {{count}} składników",
       "recipeComplete": "Przepis gotowy!",
       "roundWinner": "{{name}} zmiksował(a) jako pierwsza osoba!",
       "bustTitleBrew": "Kocioł wykipiał!",
@@ -7776,7 +7776,18 @@
           "l9": "Amber Whiskey Berry Sour",
           "l10": "Tequila Tropical Fizz"
         }
-      }
+      },
+      "hintDraw": "Dobierz składnik ze stosu.",
+      "hintCounter": "Weź 1 kartę z baru — albo od razu dobieraj.",
+      "hintPour": "{{count}} pasuje do twojego przepisu. Nalanie zabezpiecza je i kończy turę.",
+      "hintNoHit": "Nic nie pasuje. Dobieraj dalej — albo nalej i zakończ turę.",
+      "hintWait": "Kolej na {{name}}.",
+      "pourInCount": "Nalej · zabezpiecz {{count}}",
+      "missingCount_one": "Został tylko 1 składnik!",
+      "counterLabelBrew": "Regał",
+      "counterLabelBar": "Bar",
+      "trayNote": "jeszcze nie bezpieczne",
+      "counterNote": "wolne dla wszystkich · 1 karta na turę"
     }
   },
   "native": {
@@ -8919,8 +8930,8 @@
       "title": "Mikstura",
       "tagline": "Kuś los. Jedno dobranie za dużo i cała taca przepada.",
       "step1": "Każdy dostaje odkryty przepis. Kto pierwszy skompletuje go w swojej szklance, wygrywa rundę.",
-      "step2": "W swojej turze możesz wziąć najwyżej JEDNĄ kartę z odkrytego baru — ta jest za darmo.",
-      "step3": "Potem dobieraj z zakrytego stosu tyle razy, ile masz odwagi. Każdy składnik ląduje na twojej tacy.",
+      "step2": "W swojej turze możesz wziąć najwyżej JEDNĄ kartę z odkrytego baru, nie dobierając. Ona też ląduje na tacy — więc nie jest jeszcze bezpieczna.",
+      "step3": "Potem dobieraj z zakrytego stosu tyle razy, ile masz odwagi. Mniej więcej co siódma karta przewraca tacę.",
       "step4": "Gdy trafisz na pechową kartę, tracisz całą tacę — a do tego dostajesz karę.",
       "step5": "„Nalej” zamyka pasujące składniki w szklance na zawsze i kończy turę. Reszta ląduje odkryta w barze.",
       "tip": "Czego nie wykorzystasz przy nalewaniu, oddajesz innym. Wcześniejsza tura bywa warta więcej niż pełna taca."

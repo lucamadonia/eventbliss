@@ -46,6 +46,8 @@ import { ResultScreen } from "../ui/ResultScreen";
 import type { OnlineGameProps } from "../multiplayer/OnlineGameTypes";
 import { Glass } from "./Glass";
 import { TrayCards } from "./TrayCards";
+import { ingredientPlate, POUR_BEATS, pourDuration } from "./BrewFX";
+import { PourFlight, type PourPlan } from "./PourFlight";
 import { IngredientIcon } from "./IngredientIcon";
 import { TrayTip } from "./BrewFX";
 import { BrewAtmosphere } from "./BrewAtmosphere";
@@ -58,7 +60,7 @@ import {
   type RecipeLength,
   type Skin,
 } from "./brew-content";
-import { dealRecipes, buildDeck, insertBusts, drawCard, missingFor, isComplete, type DeckCard, type DealtRecipe } from "./deck";
+import { dealRecipes, buildDeck, insertBusts, drawCard, missingFor, isComplete, splitTray, ownPlayer, type DeckCard, type DealtRecipe } from "./deck";
 import { scoreFor } from "./scoring";
 
 const THEME = {
@@ -75,6 +77,12 @@ const THEME = {
 const ACCENT: Record<Skin, string> = { brew: "#8B5CF6", bar: "#F59E0B" };
 
 type Phase = "setup" | "playing" | "gameOver";
+
+/**
+ * Wie lange das fertige Glas stehen bleibt, bevor der Ergebnisschirm kommt.
+ * Deckt die Schichtfederung (~600 ms) plus `FinishSparkle` ab.
+ */
+const FINISH_HOLD_MS = 1400;
 
 interface PlayerState {
   id: string;
@@ -162,6 +170,32 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const lastBustRef = useRef<number | null>(null);
   const lastPenaltyRef = useRef<number | null>(null);
   const lastReshuffleRef = useRef<number | null>(null);
+  // --- Eingiess-Choreografie ---------------------------------------------
+  // Die WAHRHEIT wechselt sofort (Glas, Theke, Tablett), nur die DARSTELLUNG
+  // laeuft nach — dasselbe Muster wie beim Bust, wo `TrayTip` 700 ms lang
+  // nachspielt, was schon nicht mehr da ist. Ein verlorener Schnappschuss kann
+  // damit nie das Spiel verklemmen.
+  const [pourPlan, setPourPlan] = useState<PourPlan | null>(null);
+  const [pourSeq, setPourSeq] = useState(0);
+  /** Das Tablett bleibt kurz stehen, damit man die Sortierung ablesen kann. */
+  const [pourFreeze, setPourFreeze] = useState<IngredientId[] | null>(null);
+  const lastPourRef = useRef<number | null>(null);
+  /** Letzte gezeichnete Kartenpositionen — nach dem Guss ist die Reihe leer. */
+  const trayGeoRef = useRef<DOMRect[]>([]);
+  const glassBoxRef = useRef<HTMLDivElement | null>(null);
+  const counterBoxRef = useRef<HTMLDivElement | null>(null);
+  // Stabil, damit der Flug-Effekt nicht bei jedem Rendern neu anlaeuft.
+  const readGlassBox = useCallback(() => glassBoxRef.current?.getBoundingClientRect() ?? null, []);
+  const readCounterBox = useCallback(() => counterBoxRef.current?.getBoundingClientRect() ?? null, []);
+  /** Alle laufenden Guss-Timer, damit das Verlassen sie abraeumt. */
+  const pourTimersRef = useRef<number[]>([]);
+
+  /** Traegt den verzoegerten Wechsel zum Ergebnisschirm — beim Verlassen loeschen. */
+  const finishTimerRef = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (finishTimerRef.current) window.clearTimeout(finishTimerRef.current);
+    pourTimersRef.current.forEach((id) => window.clearTimeout(id));
+  }, []);
 
   const penaltyTasks = useMemo(() => {
     const raw = t("games.brew.penaltyTasks", { returnObjects: true });
@@ -171,6 +205,15 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const active = players[activeIdx] as PlayerState | undefined;
   /** Offline immer wahr — online nur, wenn dieses Geraet tatsaechlich dran ist. */
   const isMyTurn = !isOnline || (!!myId && active?.id === myId);
+  /**
+   * Wessen Rezept unter "Dein Rezept" steht.
+   *
+   * Offline wandert das Telefon, "ich" bin also immer der aktive Spieler.
+   * ONLINE NICHT: dort sass hier frueher ebenfalls `active`, und damit sah
+   * JEDER Gast das Rezept der aktiven Person, ueberschrieben mit "Dein
+   * Rezept" — der Bezugspunkt des ganzen Bildschirms war falsch.
+   */
+  const me = ownPlayer(players, isOnline ? myId : null, active) ?? active;
 
   // Zurück abfangen: der native Zurück-Button liegt über dem Pfeil im Kopf.
   useBackGuard(() => {
@@ -203,6 +246,9 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     setCounterTaken(false);
     setPenalty(null);
     setWinnerId(null);
+    // Ein noch laufender Sieges-Timer wuerde die frische Runde sofort wieder
+    // auf den Ergebnisschirm werfen.
+    if (finishTimerRef.current) { window.clearTimeout(finishTimerRef.current); finishTimerRef.current = null; }
     // Das Gewand des Gastgebers gilt ab jetzt fuer alle.
     setRoundSkin(localSkin);
     // Zaehler und Wachposten zuruecksetzen, sonst blockiert ein alter Stand die
@@ -213,6 +259,13 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     lastBustRef.current = null;
     lastPenaltyRef.current = null;
     lastReshuffleRef.current = null;
+    // NICHT null: der Wachposten deutet null als "noch nie gesehen" und wuerde
+    // den ersten Guss jeder Runde verschlucken. Der Zaehler faengt bei 0 an,
+    // also ist 0 der richtige Startwert.
+    lastPourRef.current = 0;
+    setPourPlan(null);
+    setPourFreeze(null);
+    setPourSeq(0);
     setSipDisclaimer(null);
     setPhase("playing");
   }, [localSkin]);
@@ -241,7 +294,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   }, [skin, penaltyTasks]);
 
   const doDraw = useCallback(() => {
-    if (phase !== "playing" || penalty) return;
+    if (phase !== "playing" || penalty || winnerId || pourPlan) return;
     const result = drawCard(drawPile, discardPile);
     // Laut Regeln darf das nie vorkommen (jede Zutat steckt immer irgendwo),
     // aber `drawCard` ist eine reine Funktion und wirft dafür nicht — also
@@ -278,10 +331,10 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       window.setTimeout(() => setToast((cur) => (cur === msg ? null : cur)), 1600);
       setReshuffleSeq((n) => n + 1);
     }
-  }, [phase, penalty, drawPile, discardPile, tray, reduceMotion, haptics, triggerPenalty, t]);
+  }, [phase, penalty, winnerId, pourPlan, drawPile, discardPile, tray, reduceMotion, haptics, triggerPenalty, t]);
 
   const doTakeFromCounter = useCallback((id: IngredientId, index: number) => {
-    if (phase !== "playing" || penalty || counterTaken) return;
+    if (phase !== "playing" || penalty || counterTaken || winnerId || pourPlan) return;
     // Der Index kommt online aus dem LETZTEN Schnappschuss des Gastes. Hat
     // zwischenzeitlich jemand eingegossen, haengt `leftover` an der Theke und
     // der Index zeigt auf eine andere Karte. Deshalb gegen die Kennung pruefen
@@ -293,17 +346,11 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     setCounter((prev) => prev.filter((_, i) => i !== at));
     setTray((prev) => [...prev, id]);
     setCounterTaken(true);
-  }, [phase, penalty, counterTaken, counter, haptics]);
+  }, [phase, penalty, winnerId, pourPlan, counterTaken, counter, haptics]);
 
   const doPourIn = useCallback(() => {
-    if (phase !== "playing" || penalty || tray.length === 0 || !active) return;
-    const needed = new Set(missingFor(active.recipe, active.glass));
-    const used: IngredientId[] = [];
-    const leftover: IngredientId[] = [];
-    for (const id of tray) {
-      if (needed.has(id)) { used.push(id); needed.delete(id); }
-      else leftover.push(id);
-    }
+    if (phase !== "playing" || penalty || tray.length === 0 || !active || winnerId || pourPlan) return;
+    const { used, leftover } = splitTray(active.recipe, active.glass, tray);
     const newGlass = sortGlassOrder([...active.glass, ...used]);
     const done = isComplete(active.recipe, newGlass);
     const { score } = scoreFor({ name: active.name, recipe: active.recipe, glass: newGlass });
@@ -313,14 +360,32 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     setPlayers(updated);
     setCounter((prev) => [...prev, ...leftover]);
     setTray([]);
-    void haptics.success();
+    // Das Tablett bleibt fuer die Sortierphase sichtbar stehen — genau hier
+    // liest man ab, WAS ins Glas geht und was auf die Theke.
+    setPourFreeze(tray);
+    setPourPlan({ pid: active.id, used, leftover });
+    setPourSeq((n) => n + 1);
+    void haptics.light();
     if (done) {
+      // Sieger sofort merken, Ergebnisschirm aber SPAETER: vorher uebernahm
+      // `ResultScreen` im selben Augenblick, in dem die letzte Schicht ins Glas
+      // lief — den schoensten Moment des Spiels sah dadurch nie jemand.
+      // `winnerId` sperrt derweil jede weitere Aktion (siehe die Waechter oben).
       setWinnerId(active.id);
-      setPhase("gameOver");
+      finishTimerRef.current = window.setTimeout(
+        () => setPhase("gameOver"),
+        pourDuration(used.length, leftover.length, !!reduceMotion) + FINISH_HOLD_MS,
+      );
     } else {
-      advanceTurn();
+      // Der Zugwechsel MUSS warten: das grosse Glas gehoert der aktiven Person.
+      // Wechselt der Zug sofort, wechselt mitten im Flug das Ziel — die Karten
+      // floegen sichtbar ins Glas der naechsten Person.
+      pourTimersRef.current.push(window.setTimeout(
+        advanceTurn,
+        pourDuration(used.length, leftover.length, !!reduceMotion),
+      ));
     }
-  }, [phase, penalty, tray, active, players, activeIdx, advanceTurn, haptics]);
+  }, [phase, penalty, winnerId, pourPlan, tray, active, players, activeIdx, advanceTurn, haptics, reduceMotion]);
 
   const confirmPenalty = useCallback(() => {
     setPenalty(null);
@@ -407,6 +472,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         penaltySeq,
         bustTrayCount,
         bustSeq,
+        pourPlan,
+        pourSeq,
         reshuffleSeq,
         winnerId,
         players: players.map((p) => ({
@@ -416,7 +483,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       })),
     });
   }, [online, isHost, phase, skin, ingredientCount, activeIdx, counter, tray, counterTaken,
-      drawPile, discardPile, penalty, penaltySeq, bustTrayCount, bustSeq, reshuffleSeq, winnerId, players]);
+      drawPile, discardPile, penalty, penaltySeq, bustTrayCount, bustSeq, pourPlan, pourSeq, reshuffleSeq, winnerId, players]);
 
   // Gast uebernimmt den Zustand.
   useEffect(() => {
@@ -436,6 +503,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       setPenaltySeq((s.penaltySeq as number) ?? 0);
       setBustTrayCount((s.bustTrayCount as number) ?? 0);
       setBustSeq((s.bustSeq as number) ?? 0);
+      setPourPlan((s.pourPlan as PourPlan | null) ?? null);
+      setPourSeq((s.pourSeq as number) ?? 0);
       setReshuffleSeq((s.reshuffleSeq as number) ?? 0);
       setWinnerId((s.winnerId as string | null) ?? null);
       setPlayers((s.players as PlayerState[]) ?? []);
@@ -470,6 +539,38 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     setSipDisclaimer(drinkingMode.recordDrink());
   }, [penaltySeq, isMyTurn, penalty, drinkingMode]);
 
+  /**
+   * Der Guss laeuft bei ALLEN Geraeten aus dem Zustand, nicht aus dem Klick.
+   *
+   * Der Gast tippt nie selbst auf "Eingiessen" — bei ihm leert derselbe
+   * Schnappschuss das Tablett, der den Guss ankuendigt. Und wie bei `bustSeq`
+   * gilt: Beim ERSTEN Schnappschuss wird der Stand nur gemerkt, nicht
+   * abgespielt, sonst spielt ein spaet verbundener Gast einen Guss aus der
+   * Vergangenheit nach.
+   */
+  useEffect(() => {
+    if (lastPourRef.current === null) { lastPourRef.current = pourSeq; return; }
+    if (pourSeq <= lastPourRef.current) return;
+    lastPourRef.current = pourSeq;
+    // Das Tablett des Gastes ist durch den Schnappschuss schon leer — die
+    // eingefrorene Reihe hier nachzureichen ginge nicht, weil er die Karten nie
+    // gesehen hat. Er bekommt die Fluege, nicht die Sortierphase.
+    const plan = pourPlan;
+    if (!plan) return;
+    // KEIN clearPourTimers() hier: doPourIn hat den Zugwechsel-Timer soeben
+    // gesetzt, und der Wachposten laeuft danach — er wuerde ihn mit loeschen.
+    pourTimersRef.current.push(window.setTimeout(
+      () => setPourFreeze(null),
+      // Ohne Flug traegt allein die Lesepause die Erklaerung — sie waechst
+      // deshalb von 300 auf 700 ms, statt einfach zu entfallen.
+      reduceMotion ? POUR_BEATS.reducedHold : POUR_BEATS.depart,
+    ));
+    pourTimersRef.current.push(window.setTimeout(() => {
+      setPourPlan(null);
+      void haptics.success();
+    }, pourDuration(plan.used.length, plan.leftover.length, !!reduceMotion)));
+  }, [pourSeq, pourPlan, haptics, reduceMotion]);
+
   useEffect(() => {
     if (!isOnline || isHost) return;
     if (lastReshuffleRef.current === null) { lastReshuffleRef.current = reshuffleSeq; return; }
@@ -482,6 +583,45 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
 
   // Zutatenbilder des gewaehlten Gewands vorwaermen, sobald die Runde laeuft.
   useEffect(() => { if (phase === "playing") preloadIngredients(skin); }, [phase, skin]);
+
+  /**
+   * Was die aktive Person noch braucht — Grundlage der Kartenmarkierung, und
+   * wie viele Tablettkarten wirklich ins Glas wandern wuerden.
+   *
+   * MUSS OBERHALB DER FRUEHEN `return`s STEHEN. Standen sie weiter unten neben
+   * dem Rendern, liefen sie im Aufbau- und Ergebnisbildschirm nicht mit — React
+   * zaehlte unterschiedlich viele Hooks pro Rendern und warf
+   * "Rendered more hooks than during the previous render".
+   */
+  const activeNeeds = useMemo(
+    () => (active ? new Set(missingFor(active.recipe, active.glass)) : new Set<IngredientId>()),
+    [active],
+  );
+  /**
+   * Welche Tablettkarte wirklich ins Glas wandert — EINE Quelle, `splitTray`.
+   * Damit koennen Markierung, Knopfbeschriftung und das tatsaechliche
+   * Eingiessen nie auseinanderlaufen.
+   */
+  const trayMarks = useMemo(() => {
+    if (!active) return [] as boolean[];
+    const { used } = splitTray(active.recipe, active.glass, tray);
+    const rest = [...used];
+    return tray.map((id) => {
+      const at = rest.indexOf(id);
+      if (at < 0) return false;
+      rest.splice(at, 1);
+      return true;
+    });
+  }, [active, tray]);
+  const trayHits = trayMarks.filter(Boolean).length;
+  /**
+   * Theke: jede Karte fuer sich beurteilen. Man nimmt nur EINE, sie
+   * konkurrieren also nicht — anders als auf dem Tablett.
+   */
+  const counterMarks = useMemo(
+    () => counter.map((id) => activeNeeds.has(id)),
+    [counter, activeNeeds],
+  );
 
   // --- TV / Party --------------------------------------------------------
   const tvPayload = useMemo(() => ({
@@ -498,11 +638,13 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     // wuerde den NAECHSTEN Bust verschlucken.
     bustSeq,
     bustTrayCount,
+    pourSeq,
+    pourPlan,
     players: players.map((p) => ({
       id: p.id, name: p.name, color: p.color, score: p.score,
       glass: p.glass, recipeId: p.recipe.id, recipeNeeds: p.recipe.needs,
     })),
-  }), [phase, skin, activeIdx, active, winnerId, counter, tray, cardsRemaining, bustSeq, bustTrayCount, players]);
+  }), [phase, skin, activeIdx, active, winnerId, counter, tray, cardsRemaining, bustSeq, bustTrayCount, pourSeq, pourPlan, players]);
 
   // Online sendet NUR der Gastgeber an den Fernseher — acht Geraete haetten
   // sonst acht widersprüchliche Stroeme. Das ist ein anderer Kanal als
@@ -557,7 +699,25 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   }
 
   const accent = ACCENT[skin];
-  const glassProgress = missingFor(active.recipe, active.glass).length;
+  const glassProgress = missingFor(me.recipe, me.glass).length;
+
+  /**
+   * Eine Zeile, die den Zustand liest.
+   *
+   * Vorher sperrten drei Bedingungen die Knoepfe kommentarlos, und nichts sagte
+   * einem Erstspieler, was der richtige erste Zug ist.
+   */
+  /** Solange nichts Brauchbares auf dem Tablett liegt, fuehrt "Ziehen". */
+  const drawLeads = trayHits === 0;
+  const hint = !isMyTurn
+    ? t("games.brew.hintWait", { name: active.name })
+    : tray.length === 0
+      ? (counter.length > 0 && !counterTaken
+          ? t("games.brew.hintCounter")
+          : t("games.brew.hintDraw"))
+      : trayHits > 0
+        ? t("games.brew.hintPour", { count: trayHits })
+        : t("games.brew.hintNoHit");
 
   return (
     <div className="min-h-[100dvh] relative" style={{ background: THEME.bg, color: THEME.text }}>
@@ -589,7 +749,16 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
               className="rounded-2xl p-1"
               style={{ border: i === activeIdx ? `2px solid ${p.color}` : "2px solid transparent" }}
             >
-              <Glass recipeNeeds={p.recipe.needs} filled={p.glass} skin={skin} size="sm" />
+              <Glass
+                recipeNeeds={p.recipe.needs}
+                filled={p.glass}
+                skin={skin}
+                size="sm"
+                // Dieselbe Verzoegerung wie das grosse Glas — sonst fuellt sich
+                // das Miniglas derselben Person 720 ms zu frueh.
+                arrivalDelay={pourPlan?.pid === p.id ? POUR_BEATS.depart + POUR_BEATS.flight : 0}
+                layerStagger={POUR_BEATS.stagger}
+              />
             </div>
             <span className="text-[10px] font-bold mt-1 truncate max-w-[64px]" style={{ color: p.color }}>
               {p.name}
@@ -601,27 +770,46 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       {/* Aktive Person: Rezept + Glas */}
       <div className="relative z-10 px-4 mt-3 rounded-3xl p-4" style={{ background: THEME.elevated }}>
         <p className="text-[11px] font-black uppercase tracking-wide mb-2" style={{ color: THEME.dim }}>
-          {t("games.brew.yourRecipe")} · {t(recipeKey(active.recipe.id, skin))}
+          {t("games.brew.yourRecipe")} · {t(recipeKey(me.recipe.id, skin))}
         </p>
         <div className="flex items-center gap-4">
           <div className="flex flex-wrap gap-2 flex-1">
-            {active.recipe.needs.map((id) => {
-              const owned = active.glass.includes(id);
+            {me.recipe.needs.map((id) => {
+              const owned = me.glass.includes(id);
               return (
                 <div
                   key={id}
                   title={t(ingredientKey(id, skin))}
-                  className={cn("w-11 h-11 rounded-2xl flex items-center justify-center text-xl border transition-opacity", !owned && "opacity-35 grayscale")}
-                  style={{ background: THEME.surface, borderColor: owned ? INGREDIENTS[id].color : "transparent" }}
+                  className={cn(
+                    "w-11 h-11 rounded-2xl flex items-center justify-center text-xl transition-opacity",
+                    // Ein fehlender Slot soll wie ein LOCH aussehen, nicht wie
+                    // eine ausgegraute Karte — sonst wirkt das eigene Rezept
+                    // zu Rundenbeginn wie das blasseste Element des Bildschirms.
+                    !owned && "opacity-60",
+                  )}
+                  style={owned
+                    ? { ...ingredientPlate(INGREDIENTS[id].color) }
+                    : { border: `1px dashed ${INGREDIENTS[id].color}66`, background: "transparent" }}
                 >
-                  {/* opacity-35 grayscale am Elternteil wirkt ueber CSS auch auf
-                      das <img> — "fehlende Zutat ist ausgegraut" bleibt also. */}
                   <IngredientIcon id={id} skin={skin} className="w-8 h-8" emojiSize="1.25rem" />
                 </div>
               );
             })}
           </div>
-          <Glass recipeNeeds={active.recipe.needs} filled={active.glass} skin={skin} size="md" />
+          {/* `inline-flex`, damit der Kasten das Glas UMSCHLIESST. Als
+              schlichter Block nahm er die volle Zeilenbreite ein — gemessen
+              wurde dann die Mitte eines unsichtbaren Balkens, und die Karten
+              flogen 7532 Pixel weit aus dem Bild. */}
+          <div ref={glassBoxRef} className="inline-flex shrink-0">
+            <Glass
+              recipeNeeds={me.recipe.needs}
+              filled={me.glass}
+              skin={skin}
+              size="md"
+              arrivalDelay={pourPlan?.pid === me.id ? POUR_BEATS.depart + POUR_BEATS.flight : 0}
+              layerStagger={POUR_BEATS.stagger}
+            />
+          </div>
         </div>
         {glassProgress > 0 && (
           <p className="text-[11px] mt-2" style={{ color: THEME.dim }}>
@@ -630,55 +818,126 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         )}
       </div>
 
-      {/* Tablett */}
+      {/* Tablett — bewusst als eigener Behaelter mit warnfarbenem Rand.
+          Vorher sahen Rezept, Tablett und Theke aus wie dreimal dieselbe
+          Kartenreihe, obwohl sie Ziel, Risiko und Angebot bedeuten. */}
       <div className="relative z-10 px-4 mt-4">
-        <p className="text-[11px] font-black uppercase tracking-wide mb-2" style={{ color: THEME.dim }}>
+        <p className="text-[11px] font-black uppercase tracking-wide mb-2 flex items-baseline gap-2" style={{ color: THEME.dim }}>
           {t("games.brew.trayLabel")}
+          <span className="font-bold normal-case tracking-normal" style={{ color: THEME.bad }}>
+            {t("games.brew.trayNote")}
+          </span>
         </p>
-        <div className="relative">
-          <TrayCards ids={tray} skin={skin} emptyLabel={t("games.brew.trayEmpty")} />
+        <div className="relative rounded-2xl p-2" style={{ border: `1px dashed ${THEME.bad}55`, background: "rgba(251,113,133,0.04)" }}>
+          <TrayCards
+            // Waehrend der Sortierphase bleibt die alte Reihe stehen — die
+            // Wahrheit ist bereits gewechselt, nur das Bild wartet.
+            ids={pourFreeze ?? tray}
+            skin={skin}
+            marks={pourFreeze && pourPlan
+              ? pourFreeze.map((_, i) => i < pourPlan.used.length)
+              : trayMarks}
+            onGeometry={(r) => { trayGeoRef.current = r; }}
+            emptyLabel={t("games.brew.trayEmpty")}
+          />
           {/* Bust: das Tablett kippt sichtbar, bevor die Strafe erscheint. */}
           <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-4">
             <TrayTip cards={bustTrayCount} trigger={bustTrigger} skin={skin} size={0.7} />
           </div>
+
         </div>
       </div>
 
       {/* Theke */}
       <div className="relative z-10 px-4 mt-4">
-        <p className="text-[11px] font-black uppercase tracking-wide mb-2" style={{ color: THEME.dim }}>
-          {t("games.brew.counterLabel")}
+        <p className="text-[11px] font-black uppercase tracking-wide mb-2 flex items-baseline gap-2" style={{ color: THEME.dim }}>
+          {skin === "brew" ? t("games.brew.counterLabelBrew") : t("games.brew.counterLabelBar")}
+          <span className="font-bold normal-case tracking-normal" style={{ color: THEME.dim }}>
+            {t("games.brew.counterNote")}
+          </span>
         </p>
+        <div ref={counterBoxRef} className="min-h-[3.5rem]">
         <TrayCards
           ids={counter}
           skin={skin}
           onTake={(id, index) => act("take", { id, index }, () => doTakeFromCounter(id, index))}
           disabled={counterTaken || !isMyTurn}
+          marks={counterMarks}
           emptyLabel={t("games.brew.counterEmpty")}
         />
+        </div>
         {counterTaken && counter.length > 0 && (
           <p className="text-[11px] mt-1" style={{ color: THEME.dim }}>{t("games.brew.counterUsed")}</p>
         )}
       </div>
 
       {/* Aktionen */}
-      <div className="relative z-10 px-4 mt-5 pb-10 flex gap-2">
-        <button
-          onClick={() => act("draw", {}, doDraw)}
-          disabled={cardsRemaining === 0 || !isMyTurn || !!penalty}
-          className="flex-1 h-14 rounded-2xl font-black disabled:opacity-40"
-          style={{ background: THEME.surface, color: THEME.text, border: `1px solid ${accent}55` }}
-        >
-          {cardsRemaining === 0 ? t("games.brew.deckEmpty") : t("games.brew.drawFromDeck")}
-        </button>
-        <button
-          onClick={() => act("pour", {}, doPourIn)}
-          disabled={tray.length === 0 || !isMyTurn}
-          className="flex-1 h-14 rounded-2xl font-black disabled:opacity-40"
-          style={{ background: accent, color: THEME.bg }}
-        >
-          {t("games.brew.pourIn")}
-        </button>
+      <div className="relative z-10 px-4 mt-5 pb-10">
+        {/* Sagt, was jetzt dran ist — und warum ein Knopf gesperrt ist. */}
+        <p className="text-[12px] mb-2 text-center min-h-[1.2em]" style={{ color: THEME.dim }}>{hint}</p>
+        <div className="flex gap-2">
+          {/*
+            Die Rangfolge folgt dem Zustand, nicht der Reihenfolge im Code.
+            Vorher war "Eingiessen" als einziger Knopf farbig gefuellt — und zu
+            Zugbeginn gesperrt, waehrend "Ziehen", der einzige erlaubte Zug, wie
+            ein Nebenknopf aussah. Die Oberflaeche zeigte also am staerksten auf
+            das, was man gerade nicht tun kann.
+          */}
+          <motion.button
+            onClick={() => act("draw", {}, doDraw)}
+            disabled={cardsRemaining === 0 || !isMyTurn || !!penalty}
+            className="relative flex-1 h-14 rounded-2xl font-black disabled:opacity-40"
+            style={
+              drawLeads
+                ? { background: accent, color: THEME.bg }
+                : { background: THEME.surface, color: THEME.text, border: `1px solid ${accent}55` }
+            }
+            // Der Einsatz wird spuerbar, nicht berechenbar: je voller das
+            // Tablett, desto unruhiger der Knopf. Die Kartenzahl steht daneben,
+            // die Bewegung traegt also keine Information allein.
+            // NUR `scale`. Frueher pulsierte hier zusaetzlich `boxShadow` — eine
+            // Farb-Eigenschaft, die der Browser JEDES BILD neu zeichnet, und das
+            // in einer Endlosschleife ueber die ganze Partie. Der Hauptthread
+            // haengt dadurch sekundenlang: gemessen feuerte ein 60-ms-Zeitgeber
+            // nur noch einmal pro Sekunde, und die Eingiess-Choreografie lief
+            // gar nicht erst an (die Flugkarte trug bei 520 ms noch
+            // `transform: none`). Der Schein liegt jetzt auf einer eigenen
+            // Ebene und wird ueber `opacity` geblendet — beides im Compositor.
+            animate={
+              reduceMotion || tray.length === 0 || !isMyTurn
+                ? { scale: 1 }
+                : { scale: [1, 1 + Math.min(tray.length, 6) * 0.004, 1] }
+            }
+            transition={{ duration: Math.max(0.7, 1.8 - tray.length * 0.16), repeat: Infinity, ease: "easeInOut" }}
+          >
+            {!reduceMotion && tray.length > 0 && isMyTurn && (
+              <motion.span
+                aria-hidden
+                className="absolute inset-0 rounded-2xl pointer-events-none"
+                style={{ boxShadow: `0 0 ${8 + Math.min(tray.length, 6) * 4}px 0 ${accent}` }}
+                animate={{ opacity: [0, tray.length > 3 ? 0.4 : 0.2, 0] }}
+                transition={{ duration: Math.max(0.7, 1.8 - tray.length * 0.16), repeat: Infinity, ease: "easeInOut" }}
+              />
+            )}
+            <span className="relative">
+              {cardsRemaining === 0 ? t("games.brew.deckEmpty") : t("games.brew.drawFromDeck")}
+            </span>
+          </motion.button>
+          <button
+            onClick={() => act("pour", {}, doPourIn)}
+            disabled={tray.length === 0 || !isMyTurn}
+            className="relative flex-1 h-14 rounded-2xl font-black disabled:opacity-40"
+            style={
+              drawLeads
+                ? { background: THEME.surface, color: THEME.text, border: `1px solid ${accent}55` }
+                : { background: accent, color: THEME.bg }
+            }
+          >
+            {trayHits > 0
+              ? t("games.brew.pourInCount", { count: trayHits })
+              : t("games.brew.pourIn")}
+          </button>
+        </div>
       </div>
 
       {/* Punktestand */}
@@ -689,6 +948,23 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
           </div>
         ))}
       </div>
+
+      {/* Der Guss liegt BEWUSST hier, als stabiles letztes Kind des
+          Spielbildschirms — nicht im Tablett-Block. Dort wechselt `TrayCards`
+          waehrend des Gusses zwischen Kartenreihe und Leertext, und ein
+          Geschwister, das seine Form aendert, riskiert das Neumounten der
+          Nachbarn mitten in der Animation.
+          Bewegungsarmut: kein Flug. Die Regel bleibt trotzdem sichtbar, weil
+          die eingefrorene Reihe laenger steht und markiert ist. */}
+      {!reduceMotion && (
+        <PourFlight
+          plan={pourPlan}
+          from={trayGeoRef.current}
+          glassBox={readGlassBox}
+          counterBox={readCounterBox}
+          skin={skin}
+        />
+      )}
 
       {/* Bust / Strafe */}
       <AnimatePresence>

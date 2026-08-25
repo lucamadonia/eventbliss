@@ -7,6 +7,8 @@ import {
   insertBusts,
   isComplete,
   missingFor,
+  splitTray,
+  ownPlayer,
   type DealtRecipe,
   type DeckCard,
   type Rng,
@@ -355,5 +357,67 @@ describe("missingFor / isComplete", () => {
   it("ein zweites Eis bringt niemanden weiter", () => {
     expect(missingFor(recipe, ["base1", "base1", "sour"])).toEqual(["cold"]);
     expect(isComplete(recipe, ["base1", "base1", "sour"])).toBe(false);
+  });
+});
+
+describe("splitTray — was ins Glas wandert und was auf die Theke", () => {
+  const recipe = { id: "t1", needs: ["base1", "sour", "herb"] as IngredientId[] };
+
+  it("nimmt nur, was das Rezept noch braucht", () => {
+    const r = splitTray(recipe, [], ["sour", "cold", "base1"]);
+    expect(r.used).toEqual(["sour", "base1"]);
+    expect(r.leftover).toEqual(["cold"]);
+  });
+
+  it("zaehlt eine Dublette nur EINMAL als gebraucht", () => {
+    // Der eigentliche Grund fuer das `needed.delete`: die zweite `sour` waere
+    // im Glas wertlos und muss den anderen auf der Theke zugutekommen.
+    const r = splitTray(recipe, [], ["sour", "sour"]);
+    expect(r.used).toEqual(["sour"]);
+    expect(r.leftover).toEqual(["sour"]);
+  });
+
+  it("laesst Bereits-Gesichertes auf der Theke", () => {
+    const r = splitTray(recipe, ["base1"], ["base1", "herb"]);
+    expect(r.used).toEqual(["herb"]);
+    expect(r.leftover).toEqual(["base1"]);
+  });
+
+  it("leeres Tablett ergibt zwei leere Listen", () => {
+    const r = splitTray(recipe, [], []);
+    expect(r.used).toEqual([]);
+    expect(r.leftover).toEqual([]);
+  });
+
+  it("erhaelt jede Karte — nichts geht verloren, nichts entsteht", () => {
+    const tray: IngredientId[] = ["sour", "cold", "sour", "base1", "bitter"];
+    const r = splitTray(recipe, [], tray);
+    expect([...r.used, ...r.leftover].sort()).toEqual([...tray].sort());
+  });
+});
+
+describe("ownPlayer — wessen Rezept unter 'Dein Rezept' steht", () => {
+  const a = { id: "a" }, b = { id: "b" }, c = { id: "c" };
+  const players = [a, b, c];
+
+  it("offline: immer die aktive Person (das Telefon wandert)", () => {
+    expect(ownPlayer(players, null, b)).toBe(b);
+    expect(ownPlayer(players, null, c)).toBe(c);
+  });
+
+  it("online: mein eigenes, auch wenn jemand anderes dran ist", () => {
+    // Genau der Fehler, der hier behoben wurde: vorher kam `b` zurueck.
+    expect(ownPlayer(players, "a", b)).toBe(a);
+    expect(ownPlayer(players, "c", b)).toBe(c);
+  });
+
+  it("online und selbst dran: dieselbe Person", () => {
+    expect(ownPlayer(players, "b", b)).toBe(b);
+  });
+
+  it("unbekannte eigene Kennung faellt auf die aktive Person zurueck", () => {
+    // Kann bei einem unvollstaendigen Schnappschuss auftreten — dann lieber
+    // ein fremdes Rezept als ein leerer Bildschirm.
+    expect(ownPlayer(players, "weg", b)).toBe(b);
   });
 });

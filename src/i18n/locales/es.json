@@ -7575,7 +7575,7 @@
       "reshuffled": "Se remezcla el descarte …",
       "pourIn": "Servir",
       "turnOf": "Turno de {{name}}",
-      "missingCount": "Aún faltan: {{count}}",
+      "missingCount": "Faltan {{count}} ingredientes",
       "recipeComplete": "¡Receta completa!",
       "roundWinner": "¡{{name}} ha terminado de mezclar primero!",
       "bustTitleBrew": "¡El caldero se desborda!",
@@ -7702,7 +7702,18 @@
           "l9": "Amber Whiskey Berry Sour",
           "l10": "Tequila Tropical Fizz"
         }
-      }
+      },
+      "hintDraw": "Roba un ingrediente del mazo.",
+      "hintCounter": "Coge 1 carta de la barra — o roba directamente.",
+      "hintPour": "{{count}} encajan en tu receta. Servir las asegura y termina tu turno.",
+      "hintNoHit": "Ninguna encaja. Sigue robando — o sirve y termina tu turno.",
+      "hintWait": "Turno de {{name}}.",
+      "pourInCount": "Servir · asegurar {{count}}",
+      "missingCount_one": "¡Solo queda 1 ingrediente!",
+      "counterLabelBrew": "Estantería",
+      "counterLabelBar": "Barra",
+      "trayNote": "todavía no está a salvo",
+      "counterNote": "libre para todos · 1 carta por turno"
     }
   },
   "native": {
@@ -8878,8 +8889,8 @@
       "title": "Brebaje",
       "tagline": "Tienta a la suerte. Una carta de más y toda la bandeja se va.",
       "step1": "Cada persona recibe una receta boca arriba. Quien la complete primero en su vaso gana la ronda.",
-      "step2": "En tu turno puedes coger como máximo UNA carta de la barra abierta — esa es gratis.",
-      "step3": "Después roba del mazo tapado tantas veces como te atrevas. Cada ingrediente cae en tu bandeja.",
+      "step2": "En tu turno puedes coger como máximo UNA carta de la barra abierta sin robar. También cae en tu bandeja, así que todavía no está a salvo.",
+      "step3": "Después roba del mazo tapado tantas veces como te atrevas. Aproximadamente una de cada siete cartas vuelca la bandeja.",
       "step4": "Si sale la carta fatídica, pierdes toda la bandeja — y encima te llevas un castigo.",
       "step5": "«Servir» fija para siempre los ingredientes que te sirven en el vaso y termina tu turno. El resto va boca arriba a la barra.",
       "tip": "Lo que no te sirve al servir se lo regalas a los demás. Un turno temprano suele valer más que una bandeja llena."

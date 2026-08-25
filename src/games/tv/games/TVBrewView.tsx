@@ -28,6 +28,7 @@ import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Glass } from '@/games/brew/Glass';
 import { IngredientIcon } from '@/games/brew/IngredientIcon';
+import { ingredientPlate } from '@/games/brew/BrewFX';
 import { BrewAtmosphere } from '@/games/brew/BrewAtmosphere';
 import {
   INGREDIENTS,
@@ -37,13 +38,14 @@ import {
   type IngredientId,
   type Skin,
 } from '@/games/brew/brew-content';
-import { tvPanel, tvType, tvActiveRing, tvRgb } from '../tv-tokens';
+import { tvPanel, tvType, tvActiveRing } from '../tv-tokens';
 
 interface Props {
   gameState: Record<string, unknown>;
 }
 
 interface BrewPlayerState {
+  id: string;
   name: string;
   score: number;
   glass: string[];
@@ -72,21 +74,9 @@ function safeColor(id: string): string {
   return isKnownIngredient(id) ? INGREDIENTS[id].color : '#2a2438';
 }
 
-/**
- * Kartenplatte statt Vollfarbe.
- *
- * Vier Zutatenfarben sind nahezu weiss (#F3E7D3, #E8EEF5, #DCEFF7, #E3D18A).
- * Auf denen verschwindet jedes dunkel gedachte Motiv — und die 32 Artworks
- * koennen nicht gleichzeitig auf Weiss UND auf Dunkel lesen, ohne dass die
- * Serie auseinanderfaellt. Die Zutatenfarbe bleibt Bedeutungstraegerin (Toenung
- * plus Ring), die Lichtsituation ist fuer alle Karten dieselbe.
- */
-function cardPlate(id: string): { background: string; boxShadow: string } {
-  const c = tvRgb(safeColor(id));
-  return {
-    background: `linear-gradient(160deg, rgba(${c},0.34), rgba(${c},0.10)), #120E1C`,
-    boxShadow: `inset 0 0 0 1px rgba(${c},0.55)`,
-  };
+/** Kartenplatte — Definition liegt in BrewFX, damit Telefon und TV nie auseinanderlaufen. */
+function cardPlate(id: string) {
+  return ingredientPlate(safeColor(id));
 }
 
 /**
@@ -116,6 +106,8 @@ export default function TVBrewView({ gameState }: Props) {
   const tray = useMemo(() => toStringArray(s.tray), [s.tray]);
   const deckCount = Number(s.deckCount ?? 0);
   const bustSeq = Number(s.bustSeq ?? 0);
+  const pourSeq = Number(s.pourSeq ?? 0);
+  const pourPlan = (s.pourPlan ?? null) as { pid?: string; used?: string[]; leftover?: string[] } | null;
 
   const players = useMemo<BrewPlayerState[]>(() => {
     const raw = Array.isArray(s.players) ? s.players : [];
@@ -124,6 +116,9 @@ export default function TVBrewView({ gameState }: Props) {
       const glass = toStringArray(q.glass);
       const recipe = toStringArray(q.recipeNeeds);
       return {
+        // Die Kennung ist die Wahrheit, nicht die Position: ein
+        // zusammengefasster Schnappschuss koennte beides gleichzeitig tragen.
+        id: String(q.id ?? ''),
         name: String(q.name ?? ''),
         score: Number(q.score ?? 0),
         glass,
@@ -174,6 +169,30 @@ export default function TVBrewView({ gameState }: Props) {
   // Die 16 Bilder des Gewands still vorladen — auf dem Fernseher waere ein
   // nachploppendes Icon aus drei Metern sichtbar.
   useEffect(() => { preloadIngredients(skin); }, [skin]);
+
+  /**
+   * Der Guss auf dem Fernseher: KEIN Bogenflug.
+   *
+   * Auf drei Metern ist eine 48-Pixel-Karte auf Bogenbahn quer ueber 55 Zoll
+   * nicht lesbar — man saehe einen Streifen und wuesste nicht, woher er kam.
+   * Lesbar sind Farbe, Groesse und Gruppierung. Also SPALTET sich die
+   * Tablettzeile sichtbar: Passendes nach links und groesser, Ballast nach
+   * rechts und entsaettigt. Dieselbe `null`-Wache wie beim Bust, damit ein
+   * frisch verbundener Fernseher keinen Guss aus der Vergangenheit nachspielt.
+   */
+  const prevPour = useRef<number | null>(null);
+  const [showPour, setShowPour] = useState(false);
+  useEffect(() => {
+    if (prevPour.current === null) { prevPour.current = pourSeq; return undefined; }
+    if (pourSeq > prevPour.current) {
+      prevPour.current = pourSeq;
+      setShowPour(true);
+      const id = setTimeout(() => setShowPour(false), reduce ? 300 : 900);
+      return () => clearTimeout(id);
+    }
+    prevPour.current = pourSeq;
+    return undefined;
+  }, [pourSeq, reduce]);
 
   const cols = Math.max(1, players.length);
 
@@ -249,7 +268,57 @@ export default function TVBrewView({ gameState }: Props) {
         </p>
         <div className="mt-[0.6vh] flex items-center" style={{ minHeight: '7vh' }}>
           <AnimatePresence mode="wait">
-            {showBust ? (
+            {showPour && pourPlan ? (
+              // Die Spaltung IST die Erklaerung: links geht ins Glas, rechts
+              // auf die Theke. Grosse Formen, klare Richtung, keine Bogenbahn.
+              <motion.div key="pour" className="flex items-center gap-[3vw] w-full justify-center">
+                <motion.div
+                  className="flex items-center gap-[1vh]"
+                  initial={reduce ? false : { x: 0, scale: 1 }}
+                  animate={reduce ? {} : { x: '-2vw', scale: 1.25 }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                >
+                  {(pourPlan.used ?? []).slice(0, 7).map((id, i) => (
+                    <div
+                      key={`u${i}-${id}`}
+                      className="flex items-center justify-center rounded-xl shrink-0"
+                      style={{
+                        width: 'clamp(2.4rem,3.6vw,3.4rem)',
+                        height: 'clamp(2.4rem,3.6vw,3.4rem)',
+                        ...cardPlate(id),
+                        outline: '2px solid rgba(255,255,255,0.85)',
+                      }}
+                    >
+                      {isKnownIngredient(id)
+                        ? <IngredientIcon id={id} skin={skin} style={{ width: '62%', height: '62%' }} emojiSize="clamp(1.1rem,1.8vw,1.6rem)" />
+                        : <span style={{ fontSize: 'clamp(1.1rem,1.8vw,1.6rem)' }}>{safeEmoji(id, skin)}</span>}
+                    </div>
+                  ))}
+                </motion.div>
+                <motion.div
+                  className="flex items-center gap-[1vh]"
+                  initial={reduce ? false : { x: 0, opacity: 1 }}
+                  animate={reduce ? { opacity: 0.45 } : { x: '2vw', opacity: 0.45, filter: 'saturate(0.4)' }}
+                  transition={{ duration: 0.4, ease: 'easeOut' }}
+                >
+                  {(pourPlan.leftover ?? []).slice(0, 7).map((id, i) => (
+                    <div
+                      key={`l${i}-${id}`}
+                      className="flex items-center justify-center rounded-xl shrink-0"
+                      style={{
+                        width: 'clamp(2rem,3vw,2.8rem)',
+                        height: 'clamp(2rem,3vw,2.8rem)',
+                        ...cardPlate(id),
+                      }}
+                    >
+                      {isKnownIngredient(id)
+                        ? <IngredientIcon id={id} skin={skin} style={{ width: '62%', height: '62%' }} emojiSize="clamp(1rem,1.6vw,1.4rem)" />
+                        : <span style={{ fontSize: 'clamp(1rem,1.6vw,1.4rem)' }}>{safeEmoji(id, skin)}</span>}
+                    </div>
+                  ))}
+                </motion.div>
+              </motion.div>
+            ) : showBust ? (
               <motion.div
                 key="bust"
                 className="flex items-center gap-[1.4vh]"
@@ -372,7 +441,16 @@ export default function TVBrewView({ gameState }: Props) {
                     Typ-Zusicherung statt Filtern (Filtern wuerde die
                     Rezeptlaenge verfaelschen). `filled` dagegen wird direkt
                     nachgeschlagen, deshalb ist `knownGlass` dort Pflicht. */}
-                <Glass recipeNeeds={p.recipe as IngredientId[]} filled={withBaseFirst(knownGlass)} skin={skin} size="sm" className="mt-[0.3vh]" />
+                <Glass
+                  recipeNeeds={p.recipe as IngredientId[]}
+                  filled={withBaseFirst(knownGlass)}
+                  skin={skin}
+                  size="sm"
+                  className="mt-[0.3vh]"
+                  // Nur die giessende Spalte wartet — die anderen Glaeser
+                  // duerfen sich nicht grundlos verzoegert fuellen.
+                  arrivalDelay={showPour && pourPlan?.pid === p.id ? 500 : 0}
+                />
 
                 <span className="font-mono tabular-nums truncate w-full text-center" style={{ fontSize: tvType.micro, color: '#b3a8c9' }}>
                   {p.score}

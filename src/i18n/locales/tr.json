@@ -7625,7 +7625,7 @@
       "reshuffled": "Iskarta destesi karılıyor …",
       "pourIn": "Doldur",
       "turnOf": "Sıra {{name}} oyuncusunda",
-      "missingCount": "Hâlâ eksik: {{count}}",
+      "missingCount": "{{count}} malzeme kaldı",
       "recipeComplete": "Tarif tamam!",
       "roundWinner": "{{name}} karışımı ilk bitiren oldu!",
       "bustTitleBrew": "Kazan taştı!",
@@ -7752,7 +7752,18 @@
           "l9": "Amber Whiskey Berry Sour",
           "l10": "Tequila Tropical Fizz"
         }
-      }
+      },
+      "hintDraw": "Desteden bir malzeme çek.",
+      "hintCounter": "Tezgâhtan 1 kart al — ya da hemen çek.",
+      "hintPour": "{{count}} tarifine uyuyor. Doldurmak onları güvene alır ve sıranı bitirir.",
+      "hintNoHit": "Hiçbiri uymuyor. Çekmeye devam et — ya da doldur ve sıranı bitir.",
+      "hintWait": "Sıra {{name}} oyuncusunda.",
+      "pourInCount": "Doldur · {{count}} güvene al",
+      "missingCount_one": "Sadece 1 malzeme kaldı!",
+      "counterLabelBrew": "Malzeme rafı",
+      "counterLabelBar": "Tezgâh",
+      "trayNote": "henüz güvende değil",
+      "counterNote": "herkese açık · sırada 1 kart"
     }
   },
   "native": {
@@ -8895,8 +8906,8 @@
       "title": "Karışım",
       "tagline": "Şansını zorla. Bir kart fazla çekersen bütün tepsi gider.",
       "step1": "Herkese açık bir tarif verilir. Tarifini bardağında ilk tamamlayan turu kazanır.",
-      "step2": "Sıra sendeyken açık tezgâhtan en fazla BİR kart alabilirsin — o bedava.",
-      "step3": "Sonra kapalı desteden cesaretin yettiği kadar çek. Her malzeme tepsine düşer.",
+      "step2": "Sıra sendeyken açık tezgâhtan çekmeden en fazla BİR kart alabilirsin. O da tepsine düşer — yani henüz güvende değil.",
+      "step3": "Sonra kapalı desteden cesaretin yettiği kadar çek. Yaklaşık her yedinci kart tepsiyi devirir.",
       "step4": "Uğursuz kart gelirse bütün tepsiyi kaybedersin — üstüne bir de ceza alırsın.",
       "step5": "„Doldur“ işine yarayan malzemeleri bardağa kalıcı olarak kilitler ve sıranı bitirir. Geri kalanı açık şekilde tezgâha gider.",
       "tip": "Doldururken işine yaramayanı diğerlerine hediye edersin. Erken bitirmek çoğu zaman dolu bir tepsiden değerlidir."

@@ -7625,7 +7625,7 @@
       "reshuffled": "O descarte está a ser baralhado …",
       "pourIn": "Servir",
       "turnOf": "É a vez de {{name}}",
-      "missingCount": "Ainda faltam: {{count}}",
+      "missingCount": "Faltam {{count}} ingredientes",
       "recipeComplete": "Receita completa!",
       "roundWinner": "{{name}} foi o primeiro a terminar a mistura!",
       "bustTitleBrew": "O caldeirão transbordou!",
@@ -7752,7 +7752,18 @@
           "l9": "Amber Whiskey Berry Sour",
           "l10": "Tequila Tropical Fizz"
         }
-      }
+      },
+      "hintDraw": "Compra um ingrediente do baralho.",
+      "hintCounter": "Tira 1 carta do balcão — ou compra já.",
+      "hintPour": "{{count}} servem para a tua receita. Servir fixa-as e termina a tua vez.",
+      "hintNoHit": "Nenhuma serve. Continua a comprar — ou serve e termina a tua vez.",
+      "hintWait": "É a vez de {{name}}.",
+      "pourInCount": "Servir · fixar {{count}}",
+      "missingCount_one": "Falta só 1 ingrediente!",
+      "counterLabelBrew": "Prateleira",
+      "counterLabelBar": "Balcão",
+      "trayNote": "ainda não está seguro",
+      "counterNote": "livre para todos · 1 carta por vez"
     }
   },
   "native": {
@@ -8895,8 +8906,8 @@
       "title": "Beberagem",
       "tagline": "Desafia a sorte. Uma carta a mais e o tabuleiro inteiro desaparece.",
       "step1": "Cada pessoa recebe uma receita virada para cima. Quem a completar primeiro no copo ganha a ronda.",
-      "step2": "Na tua vez podes tirar no máximo UMA carta do balcão aberto — essa é de graça.",
-      "step3": "Depois compra do baralho tapado as vezes que te atreveres. Cada ingrediente cai no teu tabuleiro.",
+      "step2": "Na tua vez podes tirar no máximo UMA carta do balcão aberto sem comprar. Também ela cai no teu tabuleiro — por isso ainda não está segura.",
+      "step3": "Depois compra do baralho tapado as vezes que te atreveres. Cerca de uma em cada sete cartas entorna o tabuleiro.",
       "step4": "Se sair a carta azarada, perdes o tabuleiro todo — e ainda levas um castigo.",
       "step5": "«Servir» fixa para sempre no copo os ingredientes de que precisas e termina a tua vez. O resto vai virado para cima para o balcão.",
       "tip": "O que não usares ao servir, ofereces aos outros. Uma vez antecipada vale muitas vezes mais do que um tabuleiro cheio."
