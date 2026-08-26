@@ -25,7 +25,6 @@
  */
 import { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   ArrowRight, Bot, Building2, CalendarCheck, CalendarDays, Check, Globe, Mail,
@@ -39,7 +38,7 @@ import { useUrlLanguage } from "@/hooks/useUrlLanguage";
 import { agencyDemoCopy } from "@/lib/agency-demo-copy";
 import { agencyDemoStages, type StageCopy } from "@/lib/agency-demo-stages";
 import {
-  HTML_LANG_BY_LANG, isRtl, LANG_LABEL, LOCALE_BY_LANG, SEO_LANGS, toSeoLang,
+  HTML_LANG_BY_LANG, isRtl, LANG_LABEL, LOCALE_BY_LANG, SEO_LANGS,
   type SeoLang,
 } from "@/lib/seo-routes";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
@@ -59,9 +58,19 @@ interface DirectoryAgency {
 export default function AgencyDemo() {
   const { token } = useParams<{ token?: string }>();
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
   const { lang: urlLang } = useUrlLanguage();
-  const lang: SeoLang = urlLang ?? toSeoLang(i18n.language) ?? "en";
+  /*
+    OHNE Sprachpraefix ist die Seite ENGLISCH — nicht die Oberflaechensprache.
+
+    Das ist bewusst: /agencies wird vorgerendert, und der Renderer erbt die
+    Sprache des Rechners, auf dem gebaut wird. Vorher hiess das: lokal gebaut
+    kam eine deutsche Seite heraus, auf Vercel eine englische — dieselbe URL,
+    zwei Ergebnisse, je nachdem wer den Build startet.
+
+    Jetzt ist /agencies die englische Fassung (x-default), und jede Sprache hat
+    ihre eigene Adresse. Der Link im Anschreiben traegt sie ohnehin mit.
+  */
+  const lang: SeoLang = urlLang ?? "en";
   const copy = agencyDemoCopy(lang);
   const stages = agencyDemoStages(lang);
 

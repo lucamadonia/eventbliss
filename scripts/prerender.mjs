@@ -449,6 +449,30 @@ async function bodyTier() {
   }
   for (const [route, t] of Object.entries(CALC)) jobs.push({ route, out: route, fb: { title: t, description: t, ogType: "website" } });
   for (const [route, m] of Object.entries(STATIC)) jobs.push({ route, out: route, fb: { ...m, ogType: route.startsWith("/legal") ? "article" : "website" } });
+  /*
+    Die Agenturseite in allen zehn Sprachen. Sie ist die Landestelle aus dem
+    Akquise-Anschreiben, und der Link traegt die Sprache des Landes — ohne
+    diese Zeilen haetten alle zehn Adressen dieselbe englische Beschreibung im
+    Kopf. Die Ersatztexte unten greifen nur, wenn der Renderer ausfaellt; im
+    Normalfall kommt der Kopf aus der gerenderten Seite selbst.
+  */
+  for (const lang of LANGS) {
+    jobs.push({
+      route: `/${lang}/agencies`,
+      out: `/${lang}/agencies`,
+      fb: {
+        ...STATIC["/agencies"],
+        ogType: "website",
+        htmlLang: HTML_LANG[lang] ?? lang,
+        rtl: lang === "ar",
+        ogLocale: OG_LOCALE[lang],
+        hreflangs: [
+          ...LANGS.map((l) => ({ hreflang: l, href: `${SITE}/${l}/agencies` })),
+          { hreflang: "x-default", href: `${SITE}/agencies` },
+        ],
+      },
+    });
+  }
 
   /*
     ALTE STATISCHE LEGAL-SEITEN BESCHATTEN IHRE EIGENEN ROUTEN.
