@@ -39,6 +39,7 @@ const AgencyPortal = lazy(() => import("./pages/AgencyPortal"));
 const AgencyDashboard = lazy(() => import("./pages/AgencyDashboard"));
 const AgencyPricing = lazy(() => import("./pages/AgencyPricing"));
 const AgencyDemo = lazy(() => import("./pages/AgencyDemo"));
+const CreatorPortal = lazy(() => import("./pages/CreatorPortal"));
 const IdeasHub = lazy(() => import("./pages/IdeasHub"));
 const JgaCity = lazy(() => import("./pages/JgaCity"));
 const JgaCalculator = lazy(() => import("./pages/JgaCalculator"));
@@ -227,6 +228,12 @@ const AppContent = () => {
             und ohne Login — eine Agentur, die eine Kaltmail bekommt, legt sich
             kein Konto an, um zu schauen, worum es geht.
           */}
+          {/*
+            Der persoenliche Bereich eines Influencers. Kein Login: wer eine
+            Kaltansprache bekommt, legt sich kein Konto an, um nachzusehen,
+            worum es geht. Die Seite haengt am invite_token.
+          */}
+          <Route path="/creators/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><CreatorPortal /></Suspense></ErrorBoundary>} />
           <Route path="/agencies" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyDemo /></Suspense></ErrorBoundary>} />
           <Route path="/agencies/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyDemo /></Suspense></ErrorBoundary>} />
           <Route path="/:lang/agencies" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyDemo /></Suspense></ErrorBoundary>} />
