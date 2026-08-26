@@ -3,7 +3,7 @@ import {
   Handshake, Coins, Banknote, TrendingUp, Building2,
   Settings, Store, ShoppingCart, PieChart, Package,
   Gamepad2, Landmark, Flag, Scroll, ServerCog, Megaphone,
-  ShieldAlert,
+  ShieldAlert, Radio,
   type LucideIcon,
 } from "lucide-react";
 
@@ -57,6 +57,18 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
       { key: "agency-analytics", labelKey: "admin.tabs.agencyAnalytics", defaultLabel: "Agentur-Stats", icon: TrendingUp },
       { key: "agency-risk", labelKey: "admin.tabs.agencyRisk", defaultLabel: "Storno-Risiko", icon: ShieldAlert },
       { key: "agency-akquise", labelKey: "admin.akquise.navLabel", defaultLabel: "Akquise", icon: Megaphone },
+    ],
+  },
+  /*
+    Influencer stehen NEBEN den Agenturen, nicht darin. Zwei Programme mit
+    demselben Ablauf, aber anderen Groessen — wer beides in eine Gruppe legt,
+    sucht spaeter in einer Liste, in der die Haelfte der Spalten leer ist.
+  */
+  {
+    groupLabelKey: "admin.nav.influencers",
+    defaultGroupLabel: "Influencer",
+    items: [
+      { key: "influencers", labelKey: "admin.tabs.influencers", defaultLabel: "Influencer", icon: Radio },
     ],
   },
   {
