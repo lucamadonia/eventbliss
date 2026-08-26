@@ -40,6 +40,7 @@ const AgencyDashboard = lazy(() => import("./pages/AgencyDashboard"));
 const AgencyPricing = lazy(() => import("./pages/AgencyPricing"));
 const AgencyDemo = lazy(() => import("./pages/AgencyDemo"));
 const CreatorPortal = lazy(() => import("./pages/CreatorPortal"));
+const InfluencerPortal = lazy(() => import("./pages/InfluencerPortal"));
 const IdeasHub = lazy(() => import("./pages/IdeasHub"));
 const JgaCity = lazy(() => import("./pages/JgaCity"));
 const JgaCalculator = lazy(() => import("./pages/JgaCalculator"));
@@ -233,6 +234,13 @@ const AppContent = () => {
             Kaltansprache bekommt, legt sich kein Konto an, um nachzusehen,
             worum es geht. Die Seite haengt am invite_token.
           */}
+          {/*
+            Das Portal fuer verknuepfte Konten. ProtectedRoute genuegt: wer
+            keinen Verzeichnis-Eintrag hat, bekommt drinnen eine ehrliche
+            Auskunft statt einer leeren Seite — und sieht ohnehin nur seine
+            eigenen Zeilen, dafuer sorgen die RLS-Regeln.
+          */}
+          <Route path="/influencer" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><InfluencerPortal /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/creators/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><CreatorPortal /></Suspense></ErrorBoundary>} />
           <Route path="/agencies" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyDemo /></Suspense></ErrorBoundary>} />
           <Route path="/agencies/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyDemo /></Suspense></ErrorBoundary>} />
