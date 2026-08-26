@@ -2,8 +2,8 @@
  * Prerenderer for public pages — two tiers, both run in `build` after `vite build`.
  *
  * TIER 1 — full body render (Puppeteer): a small, finite set of high-value pages
- * (home, budget calculator ×10 langs, marketplace/games/pricing hubs, legal
- * pages without a static .html shadow). Boots Vite preview + headless Chromium
+ * (home, budget calculator ×10 langs, marketplace/games/pricing hubs, all legal
+ * pages). Boots Vite preview + headless Chromium
  * (via @sparticuz/chromium on Vercel) and snapshots the full rendered HTML into
  * dist/<route>/index.html (home → dist/home.html, served at "/" via vercel.json).
  *
@@ -17,7 +17,7 @@
  * Fully resilient: any failure degrades gracefully and never fails the build.
  * Skipped for Capacitor (native) builds.
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, renameSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -409,6 +409,11 @@ async function renderFull(browser, route) {
   const page = await browser.newPage();
   try {
     await page.goto(`http://localhost:${PORT}${route === "/" ? "/" : route}`, { waitUntil: "domcontentloaded", timeout: 60000 });
+    // Fehlt `#root`, ist gar nicht die App ausgeliefert worden, sondern eine
+    // fremde statische Datei. Dann hilft kein Warten — vorher lief genau das
+    // 35 Sekunden lang ins Leere, dreimal pro Build, mit einer Fehlermeldung
+    // ("Waiting failed"), die die Ursache verschwieg.
+    if (!(await page.$("#root"))) throw new Error("kein #root — statische Datei beschattet die Route");
     await page.waitForFunction(
       () => { const r = document.querySelector("#root"); return r && r.innerText && r.innerText.replace(/\s/g, "").length > 80; },
       { timeout: 35000, polling: 250 },
@@ -444,6 +449,39 @@ async function bodyTier() {
   for (const [route, t] of Object.entries(CALC)) jobs.push({ route, out: route, fb: { title: t, description: t, ogType: "website" } });
   for (const [route, m] of Object.entries(STATIC)) jobs.push({ route, out: route, fb: { ...m, ogType: route.startsWith("/legal") ? "article" : "website" } });
 
+  /*
+    ALTE STATISCHE LEGAL-SEITEN BESCHATTEN IHRE EIGENEN ROUTEN.
+
+    In `public/legal/` liegen seit April 2026 handgeschriebene HTML-Dateien
+    (imprint.html, privacy.html, terms.html). Sie landen als
+    `dist/legal/imprint.html` im Build — und `vite preview` beantwortet eine
+    Anfrage nach `/legal/imprint` MIT DIESER DATEI, noch vor
+    `legal/imprint/index.html` und vor der SPA. Der Renderer sah also eine
+    fremde Seite ohne `#root`, wartete 35 Sekunden auf React und schrieb dann
+    die Meta-Notloesung. Ausgerechnet Impressum, Datenschutz und AGB — die drei
+    Seiten, die ein Crawler ohne JavaScript am ehesten liest — hatten dadurch
+    als einzige keinen Textkoerper. Der Kopfkommentar dieser Datei nannte das
+    beschoenigend "legal pages without a static .html shadow"; in Wahrheit war
+    es ein stiller Ausfall, der jeden Build 105 Sekunden kostete.
+
+    Auf Vercel gewinnt der Ordner, dort trat der Fehler nie auf. Die Dateien
+    bleiben deshalb im Build — aeltere Links von aussen koennen darauf zeigen —,
+    sie werden nur waehrend des Renderns beiseitegelegt.
+  */
+  const shadowed = [];
+  if (ctx?.browser) {
+    for (const job of jobs) {
+      const file = join(DIST, `${job.route.replace(/^\//, "")}.html`);
+      if (job.route !== "/" && existsSync(file)) {
+        const hidden = `${file}.prerender-hidden`;
+        try { renameSync(file, hidden); shadowed.push([file, hidden]); }
+        catch (e) { console.warn(`prerender: ${job.route}.html liess sich nicht beiseitelegen (${e?.message ?? e}).`); }
+      }
+    }
+    if (shadowed.length) console.log(`prerender: ${shadowed.length} statische Altdatei(en) waehrend des Renderns beiseitegelegt.`);
+  }
+
+  try {
   for (const job of jobs) {
     let html = null;
     if (ctx?.browser) {
@@ -456,6 +494,14 @@ async function bodyTier() {
     }
     if (job.out === "__index__") { writeFileSync(join(DIST, "index.html"), html); }
     else writeRoute(job.out, html);
+  }
+  } finally {
+    // Zurueck an ihren Platz — auch wenn oben etwas schiefging. Sonst fehlten
+    // die Altdateien im Deployment.
+    for (const [file, hidden] of shadowed) {
+      try { renameSync(hidden, file); }
+      catch (e) { console.warn(`prerender: ${file} liess sich nicht zuruecklegen (${e?.message ?? e}).`); }
+    }
   }
   if (ctx) {
     try { await ctx.browser.close(); } catch { /* noop */ }
