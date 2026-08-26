@@ -92,7 +92,11 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
               disabled={onTake ? disabled : undefined}
               title={name}
               className={cn(
-                "relative w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0",
+                // 72 statt 48 Pixel breit, und der NAME steht darunter.
+                // Vorher: 48-px-Karte mit 36-px-Motiv, den Namen gab es nur im
+                // aria-label. Auf dem Telefon war jede Zutat damit ein
+                // Farbfleck — "man weiss nicht was es ist".
+                "relative w-[72px] rounded-2xl flex flex-col items-center gap-1 pt-2 pb-1.5 px-1 shrink-0",
                 onTake && !disabled && "cursor-pointer active:scale-90 transition-transform",
                 onTake && disabled && "opacity-40 cursor-not-allowed",
                 // Ballast tritt zurueck, sobald ueberhaupt markiert wird.
@@ -106,7 +110,17 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
               }}
               aria-label={name}
             >
-              <IngredientIcon id={id} skin={skin} className="w-9 h-9" emojiSize="1.5rem" />
+              <IngredientIcon id={id} skin={skin} className="w-12 h-12" emojiSize="2rem" />
+              {/* Der Name IST die Erklaerung. Zwei Zeilen reichen fuer jede
+                  Zutat in allen zehn Sprachen ("Spinnenweb-Extrakt",
+                  "Coconut Cream"); laengeres wird abgeschnitten statt die
+                  Karte zu sprengen. */}
+              <span
+                className="w-full text-[10px] leading-tight font-bold text-center line-clamp-2 break-words"
+                style={{ color: "rgba(255,255,255,0.92)" }}
+              >
+                {name}
+              </span>
             </Comp>
           );
         })}

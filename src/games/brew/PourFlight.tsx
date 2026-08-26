@@ -26,9 +26,13 @@
  * Mittelklasse-Telefon sofort unter 30. Das `blur` der Fluessigkeitsebene ist
  * deshalb KONSTANT — einmal gerastert, danach nur noch verschoben.
  *
- * Bewegungsarmut: Diese Datei rendert dann gar nichts. Die Regel bleibt
- * trotzdem sichtbar, weil das Tablett in `BrewGame` laenger stehen bleibt und
- * die Markierung (Ring bzw. entsaettigt) den Rest erklaert.
+ * BEWEGUNGSARMUT HEISST EINFACHER, NICHT NICHTS. Diese Datei wurde frueher bei
+ * `useReducedMotion() === true` gar nicht erst gerendert — auf einem iPhone mit
+ * aktivierter Einstellung "Bewegung reduzieren" bewegte sich damit im ganzen
+ * Spiel nichts, und mit der Bewegung verschwand auch die Erklaerung. Jetzt
+ * laeuft die Choreografie immer: bei Bewegungsarmut auf gerader Bahn, in 45 %
+ * der Zeit und ohne Verfluessigung. Wer Bewegung reduziert, will weniger
+ * Bewegung — nicht weniger Information.
  */
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
@@ -53,6 +57,15 @@ export interface PourFlightProps {
   glassBox: () => DOMRect | null;
   counterBox: () => DOMRect | null;
   skin: Skin;
+  /**
+   * Bewegungsarmut: gerade Bahn statt Bogen, kuerzer, ohne Verfluessigung.
+   *
+   * BEWUSST KEIN AUSSCHALTER. Vorher wurde diese Komponente bei
+   * `useReducedMotion() === true` gar nicht erst gerendert — und damit fiel
+   * die Erklaerung weg, welche Zutat ins Glas geht und welche auf die Theke.
+   * Wer Bewegung reduziert, will weniger Bewegung, nicht weniger Information.
+   */
+  reduced?: boolean;
 }
 
 const CARD = 48;
@@ -68,9 +81,11 @@ interface Flight {
   delay: number;
   travel: number;
   up: boolean;
+  /** Gerade Bahn, keine Verfluessigung — siehe `reduced` in den Props. */
+  plain: boolean;
 }
 
-export function PourFlight({ plan, from, glassBox, counterBox, skin }: PourFlightProps) {
+export function PourFlight({ plan, from, glassBox, counterBox, skin, reduced = false }: PourFlightProps) {
   const [flights, setFlights] = useState<Flight[] | null>(null);
   /**
    * Fuer welchen Plan die Fluege schon gebaut wurden.
@@ -117,9 +132,9 @@ export function PourFlight({ plan, from, glassBox, counterBox, skin }: PourFligh
         x0: r.left, y0: r.top,
         dx: mouthX - (r.left + r.width / 2),
         dy: mouthY - (r.top + r.height / 2),
-        delay: POUR_BEATS.depart + i * stag,
-        travel: POUR_BEATS.flight,
-        up: true,
+        delay: reduced ? POUR_BEATS.reducedHold : POUR_BEATS.depart + i * stag,
+        travel: reduced ? POUR_BEATS.flight * 0.45 : POUR_BEATS.flight,
+        up: true, plain: reduced,
       });
     });
 
@@ -135,14 +150,14 @@ export function PourFlight({ plan, from, glassBox, counterBox, skin }: PourFligh
         x0: r.left, y0: r.top,
         dx: tx - (r.left + r.width / 2),
         dy: ty - (r.top + r.height / 2),
-        delay: POUR_BEATS.depart + POUR_BEATS.leftoverGap + i * POUR_BEATS.leftoverStagger,
-        travel: POUR_BEATS.leftoverFlight,
-        up: false,
+        delay: reduced ? POUR_BEATS.reducedHold : POUR_BEATS.depart + POUR_BEATS.leftoverGap + i * POUR_BEATS.leftoverStagger,
+        travel: reduced ? POUR_BEATS.leftoverFlight * 0.45 : POUR_BEATS.leftoverFlight,
+        up: false, plain: reduced,
       });
     });
 
     setFlights(out);
-  }, [plan, from, glassBox, counterBox]);
+  }, [plan, from, glassBox, counterBox, reduced]);
 
   if (!flights || flights.length === 0) return null;
 
@@ -181,7 +196,7 @@ function FlyingCard({ f, skin }: { f: Flight; skin: Skin }) {
   const [melting, setMelting] = useState(false);
   useEffect(() => {
     const a = window.setTimeout(() => setGo(true), f.delay);
-    const b = f.up ? window.setTimeout(() => setMelting(true), f.delay + f.travel) : 0;
+    const b = f.up && !f.plain ? window.setTimeout(() => setMelting(true), f.delay + f.travel) : 0;
     return () => { window.clearTimeout(a); if (b) window.clearTimeout(b); };
   }, [f]);
 
@@ -191,7 +206,14 @@ function FlyingCard({ f, skin }: { f: Flight; skin: Skin }) {
       style={{ left: f.x0, top: f.y0, width: CARD, height: CARD }}
       initial={false}
       animate={go
-        ? { x: f.dx, y: f.dy, scale: f.up ? 0.5 : 0.86, opacity: f.up ? 1 : 0 }
+        ? {
+            x: f.dx,
+            y: f.dy,
+            scale: f.plain ? (f.up ? 0.7 : 0.9) : (f.up ? 0.5 : 0.86),
+            // Vereinfacht: die Karte blendet am Ziel aus, statt sich zu
+            // verfluessigen. Der Weg bleibt sichtbar, der Schnoerkel entfaellt.
+            opacity: f.plain ? 0 : (f.up ? 1 : 0),
+          }
         : { x: 0, y: 0, scale: 1, opacity: 1 }}
       transition={go
         ? { duration: f.travel / 1000, ease: ease.out, opacity: { duration: f.travel / 1000, delay: f.travel / 2000 } }
@@ -208,7 +230,7 @@ function FlyingCard({ f, skin }: { f: Flight; skin: Skin }) {
       </motion.div>
 
       {/* fluessig — `blur` ist KONSTANT, siehe Kopfkommentar */}
-      {f.up && (
+      {f.up && !f.plain && (
         <motion.div
           className="absolute left-0 right-0 top-1/2 rounded-full"
           style={{

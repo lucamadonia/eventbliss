@@ -48,6 +48,7 @@ import { Glass } from "./Glass";
 import { TrayCards } from "./TrayCards";
 import { ingredientPlate, POUR_BEATS, pourDuration } from "./BrewFX";
 import { PourFlight, type PourPlan } from "./PourFlight";
+import { DrawReveal, drawRevealDuration, type DrawnCard } from "./DrawReveal";
 import { IngredientIcon } from "./IngredientIcon";
 import { TrayTip } from "./BrewFX";
 import { BrewAtmosphere } from "./BrewAtmosphere";
@@ -175,6 +176,13 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   // laeuft nach — dasselbe Muster wie beim Bust, wo `TrayTip` 700 ms lang
   // nachspielt, was schon nicht mehr da ist. Ein verlorener Schnappschuss kann
   // damit nie das Spiel verklemmen.
+  /**
+   * Die zuletzt gezogene Karte — fuer den Aufdeckmoment.
+   *
+   * Das Ziehen ist der Nervenkitzel dieses Spiels und hatte bis hierher gar
+   * keine Buehne: die Karte erschien einfach auf dem Tablett.
+   */
+  const [drawnCard, setDrawnCard] = useState<DrawnCard | null>(null);
   const [pourPlan, setPourPlan] = useState<PourPlan | null>(null);
   const [pourSeq, setPourSeq] = useState(0);
   /** Das Tablett bleibt kurz stehen, damit man die Sortierung ablesen kann. */
@@ -265,6 +273,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     lastPourRef.current = 0;
     setPourPlan(null);
     setPourFreeze(null);
+    setDrawnCard(null);
     setPourSeq(0);
     setSipDisclaimer(null);
     setPhase("playing");
@@ -317,11 +326,15 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       setBustTrigger((n) => n + 1);
       setBustSeq((n) => n + 1);
       setTray([]);
-      window.setTimeout(triggerPenalty, reduceMotion ? 0 : 700);
+      // Erst die Unglueckskarte zeigen, DANN kippen und strafen. Ohne die
+      // Wartezeit ueberholt die Vollbild-Strafe den Schreckmoment.
+      setDrawnCard({ id: null, seq: Date.now() });
+      window.setTimeout(triggerPenalty, drawRevealDuration(true, !!reduceMotion) + (reduceMotion ? 0 : 700));
     } else {
       void haptics.light();
       setDrawPile(nextDraw);
       setDiscardPile(nextDiscard);
+      setDrawnCard({ id: card.id, seq: Date.now() });
       setTray((prev) => [...prev, card.id]);
     }
 
@@ -781,17 +794,24 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
                   key={id}
                   title={t(ingredientKey(id, skin))}
                   className={cn(
-                    "w-11 h-11 rounded-2xl flex items-center justify-center text-xl transition-opacity",
-                    // Ein fehlender Slot soll wie ein LOCH aussehen, nicht wie
-                    // eine ausgegraute Karte — sonst wirkt das eigene Rezept
-                    // zu Rundenbeginn wie das blasseste Element des Bildschirms.
-                    !owned && "opacity-60",
+                    // Gleiche Karte wie auf Tablett und Theke — mit NAMEN.
+                    // Vorher: 44-px-Kachel mit 32-px-Motiv, und wenn die Zutat
+                    // fehlte, ein gestrichelter Umriss. Der liess den ganzen
+                    // Bildschirm wie einen unfertigen Entwurf wirken.
+                    "w-[72px] rounded-2xl flex flex-col items-center gap-1 pt-2 pb-1.5 px-1 transition-opacity",
+                    // Fehlende Zutat tritt zurueck — ueber Saettigung, nicht
+                    // ueber eine gestrichelte Linie.
+                    !owned && "opacity-45 saturate-[0.35]",
                   )}
-                  style={owned
-                    ? { ...ingredientPlate(INGREDIENTS[id].color) }
-                    : { border: `1px dashed ${INGREDIENTS[id].color}66`, background: "transparent" }}
+                  style={ingredientPlate(INGREDIENTS[id].color)}
                 >
-                  <IngredientIcon id={id} skin={skin} className="w-8 h-8" emojiSize="1.25rem" />
+                  <IngredientIcon id={id} skin={skin} className="w-12 h-12" emojiSize="2rem" />
+                  <span
+                    className="w-full text-[10px] leading-tight font-bold text-center line-clamp-2 break-words"
+                    style={{ color: "rgba(255,255,255,0.92)" }}
+                  >
+                    {t(ingredientKey(id, skin))}
+                  </span>
                 </div>
               );
             })}
@@ -954,17 +974,33 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
           waehrend des Gusses zwischen Kartenreihe und Leertext, und ein
           Geschwister, das seine Form aendert, riskiert das Neumounten der
           Nachbarn mitten in der Animation.
-          Bewegungsarmut: kein Flug. Die Regel bleibt trotzdem sichtbar, weil
-          die eingefrorene Reihe laenger steht und markiert ist. */}
-      {!reduceMotion && (
-        <PourFlight
-          plan={pourPlan}
-          from={trayGeoRef.current}
-          glassBox={readGlassBox}
-          counterBox={readCounterBox}
-          skin={skin}
-        />
-      )}
+          BEWEGUNGSARMUT HEISST EINFACHER, NICHT NICHTS. Hier stand
+          `{!reduceMotion && <PourFlight/>}` — und damit fiel bei aktivierter
+          Systemeinstellung "Bewegung reduzieren" die GANZE Choreografie aus,
+          nicht nur ihre Verzierung. Auf dem iPhone des Nutzers bewegte sich
+          dadurch gar nichts. Das verletzt die eigene Regel dieses Spiels: kein
+          Effekt traegt allein eine Information — und diese Choreografie IST
+          die Erklaerung der wichtigsten Regel. Sie laeuft jetzt immer, nur
+          kuerzer und auf gerader Bahn. */}
+      <PourFlight
+        plan={pourPlan}
+        from={trayGeoRef.current}
+        glassBox={readGlassBox}
+        counterBox={readCounterBox}
+        skin={skin}
+        reduced={!!reduceMotion}
+      />
+
+      {/* Der Ziehmoment — grosse aufgedeckte Karte in der Bildmitte. */}
+      <DrawReveal
+        card={drawnCard}
+        skin={skin}
+        reduced={!!reduceMotion}
+        label={drawnCard?.id
+          ? t(ingredientKey(drawnCard.id, skin))
+          : (skin === "brew" ? t("games.brew.bustTitleBrew") : t("games.brew.bustTitleBar"))}
+        onDone={() => setDrawnCard(null)}
+      />
 
       {/* Bust / Strafe */}
       <AnimatePresence>

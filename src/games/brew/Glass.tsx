@@ -192,6 +192,13 @@ export function Glass({ recipeNeeds, filled, skin, size = "md", className, arriv
               </feMerge>
             </filter>
           )}
+          {/* Der Glaskoerper selbst: oben heller, unten dunkler, damit das
+              Gefaess Tiefe bekommt statt eine flache Flaeche zu sein. */}
+          <linearGradient id={`body-${uid}`} x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="rgba(255,255,255,0.22)" />
+            <stop offset="0.45" stopColor="rgba(255,255,255,0.10)" />
+            <stop offset="1" stopColor="rgba(255,255,255,0.16)" />
+          </linearGradient>
           <clipPath id={`clip-${uid}`}>
             <path d={outlinePath} />
           </clipPath>
@@ -211,12 +218,33 @@ export function Glass({ recipeNeeds, filled, skin, size = "md", className, arriv
           />
         )}
 
-        {/* Gefäßkontur */}
+        {/*
+          Gefaesskoerper.
+
+          Vorher: `fill: rgba(255,255,255,0.04)` mit einer 0.35er Kontur — vier
+          Prozent Deckkraft. Auf dem Telefon blieb davon ein graues Drahtgitter,
+          und weil ein LEERES Glas der Normalfall ist (jede Runde beginnt so),
+          sah der halbe Bildschirm nach unfertigem Entwurf aus.
+
+          Jetzt bekommt es Material: ein Koerper mit Tiefe, eine kraeftigere
+          Wand und ein Glanzstreifen. Es geht nicht um mehr Effekte, sondern
+          darum, dass ein Glas als Gegenstand lesbar bleibt, auch leer.
+        */}
         <path
           d={outlinePath}
-          fill="rgba(255,255,255,0.04)"
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth={w * 0.02}
+          fill={`url(#body-${uid})`}
+          stroke="rgba(255,255,255,0.55)"
+          strokeWidth={w * 0.035}
+          strokeLinejoin="round"
+        />
+        {/* Glanzstreifen an der linken Wand — das eine Detail, das aus einer
+            Flaeche ein Glas macht. */}
+        <path
+          d={`M ${w * 0.3} ${innerTop + innerHeight * 0.08}
+              L ${w * 0.37} ${innerTop + innerHeight * 0.08}
+              L ${w * 0.29} ${innerBottom - innerHeight * 0.12}
+              L ${w * 0.22} ${innerBottom - innerHeight * 0.12} Z`}
+          fill="rgba(255,255,255,0.16)"
         />
 
         {/* Füllung, an die Gefäßform geklippt. */}
