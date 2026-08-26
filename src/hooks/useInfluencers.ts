@@ -11,7 +11,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { addMonths } from "@/lib/subscription-plans";
+import { addMonths, buildTrialPatch } from "@/lib/subscription-plans";
 import type {
   InfluencerPlatform, InfluencerPriority, InfluencerReward, InfluencerStatus,
 } from "@/lib/influencer-status";
@@ -356,7 +356,41 @@ export function useActivateDeal() {
       let code: string | null = null;
 
       const wantsAccess = a.rewardKinds.includes("trial") || a.rewardKinds.includes("unlimited");
-      if (wantsAccess) {
+
+      /*
+        IST EIN KONTO VERKNUEPFT, BRAUCHT ES KEINEN CODE.
+
+        Der Gutschein loest ein Problem, das es nur ohne Konto gibt: ein Abo
+        braucht eine user_id. Ist die da, war der Code bisher ein Umweg — der
+        Admin sagte zu, der Influencer musste trotzdem erst einen Code
+        eintippen, und bis dahin hatte er nichts.
+      */
+      if (wantsAccess && a.influencer.user_id) {
+        const patch = a.unlimited
+          ? {
+              plan: "premium",
+              plan_type: null,
+              provider: "manual",
+              is_manual: true,
+              expires_at: null,
+              notes: "Influencer — Premium unbegrenzt (Deal)",
+            }
+          : {
+              ...buildTrialPatch(a.trialMonths ?? 3),
+              notes: `Influencer — Probe ${a.trialMonths ?? 3} Monate (Deal)`,
+            };
+
+        const { data: existing } = await from("subscriptions")
+          .select("id")
+          .eq("user_id", a.influencer.user_id)
+          .maybeSingle();
+
+        const { error: subError } = existing
+          ? await from("subscriptions").update(patch).eq("id", existing.id)
+          : await from("subscriptions").insert({ user_id: a.influencer.user_id, ...patch });
+
+        if (subError) warnings.push(`Abo: ${subError.message}`);
+      } else if (wantsAccess) {
         const slug = a.influencer.handle.replace(/[^a-zA-Z0-9]/g, "").toUpperCase().slice(0, 10) || "INF";
         code = `INF-${slug}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
         const { data: userData } = await supabase.auth.getUser();
@@ -432,9 +466,11 @@ export function useActivateDeal() {
 
       return { code, warnings };
     },
-    onSuccess: ({ code, warnings }) => {
+    onSuccess: ({ code, warnings }, a) => {
       if (warnings.length) toast.warning(`Deal aktiviert — ${warnings.join(" · ")}`);
-      else toast.success(code ? `Deal aktiviert, Code ${code}` : "Deal aktiviert");
+      else if (code) toast.success(`Deal aktiviert, Code ${code}`);
+      else if (a.influencer.user_id) toast.success("Deal aktiviert — Zugang direkt gesetzt, kein Code nötig");
+      else toast.success("Deal aktiviert");
       qc.invalidateQueries({ queryKey: KEY });
       qc.invalidateQueries({ queryKey: KEY_DEALS });
       qc.invalidateQueries({ queryKey: KEY_DELIVERABLES });

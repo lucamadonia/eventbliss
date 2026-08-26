@@ -101,6 +101,9 @@ const T = {
     window: "Veröffentlichung",
     materials: "Materialien",
     copied: "Kopiert",
+    accessActive: "Dein Zugang ist aktiv",
+    accessUnlimited: "Premium ohne Ablaufdatum — nichts weiter zu tun.",
+    accessUntil: (d) => `Premium bis ${d}. Du musst nichts einlösen, es läuft schon.`,
     templatesTitle: "Alle Vorlagen",
     templatesHint: "Zum Stöbern — du musst dich an keine halten. Aufklappen zeigt die ganze Vorlage.",
   },
@@ -138,6 +141,9 @@ const T = {
     window: "Publishing window",
     materials: "Materials",
     copied: "Copied",
+    accessActive: "Your access is active",
+    accessUnlimited: "Premium with no end date — nothing to do.",
+    accessUntil: (d) => `Premium until ${d}. Nothing to redeem, it is already running.`,
     templatesTitle: "All templates",
     templatesHint: "To browse — you are not bound to any of them. Open one to see the whole thing.",
   },
@@ -223,6 +229,28 @@ export default function CreatorPortal() {
                   <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/30">{t.fee}</Badge>
                 )}
               </div>
+
+              {/*
+                Ohne Code heisst NICHT ohne Zugang: ist ein Konto verknuepft,
+                wird das Abo direkt gesetzt. Stuende hier nur der Code-Block,
+                saehe der Influencer in genau diesem Fall — dem besseren — gar
+                nichts.
+              */}
+              {!deal.voucher_code && (
+                <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-4">
+                  <div className="text-sm font-semibold flex items-center gap-2">
+                    <BadgeCheck className="h-4 w-4 text-emerald-400" />
+                    {t.accessActive}
+                  </div>
+                  <p className="mt-1 text-sm text-white/70">
+                    {deal.unlimited
+                      ? t.accessUnlimited
+                      : deal.ends_at
+                        ? t.accessUntil(new Date(deal.ends_at).toLocaleDateString(view.language === "de" ? "de-DE" : "en-GB"))
+                        : t.accessActive}
+                  </p>
+                </div>
+              )}
 
               {deal.voucher_code && (
                 <div className="rounded-xl border border-white/10 bg-black/30 p-4 space-y-3">
