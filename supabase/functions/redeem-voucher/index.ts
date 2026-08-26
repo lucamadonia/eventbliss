@@ -87,17 +87,21 @@ serve(async (req) => {
         .eq("user_id", user.id)
         .maybeSingle();
 
+      // "lifetime" ist KEIN gueltiger Plan-Wert: die Tabelle laesst nur
+      // free/premium zu (CHECK in Migration 20251229122020). Unbegrenzt heisst
+      // hier `premium` OHNE Ablaufdatum — genau das drueckt `expires_at: null`
+      // aus. Vorher lief jede Lifetime-Einloesung in den Constraint.
       if (existingSub) {
         const { error } = await supabaseClient
           .from("subscriptions")
-          .update({ plan: "lifetime", expires_at: null })
+          .update({ plan: "premium", expires_at: null })
           .eq("id", existingSub.id);
         if (error) throw error;
         subscriptionId = existingSub.id;
       } else {
         const { data: newSub, error } = await supabaseClient
           .from("subscriptions")
-          .insert({ user_id: user.id, plan: "lifetime", expires_at: null })
+          .insert({ user_id: user.id, plan: "premium", expires_at: null })
           .select()
           .single();
         if (error) throw error;

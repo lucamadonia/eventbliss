@@ -424,10 +424,17 @@ export function UsersTab() {
 
   const createUserMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.functions.invoke("create-user", { body: { email: newUserEmail, password: newUserPassword, fullName: newUserName, role: newUserRole, plan: newUserPlan } });
+      const { data, error } = await supabase.functions.invoke("create-user", { body: { email: newUserEmail, password: newUserPassword, fullName: newUserName, role: newUserRole, plan: newUserPlan } });
       if (error) throw error;
+      return data as { warnings?: string[] } | null;
     },
-    onSuccess: () => { toast.success("Benutzer erstellt"); queryClient.invalidateQueries({ queryKey: ["admin-profiles"] }); setCreateDialogOpen(false); setNewUserEmail(""); setNewUserName(""); setNewUserPassword(""); },
+    // Der Benutzer kann entstehen, waehrend Rolle oder Abo scheitern. Vorher
+    // meldete die Oberflaeche in genau diesem Fall trotzdem nur "Benutzer
+    // erstellt" — und die gewaehlte Rolle war stillschweigend weg.
+    onSuccess: (data) => {
+      if (data?.warnings?.length) toast.warning(`Benutzer erstellt — ${data.warnings.join(" ")}`);
+      else toast.success("Benutzer erstellt");
+      queryClient.invalidateQueries({ queryKey: ["admin-profiles"] }); setCreateDialogOpen(false); setNewUserEmail(""); setNewUserName(""); setNewUserPassword(""); },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -635,7 +642,8 @@ export function UsersTab() {
             <div className="space-y-2"><Label>Passwort *</Label><div className="flex gap-2"><Input type="text" value={newUserPassword} onChange={(e) => setNewUserPassword(e.target.value)} placeholder="Sicheres Passwort" /><Button type="button" variant="outline" onClick={() => setNewUserPassword(generatePassword())}>Generieren</Button></div></div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2"><Label>Rolle</Label><Select value={newUserRole} onValueChange={(v) => setNewUserRole(v as AppRole)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="member">Mitglied</SelectItem><SelectItem value="organizer">Organizer</SelectItem><SelectItem value="moderator">Moderator</SelectItem><SelectItem value="agency">Agentur</SelectItem><SelectItem value="affiliate">Affiliate</SelectItem><SelectItem value="admin">Admin</SelectItem></SelectContent></Select></div>
-              <div className="space-y-2"><Label>Plan</Label><Select value={newUserPlan} onValueChange={setNewUserPlan}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="free">Free</SelectItem><SelectItem value="monthly">Monthly</SelectItem><SelectItem value="yearly">Yearly</SelectItem><SelectItem value="lifetime">Lifetime</SelectItem></SelectContent></Select></div>
+              <div className="space-y-2"><Label>Plan</Label><Select value={newUserPlan} onValueChange={setNewUserPlan}><SelectTrigger><SelectValue /></SelectTrigger>{/* Nur free/premium — siehe Kommentar bei "Plan ändern" weiter unten. */}
+                <SelectContent><SelectItem value="free">Free</SelectItem><SelectItem value="premium">Premium</SelectItem></SelectContent></Select></div>
             </div>
           </div>
           <DialogFooter><Button variant="outline" onClick={() => setCreateDialogOpen(false)}>Abbrechen</Button><Button onClick={() => createUserMutation.mutate()} disabled={!newUserEmail || !newUserPassword || createUserMutation.isPending}>{createUserMutation.isPending ? "Erstelle..." : "Erstellen"}</Button></DialogFooter>
@@ -689,7 +697,18 @@ export function UsersTab() {
 
                 <TabsContent value="actions" className="mt-0 space-y-6">
                   <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><Shield className="h-4 w-4" />Rolle ändern</h4><div className="flex flex-wrap gap-2">{(["member", "organizer", "moderator", "agency", "affiliate", "admin"] as AppRole[]).map((role) => (<Button key={role} variant={getPrimaryRole(selectedUser) === role ? "default" : "outline"} size="sm" className="capitalize" onClick={() => updateRoleMutation.mutate({ userId: selectedUser.id, role })} disabled={updateRoleMutation.isPending}>{role}</Button>))}</div></div>
-                  <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><CreditCard className="h-4 w-4" />Plan ändern</h4><div className="flex flex-wrap gap-2">{["free", "monthly", "yearly", "lifetime"].map((plan) => (<Button key={plan} variant={(selectedUser.subscription?.plan || "free") === plan ? "default" : "outline"} size="sm" className="capitalize" onClick={() => updatePlanMutation.mutate({ userId: selectedUser.id, plan })} disabled={updatePlanMutation.isPending}>{plan}</Button>))}</div></div>
+                  {/*
+                    NUR "free" und "premium". Die Tabelle laesst nichts anderes zu:
+                    `subscriptions.plan ... CHECK (plan IN ('free','premium'))`
+                    (Migration 20251229122020). Hier standen bis eben zusaetzlich
+                    "monthly", "yearly" und "lifetime" — drei von vier Knoepfen
+                    liefen also zwangslaeufig in einen Datenbankfehler (23514).
+                    Derselbe Fehler wurde in SubscriptionsTab.tsx schon einmal
+                    behoben (Commit 97e7fa7), diese zweite Stelle wurde uebersehen.
+                    Die Laufzeit (monatlich/jaehrlich) steht seit der
+                    RevenueCat-Migration in der eigenen Spalte `plan_type`.
+                  */}
+                  <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><CreditCard className="h-4 w-4" />Plan ändern</h4><div className="flex flex-wrap gap-2">{["free", "premium"].map((plan) => (<Button key={plan} variant={(selectedUser.subscription?.plan || "free") === plan ? "default" : "outline"} size="sm" className="capitalize" onClick={() => updatePlanMutation.mutate({ userId: selectedUser.id, plan })} disabled={updatePlanMutation.isPending}>{plan}</Button>))}</div></div>
                   <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><Sparkles className="h-4 w-4" />Credits anpassen</h4><div className="flex gap-2"><Input type="number" placeholder="Anzahl" value={creditAmount} onChange={(e) => setCreditAmount(e.target.value)} className="w-24" /><Input placeholder="Grund" value={creditReason} onChange={(e) => setCreditReason(e.target.value)} className="flex-1" /><Button onClick={() => adjustCreditsMutation.mutate({ userId: selectedUser.id, amount: parseInt(creditAmount), reason: creditReason })} disabled={!creditAmount || !creditReason || adjustCreditsMutation.isPending}>Anpassen</Button></div></div>
                   <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><Key className="h-4 w-4" />Passwort zurücksetzen</h4><div className="flex gap-2"><Input type="text" placeholder="Neues Passwort" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} /><Button variant="outline" onClick={() => setNewPassword(generatePassword())}>Generieren</Button><Button onClick={() => resetPasswordMutation.mutate({ userId: selectedUser.id, password: newPassword })} disabled={!newPassword || resetPasswordMutation.isPending}>Zurücksetzen</Button></div></div>
                   <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><Mail className="h-4 w-4" />Nachricht senden</h4><Input placeholder="Betreff" value={messageSubject} onChange={(e) => setMessageSubject(e.target.value)} /><Textarea placeholder="Nachricht..." value={messageContent} onChange={(e) => setMessageContent(e.target.value)} rows={3} /><Button onClick={() => sendMessageMutation.mutate({ userId: selectedUser.id, subject: messageSubject, content: messageContent })} disabled={!messageSubject || !messageContent || sendMessageMutation.isPending} className="w-full"><Mail className="h-4 w-4 mr-2" />Senden</Button></div>

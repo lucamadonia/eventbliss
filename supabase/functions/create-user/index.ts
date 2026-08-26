@@ -90,6 +90,16 @@ serve(async (req) => {
     const password = sanitizeString(rawBody.password, 100);
     const fullName = sanitizeString(rawBody.fullName, 200);
     const plan = sanitizeString(rawBody.plan, 50);
+    const role = sanitizeString(rawBody.role, 30);
+
+    // Der Client schickt `role` seit jeher mit — gelesen wurde es hier nie, und
+    // es entstand nie ein user_roles-Eintrag. Die gewaehlte Rolle wurde also
+    // still verworfen, waehrend die Oberflaeche "Benutzer erstellt" meldete.
+    const ALLOWED_ROLES = ["member", "organizer", "moderator", "agency", "affiliate", "admin"];
+    // Die Tabelle laesst nur diese beiden zu:
+    // subscriptions.plan CHECK (plan IN ('free','premium')). Alles andere ergab
+    // einen Constraint-Fehler, der unten bewusst verschluckt wurde.
+    const ALLOWED_PLANS = ["free", "premium"];
 
     if (!email || !isValidEmail(email)) {
       return new Response(
@@ -156,35 +166,62 @@ serve(async (req) => {
       // Don't fail the request, profile will be created by trigger
     }
 
-    // Create subscription if plan is specified
-    if (plan && plan !== "free") {
-      const expiresAt = new Date();
-      expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 year subscription
-
-      const { error: subError } = await supabaseAdmin
-        .from("subscriptions")
-        .insert({
-          user_id: newUser.user.id,
-          plan: plan,
-          started_at: new Date().toISOString(),
-          expires_at: expiresAt.toISOString(),
-        });
-
-      if (subError) {
-        console.error("Subscription creation error");
-        // Don't fail the request
+    // Rolle setzen. "member" ist der Standard und braucht keinen Eintrag —
+    // `getPrimaryRole` im Adminbereich behandelt "kein Eintrag" genau so.
+    const warnings: string[] = [];
+    if (role && role !== "member") {
+      if (!ALLOWED_ROLES.includes(role)) {
+        warnings.push(`Unbekannte Rolle "${role}" — nicht gesetzt.`);
       } else {
-        console.log("Subscription created for new user");
+        const { error: roleInsertError } = await supabaseAdmin
+          .from("user_roles")
+          .insert({ user_id: newUser.user.id, role });
+        if (roleInsertError) {
+          console.error("Role assignment error", roleInsertError.message);
+          warnings.push("Rolle konnte nicht gesetzt werden.");
+        }
+      }
+    }
+
+    // Abo anlegen, wenn ein Plan gewaehlt wurde.
+    if (plan && plan !== "free") {
+      if (!ALLOWED_PLANS.includes(plan)) {
+        // Frueher lief genau hier ein Constraint-Fehler auf, der still
+        // verschluckt wurde: der Benutzer entstand, das Abo nicht, und niemand
+        // erfuhr davon.
+        warnings.push(`Unbekannter Plan "${plan}" — kein Abo angelegt.`);
+      } else {
+        const expiresAt = new Date();
+        expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 year subscription
+
+        const { error: subError } = await supabaseAdmin
+          .from("subscriptions")
+          .insert({
+            user_id: newUser.user.id,
+            plan: plan,
+            started_at: new Date().toISOString(),
+            expires_at: expiresAt.toISOString(),
+          });
+
+        if (subError) {
+          console.error("Subscription creation error", subError.message);
+          warnings.push("Abo konnte nicht angelegt werden.");
+        } else {
+          console.log("Subscription created for new user");
+        }
       }
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         user: {
           id: newUser.user.id,
           email: newUser.user.email,
-        }
+        },
+        // Der Benutzer steht, aber Rolle oder Abo haben nicht geklappt. Das
+        // gehoert gesagt — frueher meldete die Oberflaeche schlicht Erfolg.
+        ...(warnings.length ? { warnings } : {}),
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
