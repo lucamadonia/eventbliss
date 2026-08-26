@@ -65,20 +65,38 @@ serve(async (req) => {
       });
     }
 
-    // Check for lifetime/manual subscription in DB (Stripe lifetime purchases
-    // and admin-granted subscriptions; RevenueCat is handled above)
+    /*
+      Unbefristete Kaeufe und vom Adminbereich vergebene Abos (Probe-Abos
+      eingeschlossen). RevenueCat ist oben schon abgehandelt.
+
+      ZWEI FEHLER STANDEN HIER. Die Bedingung liess jedes manuelle Abo durch,
+      auch ein ABGELAUFENES — `!stripe_subscription_id` allein genuegte. Und
+      die Antwort behauptete danach pauschal "lifetime" mit
+      `subscription_end: null`. Ein Probe-Abo sah damit fuer jeden Aufrufer wie
+      ein unbefristetes Premium aus, und zwar auch noch nach seinem Ende. Dass
+      in der App nichts Falsches ankam, lag allein daran, dass usePremium
+      anschliessend die Datenbank liest und dort das Datum steht.
+    */
+    const manualStillValid =
+      !dbSub?.expires_at || new Date(dbSub.expires_at) > new Date();
     if (
       dbSub &&
       dbSub.plan === "premium" &&
       dbSub.provider !== "revenuecat" &&
-      (!dbSub.stripe_subscription_id || !dbSub.expires_at)
+      // Beide Altfaelle bleiben drin — kein stripe_subscription_id (manuell,
+      // Einmalkauf) ODER keine Frist. Neu ist nur: abgelaufen zaehlt nicht mehr.
+      (!dbSub.stripe_subscription_id || !dbSub.expires_at) &&
+      manualStillValid
     ) {
-      logStep("Lifetime/manual subscription found");
+      logStep("Lifetime/manual subscription found", {
+        planType: dbSub.plan_type,
+        expiresAt: dbSub.expires_at,
+      });
       return new Response(JSON.stringify({
         subscribed: true,
         plan: "premium",
-        plan_type: "lifetime",
-        subscription_end: null,
+        plan_type: dbSub.plan_type || (dbSub.expires_at ? "monthly" : "lifetime"),
+        subscription_end: dbSub.expires_at ?? null,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { buildTrialPatch, describeSubscription, isValidTrialMonths, trialNote, TRIAL_MONTHS_MAX, TRIAL_MONTHS_MIN } from "@/lib/subscription-plans";
 import {
   Table,
   TableBody,
@@ -53,6 +54,8 @@ interface Subscription {
   id: string;
   user_id: string;
   plan: string;
+  plan_type?: string | null;
+  provider?: string | null;
   expires_at: string | null;
   created_at: string;
   stripe_subscription_id: string | null;
@@ -90,6 +93,8 @@ export function SubscriptionsTab() {
   const [createPlan, setCreatePlan] = useState<"free" | "premium">("premium");
   const [createExpiry, setCreateExpiry] = useState("");
   const [createNotes, setCreateNotes] = useState("");
+  /** Laufzeit in Monaten — fuellt das Ablaufdatum, das frei bleibt. */
+  const [createTrialMonths, setCreateTrialMonths] = useState("");
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -100,8 +105,24 @@ export function SubscriptionsTab() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (filter !== "all") {
+      /*
+        Der Filter fragte frueher nach plan = monthly/yearly/lifetime — Werte,
+        die in dieser Spalte nicht vorkommen koennen. Drei Filter lieferten
+        also immer null Treffer und sahen aus, als gaebe es keine solchen Abos.
+      */
+      if (filter === "free" || filter === "premium") {
         query = query.eq("plan", filter);
+      } else if (filter === "trial") {
+        // types.ts kennt plan_type/provider nicht — die Spalten kamen mit
+        // Migration 20260611163700, die generierten Typen wurden seither nicht
+        // neu erzeugt. Ohne die Lockerung laeuft die Typherleitung des
+        // Query-Builders in TS2589 ("excessively deep").
+        query = (query as any).eq("plan_type", "trial");
+      } else if (filter === "expired") {
+        // Zwei Bedingungen nacheinander statt verkettet: die verkettete Form
+        // treibt die Typherleitung des Query-Builders ueber ihre Grenze (TS2589).
+        query = query.eq("plan", "premium");
+        query = query.lt("expires_at", new Date().toISOString());
       }
 
       const { data: subData, error: subError } = await query;
@@ -139,7 +160,9 @@ export function SubscriptionsTab() {
 
   const handleEdit = (subscription: Subscription) => {
     setEditDialog({ open: true, subscription });
-    setNewPlan(subscription.plan);
+    // Die Spalte ist TEXT, das Formular kennt nur zwei Werte. Alles andere
+    // waere ohnehin nicht speicherbar (CHECK free/premium).
+    setNewPlan(subscription.plan === "premium" ? "premium" : "free");
     setNewExpiry(subscription.expires_at ? subscription.expires_at.split("T")[0] : "");
     setNewNotes(subscription.notes || "");
   };
@@ -208,8 +231,13 @@ export function SubscriptionsTab() {
         .insert({
           user_id: selectedUserId,
           plan: createPlan,
+          // Ein Ablaufdatum aus dem Monatsfeld heisst: Probe-Abo. Wurde das
+          // Datum von Hand gesetzt, bleibt plan_type leer — dann ist es ein
+          // manuell befristetes Premium, keine Probe.
+          plan_type: isValidTrialMonths(parseInt(createTrialMonths, 10)) ? "trial" : null,
+          provider: "manual",
           expires_at: createExpiry ? new Date(createExpiry).toISOString() : null,
-          notes: createNotes || null,
+          notes: createNotes || (isValidTrialMonths(parseInt(createTrialMonths, 10)) ? trialNote(parseInt(createTrialMonths, 10)) : null),
           is_manual: true,
         });
 
@@ -222,7 +250,12 @@ export function SubscriptionsTab() {
 
       setCreateDialog(false);
       setSelectedUserId("");
-      setCreatePlan("monthly");
+      // Hier stand "monthly" — ein Wert, den die Spalte ablehnt (CHECK:
+      // free/premium). Beim ZWEITEN Anlegen in Folge stand er im Formular und
+      // das Einfuegen scheiterte an Constraint 23514. Genau der Fehler, der
+      // diese ganze Arbeit ausgeloest hat.
+      setCreatePlan("premium");
+      setCreateTrialMonths("");
       setCreateExpiry("");
       setCreateNotes("");
       fetchData();
@@ -260,21 +293,23 @@ export function SubscriptionsTab() {
     }
   };
 
-  const getPlanBadge = (plan: string) => {
+  /*
+    Die Faerbung folgt dem Zustand des Abos, nicht einem Plan-Wort. Die alten
+    Schluessel lifetime/yearly/monthly konnten in `plan` nie stehen — es gab
+    also drei Farben, die nie zum Einsatz kamen.
+  */
+  const getPlanBadge = (sub: Subscription) => {
+    const info = describeSubscription(sub);
+    if (info.kind === "free") return <Badge variant="secondary">Free</Badge>;
     const styles: Record<string, string> = {
-      lifetime: "bg-purple-500/10 text-purple-600 border-purple-500/20",
-      yearly: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-      monthly: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+      premium: "bg-purple-500/10 text-purple-600 border-purple-500/20",
+      trial: "bg-blue-500/10 text-blue-600 border-blue-500/20",
+      expired: "bg-muted text-muted-foreground border-border",
     };
-    
-    if (plan === "free") {
-      return <Badge variant="secondary">Free</Badge>;
-    }
-    
     return (
-      <Badge className={styles[plan] || ""}>
+      <Badge className={styles[info.kind] || ""}>
         <Crown className="h-3 w-3 mr-1" />
-        {plan.charAt(0).toUpperCase() + plan.slice(1)}
+        {info.label}
       </Badge>
     );
   };
@@ -298,9 +333,9 @@ export function SubscriptionsTab() {
                 <SelectContent>
                   <SelectItem value="all">{t("common.all")}</SelectItem>
                   <SelectItem value="free">Free</SelectItem>
-                  <SelectItem value="monthly">Monthly</SelectItem>
-                  <SelectItem value="yearly">Yearly</SelectItem>
-                  <SelectItem value="lifetime">Lifetime</SelectItem>
+                  <SelectItem value="premium">Premium</SelectItem>
+                  <SelectItem value="trial">Probe</SelectItem>
+                  <SelectItem value="expired">Abgelaufen</SelectItem>
                 </SelectContent>
               </Select>
               <Button variant="outline" size="icon" onClick={fetchData}>
@@ -346,7 +381,7 @@ export function SubscriptionsTab() {
                         <TableCell className="font-medium">
                           {getUserDisplay(sub.user_id)}
                         </TableCell>
-                        <TableCell>{getPlanBadge(sub.plan)}</TableCell>
+                        <TableCell>{getPlanBadge(sub)}</TableCell>
                         <TableCell>
                           {sub.stripe_subscription_id ? (
                             <Badge variant="outline">Stripe</Badge>
@@ -515,6 +550,28 @@ export function SubscriptionsTab() {
               <p className="text-xs text-muted-foreground">
                 Premium + kein Ablaufdatum = Lifetime
               </p>
+            </div>
+            {/*
+              Laufzeit in Monaten. Fuellt nur das Datumsfeld darunter vor — das
+              bleibt frei ueberschreibbar, damit krumme Zeitraeume moeglich sind.
+            */}
+            <div className="space-y-2">
+              <Label>Probe-Abo (Monate)</Label>
+              <Input
+                type="number"
+                min={TRIAL_MONTHS_MIN}
+                max={TRIAL_MONTHS_MAX}
+                placeholder="leer = kein Probe-Abo"
+                value={createTrialMonths}
+                onChange={(e) => {
+                  setCreateTrialMonths(e.target.value);
+                  const m = parseInt(e.target.value, 10);
+                  if (isValidTrialMonths(m)) {
+                    setCreatePlan("premium");
+                    setCreateExpiry(buildTrialPatch(m).expires_at.slice(0, 10));
+                  }
+                }}
+              />
             </div>
             <div className="space-y-2">
               <Label>{t("admin.subscriptions.expiryDate", "Ablaufdatum")}</Label>

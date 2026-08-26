@@ -101,6 +101,35 @@ serve(async (req) => {
     // einen Constraint-Fehler, der unten bewusst verschluckt wurde.
     const ALLOWED_PLANS = ["free", "premium"];
 
+    /*
+      Probe-Abo in Monaten. Die Regel steht doppelt: hier und in
+      src/lib/subscription-plans.ts. Edge Functions laufen in Deno und sehen
+      src/ nicht — eine geteilte Datei gaebe es nur um den Preis eines
+      Build-Schritts fuer die Functions. Die Kopie ist bewusst winzig und
+      traegt denselben Grenzwert.
+    */
+    const TRIAL_MONTHS_MIN = 1;
+    const TRIAL_MONTHS_MAX = 60;
+    const rawTrialMonths = rawBody.trialMonths;
+    const trialMonths =
+      typeof rawTrialMonths === "number" &&
+      Number.isInteger(rawTrialMonths) &&
+      rawTrialMonths >= TRIAL_MONTHS_MIN &&
+      rawTrialMonths <= TRIAL_MONTHS_MAX
+        ? rawTrialMonths
+        : null;
+
+    /** Monatsende-Korrektur wie in src/lib/subscription-plans.ts. */
+    const addMonths = (from: Date, months: number): Date => {
+      const r = new Date(from.getTime());
+      const day = r.getDate();
+      r.setDate(1);
+      r.setMonth(r.getMonth() + months);
+      const last = new Date(r.getFullYear(), r.getMonth() + 1, 0).getDate();
+      r.setDate(Math.min(day, last));
+      return r;
+    };
+
     if (!email || !isValidEmail(email)) {
       return new Response(
         JSON.stringify({ error: "Valid email is required" }),
@@ -183,31 +212,47 @@ serve(async (req) => {
       }
     }
 
-    // Abo anlegen, wenn ein Plan gewaehlt wurde.
-    if (plan && plan !== "free") {
-      if (!ALLOWED_PLANS.includes(plan)) {
+    /*
+      Abo anlegen. Zwei Faelle, eine Zeile:
+      - Probe-Monate gesetzt  -> premium mit Ablaufdatum, plan_type "trial"
+      - nur Plan "premium"    -> premium ohne Ablauf (unbegrenzt)
+
+      Frueher stand hier hart "ein Jahr" — unabhaengig davon, was der
+      Adminbereich anbot. Wer "Lifetime" waehlte, bekam ein Jahr; wer
+      "Monthly" waehlte, bekam ebenfalls ein Jahr, sofern der Wert nicht
+      ohnehin am Constraint scheiterte.
+    */
+    const wantsTrial = trialMonths !== null;
+    if (rawTrialMonths !== undefined && rawTrialMonths !== null && rawTrialMonths !== "" && !wantsTrial) {
+      warnings.push(`Ungültige Probe-Laufzeit "${rawTrialMonths}" — kein Probe-Abo angelegt.`);
+    }
+
+    if (wantsTrial || (plan && plan !== "free")) {
+      if (!wantsTrial && !ALLOWED_PLANS.includes(plan)) {
         // Frueher lief genau hier ein Constraint-Fehler auf, der still
         // verschluckt wurde: der Benutzer entstand, das Abo nicht, und niemand
         // erfuhr davon.
         warnings.push(`Unbekannter Plan "${plan}" — kein Abo angelegt.`);
       } else {
-        const expiresAt = new Date();
-        expiresAt.setFullYear(expiresAt.getFullYear() + 1); // 1 year subscription
-
+        const now = new Date();
         const { error: subError } = await supabaseAdmin
           .from("subscriptions")
           .insert({
             user_id: newUser.user.id,
-            plan: plan,
-            started_at: new Date().toISOString(),
-            expires_at: expiresAt.toISOString(),
+            plan: "premium",
+            plan_type: wantsTrial ? "trial" : null,
+            provider: "manual",
+            is_manual: true,
+            started_at: now.toISOString(),
+            expires_at: wantsTrial ? addMonths(now, trialMonths).toISOString() : null,
+            notes: wantsTrial ? `Probe ${trialMonths} Monate — Adminbereich` : "Manuell vergeben — Adminbereich",
           });
 
         if (subError) {
           console.error("Subscription creation error", subError.message);
           warnings.push("Abo konnte nicht angelegt werden.");
         } else {
-          console.log("Subscription created for new user");
+          console.log("Subscription created for new user", { trialMonths });
         }
       }
     }

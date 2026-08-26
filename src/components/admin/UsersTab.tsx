@@ -6,6 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {
+  buildTrialPatch,
+  describeSubscription,
+  isValidTrialMonths,
+  trialNote,
+  TRIAL_MONTHS_MAX,
+  TRIAL_MONTHS_MIN,
+} from "@/lib/subscription-plans";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -23,7 +31,7 @@ import { de } from "date-fns/locale";
 import { 
   Search, MoreHorizontal, UserPlus, Eye, Trash2, Key, Mail, Shield, 
   CreditCard, Sparkles, Calendar, MapPin, Building2, Ticket, User,
-  History, Settings, AlertTriangle, Clock, Users, Globe, Filter, LogIn
+  History, Settings, AlertTriangle, Clock, Users, Globe, Filter, LogIn, CalendarClock
 } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -41,6 +49,10 @@ interface Subscription {
   id: string;
   user_id: string;
   plan: string;
+  /** Laufzeit-Art: "trial" fuer Probe-Abos, sonst monthly/yearly/lifetime oder leer. */
+  plan_type?: string | null;
+  /** "stripe" | "revenuecat" | "manual" — bezahlte Abos werden nicht angefasst. */
+  provider?: string | null;
   expires_at: string | null;
   is_manual: boolean | null;
 }
@@ -177,6 +189,9 @@ export function UsersTab() {
   const [newUserPlan, setNewUserPlan] = useState("free");
   
   const [newPassword, setNewPassword] = useState("");
+  /** Laufzeit fuer ein Probe-Abo, in Monaten. Leer = keins vergeben. */
+  const [trialMonths, setTrialMonths] = useState("");
+  const [newUserTrialMonths, setNewUserTrialMonths] = useState("");
   const [creditAmount, setCreditAmount] = useState("");
   const [creditReason, setCreditReason] = useState("");
   const [messageSubject, setMessageSubject] = useState("");
@@ -304,7 +319,7 @@ export function UsersTab() {
     return extendedUsers.filter(user => {
       const matchesSearch = searchTerm === "" || user.email?.toLowerCase().includes(searchTerm.toLowerCase()) || user.full_name?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRole = roleFilter === "all" || (roleFilter === "none" && user.roles.length === 0) || user.roles.some(r => r.role === roleFilter);
-      const matchesPlan = planFilter === "all" || (user.subscription?.plan || "free") === planFilter;
+      const matchesPlan = planFilter === "all" || describeSubscription(user.subscription).kind === planFilter;
       let matchesSource = true;
       if (sourceFilter === "direct") matchesSource = user.redemptions.length === 0;
       else if (sourceFilter === "voucher") matchesSource = user.redemptions.length > 0 && user.affiliateVouchers.length === 0;
@@ -336,10 +351,17 @@ export function UsersTab() {
     return "outline";
   };
 
-  const getPlanBadgeVariant = (plan: string): "default" | "secondary" | "outline" | "destructive" => {
-    if (plan.includes("lifetime")) return "destructive";
-    if (plan.includes("yearly")) return "default";
-    if (plan.includes("monthly")) return "secondary";
+  /*
+    Die Abzeichen folgen jetzt dem ZUSTAND, nicht einem Plan-Wort. Vorher wurde
+    auf "lifetime", "yearly" und "monthly" geprueft — Werte, die in der Spalte
+    `plan` nie stehen koennen (CHECK: nur free/premium). Es gab also drei
+    Faerbungen, die nie zustande kamen, und ein Probe-Abo sah aus wie ein
+    gekauftes Premium.
+  */
+  const getPlanBadgeVariant = (kind: string): "default" | "secondary" | "outline" | "destructive" => {
+    if (kind === "trial") return "secondary";
+    if (kind === "premium") return "default";
+    if (kind === "expired") return "destructive";
     return "outline";
   };
 
@@ -424,7 +446,19 @@ export function UsersTab() {
 
   const createUserMutation = useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke("create-user", { body: { email: newUserEmail, password: newUserPassword, fullName: newUserName, role: newUserRole, plan: newUserPlan } });
+      const months = parseInt(newUserTrialMonths, 10);
+      const { data, error } = await supabase.functions.invoke("create-user", {
+        body: {
+          email: newUserEmail,
+          password: newUserPassword,
+          fullName: newUserName,
+          role: newUserRole,
+          plan: newUserPlan,
+          // Leer lassen heisst: kein Probe-Abo. Die Function prueft die
+          // Zahl noch einmal selbst — hier steht Benutzereingabe.
+          ...(isValidTrialMonths(months) ? { trialMonths: months } : {}),
+        },
+      });
       if (error) throw error;
       return data as { warnings?: string[] } | null;
     },
@@ -434,7 +468,7 @@ export function UsersTab() {
     onSuccess: (data) => {
       if (data?.warnings?.length) toast.warning(`Benutzer erstellt — ${data.warnings.join(" ")}`);
       else toast.success("Benutzer erstellt");
-      queryClient.invalidateQueries({ queryKey: ["admin-profiles"] }); setCreateDialogOpen(false); setNewUserEmail(""); setNewUserName(""); setNewUserPassword(""); },
+      queryClient.invalidateQueries({ queryKey: ["admin-profiles"] }); setCreateDialogOpen(false); setNewUserEmail(""); setNewUserName(""); setNewUserPassword(""); setNewUserTrialMonths(""); },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -469,21 +503,41 @@ export function UsersTab() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  /*
+    Plan setzen ODER ein Probe-Abo vergeben.
+
+    Beides schreibt dieselbe Zeile, deshalb dieselbe Mutation: sonst
+    ueberholen sich zwei Schreibvorgaenge auf einem Datensatz, von dem es pro
+    Benutzer nur einen gibt. Die Felder eines Probe-Abos kommen aus
+    `buildTrialPatch`, damit Insert und Update nicht auseinanderlaufen.
+  */
   const updatePlanMutation = useMutation({
-    mutationFn: async ({ userId, plan }: { userId: string; plan: string }) => {
+    mutationFn: async ({ userId, plan, months }: { userId: string; plan: string; months?: number }) => {
       const existing = subscriptions.find(s => s.user_id === userId);
-      const oldPlan = existing?.plan || "free";
-      
-      if (existing) { 
-        const { error } = await supabase.from("subscriptions").update({ plan, is_manual: true }).eq("id", existing.id); 
-        if (error) throw error; 
-      } else { 
-        const { error } = await supabase.from("subscriptions").insert({ user_id: userId, plan, is_manual: true }); 
-        if (error) throw error; 
+      const oldPlan = describeSubscription(existing).label;
+
+      // Ein bezahltes Abo gehoert seinem Anbieter. Wer es von Hand
+      // ueberschreibt, erzeugt einen Kunden, der zahlt und nichts bekommt —
+      // oder umgekehrt. Der Knopf ist deshalb gesperrt, das hier ist der Riegel.
+      if (existing && describeSubscription(existing).isPaid) {
+        throw new Error("Dieses Konto hat ein bezahltes Abo (Stripe/RevenueCat) — bitte dort ändern.");
       }
-      
-      await logActivity(userId, "plan_change", { from: oldPlan, to: plan });
-      return { oldPlan, newPlan: plan };
+
+      const patch = months !== undefined
+        ? { ...buildTrialPatch(months), notes: trialNote(months) }
+        : { plan, plan_type: null, provider: "manual", is_manual: true, expires_at: null };
+
+      if (existing) {
+        const { error } = await supabase.from("subscriptions").update(patch).eq("id", existing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.from("subscriptions").insert({ user_id: userId, ...patch });
+        if (error) throw error;
+      }
+
+      const newPlan = months !== undefined ? `Probe ${months} Monate` : plan;
+      await logActivity(userId, "plan_change", { from: oldPlan, to: newPlan });
+      return { oldPlan, newPlan };
     },
     onSuccess: (result, variables) => { 
       toast.success(`Plan geändert: ${result.oldPlan} → ${result.newPlan}`); 
@@ -496,7 +550,10 @@ export function UsersTab() {
           ...selectedUser,
           subscription: {
             ...(selectedUser.subscription || { id: "temp", user_id: variables.userId, expires_at: null }),
-            plan: variables.plan,
+            plan: variables.months !== undefined ? "premium" : variables.plan,
+            plan_type: variables.months !== undefined ? "trial" : null,
+            provider: "manual",
+            expires_at: variables.months !== undefined ? buildTrialPatch(variables.months).expires_at : null,
             is_manual: true,
           } as Subscription,
         });
@@ -596,7 +653,7 @@ export function UsersTab() {
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="E-Mail oder Name suchen..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-9" /></div>
           <Select value={roleFilter} onValueChange={setRoleFilter}><SelectTrigger className="w-[140px]"><Shield className="h-4 w-4 mr-2" /><SelectValue placeholder="Rolle" /></SelectTrigger><SelectContent><SelectItem value="all">Alle Rollen</SelectItem><SelectItem value="admin">Admin</SelectItem><SelectItem value="moderator">Moderator</SelectItem><SelectItem value="agency">Agentur</SelectItem><SelectItem value="affiliate">Affiliate</SelectItem><SelectItem value="member">Mitglied</SelectItem><SelectItem value="none">Keine Rolle</SelectItem></SelectContent></Select>
-          <Select value={planFilter} onValueChange={setPlanFilter}><SelectTrigger className="w-[140px]"><CreditCard className="h-4 w-4 mr-2" /><SelectValue placeholder="Plan" /></SelectTrigger><SelectContent><SelectItem value="all">Alle Pläne</SelectItem><SelectItem value="free">Free</SelectItem><SelectItem value="monthly">Monthly</SelectItem><SelectItem value="yearly">Yearly</SelectItem><SelectItem value="lifetime">Lifetime</SelectItem></SelectContent></Select>
+          <Select value={planFilter} onValueChange={setPlanFilter}><SelectTrigger className="w-[140px]"><CreditCard className="h-4 w-4 mr-2" /><SelectValue placeholder="Plan" /></SelectTrigger><SelectContent><SelectItem value="all">Alle Pläne</SelectItem><SelectItem value="free">Free</SelectItem><SelectItem value="premium">Premium</SelectItem><SelectItem value="trial">Probe</SelectItem><SelectItem value="expired">Abgelaufen</SelectItem></SelectContent></Select>
           <Select value={sourceFilter} onValueChange={setSourceFilter}><SelectTrigger className="w-[140px]"><Globe className="h-4 w-4 mr-2" /><SelectValue placeholder="Quelle" /></SelectTrigger><SelectContent><SelectItem value="all">Alle Quellen</SelectItem><SelectItem value="direct">Direkt</SelectItem><SelectItem value="voucher">Voucher</SelectItem><SelectItem value="affiliate">Affiliate</SelectItem><SelectItem value="agency">Agentur</SelectItem></SelectContent></Select>
         </div>
 
@@ -612,13 +669,13 @@ export function UsersTab() {
             <TableHeader><TableRow><TableHead>E-Mail</TableHead><TableHead>Name</TableHead><TableHead>Rolle</TableHead><TableHead>Plan</TableHead><TableHead>Credits</TableHead><TableHead>Quelle</TableHead><TableHead>Erstellt</TableHead><TableHead className="w-[50px]"></TableHead></TableRow></TableHeader>
             <TableBody>
               {filteredUsers.length === 0 ? <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Keine Benutzer gefunden</TableCell></TableRow> : filteredUsers.map((user) => {
-                const source = getUserSource(user); const role = getPrimaryRole(user); const plan = user.subscription?.plan || "free"; const credits = getUserCredits(user);
+                const source = getUserSource(user); const role = getPrimaryRole(user); const planInfo = describeSubscription(user.subscription); const credits = getUserCredits(user);
                 return (
                   <TableRow key={user.id} className="cursor-pointer hover:bg-muted/50" onClick={() => { setSelectedUser(user); setDetailTab("overview"); setDetailDialogOpen(true); }}>
                     <TableCell className="font-medium">{user.email || "-"}</TableCell>
                     <TableCell>{user.full_name || "-"}</TableCell>
                     <TableCell><Badge variant={getRoleBadgeVariant(role)} className="capitalize">{role}</Badge></TableCell>
-                    <TableCell><Badge variant={getPlanBadgeVariant(plan)} className="capitalize">{plan}</Badge></TableCell>
+                    <TableCell><Badge variant={getPlanBadgeVariant(planInfo.kind)}>{planInfo.label}</Badge></TableCell>
                     <TableCell><span className={credits.used >= credits.total ? "text-destructive" : ""}>{credits.used}/{credits.total}</span></TableCell>
                     <TableCell><div className="flex flex-col gap-1"><Badge variant={source.variant} className="w-fit">{source.label}</Badge>{source.details && <span className="text-xs text-muted-foreground truncate max-w-[150px]">{source.details}</span>}</div></TableCell>
                     <TableCell className="text-muted-foreground">{user.created_at ? format(new Date(user.created_at), "dd.MM.yy", { locale: de }) : "-"}</TableCell>
@@ -644,6 +701,14 @@ export function UsersTab() {
               <div className="space-y-2"><Label>Rolle</Label><Select value={newUserRole} onValueChange={(v) => setNewUserRole(v as AppRole)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="member">Mitglied</SelectItem><SelectItem value="organizer">Organizer</SelectItem><SelectItem value="moderator">Moderator</SelectItem><SelectItem value="agency">Agentur</SelectItem><SelectItem value="affiliate">Affiliate</SelectItem><SelectItem value="admin">Admin</SelectItem></SelectContent></Select></div>
               <div className="space-y-2"><Label>Plan</Label><Select value={newUserPlan} onValueChange={setNewUserPlan}><SelectTrigger><SelectValue /></SelectTrigger>{/* Nur free/premium — siehe Kommentar bei "Plan ändern" weiter unten. */}
                 <SelectContent><SelectItem value="free">Free</SelectItem><SelectItem value="premium">Premium</SelectItem></SelectContent></Select></div>
+            </div>
+            {/* Ein Testkonto ist damit ein Handgriff: Rolle, Plan, Laufzeit. */}
+            <div className="space-y-2">
+              <Label>Probe-Abo (Monate)</Label>
+              <Input type="number" min={TRIAL_MONTHS_MIN} max={TRIAL_MONTHS_MAX} placeholder="leer = kein Probe-Abo" value={newUserTrialMonths} onChange={(e) => setNewUserTrialMonths(e.target.value)} />
+              {isValidTrialMonths(parseInt(newUserTrialMonths, 10)) && (
+                <p className="text-xs text-muted-foreground">Premium bis {new Date(buildTrialPatch(parseInt(newUserTrialMonths, 10)).expires_at).toLocaleDateString("de-DE")}</p>
+              )}
             </div>
           </div>
           <DialogFooter><Button variant="outline" onClick={() => setCreateDialogOpen(false)}>Abbrechen</Button><Button onClick={() => createUserMutation.mutate()} disabled={!newUserEmail || !newUserPassword || createUserMutation.isPending}>{createUserMutation.isPending ? "Erstelle..." : "Erstellen"}</Button></DialogFooter>
@@ -673,7 +738,7 @@ export function UsersTab() {
                     <div className="space-y-4">
                       <div className="grid grid-cols-3 gap-3">
                         <div className="bg-muted/50 rounded-lg p-4 text-center"><Badge variant={getRoleBadgeVariant(getPrimaryRole(selectedUser))} className="mb-2 capitalize">{getPrimaryRole(selectedUser)}</Badge><p className="text-xs text-muted-foreground">Rolle</p></div>
-                        <div className="bg-muted/50 rounded-lg p-4 text-center"><Badge variant={getPlanBadgeVariant(selectedUser.subscription?.plan || "free")} className="mb-2 capitalize">{selectedUser.subscription?.plan || "free"}</Badge><p className="text-xs text-muted-foreground">Plan</p></div>
+                        <div className="bg-muted/50 rounded-lg p-4 text-center"><Badge variant={getPlanBadgeVariant(describeSubscription(selectedUser.subscription).kind)} className="mb-2">{describeSubscription(selectedUser.subscription).label}</Badge><p className="text-xs text-muted-foreground">Plan</p></div>
                         <div className="bg-muted/50 rounded-lg p-4 text-center"><p className="text-lg font-bold">{getUserCredits(selectedUser).used}/{getUserCredits(selectedUser).total}</p><p className="text-xs text-muted-foreground">Credits</p></div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
@@ -708,7 +773,57 @@ export function UsersTab() {
                     Die Laufzeit (monatlich/jaehrlich) steht seit der
                     RevenueCat-Migration in der eigenen Spalte `plan_type`.
                   */}
-                  <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><CreditCard className="h-4 w-4" />Plan ändern</h4><div className="flex flex-wrap gap-2">{["free", "premium"].map((plan) => (<Button key={plan} variant={(selectedUser.subscription?.plan || "free") === plan ? "default" : "outline"} size="sm" className="capitalize" onClick={() => updatePlanMutation.mutate({ userId: selectedUser.id, plan })} disabled={updatePlanMutation.isPending}>{plan}</Button>))}</div></div>
+                  {(() => {
+                    const planInfo = describeSubscription(selectedUser.subscription);
+                    const months = parseInt(trialMonths, 10);
+                    const monthsOk = isValidTrialMonths(months);
+                    return (
+                      <div className="bg-muted/30 rounded-lg p-4 space-y-4">
+                        <div className="space-y-3">
+                          <h4 className="font-semibold flex items-center gap-2"><CreditCard className="h-4 w-4" />Plan ändern</h4>
+                          <div className="flex flex-wrap items-center gap-2">
+                            {["free", "premium"].map((plan) => (
+                              <Button key={plan} variant={planInfo.kind === (plan === "free" ? "free" : "premium") ? "default" : "outline"} size="sm" className="capitalize" onClick={() => updatePlanMutation.mutate({ userId: selectedUser.id, plan })} disabled={updatePlanMutation.isPending || planInfo.isPaid}>{plan === "premium" ? "Premium (unbegrenzt)" : "Free"}</Button>
+                            ))}
+                            <span className="text-xs text-muted-foreground">Aktuell: {planInfo.label}</span>
+                          </div>
+                        </div>
+
+                        {/*
+                          Probe-Abo. Die Laufzeit steht in einer eigenen Spalte
+                          (`plan_type`), nicht in `plan` — dort sind nur free und
+                          premium erlaubt. Genau diese Verwechslung liess die
+                          frueheren Knoepfe "Monthly/Yearly/Lifetime" ins Leere
+                          laufen.
+                        */}
+                        <div className="space-y-2 border-t pt-4">
+                          <h4 className="font-semibold flex items-center gap-2"><CalendarClock className="h-4 w-4" />Probe-Abo vergeben</h4>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Input
+                              type="number"
+                              min={TRIAL_MONTHS_MIN}
+                              max={TRIAL_MONTHS_MAX}
+                              placeholder="Monate"
+                              value={trialMonths}
+                              onChange={(e) => setTrialMonths(e.target.value)}
+                              className="w-28"
+                            />
+                            <Button
+                              size="sm"
+                              onClick={() => { updatePlanMutation.mutate({ userId: selectedUser.id, plan: "premium", months }); setTrialMonths(""); }}
+                              disabled={!monthsOk || updatePlanMutation.isPending || planInfo.isPaid}
+                            >Vergeben</Button>
+                            {monthsOk && (
+                              <span className="text-xs text-muted-foreground">läuft bis {new Date(buildTrialPatch(months).expires_at).toLocaleDateString("de-DE")}</span>
+                            )}
+                          </div>
+                          {planInfo.isPaid && (
+                            <p className="text-xs text-destructive">Konto hat ein bezahltes Abo — hier nichts ändern, sonst zahlt jemand für nichts.</p>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
                   <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><Sparkles className="h-4 w-4" />Credits anpassen</h4><div className="flex gap-2"><Input type="number" placeholder="Anzahl" value={creditAmount} onChange={(e) => setCreditAmount(e.target.value)} className="w-24" /><Input placeholder="Grund" value={creditReason} onChange={(e) => setCreditReason(e.target.value)} className="flex-1" /><Button onClick={() => adjustCreditsMutation.mutate({ userId: selectedUser.id, amount: parseInt(creditAmount), reason: creditReason })} disabled={!creditAmount || !creditReason || adjustCreditsMutation.isPending}>Anpassen</Button></div></div>
                   <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><Key className="h-4 w-4" />Passwort zurücksetzen</h4><div className="flex gap-2"><Input type="text" placeholder="Neues Passwort" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} /><Button variant="outline" onClick={() => setNewPassword(generatePassword())}>Generieren</Button><Button onClick={() => resetPasswordMutation.mutate({ userId: selectedUser.id, password: newPassword })} disabled={!newPassword || resetPasswordMutation.isPending}>Zurücksetzen</Button></div></div>
                   <div className="bg-muted/30 rounded-lg p-4 space-y-3"><h4 className="font-semibold flex items-center gap-2"><Mail className="h-4 w-4" />Nachricht senden</h4><Input placeholder="Betreff" value={messageSubject} onChange={(e) => setMessageSubject(e.target.value)} /><Textarea placeholder="Nachricht..." value={messageContent} onChange={(e) => setMessageContent(e.target.value)} rows={3} /><Button onClick={() => sendMessageMutation.mutate({ userId: selectedUser.id, subject: messageSubject, content: messageContent })} disabled={!messageSubject || !messageContent || sendMessageMutation.isPending} className="w-full"><Mail className="h-4 w-4 mr-2" />Senden</Button></div>
