@@ -139,6 +139,21 @@ serve(async (req: Request): Promise<Response> => {
       .eq("influencer_id", creator.id)
       .maybeSingle();
 
+    /*
+      ALLE Briefing-Vorlagen, nicht nur das eigene Briefing.
+
+      Wer angeschrieben wird, soll sehen koennen, was ueberhaupt moeglich ist,
+      bevor etwas vereinbart ist. Dieselbe Positivliste wie oben — die internen
+      Vermerke der Vorlagen bleiben ebenso draussen.
+    */
+    const { data: templates } = await supabase
+      .from("influencer_briefing_templates")
+      .select(
+        "id, name, headline, core_message, tone, dos, donts, mention_handles, " +
+        "hashtags, link_url, disclosure_required, disclosure_text, extra"
+      )
+      .order("name");
+
     // Materialien als zeitlich begrenzte Links — der Bucket ist privat.
     const { data: assetRows } = await supabase
       .from("influencer_briefing_assets")
@@ -176,6 +191,7 @@ serve(async (req: Request): Promise<Response> => {
             }
           : null,
         briefing: briefing ?? null,
+        templates: templates ?? [],
         assets,
         tasks: tasks ?? [],
       },

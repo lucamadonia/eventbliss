@@ -19,8 +19,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  BadgeCheck, CalendarClock, CheckCircle2, Copy, Download, FileText, Gift, Link2,
-  Percent, Send, Sparkles,
+  BadgeCheck, CalendarClock, CheckCircle2, Copy, Download, FileText, Gift,
+  LayoutTemplate, Link2, Package, Percent, Send, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { toast } from "sonner";
 import type { PortalBriefing } from "@/lib/influencer-briefing";
+import { creatorMediaKit } from "@/lib/creator-media-kit";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 interface CreatorTask {
@@ -59,6 +60,8 @@ interface CreatorView {
     voucher_code: string | null;
   } | null;
   briefing: PortalBriefing | null;
+  /** Alle Vorlagen — auch ohne aktiven Deal sichtbar. */
+  templates: (Partial<PortalBriefing> & { id: number; name: string })[];
   assets: CreatorAsset[];
   tasks: CreatorTask[];
 }
@@ -98,6 +101,8 @@ const T = {
     window: "Veröffentlichung",
     materials: "Materialien",
     copied: "Kopiert",
+    templatesTitle: "Alle Vorlagen",
+    templatesHint: "Zum Stöbern — du musst dich an keine halten. Aufklappen zeigt die ganze Vorlage.",
   },
   en: {
     title: "Your area — EventBliss",
@@ -133,6 +138,8 @@ const T = {
     window: "Publishing window",
     materials: "Materials",
     copied: "Copied",
+    templatesTitle: "All templates",
+    templatesHint: "To browse — you are not bound to any of them. Open one to see the whole thing.",
   },
 };
 
@@ -433,11 +440,235 @@ export default function CreatorPortal() {
           </div>
         </section>
 
+        {/*
+          ALLE VORLAGEN — auch ohne Deal. Wer angeschrieben wird, soll sehen
+          koennen, was moeglich ist, bevor etwas vereinbart ist. Die internen
+          Vermerke der Vorlagen bleiben draussen (Feldliste in creator-view).
+        */}
+        {view.templates.length > 0 && (
+          <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+            <h2 className="text-lg font-bold flex items-center gap-2">
+              <LayoutTemplate className="h-5 w-5" />
+              {t.templatesTitle}
+            </h2>
+            <p className="mt-1 text-sm text-white/50">{t.templatesHint}</p>
+
+            <div className="mt-4 space-y-3">
+              {view.templates.map((tpl) => (
+                <details key={tpl.id} className="rounded-xl border border-white/10 bg-black/25 p-4">
+                  <summary className="cursor-pointer font-semibold">
+                    {tpl.name}
+                    {tpl.headline && <span className="text-white/50 font-normal"> — {tpl.headline}</span>}
+                  </summary>
+                  <div className="mt-3 space-y-3 text-sm">
+                    {tpl.core_message && <p className="text-white/80 whitespace-pre-line">{tpl.core_message}</p>}
+                    {tpl.tone && <p className="text-white/50">{tpl.tone}</p>}
+                    {(tpl.dos?.length || tpl.donts?.length) && (
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        {tpl.dos && tpl.dos.length > 0 && (
+                          <ul className="space-y-1">
+                            {tpl.dos.map((d) => (
+                              <li key={d} className="flex gap-2 text-white/75">
+                                <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-400" />{d}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {tpl.donts && tpl.donts.length > 0 && (
+                          <ul className="space-y-1">
+                            {tpl.donts.map((d) => (
+                              <li key={d} className="flex gap-2 text-white/60">
+                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />{d}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                    {tpl.hashtags && tpl.hashtags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {tpl.hashtags.map((h) => (
+                          <span key={h} className="rounded border border-white/10 px-2 py-0.5 text-xs text-white/60">{h}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </details>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Media-Kit — steht jedem offen, unabhaengig vom Deal. */}
+        <MediaKitSection lang={view.language} />
+
         <p className="text-sm text-white/45">
           {t.contact} <a href="mailto:svitlana@event-bliss.com" className="underline">svitlana@event-bliss.com</a>
         </p>
       </motion.div>
     </Shell>
+  );
+}
+
+/**
+ * Das Media-Kit: Texte zum Kopieren, belegbare Zahlen, Hashtags, Bilder.
+ *
+ * Steht bewusst JEDEM offen, der den Link hat — auch vor einer Zusage. Wer
+ * angeschrieben wird, soll nachsehen koennen, ohne zu fragen.
+ */
+function MediaKitSection({ lang }: { lang: string | null }) {
+  const k = creatorMediaKit(lang);
+  const copy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(k.copy);
+  };
+
+  return (
+    <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 space-y-6">
+      <div>
+        <h2 className="text-lg font-bold flex items-center gap-2">
+          <Package className="h-5 w-5" />
+          {k.title}
+        </h2>
+        <p className="mt-1 text-sm text-white/60 leading-relaxed">{k.intro}</p>
+      </div>
+
+      {/* Beschreibung */}
+      <div className="space-y-2">
+        <h3 className="text-sm font-semibold text-white/60">{k.boilerplateTitle}</h3>
+        {[k.boilerplateShort, k.boilerplateLong].map((text) => (
+          <button
+            key={text.slice(0, 24)}
+            onClick={() => copy(text)}
+            className="w-full text-left rounded-xl border border-white/10 bg-black/25 p-3 text-sm text-white/80 hover:bg-white/5 transition-colors"
+          >
+            {text}
+            <span className="ml-2 text-xs text-white/35">⧉</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Zahlen */}
+      <div>
+        <h3 className="text-sm font-semibold text-white/60">{k.factsTitle}</h3>
+        <ul className="mt-2 space-y-1.5">
+          {k.facts.map((f) => (
+            <li key={f} className="text-sm text-white/75 flex gap-2">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/30" />
+              {f}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Beispieltexte */}
+      <div className="space-y-2">
+        <h3 className="text-sm font-semibold text-white/60">{k.captionsTitle}</h3>
+        <p className="text-xs text-white/45">{k.captionsHint}</p>
+        {k.captions.map((c) => (
+          <button
+            key={c.slice(0, 24)}
+            onClick={() => copy(c)}
+            className="w-full text-left rounded-xl border border-white/10 bg-black/25 p-3 text-sm text-white/80 hover:bg-white/5 transition-colors"
+          >
+            {c}
+            <span className="ml-2 text-xs text-white/35">⧉</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Hashtags */}
+      <div>
+        <h3 className="text-sm font-semibold text-white/60">{k.hashtagsTitle}</h3>
+        <div className="mt-2 space-y-2">
+          {k.hashtagSets.map((set) => (
+            <div key={set.label} className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-white/40 w-20 shrink-0">{set.label}</span>
+              <button
+                onClick={() => copy(set.tags.join(" "))}
+                className="rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-sm hover:bg-white/10 transition-colors"
+              >
+                {set.tags.join(" ")}
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Bilder */}
+      <div>
+        <h3 className="text-sm font-semibold text-white/60">{k.assetsTitle}</h3>
+        <div className="mt-2 grid sm:grid-cols-2 gap-2">
+          {k.assets.map((a) => (
+            <a
+              key={a.url}
+              href={a.url}
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-3 rounded-lg border border-white/10 bg-black/25 px-3 py-2 hover:bg-white/5 transition-colors"
+            >
+              <Download className="h-4 w-4 shrink-0 text-white/45" />
+              <span className="min-w-0">
+                <span className="block text-sm truncate">{a.label}</span>
+                <span className="block text-xs text-white/40 truncate">{a.hint}</span>
+              </span>
+            </a>
+          ))}
+        </div>
+        <p className="mt-3 text-xs text-white/45">
+          <strong className="text-white/60">{k.screenshotTitle}:</strong> {k.screenshotHint}
+        </p>
+      </div>
+
+      {/* Farben */}
+      <div>
+        <h3 className="text-sm font-semibold text-white/60">{k.brandTitle}</h3>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {k.brandColors.map((c) => (
+            <button
+              key={c.value}
+              onClick={() => copy(c.value)}
+              className="flex items-center gap-2 rounded-lg border border-white/10 px-2.5 py-1.5 hover:bg-white/5 transition-colors"
+            >
+              <span className="h-4 w-4 rounded" style={{ background: c.value }} />
+              <span className="text-xs text-white/70">{c.label}</span>
+              <code className="text-xs text-white/40">{c.value}</code>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Links */}
+      <div>
+        <h3 className="text-sm font-semibold text-white/60">{k.linksTitle}</h3>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {k.links.map((l) => (
+            <a
+              key={l.url}
+              href={l.url}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-sm hover:bg-white/10 transition-colors"
+            >
+              {l.label}
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {/* Was wir uns wünschen */}
+      <div className="rounded-xl border border-white/10 bg-black/25 p-4">
+        <h3 className="text-sm font-semibold text-white/60">{k.rulesTitle}</h3>
+        <ul className="mt-2 space-y-1.5">
+          {k.rules.map((r) => (
+            <li key={r} className="text-sm text-white/75 flex gap-2">
+              <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-white/30" />
+              {r}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }
 
