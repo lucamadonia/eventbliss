@@ -8702,12 +8702,12 @@
     "quickGame": "Juego rápido"
   },
   "nativeTabs": {
-    "home": "Inicio",
-    "events": "Eventos",
-    "play": "Jugar",
+    "home": "Start",
+    "events": "Wydarzenia",
+    "play": "Graj",
     "ideas": "Pomysły",
     "market": "Mercado",
-    "profile": "Perfil"
+    "profile": "Profil"
   },
   "nativeDrinks": {
     "title": "Statystyki imprezy",

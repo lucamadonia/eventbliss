@@ -8628,12 +8628,12 @@
     "quickGame": "Juego rápido"
   },
   "nativeTabs": {
-    "home": "Inicio",
-    "events": "Eventos",
-    "play": "Jugar",
+    "home": "Home",
+    "events": "Eventi",
+    "play": "Gioca",
     "ideas": "Idee",
     "market": "Mercado",
-    "profile": "Perfil"
+    "profile": "Profilo"
   },
   "nativeDrinks": {
     "title": "Party Stats",

@@ -8678,12 +8678,12 @@
     "quickGame": "Juego rápido"
   },
   "nativeTabs": {
-    "home": "Inicio",
-    "events": "Eventos",
-    "play": "Jugar",
+    "home": "Start",
+    "events": "Evenementen",
+    "play": "Spelen",
     "ideas": "Ideeën",
     "market": "Mercado",
-    "profile": "Perfil"
+    "profile": "Profiel"
   },
   "nativeDrinks": {
     "title": "Feeststatistieken",

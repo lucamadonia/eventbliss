@@ -8678,12 +8678,12 @@
     "quickGame": "Juego rápido"
   },
   "nativeTabs": {
-    "home": "Inicio",
-    "events": "Eventos",
-    "play": "Jugar",
+    "home": "Ana sayfa",
+    "events": "Etkinlikler",
+    "play": "Oyna",
     "ideas": "Fikirler",
     "market": "Mercado",
-    "profile": "Perfil"
+    "profile": "Profil"
   },
   "nativeDrinks": {
     "title": "Parti istatistikleri",
