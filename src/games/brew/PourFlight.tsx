@@ -58,6 +58,11 @@ export interface PourFlightProps {
   counterBox: () => DOMRect | null;
   skin: Skin;
   /**
+   * Wo der Glashals liegt, als Anteil der Glashoehe. Kommt aus
+   * `glassMouthT(shape)` — bei zehn Formen gibt es keinen festen Wert.
+   */
+  mouthT?: number;
+  /**
    * Bewegungsarmut: gerade Bahn statt Bogen, kuerzer, ohne Verfluessigung.
    *
    * BEWUSST KEIN AUSSCHALTER. Vorher wurde diese Komponente bei
@@ -85,7 +90,7 @@ interface Flight {
   plain: boolean;
 }
 
-export function PourFlight({ plan, from, glassBox, counterBox, skin, reduced = false }: PourFlightProps) {
+export function PourFlight({ plan, from, glassBox, counterBox, skin, mouthT = 0.16, reduced = false }: PourFlightProps) {
   const [flights, setFlights] = useState<Flight[] | null>(null);
   /**
    * Fuer welchen Plan die Fluege schon gebaut wurden.
@@ -122,7 +127,12 @@ export function PourFlight({ plan, from, glassBox, counterBox, skin, reduced = f
 
     const out: Flight[] = [];
     const mouthX = glass.left + glass.width / 2;
-    const mouthY = glass.top + glass.height * 0.16;
+    // ABGESCHRIEBENE ZAHLEN LAUFEN DER ECHTEN DAVON: Hier stand fest 0.16,
+    // waehrend `Glass` 0.14 exportierte — die beiden waren schon vorher
+    // uneinig. Seit es zehn Gefaessformen gibt, laufen die Muendungen von
+    // 0.03 (Highball) bis 0.19 (Flakon); ein fester Wert trifft keine davon,
+    // und die Karten fliegen sichtbar am Glas vorbei.
+    const mouthY = glass.top + glass.height * mouthT;
 
     plan.used.forEach((id, i) => {
       const r = next();
@@ -157,7 +167,7 @@ export function PourFlight({ plan, from, glassBox, counterBox, skin, reduced = f
     });
 
     setFlights(out);
-  }, [plan, from, glassBox, counterBox, reduced]);
+  }, [plan, from, glassBox, counterBox, mouthT, reduced]);
 
   if (!flights || flights.length === 0) return null;
 

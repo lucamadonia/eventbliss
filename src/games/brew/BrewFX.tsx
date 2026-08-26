@@ -61,10 +61,26 @@ function withAlpha(hex: string, alpha: number): string {
  * (#F3E7D3, #E8EEF5, #DCEFF7, #E3D18A) — auf ihnen verschwaende jedes dunkel
  * gedachte Artwork.
  */
-export function ingredientPlate(color: string): { background: string; boxShadow: string } {
+export function ingredientPlate(
+  color: string,
+  /** Ohne Angabe der Grundton des Zaubertrank-Gewands wie bisher. */
+  plateBase = "#120E1C",
+  /** Wie stark die Karte nach aussen leuchtet. */
+  glow: "none" | "soft" | "strong" = "soft",
+): { background: string; boxShadow: string } {
   return {
-    background: `linear-gradient(160deg, ${withAlpha(color, 0.34)}, ${withAlpha(color, 0.10)}), #120E1C`,
-    boxShadow: `inset 0 0 0 1px ${withAlpha(color, 0.55)}`,
+    background: [
+      // Deckenlicht von oben — ohne das liest die Karte als flaches Rechteck.
+      "radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,0.14), transparent 55%)",
+      `linear-gradient(168deg, ${withAlpha(color, 0.42)}, ${withAlpha(color, 0.12)} 62%, ${withAlpha(color, 0.20)})`,
+      plateBase,
+    ].join(", "),
+    boxShadow: [
+      "inset 0 1px 0 rgba(255,255,255,0.14)",
+      `inset 0 0 0 1px ${withAlpha(color, glow === "strong" ? 0.95 : 0.5)}`,
+      "0 8px 18px -10px rgba(0,0,0,0.85)",
+      glow === "none" ? "" : `0 0 ${glow === "strong" ? 34 : 22}px ${glow === "strong" ? -6 : -12}px ${withAlpha(color, 0.95)}`,
+    ].filter(Boolean).join(", "),
   };
 }
 

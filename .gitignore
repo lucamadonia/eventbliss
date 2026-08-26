@@ -41,3 +41,4 @@ android/app/build/
 .swarm/
 appstore/
 scripts/_*
+.brew-src/

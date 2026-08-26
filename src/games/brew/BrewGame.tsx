@@ -45,6 +45,7 @@ import { hasShellBackButton } from "../ui/shell-back";
 import { ResultScreen } from "../ui/ResultScreen";
 import type { OnlineGameProps } from "../multiplayer/OnlineGameTypes";
 import { Glass } from "./Glass";
+import { GLASS_SHAPES, glassMouthT, shapeForRecipe } from "./glass-shapes";
 import { TrayCards } from "./TrayCards";
 import { ingredientPlate, POUR_BEATS, pourDuration } from "./BrewFX";
 import { PourFlight, type PourPlan } from "./PourFlight";
@@ -642,6 +643,10 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     skin,
     activeIdx,
     activeName: active?.name ?? "",
+    // ADDITIV: Der Fernseher erkannte den aktiven Spieler bisher am NAMEN.
+    // Zwei gleichnamige Gaeste bekamen beide den Ring. Die Kennung ist die
+    // Wahrheit; `activeName` bleibt fuer die Beschriftung und als Rueckfall.
+    activeId: active?.id ?? "",
     winnerId,
     counter,
     tray,
@@ -766,6 +771,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
                 recipeNeeds={p.recipe.needs}
                 filled={p.glass}
                 skin={skin}
+                shape={shapeForRecipe(p.recipe.id, skin)}
                 size="sm"
                 // Dieselbe Verzoegerung wie das grosse Glas — sonst fuellt sich
                 // das Miniglas derselben Person 720 ms zu frueh.
@@ -825,7 +831,11 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
               recipeNeeds={me.recipe.needs}
               filled={me.glass}
               skin={skin}
-              size="md"
+              shape={shapeForRecipe(me.recipe.id, skin)}
+              // Nur das eigene Heldenglas perlt — und auch nur, wenn das
+              // Rezept ueberhaupt Kohlensaeure enthaelt.
+              bubbles
+              size="lg"
               arrivalDelay={pourPlan?.pid === me.id ? POUR_BEATS.depart + POUR_BEATS.flight : 0}
               layerStagger={POUR_BEATS.stagger}
             />
@@ -987,6 +997,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         from={trayGeoRef.current}
         glassBox={readGlassBox}
         counterBox={readCounterBox}
+        mouthT={glassMouthT(GLASS_SHAPES[shapeForRecipe(me?.recipe.id ?? "", skin)])}
         skin={skin}
         reduced={!!reduceMotion}
       />

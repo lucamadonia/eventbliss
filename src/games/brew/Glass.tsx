@@ -1,144 +1,171 @@
 /**
- * Glass — das Herzstück von GEBRÄU: ein echtes Gefäß, das sich schichtweise
- * füllt. Bewusst SVG statt Bilddatei: 30 Rezepte × 2 Gewänder als Grafiken
- * wären nicht wartbar, ein paar <rect>/<path>-Elemente mit Farbverläufen
- * schon.
+ * Glass — das Herzstueck von GEBRAEU: ein echtes Gefaess, das sich schichtweise
+ * fuellt. Bewusst SVG statt Bilddatei: 30 Rezepte x 2 Gewaender als Grafiken
+ * waeren nicht wartbar, ein paar Pfade mit Farbverlaeufen schon.
  *
- * ZWEI GEWÄNDER, EINE GEOMETRIE:
- *  - "bar"  → ein Trinkglas (Trapez), die Flüssigkeit ist einfach nur schön.
- *  - "brew" → ein Kolben (Erlenmeyerkolben), die Flüssigkeit LEUCHTET —
- *             ein weicher, gefilterter Schein in der obersten Schichtfarbe.
+ * ZEHN FORMEN, EIN VERFAHREN: Die Geometrie steht in `glass-shapes.ts` als
+ * Profil. Hier wird nur gezeichnet, nicht entschieden. Aussenkontur und
+ * Innenraum entstehen aus DEMSELBEN Profil, deshalb kann die Fuellung
+ * prinzipiell nicht aus dem Glas laufen.
  *
- * Die Basis-Zutat (isBase) liegt immer UNTEN. `filled` kommt von BrewGame.tsx
- * bereits in dieser Reihenfolge an (Basis zuerst) — Glass.tsx sortiert nicht
- * selbst, damit hier nur gezeichnet wird, nicht entschieden.
+ * EINHEITSRAUM STATT PIXELGROESSEN: Vorher gab es drei feste Groessen, und der
+ * Fernseher nahm die kleinste — 56x72 px. Das Hero-Objekt des Spiels war auf
+ * dem groessten Bildschirm das kleinste Element. Jetzt bestimmt allein die
+ * CSS-Breite, wie gross das Glas wird.
  *
- * Die Zutatenfarbe ist die einzige Bedeutungsträgerin: brew-content.ts sagt
- * es im Kommentar selbst — die Farbe gehört zur Zutat, nicht zur Darstellung.
+ * FILTERBUDGET NULL: Alle Weichzeichnungen sind `radialGradient`-Ellipsen,
+ * kein `feGaussianBlur`. Ein SVG-Filter rastert pro Glas eine eigene
+ * Filterregion — bei acht Glaesern nebeneinander ist das der Unterschied
+ * zwischen fluessig und ruckelig.
+ *
+ * Die Basis-Zutat liegt immer UNTEN. `filled` kommt von BrewGame bereits in
+ * dieser Reihenfolge an; hier wird nicht sortiert.
  */
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { useAmbientMotion } from "@/lib/useAmbientMotion";
 import { INGREDIENTS, type IngredientId, type Skin } from "./brew-content";
+import { BREW_PALETTES, layerColor, type BrewPalette } from "./brew-palette";
+import {
+  DEFAULT_SHAPE, GLASS_SHAPES, bandBoundaries, hwInnerAt, hwOuterAt, unitHeight,
+  type GlassShape, type GlassShapeId,
+} from "./glass-shapes";
 import { PourStream, Splash, FinishSparkle } from "./BrewFX";
-
-/** Referenzgröße der BrewFX-Effekte ist das Telefon-Maß (size=1) — hier auf
- * die drei Glas-Größen umgerechnet, statt eine vierte Größenskala einzuführen. */
-const FX_SCALE: Record<NonNullable<GlassProps["size"]>, number> = { sm: 0.42, md: 0.7, lg: 1.05 };
 
 /**
  * Wo der Glashals liegt, als Anteil der Gesamthoehe.
  *
- * Exportiert, damit `PourFlight` sein Ziel nicht abschreiben muss — eine
- * abgeschriebene Zahl laeuft der echten irgendwann davon.
+ * @deprecated Rueckfall fuer Aufrufer ohne Form. Wer die Form kennt, nimmt
+ * `glassMouthT(shape)` — die Muendungen laufen von 0.03 (Highball) bis 0.19
+ * (Flakon), ein fester Wert trifft keinen davon.
  */
 export const GLASS_MOUTH_T = 0.14;
 
+/** Breite je Groessenstufe. `size` ist nur noch eine CSS-Vorgabe. */
+const SIZE_WIDTH: Record<"sm" | "md" | "lg", string> = {
+  sm: "clamp(44px, 5.5vw, 92px)",
+  md: "clamp(96px, 26vw, 148px)",
+  lg: "clamp(148px, 34vw, 220px)",
+};
+
+/**
+ * Bezugsbreite der BrewFX-Effekte. So gewaehlt, dass die drei alten
+ * FX_SCALE-Werte (0.42 / 0.70 / 1.05) auf drei Prozent genau herauskommen —
+ * BrewFX merkt vom Umbau nichts.
+ */
+const FX_REF_W = 137;
+const LEGACY_PX: Record<"sm" | "md" | "lg", number> = { sm: 56, md: 96, lg: 148 };
+
 export interface GlassProps {
-  /** Zutaten des Rezepts in der Reihenfolge, die die Gesamthöhe aufteilt. */
+  /** Zutaten des Rezepts — teilt die Fuellhoehe auf. */
   recipeNeeds: IngredientId[];
-  /** Bereits gesicherte Zutaten — Basis zuerst, sonst Einfüll-Reihenfolge. */
+  /** Bereits gesicherte Zutaten, Basis zuerst. */
   filled: IngredientId[];
   skin: Skin;
-  /** Für die kleine Wiederverwendung auf dem Fernseher. */
+  /** Groessenvorgabe. Wird von `width` geschlagen. */
   size?: "sm" | "md" | "lg";
-  className?: string;
+  /** Freie CSS-Breite, z. B. `clamp(56px,7.4vw,132px)`. */
+  width?: string | number;
+  /** Gefaessform. Ohne Angabe die Standardform des Gewands. */
+  shape?: GlassShapeId;
+  /** Ohne Angabe die Palette des Gewands. */
+  palette?: BrewPalette;
   /**
-   * Wie viele Millisekunden vergehen, bis die erste NEUE Schicht zu entstehen
-   * beginnt — die Zeit, die die fliegende Karte bis zum Glashals braucht.
-   *
-   * Kein Aufblitzen trotz Verzoegerung: `motion.path` hat bereits ein
-   * `initial` (am Boden zusammengefallen) und haelt es waehrend der Wartezeit.
-   * Die Schicht existiert also, ist aber flach, bis ihre Karte landet.
+   * Perlen aufsteigen lassen, wenn das Rezept `fizz` enthaelt.
+   * Der Fernseher setzt das NIE: acht Glaeser mit Dauerschleife sind acht
+   * Dauerschleifen. `useAmbientMotion` allein reicht als Riegel nicht — es
+   * liefert nur nativ `false`, ein Browser-Cast bekommt `true`.
    */
+  bubbles?: boolean;
+  /** Notausgang, falls die Messung einmal nicht greift. */
+  fxScale?: number;
+  className?: string;
+  /** Millisekunden, bis die erste NEUE Schicht zu entstehen beginnt. */
   arrivalDelay?: number;
   /** Versatz zwischen zwei neuen Schichten. */
   layerStagger?: number;
 }
 
-const SIZES: Record<NonNullable<GlassProps["size"]>, { w: number; h: number }> = {
-  sm: { w: 56, h: 72 },
-  md: { w: 96, h: 124 },
-  lg: { w: 148, h: 192 },
-};
+// ---------------------------------------------------------------------------
+// Pfade — alle aus dem Profil abgeleitet, keiner von Hand geschrieben
+// ---------------------------------------------------------------------------
 
-/**
- * Verlaufsstopps für EINE Schicht: oben ein Hauch der Farbe darüber, unten
- * ein Hauch der Farbe darunter. So laufen Schichten an den Rändern ineinander
- * statt als harte Streifen zu wirken — genau der Effekt, der verlangt war.
- */
-function layerStops(above: string | null, own: string, below: string | null) {
-  const stops: { offset: string; color: string }[] = [];
-  stops.push({ offset: "0%", color: above ?? own });
-  stops.push({ offset: "18%", color: own });
-  stops.push({ offset: "82%", color: own });
-  stops.push({ offset: "100%", color: below ?? own });
-  return stops;
+/** Geschlossener Pfad entlang einer Kontur zwischen zwei Hoehenanteilen. */
+function wallPath(
+  shape: GlassShape, H: number, tTop: number, tBottom: number,
+  halfWidth: (s: GlassShape, t: number) => number, steps = 20,
+): string {
+  const links: string[] = [];
+  const rechts: string[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = tTop + ((tBottom - tTop) * i) / steps;
+    const hw = halfWidth(shape, t);
+    const y = t * H;
+    links.push(`${(50 - hw).toFixed(2)} ${y.toFixed(2)}`);
+    rechts.push(`${(50 + hw).toFixed(2)} ${y.toFixed(2)}`);
+  }
+  rechts.reverse();
+  return `M ${links[0]} ${links.slice(1).map((p) => `L ${p}`).join(" ")} ${rechts.map((p) => `L ${p}`).join(" ")} Z`;
 }
 
-export function Glass({ recipeNeeds, filled, skin, size = "md", className, arrivalDelay = 0, layerStagger = 70 }: GlassProps) {
-  const reduceMotion = useReducedMotion();
-  const uid = useId();
-  const { w, h } = SIZES[size];
+/** Ein flaches Band an der Wand entlang — eine Zutatenschicht. */
+function bandPath(shape: GlassShape, H: number, yTop: number, yBottom: number): string {
+  return wallPath(shape, H, yTop / H, yBottom / H, hwInnerAt, 8);
+}
 
-  const isBrew = skin === "brew";
-  // Innenraum des Gefäßes — etwas Rand für Wandstärke und den Glanzrand oben.
-  const pad = w * 0.1;
-  const innerTop = h * GLASS_MOUTH_T;
-  const innerBottom = h * 0.94;
-  const innerHeight = innerBottom - innerTop;
-  const innerLeftTop = isBrew ? w * 0.34 : pad;
-  const innerRightTop = isBrew ? w - w * 0.34 : w - pad;
-  const innerLeftBottom = pad * 0.6;
-  const innerRightBottom = w - pad * 0.6;
+export function Glass({
+  recipeNeeds, filled, skin, size = "md", width, shape, palette,
+  bubbles = false, fxScale, className, arrivalDelay = 0, layerStagger = 70,
+}: GlassProps) {
+  const reduceMotion = useReducedMotion();
+  const ambient = useAmbientMotion();
+  const uid = useId().replace(/:/g, "");
+  const pal = palette ?? BREW_PALETTES[skin];
+  const form = GLASS_SHAPES[shape ?? DEFAULT_SHAPE[skin]];
+  const H = unitHeight(form);
 
   const total = Math.max(1, recipeNeeds.length);
-  const bandHeight = innerHeight / total;
   const fillCount = Math.min(filled.length, total);
-  const fillFraction = fillCount / total;
-  const complete = fillCount >= total && total > 0;
+  const complete = fillCount >= total;
+  const grenzen = useMemo(() => bandBoundaries(form, total), [form, total]);
 
-  // Breite an einer Höhe h0..1 (0 = oben, 1 = unten) entlang der Gefäßwand
-  // interpolieren — der Kolben ist oben eng, unten weit; das Glas ist ein
-  // gleichmäßiger Trichter. Ohne das würden die Schichten im Kolben wie ein
-  // Rechteck wirken statt wie Flüssigkeit in einer Flasche.
-  const widthAt = (t: number) => {
-    const left = innerLeftTop + (innerLeftBottom - innerLeftTop) * t;
-    const right = innerRightTop + (innerRightBottom - innerRightTop) * t;
-    return { left, right };
-  };
-
-  const layers = useMemo(() => {
-    return filled.slice(0, total).map((id, i) => {
-      const color = INGREDIENTS[id].color;
-      const aboveId = i > 0 ? filled[i - 1] : null;
-      const belowId = i < filled.length - 1 ? filled[i + 1] : null;
-      return {
-        id,
-        color,
-        gradId: `brewLayer-${uid}-${i}`,
-        stops: layerStops(
-          aboveId ? INGREDIENTS[aboveId].color : null,
-          color,
-          belowId ? INGREDIENTS[belowId].color : null,
-        ),
-        // Von unten gezählt: Schicht 0 sitzt am Boden.
-        yTop: innerBottom - (i + 1) * bandHeight,
-        yBottom: innerBottom - i * bandHeight,
-      };
+  // Gemessene Breite fuer die BrewFX-Overlays. Startwert aus der
+  // Groessenvorgabe, damit Giessstrahl und Splash nicht einen Frame lang auf
+  // Groesse null rendern.
+  const boxRef = useRef<HTMLDivElement>(null);
+  const [pxW, setPxW] = useState<number>(() =>
+    typeof width === "number" ? width : LEGACY_PX[size]);
+  useEffect(() => {
+    if (typeof width === "number") { setPxW(width); return; }
+    const el = boxRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver((eintraege) => {
+      const w = eintraege[0]?.contentRect.width;
+      if (w && w > 0) setPxW(w);
     });
-  }, [filled, total, uid, innerBottom, bandHeight]);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [width]);
+  const fx = fxScale ?? pxW / FX_REF_W;
+  const pxH = pxW * form.aspect;
+
+  const layers = useMemo(() => filled.slice(0, total).map((id, i) => ({
+    id,
+    color: layerColor(INGREDIENTS[id].color, skin, i, total),
+    gradId: `bl-${uid}-${i}`,
+    yBottom: grenzen[i],
+    yTop: grenzen[i + 1],
+  })), [filled, total, skin, uid, grenzen]);
 
   const topColor = layers.length ? layers[layers.length - 1].color : null;
-  const glowId = `brewGlow-${uid}`;
-  const fx = FX_SCALE[size];
+  /** Hoehe des Pegels im Einheitsraum. */
+  const pegel = grenzen[fillCount];
 
-  // Splash + kurzer Gießstrahl, sobald eine neue Schicht dazukommt — beide
-  // gehören BrewFX.tsx (`Splash`/`PourStream`), Glass.tsx liefert nur das
-  // "wann". `useRef` statt State für den Vorwert: löst keinen Extra-Render aus.
+  // Splash + Giessstrahl, sobald eine Schicht dazukommt. `useRef` fuer den
+  // Vorwert: loest keinen Extra-Render aus.
   const [splashTrigger, setSplashTrigger] = useState(0);
   const [pouring, setPouring] = useState(false);
   const prevCountRef = useRef(filled.length);
-  /** Index der ersten Schicht, die bei der letzten Aenderung neu hinzukam. */
   const [newFrom, setNewFrom] = useState(filled.length);
   useEffect(() => {
     if (filled.length > prevCountRef.current) {
@@ -152,8 +179,7 @@ export function Glass({ recipeNeeds, filled, skin, size = "md", className, arriv
     prevCountRef.current = filled.length;
   }, [filled.length]);
 
-  // Funkeln genau EINMAL beim Übergang zu "fertig", nicht bei jedem Render,
-  // in dem `complete` schon true ist.
+  // Funkeln genau EINMAL beim Uebergang zu "fertig".
   const [finishTrigger, setFinishTrigger] = useState(0);
   const wasCompleteRef = useRef(complete);
   useEffect(() => {
@@ -161,165 +187,186 @@ export function Glass({ recipeNeeds, filled, skin, size = "md", className, arriv
     wasCompleteRef.current = complete;
   }, [complete]);
 
-  // Kolben: Dreieck von schmalem Hals zu breitem Boden. Glas: Trapez, oben
-  // etwas weiter als unten (typische Tumbler-Silhouette).
-  const outlinePath = isBrew
-    ? `M ${w * 0.34} ${innerTop} L ${w * 0.66} ${innerTop} L ${innerRightBottom} ${innerBottom} A ${pad * 0.4} ${pad * 0.4} 0 0 1 ${innerLeftBottom} ${innerBottom} Z`
-    : `M ${innerLeftTop} ${innerTop} L ${innerRightTop} ${innerTop} L ${innerRightBottom} ${innerBottom} A ${pad * 0.3} ${pad * 0.3} 0 0 1 ${innerLeftBottom} ${innerBottom} Z`;
+  const bowlTop = form.bowl[0].y;
+  const bowlBottom = form.bowl[form.bowl.length - 1].y;
+  const aussen = wallPath(form, H, bowlTop, bowlBottom, hwOuterAt, 22);
+  const innen = wallPath(form, H, form.cavity.top, form.cavity.bottom, hwInnerAt, 22);
+  const muendungHw = hwOuterAt(form, bowlTop);
+  const zeigePerlen = bubbles && ambient && !reduceMotion && recipeNeeds.includes("fizz");
 
   return (
     <motion.div
+      ref={boxRef}
       className={className}
-      style={{ width: w, position: "relative" }}
+      style={{ width: width ?? SIZE_WIDTH[size], position: "relative" }}
       animate={{ y: complete && !reduceMotion ? -4 : 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 14 }}
     >
-      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} role="img" aria-hidden="true">
+      <svg viewBox={`0 0 100 ${H}`} width="100%" height="100%" role="img" aria-hidden="true"
+        style={{ display: "block", overflow: "visible" }}>
         <defs>
-          {layers.map((l) => (
-            <linearGradient key={l.gradId} id={l.gradId} x1="0" y1="0" x2="0" y2="1">
-              {l.stops.map((s, i) => (
-                <stop key={i} offset={s.offset} stopColor={s.color} />
-              ))}
-            </linearGradient>
-          ))}
-          {isBrew && topColor && (
-            <filter id={glowId} x="-60%" y="-60%" width="220%" height="220%">
-              <feGaussianBlur stdDeviation={w * 0.06} result="blur" />
-              <feMerge>
-                <feMergeNode in="blur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-          )}
-          {/* Der Glaskoerper selbst: oben heller, unten dunkler, damit das
-              Gefaess Tiefe bekommt statt eine flache Flaeche zu sein. */}
+          {layers.map((l, i) => {
+            const oben = i < layers.length - 1 ? layers[i + 1].color : l.color;
+            const unten = i > 0 ? layers[i - 1].color : l.color;
+            return (
+              <linearGradient key={l.gradId} id={l.gradId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={oben} />
+                <stop offset="18%" stopColor={l.color} />
+                <stop offset="82%" stopColor={l.color} />
+                <stop offset="100%" stopColor={unten} />
+              </linearGradient>
+            );
+          })}
+          {/* Glaskoerper: oben heller, unten dunkler, damit das Gefaess Tiefe
+              bekommt statt eine flache Flaeche zu sein. */}
           <linearGradient id={`body-${uid}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="rgba(255,255,255,0.22)" />
-            <stop offset="0.45" stopColor="rgba(255,255,255,0.10)" />
-            <stop offset="1" stopColor="rgba(255,255,255,0.16)" />
+            <stop offset="0" stopColor="rgba(255,255,255,0.13)" />
+            <stop offset="0.45" stopColor="rgba(255,255,255,0.04)" />
+            <stop offset="1" stopColor="rgba(255,255,255,0.10)" />
           </linearGradient>
-          <clipPath id={`clip-${uid}`}>
-            <path d={outlinePath} />
-          </clipPath>
+          {/* Kanten dunkler — das laesst die Wand als Material lesen. */}
+          <linearGradient id={`kante-${uid}`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="rgba(0,0,0,0.32)" />
+            <stop offset="0.22" stopColor="rgba(0,0,0,0)" />
+            <stop offset="0.78" stopColor="rgba(0,0,0,0)" />
+            <stop offset="1" stopColor="rgba(0,0,0,0.32)" />
+          </linearGradient>
+          <radialGradient id={`schatten-${uid}`}>
+            <stop offset="0" stopColor="#000" stopOpacity="0.5" />
+            <stop offset="1" stopColor="#000" stopOpacity="0" />
+          </radialGradient>
+          {topColor && (
+            <radialGradient id={`aura-${uid}`}>
+              <stop offset="0" stopColor={topColor} stopOpacity={pal.glowAlpha} />
+              <stop offset="0.5" stopColor={topColor} stopOpacity={pal.glowAlpha * 0.4} />
+              <stop offset="1" stopColor={topColor} stopOpacity="0" />
+            </radialGradient>
+          )}
+          <clipPath id={`clip-${uid}`}><path d={innen} /></clipPath>
         </defs>
 
-        {/* Leuchten hinter dem Kolben — nur im Zaubertrank-Gewand. Eine
-            weiche, farbige Aura statt eines harten Glases mit Inhalt. */}
-        {isBrew && topColor && (
-          <ellipse
-            cx={w / 2}
-            cy={innerBottom - innerHeight * fillFraction * 0.5}
-            rx={w * 0.42}
-            ry={h * 0.32}
-            fill={topColor}
-            opacity={fillCount > 0 ? 0.35 : 0}
-            filter={`url(#${glowId})`}
-          />
+        {/* 1. Aufsetzschatten — ohne ihn schwebt das Glas im Nichts. */}
+        <ellipse cx="50" cy={H * 0.985}
+          rx={(form.foot?.rx ?? hwOuterAt(form, bowlBottom)) * 1.25} ry={H * 0.022}
+          fill={`url(#schatten-${uid})`} />
+
+        {/* 2. Kaustik: das Licht, das die Fluessigkeit auf die Theke wirft.
+            Jetzt in BEIDEN Gewaendern — vorher hatte die Bar gar kein Leuchten. */}
+        {topColor && fillCount > 0 && (
+          <ellipse cx="50" cy={H * 0.965} rx="52" ry={H * 0.05}
+            fill={`url(#aura-${uid})`} opacity={0.7} />
         )}
 
-        {/*
-          Gefaesskoerper.
+        {/* 3. Aura der Fluessigkeit, auf Pegelhoehe. */}
+        {topColor && fillCount > 0 && (
+          <ellipse cx="50" cy={(pegel + grenzen[0]) / 2} rx="48" ry={H * 0.3}
+            fill={`url(#aura-${uid})`} />
+        )}
 
-          Vorher: `fill: rgba(255,255,255,0.04)` mit einer 0.35er Kontur — vier
-          Prozent Deckkraft. Auf dem Telefon blieb davon ein graues Drahtgitter,
-          und weil ein LEERES Glas der Normalfall ist (jede Runde beginnt so),
-          sah der halbe Bildschirm nach unfertigem Entwurf aus.
+        {/* 4. Glaskoerper: Schale, Stiel, Knoten, Fuss. */}
+        <path d={aussen} fill={`url(#body-${uid})`} />
+        <path d={aussen} fill={`url(#kante-${uid})`} />
+        {form.stem && (
+          <rect x={50 - form.stem.hw} y={form.stem.top * H}
+            width={form.stem.hw * 2} height={(form.stem.bottom - form.stem.top) * H}
+            rx={form.stem.hw} fill={`url(#body-${uid})`} />
+        )}
+        {form.stem?.knob && (
+          <ellipse cx="50" cy={form.stem.knob.y * H} rx={form.stem.knob.rx} ry={form.stem.knob.ry}
+            fill={`url(#body-${uid})`} />
+        )}
+        {form.foot && (
+          <ellipse cx="50" cy={form.foot.cy * H} rx={form.foot.rx} ry={form.foot.ry}
+            fill={`url(#body-${uid})`} stroke="rgba(255,255,255,0.28)" strokeWidth="0.8" />
+        )}
 
-          Jetzt bekommt es Material: ein Koerper mit Tiefe, eine kraeftigere
-          Wand und ein Glanzstreifen. Es geht nicht um mehr Effekte, sondern
-          darum, dass ein Glas als Gegenstand lesbar bleibt, auch leer.
-        */}
-        <path
-          d={outlinePath}
-          fill={`url(#body-${uid})`}
-          stroke="rgba(255,255,255,0.55)"
-          strokeWidth={w * 0.035}
-          strokeLinejoin="round"
-        />
-        {/* Glanzstreifen an der linken Wand — das eine Detail, das aus einer
-            Flaeche ein Glas macht. */}
-        <path
-          d={`M ${w * 0.3} ${innerTop + innerHeight * 0.08}
-              L ${w * 0.37} ${innerTop + innerHeight * 0.08}
-              L ${w * 0.29} ${innerBottom - innerHeight * 0.12}
-              L ${w * 0.22} ${innerBottom - innerHeight * 0.12} Z`}
-          fill="rgba(255,255,255,0.16)"
-        />
-
-        {/* Füllung, an die Gefäßform geklippt. */}
+        {/* 5. Fluessigkeit, an den Innenraum geklippt. */}
         <g clipPath={`url(#clip-${uid})`}>
           {layers.map((l, i) => {
-            const tTop = (l.yTop - innerTop) / innerHeight;
-            const tBottom = (l.yBottom - innerTop) / innerHeight;
-            const top = widthAt(tTop);
-            const bottom = widthAt(tBottom);
-            const targetD = `M ${top.left} ${l.yTop} L ${top.right} ${l.yTop} L ${bottom.right} ${l.yBottom} L ${bottom.left} ${l.yBottom} Z`;
-            // Schluessel NUR die Zutatenkennung, NICHT zusaetzlich yTop:
-            // `sortGlassOrder` zieht die Basiszutat nach vorn. Kommt sie
-            // nachtraeglich dazu, verschieben sich alle Indizes, yTop aendert
-            // sich — und mit `id + yTop` mounteten ALLE Schichten neu und
-            // liefen von unten wieder hoch, statt sauber nachzuruecken.
-            // Die Kennungen sind eindeutig: `missingFor` schliesst Vorhandenes
-            // aus, `splitTray` loescht Dubletten aus dem Bedarf.
+            const ziel = bandPath(form, H, l.yTop, l.yBottom);
+            const flach = bandPath(form, H, l.yBottom, l.yBottom);
+            // Schluessel NUR die Zutatenkennung: `sortGlassOrder` zieht die
+            // Basiszutat nach vorn. Mit `id + y` mounteten sonst ALLE
+            // Schichten neu und liefen von unten wieder hoch.
             return reduceMotion ? (
-              <path key={l.id} d={targetD} fill={`url(#${l.gradId})`} />
+              <path key={l.id} d={ziel} fill={`url(#${l.gradId})`} />
             ) : (
               <motion.path
                 key={l.id}
                 fill={`url(#${l.gradId})`}
-                initial={{ d: `M ${bottom.left} ${innerBottom} L ${bottom.right} ${innerBottom} L ${bottom.right} ${innerBottom} L ${bottom.left} ${innerBottom} Z` }}
-                animate={{ d: targetD }}
-                // Federung statt linearem Anstieg: der Pegel schwappt oben
-                // kurz nach, statt wie ein Ladebalken gleichmäßig zu steigen.
-                // Neue Schichten warten, bis ihre Karte oben angekommen ist.
+                initial={{ d: flach }}
+                animate={{ d: ziel }}
                 transition={{
-                  type: "spring",
-                  stiffness: 140,
-                  damping: 12,
+                  type: "spring", stiffness: 140, damping: 12,
                   delay: i >= newFrom ? (arrivalDelay + (i - newFrom) * layerStagger) / 1000 : 0,
                 }}
               />
             );
           })}
+
+          {/* 6. Perlen — nur bei Kohlensaeure, nur am Telefon. */}
+          {zeigePerlen && fillCount > 0 && [0, 1, 2, 3, 4, 5].map((i) => (
+            <motion.circle key={i} cx={50 + (i % 3) * 9 - 9} r={0.9 + (i % 2) * 0.7}
+              fill="rgba(255,255,255,0.55)"
+              initial={{ cy: grenzen[0] }}
+              animate={{ cy: [grenzen[0], pegel], opacity: [0, 0.8, 0] }}
+              transition={{ duration: 2.6 + (i % 3) * 0.8, repeat: Infinity, delay: i * 0.45, ease: "easeOut" }}
+            />
+          ))}
         </g>
 
-        {/* Glanzrand — Andeutung von Glas/Kristall. */}
+        {/* 7. Meniskus: die Ellipse auf der Oberflaeche. Ohne sie sieht die
+            Fuellung aus wie ein Balken, nicht wie Fluessigkeit. */}
+        {topColor && fillCount > 0 && (
+          <motion.ellipse
+            cx="50" rx={hwInnerAt(form, pegel / H)} ry={Math.max(1.2, hwInnerAt(form, pegel / H) * 0.16)}
+            fill={topColor} stroke="rgba(255,255,255,0.45)" strokeWidth="0.7"
+            initial={false}
+            animate={{ cy: pegel }}
+            transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 140, damping: 12, delay: arrivalDelay / 1000 }}
+          />
+        )}
+
+        {/* 8. Bodenellipse — nur bei flachem Boden. */}
+        {form.flatFloor && (
+          <ellipse cx="50" cy={form.cavity.bottom * H}
+            rx={hwInnerAt(form, form.cavity.bottom)} ry={hwInnerAt(form, form.cavity.bottom) * 0.13}
+            fill="rgba(0,0,0,0.3)" />
+        )}
+
+        {/* 9. Wandkontur und Muendung. Die Muendungsellipse ist der Rand, der
+            ein Glas ueberhaupt erst als Glas lesbar macht — vorher war dort
+            eine gerade Linie. */}
+        <path d={aussen} fill="none" stroke="rgba(255,255,255,0.42)" strokeWidth="1.1" strokeLinejoin="round" />
+        <ellipse cx="50" cy={bowlTop * H} rx={muendungHw} ry={Math.max(1.4, muendungHw * 0.17)}
+          fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.3" />
+
+        {/* 10. Glanzstreifen an der linken Wand — das eine Detail, das aus
+            einer Flaeche ein Glas macht. Folgt der Kontur der Form. */}
         <path
-          d={outlinePath}
-          fill="none"
-          stroke="rgba(255,255,255,0.5)"
-          strokeWidth={w * 0.012}
-          strokeDasharray={`${w * 0.3} ${w * 0.7}`}
-          opacity={0.4}
+          d={wallPath(form, H, form.cavity.top + 0.04, form.cavity.bottom - 0.06,
+            (s, t) => hwOuterAt(s, t) * 0.2, 10)}
+          transform={`translate(${-muendungHw * 0.52} 0)`}
+          fill="rgba(255,255,255,0.14)"
         />
       </svg>
 
-      {/* Gießstrahl: läuft kurz von oben in den Hals, wenn eine Schicht dazukommt. */}
-      <div
-        className="pointer-events-none absolute left-1/2"
-        style={{ top: -h * 0.55 * fx, transform: "translateX(-50%)" }}
-      >
+      {/* Giessstrahl: laeuft kurz von oben in den Hals. */}
+      <div className="pointer-events-none absolute left-1/2"
+        style={{ top: -pxH * 0.42, transform: "translateX(-50%)" }}>
         <PourStream color={topColor ?? "#ffffff"} active={pouring} skin={skin} size={fx} />
       </div>
 
-      {/* Die Aufprallwelle sitzt an der aktuellen Pegel-Oberfläche. */}
-      <div
-        className="pointer-events-none absolute left-1/2"
-        style={{
-          top: innerBottom - innerHeight * fillFraction,
-          transform: "translate(-50%, -50%)",
-        }}
-      >
+      {/* Aufprallwelle an der Pegel-Oberflaeche. */}
+      <div className="pointer-events-none absolute left-1/2"
+        style={{ top: (pegel / H) * pxH, transform: "translate(-50%, -50%)" }}>
         <Splash color={topColor ?? "#ffffff"} trigger={splashTrigger} skin={skin} size={fx} />
       </div>
 
-      {/* Fertig-Funkeln, mittig über dem Gefäß. */}
+      {/* Fertig-Funkeln. */}
       {complete && (
-        <div
-          className="pointer-events-none absolute left-1/2"
-          style={{ top: innerTop + innerHeight * 0.3, transform: "translate(-50%, -50%)" }}
-        >
+        <div className="pointer-events-none absolute left-1/2"
+          style={{ top: (form.cavity.top + 0.3 * (form.cavity.bottom - form.cavity.top)) * pxH, transform: "translate(-50%, -50%)" }}>
           <FinishSparkle color={topColor ?? "#ffffff"} trigger={finishTrigger} skin={skin} size={fx} />
         </div>
       )}
