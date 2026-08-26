@@ -91,6 +91,12 @@ serve(async (req: Request): Promise<Response> => {
         return json({ error: "Konnte nicht gespeichert werden." }, 500);
       }
 
+      // Auch das gehoert in den Verlauf: es passiert ohne Zutun des Teams.
+      await supabase.from("influencer_activity").insert({
+        influencer_id: creator.id,
+        action: "proof_submitted",
+        details: { taskId, proofUrl },
+      });
       log("proof submitted", { influencer: creator.id, task: taskId });
       return json({ ok: true });
     }
@@ -115,6 +121,39 @@ serve(async (req: Request): Promise<Response> => {
       if (voucher?.is_active) voucherCode = voucher.code as string;
     }
 
+    /*
+      Das Briefing — mit AUSDRUECKLICHER Feldliste.
+
+      Die Liste spiegelt PORTAL_FIELDS aus src/lib/influencer-briefing.ts.
+      Sie ist eine Positivliste: ein spaeter ergaenztes Feld ist damit
+      automatisch intern, bis es hier bewusst eingetragen wird.
+      `internal_notes` steht nicht darin und darf nie darin stehen.
+    */
+    const { data: briefing } = await supabase
+      .from("influencer_briefings")
+      .select(
+        "headline, core_message, tone, dos, donts, mention_handles, hashtags, " +
+        "link_url, discount_code, discount_note, disclosure_required, " +
+        "disclosure_text, approval_required, publish_from, publish_until, extra"
+      )
+      .eq("influencer_id", creator.id)
+      .maybeSingle();
+
+    // Materialien als zeitlich begrenzte Links — der Bucket ist privat.
+    const { data: assetRows } = await supabase
+      .from("influencer_briefing_assets")
+      .select("id, file_name, storage_path, mime_type, size_bytes")
+      .eq("influencer_id", creator.id)
+      .order("created_at", { ascending: false });
+
+    const assets: { id: number; file_name: string; url: string | null }[] = [];
+    for (const a of assetRows ?? []) {
+      const { data: signed } = await supabase.storage
+        .from("influencer-assets")
+        .createSignedUrl(a.storage_path, 600);
+      assets.push({ id: a.id, file_name: a.file_name, url: signed?.signedUrl ?? null });
+    }
+
     const { data: tasks } = await supabase
       .from("influencer_deliverables")
       .select("id, kind, title, due_at, status, proof_url")
@@ -136,6 +175,8 @@ serve(async (req: Request): Promise<Response> => {
               voucher_code: voucherCode,
             }
           : null,
+        briefing: briefing ?? null,
+        assets,
         tasks: tasks ?? [],
       },
     });

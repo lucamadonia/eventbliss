@@ -42,6 +42,8 @@ import {
   useInfluencerGroups, useInfluencerPackages, useUpdateInfluencer,
   type Influencer, type InfluencerDeal,
 } from "@/hooks/useInfluencers";
+import { logInfluencerActivity } from "@/hooks/useInfluencerBriefing";
+import { AccountPanel, BriefingPanel, HistoryPanel } from "./InfluencerPanels";
 
 const SITE = "https://event-bliss.com";
 
@@ -83,15 +85,19 @@ export default function InfluencerDetail({
         </DialogHeader>
 
         <Tabs defaultValue="data">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="data">Stammdaten</TabsTrigger>
+            <TabsTrigger value="briefing">Briefing</TabsTrigger>
             <TabsTrigger value="outreach">Ansprache</TabsTrigger>
             <TabsTrigger value="deal">Deal & Zugang</TabsTrigger>
             <TabsTrigger value="tasks">Aufgaben ({tasks.length})</TabsTrigger>
+            <TabsTrigger value="history">Verlauf</TabsTrigger>
           </TabsList>
 
           {/* ── Stammdaten ─────────────────────────────────────────── */}
           <TabsContent value="data" className="space-y-4 pt-4">
+            <AccountPanel influencer={influencer} />
+
             <div className="grid sm:grid-cols-2 gap-3">
               <Field label="Handle">
                 <Input value={form.handle} onChange={(e) => set("handle", e.target.value)} />
@@ -209,8 +215,13 @@ export default function InfluencerDetail({
               <Select
                 value={form.outreach_status}
                 onValueChange={(v) => {
-                  set("outreach_status", v as InfluencerStatus);
-                  update.mutate({ id: influencer.id, patch: { outreach_status: v as InfluencerStatus } });
+                  const next = v as InfluencerStatus;
+                  set("outreach_status", next);
+                  update.mutate({ id: influencer.id, patch: { outreach_status: next } });
+                  void logInfluencerActivity(influencer.id, "status_changed", {
+                    von: INFLUENCER_STATUS_LABEL[influencer.outreach_status],
+                    nach: INFLUENCER_STATUS_LABEL[next],
+                  });
                 }}
               >
                 <SelectTrigger><SelectValue /></SelectTrigger>
@@ -301,6 +312,16 @@ export default function InfluencerDetail({
                 <p className="text-sm text-muted-foreground">Noch kein Token vergeben.</p>
               )}
             </div>
+          </TabsContent>
+
+          {/* ── Briefing ───────────────────────────────────────────── */}
+          <TabsContent value="briefing" className="pt-4">
+            <BriefingPanel influencer={influencer} />
+          </TabsContent>
+
+          {/* ── Verlauf ────────────────────────────────────────────── */}
+          <TabsContent value="history" className="pt-4">
+            <HistoryPanel influencer={influencer} />
           </TabsContent>
 
           {/* ── Deal & Zugang ──────────────────────────────────────── */}

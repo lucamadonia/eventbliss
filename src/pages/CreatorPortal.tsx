@@ -8,21 +8,19 @@
  * DAS IST AUCH DER "ANSEHEN WIE"-BEREICH DES ADMINS. Ein echtes
  * Fremd-Einloggen gibt es bewusst nicht: dafuer muesste der Server eine fremde
  * Sitzung ausstellen, und das ist eine Sicherheitsfunktion mit eigenem
- * Kapitel, kein Nebenprodukt einer Detailansicht. Der Admin oeffnet dieselbe
- * Seite, die der Influencer sieht — mehr braucht es fuer "wie sieht er das?"
- * nicht.
+ * Kapitel, kein Nebenprodukt einer Detailansicht.
  *
- * ZUGRIFF: Die Tabelle hat KEINE oeffentliche Leseregel (personenbezogene
- * Daten). Gelesen wird deshalb ueber die Edge Function `creator-view`, die mit
- * Dienstschluessel arbeitet und nur die Felder herausgibt, die auf dieser
- * Seite stehen — nicht die Notizen des Vertriebs, nicht die Bewertung des
- * Erstkontakts.
+ * ZUGRIFF: Die Tabellen haben KEINE oeffentliche Leseregel (personenbezogene
+ * Daten). Gelesen wird ueber die Edge Function `creator-view`, die mit
+ * Dienstschluessel arbeitet und eine ausdrueckliche Feldliste herausgibt —
+ * `internal_notes` steht nicht darin.
  */
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  BadgeCheck, CalendarClock, CheckCircle2, Copy, Gift, Link2, Percent, Send, Sparkles,
+  BadgeCheck, CalendarClock, CheckCircle2, Copy, Download, FileText, Gift, Link2,
+  Percent, Send, Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +28,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useSEO } from "@/hooks/useSEO";
 import { toast } from "sonner";
+import type { PortalBriefing } from "@/lib/influencer-briefing";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 interface CreatorTask {
@@ -39,6 +38,12 @@ interface CreatorTask {
   due_at: string | null;
   status: string;
   proof_url: string | null;
+}
+
+interface CreatorAsset {
+  id: number;
+  file_name: string;
+  url: string | null;
 }
 
 interface CreatorView {
@@ -53,6 +58,8 @@ interface CreatorView {
     ends_at: string | null;
     voucher_code: string | null;
   } | null;
+  briefing: PortalBriefing | null;
+  assets: CreatorAsset[];
   tasks: CreatorTask[];
 }
 
@@ -80,6 +87,17 @@ const T = {
     thanks: "Danke — wir schauen es uns an.",
     contact: "Fragen? Schreib an",
     invalid: "Dieser Link ist nicht (mehr) gültig.",
+    briefingTitle: "Das Briefing",
+    message: "Darum geht es",
+    dos: "Bitte so",
+    donts: "Bitte nicht",
+    linking: "Verlinkung",
+    disclosure: "Kennzeichnung",
+    disclosureHint: (x: string) => `Bitte als "${x}" kennzeichnen — das ist Pflicht.`,
+    approval: "Vor der Veröffentlichung kurz mit uns abstimmen.",
+    window: "Veröffentlichung",
+    materials: "Materialien",
+    copied: "Kopiert",
   },
   en: {
     title: "Your area — EventBliss",
@@ -104,6 +122,17 @@ const T = {
     thanks: "Thank you — we will take a look.",
     contact: "Questions? Write to",
     invalid: "This link is no longer valid.",
+    briefingTitle: "The brief",
+    message: "What it is about",
+    dos: "Please do",
+    donts: "Please avoid",
+    linking: "Tagging",
+    disclosure: "Disclosure",
+    disclosureHint: (x: string) => `Please label it "${x}" — this is required.`,
+    approval: "Check with us before publishing.",
+    window: "Publishing window",
+    materials: "Materials",
+    copied: "Copied",
   },
 };
 
@@ -134,15 +163,11 @@ export default function CreatorPortal() {
     return () => { cancelled = true; };
   }, [token]);
 
-  if (state === "loading") {
-    return <Shell><p className="text-white/50">…</p></Shell>;
-  }
-
-  if (state === "unknown" || !view) {
-    return <Shell><p className="text-white/70">{t.invalid}</p></Shell>;
-  }
+  if (state === "loading") return <Shell><p className="text-white/50">…</p></Shell>;
+  if (state === "unknown" || !view) return <Shell><p className="text-white/70">{t.invalid}</p></Shell>;
 
   const deal = view.deal;
+  const brief = view.briefing;
 
   return (
     <Shell>
@@ -163,7 +188,7 @@ export default function CreatorPortal() {
           <p className="mt-3 text-white/70 leading-relaxed max-w-2xl">{t.lead}</p>
         </div>
 
-        {/* Was vereinbart ist */}
+        {/* ── Was vereinbart ist ──────────────────────────────────── */}
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <h2 className="text-lg font-bold flex items-center gap-2">
             <Gift className="h-5 w-5" />
@@ -205,7 +230,7 @@ export default function CreatorPortal() {
                       variant="ghost"
                       onClick={() => {
                         navigator.clipboard.writeText(deal.voucher_code as string);
-                        toast.success("OK");
+                        toast.success(t.copied);
                       }}
                     >
                       <Copy className="h-4 w-4" />
@@ -224,7 +249,119 @@ export default function CreatorPortal() {
           )}
         </section>
 
-        {/* Aufgaben */}
+        {/* ── Das Briefing ────────────────────────────────────────── */}
+        {brief && (
+          <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 space-y-5">
+            <h2 className="text-lg font-bold flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              {t.briefingTitle}
+              {brief.headline && <span className="text-white/50 font-normal">— {brief.headline}</span>}
+            </h2>
+
+            {brief.core_message && (
+              <div>
+                <h3 className="text-sm font-semibold text-white/60">{t.message}</h3>
+                <p className="mt-1 text-white/85 leading-relaxed whitespace-pre-line">{brief.core_message}</p>
+                {brief.tone && <p className="mt-2 text-sm text-white/50">{brief.tone}</p>}
+              </div>
+            )}
+
+            {(brief.dos.length > 0 || brief.donts.length > 0) && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                {brief.dos.length > 0 && (
+                  <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/5 p-4">
+                    <h3 className="text-sm font-semibold text-emerald-300">{t.dos}</h3>
+                    <ul className="mt-2 space-y-1.5">
+                      {brief.dos.map((d) => (
+                        <li key={d} className="text-sm text-white/80 flex gap-2">
+                          <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-400" />
+                          {d}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {brief.donts.length > 0 && (
+                  <div className="rounded-xl border border-red-500/25 bg-red-500/5 p-4">
+                    <h3 className="text-sm font-semibold text-red-300">{t.donts}</h3>
+                    <ul className="mt-2 space-y-1.5">
+                      {brief.donts.map((d) => (
+                        <li key={d} className="text-sm text-white/80 flex gap-2">
+                          <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
+                          {d}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {(brief.mention_handles.length > 0 || brief.hashtags.length > 0 || brief.discount_code) && (
+              <div>
+                <h3 className="text-sm font-semibold text-white/60">{t.linking}</h3>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {[...brief.mention_handles, ...brief.hashtags].map((tag) => (
+                    <button
+                      key={tag}
+                      onClick={() => { navigator.clipboard.writeText(tag); toast.success(t.copied); }}
+                      className="rounded-lg border border-white/15 bg-white/5 px-2.5 py-1 text-sm hover:bg-white/10 transition-colors"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+                {brief.discount_code && (
+                  <div className="mt-3 rounded-xl border border-white/10 bg-black/30 p-3">
+                    <code className="font-mono text-lg">{brief.discount_code}</code>
+                    {brief.discount_note && <p className="text-xs text-white/50 mt-1">{brief.discount_note}</p>}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Kennzeichnung steht hervorgehoben: sie ist Pflicht, nicht Kür. */}
+            {brief.disclosure_required && (
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
+                <h3 className="text-sm font-semibold text-amber-300">{t.disclosure}</h3>
+                <p className="mt-1 text-sm text-white/85">{t.disclosureHint(brief.disclosure_text)}</p>
+                {brief.approval_required && <p className="mt-2 text-sm text-white/70">{t.approval}</p>}
+              </div>
+            )}
+
+            {(brief.publish_from || brief.publish_until) && (
+              <p className="text-sm text-white/60">
+                {t.window}: {brief.publish_from ? new Date(brief.publish_from).toLocaleDateString() : "—"}
+                {" – "}
+                {brief.publish_until ? new Date(brief.publish_until).toLocaleDateString() : "—"}
+              </p>
+            )}
+
+            {brief.extra && <p className="text-sm text-white/70 whitespace-pre-line">{brief.extra}</p>}
+
+            {view.assets.length > 0 && (
+              <div>
+                <h3 className="text-sm font-semibold text-white/60">{t.materials}</h3>
+                <div className="mt-2 space-y-2">
+                  {view.assets.map((a) => (
+                    <a
+                      key={a.id}
+                      href={a.url ?? "#"}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/25 px-3 py-2 hover:bg-white/5 transition-colors"
+                    >
+                      <Download className="h-4 w-4 text-white/50" />
+                      <span className="text-sm truncate">{a.file_name}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* ── Aufgaben ────────────────────────────────────────────── */}
         <section className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
           <h2 className="text-lg font-bold flex items-center gap-2">
             <CalendarClock className="h-5 w-5" />
