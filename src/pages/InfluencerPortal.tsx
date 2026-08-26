@@ -17,9 +17,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  BookOpen, CalendarClock, CheckCircle2, ChevronRight, Gift, Image as ImageIcon,
-  LayoutDashboard, Percent, Send,
+  BookOpen, CalendarClock, CheckCircle2, ChevronRight, Copy, Download, Gift,
+  Image as ImageIcon, LayoutDashboard, Percent, Send,
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -27,7 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useSEO } from "@/hooks/useSEO";
 import { describeSubscription } from "@/lib/subscription-plans";
-import { creatorMediaKit } from "@/lib/creator-media-kit";
+import { creatorMediaKit, storyTileUrl } from "@/lib/creator-media-kit";
 import {
   useBible, useBibleProgress, useMarkPageRead, useMyBriefing, useMyDeal,
   useMyInfluencer, useMySubscription, useMyTasks, useSubmitProof,
@@ -373,28 +374,193 @@ function BriefingView({ influencerId }: { influencerId: number }) {
 
 /* ── Material ────────────────────────────────────────────────────────── */
 
+/**
+ * Das vollstaendige Material — dieselben Inhalte wie im Token-Bereich.
+ *
+ * VORHER STAND HIER EIN VERWEIS: "Vollstaendiges Media-Kit … im persoenlichen
+ * Link, den du von uns bekommen hast." Wer sich angemeldet hat, soll nicht in
+ * einer alten E-Mail nach einem Link suchen muessen, um an seine eigenen
+ * Vorlagen zu kommen.
+ */
 function MaterialView() {
   const k = creatorMediaKit("de");
+  const copy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(k.copy);
+  };
+
   return (
-    <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">{k.intro}</p>
-      <div className="grid sm:grid-cols-2 gap-2">
-        {k.assets.map((a) => (
-          <a
-            key={a.url}
-            href={a.url}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg border px-3 py-2 hover:bg-muted/50 transition-colors"
+    <div className="space-y-8">
+      <p className="text-sm text-muted-foreground leading-relaxed max-w-2xl">{k.intro}</p>
+
+      {/* Fertige Kacheln zuerst — das Einzige, was ohne Handgriff hochgeht. */}
+      <section>
+        <h3 className="font-bold">Story-Kacheln</h3>
+        <p className="text-sm text-muted-foreground mt-1">
+          Fertig im Hochformat, 1080 × 1920. Antippen lädt die volle Auflösung.
+        </p>
+        <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {k.storyTiles.map((tile) => (
+            <a
+              key={tile.key}
+              href={storyTileUrl("de", tile.key)}
+              target="_blank"
+              rel="noreferrer"
+              className="overflow-hidden rounded-xl border hover:border-foreground/30 transition-colors"
+            >
+              <img
+                src={storyTileUrl("de", tile.key)}
+                alt={tile.label}
+                loading="lazy"
+                className="aspect-[9/16] w-full object-cover"
+              />
+              <div className="px-3 py-2">
+                <div className="text-sm font-medium truncate">{tile.label}</div>
+                <div className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Download className="h-3 w-3" />
+                  1080 × 1920
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* Texte zum Kopieren */}
+      <section className="space-y-2">
+        <h3 className="font-bold">{k.captionsTitle}</h3>
+        <p className="text-sm text-muted-foreground max-w-2xl">{k.captionsHint}</p>
+        {k.captions.map((cap) => (
+          <button
+            key={cap.text.slice(0, 24)}
+            onClick={() => copy(cap.text)}
+            className="w-full text-left rounded-xl border p-4 hover:bg-muted/50 transition-colors"
           >
-            <div className="text-sm font-medium">{a.label}</div>
-            <div className="text-xs text-muted-foreground">{a.hint}</div>
-          </a>
+            <div className="flex items-center gap-2 mb-2">
+              <Badge variant="secondary">{cap.format}</Badge>
+              <span className="text-xs text-muted-foreground">{cap.hint}</span>
+              <Copy className="h-3.5 w-3.5 ml-auto text-muted-foreground" />
+            </div>
+            <p className="text-sm leading-relaxed whitespace-pre-line">{cap.text}</p>
+          </button>
         ))}
-      </div>
-      <p className="text-xs text-muted-foreground">
-        Vollständiges Media-Kit mit Beispieltexten und Hashtags: im persönlichen Link, den du von uns bekommen hast.
-      </p>
+      </section>
+
+      {/* Beschreibung */}
+      <section className="space-y-2">
+        <h3 className="font-bold">{k.boilerplateTitle}</h3>
+        {[k.boilerplateShort, k.boilerplateLong].map((text) => (
+          <button
+            key={text.slice(0, 24)}
+            onClick={() => copy(text)}
+            className="w-full text-left rounded-xl border p-4 text-sm leading-relaxed hover:bg-muted/50 transition-colors"
+          >
+            {text}
+          </button>
+        ))}
+      </section>
+
+      {/* Zahlen */}
+      <section>
+        <h3 className="font-bold">{k.factsTitle}</h3>
+        <ul className="mt-2 space-y-1.5">
+          {k.facts.map((f) => (
+            <li key={f} className="text-sm text-muted-foreground flex gap-2">
+              <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5 text-emerald-500" />
+              {f}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Hashtags */}
+      <section>
+        <h3 className="font-bold">{k.hashtagsTitle}</h3>
+        <div className="mt-2 space-y-2">
+          {k.hashtagSets.map((set) => (
+            <div key={set.label} className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-muted-foreground w-20 shrink-0">{set.label}</span>
+              <button
+                onClick={() => copy(set.tags.join(" "))}
+                className="rounded-lg border px-2.5 py-1 text-sm hover:bg-muted/50 transition-colors"
+              >
+                {set.tags.join(" ")}
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Bilder */}
+      <section>
+        <h3 className="font-bold">{k.assetsTitle}</h3>
+        <div className="mt-2 grid sm:grid-cols-2 gap-2">
+          {k.assets.map((a) => (
+            <a
+              key={a.url}
+              href={a.url}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border px-3 py-2 hover:bg-muted/50 transition-colors"
+            >
+              <div className="text-sm font-medium">{a.label}</div>
+              <div className="text-xs text-muted-foreground">{a.hint}</div>
+            </a>
+          ))}
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground max-w-2xl">
+          <strong>{k.screenshotTitle}:</strong> {k.screenshotHint}
+        </p>
+      </section>
+
+      {/* Farben */}
+      <section>
+        <h3 className="font-bold">{k.brandTitle}</h3>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {k.brandColors.map((col) => (
+            <button
+              key={col.value}
+              onClick={() => copy(col.value)}
+              className="flex items-center gap-2 rounded-lg border px-2.5 py-1.5 hover:bg-muted/50 transition-colors"
+            >
+              <span className="h-4 w-4 rounded" style={{ background: col.value }} />
+              <span className="text-xs">{col.label}</span>
+              <code className="text-xs text-muted-foreground">{col.value}</code>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Links */}
+      <section>
+        <h3 className="font-bold">{k.linksTitle}</h3>
+        <div className="mt-2 flex flex-wrap gap-2">
+          {k.links.map((l) => (
+            <a
+              key={l.url}
+              href={l.url}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-lg border px-2.5 py-1 text-sm hover:bg-muted/50 transition-colors"
+            >
+              {l.label}
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* Was wir uns wünschen */}
+      <section className="rounded-xl border bg-muted/30 p-4">
+        <h3 className="font-bold">{k.rulesTitle}</h3>
+        <ul className="mt-2 space-y-1.5">
+          {k.rules.map((r) => (
+            <li key={r} className="text-sm text-muted-foreground flex gap-2">
+              <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
+              {r}
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   );
 }

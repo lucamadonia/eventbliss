@@ -30,6 +30,38 @@ export interface MediaKitAsset {
   hint: string;
 }
 
+/**
+ * Ein Beispieltext mit Format und Einsatzhinweis.
+ *
+ * WARUM NEUN STATT DREI: drei Texte sind ein Beleg, dass es Texte gibt. Neun —
+ * je drei fuer Reel, Story und Beitrag — sind eine Auswahl, aus der man
+ * tatsaechlich etwas nimmt. Jeder hat einen Anfang, der neugierig macht, eine
+ * Mitte, in der etwas passiert, und einen Schluss, der nicht bettelt.
+ */
+export interface MediaKitCaption {
+  format: string;
+  hint: string;
+  text: string;
+}
+
+/** Eine fertige Story-Kachel im Hochformat. Erzeugt von scripts/generate-story-tiles.mjs. */
+export interface StoryTile {
+  key: string;
+  label: string;
+}
+
+/**
+ * Die Adresse einer Story-Kachel.
+ *
+ * BEWUSST RELATIV: die Kacheln sollen in der Vorschau auch dann erscheinen,
+ * wenn der Bereich lokal oder in einer Vorschau-Bereitstellung laeuft. Die
+ * uebrigen Bilder stehen absolut, weil man deren Adresse weitergibt — eine
+ * Kachel laedt man herunter.
+ */
+export function storyTileUrl(lang: "de" | "en", key: string): string {
+  return `/press/story/${lang}/${key}.png`;
+}
+
 export interface MediaKit {
   title: string;
   intro: string;
@@ -40,7 +72,9 @@ export interface MediaKit {
   facts: string[];
   captionsTitle: string;
   captionsHint: string;
-  captions: string[];
+  captions: MediaKitCaption[];
+  storyTiles: StoryTile[];
+  personalTitle: string;
   hashtagsTitle: string;
   hashtagSets: { label: string; tags: string[] }[];
   linksTitle: string;
@@ -79,14 +113,90 @@ const de: MediaKit = {
     "Planung ist kostenlos; Premium ist optional",
   ],
 
-  captionsTitle: "Beispieltexte",
+  captionsTitle: "Texte zum Kopieren",
   captionsHint:
-    "Als Ausgangspunkt gedacht, nicht zum Abschreiben. In deinen Worten wirkt es immer besser.",
+    "Neun Texte, drei je Format. Gedacht zum Antippen, Einfügen und Umschreiben — in deinen Worten wirkt jeder davon besser als hier.",
   captions: [
-    "Zehn Leute, drei Gruppenchats, keiner entscheidet. Wir haben den JGA diesmal in einer App geplant — Termin, Ideen, Budget, und am Ende stand da, wer wem was schuldet. Link ist oben. #Werbung",
-    "Wir haben den Abend mit einem Spiel gestartet, das auf dem Fernseher lief und bei dem alle am Handy mitgespielt haben. Es gibt 22 davon. #Werbung",
-    "Der unangenehme Teil jeder Gruppenreise: die Abrechnung. Ich habe alle Ausgaben eingetragen und die App hat aufgeteilt — auch ungleich, wenn nicht alle bei allem dabei waren. #Werbung",
+    {
+      format: "Reel",
+      hint: "Vorher-Nachher, ~20 Sekunden",
+      text:
+        "Zehn Leute. Drei Gruppenchats. Und bis Dienstag hatte niemand irgendetwas entschieden.\n\n" +
+        "Diesmal haben wir alles an einen Ort gelegt: Termin, Ideen, Budget. Zwei Tage später stand das Wochenende — ohne dass einer 200 Nachrichten nachlesen musste.\n\n" +
+        "Wenn ihr gerade selbst zu zehnt etwas plant: der Link ist oben. #Werbung",
+    },
+    {
+      format: "Reel",
+      hint: "Die Abrechnung, der Teil den alle kennen",
+      text:
+        "Der Moment, über den nach jeder Gruppenreise keiner reden will: Wer hat eigentlich was bezahlt?\n\n" +
+        "Ich hab jede Ausgabe eingetragen. Auch die, bei denen nicht alle dabei waren — dann wird eben ungleich geteilt. Am Ende stand da einfach: wer wem was schuldet.\n\n" +
+        "Zum ersten Mal ohne diese komische Stimmung am letzten Abend. #Werbung",
+    },
+    {
+      format: "Reel",
+      hint: "Der Spieleabend, mit echten Reaktionen",
+      text:
+        "Wir haben den Abend mit einem Spiel auf dem Fernseher gestartet. Gespielt haben alle am eigenen Handy.\n\n" +
+        "Keine Karten, keine Regeln zum Vorlesen, niemand musste etwas installieren. Es gibt 22 davon — wir haben drei geschafft, dann war es zwei Uhr.\n\n" +
+        "Ab Minute zwei ist da nichts mehr gestellt. #Werbung",
+    },
+    {
+      format: "Story",
+      hint: "Frage-Sticker, holt Antworten",
+      text: "Plant ihr gerade auch zu zehnt in drei verschiedenen Chats? 🙃\nWir haben's diesmal anders gemacht — Link oben. #Werbung",
+    },
+    {
+      format: "Story",
+      hint: "Direkt vor oder nach der Abrechnung",
+      text: "Ehrliche Frage: Wer rechnet bei euch nach einer Gruppenreise ab? 👀\nBei uns macht das jetzt die App — inklusive „wer schuldet wem\". #Werbung",
+    },
+    {
+      format: "Story",
+      hint: "Am Abend selbst, mit Bildschirmaufnahme",
+      text: "Spieleabend-Trick: Das Spiel läuft auf dem Fernseher, alle spielen am eigenen Handy mit. 22 Stück zur Auswahl, nichts zu installieren. #Werbung",
+    },
+    {
+      format: "Beitrag",
+      hint: "Karussell, längere Fassung",
+      text:
+        "Zehn Leute, ein Wochenende — und am Anfang drei Gruppenchats.\n\n" +
+        "Wir haben den JGA diesmal komplett an einem Ort geplant. Termin abstimmen, Ideen sammeln, Budget festhalten. Alle sehen dasselbe, keiner muss etwas weiterleiten.\n\n" +
+        "Am meisten überrascht hat mich der langweiligste Teil: die Abrechnung. Ausgaben rein, aufteilen, fertig — auch ungleich, wenn nicht alle bei allem dabei waren.\n\n" +
+        "Und für den Abend selbst gibt es 22 Spiele, bei denen alle am Handy mitspielen und das Spiel auf dem Fernseher läuft.\n\n" +
+        "Planen kostet nichts. Link in der Bio. #Werbung",
+    },
+    {
+      format: "Beitrag",
+      hint: "Persönlich, für Profile mit engem Publikum",
+      text:
+        "Ich empfehle selten etwas, weil ich selbst wenig benutze, das ich nicht sowieso brauche.\n\n" +
+        "Das hier benutze ich. Wir planen unsere Wochenenden damit — und was mich überzeugt hat, war nicht irgendeine Funktion, sondern dass nach dem Wochenende niemand mehr rechnen musste.\n\n" +
+        "Wenn ihr euch fragt, ob das für eure Gruppe was ist: Planen ist kostenlos, ihr könnt es einfach zu zweit ausprobieren, bevor ihr die anderen dazuholt. #Werbung",
+    },
+    {
+      format: "Beitrag",
+      hint: "Liste, funktioniert auch ohne Video",
+      text:
+        "Vier Dinge, die bei unserer Gruppenreise dieses Mal nicht passiert sind:\n\n" +
+        "1. Niemand musste 200 Nachrichten nachlesen, um den Stand zu kennen.\n" +
+        "2. Keine drei Termin-Umfragen in drei verschiedenen Chats.\n" +
+        "3. Niemand ist auf 180 € sitzen geblieben, weil man es „später klärt\".\n" +
+        "4. Der Abend musste nicht mit „und was machen wir jetzt?\" anfangen — 22 Spiele, alle am Handy.\n\n" +
+        "Alles an einem Ort. Link in der Bio. #Werbung",
+    },
   ],
+
+  storyTiles: [
+    { key: "chaos", label: "Drei Chats" },
+    { key: "planning", label: "Alles an einem Ort" },
+    { key: "split", label: "Wer schuldet wem" },
+    { key: "games", label: "22 Spiele" },
+    { key: "ideas", label: "Ideen sammeln" },
+    { key: "code", label: "Dein Code" },
+  ],
+
+  personalTitle: "Nur für dich hinterlegt",
 
   hashtagsTitle: "Hashtags",
   hashtagSets: [
@@ -163,13 +273,90 @@ const en: MediaKit = {
     "Planning is free; Premium is optional",
   ],
 
-  captionsTitle: "Example captions",
-  captionsHint: "A starting point, not a script. Your own words always work better.",
+  captionsTitle: "Copy-ready captions",
+  captionsHint:
+    "Nine captions, three per format. Made to be tapped, pasted and rewritten — in your own words every one of them lands better than it does here.",
   captions: [
-    "Ten people, three group chats, nobody deciding. This time we planned the stag do in one app — date, ideas, budget, and at the end it showed who owed whom. Link above. #ad",
-    "We started the evening with a game running on the TV while everyone played from their phone. There are 22 of them. #ad",
-    "The awkward part of every group trip: the settlement. I entered every expense and the app split it — unevenly too, when not everyone joined everything. #ad",
+    {
+      format: "Reel",
+      hint: "Before and after, ~20 seconds",
+      text:
+        "Ten people. Three group chats. And by Tuesday nobody had decided anything.\n\n" +
+        "This time we put it all in one place: date, ideas, budget. Two days later the weekend was booked — without anyone scrolling back through 200 messages.\n\n" +
+        "If you are planning something with a group right now, the link is above. #ad",
+    },
+    {
+      format: "Reel",
+      hint: "The settlement — everyone knows this one",
+      text:
+        "The moment nobody wants to bring up after a group trip: who actually paid for what?\n\n" +
+        "I entered every expense. Including the ones not everyone joined — those just get split unevenly. At the end it simply said who owes whom.\n\n" +
+        "First trip without that weird mood on the last night. #ad",
+    },
+    {
+      format: "Reel",
+      hint: "Game night, real reactions",
+      text:
+        "We started the evening with a game running on the TV. Everyone played from their own phone.\n\n" +
+        "No cards, no rules to read out, nothing to install. There are 22 of them — we managed three before it was 2am.\n\n" +
+        "From minute two, none of it is staged. #ad",
+    },
+    {
+      format: "Story",
+      hint: "With a question sticker, gets replies",
+      text: "Are you also planning with ten people across three chats right now? 🙃\nWe did it differently this time — link above. #ad",
+    },
+    {
+      format: "Story",
+      hint: "Right before or after the settlement",
+      text: "Honest question: who does the maths after a group trip in your circle? 👀\nOurs is done by the app now — including who owes whom. #ad",
+    },
+    {
+      format: "Story",
+      hint: "During the evening, with a screen recording",
+      text: "Game night trick: the game runs on the TV, everyone plays from their own phone. 22 to choose from, nothing to install. #ad",
+    },
+    {
+      format: "Post",
+      hint: "Carousel, longer version",
+      text:
+        "Ten people, one weekend — and three group chats to start with.\n\n" +
+        "This time we planned the whole stag do in one place. Agreeing the date, collecting ideas, keeping the budget. Everyone sees the same thing, nobody forwards anything.\n\n" +
+        "What surprised me most was the dullest part: the settlement. Expenses in, split, done — unevenly too, when not everyone joined everything.\n\n" +
+        "And for the evening itself there are 22 games everyone joins from their phone while the game runs on the TV.\n\n" +
+        "Planning is free. Link in bio. #ad",
+    },
+    {
+      format: "Post",
+      hint: "Personal, for accounts with a close audience",
+      text:
+        "I rarely recommend anything, because I barely use things I do not already need.\n\n" +
+        "This one I use. We plan our weekends with it — and what convinced me was not a feature, it was that after the weekend nobody had to do any maths.\n\n" +
+        "If you are wondering whether it suits your group: planning is free, so you can try it with one other person before pulling everyone in. #ad",
+    },
+    {
+      format: "Post",
+      hint: "List, works without video too",
+      text:
+        "Four things that did not happen on our group trip this time:\n\n" +
+        "1. Nobody had to read back 200 messages to know where things stood.\n" +
+        "2. No three separate date polls in three separate chats.\n" +
+        "3. Nobody was left £150 out of pocket because we would \"sort it later\".\n" +
+        "4. The evening did not have to start with \"so what now?\" — 22 games, everyone on their phone.\n\n" +
+        "All in one place. Link in bio. #ad",
+    },
   ],
+
+  storyTiles: [
+    { key: "chaos", label: "Three chats" },
+    { key: "planning", label: "All in one place" },
+    { key: "split", label: "Who owes whom" },
+    { key: "games", label: "22 games" },
+    { key: "ideas", label: "Collecting ideas" },
+    { key: "code", label: "Your code" },
+  ],
+
+  personalTitle: "Kept just for you",
 
   hashtagsTitle: "Hashtags",
   hashtagSets: [
