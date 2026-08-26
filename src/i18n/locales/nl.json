@@ -9675,7 +9675,9 @@
         "reaktion": "Reactie en behendigheid",
         "social": "Sociaal en bluf",
         "kreativ": "Creatief en leuk"
-      }
+      },
+      "badgeHot": "Populair",
+      "badgeNew": "Nieuw"
     },
     "receipt": {
       "scanReceipt": "Bon scannen",

@@ -9625,7 +9625,9 @@
         "reaktion": "Réflexes et adresse",
         "social": "Social et bluff",
         "kreativ": "Créatif et fun"
-      }
+      },
+      "badgeHot": "Tendance",
+      "badgeNew": "Nouveau"
     },
     "receipt": {
       "scanReceipt": "Scanner le reçu",

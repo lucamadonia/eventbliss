@@ -9601,7 +9601,9 @@
         "reaktion": "Reflex & skill",
         "social": "Social & bluff",
         "kreativ": "Creative & fun"
-      }
+      },
+      "badgeHot": "Hot",
+      "badgeNew": "New"
     },
     "receipt": {
       "scanReceipt": "Scan receipt",

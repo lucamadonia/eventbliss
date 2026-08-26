@@ -11,7 +11,7 @@ import { GameReportModal } from "@/games/ui/GameReportModal";
 import { GameTitleBar } from "@/games/ui/GameTitleBar";
 import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
-import { playableGames } from "@/lib/playable-games";
+import { playableGames, GAME_BADGE_KEY } from "@/lib/playable-games";
 import { PartyNightFlow } from "@/components/native/party/PartyNightFlow";
 import { getActivePartySession } from "@/hooks/usePartySession";
 import { partyGameName } from "@/hooks/useTVGameBridge";
@@ -227,7 +227,7 @@ const GameCard = memo(function GameCard({ game, onClick, onOnline, premiumInfo }
           <span className={`absolute top-2 right-2 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider font-game ${
             game.badge === "Hot" ? "bg-[#ff7350] text-white" : "bg-[#00e3fd] text-[#0d0d15]"
           }`}>
-            {game.badge}
+            {t(GAME_BADGE_KEY[game.badge])}
           </span>
         )}
       </div>

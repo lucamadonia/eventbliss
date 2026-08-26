@@ -9675,7 +9675,9 @@
         "reaktion": "Refleks ve beceri",
         "social": "Sosyal ve blöf",
         "kreativ": "Yaratıcı ve eğlenceli"
-      }
+      },
+      "badgeHot": "Popüler",
+      "badgeNew": "Yeni"
     },
     "receipt": {
       "scanReceipt": "Fişi tara",

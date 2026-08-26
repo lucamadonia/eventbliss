@@ -9675,7 +9675,9 @@
         "reaktion": "Reflexos e destreza",
         "social": "Social e bluff",
         "kreativ": "Criativo e divertido"
-      }
+      },
+      "badgeHot": "Popular",
+      "badgeNew": "Novo"
     },
     "receipt": {
       "scanReceipt": "Digitalizar recibo",

@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Gamepad2, Play, Lock, ChevronRight } from "lucide-react";
-import { playableGames } from "@/lib/playable-games";
+import { playableGames, GAME_BADGE_KEY } from "@/lib/playable-games";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
 import { cn } from "@/lib/utils";
@@ -98,7 +98,7 @@ export function PlayableGamesShelf() {
                         game.badge === "Hot" ? "bg-red-500 text-white" : "bg-emerald-500 text-white"
                       )}
                     >
-                      {game.badge}
+                      {t(GAME_BADGE_KEY[game.badge])}
                     </span>
                   ) : (
                     <span />

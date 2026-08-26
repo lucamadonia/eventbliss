@@ -37,6 +37,7 @@ import {
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
+import { GAME_BADGE_KEY } from "@/lib/playable-games";
 import { cn } from "@/lib/utils";
 
 export type PartyPickerMode = "single" | "setlist";
@@ -391,7 +392,7 @@ export function PartyGamePicker({
                               game.badge === "Hot" ? "bg-red-500 text-white" : "bg-emerald-500 text-white"
                             )}
                           >
-                            {game.badge}
+                            {t(GAME_BADGE_KEY[game.badge])}
                           </span>
                         ) : <span />}
 

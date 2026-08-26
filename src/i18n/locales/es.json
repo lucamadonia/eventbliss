@@ -9803,7 +9803,9 @@
         "reaktion": "Reflejos y destreza",
         "social": "Social y farol",
         "kreativ": "Creatividad y diversión"
-      }
+      },
+      "badgeHot": "Popular",
+      "badgeNew": "Nuevo"
     },
     "receipt": {
       "scanReceipt": "Escanear recibo",

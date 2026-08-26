@@ -9699,7 +9699,9 @@
         "reaktion": "Refleks i zręczność",
         "social": "Społeczne i blef",
         "kreativ": "Kreatywne i zabawne"
-      }
+      },
+      "badgeHot": "Popularne",
+      "badgeNew": "Nowość"
     },
     "receipt": {
       "scanReceipt": "Skanuj paragon",

@@ -40,6 +40,23 @@ export interface PlayableGame {
   badge?: "Hot" | "Neu";
 }
 
+/**
+ * Der i18n-Schluessel zum Abzeichen.
+ *
+ * WARUM DIESE ZUORDNUNG HIER STEHT: die Werte `"Hot"` und `"Neu"` sind
+ * Registry-Kennungen, keine Anzeigetexte — sie wurden aber an vier Stellen
+ * unuebersetzt ausgegeben. Ein tuerkischer Nutzer sah "NEU" auf jedem zweiten
+ * Spiel. Eine einzige Zuordnung, damit die vier Stellen nicht wieder
+ * auseinanderlaufen.
+ *
+ * Die Kennungen bleiben absichtlich deutsch: sie stehen in dieser Datei und in
+ * der Praesentationsliste von GamesHub, nicht auf dem Bildschirm.
+ */
+export const GAME_BADGE_KEY: Record<"Hot" | "Neu", string> = {
+  Hot: "nativeExtra.gamesHub.badgeHot",
+  Neu: "nativeExtra.gamesHub.badgeNew",
+};
+
 export const playableGames: PlayableGame[] = [
   { id: "bomb",            nameKey: "native.gameNames.bomb",            descKey: "native.gameDescs.bomb",            image: "/images/games/bomb.webp",            gradient: "from-orange-500 to-red-600",       minPlayers: 2, maxPlayers: 20, tier: "free",    badge: "Hot", categories: ["party", "quiz"] },
   { id: "headup",          nameKey: "native.gameNames.headup",          descKey: "native.gameDescs.headup",          image: "/images/games/headup.webp",          gradient: "from-violet-500 to-purple-600",    minPlayers: 2, maxPlayers: 12, tier: "free",                  categories: ["party", "wort"] },

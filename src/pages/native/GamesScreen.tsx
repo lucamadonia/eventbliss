@@ -26,7 +26,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { playableGames, type PlayableGame } from "@/lib/playable-games";
+import { playableGames, GAME_BADGE_KEY, type PlayableGame } from "@/lib/playable-games";
 import { PartyResumeBanner } from "@/components/native/party/PartyResumeBanner";
 import { usePartyResumeState } from "@/components/native/party/usePartyResume";
 import { usePartySession } from "@/hooks/usePartySession";
@@ -208,7 +208,7 @@ export default function GamesScreen() {
                           : "bg-emerald-500 text-white"
                       )}
                     >
-                      {game.badge}
+                      {t(GAME_BADGE_KEY[game.badge])}
                     </span>
                   ) : (
                     <span />

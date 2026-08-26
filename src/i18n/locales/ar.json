@@ -9612,7 +9612,9 @@
         "reaktion": "سرعة ومهارة",
         "social": "اجتماعي وخداع",
         "kreativ": "إبداع ومرح"
-      }
+      },
+      "badgeHot": "رائج",
+      "badgeNew": "جديد"
     },
     "receipt": {
       "scanReceipt": "مسح الإيصال",

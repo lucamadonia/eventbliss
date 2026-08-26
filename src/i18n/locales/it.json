@@ -9625,7 +9625,9 @@
         "reaktion": "Riflessi e abilità",
         "social": "Social e bluff",
         "kreativ": "Creatività e divertimento"
-      }
+      },
+      "badgeHot": "Popolare",
+      "badgeNew": "Nuovo"
     },
     "receipt": {
       "scanReceipt": "Scansiona scontrino",
