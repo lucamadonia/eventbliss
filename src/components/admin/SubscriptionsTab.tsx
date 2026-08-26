@@ -383,9 +383,18 @@ export function SubscriptionsTab() {
                         </TableCell>
                         <TableCell>{getPlanBadge(sub)}</TableCell>
                         <TableCell>
-                          {sub.stripe_subscription_id ? (
+                          {/*
+                            Der ANBIETER entscheidet, ob eine Zeile von Hand
+                            angefasst werden darf — im Benutzer-Tab ist sie
+                            deshalb gesperrt, wenn Stripe oder RevenueCat sie
+                            haelt. Bis hierher war das nirgends ablesbar: eine
+                            Zeile aus einem Kauf sah aus wie jede andere.
+                          */}
+                          {sub.provider === "stripe" || sub.stripe_subscription_id ? (
                             <Badge variant="outline">Stripe</Badge>
-                          ) : sub.is_manual ? (
+                          ) : sub.provider === "revenuecat" ? (
+                            <Badge variant="outline">RevenueCat</Badge>
+                          ) : sub.is_manual || sub.provider === "manual" ? (
                             <Badge variant="secondary">Manuell</Badge>
                           ) : (
                             <Badge variant="secondary">—</Badge>

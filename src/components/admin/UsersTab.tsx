@@ -818,7 +818,7 @@ export function UsersTab() {
                             )}
                           </div>
                           {planInfo.isPaid && (
-                            <p className="text-xs text-destructive">Konto hat ein bezahltes Abo — hier nichts ändern, sonst zahlt jemand für nichts.</p>
+                            <p className="text-xs text-destructive">Konto hat ein bezahltes Abo ({selectedUser.subscription?.provider}) — hier gesperrt. Bewusste Änderungen gehen über den Abos-Bereich.</p>
                           )}
                         </div>
                       </div>
