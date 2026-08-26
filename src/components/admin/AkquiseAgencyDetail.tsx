@@ -157,7 +157,10 @@ export default function AkquiseAgencyDetail({ agencyId, onClose }: Props) {
   };
 
   const copyInviteLink = () => {
-    const link = agency.invite_token ? `https://event-bliss.com/invite/${agency.invite_token}` : "";
+    // Zeigte auf /invite/<token> — eine Route, die es in App.tsx nie gab. Der
+    // kopierte Link landete also im SPA-Fallback. Jetzt: die Demoseite, auf der
+    // die Agentur ihr eigenes Profil sieht und von dort weiterklickt.
+    const link = agency.invite_token ? `https://event-bliss.com/agencies/${agency.invite_token}` : "";
     navigator.clipboard.writeText(link);
     toast.success("Link kopiert");
   };

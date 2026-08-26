@@ -38,6 +38,7 @@ const AgencyApply = lazy(() => import("./pages/AgencyApply"));
 const AgencyPortal = lazy(() => import("./pages/AgencyPortal"));
 const AgencyDashboard = lazy(() => import("./pages/AgencyDashboard"));
 const AgencyPricing = lazy(() => import("./pages/AgencyPricing"));
+const AgencyDemo = lazy(() => import("./pages/AgencyDemo"));
 const IdeasHub = lazy(() => import("./pages/IdeasHub"));
 const JgaCity = lazy(() => import("./pages/JgaCity"));
 const JgaCalculator = lazy(() => import("./pages/JgaCalculator"));
@@ -219,6 +220,17 @@ const AppContent = () => {
           <Route path="/agency-portal" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyPortal /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/agency" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AgencyDashboard /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/agency/pricing" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyPricing /></Suspense></ErrorBoundary>} />
+
+          {/*
+            Die Demoseite aus dem Akquise-Anschreiben. Mit Token zeigt sie das
+            Profil DIESER Agentur, ohne Token die allgemeine Fassung. Oeffentlich
+            und ohne Login — eine Agentur, die eine Kaltmail bekommt, legt sich
+            kein Konto an, um zu schauen, worum es geht.
+          */}
+          <Route path="/agencies" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyDemo /></Suspense></ErrorBoundary>} />
+          <Route path="/agencies/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyDemo /></Suspense></ErrorBoundary>} />
+          <Route path="/:lang/agencies" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyDemo /></Suspense></ErrorBoundary>} />
+          <Route path="/:lang/agencies/:token" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AgencyDemo /></Suspense></ErrorBoundary>} />
           <Route path="/admin/*" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AdminRoute><Admin /></AdminRoute></Suspense></ErrorBoundary>} />
           <Route path="/ideas" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><IdeasHub /></ProtectedRoute></Suspense></ErrorBoundary>} />
           <Route path="/my-bookings" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><MyBookings /></ProtectedRoute></Suspense></ErrorBoundary>} />

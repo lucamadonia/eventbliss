@@ -297,7 +297,10 @@ serve(async (req) => {
           ?? (campaign[`template_stage${stageNum}_body`] || campaign.template_stage1_body);
 
         const inviteToken = item.invite_token || crypto.randomUUID().slice(0, 12);
-        const signupUrl = `https://event-bliss.com/agency-apply?invite=${inviteToken}`;
+        // Erst die Demoseite, nicht direkt das Formular: die Agentur sieht dort ihr
+        // eigenes Profil und entscheidet danach. Der Token wandert von dort in das
+        // Bewerbungsformular weiter, das ihn schon immer vorbefuellt.
+        const signupUrl = `https://event-bliss.com/agencies/${inviteToken}`;
 
         const vars: Record<string, string> = {
           agency_name: agency.name || "",
@@ -515,7 +518,10 @@ Antworte NUR mit dem JSON, kein Markdown drumherum.`;
       if (!ag?.email) throw new Error("Agency not found or no email");
 
       const inviteToken = crypto.randomUUID().slice(0, 12);
-      const signupUrl = `https://event-bliss.com/agency-apply?invite=${inviteToken}`;
+      // Erst die Demoseite, nicht direkt das Formular: die Agentur sieht dort ihr
+      // eigenes Profil und entscheidet danach. Der Token wandert von dort in das
+      // Bewerbungsformular weiter, das ihn schon immer vorbefuellt.
+      const signupUrl = `https://event-bliss.com/agencies/${inviteToken}`;
       const vars: Record<string, string> = {
         agency_name: ag.name || "", city: ag.city || "", country: ag.country || "",
         contact_name: ag.contact_person || ag.name || "", website: ag.website || "",
