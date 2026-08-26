@@ -35,7 +35,13 @@ const WIDTH = 750;
 /** Welche Bildschirme uebernommen werden — nicht alle, nur die erzaehlbaren. */
 const KEYS = ["home", "schedule", "expenses", "games", "ideas", "guests", "messages", "services"];
 
-const langs = process.argv.slice(2).length ? process.argv.slice(2) : ["de", "en"];
+/**
+ * ALLE ZEHN SPRACHEN als Voreinstellung. Die Tour im Influencer-Bereich
+ * erklaert die Module in zehn Sprachen; ein englischer Bildschirm unter einem
+ * tuerkischen Text waere genau die Halbheit, die man sofort sieht.
+ */
+const ALL = ["de", "en", "es", "fr", "it", "pt", "nl", "pl", "tr", "ar"];
+const langs = process.argv.slice(2).length ? process.argv.slice(2) : ALL;
 
 let written = 0;
 let bytes = 0;

@@ -18,7 +18,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   BookOpen, CalendarClock, CheckCircle2, ChevronRight, Copy, Download, Gift,
-  Image as ImageIcon, LayoutDashboard, Percent, Send,
+  Image as ImageIcon, LayoutDashboard, Percent, Send, Smartphone,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { useSEO } from "@/hooks/useSEO";
 import { describeSubscription } from "@/lib/subscription-plans";
 import { creatorMediaKit, storyTileUrl } from "@/lib/creator-media-kit";
+import { CreatorTourView } from "@/components/creator/CreatorTourView";
 import {
   useBible, useBibleProgress, useMarkPageRead, useMyBriefing, useMyDeal,
   useMyInfluencer, useMySubscription, useMyTasks, useSubmitProof,
@@ -37,6 +38,9 @@ import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 const NAV = [
   { key: "overview", label: "Übersicht", icon: LayoutDashboard },
+  // Vor der Bibel: erst verstehen, was die App kann, dann lernen, wie man
+  // darueber spricht.
+  { key: "app", label: "Die App", icon: Smartphone },
   { key: "bible", label: "Bibel", icon: BookOpen },
   { key: "tasks", label: "Aufgaben", icon: CalendarClock },
   { key: "briefing", label: "Briefing", icon: Send },
@@ -156,18 +160,27 @@ export default function InfluencerPortal() {
             <CardHeader><CardTitle className="text-base">Neu hier?</CardTitle></CardHeader>
             <CardContent className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                Die Bibel erklärt in fünfzehn Kapiteln, wie das Programm funktioniert — von der
-                Kennzeichnungspflicht bis zu den ersten drei Sekunden eines Reels.
+                Fang bei der App an: acht Bildschirme, und du kannst erklären, worum es geht.
+                Danach die Bibel — fünfzehn Kapitel von der Kennzeichnungspflicht bis zu den
+                ersten drei Sekunden eines Reels.
               </p>
-              <Button size="sm" onClick={() => setTab("bible")}>
-                Bibel öffnen
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" onClick={() => setTab("app")}>
+                  Die App ansehen
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => setTab("bible")}>
+                  Bibel öffnen
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
       )}
 
+      {/* Die Tour in SEINER Sprache — die Huelle hier ist deutsch, die Module
+          erklaeren sich in der Sprache, die im Verzeichnis steht. */}
+      {tab === "app" && <CreatorTourView lang={me.language} tone="app" />}
       {tab === "bible" && <BibleReader />}
       {tab === "tasks" && <TaskList tasks={tasks} />}
       {tab === "briefing" && <BriefingView influencerId={me.id} />}

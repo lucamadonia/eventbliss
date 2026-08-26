@@ -29,7 +29,8 @@ import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   BadgeCheck, CalendarClock, CheckCircle2, Copy, Download, FileText, Gift,
-  Image as ImageIcon, LayoutTemplate, Link2, Package, Percent, Send, Sparkles,
+  Image as ImageIcon, LayoutTemplate, Link2, Package, Percent, Send, Smartphone,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -41,6 +42,7 @@ import { toast } from "sonner";
 import type { PortalBriefing } from "@/lib/influencer-briefing";
 import { creatorCopy, type CreatorCopy } from "@/lib/creator-copy";
 import { creatorMediaKit, storyTileUrl } from "@/lib/creator-media-kit";
+import { CreatorTourView } from "@/components/creator/CreatorTourView";
 import eventBlissLogo from "@/assets/eventbliss-logo.png";
 
 interface CreatorTask {
@@ -77,7 +79,7 @@ interface CreatorView {
   tasks: CreatorTask[];
 }
 
-type TabKey = "start" | "briefing" | "tasks" | "material" | "templates";
+type TabKey = "start" | "app" | "briefing" | "tasks" | "material" | "templates";
 
 /**
  * Die Bilder zu den drei Blickwinkeln im Start-Reiter.
@@ -127,6 +129,9 @@ export default function CreatorPortal() {
 
   const nav: { key: TabKey; label: string; icon: typeof Sparkles; badge?: number }[] = [
     { key: "start", label: c.tabStart, icon: Sparkles },
+    // Direkt hinter "Start": wer gerade gelesen hat, WARUM das Thema traegt,
+    // will als Naechstes sehen, WAS die App kann — nicht das Briefing.
+    { key: "app", label: c.tabApp, icon: Smartphone },
     { key: "briefing", label: c.tabBriefing, icon: FileText },
     { key: "tasks", label: c.tabTasks, icon: CalendarClock, badge: openTasks.length || undefined },
     { key: "material", label: c.tabMaterial, icon: Package },
@@ -177,6 +182,11 @@ export default function CreatorPortal() {
         transition={{ duration: 0.25 }}
       >
         {tab === "start" && <StartTab c={c} view={view} />}
+        {/*
+          Die Tour spricht SEINE Sprache, auch wenn die Huelle nur Deutsch und
+          Englisch kann — er soll das Produkt verstehen, nicht uebersetzen.
+        */}
+        {tab === "app" && <CreatorTourView lang={view.language} tone="dark" />}
         {tab === "briefing" && <BriefingTab c={c} view={view} />}
         {tab === "tasks" && <TasksTab c={c} view={view} token={token} onChange={setView} />}
         {tab === "material" && <MaterialTab c={c} view={view} />}

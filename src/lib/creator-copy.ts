@@ -28,6 +28,16 @@ export interface CreatorCopy {
   metaDescription: string;
 
   tabStart: string;
+  /**
+   * Reiterbeschriftung der Produkt-Tour.
+   *
+   * WARUM HIER UND NICHT AUS creator-tour.ts: die Tour gibt es in zehn
+   * Sprachen, dieser Bereich in zwei. Naehme man die Beschriftung von dort,
+   * stuende bei einem tuerkischen Influencer "Uygulama" zwischen "Start" und
+   * "Brief" — die Navigation soll aus einem Guss sein. Der INHALT der Tour
+   * bleibt in seiner Sprache, denn den liest er, um das Produkt zu verstehen.
+   */
+  tabApp: string;
   tabBriefing: string;
   tabTasks: string;
   tabMaterial: string;
@@ -107,6 +117,7 @@ const de: CreatorCopy = {
   metaDescription: "Was vereinbart ist, was ansteht, und das Material dazu.",
 
   tabStart: "Start",
+  tabApp: "Die App",
   tabBriefing: "Briefing",
   tabTasks: "Aufgaben",
   tabMaterial: "Material",
@@ -207,6 +218,7 @@ const en: CreatorCopy = {
   metaDescription: "What we agreed, what is coming up, and the material for it.",
 
   tabStart: "Start",
+  tabApp: "The app",
   tabBriefing: "Brief",
   tabTasks: "Tasks",
   tabMaterial: "Material",
