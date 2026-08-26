@@ -9,6 +9,37 @@ const log = (step: string, details?: unknown) => {
 };
 
 // ---------------------------------------------------------------------------
+// Sprache des Demolinks
+// ---------------------------------------------------------------------------
+
+/*
+  Die Demoseite gibt es in zehn Sprachen. Welche eine Agentur zu sehen bekommt,
+  entscheidet der Link im Anschreiben — sonst landet eine Agentur aus Sevilla
+  auf der englischen Fassung, obwohl es die spanische gibt.
+
+  Grundlage ist das Land aus dem Verzeichnis. Belgien ist bewusst NL: Bruessel
+  waere franzoesisch, Antwerpen niederlaendisch, und das Land verraet es nicht.
+  Deshalb steht die Sprachwahl auf der Seite selbst — dort korrigiert sich das
+  in einem Klick. Unbekanntes Land ergibt Englisch, nicht Deutsch.
+*/
+const LANG_BY_COUNTRY: Record<string, string> = {
+  deutschland: "de", germany: "de", oesterreich: "de", "österreich": "de",
+  austria: "de", schweiz: "de", switzerland: "de", suisse: "de",
+  spanien: "es", spain: "es", "españa": "es", espana: "es",
+  frankreich: "fr", france: "fr",
+  italien: "it", italy: "it", italia: "it",
+  niederlande: "nl", netherlands: "nl", nederland: "nl", belgien: "nl", belgium: "nl", belgie: "nl",
+  portugal: "pt",
+  polen: "pl", poland: "pl", polska: "pl",
+  "tuerkei": "tr", "türkei": "tr", turkey: "tr", turkiye: "tr",
+};
+
+function demoLang(country?: string | null): string {
+  const key = (country || "").trim().toLowerCase();
+  return LANG_BY_COUNTRY[key] || "en";
+}
+
+// ---------------------------------------------------------------------------
 // Sender signatures
 // ---------------------------------------------------------------------------
 
@@ -300,7 +331,7 @@ serve(async (req) => {
         // Erst die Demoseite, nicht direkt das Formular: die Agentur sieht dort ihr
         // eigenes Profil und entscheidet danach. Der Token wandert von dort in das
         // Bewerbungsformular weiter, das ihn schon immer vorbefuellt.
-        const signupUrl = `https://event-bliss.com/agencies/${inviteToken}`;
+        const signupUrl = `https://event-bliss.com/${demoLang(agency.country)}/agencies/${inviteToken}`;
 
         const vars: Record<string, string> = {
           agency_name: agency.name || "",
@@ -521,7 +552,7 @@ Antworte NUR mit dem JSON, kein Markdown drumherum.`;
       // Erst die Demoseite, nicht direkt das Formular: die Agentur sieht dort ihr
       // eigenes Profil und entscheidet danach. Der Token wandert von dort in das
       // Bewerbungsformular weiter, das ihn schon immer vorbefuellt.
-      const signupUrl = `https://event-bliss.com/agencies/${inviteToken}`;
+      const signupUrl = `https://event-bliss.com/${demoLang(ag.country)}/agencies/${inviteToken}`;
       const vars: Record<string, string> = {
         agency_name: ag.name || "", city: ag.city || "", country: ag.country || "",
         contact_name: ag.contact_person || ag.name || "", website: ag.website || "",

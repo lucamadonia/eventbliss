@@ -61,6 +61,7 @@ import {
 } from "@/hooks/useAgencyDirectory";
 import { AgencyServiceEditor } from "@/components/agency/AgencyServiceEditor";
 import { toast } from "sonner";
+import { buildTrialPatch, isValidTrialMonths, TRIAL_MONTHS_MAX, TRIAL_MONTHS_MIN } from "@/lib/subscription-plans";
 import { Label } from "@/components/ui/label";
 
 type AgencyTier = "starter" | "professional" | "enterprise";
@@ -128,6 +129,8 @@ export default function AdminAgencyManager() {
   const [tierDialogOpen, setTierDialogOpen] = useState(false);
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null);
   const [newTier, setNewTier] = useState<AgencyTier>("starter");
+  /** Laufzeit in Monaten. Leer = unbefristet, wie es bisher immer war. */
+  const [tierTrialMonths, setTierTrialMonths] = useState("");
 
   // Directory state
   const [dirSearch, setDirSearch] = useState("");
@@ -274,16 +277,32 @@ export default function AdminAgencyManager() {
   });
 
   // ─── Mutations ─────────────────────────────────────────────────────
+  /*
+    Stufe UND Laufzeit.
+
+    Die Tabelle hat seit jeher `expires_at` und `is_active` — geschrieben
+    wurde bisher nur `tier`. Ein Agentur-Abo lief damit unbefristet, und ein
+    Probezeitraum liess sich hier gar nicht vergeben; man musste ihn in der
+    Datenbank von Hand setzen.
+
+    Die Monatsrechnung kommt aus subscription-plans.ts, damit ein Probe-Abo
+    fuer eine Agentur genauso endet wie eines fuer einen Benutzer — inklusive
+    Monatsende-Korrektur.
+  */
   const changeTierMutation = useMutation({
-    mutationFn: async ({ agencyId, tier }: { agencyId: string; tier: AgencyTier }) => {
-      // Upsert subscription
+    mutationFn: async ({ agencyId, tier, months }: { agencyId: string; tier: AgencyTier; months?: number }) => {
+      const expiresAt = months !== undefined ? buildTrialPatch(months).expires_at : null;
       const { error } = await (supabase.from as any)("agency_marketplace_subscriptions")
-        .upsert({ agency_id: agencyId, tier }, { onConflict: "agency_id" });
+        .upsert(
+          { agency_id: agencyId, tier, expires_at: expiresAt, is_active: true },
+          { onConflict: "agency_id" },
+        );
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-agencies"] });
-      toast.success("Tier erfolgreich geändert");
+      toast.success("Abo gespeichert");
+      setTierTrialMonths("");
       setTierDialogOpen(false);
     },
     onError: () => toast.error("Fehler beim Ändern des Tiers"),
@@ -706,7 +725,7 @@ export default function AdminAgencyManager() {
       <Dialog open={tierDialogOpen} onOpenChange={setTierDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Tier ändern — {selectedAgency?.name}</DialogTitle>
+            <DialogTitle>Abo ändern — {selectedAgency?.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-3 gap-3">
@@ -732,6 +751,27 @@ export default function AdminAgencyManager() {
                 );
               })}
             </div>
+
+            {/*
+              Probe-Laufzeit. Leer heisst unbefristet — das war bisher der
+              einzige moegliche Zustand und bleibt der Standard.
+            */}
+            <div className="space-y-2 border-t pt-4">
+              <Label>Probe-Abo (Monate)</Label>
+              <Input
+                type="number"
+                min={TRIAL_MONTHS_MIN}
+                max={TRIAL_MONTHS_MAX}
+                placeholder="leer = unbefristet"
+                value={tierTrialMonths}
+                onChange={(e) => setTierTrialMonths(e.target.value)}
+              />
+              {isValidTrialMonths(parseInt(tierTrialMonths, 10)) && (
+                <p className="text-xs text-muted-foreground">
+                  Läuft bis {new Date(buildTrialPatch(parseInt(tierTrialMonths, 10)).expires_at).toLocaleDateString("de-DE")}
+                </p>
+              )}
+            </div>
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setTierDialogOpen(false)}>
@@ -740,12 +780,17 @@ export default function AdminAgencyManager() {
             <Button
               onClick={() => {
                 if (selectedAgency) {
-                  changeTierMutation.mutate({ agencyId: selectedAgency.id, tier: newTier });
+                  const months = parseInt(tierTrialMonths, 10);
+                  changeTierMutation.mutate({
+                    agencyId: selectedAgency.id,
+                    tier: newTier,
+                    ...(isValidTrialMonths(months) ? { months } : {}),
+                  });
                 }
               }}
               disabled={changeTierMutation.isPending}
             >
-              {changeTierMutation.isPending ? "Wird gespeichert..." : "Tier speichern"}
+              {changeTierMutation.isPending ? "Wird gespeichert..." : "Abo speichern"}
             </Button>
           </DialogFooter>
         </DialogContent>

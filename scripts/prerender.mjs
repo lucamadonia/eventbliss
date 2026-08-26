@@ -302,6 +302,7 @@ const STATIC = {
   "/legal/terms": { title: "Terms of Service | EventBliss", description: "The terms and conditions governing your use of EventBliss — accounts, services, payments and responsibilities." },
   "/legal/disclaimer": { title: "Disclaimer | EventBliss", description: "Liability, content and external-link disclaimer for the EventBliss platform." },
   "/legal/agency-agreement": { title: "Agency Partner Agreement | EventBliss", description: "Partnership agreement terms for agencies joining the EventBliss marketplace." },
+  "/agencies": { title: "For agencies — EventBliss", description: "This is how your profile looks on EventBliss: groups planning in your city see you while they plan and send a complete request with one tap." },
   "/support": { title: "Help & Support | EventBliss", description: "Get help with EventBliss: contact our support team and find answers about events, Premium subscriptions, cancellations, account deletion and bookings." },
 };
 const HOME = { title: "EventBliss — Smart Event & Party Planning App | Bachelor Parties, Birthdays & Trips", description: "Plan bachelor parties, bachelorette celebrations, birthdays and group trips effortlessly — AI suggestions, automatic cost splitting, 24+ party games and real-time collaboration. 100% free." };
