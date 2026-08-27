@@ -68,13 +68,14 @@ export interface PartyNightState {
    * 'map'     — die Nacht-Route als eigene Ansicht.
    * 'intro'   — der Begruessungsbildschirm mit dem Raumcode.
    * 'rules'   — die Anleitung des Spiels, das als Naechstes dran ist.
+   * 'ready'   — die animierte Buehne vor dem allerersten Spiel.
    *
    * Alles ausser 'ingame' wird vom Gastgeber gesetzt (Fernbedienung auf dem
    * Telefon oder Knopfreihe auf dem Fernseher) und reist in JEDEM Broadcast
    * mit — sonst wuerde der naechste Spielzustand die Ansicht sofort wieder
    * ueberschreiben.
    */
-  phase: 'ingame' | 'between' | 'finale' | 'map' | 'intro' | 'rules';
+  phase: 'ingame' | 'between' | 'finale' | 'map' | 'intro' | 'rules' | 'ready';
   /** name of the game that just finished — headline of the standings scene */
   lastGameName?: string;
 }

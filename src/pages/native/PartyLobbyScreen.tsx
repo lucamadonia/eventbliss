@@ -22,15 +22,16 @@ import { usePartySession } from "@/hooks/usePartySession";
 import { useBackGuard } from "@/lib/back-guard";
 import { PartyGamePicker, type PartyPickerMode } from "@/components/native/PartyGamePicker";
 import { PartyFinaleOverlay } from "@/components/native/party/PartyFinaleOverlay";
+import { PartyReadyOverlay } from "@/components/native/party/PartyReadyOverlay";
 import { PartySetlistStrip } from "@/components/native/party/PartySetlistStrip";
 import { nextFittingIndex } from "@/components/native/party/setlist";
 import { TVRemote } from "@/components/native/party/TVRemote";
-import { setTvView, resetTvView, getRulesIntro, setRulesIntro,
-         subscribeTvView, rulesIntroServerSnapshot } from "@/games/tv/tv-view";
+import { setTvView, resetTvView, getRulesIntro, getTvView, setRulesIntro,
+         subscribeTvView, rulesIntroServerSnapshot, tvViewServerSnapshot } from "@/games/tv/tv-view";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { PartyStandingsList } from "@/components/native/party/PartyStandingsList";
 import { EventParticipantPicker } from "@/games/ui/EventParticipantPicker";
-import { derivePartyStandings } from "@/games/party/standings";
+import { buildPartyNightState, derivePartyStandings } from "@/games/party/standings";
 import { playableGames } from "@/lib/playable-games";
 import { spring, stagger, staggerItem, blissBloom } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -48,6 +49,7 @@ export default function PartyLobbyScreen() {
   // Vorliebe der Gruppe, nicht Eigenschaft des Abends — wer die Spiele kennt,
   // will die Anleitungen dauerhaft aus haben.
   const rulesIntro = useSyncExternalStore(subscribeTvView, getRulesIntro, rulesIntroServerSnapshot);
+  const tvView = useSyncExternalStore(subscribeTvView, getTvView, tvViewServerSnapshot);
   const [searchParams, setSearchParams] = useSearchParams();
   const [newName, setNewName] = useState("");
   const [showPicker, setShowPicker] = useState(false);
@@ -56,6 +58,7 @@ export default function PartyLobbyScreen() {
   const [showFinalLeaderboard, setShowFinalLeaderboard] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmEnd, setConfirmEnd] = useState(false);
+  const [readyGameId, setReadyGameId] = useState<string | null>(null);
 
   const startSession = party.startSession;
   const isPartyActive = party.isPartyActive;
@@ -93,7 +96,7 @@ export default function PartyLobbyScreen() {
   );
   const canStartGame = players.length >= 2;
 
-  const playlist = session?.playlist ?? [];
+  const playlist = useMemo(() => session?.playlist ?? [], [session]);
   const playlistIndex = session?.playlistIndex ?? 0;
   const playlistActive = session?.playlistActive ?? false;
   /**
@@ -111,6 +114,36 @@ export default function PartyLobbyScreen() {
   const currentPlaylistName = currentPlaylistGame
     ? t(playableGames.find((g) => g.id === currentPlaylistGame)?.nameKey ?? currentPlaylistGame)
     : null;
+  const readyGameName = readyGameId
+    ? t(playableGames.find((g) => g.id === readyGameId)?.nameKey ?? readyGameId)
+    : null;
+
+  /**
+   * Solange die Lobby sichtbar ist, ist sie selbst der Sender fuer alle
+   * Party-Szenen. Vor Spiel eins existiert noch keine Game-Bridge; genau
+   * deshalb kam der fruehere Karten-Impuls nie verlaesslich am TV an.
+   */
+  useEffect(() => {
+    if (!tv?.isActive || !session) return;
+    const nameFor = (id: string) => {
+      const game = playableGames.find((entry) => entry.id === id);
+      return t(game?.nameKey ?? id);
+    };
+    const partyNight = buildPartyNightState(session, nameFor, tvView);
+    tv.broadcastTV("tv-state", {
+      game: "lobby",
+      phase: "idle",
+      lang: i18n.language,
+      players: partyNight.standings.map((player) => ({
+        name: player.name,
+        score: player.points,
+        color: player.color,
+        avatar: player.avatar,
+      })),
+      gameHistory: session.gameHistory,
+      partyNight,
+    });
+  }, [tv, session, tvView, i18n.language, t]);
 
   const handleAddPlayer = useCallback(() => {
     const trimmed = newName.trim();
@@ -143,6 +176,7 @@ export default function PartyLobbyScreen() {
     // die Nacht-Route. Ohne diesen Ruecksprung liefe ein einzeln gestartetes
     // Spiel die ganze Runde ueber mit der Karte auf dem Schirm.
     resetTvView();
+    setReadyGameId(null);
     party.startGame(gameId);
     setShowPicker(false);
     navigate(`/games/${gameId}?party=true`);
@@ -166,22 +200,27 @@ export default function PartyLobbyScreen() {
     launchGame(gameId);
   }, [haptics, launchGame]);
 
-  /** Set-Liste uebernehmen und direkt mit dem ersten Eintrag loslegen. */
+  /** Set-Liste uebernehmen und vor Spiel eins bewusst im Ready Room halten. */
   const handleStartSetlist = useCallback((gameIds: string[]) => {
     if (gameIds.length === 0) return;
     haptics.celebrate();
     party.setPlaylist(gameIds);
-    // Der Abend eroeffnet auf dem Fernseher mit der Nacht-Route: einmal die
-    // ganze Strecke sehen, bevor es losgeht. Danach uebernimmt das Spiel von
-    // selbst — ohne diesen Ruecksprung bliebe die Karte ueber der ersten Runde
-    // liegen.
-    // Der Abend eroeffnet mit der Nacht-Route. Frueher stand hier zusaetzlich
-    // ein 6-Sekunden-Zeitgeber, der sie wieder wegnahm — leicht zu verpassen
-    // und nicht anhaltbar. Aufgeraeumt wird jetzt beim Spielstart selbst
-    // (`useTVGameBridge`), also bleibt die Route stehen, bis es losgeht.
+    setShowPicker(false);
+    setReadyGameId(gameIds[0]);
+    setTvView("ready");
+  }, [party, haptics]);
+
+  const handleReadyStart = useCallback(() => {
+    if (!readyGameId) return;
+    haptics.celebrate();
+    launchPlaylistEntry(readyGameId);
+  }, [readyGameId, haptics, launchPlaylistEntry]);
+
+  const handleReadyBack = useCallback(() => {
+    haptics.light();
+    setReadyGameId(null);
     setTvView("map");
-    launchGame(gameIds[0]);
-  }, [party, haptics, launchGame]);
+  }, [haptics]);
 
   /**
    * `?finale=1` kommt vom Uebergang nach dem letzten Spiel der Set-Liste.
@@ -213,8 +252,11 @@ export default function PartyLobbyScreen() {
    */
   useEffect(() => {
     if (showFinalLeaderboard) return;
-    setTvView("map");
-  }, [showFinalLeaderboard]);
+    // Nur eine wirklich geschlossene Siegerehrung zur Route zuruecknehmen.
+    // Einen frischen Zwischenstand oder Ready Room beim Betreten der Lobby
+    // darf dieser Effekt nicht mehr ueberschreiben.
+    if (tvView === "finale") setTvView("map");
+  }, [showFinalLeaderboard, tvView]);
 
   const handleEndParty = useCallback(() => {
     if (history.length === 0) {
@@ -243,7 +285,7 @@ export default function PartyLobbyScreen() {
     } catch {
       // Zwischenablage nicht verfuegbar — der Code steht ja daneben.
     }
-  }, [party.tvCode, haptics]);
+  }, [party.tvCode, haptics, i18n.language]);
 
   return (
     <div className="relative h-full overflow-y-auto native-scroll bg-background safe-top">
@@ -626,6 +668,16 @@ export default function PartyLobbyScreen() {
         mode={pickerMode}
         initialSetlist={playlist}
         onStartSetlist={handleStartSetlist}
+      />
+
+      <PartyReadyOverlay
+        open={!!readyGameId}
+        gameId={readyGameId}
+        gameName={readyGameName}
+        playerCount={players.length}
+        tvActive={!!tv?.isActive}
+        onStart={handleReadyStart}
+        onBack={handleReadyBack}
       />
 
       <PartyFinaleOverlay

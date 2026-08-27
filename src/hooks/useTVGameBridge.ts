@@ -22,7 +22,7 @@ import i18n from "i18next";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { extractGameResult, resolvePartyGameId } from "@/games/party/extractResult";
 import { buildPartyNightState } from "@/games/party/standings";
-import { getTvView, resetTvView, subscribeTvView, tvViewServerSnapshot } from "@/games/tv/tv-view";
+import { getTvView, resetTvView, setTvView, subscribeTvView, tvViewServerSnapshot } from "@/games/tv/tv-view";
 import {
   getActivePartySession,
   reportGameResult,
@@ -200,12 +200,16 @@ export function useTVGameBridge(
 
     const partyGameId = resolvePartyGameId(routeGameId, gameId);
     const result = extractGameResult(partyGameId, state);
-    reportGameResult({
+    const recorded = reportGameResult({
       gameId: partyGameId,
       gameName: partyGameName(partyGameId),
       scored: result.scored,
       scoresByName: result.scores,
     });
+    // Im Party-Modus gehoert die grosse Leinwand nach dem Spiel der
+    // Gesamtwertung. Das Telefon behaelt seinen Game-Winner-Screen; der TV
+    // zeigt sofort, was der Sieg am ganzen Abend veraendert hat.
+    if (recorded) setTvView("between");
   }, [gameId, routeGameId, state.phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return tv;

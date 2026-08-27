@@ -111,7 +111,9 @@ export default function TVPartyStandings({ party }: { party: PartyNightState }) 
   const standings = [...party.standings].sort((a, b) => a.rank - b.rank || b.points - a.points);
   const leader = standings[0];
   const leaderChanged = !!leader && leader.prevRank !== null && leader.prevRank > 1;
-  const nextGame = party.playlist[party.index];
+  // Der Playlist-Zeiger rueckt erst mit "Weiter". `finishedThrough` zeigt im
+  // Zwischenstand bereits auf das wirklich naechste Spiel.
+  const nextGame = party.playlist[party.finishedThrough];
 
   const [beat, setBeat] = useState(0);
   useEffect(() => {
@@ -201,7 +203,7 @@ export default function TVPartyStandings({ party }: { party: PartyNightState }) 
       {/* ── Left rail: the evening's roadmap ── */}
       <TVPartyRoadmap
         playlist={party.playlist}
-        index={party.index}
+        index={party.finishedThrough}
         reveal={beat >= 3}
         className="relative z-10 max-h-full"
       />

@@ -1,226 +1,172 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { Crown } from 'lucide-react';
-import { useAmbientMotion } from '@/lib/useAmbientMotion';
-import { tvPanel, tvPanelRaised, tvType, tvActiveRing } from './tv-tokens';
-import { useCountUp } from './useCountUp';
+import { Sparkles, Trophy } from 'lucide-react';
+
+import { ConfettiBurst } from '@/components/vfx/ConfettiBurst';
+import TVPartyPodium from './components/TVPartyPodium';
+import { tvType } from './tv-tokens';
+import type { PartyStanding } from './party-types';
 import type { TVScore } from './useTVConnection';
 
+const spring = { type: 'spring' as const, stiffness: 225, damping: 23, mass: 0.82 };
+
+const THEMES: Record<string, { accent: string; secondary: string; warm: string; background: string }> = {
+  brew: { accent: '#df8eff', secondary: '#8ff5ff', warm: '#FFD75E', background: '#070812' },
+  pixeljagd: { accent: '#38BDF8', secondary: '#FDE047', warm: '#FB7185', background: '#07101e' },
+  closeenough: { accent: '#A78BFA', secondary: '#22D3EE', warm: '#FBBF24', background: '#090b19' },
+  bomb: { accent: '#FB7185', secondary: '#F59E0B', warm: '#A78BFA', background: '#12070d' },
+};
+
+const DEFAULT_THEME = { accent: '#df8eff', secondary: '#8ff5ff', warm: '#FFD75E', background: '#070812' };
+
 /**
- * TVGameOver — the cinematic final screen on the shared big screen.
+ * Premium-Einzelspiel-Sieg auf dem Fernseher.
  *
- * A tasteful winner reveal (spotlight + crown + count-up) followed by the full
- * ranked board of EVERY player (medals for top 3, rank numerals beyond), each
- * row staggered in. One short, capped confetti burst on reveal — gated behind
- * useAmbientMotion so native WebViews stay smooth. Flat-modern, solid panels,
- * transform/opacity animation only.
+ * Party-Spiele werden vorher nach `TVPartyStandings` umgeleitet. Diese Szene
+ * bleibt der hochwertige Rueckfall fuer ein einzelnes Spiel: gemeinsame
+ * Victory-Circuit-Buehne, kurze Reveal-Takte und eine kompakte Endtabelle statt
+ * der frueheren grossen Legacy-Ranglistenkarte.
  */
-
-const spring = { type: 'spring' as const, stiffness: 220, damping: 22 };
-const springBouncy = { type: 'spring' as const, stiffness: 280, damping: 16 };
-
-const MEDAL = ['🥇', '🥈', '🥉'];
-const RANK_COLOR = ['#FFD23F', '#cfd3dc', '#e0915b'];
-
-/* ─── Capped confetti burst — ~26 nodes, stops after one fall, gated ─── */
-const CONFETTI_COLORS = ['#df8eff', '#ff6b98', '#8ff5ff', '#FFD23F', '#26E0C4', '#d779ff'];
-function ConfettiBurst() {
-  const pieces = Array.from({ length: 26 }, (_, i) => {
-    const angle = (i / 26) * Math.PI * 2 + Math.random();
-    const dist = 220 + Math.random() * 360;
-    return {
-      x: Math.cos(angle) * dist,
-      y: Math.sin(angle) * dist - 120,
-      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-      size: 7 + Math.random() * 8,
-      rotate: Math.random() * 540 - 270,
-      duration: 1.6 + Math.random() * 1,
-      delay: Math.random() * 0.2,
-      round: i % 2 === 0,
-    };
-  });
-  return (
-    <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
-      {pieces.map((p, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          style={{
-            width: p.round ? p.size * 0.8 : p.size,
-            height: p.round ? p.size * 0.8 : p.size * 0.45,
-            backgroundColor: p.color,
-            borderRadius: p.round ? '50%' : 2,
-          }}
-          initial={{ x: 0, y: 0, rotate: 0, opacity: 1, scale: 0 }}
-          animate={{ x: p.x, y: p.y, rotate: p.rotate, opacity: [1, 1, 0], scale: [0, 1, 0.6] }}
-          transition={{ duration: p.duration, delay: p.delay, ease: [0.22, 1, 0.36, 1] }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/* ─── Player avatar ─── */
-function Avatar({ name, color, size, glow }: { name: string; color: string; size: string; glow?: boolean }) {
-  return (
-    <div
-      className="rounded-full flex items-center justify-center font-black text-white shrink-0"
-      style={{
-        width: size,
-        height: size,
-        fontSize: `calc(${size} * 0.42)`,
-        background: color,
-        ...(glow ? tvActiveRing(color) : {}),
-      }}
-    >
-      {name?.slice(0, 1).toUpperCase()}
-    </div>
-  );
-}
-
-/* ─── Main TVGameOver ─── */
-export default function TVGameOver({ scores }: { scores: TVScore[] }) {
+export default function TVGameOver({ scores, gameId }: { scores: TVScore[]; gameId?: string }) {
   const { t } = useTranslation();
-  const ambient = useAmbientMotion();
-  const sorted = [...scores].sort((a, b) => b.score - a.score);
+  const reduced = !!useReducedMotion();
+  const theme = THEMES[gameId ?? ''] ?? DEFAULT_THEME;
+  const sorted = useMemo(() => [...scores].sort((a, b) => b.score - a.score), [scores]);
   const winner = sorted[0];
 
-  // Reveal beats: 0 = drumroll, 1 = winner up, 2 = board fills in.
-  const [beat, setBeat] = useState(0);
+  const podium = useMemo<PartyStanding[]>(
+    () => sorted.map((entry, index) => ({
+      id: `${entry.name}-${index}`,
+      name: entry.name,
+      color: entry.color || theme.accent,
+      points: entry.score,
+      rank: index + 1,
+      prevRank: null,
+      gamesWon: index === 0 ? 1 : 0,
+      streak: 0,
+    })),
+    [sorted, theme.accent],
+  );
+
+  const [beat, setBeat] = useState(reduced ? 3 : 0);
+  const [confetti, setConfetti] = useState(false);
   useEffect(() => {
-    const t1 = setTimeout(() => setBeat(1), 1100);
-    const t2 = setTimeout(() => setBeat(2), 2400);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, []);
+    if (reduced) {
+      setBeat(3);
+      setConfetti(false);
+      return;
+    }
+    setBeat(0);
+    const timers = [
+      window.setTimeout(() => {
+        setBeat(1);
+        setConfetti(true);
+      }, 760),
+      window.setTimeout(() => setBeat(2), 1750),
+      window.setTimeout(() => setBeat(3), 2350),
+      window.setTimeout(() => setConfetti(false), 2250),
+    ];
+    return () => timers.forEach(window.clearTimeout);
+  }, [reduced]);
 
-  const winnerScore = useCountUp(winner?.score ?? 0, 1.4, beat >= 1);
-
-  if (!winner) {
-    return <div className="min-h-screen" style={{ backgroundColor: '#060810' }} />;
-  }
+  if (!winner) return <div className="h-screen w-screen" style={{ background: theme.background }} />;
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center gap-[clamp(1.5rem,3vh,3rem)] p-[clamp(1.5rem,3vw,3.5rem)] relative overflow-hidden"
-      style={{ backgroundColor: '#060810' }}
-    >
-      {/* Static winner wash (no loop) */}
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[60rem] h-[40rem] rounded-full blur-[120px] pointer-events-none"
-        style={{ background: `${winner.color}1f` }}
+    <div className="relative h-screen w-screen overflow-hidden text-white" style={{ background: theme.background }}>
+      <div aria-hidden className="absolute inset-0 opacity-35" style={{ backgroundImage: `linear-gradient(${theme.accent}13 1px,transparent 1px),linear-gradient(90deg,${theme.secondary}10 1px,transparent 1px)`, backgroundSize: '44px 44px', maskImage: 'radial-gradient(circle at 42% 46%,black,transparent 78%)' }} />
+      <motion.div
+        aria-hidden
+        className="absolute left-[37%] top-[42%] h-[42rem] w-[58rem] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px]"
+        style={{ background: `${winner.color || theme.accent}2f` }}
+        initial={{ opacity: 0, scale: reduced ? 1 : 0.68 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: reduced ? 0.1 : 1.1, ease: [0.22, 1, 0.36, 1] }}
       />
+      <div aria-hidden className="absolute right-[-10rem] top-[-12rem] h-[34rem] w-[34rem] rounded-full blur-[130px]" style={{ background: `${theme.secondary}17` }} />
 
-      {/* One capped confetti burst when the winner lands */}
-      {beat >= 1 && ambient && <ConfettiBurst />}
+      <ConfettiBurst active={confetti} count={46} />
 
-      {/* Headline */}
-      <motion.div
-        className="relative text-center"
-        initial={{ opacity: 0, y: -16 }}
+      <motion.header
+        className="absolute inset-x-[clamp(2rem,4vw,5rem)] top-[clamp(1.3rem,3vh,3rem)] z-30 flex items-center justify-between gap-6"
+        initial={{ opacity: 0, y: reduced ? 0 : -18 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={spring}
+        transition={{ duration: reduced ? 0.1 : 0.45 }}
       >
-        <span
-          className="uppercase font-black tracking-[0.3em]"
-          style={{ fontSize: tvType.label, color: '#b3a8c9' }}
-        >
-          {t('tv.andTheWinnerIs', 'Und der Gewinner ist')}
-        </span>
-      </motion.div>
-
-      {/* Winner card — spotlight + crown + count-up */}
-      <motion.div
-        className={`${tvPanelRaised} relative flex items-center gap-[clamp(1rem,2vw,2rem)] px-[clamp(1.5rem,3vw,3rem)] py-[clamp(1.25rem,2.4vw,2.5rem)]`}
-        style={beat >= 1 ? tvActiveRing(winner.color) : undefined}
-        initial={{ opacity: 0, scale: 0.85, y: 24 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ ...springBouncy, delay: 0.1 }}
-      >
-        <motion.div
-          className="absolute -top-[clamp(1.4rem,2.6vw,2.6rem)] left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0, y: 10, scale: 0.6 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ ...springBouncy, delay: 0.35 }}
-        >
-          <Crown
-            style={{
-              width: 'clamp(2.5rem,4vw,4rem)',
-              height: 'clamp(2.5rem,4vw,4rem)',
-              color: '#FFD23F',
-              filter: 'drop-shadow(0 0 14px rgba(255,210,63,0.6))',
-            }}
-          />
-        </motion.div>
-
-        <Avatar name={winner.name} color={winner.color} size="clamp(4.5rem,8vw,8rem)" glow />
-
-        <div className="flex flex-col items-start leading-tight">
-          <span
-            className="font-black text-white"
-            style={{ fontSize: tvType.display, lineHeight: 1 }}
-          >
-            {winner.name}
-          </span>
-          <span
-            className="font-black tabular-nums"
-            style={{ fontSize: tvType.title, color: winner.color }}
-          >
-            {winnerScore.toLocaleString('de-DE')}{' '}
-            <span className="font-bold" style={{ fontSize: tvType.body, color: '#b3a8c9' }}>
-              {t('tv.points', 'Punkte')}
-            </span>
+        <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.055] px-5 py-3 backdrop-blur-xl">
+          <Sparkles className="h-[1.15em] w-[1.15em]" style={{ color: theme.secondary }} aria-hidden />
+          <span className="font-black uppercase tracking-[0.27em] text-white/[0.68]" style={{ fontSize: tvType.micro }}>
+            {t('games.results.gameOver')}
           </span>
         </div>
-      </motion.div>
+        {gameId && (
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 font-black uppercase tracking-[.24em] text-white/38" style={{ fontSize: tvType.micro }}>
+            {gameId}
+          </span>
+        )}
+      </motion.header>
 
-      {/* Full ranked board — every player, staggered */}
-      <motion.div
-        className={`${tvPanel} w-full max-w-[min(54rem,90vw)] p-[clamp(1rem,1.6vw,1.75rem)] flex flex-col gap-2.5 max-h-[42vh] overflow-y-auto`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: beat >= 2 ? 1 : 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        {sorted.map((entry, i) => {
-          const isLeader = i === 0;
-          return (
-            <motion.div
-              key={`${entry.name}-${i}`}
-              className="flex items-center gap-[clamp(0.75rem,1.4vw,1.5rem)] rounded-2xl px-[clamp(0.85rem,1.4vw,1.5rem)] py-[clamp(0.6rem,1vw,1rem)]"
-              style={{
-                background: isLeader ? `linear-gradient(120deg, ${entry.color}1f, #140e24 60%)` : '#140e24',
-                border: `1.5px solid ${isLeader ? `${entry.color}66` : 'rgba(255,255,255,0.08)'}`,
-              }}
-              initial={{ opacity: 0, x: -24 }}
-              animate={beat >= 2 ? { opacity: 1, x: 0 } : { opacity: 0, x: -24 }}
-              transition={{ ...spring, delay: 0.05 + i * 0.06 }}
-            >
-              <span
-                className="shrink-0 font-black tabular-nums text-center"
-                style={{ fontSize: tvType.title, width: '1.6em', color: i < 3 ? RANK_COLOR[i] : '#6b6480' }}
+      <main className="relative z-10 grid h-full grid-cols-[1.35fr_.65fr] gap-[clamp(2rem,4vw,5rem)] px-[clamp(2.5rem,5vw,6rem)] pb-[clamp(2rem,4vh,4rem)] pt-[clamp(5.5rem,10vh,8rem)]">
+        <section className="flex min-h-0 flex-col items-center justify-center">
+          <motion.div
+            className="text-center"
+            initial={{ opacity: 0, y: reduced ? 0 : 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={spring}
+          >
+            <p className="font-black uppercase tracking-[0.34em]" style={{ color: theme.secondary, fontSize: tvType.micro }}>
+              {t('tv.andTheWinnerIs')}
+            </p>
+            <h1 className="mt-2 font-black leading-[.9] tracking-[-.05em]" style={{ fontSize: 'clamp(4rem,7.3vw,8.4rem)' }}>
+              {winner.name}
+            </h1>
+          </motion.div>
+
+          <TVPartyPodium entries={podium} reveal={beat >= 1} variant="finale" className="mt-[-1rem] max-w-[min(58rem,92%)]" />
+
+          <motion.div
+            className="-mt-1 inline-flex items-center gap-3 rounded-full border px-6 py-3 font-black"
+            style={{ borderColor: `${theme.warm}50`, background: `linear-gradient(90deg,transparent,${theme.warm}16,transparent)`, fontSize: tvType.label }}
+            initial={{ opacity: 0, y: reduced ? 0 : 16 }}
+            animate={beat >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: reduced ? 0 : 16 }}
+            transition={spring}
+          >
+            <Trophy className="h-[1.1em] w-[1.1em]" style={{ color: theme.warm }} aria-hidden />
+            <span>{winner.score.toLocaleString('de-DE')} {t('tv.points')}</span>
+          </motion.div>
+        </section>
+
+        <motion.aside
+          className="relative my-auto flex max-h-[72vh] min-h-0 flex-col overflow-hidden rounded-[clamp(1.8rem,2.6vw,3rem)] border border-white/[0.09] bg-white/[0.048] p-[clamp(1rem,1.7vw,2rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.09),0_34px_90px_-58px_rgba(0,0,0,.95)] backdrop-blur-2xl"
+          initial={{ opacity: 0, x: reduced ? 0 : 30 }}
+          animate={beat >= 2 ? { opacity: 1, x: 0 } : { opacity: 0, x: reduced ? 0 : 30 }}
+          transition={spring}
+        >
+          <div aria-hidden className="absolute inset-x-[15%] top-0 h-px" style={{ background: `linear-gradient(90deg,transparent,${theme.accent},${theme.secondary},transparent)` }} />
+          <div className="mb-4 flex items-center justify-between gap-4 px-1">
+            <h2 className="font-black uppercase tracking-[0.24em] text-white/48" style={{ fontSize: tvType.micro }}>{t('games.results.leaderboard')}</h2>
+            <span className="font-black tabular-nums text-white/30" style={{ fontSize: tvType.micro }}>{sorted.length}</span>
+          </div>
+          <div className="min-h-0 space-y-[clamp(.35rem,.7vh,.65rem)] overflow-y-auto">
+            {sorted.map((entry, index) => (
+              <motion.div
+                key={`${entry.name}-${index}`}
+                className="relative flex items-center gap-[clamp(.55rem,1vw,1rem)] overflow-hidden rounded-[clamp(1rem,1.4vw,1.4rem)] border px-[clamp(.65rem,1vw,1rem)] py-[clamp(.55rem,.9vh,.9rem)]"
+                style={{ borderColor: index === 0 ? `${entry.color}70` : 'rgba(255,255,255,.07)', background: index === 0 ? `linear-gradient(105deg,${entry.color}24,rgba(255,255,255,.04))` : 'rgba(255,255,255,.025)' }}
+                initial={{ opacity: 0, x: reduced ? 0 : 20 }}
+                animate={beat >= 2 ? { opacity: 1, x: 0 } : { opacity: 0, x: reduced ? 0 : 20 }}
+                transition={{ ...spring, delay: reduced ? 0 : Math.min(index * 0.055, 0.4) }}
               >
-                {i < 3 ? MEDAL[i] : i + 1}
-              </span>
-              <Avatar name={entry.name} color={entry.color} size="clamp(2.5rem,3.4vw,3.5rem)" />
-              <span
-                className="flex-1 min-w-0 truncate font-bold text-white"
-                style={{ fontSize: tvType.body }}
-              >
-                {entry.name}
-              </span>
-              <span
-                className="shrink-0 font-black tabular-nums"
-                style={{ fontSize: tvType.body, color: isLeader ? entry.color : '#b3a8c9' }}
-              >
-                {entry.score.toLocaleString('de-DE')}
-              </span>
-            </motion.div>
-          );
-        })}
-      </motion.div>
+                {index === 0 && <span aria-hidden className="absolute inset-y-[18%] left-0 w-[3px] rounded-full" style={{ background: entry.color, boxShadow: `0 0 16px ${entry.color}` }} />}
+                <span className="w-[1.8em] shrink-0 text-center font-black tabular-nums" style={{ color: index < 3 ? [theme.warm, '#D9E1F2', '#E99A67'][index] : 'rgba(255,255,255,.3)', fontSize: tvType.label }}>{String(index + 1).padStart(2, '0')}</span>
+                <span className="grid h-[clamp(2.1rem,3vw,3.2rem)] w-[clamp(2.1rem,3vw,3.2rem)] shrink-0 place-items-center rounded-full border font-black" style={{ background: `linear-gradient(145deg,${entry.color},#0b0b16)`, borderColor: `${entry.color}b0`, fontSize: tvType.label }}>{entry.name.slice(0, 1).toUpperCase()}</span>
+                <span className="min-w-0 flex-1 truncate font-black" style={{ fontSize: tvType.label }}>{entry.name}</span>
+                <span className="shrink-0 font-black tabular-nums" style={{ color: index === 0 ? theme.warm : 'rgba(255,255,255,.68)', fontSize: tvType.label }}>{entry.score.toLocaleString('de-DE')}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.aside>
+      </main>
     </div>
   );
 }

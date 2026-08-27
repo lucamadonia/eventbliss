@@ -8,7 +8,7 @@
  */
 import { describe, it, expect, beforeEach } from "vitest";
 
-import { getTvView, setTvView, resetTvView, subscribeTvView } from "./tv-view";
+import { getTvView, setTvView, resetTvView, resolveTvView, subscribeTvView } from "./tv-view";
 
 describe("tv-view", () => {
   beforeEach(() => resetTvView());
@@ -45,5 +45,15 @@ describe("tv-view", () => {
     ab();
     setTvView("intro");
     expect(rufe).toBe(1);
+  });
+
+  it("zeigt nach einem Party-Spiel automatisch den Zwischenstand", () => {
+    expect(resolveTvView("ingame", { partyActive: true, gameOver: true })).toBe("between");
+  });
+
+  it("ueberschreibt weder Einzelspiele noch eine explizite Host-Ansicht", () => {
+    expect(resolveTvView("ingame", { partyActive: false, gameOver: true })).toBe("ingame");
+    expect(resolveTvView("finale", { partyActive: true, gameOver: true })).toBe("finale");
+    expect(resolveTvView("map", { partyActive: true, gameOver: true })).toBe("map");
   });
 });

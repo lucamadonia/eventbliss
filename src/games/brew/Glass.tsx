@@ -204,6 +204,122 @@ export function Glass({
   const showSurfaceMotion = premium && ambient && !reduceMotion && fillCount > 0;
   const tensionGlow = intensity === 3 ? pal.bad : topColor ?? pal.accent;
 
+  /**
+   * Der Kessel ist kein aus dem Glasprofil abgeleitetes SVG mehr. Seine alte
+   * Silhouette (zwei dicke Henkelpfade plus Schale) war technisch korrekt,
+   * aber sichtbar gezeichnet. Das neue GPT-Image-Asset liefert Material,
+   * Licht und echte Tiefe; Fluessigkeit, Dampf und Gameplay-Reaktionen bleiben
+   * echte UI-Layer und koennen deshalb weiterhin dynamisch animieren.
+   */
+  if (form.id === "kessel") {
+    const surface = topColor ?? "#24112f";
+    return (
+      <motion.div
+        ref={boxRef}
+        className={className}
+        style={{
+          width: width ?? SIZE_WIDTH[size],
+          aspectRatio: "1 / 1",
+          position: "relative",
+          filter: premium
+            ? `drop-shadow(0 20px 26px rgba(0,0,0,.58)) drop-shadow(0 0 ${14 + intensity * 8}px ${tensionGlow}4f)`
+            : `drop-shadow(0 12px 16px rgba(0,0,0,.5)) drop-shadow(0 0 9px ${tensionGlow}38)`,
+        }}
+        animate={{
+          y: complete && !reduceMotion ? -5 : 0,
+          scale: active && premium && !reduceMotion ? [1, 1.012, 1] : 1,
+        }}
+        transition={{
+          y: { type: "spring", stiffness: 200, damping: 14 },
+          scale: active && premium && !reduceMotion
+            ? { duration: 1.9, repeat: Infinity, ease: "easeInOut" }
+            : { duration: 0.2 },
+        }}
+      >
+        <div
+          aria-hidden
+          className="absolute left-1/2 top-[55%] h-[42%] w-[82%] -translate-x-1/2 -translate-y-1/2"
+        >
+          <motion.span
+            className="block h-full w-full rounded-full blur-2xl"
+            style={{ background: `${surface}${fillCount > 0 ? "36" : "16"}` }}
+            animate={showSurfaceMotion ? { opacity: [0.42, 0.78, 0.42], scale: [0.92, 1.06, 0.92] } : { opacity: 0.46, scale: 1 }}
+            transition={{ duration: 2.8, repeat: showSurfaceMotion ? Infinity : 0, ease: "easeInOut" }}
+          />
+        </div>
+
+        <img
+          src="/images/brew/cauldron-premium-v2.webp"
+          alt=""
+          aria-hidden="true"
+          className="relative z-10 h-full w-full object-contain"
+        />
+
+        {/* Sichtbare Trankoberflaeche innerhalb der generierten Muendung. */}
+        <div
+          aria-hidden
+          className="absolute left-1/2 top-[20.2%] z-20 h-[7.4%] w-[52%] -translate-x-1/2"
+        >
+          <motion.span
+            className="block h-full w-full rounded-[50%]"
+            style={{
+              background: fillCount > 0
+                ? `radial-gradient(ellipse at 38% 30%, rgba(255,255,255,.96) 0%, ${surface} 11%, ${surface} 56%, rgba(14,4,22,.98) 100%)`
+                : "radial-gradient(ellipse,rgba(28,16,39,.92),rgba(3,2,7,.98))",
+              boxShadow: fillCount > 0
+                ? `inset 0 7px 15px rgba(255,255,255,.14), 0 0 16px ${surface}aa, 0 0 42px ${surface}66`
+                : "inset 0 7px 15px rgba(255,255,255,.04)",
+            }}
+            animate={showSurfaceMotion
+              ? { scaleX: [0.97, 1.035, 0.985, 0.97], scaleY: [1, 0.86, 1.06, 1], filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] }
+              : { scaleX: 1, scaleY: 1 }}
+            transition={{ duration: 2.1, repeat: showSurfaceMotion ? Infinity : 0, ease: "easeInOut" }}
+          />
+        </div>
+
+        {/* Jede gesicherte Zutat leuchtet als kleine Rune am Kesselband. */}
+        {fillCount > 0 && (
+          <div className="absolute left-1/2 top-[43%] z-30 flex max-w-[58%] -translate-x-1/2 items-center justify-center gap-[3%]" aria-hidden>
+            {layers.map((layer, index) => (
+              <motion.span
+                key={layer.id}
+                className="aspect-square min-w-[5px] flex-1 rounded-full border border-white/45"
+                style={{ maxWidth: premium ? 13 : 8, background: layer.color, boxShadow: `0 0 ${premium ? 12 : 7}px ${layer.color}` }}
+                initial={index >= newFrom && !reduceMotion ? { opacity: 0, scale: 0.25, y: 6 } : false}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 260, damping: 16, delay: index >= newFrom ? (arrivalDelay + (index - newFrom) * layerStagger) / 1000 : 0 }}
+              />
+            ))}
+          </div>
+        )}
+
+        {premium && ambient && !reduceMotion && fillCount > 0 && [0, 1, 2].map((wisp) => (
+          <motion.span
+            key={wisp}
+            aria-hidden
+            className="absolute left-1/2 top-[16%] z-30 h-[26%] w-[7%] rounded-full blur-[6px]"
+            style={{ background: `linear-gradient(to top,${surface}a8,${pal.accent}35,transparent)` }}
+            initial={{ x: `${(wisp - 1) * 42 - 50}%`, y: 10, opacity: 0, scaleY: 0.55 }}
+            animate={{ x: [`${(wisp - 1) * 42 - 50}%`, `${(wisp - 1) * 28 - 50}%`], y: [10, -pxH * 0.32], opacity: [0, 0.68, 0], scaleY: [0.55, 1.3] }}
+            transition={{ duration: 2.25 + wisp * 0.25, repeat: Infinity, delay: wisp * 0.48, ease: "easeOut" }}
+          />
+        ))}
+
+        <div className="pointer-events-none absolute left-1/2 z-40" style={{ top: -pxH * 0.35, transform: "translateX(-50%)" }}>
+          <PourStream color={surface} active={pouring} skin={skin} size={fx} />
+        </div>
+        <div className="pointer-events-none absolute left-1/2 top-[23%] z-40" style={{ transform: "translate(-50%, -50%)" }}>
+          <Splash color={surface} trigger={splashTrigger} skin={skin} size={fx} />
+        </div>
+        {complete && (
+          <div className="pointer-events-none absolute left-1/2 top-[35%] z-40" style={{ transform: "translate(-50%, -50%)" }}>
+            <FinishSparkle color={surface} trigger={finishTrigger} skin={skin} size={fx} />
+          </div>
+        )}
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       ref={boxRef}

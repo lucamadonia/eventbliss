@@ -18,6 +18,7 @@
  */
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { BellRing } from "lucide-react";
 import { NativeOverlayPortal } from "@/components/native/NativeOverlayPortal";
 import { ease } from "@/lib/motion";
 import { INGREDIENTS, type IngredientId, type Skin } from "./brew-content";
@@ -48,7 +49,7 @@ export const DRAW_BEATS = {
   /** Wie lange die aufgedeckte Karte stehen bleibt. */
   hold: 420,
   /** Der Bust haelt laenger — der Schreck braucht Zeit. */
-  holdBust: 620,
+  holdBust: 900,
   out: 220,
   reducedTotal: 420,
 } as const;
@@ -60,11 +61,15 @@ export function drawRevealDuration(isBust: boolean, reduced: boolean): number {
 
 export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, onDone }: DrawRevealProps) {
   const [phase, setPhase] = useState<"flip" | "hold" | "out" | null>(null);
+  const [bustAssetReady, setBustAssetReady] = useState(false);
 
   useEffect(() => {
     if (!card) { setPhase(null); return; }
     const isBust = card.id === null;
     setPhase("flip");
+    // Beim ersten Bust startet die Reveal-Uhr erst, wenn das Hero-Asset da ist.
+    // Sonst kann eine langsame Verbindung den kompletten Effekt verschlucken.
+    if (isBust && !bustAssetReady) return;
     const timers: number[] = [];
     if (reduced) {
       timers.push(window.setTimeout(() => setPhase("out"), DRAW_BEATS.reducedTotal * 0.6));
@@ -76,7 +81,7 @@ export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, o
       timers.push(window.setTimeout(() => { setPhase(null); onDone(); }, drawRevealDuration(isBust, false)));
     }
     return () => timers.forEach((t) => window.clearTimeout(t));
-  }, [card, reduced, onDone]);
+  }, [bustAssetReady, card, reduced, onDone]);
 
   const isBust = card?.id === null || card?.outcome === "bust";
   const isHit = card?.outcome === "hit";
@@ -121,10 +126,10 @@ export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, o
               </>
             )}
             <motion.div
-              className="relative rounded-3xl flex flex-col items-center justify-center gap-2"
+              className="relative flex flex-col items-center justify-center overflow-hidden rounded-[2rem]"
               style={{
-                width: 190,
-                height: 232,
+                width: isBust ? "min(78vw, 304px)" : 190,
+                height: isBust ? "min(92vw, 364px)" : 232,
                 ...ingredientPlate(color),
                 // Der Schein traegt die Stimmung: Zutat ruhig, Bust hart.
                 boxShadow: `inset 0 0 0 2px ${color}, inset 0 0 42px ${color}35, 0 0 ${isBust ? 90 : 62}px ${color}`,
@@ -138,24 +143,79 @@ export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, o
                     ? { opacity: 1, scale: 1 }
                     : phase === "flip"
                       ? { rotateY: [180, 0], scale: [0.62, 1.04, 0.96], opacity: [0, 1, 1], y: [18, 0] }
-                      : { rotateY: 0, scale: isHit ? [0.96, 1.055, 1] : 1, opacity: 1, y: 0 }
+                      : isBust
+                        ? { rotateY: 0, scale: [0.96, 1.035, 1], rotate: [0, -1.4, 1.2, 0], opacity: 1, y: 0 }
+                        : { rotateY: 0, scale: isHit ? [0.96, 1.055, 1] : 1, opacity: 1, y: 0 }
               }
               transition={{
                 duration: (phase === "out" ? DRAW_BEATS.out : DRAW_BEATS.flip) / 1000,
                 ease: phase === "out" ? ease.in : ease.snap,
               }}
             >
+              {isBust && (
+                <>
+                  <motion.span
+                    aria-hidden
+                    className="absolute h-[80%] w-[80%] rounded-full border border-[#FB7185]/28"
+                    animate={reduced ? undefined : { rotate: 360, scale: [0.94, 1.04, 0.94] }}
+                    transition={{ rotate: { duration: 9, repeat: Infinity, ease: "linear" }, scale: { duration: 2.2, repeat: Infinity, ease: "easeInOut" } }}
+                  />
+                  <motion.span
+                    aria-hidden
+                    className="absolute h-[62%] w-[62%] rounded-full border border-dashed border-[#8ff5ff]/25"
+                    animate={reduced ? undefined : { rotate: -360 }}
+                    transition={{ duration: 7, repeat: Infinity, ease: "linear" }}
+                  />
+                  <div aria-hidden className="absolute inset-x-[12%] top-0 h-px bg-gradient-to-r from-transparent via-[#8ff5ff] to-transparent" />
+                </>
+              )}
               {card.id ? (
                 <IngredientIcon id={card.id} skin={skin} className="w-24 h-24" emojiSize="4rem" />
+              ) : skin === "brew" ? (
+                <motion.div className="relative z-10 h-52 w-52" initial={false}>
+                  <motion.span
+                    aria-hidden
+                    className="absolute inset-[20%] rounded-full bg-[#FB7185]/35 blur-2xl"
+                    animate={reduced ? undefined : { scale: [0.72, 1.32, 0.72], opacity: [0.25, 0.78, 0.25] }}
+                    transition={{ duration: 1.15, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                  <motion.img
+                    src="/images/brew/bust-eruption-v2.webp"
+                    alt=""
+                    onLoad={() => setBustAssetReady(true)}
+                    onError={() => setBustAssetReady(true)}
+                    className="relative h-full w-full object-contain drop-shadow-[0_0_24px_rgba(251,113,133,.8)]"
+                    initial={reduced ? false : { opacity: 0, scale: 0.22, y: 34 }}
+                    animate={phase === "out"
+                      ? { opacity: 0, scale: 1.36, y: -20 }
+                      : { opacity: 1, scale: phase === "flip" && !reduced ? [0.22, 1.13, 0.96] : 1, y: 0 }}
+                    transition={{ duration: phase === "out" ? 0.22 : 0.48, ease: [0.16, 1, 0.3, 1] }}
+                  />
+                </motion.div>
               ) : (
-                <span style={{ fontSize: "4rem", lineHeight: 1 }}>{skin === "brew" ? "🌋" : "🔔"}</span>
+                <motion.span
+                  className="grid h-24 w-24 place-items-center rounded-full border border-[#FBBF24]/35 bg-[#FBBF24]/10 text-[#FBBF24] shadow-[0_0_42px_rgba(251,191,36,.28)]"
+                  animate={reduced ? undefined : { rotate: [0, -9, 9, -5, 5, 0], scale: [1, 1.08, 1] }}
+                  transition={{ duration: 0.72, ease: "easeInOut" }}
+                >
+                  <BellRing className="h-12 w-12" strokeWidth={2.4} aria-hidden />
+                </motion.span>
               )}
               <span
-                className="px-3 text-center text-sm font-black leading-tight"
+                className={`relative z-10 px-4 text-center font-black leading-tight ${isBust ? "text-lg" : "text-sm"}`}
                 style={{ color: isBust ? "#FFE4E6" : "rgba(255,255,255,0.95)" }}
               >
                 {label}
               </span>
+              {isBust && verdictLabel && phase === "hold" && (
+                <motion.span
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="relative z-10 mt-1 rounded-full border border-[#FB7185]/35 bg-[#FB7185]/12 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#fecdd3]"
+                >
+                  {verdictLabel}
+                </motion.span>
+              )}
               {!isBust && phase === "hold" && (
                 <motion.span
                   initial={false}

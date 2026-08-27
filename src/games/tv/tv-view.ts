@@ -32,6 +32,23 @@ export function setTvView(next: TvView): void {
   listeners.forEach((l) => l());
 }
 
+/**
+ * Sicherheitsnetz fuer den exakten Moment, in dem ein Party-Spiel endet.
+ *
+ * Das Telefon schreibt Ergebnis und TV-Zustand in zwei aufeinanderfolgenden
+ * React-Effekten. Fuer wenige Millisekunden kann deshalb bereits `gameOver`
+ * anliegen, waehrend die Erlebnis-Ansicht noch `ingame` lautet. Ohne diese
+ * Ableitung faellt der Fernseher in die generische Einzelspiel-Rangliste.
+ * Explizite Ansichten des Hosts (Karte, Regeln, Finale, ...) bleiben unangetastet.
+ */
+export function resolveTvView(
+  requested: TvView,
+  options: { partyActive: boolean; gameOver: boolean },
+): TvView {
+  if (options.partyActive && options.gameOver && requested === "ingame") return "between";
+  return requested;
+}
+
 /** Zurueck auf "das Spiel laeuft" — beim Start eines Spiels. */
 export function resetTvView(): void {
   setTvView("ingame");

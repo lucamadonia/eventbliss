@@ -15,6 +15,7 @@ import { useTVConnection } from './useTVConnection';
 import { useTVAudio } from './TVAudioManager';
 import type { BrewCue } from '@/games/brew/brew-audio';
 import type { PartyNightState } from './party-types';
+import { resolveTvView } from './tv-view';
 
 // Lazy load game-specific TV views
 const TVBombView = lazy(() => import('./games/TVBombView'));
@@ -44,6 +45,7 @@ const TVPartyStandings = lazy(() => import('./TVPartyStandings'));
 const TVPartyMap = lazy(() => import('./components/TVPartyMap'));
 const TVRules = lazy(() => import('./TVRules'));
 const TVPartyFinale = lazy(() => import('./TVPartyFinale'));
+const TVPartyReady = lazy(() => import('./TVPartyReady'));
 
 const TVFallback = (
   <div className="min-h-screen flex items-center justify-center">
@@ -135,14 +137,17 @@ export default function TVScreen() {
   // single games, in which case everything below behaves exactly as before.
   const partyNight = gameState?.partyNight as PartyNightState | undefined;
   const partyActive = !!partyNight?.active && (partyNight.standings?.length ?? 0) > 0;
+  const showLeaderboard = gameState?.phase === 'leaderboard' || gameState?.phase === 'roundEnd';
+  const showGameOver = gameEnded || gameState?.phase === 'gameOver';
   // Explicit host intent wins over the derived per-game phases below.
   const wirePhase = partyNight?.phase ?? 'ingame';
-  const effectiveView = localView ?? wirePhase;
+  const effectiveView = resolveTvView(localView ?? wirePhase, { partyActive, gameOver: showGameOver });
   const showPartyFinale = partyActive && effectiveView === 'finale';
   const showPartyStandings = partyActive && effectiveView === 'between';
   const showPartyMap = partyActive && effectiveView === 'map';
   const showPartyIntro = partyActive && effectiveView === 'intro';
   const showPartyRules = partyActive && effectiveView === 'rules';
+  const showPartyReady = partyActive && effectiveView === 'ready';
 
   /**
    * Schaltet der Gastgeber am Telefon um, gibt der Fernseher seine oertliche
@@ -157,9 +162,7 @@ export default function TVScreen() {
     }
   }, [wirePhase]);
 
-  // Determine phase
-  const showLeaderboard = gameState?.phase === 'leaderboard' || gameState?.phase === 'roundEnd';
-  const showGameOver = gameEnded || gameState?.phase === 'gameOver';
+  // Determine the remaining per-game phases.
   const showGame = gameStarted && gameState && !showLeaderboard && !showGameOver;
   const showLobby = !gameStarted || (!showGame && !showLeaderboard && !showGameOver);
 
@@ -268,7 +271,7 @@ export default function TVScreen() {
           optional partyRank/partyPoints props on that same TVScoreboard, and
           the only extra chrome is the hairline strip below — a single
           text-height row inside the padding every view already reserves. */}
-      {partyActive && !showPartyStandings && !showPartyFinale && !showPartyMap && !showPartyIntro && !showPartyRules && (
+      {partyActive && !showPartyStandings && !showPartyFinale && !showPartyMap && !showPartyIntro && !showPartyRules && !showPartyReady && (
         <TVPartyProgressStrip playlist={partyNight!.playlist} index={partyNight!.index} />
       )}
 
@@ -310,6 +313,7 @@ export default function TVScreen() {
           key={
             showPartyFinale ? 'partyFinale'
             : showPartyStandings ? 'partyStandings'
+            : showPartyReady ? 'partyReady'
             // Vom Gastgeber gerufenes Startbild — dieselbe Lobby wie am Anfang
             // des Abends, damit ein Nachzuegler den Raumcode wiederfindet.
             : showPartyRules ? 'partyRules'
@@ -332,6 +336,8 @@ export default function TVScreen() {
             <Suspense fallback={TVFallback}><TVPartyFinale party={partyNight!} /></Suspense>
           ) : showPartyStandings ? (
             <Suspense fallback={TVFallback}><TVPartyStandings party={partyNight!} /></Suspense>
+          ) : showPartyReady ? (
+            <Suspense fallback={TVFallback}><TVPartyReady party={partyNight!} /></Suspense>
           ) : showPartyRules ? (
             <Suspense fallback={TVFallback}>
               <TVRules
@@ -342,7 +348,7 @@ export default function TVScreen() {
           ) : showPartyIntro ? (
             <TVLobby roomCode={code} players={players} isConnected={isConnected} error={error} />
           ) : showGameOver ? (
-            <TVGameOver scores={scores} />
+            <TVGameOver scores={scores} gameId={gameState?.game as string | undefined} />
           ) : showLeaderboard ? (
             <TVLeaderboard scores={scores} party={partyNight} />
           ) : showGame ? (
