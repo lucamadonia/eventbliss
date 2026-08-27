@@ -7646,6 +7646,14 @@
       ],
       "sipPenalty": "Bir yudum al.",
       "finishBonus": "+{{count}} bonus",
+      "soundOn": "Sesi aç",
+      "soundOff": "Sesi kapat",
+      "drawHit": "Doğru malzeme",
+      "drawMiss": "Tepsiye",
+      "chain": "Demleme zinciri ×{{count}}",
+      "multiBonus": "Çoklu döküş",
+      "perfectBonus": "Kusursuz döküş",
+      "risk": { "calm": "sakin", "simmering": "kaynıyor", "unstable": "dengesiz", "critical": "kritik" },
       "tv": {
         "done": "bitti"
       },
@@ -8910,7 +8918,7 @@
       "step3": "Sonra kapalı desteden cesaretin yettiği kadar çek. Yaklaşık her yedinci kart tepsiyi devirir.",
       "step4": "Uğursuz kart gelirse bütün tepsiyi kaybedersin — üstüne bir de ceza alırsın.",
       "step5": "„Doldur“ işine yarayan malzemeleri bardağa kalıcı olarak kilitler ve sıranı bitirir. Geri kalanı açık şekilde tezgâha gider.",
-      "tip": "Doldururken işine yaramayanı diğerlerine hediye edersin. Erken bitirmek çoğu zaman dolu bir tepsiden değerlidir."
+      "tip": "Gösterge sıradaki kartı değil, riske attığın tepsiyi anlatır. İki doğru malzeme bonus verir; artan yoksa kusursuz döküş bonusu gelir."
     }
   },
   "nativeAdmin": {

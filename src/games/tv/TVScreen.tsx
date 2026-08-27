@@ -13,6 +13,7 @@ import TVPartyProgressStrip from './components/TVPartyProgressStrip';
 import TVViewBar from './components/TVViewBar';
 import { useTVConnection } from './useTVConnection';
 import { useTVAudio } from './TVAudioManager';
+import type { BrewCue } from '@/games/brew/brew-audio';
 import type { PartyNightState } from './party-types';
 
 // Lazy load game-specific TV views
@@ -50,6 +51,8 @@ const TVFallback = (
   </div>
 );
 
+// Die einzelnen Legacy-TV-Views besitzen noch keinen gemeinsamen State-Vertrag.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }) {
   const game = gameState?.game || '';
   const props = { gameState, drawing };
@@ -163,6 +166,7 @@ export default function TVScreen() {
   // Audio
   const audio = useTVAudio();
   const prevPhaseRef = useRef<string>('');
+  const prevBrewCueRef = useRef<number | null>(null);
 
   // Trigger audio on phase changes
   useEffect(() => {
@@ -182,6 +186,18 @@ export default function TVScreen() {
     const tl = gameState?.timeLeft as number | undefined;
     if (typeof tl === 'number' && tl <= 5 && tl > 0) audio.playTick();
   }, [gameState?.timeLeft, audio]);
+
+  // Gebräu sendet semantische Cues mit monotonem Zähler. Der erste empfangene
+  // Stand wird nur gemerkt, damit ein spät verbundener TV nichts nachspielt.
+  useEffect(() => {
+    if (gameState?.game !== 'brew') return;
+    const seq = Number(gameState?.audioCueSeq ?? 0);
+    if (prevBrewCueRef.current === null) { prevBrewCueRef.current = seq; return; }
+    if (seq <= prevBrewCueRef.current) return;
+    prevBrewCueRef.current = seq;
+    const cue = gameState?.audioCue as BrewCue | undefined;
+    if (cue) audio.playBrew(cue);
+  }, [gameState?.game, gameState?.audioCueSeq, gameState?.audioCue, audio]);
 
   // Derive glow frame props from game state
   const glowColor = gameState?.players?.[gameState?.currentPlayerIndex ?? gameState?.activeIdx ?? gameState?.currentPlayerIdx]?.color as string | undefined;

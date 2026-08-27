@@ -34,9 +34,15 @@ describe("scoreFor", () => {
       name: "Bo",
       recipe: shortRecipe,
       glass: shortRecipe.needs.slice(0, -1), // eine Zutat fehlt noch
+      brewBonus: 3,
     });
     const done = scoreFor({ name: "Ada", recipe: shortRecipe, glass: shortRecipe.needs });
     expect(done.score).toBeGreaterThan(almostDone.score);
+  });
+
+  it("addiert Brauboni und deckelt manipulierte Werte bei drei", () => {
+    expect(scoreFor({ name: "Ada", recipe, glass: ["base1"], brewBonus: 2 }).score).toBe(3);
+    expect(scoreFor({ name: "Ada", recipe, glass: ["base1"], brewBonus: 99 }).score).toBe(4);
   });
 
   it("leeres Glas ergibt 0 Punkte", () => {

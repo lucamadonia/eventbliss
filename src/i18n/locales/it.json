@@ -7596,6 +7596,14 @@
       ],
       "sipPenalty": "Fai un sorso.",
       "finishBonus": "+{{count}} bonus",
+      "soundOn": "Attiva audio",
+      "soundOff": "Disattiva audio",
+      "drawHit": "Ingrediente giusto",
+      "drawMiss": "Sul vassoio",
+      "chain": "Catena alchemica ×{{count}}",
+      "multiBonus": "Versata multipla",
+      "perfectBonus": "Versata perfetta",
+      "risk": { "calm": "calmo", "simmering": "ribolle", "unstable": "instabile", "critical": "critico" },
       "tv": {
         "done": "fatto"
       },
@@ -8860,7 +8868,7 @@
       "step3": "Poi pesca dal mazzo coperto quante volte osi. Circa una carta su sette rovescia il vassoio.",
       "step4": "Se esce la carta sfortunata, perdi tutto il vassoio — e in più ti becchi una penitenza.",
       "step5": "«Versa» fissa per sempre nel bicchiere gli ingredienti che ti servono e chiude il turno. Il resto va scoperto sul bancone.",
-      "tip": "Quello che non ti serve quando versi lo regali agli altri. Un turno anticipato vale spesso più di un vassoio pieno."
+      "tip": "L’indicatore mostra ciò che rischi, non la prossima carta. Due ingredienti giusti danno un bonus; non lasciare avanzi per il bonus perfetto."
     }
   },
   "nativeAdmin": {

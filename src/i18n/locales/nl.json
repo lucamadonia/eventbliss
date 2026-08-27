@@ -7646,6 +7646,14 @@
       ],
       "sipPenalty": "Neem een slok.",
       "finishBonus": "+{{count}} bonus",
+      "soundOn": "Geluid aanzetten",
+      "soundOff": "Geluid uitzetten",
+      "drawHit": "Juiste ingrediënt",
+      "drawMiss": "Op het dienblad",
+      "chain": "Brouwketen ×{{count}}",
+      "multiBonus": "Meervoudige schenking",
+      "perfectBonus": "Perfecte schenking",
+      "risk": { "calm": "rustig", "simmering": "pruttelt", "unstable": "instabiel", "critical": "kritiek" },
       "tv": {
         "done": "klaar"
       },
@@ -8910,7 +8918,7 @@
       "step3": "Daarna trek je zo vaak van de gesloten stapel als je durft. Ongeveer elke zevende kaart doet je blad kantelen.",
       "step4": "Trek je de pechkaart, dan ben je je hele blad kwijt — plus een straf erbovenop.",
       "step5": "„Inschenken“ zet alle passende ingrediënten voorgoed in je glas en beëindigt je beurt. De rest gaat open op de toonbank.",
-      "tip": "Wat je bij het inschenken niet kunt gebruiken, geef je aan de anderen. Vroeg stoppen is vaak meer waard dan een vol blad."
+      "tip": "De meter toont wat je riskeert, niet de volgende kaart. Twee passende ingrediënten geven bonus; zonder rest krijg je de perfectbonus."
     }
   },
   "nativeAdmin": {

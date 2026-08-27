@@ -60,6 +60,7 @@ interface BrewPlayerState {
   recipeId: string;
   have: number;
   done: boolean;
+  brewBonus: number;
 }
 
 function toStringArray(v: unknown): string[] {
@@ -102,6 +103,10 @@ export default function TVBrewView({ gameState }: Props) {
   const bustSeq = Number(s.bustSeq ?? 0);
   const pourSeq = Number(s.pourSeq ?? 0);
   const pourPlan = (s.pourPlan ?? null) as { pid?: string; used?: string[]; leftover?: string[] } | null;
+  const riskTier = typeof s.riskTier === 'string' ? s.riskTier : 'calm';
+  const chainLevel = Math.max(0, Math.min(3, Number(s.chainLevel ?? 0)));
+  const bonusPreview = Math.max(0, Number(s.bonusPreview ?? 0));
+  const drawnCard = (s.drawnCard ?? null) as { id?: string | null; seq?: number; outcome?: string } | null;
 
   const players = useMemo<BrewPlayerState[]>(() => {
     const raw = Array.isArray(s.players) ? s.players : [];
@@ -124,6 +129,7 @@ export default function TVBrewView({ gameState }: Props) {
         // Abgeleitet statt gesendet: ein eigenes Feld koennte gegenueber
         // glass/recipe auseinanderlaufen.
         done: recipe.length > 0 && have === recipe.length,
+        brewBonus: Math.max(0, Number(q.brewBonus ?? 0)),
       };
     });
   }, [s.players]);
@@ -182,6 +188,18 @@ export default function TVBrewView({ gameState }: Props) {
     return undefined;
   }, [pourSeq, reduce]);
 
+  const prevDraw = useRef<number | null>(null);
+  const [showDraw, setShowDraw] = useState<typeof drawnCard>(null);
+  useEffect(() => {
+    const seq = Number(drawnCard?.seq ?? 0);
+    if (prevDraw.current === null) { prevDraw.current = seq; return undefined; }
+    if (!drawnCard || seq <= prevDraw.current) return undefined;
+    prevDraw.current = seq;
+    setShowDraw(drawnCard);
+    const id = setTimeout(() => setShowDraw(null), reduce ? 360 : 1050);
+    return () => clearTimeout(id);
+  }, [drawnCard, reduce]);
+
   const cols = Math.max(1, players.length);
   const Wortmarke = skin === 'bar' ? Martini : FlaskConical;
   /**
@@ -210,6 +228,12 @@ export default function TVBrewView({ gameState }: Props) {
               }}
             >
               {deckCount > 0 ? t('games.brew.deckCount', { count: deckCount }) : t('games.brew.deckEmpty')}
+            </span>
+            <span className="font-black uppercase tracking-[0.18em]" style={{
+              fontSize: tvType.micro,
+              color: riskTier === 'critical' ? p.bad : p.accent,
+            }}>
+              {t(`games.brew.risk.${riskTier}`)}
             </span>
           </div>
 
@@ -443,6 +467,9 @@ export default function TVBrewView({ gameState }: Props) {
                     palette={p}
                     width="clamp(56px, 7.4vw, 132px)"
                     className="relative"
+                    quality="tv"
+                    active={isActive}
+                    intensity={isActive ? (chainLevel as 0 | 1 | 2 | 3) : 0}
                     // Nur die giessende Spalte wartet. Bei vielen Spielern
                     // bekommen die nicht-aktiven keinen Versatz mehr.
                     arrivalDelay={showPour && pourPlan?.pid === pl.id ? 500 : 0}
@@ -454,8 +481,8 @@ export default function TVBrewView({ gameState }: Props) {
                     transform/opacity, sonst rechnet der Browser Layout. */}
                 <div className="w-full px-[0.2vw]">
                   <div className="flex justify-end">
-                    <span className="font-mono tabular-nums" style={{ fontSize: tvType.micro, color: isActive ? color : p.dim }}>
-                      {pl.have}/{pl.recipe.length}
+                  <span className="font-mono tabular-nums" style={{ fontSize: tvType.micro, color: isActive ? color : p.dim }}>
+                      {pl.have}/{pl.recipe.length}{pl.brewBonus > 0 ? ` · ✦${pl.brewBonus}` : ''}
                     </span>
                   </div>
                   <div style={{ height: 'clamp(6px,0.6vh,10px)', borderRadius: 9999, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
@@ -498,6 +525,44 @@ export default function TVBrewView({ gameState }: Props) {
           })}
         </div>
       </div>
+
+      {/* Gemeinsamer Kinomoment: Der TV zeigt die gezogene Karte gross, waehrend
+          die dauerhaften Spielzonen dahinter lesbar bleiben. */}
+      <AnimatePresence mode="wait">
+        {showDraw && (
+          <motion.div
+            key={showDraw.seq}
+            className="pointer-events-none absolute inset-0 z-40 grid place-items-center"
+            initial={false}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ background: showDraw.outcome === 'bust' ? 'rgba(38,4,12,.66)' : 'rgba(7,5,18,.48)' }}
+          >
+            <motion.div
+              initial={false}
+              animate={reduce ? { opacity: 1 } : { opacity: [0, 1, 1], scale: [0.62, 1.08, 1], rotateY: [180, 0] }}
+              transition={{ duration: reduce ? 0.12 : 0.46, ease: 'easeOut' }}
+              className="flex flex-col items-center gap-[1vh] rounded-[2vw] border border-white/20 bg-black/55 p-[2vw] shadow-2xl"
+            >
+              {showDraw.id && isKnownIngredient(showDraw.id) ? (
+                <IngredientCard id={showDraw.id} skin={skin} variant="tv" showName palette={p} width="clamp(7rem,11vw,12rem)" />
+              ) : (
+                <span style={{ fontSize: 'clamp(5rem,10vw,11rem)' }}>{skin === 'brew' ? '🌋' : '🔔'}</span>
+              )}
+              <span className="font-black uppercase tracking-[0.22em]" style={{
+                fontSize: tvType.title,
+                color: showDraw.outcome === 'hit' ? '#86EFAC' : showDraw.outcome === 'bust' ? p.bad : p.text,
+              }}>
+                {showDraw.outcome === 'hit'
+                  ? `${t('games.brew.drawHit')}${bonusPreview > 0 ? ` · +${bonusPreview}` : ''}`
+                  : showDraw.outcome === 'bust'
+                    ? t(skin === 'bar' ? 'games.brew.bustTitleBar' : 'games.brew.bustTitleBrew')
+                    : t('games.brew.drawMiss')}
+              </span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

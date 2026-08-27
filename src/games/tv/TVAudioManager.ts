@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { playBrewCue, type BrewCue } from '@/games/brew/brew-audio';
 
 let audioCtx: AudioContext | null = null;
 
@@ -158,6 +159,11 @@ export function useTVAudio() {
     playFilteredNoise(0.2, 3000, 0.08, 0.26);
   }, [isEnabled]);
 
+  const playBrew = useCallback((cue: BrewCue) => {
+    if (!isEnabled) return;
+    playBrewCue(cue);
+  }, [isEnabled]);
+
   return {
     playChime,
     playTick,
@@ -166,6 +172,7 @@ export function useTVAudio() {
     playFanfare,
     playDrumroll,
     playReveal,
+    playBrew,
     isEnabled,
     enable,
   };

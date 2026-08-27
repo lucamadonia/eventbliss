@@ -7443,6 +7443,14 @@
       ],
       "sipPenalty": "Take a sip.",
       "finishBonus": "+{{count}} bonus",
+      "soundOn": "Turn sound on",
+      "soundOff": "Turn sound off",
+      "drawHit": "Recipe ingredient",
+      "drawMiss": "Onto the tray",
+      "chain": "Brew chain ×{{count}}",
+      "multiBonus": "Multi-pour",
+      "perfectBonus": "Perfect pour",
+      "risk": { "calm": "calm", "simmering": "simmering", "unstable": "unstable", "critical": "critical" },
       "tv": {
         "done": "done"
       },
@@ -8836,7 +8844,7 @@
       "step3": "After that, draw from the face-down deck as often as you dare. Roughly every seventh card tips the tray.",
       "step4": "Draw the bust card and the whole tray is gone — plus a penalty on top.",
       "step5": "“Pour in” locks every matching ingredient into your glass for good and ends your turn. The rest goes face-up onto the counter.",
-      "tip": "Whatever you can't use when pouring, you hand to everyone else. An early turn is often worth more than a full tray."
+      "tip": "The meter describes what you have at stake, not the next card. Two matching ingredients earn a brew bonus; leave nothing behind for the perfect-pour bonus."
     }
   },
   "nativeAdmin": {

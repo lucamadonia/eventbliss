@@ -7596,6 +7596,14 @@
       ],
       "sipPenalty": "Prends une gorgée.",
       "finishBonus": "+{{count}} bonus",
+      "soundOn": "Activer le son",
+      "soundOff": "Couper le son",
+      "drawHit": "Bon ingrédient",
+      "drawMiss": "Sur le plateau",
+      "chain": "Chaîne d’alchimie ×{{count}}",
+      "multiBonus": "Versement multiple",
+      "perfectBonus": "Versement parfait",
+      "risk": { "calm": "calme", "simmering": "frémissant", "unstable": "instable", "critical": "critique" },
       "tv": {
         "done": "terminé"
       },
@@ -8860,7 +8868,7 @@
       "step3": "Ensuite, pioche dans la pile face cachée aussi souvent que tu l'oses. Environ une carte sur sept fait basculer le plateau.",
       "step4": "Si tu tires la carte fatale, tout le plateau disparaît — et tu écopes d'un gage.",
       "step5": "« Verser » fixe définitivement les ingrédients utiles dans ton verre et met fin à ton tour. Le reste part sur le comptoir, face visible.",
-      "tip": "Ce que tu ne peux pas utiliser en versant, tu l'offres aux autres. Un tour anticipé vaut souvent mieux qu'un plateau plein."
+      "tip": "La jauge montre ce que tu risques, pas la prochaine carte. Deux bons ingrédients donnent un bonus ; ne laisse rien pour obtenir le bonus parfait."
     }
   },
   "nativeAdmin": {

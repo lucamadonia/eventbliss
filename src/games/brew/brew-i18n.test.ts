@@ -56,6 +56,8 @@ const REQUIRED = [
   'hintDraw', 'hintCounter', 'hintPour', 'hintNoHit', 'hintWait',
   'pourInCount', 'missingCount_one',
   'counterLabelBrew', 'counterLabelBar', 'trayNote', 'counterNote',
+  'soundOn', 'soundOff', 'drawHit', 'drawMiss', 'chain', 'multiBonus',
+  'perfectBonus', 'risk.calm', 'risk.simmering', 'risk.unstable', 'risk.critical',
 ];
 
 describe('GEBRAEU — Sprachbestand', () => {

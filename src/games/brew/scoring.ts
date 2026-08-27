@@ -14,6 +14,8 @@ export interface BrewScoreInput {
   name: string;
   recipe: DealtRecipe;
   glass: IngredientId[];
+  /** Mut-/Praezisionsboni dieser Runde, hart auf drei begrenzt. */
+  brewBonus?: number;
 }
 
 export interface BrewScore {
@@ -46,9 +48,10 @@ const FINISH_BONUS = 5;
 export function scoreFor(input: BrewScoreInput): BrewScore {
   const uniqueInGlass = new Set(input.glass).size;
   const finished = isComplete(input.recipe, input.glass);
+  const brewBonus = Math.min(3, Math.max(0, input.brewBonus ?? 0));
   return {
     name: input.name,
-    score: uniqueInGlass + (finished ? FINISH_BONUS : 0),
+    score: uniqueInGlass + brewBonus + (finished ? FINISH_BONUS : 0),
   };
 }
 

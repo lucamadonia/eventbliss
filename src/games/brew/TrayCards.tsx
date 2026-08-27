@@ -12,6 +12,7 @@ import { useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { INGREDIENTS, ingredientKey, type IngredientId, type Skin } from "./brew-content";
 import { ingredientPlate } from "./BrewFX";
+import { BREW_PALETTES, brewRadius } from "./brew-palette";
 import { IngredientIcon } from "./IngredientIcon";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
@@ -58,6 +59,7 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
   });
   const { t } = useTranslation();
   const reduce = useReducedMotion();
+  const pal = BREW_PALETTES[skin];
 
   if (ids.length === 0) {
     return emptyLabel ? (
@@ -80,7 +82,15 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
         {ids.map((id, i) => {
           const name = t(ingredientKey(id, skin));
           const wanted = marks?.[i] ?? false;
-          const plate = ingredientPlate(INGREDIENTS[id].color);
+          // Die Platte ist das EINE geteilte Stueck zwischen Telefon und
+          // Fernseher. Den Container teilen sie bewusst nicht: hier haengt die
+          // Ref fuer `onGeometry` dran (PourFlight misst daran, wohin die
+          // Karten fliegen), und die Theke muss ein `button` sein.
+          const plate = ingredientPlate(
+            INGREDIENTS[id].color,
+            pal.plateBase,
+            wanted ? "strong" : marks ? "none" : "soft",
+          );
           const Comp: typeof motion.div | typeof motion.button = onTake ? motion.button : motion.div;
           return (
             <Comp
@@ -96,18 +106,13 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
                 // Vorher: 48-px-Karte mit 36-px-Motiv, den Namen gab es nur im
                 // aria-label. Auf dem Telefon war jede Zutat damit ein
                 // Farbfleck — "man weiss nicht was es ist".
-                "relative w-[72px] rounded-2xl flex flex-col items-center gap-1 pt-2 pb-1.5 px-1 shrink-0",
+                "relative w-[72px] flex flex-col items-center gap-1 pt-2 pb-1.5 px-1 shrink-0",
                 onTake && !disabled && "cursor-pointer active:scale-90 transition-transform",
                 onTake && disabled && "opacity-40 cursor-not-allowed",
                 // Ballast tritt zurueck, sobald ueberhaupt markiert wird.
                 marks && !wanted && "opacity-55 saturate-50",
               )}
-              style={{
-                ...plate,
-                ...(wanted
-                  ? { boxShadow: `inset 0 0 0 2px ${INGREDIENTS[id].color}, 0 0 14px -2px ${INGREDIENTS[id].color}` }
-                  : {}),
-              }}
+              style={{ borderRadius: brewRadius.md, ...plate }}
               aria-label={name}
             >
               <IngredientIcon id={id} skin={skin} className="w-12 h-12" emojiSize="2rem" />
@@ -117,7 +122,7 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
                   Karte zu sprengen. */}
               <span
                 className="w-full text-[10px] leading-tight font-bold text-center line-clamp-2 break-words"
-                style={{ color: "rgba(255,255,255,0.92)" }}
+                style={{ color: pal.text }}
               >
                 {name}
               </span>

@@ -84,6 +84,12 @@ export interface GlassProps {
   arrivalDelay?: number;
   /** Versatz zwischen zwei neuen Schichten. */
   layerStagger?: number;
+  /** Material- und Effektbudget je Einsatzort. */
+  quality?: "hero" | "compact" | "tv";
+  /** 0..3: visuelle Spannung des aktuell gefaehrdeten Tabletts. */
+  intensity?: 0 | 1 | 2 | 3;
+  /** Aktives Gefaess bekommt gerichtetes Licht statt nur mehr Helligkeit. */
+  active?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -116,6 +122,7 @@ function bandPath(shape: GlassShape, H: number, yTop: number, yBottom: number): 
 export function Glass({
   recipeNeeds, filled, skin, size = "md", width, shape, palette,
   bubbles = false, fxScale, className, arrivalDelay = 0, layerStagger = 70,
+  quality = size === "lg" ? "hero" : "compact", intensity = 0, active = false,
 }: GlassProps) {
   const reduceMotion = useReducedMotion();
   const ambient = useAmbientMotion();
@@ -193,13 +200,24 @@ export function Glass({
   const innen = wallPath(form, H, form.cavity.top, form.cavity.bottom, hwInnerAt, 22);
   const muendungHw = hwOuterAt(form, bowlTop);
   const zeigePerlen = bubbles && ambient && !reduceMotion && recipeNeeds.includes("fizz");
+  const premium = quality === "hero";
+  const showSurfaceMotion = premium && ambient && !reduceMotion && fillCount > 0;
+  const tensionGlow = intensity === 3 ? pal.bad : topColor ?? pal.accent;
 
   return (
     <motion.div
       ref={boxRef}
       className={className}
-      style={{ width: width ?? SIZE_WIDTH[size], position: "relative" }}
-      animate={{ y: complete && !reduceMotion ? -4 : 0 }}
+      style={{
+        width: width ?? SIZE_WIDTH[size], position: "relative",
+        filter: premium
+          ? `drop-shadow(0 18px 22px rgba(0,0,0,.46)) drop-shadow(0 0 ${12 + intensity * 7}px ${tensionGlow}44)`
+          : undefined,
+      }}
+      animate={{
+        y: complete && !reduceMotion ? -5 : 0,
+        scale: active && premium && !reduceMotion ? [1, 1.008, 1] : 1,
+      }}
       transition={{ type: "spring", stiffness: 200, damping: 14 }}
     >
       <svg viewBox={`0 0 100 ${H}`} width="100%" height="100%" role="img" aria-hidden="true"
@@ -209,20 +227,35 @@ export function Glass({
             const oben = i < layers.length - 1 ? layers[i + 1].color : l.color;
             const unten = i > 0 ? layers[i - 1].color : l.color;
             return (
-              <linearGradient key={l.gradId} id={l.gradId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={oben} />
-                <stop offset="18%" stopColor={l.color} />
-                <stop offset="82%" stopColor={l.color} />
-                <stop offset="100%" stopColor={unten} />
-              </linearGradient>
+              <radialGradient key={l.gradId} id={l.gradId} cx="32%" cy="20%" r="92%">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.78)" />
+                <stop offset="13%" stopColor={oben} />
+                <stop offset="52%" stopColor={l.color} />
+                <stop offset="84%" stopColor={unten} />
+                <stop offset="100%" stopColor="rgba(0,0,0,0.62)" />
+              </radialGradient>
             );
           })}
           {/* Glaskoerper: oben heller, unten dunkler, damit das Gefaess Tiefe
               bekommt statt eine flache Flaeche zu sein. */}
           <linearGradient id={`body-${uid}`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="rgba(255,255,255,0.13)" />
-            <stop offset="0.45" stopColor="rgba(255,255,255,0.04)" />
-            <stop offset="1" stopColor="rgba(255,255,255,0.10)" />
+            <stop offset="0" stopColor="rgba(255,255,255,0.34)" />
+            <stop offset="0.18" stopColor="rgba(210,225,255,0.09)" />
+            <stop offset="0.58" stopColor="rgba(255,255,255,0.025)" />
+            <stop offset="0.84" stopColor="rgba(135,110,185,0.12)" />
+            <stop offset="1" stopColor="rgba(255,255,255,0.22)" />
+          </linearGradient>
+          <linearGradient id={`front-${uid}`} x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stopColor="rgba(255,255,255,0.24)" />
+            <stop offset="0.16" stopColor="rgba(255,255,255,0.04)" />
+            <stop offset="0.56" stopColor="rgba(255,255,255,0)" />
+            <stop offset="0.86" stopColor="rgba(255,255,255,0.07)" />
+            <stop offset="1" stopColor="rgba(255,255,255,0.26)" />
+          </linearGradient>
+          <linearGradient id={`rim-${uid}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="rgba(255,255,255,0.98)" />
+            <stop offset="0.48" stopColor="rgba(210,220,255,0.36)" />
+            <stop offset="1" stopColor="rgba(35,24,55,0.88)" />
           </linearGradient>
           {/* Kanten dunkler — das laesst die Wand als Material lesen. */}
           <linearGradient id={`kante-${uid}`} x1="0" y1="0" x2="1" y2="0">
@@ -264,6 +297,7 @@ export function Glass({
         )}
 
         {/* 4. Glaskoerper: Schale, Stiel, Knoten, Fuss. */}
+        <path d={aussen} fill="rgba(18,12,31,0.34)" stroke="rgba(255,255,255,0.12)" strokeWidth="2.8" />
         <path d={aussen} fill={`url(#body-${uid})`} />
         <path d={aussen} fill={`url(#kante-${uid})`} />
         {form.stem && (
@@ -313,6 +347,18 @@ export function Glass({
               transition={{ duration: 2.6 + (i % 3) * 0.8, repeat: Infinity, delay: i * 0.45, ease: "easeOut" }}
             />
           ))}
+
+          {/* Langsame Lichtwalze nur am Heldenglas: sie macht aus Farbbalken
+              eine zaehe, lebendige Fluessigkeit, ohne die Geometrie zu bewegen. */}
+          {premium && fillCount > 0 && (
+            <motion.rect
+              x="18" y={pegel} width="28" height={Math.max(0, grenzen[0] - pegel)}
+              rx="14" fill="rgba(255,255,255,0.11)"
+              initial={false}
+              animate={showSurfaceMotion ? { x: [10, 48, 10], opacity: [0.04, 0.2, 0.04] } : { x: 18, opacity: 0.08 }}
+              transition={{ duration: 4.8, repeat: showSurfaceMotion ? Infinity : 0, ease: "easeInOut" }}
+            />
+          )}
         </g>
 
         {/* 7. Meniskus: die Ellipse auf der Oberflaeche. Ohne sie sieht die
@@ -322,8 +368,14 @@ export function Glass({
             cx="50" rx={hwInnerAt(form, pegel / H)} ry={Math.max(1.2, hwInnerAt(form, pegel / H) * 0.16)}
             fill={topColor} stroke="rgba(255,255,255,0.45)" strokeWidth="0.7"
             initial={false}
-            animate={{ cy: pegel }}
-            transition={reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 140, damping: 12, delay: arrivalDelay / 1000 }}
+            animate={{
+              cy: pegel,
+              scaleX: showSurfaceMotion ? [1, 0.97, 1.025, 1] : 1,
+              opacity: [0.88, 1],
+            }}
+            transition={reduceMotion
+              ? { duration: 0 }
+              : { type: "spring", stiffness: 140, damping: 12, delay: arrivalDelay / 1000 }}
           />
         )}
 
@@ -337,9 +389,14 @@ export function Glass({
         {/* 9. Wandkontur und Muendung. Die Muendungsellipse ist der Rand, der
             ein Glas ueberhaupt erst als Glas lesbar macht — vorher war dort
             eine gerade Linie. */}
-        <path d={aussen} fill="none" stroke="rgba(255,255,255,0.42)" strokeWidth="1.1" strokeLinejoin="round" />
+        {/* Vorderwand liegt ueber der Fluessigkeit und erzeugt echte
+            Materialtiefe statt einer blossen Konturlinie. */}
+        <path d={aussen} fill={`url(#front-${uid})`} opacity={premium ? 0.72 : 0.52} />
+        <path d={aussen} fill="none" stroke="rgba(225,232,255,0.62)" strokeWidth={premium ? 1.45 : 1.1} strokeLinejoin="round" />
         <ellipse cx="50" cy={bowlTop * H} rx={muendungHw} ry={Math.max(1.4, muendungHw * 0.17)}
-          fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.3" />
+          fill="rgba(10,7,18,0.46)" stroke={`url(#rim-${uid})`} strokeWidth={premium ? 2.1 : 1.4} />
+        <ellipse cx="50" cy={bowlTop * H + 0.8} rx={Math.max(1, muendungHw - form.wall * 0.65)}
+          ry={Math.max(0.8, muendungHw * 0.105)} fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="0.8" />
 
         {/* 10. Glanzstreifen an der linken Wand — das eine Detail, das aus
             einer Flaeche ein Glas macht. Folgt der Kontur der Form. */}
@@ -347,8 +404,16 @@ export function Glass({
           d={wallPath(form, H, form.cavity.top + 0.04, form.cavity.bottom - 0.06,
             (s, t) => hwOuterAt(s, t) * 0.2, 10)}
           transform={`translate(${-muendungHw * 0.52} 0)`}
-          fill="rgba(255,255,255,0.14)"
+          fill={premium ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.14)"}
         />
+        {premium && (
+          <path
+            d={wallPath(form, H, form.cavity.top + 0.1, form.cavity.bottom - 0.14,
+              (s, t) => hwOuterAt(s, t) * 0.085, 8)}
+            transform={`translate(${muendungHw * 0.63} 0)`}
+            fill="rgba(185,205,255,0.12)"
+          />
+        )}
       </svg>
 
       {/* Giessstrahl: laeuft kurz von oben in den Hals. */}

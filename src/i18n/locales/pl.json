@@ -7670,6 +7670,14 @@
       ],
       "sipPenalty": "Weź łyk.",
       "finishBonus": "+{{count}} bonusu",
+      "soundOn": "Włącz dźwięk",
+      "soundOff": "Wyłącz dźwięk",
+      "drawHit": "Pasujący składnik",
+      "drawMiss": "Na tacę",
+      "chain": "Łańcuch warzenia ×{{count}}",
+      "multiBonus": "Wielokrotne nalanie",
+      "perfectBonus": "Idealne nalanie",
+      "risk": { "calm": "spokojnie", "simmering": "bulgocze", "unstable": "niestabilnie", "critical": "krytycznie" },
       "tv": {
         "done": "gotowe"
       },
@@ -8934,7 +8942,7 @@
       "step3": "Potem dobieraj z zakrytego stosu tyle razy, ile masz odwagi. Mniej więcej co siódma karta przewraca tacę.",
       "step4": "Gdy trafisz na pechową kartę, tracisz całą tacę — a do tego dostajesz karę.",
       "step5": "„Nalej” zamyka pasujące składniki w szklance na zawsze i kończy turę. Reszta ląduje odkryta w barze.",
-      "tip": "Czego nie wykorzystasz przy nalewaniu, oddajesz innym. Wcześniejsza tura bywa warta więcej niż pełna taca."
+      "tip": "Wskaźnik pokazuje stawkę na tacy, nie następną kartę. Dwa pasujące składniki dają bonus, a brak resztek premię za idealne nalanie."
     }
   },
   "nativeAdmin": {

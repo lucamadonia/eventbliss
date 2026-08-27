@@ -7646,6 +7646,14 @@
       ],
       "sipPenalty": "Bebe um gole.",
       "finishBonus": "+{{count}} de bónus",
+      "soundOn": "Ativar som",
+      "soundOff": "Desativar som",
+      "drawHit": "Ingrediente certo",
+      "drawMiss": "Para a bandeja",
+      "chain": "Cadeia alquímica ×{{count}}",
+      "multiBonus": "Mistura múltipla",
+      "perfectBonus": "Mistura perfeita",
+      "risk": { "calm": "calmo", "simmering": "a borbulhar", "unstable": "instável", "critical": "crítico" },
       "tv": {
         "done": "pronto"
       },
@@ -8910,7 +8918,7 @@
       "step3": "Depois compra do baralho tapado as vezes que te atreveres. Cerca de uma em cada sete cartas entorna o tabuleiro.",
       "step4": "Se sair a carta azarada, perdes o tabuleiro todo — e ainda levas um castigo.",
       "step5": "«Servir» fixa para sempre no copo os ingredientes de que precisas e termina a tua vez. O resto vai virado para cima para o balcão.",
-      "tip": "O que não usares ao servir, ofereces aos outros. Uma vez antecipada vale muitas vezes mais do que um tabuleiro cheio."
+      "tip": "O indicador mostra o que arriscas, não a próxima carta. Dois ingredientes certos dão bónus; sem sobras recebes o bónus perfeito."
     }
   },
   "nativeAdmin": {

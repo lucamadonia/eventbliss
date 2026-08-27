@@ -7596,6 +7596,14 @@
       ],
       "sipPenalty": "Da un trago.",
       "finishBonus": "+{{count}} de bonus",
+      "soundOn": "Activar sonido",
+      "soundOff": "Desactivar sonido",
+      "drawHit": "Ingrediente correcto",
+      "drawMiss": "A la bandeja",
+      "chain": "Cadena alquímica ×{{count}}",
+      "multiBonus": "Mezcla múltiple",
+      "perfectBonus": "Vertido perfecto",
+      "risk": { "calm": "tranquilo", "simmering": "burbujeando", "unstable": "inestable", "critical": "crítico" },
       "tv": {
         "done": "listo"
       },
@@ -8893,7 +8901,7 @@
       "step3": "Después roba del mazo tapado tantas veces como te atrevas. Aproximadamente una de cada siete cartas vuelca la bandeja.",
       "step4": "Si sale la carta fatídica, pierdes toda la bandeja — y encima te llevas un castigo.",
       "step5": "«Servir» fija para siempre los ingredientes que te sirven en el vaso y termina tu turno. El resto va boca arriba a la barra.",
-      "tip": "Lo que no te sirve al servir se lo regalas a los demás. Un turno temprano suele valer más que una bandeja llena."
+      "tip": "El indicador muestra lo que arriesgas, no la próxima carta. Dos ingredientes correctos dan un bonus; si no sobra nada, sumas el bonus perfecto."
     }
   },
   "nativeAdmin": {

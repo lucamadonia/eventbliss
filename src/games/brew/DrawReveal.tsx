@@ -29,6 +29,7 @@ export interface DrawnCard {
   id: IngredientId | null;
   /** Zaehler, kein Boolean: zweimal dieselbe Karte muss zweimal feuern. */
   seq: number;
+  outcome?: "hit" | "miss" | "bust";
 }
 
 export interface DrawRevealProps {
@@ -37,6 +38,7 @@ export interface DrawRevealProps {
   reduced?: boolean;
   /** Name der Zutat, schon uebersetzt. Bei der Unglueckskarte der Bust-Titel. */
   label: string;
+  verdictLabel?: string;
   onDone: () => void;
 }
 
@@ -56,7 +58,7 @@ export function drawRevealDuration(isBust: boolean, reduced: boolean): number {
   return DRAW_BEATS.flip + (isBust ? DRAW_BEATS.holdBust : DRAW_BEATS.hold) + DRAW_BEATS.out;
 }
 
-export function DrawReveal({ card, skin, reduced = false, label, onDone }: DrawRevealProps) {
+export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, onDone }: DrawRevealProps) {
   const [phase, setPhase] = useState<"flip" | "hold" | "out" | null>(null);
 
   useEffect(() => {
@@ -76,18 +78,19 @@ export function DrawReveal({ card, skin, reduced = false, label, onDone }: DrawR
     return () => timers.forEach((t) => window.clearTimeout(t));
   }, [card, reduced, onDone]);
 
-  const isBust = card?.id === null;
+  const isBust = card?.id === null || card?.outcome === "bust";
+  const isHit = card?.outcome === "hit";
   const color = card?.id ? INGREDIENTS[card.id].color : "#FB7185";
 
   return (
     <NativeOverlayPortal>
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {card && phase && (
           <motion.div
             key={card.seq}
             className="pointer-events-none fixed inset-0 z-[55] flex items-center justify-center"
             aria-hidden
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.12 }}
@@ -107,15 +110,15 @@ export function DrawReveal({ card, skin, reduced = false, label, onDone }: DrawR
                 boxShadow: `inset 0 0 0 2px ${color}, 0 0 ${isBust ? 60 : 34}px -4px ${color}`,
                 transformStyle: "preserve-3d",
               }}
-              initial={reduced
-                ? { opacity: 0, scale: 0.9 }
-                : { rotateY: 180, scale: 0.6, opacity: 0 }}
+              initial={false}
               animate={
                 phase === "out"
                   ? { scale: reduced ? 0.9 : 0.5, opacity: 0, y: reduced ? 0 : 40 }
                   : reduced
                     ? { opacity: 1, scale: 1 }
-                    : { rotateY: 0, scale: phase === "hold" ? 1 : 0.94, opacity: 1 }
+                    : phase === "flip"
+                      ? { rotateY: [180, 0], scale: [0.62, 1.04, 0.96], opacity: [0, 1, 1], y: [18, 0] }
+                      : { rotateY: 0, scale: isHit ? [0.96, 1.055, 1] : 1, opacity: 1, y: 0 }
               }
               transition={{
                 duration: (phase === "out" ? DRAW_BEATS.out : DRAW_BEATS.flip) / 1000,
@@ -133,6 +136,16 @@ export function DrawReveal({ card, skin, reduced = false, label, onDone }: DrawR
               >
                 {label}
               </span>
+              {!isBust && phase === "hold" && (
+                <motion.span
+                  initial={false}
+                  animate={{ opacity: [0, 1], y: [5, 0] }}
+                  className="text-[10px] font-black uppercase tracking-[0.2em]"
+                  style={{ color: isHit ? "#A7F3D0" : "rgba(255,255,255,.56)" }}
+                >
+                  {isHit ? "✦ " : ""}{verdictLabel}
+                </motion.span>
+              )}
             </motion.div>
           </motion.div>
         )}

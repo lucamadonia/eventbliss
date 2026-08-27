@@ -7443,6 +7443,14 @@
       ],
       "sipPenalty": "Nimm einen Schluck.",
       "finishBonus": "+{{count}} Bonus",
+      "soundOn": "Ton einschalten",
+      "soundOff": "Ton ausschalten",
+      "drawHit": "Passende Zutat",
+      "drawMiss": "Auf das Tablett",
+      "chain": "Braukette ×{{count}}",
+      "multiBonus": "Mehrfachguss",
+      "perfectBonus": "Perfekter Guss",
+      "risk": { "calm": "ruhig", "simmering": "brodelt", "unstable": "instabil", "critical": "kritisch" },
       "tv": {
         "done": "fertig"
       },
@@ -8836,7 +8844,7 @@
       "step3": "Danach so oft vom verdeckten Stapel ziehen, wie du dich traust. Etwa jede siebte Karte lässt das Tablett kippen.",
       "step4": "Kommt die Unglückskarte, ist das ganze Tablett weg — und es gibt eine Strafe obendrauf.",
       "step5": "„Eingießen“ sichert alle passenden Zutaten für immer im Glas und beendet deinen Zug. Der Rest landet offen auf der Theke.",
-      "tip": "Was du beim Eingießen nicht brauchst, schenkst du den anderen. Ein früher Zug ist oft mehr wert als ein volles Tablett."
+      "tip": "Die Anzeige beschreibt deinen gefährdeten Einsatz, nicht die nächste Karte. Zwei passende Zutaten geben einen Braubonus; bleibt nichts übrig, kommt der Perfektbonus dazu."
     }
   },
   "nativeAdmin": {
