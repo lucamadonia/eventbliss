@@ -122,6 +122,7 @@ export function PartyInterstitial({
     const leader = standings.find((s) => s.rank === 1);
     return !!leader && leader.prevRank !== null && leader.prevRank > 1;
   }, [standings]);
+  const leader = standings.find((standing) => standing.rank === 1) ?? null;
 
   useEffect(() => {
     if (!open) {
@@ -153,10 +154,10 @@ export function PartyInterstitial({
 
   return (
     <NativeOverlayPortal>
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {open && (
           <motion.div
-            className="fixed inset-0 z-50 bg-background/98 backdrop-blur-2xl flex flex-col safe-top"
+            className="fixed inset-0 z-50 flex flex-col overflow-hidden bg-[#060810] text-white safe-top"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -166,20 +167,21 @@ export function PartyInterstitial({
           >
             {/* Ambiente */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden>
-              <div className="absolute -top-32 -start-32 w-72 h-72 bg-[#df8eff]/12 rounded-full blur-[110px]" />
-              <div className="absolute -bottom-32 -end-32 w-72 h-72 bg-[#ff6b98]/12 rounded-full blur-[110px]" />
+              <div className="absolute inset-0 opacity-35" style={{ backgroundImage: "linear-gradient(rgba(223,142,255,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(143,245,255,.05) 1px,transparent 1px)", backgroundSize: "30px 30px", maskImage: "radial-gradient(circle at 50% 32%,black,transparent 76%)" }} />
+              <div className="absolute -top-36 -start-28 h-80 w-80 rounded-full bg-[#df8eff]/16 blur-[110px]" />
+              <div className="absolute -bottom-32 -end-32 h-80 w-80 rounded-full bg-[#8ff5ff]/10 blur-[110px]" />
             </div>
 
             <ConfettiBurst active={celebrate} count={36} onComplete={() => setCelebrate(false)} />
 
-            <div className="relative z-10 flex-1 overflow-y-auto native-scroll px-5 pt-6 pb-40">
+            <div className="relative z-10 flex-1 overflow-y-auto native-scroll px-5 pb-8 pt-6">
               {/* Fortschritt */}
               <motion.div
                 initial={reduce ? { opacity: 0 } : { opacity: 0, y: -12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={spring.soft}
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-500 dark:text-[#df8eff]">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#8ff5ff]">
                   {t("nativeExtra.partyNight.gameXofY", { done: index + 1, total })}
                 </p>
                 <div className="mt-2 flex items-center gap-1" aria-hidden>
@@ -188,7 +190,7 @@ export function PartyInterstitial({
                       key={`${id}-${i}`}
                       className={cn(
                         "h-1.5 flex-1 rounded-full",
-                        i <= index ? "bg-gradient-to-r from-[#df8eff] to-[#ff6b98]" : "bg-foreground/10"
+                        i <= index ? "bg-gradient-to-r from-[#8ff5ff] via-[#df8eff] to-[#ff6b98]" : "bg-white/10"
                       )}
                       initial={reduce ? false : { scaleX: i === index ? 0 : 1 }}
                       animate={{ scaleX: 1 }}
@@ -206,16 +208,16 @@ export function PartyInterstitial({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...spring.soft, delay: 0.08 }}
               >
-                <h2 className="text-2xl font-display font-bold text-foreground leading-tight">
+                <h2 className="text-[clamp(1.8rem,8vw,2.4rem)] font-display font-black leading-[1.02] tracking-[-0.04em] text-white">
                   {lastEntry
                     ? t("nativeExtra.partyNight.finishedHeadline", { game: lastEntry.gameName })
                     : t("nativeExtra.partyNight.standingsTitle")}
                 </h2>
                 {lastEntry && (
-                  <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs font-bold text-white/58">
                     {lastEntry.scored && lastEntry.winnerName ? (
                       <>
-                        <Crown className="w-4 h-4 text-amber-500 dark:text-[#f9ca24]" aria-hidden />
+                        <Crown className="h-4 w-4 text-[#FFD75E]" aria-hidden />
                         {t("nativeExtra.partyNight.winnerLine", { name: lastEntry.winnerName })}
                       </>
                     ) : (
@@ -223,11 +225,22 @@ export function PartyInterstitial({
                     )}
                   </p>
                 )}
+                {leaderChanged && leader && (
+                  <motion.div
+                    className="mt-3 flex items-center gap-2 rounded-2xl border border-[#26E0C4]/22 bg-[#26E0C4]/9 px-3.5 py-3 text-sm font-black text-[#71f5df]"
+                    initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92, y: 8 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ ...spring.bouncy, delay: 0.25 }}
+                  >
+                    <Trophy className="h-4 w-4 shrink-0" aria-hidden />
+                    <span className="truncate">{t("tv.partyNight.leadChange", { name: leader.name })}</span>
+                  </motion.div>
+                )}
               </motion.div>
 
               {/* Tabelle */}
               <div className="mt-5">
-                <h3 className="mb-2.5 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+                <h3 className="mb-2.5 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-white/40">
                   <Trophy className="w-4 h-4" aria-hidden />
                   {t("nativeExtra.partyNight.standingsTitle")}
                 </h3>
@@ -241,7 +254,7 @@ export function PartyInterstitial({
 
             {/* Fortsetzen / Pause */}
             <motion.div
-              className="absolute inset-x-0 bottom-0 z-20 border-t border-border bg-background/95 backdrop-blur-2xl px-5 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] space-y-2"
+              className="relative z-20 max-h-[48vh] shrink-0 space-y-2 overflow-y-auto border-t border-white/[0.08] bg-[#080a15]/94 px-5 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur-2xl"
               initial={reduce ? { opacity: 0 } : { opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...spring.soft, delay: 0.3 }}
@@ -251,10 +264,10 @@ export function PartyInterstitial({
                 whileTap={{ scale: 0.97 }}
                 transition={spring.snappy}
                 onClick={handleContinue}
-                className="cursor-pointer w-full min-h-[56px] rounded-2xl bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#f9ca24] text-white font-bold shadow-[0_0_30px_rgba(223,142,255,0.32)] flex items-center gap-3 px-3 text-start"
+                className="cursor-pointer flex min-h-[58px] w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-[#8ff5ff] via-[#df8eff] to-[#FFD75E] px-3 text-start font-black text-[#070812] shadow-[0_20px_48px_-26px_rgba(223,142,255,.95)]"
               >
                 {nextLocked ? (
-                  <span className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/15">
                     <Lock className="w-5 h-5" aria-hidden />
                   </span>
                 ) : nextGameId && gameImageOf(nextGameId) ? (
@@ -263,15 +276,15 @@ export function PartyInterstitial({
                     alt=""
                     aria-hidden
                     loading="lazy"
-                    className="w-10 h-10 rounded-xl object-cover shrink-0 border border-white/25"
+                    className="h-10 w-10 shrink-0 rounded-xl border border-black/15 object-cover"
                     onError={(e) => { (e.target as HTMLImageElement).style.visibility = "hidden"; }}
                   />
                 ) : (
-                  <span className="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center shrink-0">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-black/15">
                     <PartyPopper className="w-5 h-5" aria-hidden />
                   </span>
                 )}
-                <span className="flex-1 min-w-0 truncate text-[15px]">
+                <span className="min-w-0 flex-1 truncate text-[15px]">
                   {readyGameId
                     ? t("nativeExtra.partyNight.startNow", { game: gameNameOf(readyGameId, t) })
                     : nextLocked
@@ -290,7 +303,7 @@ export function PartyInterstitial({
                 hatte keine Gelegenheit sie zu lesen.
               */}
               {readyGameId && onReadyStart && (
-                <div className="w-full rounded-2xl border border-[#df8eff]/30 bg-[#df8eff]/10 px-4 py-3 text-center text-xs text-violet-500 dark:text-[#df8eff]">
+                <div className="w-full rounded-2xl border border-[#df8eff]/25 bg-[#df8eff]/10 px-4 py-3 text-center text-xs font-semibold text-[#e6a5ff]">
                   {t("nativeExtra.partyNight.rulesOnTv")}
                 </div>
               )}
@@ -299,7 +312,7 @@ export function PartyInterstitial({
                 <button
                   type="button"
                   onClick={() => { haptics.light(); onSkipNext(); }}
-                  className="cursor-pointer w-full min-h-[44px] rounded-2xl border border-[#df8eff]/40 text-violet-500 dark:text-[#df8eff] font-semibold text-sm flex items-center justify-center gap-2 active:bg-[#df8eff]/10 transition-colors"
+                  className="cursor-pointer flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl border border-[#df8eff]/35 bg-[#df8eff]/8 text-sm font-bold text-[#e6a5ff] transition-colors active:bg-[#df8eff]/14"
                 >
                   <SkipForward className="w-4 h-4 rtl:rotate-180" aria-hidden />
                   {t("nativeExtra.partyNight.skipNext")}
@@ -316,7 +329,7 @@ export function PartyInterstitial({
                 <button
                   type="button"
                   onClick={() => { haptics.light(); onShowOnTv?.(); }}
-                  className="cursor-pointer w-full min-h-[44px] rounded-2xl border border-[#df8eff]/30 bg-[#df8eff]/10 text-violet-500 dark:text-[#df8eff] font-semibold text-sm flex items-center justify-center gap-2 transition-colors"
+                  className="cursor-pointer flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl border border-[#8ff5ff]/22 bg-[#8ff5ff]/8 text-sm font-bold text-[#9bf7ff] transition-colors"
                 >
                   <Tv className="w-4 h-4" aria-hidden />
                   {t("nativeExtra.partyNight.showOnTv")}
@@ -326,12 +339,12 @@ export function PartyInterstitial({
               <button
                 type="button"
                 onClick={() => { haptics.light(); onPause(); }}
-                className="cursor-pointer w-full min-h-[44px] rounded-2xl border border-border text-muted-foreground font-semibold text-sm flex items-center justify-center gap-2 active:bg-foreground/5 transition-colors"
+                className="cursor-pointer flex min-h-[44px] w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[0.035] text-sm font-bold text-white/50 transition-colors active:bg-white/[0.07]"
               >
                 <Pause className="w-4 h-4" aria-hidden />
                 {t("nativeExtra.partyNight.pause")}
               </button>
-              <p className="text-center text-[11px] text-muted-foreground">
+              <p className="text-center text-[10px] font-medium text-white/32">
                 {nextLocked
                   ? t("nativeExtra.partyNight.nextLockedHint")
                   : nextGameId

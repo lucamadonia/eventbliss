@@ -8170,24 +8170,24 @@
       "joinButton": "Dołącz"
     },
     "onboarding": {
-      "slide1Title": "Planuj epickie wydarzenia",
-      "slide1Subtitle": "Wieczory kawalerskie, urodziny, wycieczki grupowe — wszystko w jednym miejscu.",
-      "slide2Title": "Graj w 24+ gry imprezowe",
-      "slide2Subtitle": "Tabu, Bomba, Headup, Prawda czy Wyzwanie, Impostor i więcej.",
-      "slide3Title": "Podziel koszty",
-      "slide3Subtitle": "Śledź wydatki i rozliczaj się bez niezręcznych rozmów.",
-      "slide4Title": "Zaproś wszystkich",
-      "slide4Subtitle": "Udostępnij link, zbierz potwierdzenia i informuj wszystkich na bieżąco.",
+      "slide1Title": "Od pierwszego pomysłu do ostatniej rundy",
+      "slide1Subtitle": "EventBliss łączy planowanie, gości i imprezę w jednej aplikacji — zamieniając organizację w prawdziwą ekscytację.",
+      "slide2Title": "Koniec z niekończącymi się czatami grupowymi",
+      "slide2Subtitle": "Bezpośrednie wiadomości, ankiety i potwierdzenia są w jednym miejscu. Od razu widzisz, co pasuje wszystkim.",
+      "slide3Title": "Właściwi profesjonaliści w zasięgu ręki",
+      "slide3Subtitle": "Odkrywaj lokale, catering i atrakcje w pobliżu, a wszystkie zapytania trzymaj w jednym miejscu.",
+      "slide4Title": "Każda kwota. Każdy udział. Rozliczony.",
+      "slide4Subtitle": "EventBliss przejrzyście dzieli koszty, pokazuje zaległe kwoty i oszczędza Ci ścigania płatności.",
       "skip": "Pomiń",
       "next": "Dalej",
-      "getStarted": "Zaczynajmy",
-      "slide5Title": "Tryb imprezy",
-      "slide5Subtitle": "Lista prawdziwych gier, punkty licza sie przez caly wieczor.",
-      "slide6Title": "Telewizor staje sie scena",
-      "slide6Subtitle": "Grupa wedruje na zywo nocna trasa — widza to wszyscy.",
-      "slide7Title": "Ceremonia",
-      "slide7Subtitle": "Wieczor konczy sie na podium — z punktami z calego wieczoru.",
-      "skipToStart": "Zacznij od razu",
+      "getStarted": "Utwórz moje pierwsze wydarzenie",
+      "slide5Title": "22 gry. Jedna wspólna imprezowa noc.",
+      "slide5Subtitle": "Ułóżcie listę gier, zbierajcie punkty we wszystkich rozgrywkach i zmieńcie każdy telefon w kontroler.",
+      "slide6Title": "Wasz telewizor staje się sceną teleturnieju",
+      "slide6Subtitle": "Trasa, wyniki i najważniejsze chwile pojawiają się na żywo na ekranie, gdy wszyscy grają na telefonach.",
+      "slide7Title": "Nie tylko zaplanowane. Przeżyte razem.",
+      "slide7Subtitle": "Od pierwszego głosowania po ceremonię zwycięzców wszystko pozostaje połączone. To właśnie wyróżnia EventBliss.",
+      "skipToStart": "Utwórz wydarzenie teraz",
       "scene": {
         "eventCard": {
           "statusBadge": "Zaplanowane",
@@ -8227,7 +8227,7 @@
       }
     },
     "splash": {
-      "tagline": "Wydarzenia, które się pamięta"
+      "tagline": "Planuj. Decyduj. Graj. Przeżywajcie razem."
     }
   },
   "marketplace": {

@@ -8096,24 +8096,24 @@
       "joinButton": "Partecipa"
     },
     "onboarding": {
-      "slide1Title": "Organizza eventi epici",
-      "slide1Subtitle": "Addii al celibato, compleanni, viaggi di gruppo — tutto in un unico posto.",
-      "slide2Title": "Gioca a 24+ giochi di gruppo",
-      "slide2Subtitle": "Tabù, Bomba, Headup, Obbligo o Verità, Impostore e altro.",
-      "slide3Title": "Dividi le spese",
-      "slide3Subtitle": "Tieni traccia delle spese e salda i conti senza conversazioni imbarazzanti.",
-      "slide4Title": "Invita tutti",
-      "slide4Subtitle": "Condividi un link, raccogli le conferme e tieni tutti aggiornati.",
+      "slide1Title": "Dalla prima idea all’ultimo round",
+      "slide1Subtitle": "EventBliss unisce organizzazione, invitati e festa in un’unica app, trasformando i preparativi in vera attesa.",
+      "slide2Title": "Basta chat di gruppo infinite",
+      "slide2Subtitle": "Messaggi diretti, sondaggi e conferme sono tutti in un unico posto. Vedi subito cosa funziona per tutti.",
+      "slide3Title": "I professionisti giusti a portata di mano",
+      "slide3Subtitle": "Scopri location, catering ed esperienze vicino a te e tieni ogni richiesta in un unico posto.",
+      "slide4Title": "Ogni spesa. Ogni quota. Risolta.",
+      "slide4Subtitle": "EventBliss divide i costi in modo trasparente, mostra le quote ancora aperte e ti evita di rincorrere i pagamenti.",
       "skip": "Salta",
       "next": "Avanti",
-      "getStarted": "Iniziamo",
-      "slide5Title": "Modalita Festa",
-      "slide5Subtitle": "Una scaletta di giochi veri, i punti corrono tutta la sera.",
-      "slide6Title": "La TV diventa il palco",
-      "slide6Subtitle": "Il gruppo avanza dal vivo lungo il percorso notturno — visibile a tutti.",
-      "slide7Title": "Premiazione",
-      "slide7Subtitle": "La serata finisce sul podio — con i punti di tutta la sera.",
-      "skipToStart": "Inizia subito",
+      "getStarted": "Crea il mio primo evento",
+      "slide5Title": "22 giochi. Un’unica serata insieme.",
+      "slide5Subtitle": "Create la vostra scaletta, accumulate punti tra un gioco e l’altro e trasformate ogni telefono in un controller.",
+      "slide6Title": "La TV diventa il palco di un game show",
+      "slide6Subtitle": "Percorso, punteggi e momenti più belli appaiono in diretta sulla TV mentre tutti giocano dal telefono.",
+      "slide7Title": "Non solo organizzato. Vissuto insieme.",
+      "slide7Subtitle": "Dal primo voto alla premiazione, tutto resta collegato. È questo che rende speciale EventBliss.",
+      "skipToStart": "Crea subito un evento",
       "scene": {
         "eventCard": {
           "statusBadge": "In programma",
@@ -8153,7 +8153,7 @@
       }
     },
     "splash": {
-      "tagline": "Eventi da ricordare"
+      "tagline": "Pianifica. Decidi. Gioca. Vivilo insieme."
     }
   },
   "marketplace": {

@@ -27,7 +27,7 @@ export function ScenePodium() {
       <div className="text-center text-[10px] font-bold uppercase tracking-[0.25em] text-white/50 mb-4">
         {t("native.onboarding.scene.podium.heading")}
       </div>
-      <TVPartyPodium entries={ONBOARDING_STANDINGS} reveal={reveal} showDelta />
+      <TVPartyPodium entries={ONBOARDING_STANDINGS} reveal={reveal} showDelta variant="preview" compact />
     </div>
   );
 }

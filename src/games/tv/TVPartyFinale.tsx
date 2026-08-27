@@ -5,7 +5,7 @@ import { CloudRain, Target, TrendingUp, Trophy, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAmbientMotion } from '@/lib/useAmbientMotion';
 import { ConfettiBurst } from '@/components/vfx/ConfettiBurst';
-import { tvGrid, tvPanel, tvPanelRaised, tvType } from './tv-tokens';
+import { tvGrid, tvType } from './tv-tokens';
 import { useTVAudio } from './TVAudioManager';
 import TVPartyPodium from './components/TVPartyPodium';
 import { computePartyAwards } from './partyAwards';
@@ -87,12 +87,13 @@ function AwardCard({
 
   return (
     <motion.div
-      className={`${tvPanel} flex items-center gap-[clamp(0.6rem,1.1vw,1.1rem)] px-[clamp(0.7rem,1.2vw,1.2rem)] py-[clamp(0.5rem,0.9vh,0.9rem)]`}
-      style={{ borderColor: `${meta.color}44` }}
+      className="relative flex items-center gap-[clamp(0.6rem,1.1vw,1.1rem)] overflow-hidden rounded-[clamp(1rem,1.5vw,1.5rem)] border bg-white/[0.038] px-[clamp(0.7rem,1.2vw,1.2rem)] py-[clamp(0.55rem,0.9vh,0.9rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.06)]"
+      style={{ borderColor: `${meta.color}38`, boxShadow: `inset 0 1px 0 rgba(255,255,255,.07), 0 18px 46px -38px ${meta.color}` }}
       initial={{ opacity: 0, x: 22 }}
       animate={reveal ? { opacity: 1, x: 0 } : { opacity: 0, x: 22 }}
       transition={{ ...spring, delay: 0.08 + index * 0.12 }}
     >
+      <span className="absolute inset-y-[20%] left-0 w-[3px] rounded-full" style={{ background: meta.color, boxShadow: `0 0 14px ${meta.color}` }} aria-hidden />
       <span
         className="shrink-0 rounded-2xl flex items-center justify-center"
         style={{
@@ -180,10 +181,22 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
   const gamesPlayed = party.history?.length ?? party.playlist.filter((p) => p.done).length;
 
   return (
-    <div className={`${tvGrid} relative overflow-hidden`} style={{ backgroundColor: '#060810' }}>
+    <div
+      className={`${tvGrid} relative overflow-hidden`}
+      style={{ background: 'radial-gradient(circle at 50% 12%, #21172d 0%, #0a0b15 40%, #05070d 100%)' }}
+    >
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[60rem] h-[38rem] rounded-full blur-[120px] pointer-events-none"
-        style={{ background: `${champion.color}24` }}
+        aria-hidden
+        className="absolute inset-0 opacity-30 pointer-events-none"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(255,215,94,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(223,142,255,.055) 1px,transparent 1px)',
+          backgroundSize: '44px 44px',
+          maskImage: 'radial-gradient(circle at 50% 42%,black,transparent 78%)',
+        }}
+      />
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[64rem] h-[40rem] rounded-full blur-[120px] pointer-events-none"
+        style={{ background: `${champion.color}32` }}
       />
 
       <ConfettiBurst active={beat >= 1 && ambient} count={56} />
@@ -191,7 +204,7 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
       {/* ── Left rail: the evening in numbers + the full board ── */}
       <div className="relative z-10 flex flex-col gap-[clamp(0.5rem,1vh,1rem)] min-h-0">
         <motion.div
-          className={`${tvPanel} grid grid-cols-2 gap-[clamp(0.4rem,0.8vw,0.8rem)] p-[clamp(0.8rem,1.4vw,1.5rem)] shrink-0`}
+          className="grid shrink-0 grid-cols-2 gap-[clamp(0.4rem,0.8vw,0.8rem)] rounded-[28px] border border-[#FFD75E]/18 bg-[#FFD75E]/[0.045] p-[clamp(0.8rem,1.4vw,1.5rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
           initial={{ opacity: 0, x: -18 }}
           animate={beat >= 3 ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
           transition={spring}
@@ -214,7 +227,7 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
           ))}
         </motion.div>
 
-        <div className={`${tvPanel} flex flex-col min-h-0 p-[clamp(0.8rem,1.4vw,1.5rem)]`}>
+        <div className="flex min-h-0 flex-col rounded-[28px] border border-white/[0.075] bg-white/[0.034] p-[clamp(0.8rem,1.4vw,1.5rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.065)] backdrop-blur-xl">
           <span
             className="uppercase font-black tracking-[0.24em] mb-[clamp(0.4rem,0.8vh,0.8rem)] shrink-0"
             style={{ fontSize: tvType.micro, color: '#b3a8c9' }}
@@ -225,12 +238,12 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
             {standings.map((entry, i) => (
               <motion.div
                 key={entry.id}
-                className="flex items-center gap-[clamp(0.4rem,0.8vw,0.8rem)] rounded-xl px-[clamp(0.5rem,0.8vw,0.8rem)] py-[clamp(0.3rem,0.5vh,0.5rem)]"
-                style={{ background: '#140e24', border: '1.5px solid rgba(255,255,255,0.08)' }}
+                className="relative flex items-center gap-[clamp(0.4rem,0.8vw,0.8rem)] overflow-hidden rounded-xl border border-white/[0.065] bg-white/[0.035] px-[clamp(0.5rem,0.8vw,0.8rem)] py-[clamp(0.35rem,0.5vh,0.55rem)]"
                 initial={{ opacity: 0, x: -14 }}
                 animate={beat >= 3 ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
                 transition={{ ...spring, delay: Math.min(0.1 + i * 0.04, 0.5) }}
               >
+                <span className="absolute inset-y-[20%] left-0 w-[2px] rounded-full" style={{ background: entry.rank === 1 ? '#FFD75E' : entry.color, opacity: entry.rank <= 3 ? 1 : 0.32 }} aria-hidden />
                 <span
                   className="shrink-0 font-black tabular-nums text-center"
                   style={{ fontSize: tvType.label, width: '1.5em', color: '#6b6480' }}
@@ -262,9 +275,10 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
           transition={spring}
         >
           <span
-            className="uppercase font-black tracking-[0.3em]"
-            style={{ fontSize: tvType.label, color: '#b3a8c9' }}
+            className="inline-flex items-center gap-[.55em] rounded-full border border-[#FFD75E]/22 bg-[#FFD75E]/8 px-[1em] py-[.45em] uppercase font-black tracking-[0.28em]"
+            style={{ fontSize: tvType.micro, color: '#FFD75E' }}
           >
+            <span className="h-[.55em] w-[.55em] rounded-full bg-[#FFD75E] shadow-[0_0_14px_#FFD75E]" aria-hidden />
             {t('tv.partyNight.finaleEyebrow', 'Die Party Night ist vorbei')}
           </span>
           <span className="font-black text-white" style={{ fontSize: tvType.title, lineHeight: 1.1 }}>
@@ -272,14 +286,20 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
           </span>
         </motion.div>
 
-        <TVPartyPodium entries={standings} reveal={beat >= 1} className="max-w-[min(48rem,100%)]" />
+        <TVPartyPodium
+          entries={standings}
+          reveal={beat >= 1}
+          variant="finale"
+          className="max-w-[min(52rem,100%)]"
+        />
 
         <motion.div
-          className={`${tvPanelRaised} px-[clamp(1rem,1.8vw,2rem)] py-[clamp(0.5rem,1vh,1rem)]`}
+          className="relative overflow-hidden rounded-full border border-[#FFD75E]/24 bg-[#FFD75E]/8 px-[clamp(1rem,1.8vw,2rem)] py-[clamp(0.55rem,1vh,1rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.08),0_20px_50px_-34px_rgba(255,215,94,.7)]"
           initial={{ opacity: 0, y: 14 }}
           animate={beat >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
           transition={spring}
         >
+          <span className="absolute inset-y-[22%] left-0 w-[3px] rounded-full bg-[#FFD75E] shadow-[0_0_14px_#FFD75E]" aria-hidden />
           <span className="font-black text-white" style={{ fontSize: tvType.body }}>
             {t('tv.partyNight.championLine', '{{name}} gewinnt mit {{points}} Punkten', {
               name: champion.name,

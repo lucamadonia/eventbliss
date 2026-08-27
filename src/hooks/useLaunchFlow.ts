@@ -25,8 +25,9 @@ export type LaunchStage = "splash" | "onboarding" | "ready";
  * bekamen sie nie zu sehen — nur brandneue Installationen.
  *
  * Version 2 = die sieben Szenen (1.4.x).
+ * Version 3 = Premium-Nutzenstory, Direktnachrichten und neue Keyvisuals.
  */
-const ONBOARDING_VERSION = 2;
+const ONBOARDING_VERSION = 3;
 
 const VERSION_KEY = "eventbliss.onboardingVersion";
 /** Der alte Ja/Nein-Merker. Bleibt nur fuer die Uebernahme bestehen. */

@@ -122,7 +122,10 @@ export const GLASS_SHAPES: Record<GlassShapeId, GlassShape> = {
 };
 
 export const BAR_SHAPES = ["martini", "coupe", "highball", "tumbler", "sour"] as const;
-export const BREW_SHAPES = ["erlenmeyer", "kessel", "phiole", "kelch", "flakon"] as const;
+// Im Zaubertrank-Gewand ist der KESSEL das Spielobjekt. Unterschiedliche
+// Cocktail-Silhouetten gehoeren ausschliesslich in den Bar-Modus; sonst
+// widersprechen Bild und Regeltext einander.
+export const BREW_SHAPES = ["kessel"] as const;
 
 /** Standardform, wenn ein Aufrufer keine nennt. */
 export const DEFAULT_SHAPE: Record<Skin, GlassShapeId> = { bar: "tumbler", brew: "erlenmeyer" };
@@ -152,6 +155,7 @@ function fnv1a(s: string): number {
  * einmal passiert. Deshalb der Streuwert als Rueckfall.
  */
 export function shapeForRecipe(recipeId: string, skin: Skin): GlassShapeId {
+  if (skin === "brew") return "kessel";
   const family = skin === "bar" ? BAR_SHAPES : BREW_SHAPES;
   const raw = String(recipeId ?? "");
   const digits = raw.replace(/^\D+/, "");

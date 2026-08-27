@@ -8072,24 +8072,24 @@
       "joinButton": "Beitreten"
     },
     "onboarding": {
-      "slide1Title": "Plane den Abend",
-      "slide1Subtitle": "Datum, Gäste und Ort — dein Event steht in einer Minute.",
-      "slide2Title": "Frag deine Gäste",
-      "slide2Subtitle": "Eine Umfrage klärt Termin, Budget und Wünsche, bevor du buchst.",
-      "slide3Title": "Buch die Dienstleister",
-      "slide3Subtitle": "Fotografen, Locations und Catering aus deiner Stadt — direkt buchbar.",
-      "slide4Title": "Teilt die Kosten",
-      "slide4Subtitle": "Ausgaben landen automatisch beim Richtigen — ohne peinliche Rechnerei.",
-      "slide5Title": "Party-Modus",
-      "slide5Subtitle": "Eine Set-Liste aus echten Spielen, Punkte laufen den ganzen Abend mit.",
-      "slide6Title": "Der Fernseher wird zur Bühne",
-      "slide6Subtitle": "Die Gruppe wandert live die Nacht-Route entlang — für alle sichtbar.",
-      "slide7Title": "Siegerehrung",
-      "slide7Subtitle": "Am Ende steht ein Podium — mit echten Punkten aus dem ganzen Abend.",
+      "slide1Title": "Von der ersten Idee bis zur letzten Runde",
+      "slide1Subtitle": "EventBliss verbindet Planung, Gäste und Party in einer App — damit aus Organisation echte Vorfreude wird.",
+      "slide2Title": "Keine endlosen Gruppenchats mehr",
+      "slide2Subtitle": "Direktnachrichten, Abstimmungen und Zusagen landen an einem Ort. Du siehst sofort, was für alle passt.",
+      "slide3Title": "Die richtigen Profis direkt griffbereit",
+      "slide3Subtitle": "Entdecke Locations, Catering und Erlebnisse in deiner Nähe und behalte jede Anfrage an einem Ort.",
+      "slide4Title": "Jeder Betrag. Jeder Anteil. Geklärt.",
+      "slide4Subtitle": "EventBliss verteilt Kosten nachvollziehbar, zeigt offene Beträge und erspart dir das Hinterherlaufen.",
+      "slide5Title": "22 Spiele. Eine gemeinsame Partynacht.",
+      "slide5Subtitle": "Stellt eure Set-Liste zusammen, sammelt spielübergreifend Punkte und macht jedes Handy zum Controller.",
+      "slide6Title": "Euer Fernseher wird zur Gameshow-Bühne",
+      "slide6Subtitle": "Route, Spielstände und große Momente erscheinen live auf dem TV — während ihr mit den Handys spielt.",
+      "slide7Title": "Nicht nur geplant. Gemeinsam erlebt.",
+      "slide7Subtitle": "Vom ersten Voting bis zur Siegerehrung bleibt alles verbunden. Genau das macht EventBliss besonders.",
       "skip": "Überspringen",
       "next": "Weiter",
-      "getStarted": "Los geht’s",
-      "skipToStart": "Direkt loslegen",
+      "getStarted": "Mein erstes Event starten",
+      "skipToStart": "Jetzt Event erstellen",
       "scene": {
         "eventCard": {
           "statusBadge": "Geplant",
@@ -8129,7 +8129,7 @@
       }
     },
     "splash": {
-      "tagline": "Plane Events, an die man sich erinnert"
+      "tagline": "Planen. Abstimmen. Spielen. Gemeinsam erleben."
     }
   },
   "marketplace": {

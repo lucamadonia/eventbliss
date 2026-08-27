@@ -296,6 +296,19 @@ export function Glass({
             fill={`url(#aura-${uid})`} />
         )}
 
+        {/* Kessel-Henkel und Standfuesse liegen hinter dem Koerper. Erst diese
+            Silhouette macht aus einer runden Schale einen echten Kessel. */}
+        {form.id === "kessel" && (
+          <>
+            <path d={`M 9 ${H * 0.24} C -8 ${H * 0.26}, -7 ${H * 0.58}, 14 ${H * 0.62}`}
+              fill="none" stroke="rgba(18,13,25,.96)" strokeWidth="7" strokeLinecap="round" />
+            <path d={`M 91 ${H * 0.24} C 108 ${H * 0.26}, 107 ${H * 0.58}, 86 ${H * 0.62}`}
+              fill="none" stroke="rgba(18,13,25,.96)" strokeWidth="7" strokeLinecap="round" />
+            <path d={`M 30 ${H * 0.82} L 23 ${H * 1.01}`} stroke="rgba(13,9,19,.98)" strokeWidth="8" strokeLinecap="round" />
+            <path d={`M 70 ${H * 0.82} L 77 ${H * 1.01}`} stroke="rgba(13,9,19,.98)" strokeWidth="8" strokeLinecap="round" />
+          </>
+        )}
+
         {/* 4. Glaskoerper: Schale, Stiel, Knoten, Fuss. */}
         <path d={aussen} fill="rgba(18,12,31,0.34)" stroke="rgba(255,255,255,0.12)" strokeWidth="2.8" />
         <path d={aussen} fill={`url(#body-${uid})`} />
@@ -394,7 +407,8 @@ export function Glass({
         <path d={aussen} fill={`url(#front-${uid})`} opacity={premium ? 0.72 : 0.52} />
         <path d={aussen} fill="none" stroke="rgba(225,232,255,0.62)" strokeWidth={premium ? 1.45 : 1.1} strokeLinejoin="round" />
         <ellipse cx="50" cy={bowlTop * H} rx={muendungHw} ry={Math.max(1.4, muendungHw * 0.17)}
-          fill="rgba(10,7,18,0.46)" stroke={`url(#rim-${uid})`} strokeWidth={premium ? 2.1 : 1.4} />
+          fill={form.id === "kessel" ? "rgba(4,3,8,.9)" : "rgba(10,7,18,0.46)"}
+          stroke={`url(#rim-${uid})`} strokeWidth={form.id === "kessel" ? 4.2 : premium ? 2.1 : 1.4} />
         <ellipse cx="50" cy={bowlTop * H + 0.8} rx={Math.max(1, muendungHw - form.wall * 0.65)}
           ry={Math.max(0.8, muendungHw * 0.105)} fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="0.8" />
 

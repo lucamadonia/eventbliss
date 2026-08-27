@@ -631,6 +631,7 @@ export default function PartyLobbyScreen() {
       <PartyFinaleOverlay
         open={showFinalLeaderboard}
         standings={standings}
+        history={history}
         gamesPlayed={history.length}
         playerCount={players.length}
         onDone={handleConfirmEnd}

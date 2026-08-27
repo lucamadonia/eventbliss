@@ -8096,24 +8096,24 @@
       "joinButton": "Unirse"
     },
     "onboarding": {
-      "slide1Title": "Planea eventos épicos",
-      "slide1Subtitle": "Despedidas, cumpleaños, viajes en grupo — todo desde un solo lugar.",
-      "slide2Title": "Juega 24+ juegos de fiesta",
-      "slide2Subtitle": "Tabú, Bomba, Headup, Verdad o Reto, Impostor y más.",
-      "slide3Title": "Divide los gastos",
-      "slide3Subtitle": "Registra los gastos y salda cuentas sin conversaciones incómodas.",
-      "slide4Title": "Invita a todos",
-      "slide4Subtitle": "Comparte un enlace, recoge confirmaciones y mantén a todos al tanto.",
+      "slide1Title": "De la primera idea a la última ronda",
+      "slide1Subtitle": "EventBliss conecta la planificación, los invitados y la fiesta en una sola app, para convertir la organización en ilusión de verdad.",
+      "slide2Title": "No más chats de grupo interminables",
+      "slide2Subtitle": "Los mensajes directos, las votaciones y las confirmaciones están en un solo lugar. Ves al instante qué le va bien a todo el mundo.",
+      "slide3Title": "Los profesionales adecuados, siempre a mano",
+      "slide3Subtitle": "Descubre espacios, catering y experiencias cerca de ti, y reúne cada solicitud en un solo lugar.",
+      "slide4Title": "Cada importe. Cada parte. Resuelto.",
+      "slide4Subtitle": "EventBliss reparte los gastos de forma transparente, muestra los importes pendientes y te evita tener que perseguir pagos.",
       "skip": "Saltar",
       "next": "Siguiente",
-      "getStarted": "Vamos",
-      "slide5Title": "Modo Fiesta",
-      "slide5Subtitle": "Una lista de juegos reales; los puntos corren toda la noche.",
-      "slide6Title": "La tele se convierte en escenario",
-      "slide6Subtitle": "El grupo avanza en vivo por la ruta nocturna, a la vista de todos.",
-      "slide7Title": "Premiacion",
-      "slide7Subtitle": "La noche termina en un podio, con los puntos de toda la velada.",
-      "skipToStart": "Empezar ya",
+      "getStarted": "Crear mi primer evento",
+      "slide5Title": "22 juegos. Una noche de fiesta compartida.",
+      "slide5Subtitle": "Cread vuestra lista, sumad puntos entre juegos y convertid cada móvil en un mando.",
+      "slide6Title": "Tu tele se convierte en un escenario de concurso",
+      "slide6Subtitle": "La ruta, las puntuaciones y los grandes momentos aparecen en directo en la tele mientras jugáis con el móvil.",
+      "slide7Title": "No solo organizado. Vivido juntos.",
+      "slide7Subtitle": "Desde la primera votación hasta la entrega de premios, todo permanece conectado. Eso es lo que hace especial a EventBliss.",
+      "skipToStart": "Crear un evento ahora",
       "scene": {
         "eventCard": {
           "statusBadge": "Planeado",
@@ -8153,7 +8153,7 @@
       }
     },
     "splash": {
-      "tagline": "Eventos que se recuerdan"
+      "tagline": "Planifica. Decide. Juega. Vívelo en compañía."
     }
   },
   "marketplace": {

@@ -16,8 +16,8 @@ android {
         applicationId "app.eventbliss"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
-        versionName "1.3.6"
+        versionCode 4
+        versionName "1.5.3"
         // Spotify auth library injects an intent filter with these placeholders.
         // Must match SPOTIFY_REDIRECT_URL ('eventbliss://spotify-callback') in
         // src/games/ohrwurm/playback.ts.

@@ -8146,24 +8146,24 @@
       "joinButton": "Deelnemen"
     },
     "onboarding": {
-      "slide1Title": "Plan epische evenementen",
-      "slide1Subtitle": "Vrijgezellenfeesten, verjaardagen, groepsreizen — alles op één plek.",
-      "slide2Title": "Speel 24+ feestspellen",
-      "slide2Subtitle": "Taboe, Bom, Headup, Waarheid of Durven, Bedrieger en meer.",
-      "slide3Title": "Deel de kosten",
-      "slide3Subtitle": "Houd uitgaven bij en reken af zonder ongemakkelijke gesprekken.",
-      "slide4Title": "Nodig iedereen uit",
-      "slide4Subtitle": "Deel een link, verzamel bevestigingen en houd iedereen op de hoogte.",
+      "slide1Title": "Van het eerste idee tot de laatste ronde",
+      "slide1Subtitle": "EventBliss brengt planning, gasten en het feest samen in één app — zodat organiseren verandert in echte voorpret.",
+      "slide2Title": "Geen eindeloze groepschats meer",
+      "slide2Subtitle": "Privéberichten, stemmingen en aanmeldingen staan op één plek. Je ziet meteen wat voor iedereen werkt.",
+      "slide3Title": "De juiste professionals binnen handbereik",
+      "slide3Subtitle": "Ontdek locaties, catering en belevenissen in de buurt en houd elke aanvraag op één plek.",
+      "slide4Title": "Elk bedrag. Ieders deel. Geregeld.",
+      "slide4Subtitle": "EventBliss verdeelt de kosten helder, toont openstaande bedragen en bespaart je het najagen van betalingen.",
       "skip": "Overslaan",
       "next": "Volgende",
-      "getStarted": "Laten we gaan",
-      "slide5Title": "Party-modus",
-      "slide5Subtitle": "Een setlist met echte spellen, punten lopen de hele avond door.",
-      "slide6Title": "De tv wordt het podium",
-      "slide6Subtitle": "De groep loopt live over de nachtroute — voor iedereen zichtbaar.",
-      "slide7Title": "Prijsuitreiking",
-      "slide7Subtitle": "De avond eindigt op een podium — met punten van de hele avond.",
-      "skipToStart": "Direct beginnen",
+      "getStarted": "Mijn eerste event maken",
+      "slide5Title": "22 spellen. Eén gezamenlijke feestavond.",
+      "slide5Subtitle": "Stel jullie setlist samen, verzamel punten over meerdere spellen en maak van elke telefoon een controller.",
+      "slide6Title": "Jullie tv wordt een gameshowpodium",
+      "slide6Subtitle": "De route, scores en grote momenten verschijnen live op tv terwijl iedereen op de telefoon speelt.",
+      "slide7Title": "Niet alleen gepland. Samen beleefd.",
+      "slide7Subtitle": "Van de eerste stemming tot de prijsuitreiking blijft alles verbonden. Dat maakt EventBliss bijzonder.",
+      "skipToStart": "Nu een event maken",
       "scene": {
         "eventCard": {
           "statusBadge": "Gepland",
@@ -8203,7 +8203,7 @@
       }
     },
     "splash": {
-      "tagline": "Events om te onthouden"
+      "tagline": "Plan. Beslis. Speel. Beleef het samen."
     }
   },
   "marketplace": {

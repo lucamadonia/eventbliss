@@ -98,16 +98,36 @@ export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, o
             {/* Abdunkeln, damit die Karte die Buehne ganz fuer sich hat. */}
             <div
               className="absolute inset-0"
-              style={{ background: isBust ? "rgba(40,6,14,0.55)" : "rgba(11,15,26,0.45)" }}
+              style={{ background: isBust ? "rgba(40,6,14,0.78)" : "rgba(4,7,16,0.68)" }}
             />
+            {!reduced && (
+              <>
+                {[0, 1, 2].map((i) => (
+                  <motion.div key={i} className="absolute h-44 w-44 rounded-full border-2"
+                    style={{ borderColor: `${color}${i === 0 ? "cc" : "66"}`, boxShadow: `0 0 38px ${color}55` }}
+                    initial={{ scale: 0.25, opacity: 0.9 }}
+                    animate={{ scale: 2.2 + i * 0.6, opacity: 0, rotate: i % 2 ? -55 : 55 }}
+                    transition={{ duration: 0.75, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }} />
+                ))}
+                {Array.from({ length: isBust ? 18 : 12 }).map((_, i) => {
+                  const angle = (Math.PI * 2 * i) / (isBust ? 18 : 12);
+                  const distance = isBust ? 230 : 155;
+                  return <motion.span key={`ray-${i}`} className="absolute h-1.5 w-12 origin-left rounded-full"
+                    style={{ background: `linear-gradient(90deg, ${color}, transparent)`, boxShadow: `0 0 10px ${color}` }}
+                    initial={{ x: 0, y: 0, rotate: angle * 180 / Math.PI, scaleX: 0, opacity: 0 }}
+                    animate={{ x: Math.cos(angle) * distance, y: Math.sin(angle) * distance, scaleX: [0, 1.3, 0.2], opacity: [0, 1, 0] }}
+                    transition={{ duration: 0.72, delay: 0.08 + (i % 3) * 0.025, ease: "easeOut" }} />;
+                })}
+              </>
+            )}
             <motion.div
               className="relative rounded-3xl flex flex-col items-center justify-center gap-2"
               style={{
-                width: 168,
-                height: 200,
+                width: 190,
+                height: 232,
                 ...ingredientPlate(color),
                 // Der Schein traegt die Stimmung: Zutat ruhig, Bust hart.
-                boxShadow: `inset 0 0 0 2px ${color}, 0 0 ${isBust ? 60 : 34}px -4px ${color}`,
+                boxShadow: `inset 0 0 0 2px ${color}, inset 0 0 42px ${color}35, 0 0 ${isBust ? 90 : 62}px ${color}`,
                 transformStyle: "preserve-3d",
               }}
               initial={false}

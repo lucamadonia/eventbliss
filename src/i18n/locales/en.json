@@ -8072,24 +8072,24 @@
       "joinButton": "Join"
     },
     "onboarding": {
-      "slide1Title": "Plan the evening",
-      "slide1Subtitle": "Date, guests and location — your event is set in a minute.",
-      "slide2Title": "Ask your guests",
-      "slide2Subtitle": "A poll settles the date, budget and wishes before you book anything.",
-      "slide3Title": "Book the vendors",
-      "slide3Subtitle": "Photographers, venues and catering from your city — bookable right away.",
-      "slide4Title": "Split the costs",
-      "slide4Subtitle": "Expenses land with the right person automatically — no awkward math.",
-      "slide5Title": "Party Mode",
-      "slide5Subtitle": "A set list of real games, with points running all night long.",
-      "slide6Title": "The TV becomes the stage",
-      "slide6Subtitle": "The group travels the night route live — everyone can see it.",
-      "slide7Title": "Awards Ceremony",
-      "slide7Subtitle": "The night ends on a podium — with real points from the whole evening.",
+      "slide1Title": "From the first idea to the final round",
+      "slide1Subtitle": "EventBliss connects planning, guests and the party itself — turning organisation into anticipation.",
+      "slide2Title": "No more endless group chats",
+      "slide2Subtitle": "Direct messages, polls and RSVPs live in one place. See instantly what works for everyone.",
+      "slide3Title": "The right professionals, within reach",
+      "slide3Subtitle": "Discover venues, catering and experiences nearby and keep every enquiry in one place.",
+      "slide4Title": "Every expense. Every share. Sorted.",
+      "slide4Subtitle": "EventBliss splits costs transparently, tracks open balances and saves you from chasing payments.",
+      "slide5Title": "22 games. One connected party night.",
+      "slide5Subtitle": "Build your set list, collect points across games and turn every phone into a controller.",
+      "slide6Title": "Your TV becomes a game-show stage",
+      "slide6Subtitle": "The route, scores and big moments appear live on TV while everyone plays from their phone.",
+      "slide7Title": "Not just planned. Experienced together.",
+      "slide7Subtitle": "From the first vote to the awards ceremony, everything stays connected. That is EventBliss.",
       "skip": "Skip",
       "next": "Next",
-      "getStarted": "Let's go",
-      "skipToStart": "Jump right in",
+      "getStarted": "Create my first event",
+      "skipToStart": "Create an event now",
       "scene": {
         "eventCard": {
           "statusBadge": "Planned",
@@ -8129,7 +8129,7 @@
       }
     },
     "splash": {
-      "tagline": "Plan events worth remembering"
+      "tagline": "Plan. Decide. Play. Experience it together."
     }
   },
   "marketplace": {

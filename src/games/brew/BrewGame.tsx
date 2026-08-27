@@ -46,6 +46,7 @@ import { hasShellBackButton } from "../ui/shell-back";
 import { ResultScreen } from "../ui/ResultScreen";
 import type { OnlineGameProps } from "../multiplayer/OnlineGameTypes";
 import { Glass } from "./Glass";
+import { BrewStageFX } from "./BrewStageFX";
 import { GLASS_SHAPES, glassMouthT, shapeForRecipe } from "./glass-shapes";
 import { BREW_PALETTES } from "./brew-palette";
 import { TrayCards } from "./TrayCards";
@@ -868,11 +869,11 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
 
       {/* Aktive Person: Rezept + Glas */}
       <motion.div
-        className="relative z-10 mx-3 mt-3 overflow-hidden rounded-[2rem] border p-4"
+        className="relative z-10 mt-2 min-h-[430px] overflow-hidden border-y px-4 pb-5 pt-4"
         style={{
-          background: `linear-gradient(155deg, ${theme.surfaceRaised}, ${theme.surface})`,
-          borderColor: `${accent}35`,
-          boxShadow: `inset 0 1px 0 rgba(255,255,255,.08), 0 24px 60px -42px ${accent}`,
+          background: `radial-gradient(circle at 50% 42%, ${accent}26 0%, transparent 34%), linear-gradient(180deg, rgba(5,7,16,.22), ${theme.surface} 72%, rgba(3,4,10,.82))`,
+          borderColor: `${accent}42`,
+          boxShadow: `inset 0 1px 0 rgba(255,255,255,.1), inset 0 -30px 70px rgba(0,0,0,.24), 0 30px 80px -52px ${accent}`,
         }}
         animate={reduceMotion ? undefined : { boxShadow: chainLevel >= 2
           ? [`inset 0 1px 0 rgba(255,255,255,.08), 0 18px 48px -34px ${accent}`,
@@ -881,13 +882,53 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
           : `inset 0 1px 0 rgba(255,255,255,.08), 0 24px 60px -42px ${accent}` }}
         transition={{ duration: 1.8, repeat: chainLevel >= 2 ? Infinity : 0, ease: "easeInOut" }}
       >
-        <div aria-hidden className="absolute inset-x-0 top-0 h-24 opacity-50"
-          style={{ background: `radial-gradient(ellipse at 72% 0%, ${accent}42, transparent 68%)` }} />
-        <p className="text-[11px] font-black uppercase tracking-wide mb-2" style={{ color: theme.dim }}>
+        <BrewStageFX
+          drawnCard={drawnCard}
+          pourSeq={pourSeq}
+          pouring={!!pourPlan}
+          accent={accent}
+          danger={theme.bad}
+          reduced={!!reduceMotion}
+        />
+        <div aria-hidden className="absolute inset-0 opacity-60"
+          style={{ backgroundImage: `linear-gradient(${accent}0d 1px, transparent 1px), linear-gradient(90deg, ${accent}0d 1px, transparent 1px)`, backgroundSize: "28px 28px", maskImage: "radial-gradient(circle at 50% 44%, black, transparent 72%)" }} />
+        <div aria-hidden className="absolute left-1/2 top-[44%] h-[290px] w-[290px] -translate-x-1/2 -translate-y-1/2 rounded-full border"
+          style={{ borderColor: `${accent}30`, boxShadow: `inset 0 0 50px ${accent}12, 0 0 70px ${accent}16` }} />
+        <motion.div aria-hidden className="absolute left-1/2 top-[44%] h-[238px] w-[238px] rounded-full border border-dashed"
+          style={{ x: "-50%", y: "-50%", borderColor: `${accent}65` }}
+          animate={reduceMotion ? undefined : { rotate: chainLevel > 0 ? 360 : 90, scale: chainLevel >= 2 ? [1, 1.035, 1] : 1 }}
+          transition={{ rotate: { duration: Math.max(7, 15 - chainLevel * 2), repeat: Infinity, ease: "linear" }, scale: { duration: 1.2, repeat: Infinity, ease: "easeInOut" } }}
+        />
+        {[0, 1, 2, 3].map((i) => (
+          <motion.span key={i} aria-hidden className="absolute left-1/2 top-[44%] h-2 w-2 rounded-full"
+            style={{ background: i < chainLevel ? accent : `${accent}48`, boxShadow: `0 0 16px ${accent}`, x: "-50%", y: "-50%" }}
+            animate={reduceMotion ? undefined : { x: [Math.cos(i * Math.PI / 2) * 132, Math.cos(i * Math.PI / 2 + Math.PI) * 132, Math.cos(i * Math.PI / 2) * 132], y: [Math.sin(i * Math.PI / 2) * 132, Math.sin(i * Math.PI / 2 + Math.PI) * 132, Math.sin(i * Math.PI / 2) * 132], opacity: [0.35, 1, 0.35] }}
+            transition={{ duration: 5.5 + i * 0.4, repeat: Infinity, ease: "linear" }} />
+        ))}
+        <p className="relative text-center text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: accent }}>
           {t("games.brew.yourRecipe")} · {t(recipeKey(me.recipe.id, skin))}
         </p>
-        <div className="flex items-center gap-4">
-          <div className="flex flex-wrap gap-2 flex-1">
+        <div className="relative flex flex-col items-center">
+          <div ref={glassBoxRef} className="relative z-10 mt-1 inline-flex h-[300px] items-end justify-center">
+            <motion.div aria-hidden className="absolute bottom-[2%] left-1/2 h-28 w-56 -translate-x-1/2 rounded-full"
+              style={{ background: `radial-gradient(ellipse, ${accent}70, ${accent}18 42%, transparent 72%)` }}
+              animate={reduceMotion ? undefined : { opacity: [0.42, 0.95, 0.42], scale: [0.9, 1.1, 0.9] }}
+              transition={{ duration: Math.max(0.8, 2 - chainLevel * 0.28), repeat: Infinity, ease: "easeInOut" }} />
+            <Glass
+              recipeNeeds={me.recipe.needs}
+              filled={me.glass}
+              skin={skin}
+              shape={shapeForRecipe(me.recipe.id, skin)}
+              bubbles
+              width="clamp(190px, 56vw, 260px)"
+              quality="hero"
+              active
+              intensity={chainLevel}
+              arrivalDelay={pourPlan?.pid === me.id ? POUR_BEATS.depart + POUR_BEATS.flight : 0}
+              layerStagger={POUR_BEATS.stagger}
+            />
+          </div>
+          <div className="relative z-10 mt-1 flex w-full justify-center gap-1.5 overflow-x-auto pb-1">
             {me.recipe.needs.map((id) => {
               const owned = me.glass.includes(id);
               return (
@@ -899,16 +940,16 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
                     // Vorher: 44-px-Kachel mit 32-px-Motiv, und wenn die Zutat
                     // fehlte, ein gestrichelter Umriss. Der liess den ganzen
                     // Bildschirm wie einen unfertigen Entwurf wirken.
-                    "w-[72px] rounded-2xl flex flex-col items-center gap-1 pt-2 pb-1.5 px-1 transition-opacity",
+                    "w-[58px] shrink-0 rounded-xl flex flex-col items-center gap-0.5 pt-1.5 pb-1 px-1 transition-opacity",
                     // Fehlende Zutat tritt zurueck — ueber Saettigung, nicht
                     // ueber eine gestrichelte Linie.
                     !owned && "opacity-45 saturate-[0.35]",
                   )}
                   style={ingredientPlate(INGREDIENTS[id].color)}
                 >
-                  <IngredientIcon id={id} skin={skin} className="w-12 h-12" emojiSize="2rem" />
+                  <IngredientIcon id={id} skin={skin} className="h-9 w-9" emojiSize="1.55rem" />
                   <span
-                    className="w-full text-[10px] leading-tight font-bold text-center line-clamp-2 break-words"
+                    className="w-full text-[8px] leading-tight font-bold text-center line-clamp-1 break-words"
                     style={{ color: "rgba(255,255,255,0.92)" }}
                   >
                     {t(ingredientKey(id, skin))}
@@ -916,31 +957,6 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
                 </div>
               );
             })}
-          </div>
-          {/* `inline-flex`, damit der Kasten das Glas UMSCHLIESST. Als
-              schlichter Block nahm er die volle Zeilenbreite ein — gemessen
-              wurde dann die Mitte eines unsichtbaren Balkens, und die Karten
-              flogen 7532 Pixel weit aus dem Bild. */}
-          <div ref={glassBoxRef} className="relative inline-flex shrink-0 items-end justify-center">
-            <motion.div aria-hidden className="absolute bottom-[4%] left-1/2 h-24 w-36 -translate-x-1/2 rounded-full"
-              style={{ background: `radial-gradient(ellipse, ${accent}32, transparent 68%)` }}
-              animate={reduceMotion ? undefined : { opacity: [0.35, 0.72, 0.35], scale: [0.94, 1.05, 0.94] }}
-              transition={{ duration: Math.max(0.9, 2.2 - chainLevel * 0.32), repeat: Infinity, ease: "easeInOut" }} />
-            <Glass
-              recipeNeeds={me.recipe.needs}
-              filled={me.glass}
-              skin={skin}
-              shape={shapeForRecipe(me.recipe.id, skin)}
-              // Nur das eigene Heldenglas perlt — und auch nur, wenn das
-              // Rezept ueberhaupt Kohlensaeure enthaelt.
-              bubbles
-              size="lg"
-              quality="hero"
-              active
-              intensity={chainLevel}
-              arrivalDelay={pourPlan?.pid === me.id ? POUR_BEATS.depart + POUR_BEATS.flight : 0}
-              layerStagger={POUR_BEATS.stagger}
-            />
           </div>
         </div>
         {glassProgress > 0 && (

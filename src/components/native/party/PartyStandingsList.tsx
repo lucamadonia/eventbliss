@@ -36,16 +36,24 @@ function rankDelta(standing: PartyStanding): number {
 
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1) {
-    return <Crown className="w-5 h-5 text-amber-500 dark:text-[#f9ca24]" aria-hidden />;
+    return (
+      <span className="grid h-8 w-8 place-items-center rounded-xl border border-[#FFD75E]/35 bg-[#FFD75E]/12 shadow-[0_0_22px_-8px_rgba(255,215,94,.8)]">
+        <Crown className="h-4.5 w-4.5 text-[#FFD75E]" aria-hidden />
+      </span>
+    );
   }
   return (
     <span
       className={cn(
-        "text-sm font-bold tabular-nums",
-        rank === 2 ? "text-foreground/70" : rank === 3 ? "text-amber-700" : "text-muted-foreground"
+        "grid h-8 w-8 place-items-center rounded-xl border text-xs font-black tabular-nums",
+        rank === 2
+          ? "border-[#D9E1F2]/25 bg-[#D9E1F2]/8 text-[#D9E1F2]"
+          : rank === 3
+          ? "border-[#E99A67]/25 bg-[#E99A67]/8 text-[#E99A67]"
+          : "border-white/[0.07] bg-white/[0.035] text-white/35"
       )}
     >
-      {rank}
+      {String(rank).padStart(2, "0")}
     </span>
   );
 }
@@ -61,7 +69,7 @@ export function PartyStandingsList({
   const reduce = useReducedMotion();
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("space-y-2.5", className)}>
       {standings.map((standing, index) => {
         const delta = showDelta ? rankDelta(standing) : 0;
         const points = gained?.[standing.id] ?? 0;
@@ -70,20 +78,29 @@ export function PartyStandingsList({
         return (
           <motion.div
             key={standing.id}
-            layout={!reduce}
+            layout={reduce ? false : "position"}
             initial={reduce ? { opacity: 0 } : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={reduce ? { duration: 0.15 } : { ...spring.soft, delay: index * 0.06 }}
             className={cn(
-              "relative flex items-center gap-3 rounded-2xl border overflow-hidden",
-              compact ? "p-2.5" : "p-3",
+              "relative flex items-center gap-2.5 overflow-hidden rounded-[20px] border text-white shadow-[inset_0_1px_0_rgba(255,255,255,.055)]",
+              compact ? "min-h-[54px] px-2.5 py-2" : "min-h-[64px] px-3 py-2.5",
               leader
-                ? "bg-[#f9ca24]/10 border-[#f9ca24]/30"
+                ? "border-[#FFD75E]/28 bg-[linear-gradient(105deg,rgba(255,215,94,.14),rgba(223,142,255,.08)_55%,rgba(255,255,255,.035))]"
                 : delta > 0
-                ? "bg-emerald-500/[0.07] border-emerald-500/20"
-                : "bg-card border-border"
+                ? "border-[#26E0C4]/22 bg-[linear-gradient(105deg,rgba(38,224,196,.09),rgba(255,255,255,.035))]"
+                : "border-white/[0.075] bg-white/[0.038]"
             )}
           >
+            <span
+              aria-hidden
+              className="absolute inset-y-3 left-0 w-0.5 rounded-full"
+              style={{
+                background: leader ? "#FFD75E" : delta > 0 ? "#26E0C4" : standing.color,
+                opacity: leader || delta > 0 ? 1 : 0.35,
+                boxShadow: leader ? "0 0 14px #FFD75E" : undefined,
+              }}
+            />
             {/* Aufstiegs-Blitz: EIN Aufleuchten, keine Dauerschleife — ein
                 laufender Effekt pro Zeile wuerde den Akku des Abends kosten. */}
             {delta > 0 && !reduce && (
@@ -96,13 +113,13 @@ export function PartyStandingsList({
               />
             )}
 
-            <div className="w-6 flex items-center justify-center shrink-0">
+            <div className="flex shrink-0 items-center justify-center">
               <RankBadge rank={standing.rank} />
             </div>
 
             {/* Rangwechsel — die Bewegung IST die Information. */}
             {showDelta && (
-              <div className="w-6 flex items-center justify-center shrink-0">
+              <div className="flex w-6 shrink-0 items-center justify-center">
                 {delta > 0 ? (
                   <motion.span
                     className="flex items-center text-emerald-400"
@@ -133,22 +150,23 @@ export function PartyStandingsList({
 
             <div
               className={cn(
-                "rounded-full flex items-center justify-center shrink-0",
-                compact ? "w-8 h-8 text-sm" : "w-9 h-9 text-base"
+                "flex shrink-0 items-center justify-center rounded-full font-black",
+                compact ? "h-8 w-8 text-sm" : "h-10 w-10 text-base"
               )}
               style={{
-                backgroundColor: standing.color + "30",
+                background: `linear-gradient(145deg, ${standing.color}55, rgba(7,8,18,.92))`,
                 borderColor: standing.color,
-                borderWidth: 2,
+                borderWidth: 1.5,
+                boxShadow: leader ? `0 0 22px ${standing.color}55` : undefined,
               }}
             >
               {standing.avatar || standing.name.slice(0, 1).toUpperCase()}
             </div>
 
             <div className="flex-1 min-w-0 text-start">
-              <p className="text-sm font-semibold text-foreground truncate">{standing.name}</p>
+              <p className={cn("truncate font-black text-white", compact ? "text-xs" : "text-sm")}>{standing.name}</p>
               {standing.streak > 1 && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-orange-400">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#ff8eb4]">
                   <Flame className="w-3 h-3" aria-hidden />
                   {t("nativeExtra.partyNight.streak", { n: standing.streak })}
                 </span>
@@ -158,7 +176,7 @@ export function PartyStandingsList({
             {/* Punktzuwachs dieses Spiels */}
             {points > 0 && (
               <motion.span
-                className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[11px] font-bold tabular-nums shrink-0"
+                className="shrink-0 rounded-full border border-[#26E0C4]/20 bg-[#26E0C4]/10 px-2 py-0.5 text-[10px] font-black tabular-nums text-[#71f5df]"
                 initial={reduce ? false : { scale: 0.4, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ ...spring.bouncy, delay: 0.35 + index * 0.06 }}
@@ -168,7 +186,7 @@ export function PartyStandingsList({
               </motion.span>
             )}
 
-            <span className="text-base font-bold text-foreground tabular-nums shrink-0">
+            <span className={cn("shrink-0 font-black tabular-nums", compact ? "text-sm" : "text-lg")} style={{ color: leader ? "#FFD75E" : "rgba(255,255,255,.82)" }}>
               {standing.points}
             </span>
           </motion.div>

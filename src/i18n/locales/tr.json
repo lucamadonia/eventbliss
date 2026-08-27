@@ -8146,24 +8146,24 @@
       "joinButton": "Katıl"
     },
     "onboarding": {
-      "slide1Title": "Epik etkinlikler planla",
-      "slide1Subtitle": "Bekarlara veda, doğum günleri, grup gezileri — hepsi tek yerden.",
-      "slide2Title": "24+ parti oyunu oyna",
-      "slide2Subtitle": "Tabu, Bomba, Headup, Doğruluk mu Cesaret mi, Casuslar ve daha fazlası.",
-      "slide3Title": "Masrafları paylaş",
-      "slide3Subtitle": "Harcamaları takip et ve garip konuşmalar olmadan hesaplaş.",
-      "slide4Title": "Herkesi davet et",
-      "slide4Subtitle": "Link paylaş, katılım topla ve herkesi bilgilendir.",
+      "slide1Title": "İlk fikirden son tura kadar",
+      "slide1Subtitle": "EventBliss planlamayı, konukları ve partiyi tek bir uygulamada buluşturur — organizasyonu gerçek bir heyecana dönüştürür.",
+      "slide2Title": "Bitmek bilmeyen grup sohbetlerine son",
+      "slide2Subtitle": "Doğrudan mesajlar, oylamalar ve katılım onayları tek yerde. Herkese neyin uyduğunu anında gör.",
+      "slide3Title": "Doğru profesyoneller elinin altında",
+      "slide3Subtitle": "Yakınındaki mekânları, catering hizmetlerini ve deneyimleri keşfet; tüm talepleri tek yerde tut.",
+      "slide4Title": "Her tutar. Her pay. Çözüldü.",
+      "slide4Subtitle": "EventBliss masrafları şeffafça bölüştürür, açık tutarları gösterir ve ödeme peşinde koşma derdini bitirir.",
       "skip": "Atla",
       "next": "İleri",
-      "getStarted": "Hadi başlayalım",
-      "slide5Title": "Parti Modu",
-      "slide5Subtitle": "Gercek oyunlardan bir liste, puanlar tum gece boyunca birikir.",
-      "slide6Title": "Televizyon sahneye donusur",
-      "slide6Subtitle": "Grup gece rotasinda canli ilerler — herkes gorur.",
-      "slide7Title": "Odul toreni",
-      "slide7Subtitle": "Gece bir podyumla biter — tum aksamin puanlariyla.",
-      "skipToStart": "Hemen basla",
+      "getStarted": "İlk etkinliğimi oluştur",
+      "slide5Title": "22 oyun. Birlikte yaşanan tek parti gecesi.",
+      "slide5Subtitle": "Oyun listenizi oluşturun, oyunlar boyunca puan toplayın ve her telefonu bir kumandaya dönüştürün.",
+      "slide6Title": "Televizyonunuz bir yarışma sahnesine dönüşür",
+      "slide6Subtitle": "Rota, skorlar ve büyük anlar siz telefonlarınızdan oynarken TV’de canlı görünür.",
+      "slide7Title": "Sadece planlanmadı. Birlikte yaşandı.",
+      "slide7Subtitle": "İlk oylamadan ödül törenine kadar her şey birbirine bağlı kalır. EventBliss'i özel yapan da budur.",
+      "skipToStart": "Şimdi bir etkinlik oluştur",
       "scene": {
         "eventCard": {
           "statusBadge": "Planlandi",
@@ -8203,7 +8203,7 @@
       }
     },
     "splash": {
-      "tagline": "Unutulmayacak etkinlikler"
+      "tagline": "Planla. Karar ver. Oyna. Birlikte yaşa."
     }
   },
   "marketplace": {
