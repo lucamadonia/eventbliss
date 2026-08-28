@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { marketplaceFunctionErrorMessage } from "@/lib/marketplace-function-error";
 
 const SUPPORTED_LOCALES = ["de", "en", "es", "fr", "it", "nl", "pl", "pt", "tr", "ar"] as const;
 
@@ -96,6 +97,7 @@ export interface MarketplaceService {
   review_count: number;
   booking_count: number;
   cancellation_policy: string;
+  advance_booking_days: number;
   auto_confirm: boolean;
   payment_method: "online" | "on_site";
   created_at: string;
@@ -299,6 +301,7 @@ export function useMarketplaceServiceBySlug(slug: string | undefined) {
         review_count: service.review_count,
         booking_count: service.booking_count,
         cancellation_policy: service.cancellation_policy,
+        advance_booking_days: service.advance_booking_days ?? 0,
         auto_confirm: service.auto_confirm,
         payment_method: (service.payment_method as "online" | "on_site") ?? "online",
         created_at: service.created_at,
@@ -373,8 +376,11 @@ export function useCreateBooking() {
           },
         );
 
-        if (guestError || guestData?.error) {
-          throw new Error(guestData?.error || guestError?.message || "Die Gastbuchung ist fehlgeschlagen.");
+        if (guestError) {
+          throw new Error(await marketplaceFunctionErrorMessage(guestError, "Die Gastbuchung ist fehlgeschlagen."));
+        }
+        if (guestData?.error) {
+          throw new Error(guestData.error);
         }
 
         try {

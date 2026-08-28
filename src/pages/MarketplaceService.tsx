@@ -251,6 +251,20 @@ export default function MarketplaceServicePage() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!s) return;
+    const minimum = Math.max(1, s.min_participants ?? 1);
+    const maximum = Math.max(minimum, s.max_participants ?? 50);
+    setParticipants((current) => Math.min(maximum, Math.max(minimum, current)));
+  }, [s]);
+
+  const minBookingDate = useMemo(() => {
+    const date = new Date();
+    date.setHours(12, 0, 0, 0);
+    date.setDate(date.getDate() + Math.max(0, s?.advance_booking_days ?? 0));
+    return date.toISOString().slice(0, 10);
+  }, [s?.advance_booking_days]);
+
   // Availability: derive year/month from selectedDate or current month
   const now = new Date();
   const availYear = selectedDate ? parseInt(selectedDate.slice(0, 4), 10) : now.getFullYear();
@@ -707,8 +721,9 @@ export default function MarketplaceServicePage() {
                 <input
                   type="date"
                   value={selectedDate}
+                  min={minBookingDate}
                   onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(""); }}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted border border-border text-sm font-['Be_Vietnam_Pro'] text-foreground focus:outline-none focus:border-[#cf96ff]/40 transition-colors [color-scheme:light] dark:[color-scheme:dark]"
+                  className="block h-12 min-h-12 w-full min-w-0 appearance-none pl-10 pr-4 rounded-xl bg-muted border border-border text-sm font-['Be_Vietnam_Pro'] text-foreground text-left focus:outline-none focus:border-[#cf96ff]/40 transition-colors [color-scheme:light] dark:[color-scheme:dark]"
                 />
               </div>
             </div>
@@ -942,9 +957,9 @@ export default function MarketplaceServicePage() {
                   <input
                     type="date"
                     value={selectedDate}
-                    min={new Date().toISOString().slice(0, 10)}
+                    min={minBookingDate}
                     onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(""); }}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-muted border border-border text-sm font-['Be_Vietnam_Pro'] text-foreground focus:outline-none focus:border-[#cf96ff]/40 transition-colors [color-scheme:light] dark:[color-scheme:dark]"
+                    className="block h-12 min-h-12 w-full min-w-0 appearance-none pl-10 pr-4 rounded-xl bg-muted border border-border text-sm font-['Be_Vietnam_Pro'] text-foreground text-left focus:outline-none focus:border-[#cf96ff]/40 transition-colors [color-scheme:light] dark:[color-scheme:dark]"
                   />
                 </div>
               </div>

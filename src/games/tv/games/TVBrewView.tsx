@@ -188,17 +188,22 @@ export default function TVBrewView({ gameState }: Props) {
     return undefined;
   }, [pourSeq, reduce]);
 
+  const drawSeq = Number(drawnCard?.seq ?? 0);
+  const drawId = typeof drawnCard?.id === 'string' || drawnCard?.id === null ? drawnCard.id : null;
+  const drawOutcome = typeof drawnCard?.outcome === 'string' ? drawnCard.outcome : undefined;
   const prevDraw = useRef<number | null>(null);
   const [showDraw, setShowDraw] = useState<typeof drawnCard>(null);
   useEffect(() => {
-    const seq = Number(drawnCard?.seq ?? 0);
-    if (prevDraw.current === null) { prevDraw.current = seq; return undefined; }
-    if (!drawnCard || seq <= prevDraw.current) return undefined;
-    prevDraw.current = seq;
-    setShowDraw(drawnCard);
-    const id = setTimeout(() => setShowDraw(null), reduce ? 360 : 1050);
+    if (prevDraw.current === null) { prevDraw.current = drawSeq; return undefined; }
+    if (drawSeq <= prevDraw.current) return undefined;
+    prevDraw.current = drawSeq;
+    setShowDraw({ id: drawId, seq: drawSeq, outcome: drawOutcome });
+    // TV-State kommt mehrmals pro Sekunde als neues Objekt. Darum haengt dieser
+    // Effekt nur an stabilen Kartenwerten: sonst raeumt jeder Status-Puls den
+    // Timer wieder ab und die grosse Zutat bleibt endlos ueber dem Spiel liegen.
+    const id = setTimeout(() => setShowDraw(null), reduce ? 420 : 1800);
     return () => clearTimeout(id);
-  }, [drawnCard, reduce]);
+  }, [drawId, drawOutcome, drawSeq, reduce]);
 
   const cols = Math.max(1, players.length);
   const Wortmarke = skin === 'bar' ? Martini : FlaskConical;

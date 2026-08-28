@@ -162,6 +162,20 @@ export default function NativeServiceDetailScreen() {
     });
   }, []);
 
+  useEffect(() => {
+    if (!s) return;
+    const minimum = Math.max(1, s.min_participants ?? 1);
+    const maximum = Math.max(minimum, s.max_participants ?? 50);
+    setParticipants((current) => Math.min(maximum, Math.max(minimum, current)));
+  }, [s]);
+
+  const minBookingDate = useMemo(() => {
+    const date = new Date();
+    date.setHours(12, 0, 0, 0);
+    date.setDate(date.getDate() + Math.max(0, s?.advance_booking_days ?? 0));
+    return date.toISOString().slice(0, 10);
+  }, [s?.advance_booking_days]);
+
   const now = new Date();
   const availYear = selectedDate ? parseInt(selectedDate.slice(0, 4), 10) : now.getFullYear();
   const availMonth = selectedDate ? parseInt(selectedDate.slice(5, 7), 10) - 1 : now.getMonth();
@@ -542,8 +556,9 @@ export default function NativeServiceDetailScreen() {
               <input
                 type="date"
                 value={selectedDate}
+                min={minBookingDate}
                 onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(""); }}
-                className="appearance-none block w-full min-w-0 pl-9 pr-3 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground text-left focus:outline-none focus:border-primary/40 transition-colors [color-scheme:light] dark:[color-scheme:dark]"
+                className="appearance-none block h-12 min-h-12 w-full min-w-0 pl-9 pr-3 rounded-xl bg-background border border-border text-sm text-foreground text-left focus:outline-none focus:border-primary/40 transition-colors [color-scheme:light] dark:[color-scheme:dark]"
               />
             </div>
           </div>

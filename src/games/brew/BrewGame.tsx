@@ -28,7 +28,7 @@
  * zwei getrennte Zustände statt einem einzigen Stapel.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { FlaskConical, Martini, ArrowLeft, Volume2, VolumeX, Sparkles, Flame } from "lucide-react";
@@ -38,6 +38,7 @@ import { useDrinkingMode } from "@/hooks/useDrinkingMode";
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { useBackGuard } from "@/lib/back-guard";
+import { NativeOverlayPortal } from "@/components/native/NativeOverlayPortal";
 import { PlayerSetup, type PlayerSetupPlayer } from "../ui/PlayerSetup";
 import { useInitialRoster } from "../ui/useInitialRoster";
 import { getPlayerColor } from "../ui/PlayerAvatars";
@@ -1149,15 +1150,19 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         onDone={() => setDrawnCard(null)}
       />
 
-      {/* Bust / Strafe */}
-      <AnimatePresence>
+      {/*
+        Bust / Strafe. Das Portal ist hier funktional: PageTransition setzt
+        `transform` und wuerde ein normales fixed-Overlay unter der nativen
+        Navigation festhalten. Direkt aushaengen statt AnimatePresence, damit
+        "Weiter" die klickfangende Flaeche garantiert im selben Render entfernt.
+      */}
+      <NativeOverlayPortal>
         {penalty && (
           <motion.div
-            className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto overscroll-contain px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:items-center"
+            className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:items-center"
             style={{ background: "rgba(11,15,26,0.88)" }}
             initial={reduceMotion ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
             role="dialog"
             aria-modal="true"
             aria-labelledby="brew-penalty-title"
@@ -1227,7 +1232,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </NativeOverlayPortal>
 
       {/* "Wird gemischt" — nur wenn drawCard() den Ablagestapel nachmischen musste. */}
       {toast && (
@@ -1238,22 +1243,24 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       )}
 
       {/* Verlassen bestätigen */}
-      {confirmExit && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto px-6 py-4" style={{ background: "rgba(11,15,26,0.85)" }}>
-          <div className="w-full max-w-xs rounded-3xl p-5 text-center" style={{ background: theme.surface }}>
-            <p className="font-black">{t("games.brew.leaveTitle")}</p>
-            <p className="text-xs mt-1" style={{ color: theme.dim }}>{t("games.brew.leaveBody")}</p>
-            <div className="flex gap-2 mt-4">
-              <button onClick={() => setConfirmExit(false)} className="flex-1 h-11 rounded-2xl font-bold" style={{ background: accent, color: theme.bg }}>
-                {t("games.brew.leaveStay")}
-              </button>
-              <button onClick={() => { setConfirmExit(false); navigate("/games"); }} className="flex-1 h-11 rounded-2xl font-bold" style={{ border: `1px solid ${theme.dim}`, color: theme.dim }}>
-                {t("games.brew.leaveGo")}
-              </button>
+      <NativeOverlayPortal>
+        {confirmExit && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center overflow-y-auto px-6 py-4" style={{ background: "rgba(11,15,26,0.85)" }}>
+            <div className="w-full max-w-xs rounded-3xl p-5 text-center" style={{ background: theme.surface }}>
+              <p className="font-black">{t("games.brew.leaveTitle")}</p>
+              <p className="text-xs mt-1" style={{ color: theme.dim }}>{t("games.brew.leaveBody")}</p>
+              <div className="flex gap-2 mt-4">
+                <button onClick={() => setConfirmExit(false)} className="flex-1 h-11 rounded-2xl font-bold" style={{ background: accent, color: theme.bg }}>
+                  {t("games.brew.leaveStay")}
+                </button>
+                <button onClick={() => { setConfirmExit(false); navigate("/games"); }} className="flex-1 h-11 rounded-2xl font-bold" style={{ border: `1px solid ${theme.dim}`, color: theme.dim }}>
+                  {t("games.brew.leaveGo")}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </NativeOverlayPortal>
     </div>
   );
 }

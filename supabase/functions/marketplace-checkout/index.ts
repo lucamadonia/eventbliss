@@ -24,15 +24,19 @@ function cleanText(value: unknown, maxLength: number): string {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 }
 
-async function optionalUser(req: Request, supabaseUrl: string, anonKey: string): Promise<User | null> {
+async function optionalUser(
+  req: Request,
+  supabaseAdmin: ReturnType<typeof createClient>,
+): Promise<User | null> {
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) return null;
 
-  const userClient = createClient(supabaseUrl, anonKey, {
-    global: { headers: { Authorization: authHeader } },
-    auth: { persistSession: false },
-  });
-  const { data, error } = await userClient.auth.getUser();
+  const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+  if (!token) return null;
+
+  // The service client can verify the supplied user JWT without relying on
+  // SUPABASE_ANON_KEY being present in the Edge runtime.
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
   return error ? null : data.user;
 }
 
@@ -44,8 +48,6 @@ serve(async (req) => {
   const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
   const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-  const anonKey = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
-
   if (!stripeKey || !supabaseUrl || !supabaseServiceKey) {
     logStep("ERROR", { message: "Missing server configuration" });
     return json(corsHeaders, { error: "Server configuration error" }, 500);
@@ -58,7 +60,7 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const user = await optionalUser(req, supabaseUrl, anonKey);
+    const user = await optionalUser(req, supabaseAdmin);
     const isGuestCreation = body?.action === "create_guest_booking";
     const bookingLanguage = cleanText(body?.locale, 2).toLowerCase() || null;
 
