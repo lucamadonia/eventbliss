@@ -48,43 +48,43 @@ export interface GlassShape {
 
 export const GLASS_SHAPES: Record<GlassShapeId, GlassShape> = {
   martini: {
-    id: "martini", skin: "bar", aspect: 1.26, wall: 3.0,
-    bowl: [{ y: 0.06, hw: 46 }, { y: 0.25, hw: 25 }, { y: 0.44, hw: 3 }],
-    cavity: { top: 0.085, bottom: 0.425 },
-    stem: { top: 0.44, bottom: 0.88, hw: 2.5 },
-    foot: { cy: 0.90, rx: 26, ry: 4.5 },
+    id: "martini", skin: "bar", aspect: 1.341, wall: 3.0,
+    bowl: [{ y: 0.01, hw: 49 }, { y: 0.20, hw: 27 }, { y: 0.405, hw: 3 }],
+    cavity: { top: 0.035, bottom: 0.39 },
+    stem: { top: 0.405, bottom: 0.90, hw: 2.5 },
+    foot: { cy: 0.955, rx: 27, ry: 4.5 },
     displayScale: 1.15, flatFloor: false,
   },
   coupe: {
-    id: "coupe", skin: "bar", aspect: 1.03, wall: 3.0,
-    bowl: [{ y: 0.06, hw: 46 }, { y: 0.18, hw: 43 }, { y: 0.32, hw: 31 }, { y: 0.41, hw: 11 }, { y: 0.43, hw: 6 }],
-    cavity: { top: 0.085, bottom: 0.405 },
-    stem: { top: 0.43, bottom: 0.84, hw: 2.8, knob: { y: 0.65, rx: 5.5, ry: 4 } },
-    foot: { cy: 0.91, rx: 27, ry: 5.0 },
+    id: "coupe", skin: "bar", aspect: 1.258, wall: 3.0,
+    bowl: [{ y: 0.01, hw: 49 }, { y: 0.10, hw: 46 }, { y: 0.20, hw: 34 }, { y: 0.285, hw: 8 }],
+    cavity: { top: 0.035, bottom: 0.265 },
+    stem: { top: 0.285, bottom: 0.86, hw: 2.8, knob: { y: 0.58, rx: 5.5, ry: 4 } },
+    foot: { cy: 0.94, rx: 29, ry: 5.0 },
     displayScale: 1.15, flatFloor: false,
   },
   highball: {
-    id: "highball", skin: "bar", aspect: 2.18, wall: 3.2,
-    bowl: [{ y: 0.03, hw: 43 }, { y: 0.48, hw: 42 }, { y: 0.70, hw: 41 }, { y: 0.84, hw: 39 }, { y: 0.965, hw: 34 }],
+    id: "highball", skin: "bar", aspect: 2.532, wall: 3.2,
+    bowl: [{ y: 0.01, hw: 49 }, { y: 0.40, hw: 48 }, { y: 0.64, hw: 47 }, { y: 0.82, hw: 45 }, { y: 0.99, hw: 40 }],
     // Das generierte Gefaess hat unter dem Glasraum einen ornamentierten
     // Sockel. Fluessigkeit endet deshalb sichtbar VOR der Metallfassung.
-    cavity: { top: 0.065, bottom: 0.70 },
+    cavity: { top: 0.035, bottom: 0.80 },
     displayScale: 1.0, flatFloor: true,
   },
   tumbler: {
-    id: "tumbler", skin: "bar", aspect: 0.92, wall: 3.6,
-    bowl: [{ y: 0.05, hw: 45 }, { y: 0.48, hw: 44 }, { y: 0.955, hw: 43 }],
+    id: "tumbler", skin: "bar", aspect: 1.128, wall: 3.6,
+    bowl: [{ y: 0.01, hw: 49 }, { y: 0.48, hw: 48 }, { y: 0.99, hw: 47 }],
     // Der dicke Massivboden ist das Kennzeichen eines Tumblers — deshalb
     // endet der Innenraum deutlich ueber dem Glasboden.
-    cavity: { top: 0.075, bottom: 0.56 },
+    cavity: { top: 0.04, bottom: 0.59 },
     displayScale: 1.0, flatFloor: true,
   },
   sour: {
-    id: "sour", skin: "bar", aspect: 1.20, wall: 3.0,
-    bowl: [{ y: 0.05, hw: 45 }, { y: 0.18, hw: 44 }, { y: 0.34, hw: 36 }, { y: 0.49, hw: 12 }],
-    cavity: { top: 0.08, bottom: 0.475 },
-    stem: { top: 0.49, bottom: 0.83, hw: 4.6, knob: { y: 0.62, rx: 6.5, ry: 4.8 } },
-    foot: { cy: 0.91, rx: 28, ry: 5.0 },
+    id: "sour", skin: "bar", aspect: 1.510, wall: 3.0,
+    bowl: [{ y: 0.01, hw: 49 }, { y: 0.15, hw: 46 }, { y: 0.29, hw: 34 }, { y: 0.40, hw: 8 }],
+    cavity: { top: 0.035, bottom: 0.37 },
+    stem: { top: 0.40, bottom: 0.86, hw: 4.6, knob: { y: 0.55, rx: 6.5, ry: 4.8 } },
+    foot: { cy: 0.94, rx: 29, ry: 5.0 },
     displayScale: 1.12, flatFloor: false,
   },
 

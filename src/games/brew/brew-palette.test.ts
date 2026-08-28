@@ -7,7 +7,7 @@
  */
 import { describe, expect, it } from "vitest";
 import { INGREDIENTS, INGREDIENT_IDS, RECIPES_BY_LENGTH, type Skin } from "./brew-content";
-import { BREW_PALETTES, brewRadius, hueOf, layerColor, luminanceOf } from "./brew-palette";
+import { BREW_PALETTES, brewRadius, hueOf, layerColor, luminanceOf, mixLiquidColors } from "./brew-palette";
 
 const SKINS: Skin[] = ["bar", "brew"];
 const ALLE_REZEPTE = [...RECIPES_BY_LENGTH[5], ...RECIPES_BY_LENGTH[6], ...RECIPES_BY_LENGTH[7]];
@@ -119,5 +119,22 @@ describe("layerColor", () => {
     const vorher = INGREDIENT_IDS.map((id) => INGREDIENTS[id].color);
     for (const skin of SKINS) for (const id of INGREDIENT_IDS) layerColor(INGREDIENTS[id].color, skin, 2, 5);
     expect(INGREDIENT_IDS.map((id) => INGREDIENTS[id].color)).toEqual(vorher);
+  });
+});
+
+describe("mixLiquidColors", () => {
+  it("mischt Rot und Blau sichtbar zu Violett", () => {
+    expect(mixLiquidColors(["#ff0000", "#0000ff"])).toBe("#800080");
+  });
+
+  it("bildet das Mischverhaeltnis ab", () => {
+    expect(mixLiquidColors(["#ff0000", "#0000ff", "#ff8000"])).toBe("#aa2b55");
+    expect(mixLiquidColors(["#ff0000", "#ff0000", "#0000ff"])).toBe("#aa0055");
+  });
+
+  it("mischt die echten Zutatenfarben deterministisch", () => {
+    const colors = ["redFruit", "base2", "sweetFruit"].map((id) => INGREDIENTS[id as keyof typeof INGREDIENTS].color);
+    expect(mixLiquidColors(colors)).toMatch(HEX);
+    expect(mixLiquidColors(colors)).toBe(mixLiquidColors(colors));
   });
 });

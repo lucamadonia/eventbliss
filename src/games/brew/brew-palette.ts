@@ -89,6 +89,20 @@ export const brewRadius = { xs: 8, sm: 12, md: 18, lg: 24, xl: 32 } as const;
 
 interface Hsl { h: number; s: number; l: number }
 
+interface Rgb { r: number; g: number; b: number }
+
+function hexToRgb(hex: string): Rgb {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return { r: 128, g: 128, b: 128 };
+  const n = parseInt(m[1], 16);
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+function rgbToHex({ r, g, b }: Rgb): string {
+  const channel = (value: number) => Math.round(Math.min(255, Math.max(0, value))).toString(16).padStart(2, "0");
+  return `#${channel(r)}${channel(g)}${channel(b)}`;
+}
+
 function hexToHsl(hex: string): Hsl {
   const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
   if (!m) return { h: 0, s: 0, l: 0.5 };
@@ -130,7 +144,7 @@ function hslToHex({ h, s, l }: Hsl): string {
 
 /** Kuerzester Weg zwischen zwei Winkeln, damit 350 -> 10 nicht rueckwaerts laeuft. */
 function mixHue(from: number, to: number, weight: number): number {
-  let d = ((to - from + 540) % 360) - 180;
+  const d = ((to - from + 540) % 360) - 180;
   return from + d * weight;
 }
 
@@ -169,6 +183,25 @@ export function layerColor(base: string, skin: Skin, depth: number, total: numbe
   const band = L_BOTTOM + (L_TOP - L_BOTTOM) * (Math.min(depth, stufen) / stufen);
   const eigen = (Math.min(0.9, Math.max(0.2, c.l)) - 0.55) * L_EIGEN * 2;
   return hslToHex({ h, s, l: Math.min(0.82, Math.max(0.14, band + eigen)) });
+}
+
+/**
+ * Sichtbare Mischfarbe aller bereits eingefuellten Zutaten.
+ *
+ * Jede Kennung zaehlt einmal; mehrfach vorkommende Farben wirken damit wie
+ * ein echtes Mischverhaeltnis. Die Mischung erfolgt kanalweise in sRGB:
+ * reines Rot + reines Blau ergibt #800080, eine weitere orange Portion zieht
+ * denselben Drink nachvollziehbar in Richtung Orange. Die einzelnen
+ * Schichten bleiben in `Glass` dennoch erhalten und werden nicht zu einer
+ * einzigen Flaeche nivelliert.
+ */
+export function mixLiquidColors(colors: readonly string[]): string {
+  if (colors.length === 0) return "#000000";
+  const sum = colors.reduce((acc, color) => {
+    const rgb = hexToRgb(color);
+    return { r: acc.r + rgb.r, g: acc.g + rgb.g, b: acc.b + rgb.b };
+  }, { r: 0, g: 0, b: 0 });
+  return rgbToHex({ r: sum.r / colors.length, g: sum.g / colors.length, b: sum.b / colors.length });
 }
 
 /** Helligkeit 0..1 — fuer die Kontrastzusage im Test. */

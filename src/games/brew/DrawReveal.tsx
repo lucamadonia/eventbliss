@@ -16,7 +16,7 @@
  * das `fixed` ab), nur `transform` und `opacity`, und bei Bewegungsarmut
  * kuerzer statt gar nicht.
  */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BellRing } from "lucide-react";
 import { NativeOverlayPortal } from "@/components/native/NativeOverlayPortal";
@@ -62,6 +62,8 @@ export function drawRevealDuration(isBust: boolean, reduced: boolean): number {
 export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, onDone }: DrawRevealProps) {
   const [phase, setPhase] = useState<"flip" | "hold" | "out" | null>(null);
   const [bustAssetReady, setBustAssetReady] = useState(false);
+  const onDoneRef = useRef(onDone);
+  useEffect(() => { onDoneRef.current = onDone; }, [onDone]);
 
   useEffect(() => {
     if (!card) { setPhase(null); return; }
@@ -73,15 +75,15 @@ export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, o
     const timers: number[] = [];
     if (reduced) {
       timers.push(window.setTimeout(() => setPhase("out"), DRAW_BEATS.reducedTotal * 0.6));
-      timers.push(window.setTimeout(() => { setPhase(null); onDone(); }, DRAW_BEATS.reducedTotal));
+      timers.push(window.setTimeout(() => { setPhase(null); onDoneRef.current(); }, DRAW_BEATS.reducedTotal));
     } else {
       const hold = isBust ? DRAW_BEATS.holdBust : DRAW_BEATS.hold;
       timers.push(window.setTimeout(() => setPhase("hold"), DRAW_BEATS.flip));
       timers.push(window.setTimeout(() => setPhase("out"), DRAW_BEATS.flip + hold));
-      timers.push(window.setTimeout(() => { setPhase(null); onDone(); }, drawRevealDuration(isBust, false)));
+      timers.push(window.setTimeout(() => { setPhase(null); onDoneRef.current(); }, drawRevealDuration(isBust, false)));
     }
     return () => timers.forEach((t) => window.clearTimeout(t));
-  }, [bustAssetReady, card, reduced, onDone]);
+  }, [bustAssetReady, card, reduced]);
 
   const isBust = card?.id === null || card?.outcome === "bust";
   const isHit = card?.outcome === "hit";

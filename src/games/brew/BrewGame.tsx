@@ -311,6 +311,11 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   // Laeuft nur beim Gastgeber. `recordDrink()` steht hier bewusst NICHT — das
   // macht jedes Geraet fuer sich, siehe den Effekt weiter unten.
   const triggerPenalty = useCallback(() => {
+    // Die Bust-Karte bleibt bis hier als Aktionssperre im Zustand. Ohne das
+    // gab es zwischen Reveal-Ende und Sperrstunde ein kurzes Zeitfenster, in
+    // dem bereits die naechste Zutat gezogen werden konnte und dann vor dem
+    // Strafdialog liegen blieb.
+    setDrawnCard(null);
     if (skin === "bar") {
       setPenalty({ kind: "sip" });
     } else {
@@ -1147,7 +1152,9 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         verdictLabel={drawnCard?.outcome === "hit"
           ? t("games.brew.drawHit")
           : drawnCard?.outcome === "miss" ? t("games.brew.drawMiss") : undefined}
-        onDone={() => setDrawnCard(null)}
+        onDone={() => {
+          if (drawnCard?.outcome !== "bust") setDrawnCard(null);
+        }}
       />
 
       {/*
@@ -1157,9 +1164,10 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         "Weiter" die klickfangende Flaeche garantiert im selben Render entfernt.
       */}
       <NativeOverlayPortal>
-        {penalty && (
+        {penalty && (isMyTurn || isHost) && (
           <motion.div
-            className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto overscroll-contain px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:items-center"
+            data-testid="brew-penalty-overlay"
+            className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden overscroll-none px-3 pb-[max(.75rem,env(safe-area-inset-bottom))] pt-[max(.75rem,env(safe-area-inset-top))]"
             style={{ background: "rgba(11,15,26,0.88)" }}
             initial={reduceMotion ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1168,8 +1176,12 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
             aria-labelledby="brew-penalty-title"
           >
             <motion.div
-              className="relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-xs overflow-y-auto overscroll-contain rounded-3xl p-5 text-center"
-              style={{ background: theme.surface }}
+              className="relative flex w-full max-w-xs flex-col overflow-hidden rounded-3xl text-center"
+              style={{
+                background: theme.surface,
+                color: theme.text,
+                maxHeight: "calc(100dvh - max(1.5rem, env(safe-area-inset-top)) - max(1.5rem, env(safe-area-inset-bottom)))",
+              }}
               initial={reduceMotion ? { scale: 1, opacity: 1 } : { scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
@@ -1177,13 +1189,14 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
               <button
                 type="button"
                 onClick={() => setConfirmExit(true)}
-                className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full border"
+                className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full border"
                 style={{ borderColor: `${theme.dim}66`, color: theme.text, background: `${theme.bg}cc` }}
                 aria-label={t("games.brew.leave")}
               >
                 <ArrowLeft className="h-5 w-5" />
               </button>
 
+              <div className="min-h-0 overflow-y-auto overscroll-contain px-5 pb-2 pt-5">
               <p id="brew-penalty-title" className="px-9 text-2xl font-black">
                 {skin === "brew" ? t("games.brew.bustTitleBrew") : t("games.brew.bustTitleBar")}
               </p>
@@ -1211,24 +1224,27 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
 
               {/* Weiter darf nur, wer die Strafe hat — sonst klickt ein Zuschauer
                   den Zug der anderen weg. */}
-              {(isMyTurn || isHost) && (
+              </div>
+              <div className="shrink-0 border-t border-white/10 bg-black/10 px-5 pb-5 pt-3">
                 <button
+                  type="button"
+                  data-testid="brew-penalty-continue"
                   onClick={() => act("penalty", {}, confirmPenalty)}
-                  className="mt-5 w-full h-12 rounded-2xl font-black"
+                  className="h-12 w-full rounded-2xl font-black"
                   style={{ background: accent, color: theme.bg }}
                 >
                   {t("games.brew.bustContinue")}
                 </button>
-              )}
 
               <button
                 type="button"
                 onClick={() => setConfirmExit(true)}
-                className={`${isMyTurn || isHost ? "mt-2" : "mt-5"} h-11 w-full rounded-2xl border font-bold`}
+                className="mt-2 h-11 w-full rounded-2xl border font-bold"
                 style={{ borderColor: `${theme.dim}80`, color: theme.text }}
               >
                 {t("games.brew.leave")}
               </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

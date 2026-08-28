@@ -26,13 +26,13 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useAmbientMotion } from "@/lib/useAmbientMotion";
 import { INGREDIENTS, type IngredientId, type Skin } from "./brew-content";
-import { BREW_PALETTES, layerColor, type BrewPalette } from "./brew-palette";
+import { BREW_PALETTES, layerColor, mixLiquidColors, type BrewPalette } from "./brew-palette";
 import {
   DEFAULT_SHAPE, GLASS_SHAPES, bandBoundaries, hwInnerAt, hwOuterAt, unitHeight,
   type GlassShape, type GlassShapeId,
 } from "./glass-shapes";
 import { PourStream, Splash, FinishSparkle } from "./BrewFX";
-import { BAR_GLASS_ASSETS } from "./glass-assets";
+import { BAR_GLASS_ASSETS, BAR_GLASS_ASSET_FRAMES } from "./glass-assets";
 
 /**
  * Wo der Glashals liegt, als Anteil der Gesamthoehe.
@@ -169,6 +169,9 @@ export function Glass({
   })), [filled, total, skin, uid, grenzen]);
 
   const topColor = layers.length ? layers[layers.length - 1].color : null;
+  const mixtureColor = filled.length
+    ? mixLiquidColors(filled.slice(0, total).map((id) => INGREDIENTS[id].color))
+    : null;
   /** Hoehe des Pegels im Einheitsraum. */
   const pegel = grenzen[fillCount];
 
@@ -183,12 +186,16 @@ export function Glass({
       setNewFrom(prevCountRef.current);
       setSplashTrigger((n) => n + 1);
       setPouring(true);
-      const id = window.setTimeout(() => setPouring(false), 500);
+      const added = filled.length - prevCountRef.current;
+      const pourMs = skin === "bar"
+        ? Math.min(1800, Math.max(650, arrivalDelay + 480 + added * layerStagger))
+        : 500;
+      const id = window.setTimeout(() => setPouring(false), pourMs);
       prevCountRef.current = filled.length;
       return () => window.clearTimeout(id);
     }
     prevCountRef.current = filled.length;
-  }, [filled.length]);
+  }, [filled.length, arrivalDelay, layerStagger, skin]);
 
   // Funkeln genau EINMAL beim Uebergang zu "fertig".
   const [finishTrigger, setFinishTrigger] = useState(0);
@@ -206,10 +213,21 @@ export function Glass({
   const zeigePerlen = bubbles && ambient && !reduceMotion && recipeNeeds.includes("fizz");
   const premium = quality === "hero";
   const showSurfaceMotion = premium && ambient && !reduceMotion && fillCount > 0;
-  const tensionGlow = intensity === 3 ? pal.bad : topColor ?? pal.accent;
+  const tensionGlow = intensity === 3
+    ? pal.bad
+    : skin === "bar" ? mixtureColor ?? topColor ?? pal.accent : topColor ?? pal.accent;
   const generatedAsset = skin === "bar"
     ? BAR_GLASS_ASSETS[form.id as keyof typeof BAR_GLASS_ASSETS]
     : undefined;
+  const generatedFrame = skin === "bar"
+    ? BAR_GLASS_ASSET_FRAMES[form.id as keyof typeof BAR_GLASS_ASSET_FRAMES]
+    : undefined;
+  const generatedPlacement = generatedFrame ? {
+    x: (-generatedFrame.x / generatedFrame.width) * 100,
+    y: (-generatedFrame.y / generatedFrame.height) * H,
+    width: (generatedFrame.sourceWidth / generatedFrame.width) * 100,
+    height: (generatedFrame.sourceHeight / generatedFrame.height) * H,
+  } : null;
   const sizing = height != null
     ? { height, width: "auto", aspectRatio: `1 / ${form.aspect}`, display: "inline-block" }
     : { width: width ?? SIZE_WIDTH[size], aspectRatio: `1 / ${form.aspect}` };
@@ -344,7 +362,12 @@ export function Glass({
         y: complete && !reduceMotion ? -5 : 0,
         scale: active && premium && !reduceMotion ? [1, 1.008, 1] : 1,
       }}
-      transition={{ type: "spring", stiffness: 200, damping: 14 }}
+      transition={{
+        y: { type: "spring", stiffness: 200, damping: 14 },
+        scale: active && premium && !reduceMotion
+          ? { duration: 1.9, repeat: Infinity, ease: "easeInOut" }
+          : { duration: 0.2 },
+      }}
     >
       <svg viewBox={`0 0 100 ${H}`} width="100%" height="100%" role="img" aria-hidden="true"
         style={{ display: "block", overflow: "visible" }}>
@@ -356,7 +379,8 @@ export function Glass({
               <radialGradient key={l.gradId} id={l.gradId} cx="32%" cy="20%" r="92%">
                 <stop offset="0%" stopColor="rgba(255,255,255,0.78)" />
                 <stop offset="13%" stopColor={oben} />
-                <stop offset="52%" stopColor={l.color} />
+                <stop offset="48%" stopColor={l.color} />
+                <stop offset="72%" stopColor={mixtureColor ?? l.color} />
                 <stop offset="84%" stopColor={unten} />
                 <stop offset="100%" stopColor="rgba(0,0,0,0.62)" />
               </radialGradient>
@@ -396,38 +420,37 @@ export function Glass({
           </radialGradient>
           {topColor && (
             <radialGradient id={`aura-${uid}`}>
-              <stop offset="0" stopColor={topColor} stopOpacity={pal.glowAlpha} />
-              <stop offset="0.5" stopColor={topColor} stopOpacity={pal.glowAlpha * 0.4} />
-              <stop offset="1" stopColor={topColor} stopOpacity="0" />
+              <stop offset="0" stopColor={mixtureColor ?? topColor} stopOpacity={pal.glowAlpha} />
+              <stop offset="0.5" stopColor={mixtureColor ?? topColor} stopOpacity={pal.glowAlpha * 0.4} />
+              <stop offset="1" stopColor={mixtureColor ?? topColor} stopOpacity="0" />
+            </radialGradient>
+          )}
+          {mixtureColor && (
+            <radialGradient id={`mix-${uid}`} cx="50%" cy="58%" r="68%">
+              <stop offset="0" stopColor="rgba(255,255,255,.58)" />
+              <stop offset="0.24" stopColor={topColor ?? mixtureColor} />
+              <stop offset="0.72" stopColor={mixtureColor} />
+              <stop offset="1" stopColor={mixtureColor} stopOpacity="0" />
             </radialGradient>
           )}
           <clipPath id={`clip-${uid}`}><path d={innen} /></clipPath>
-          {generatedAsset && (
-            <mask id={`generated-vessel-${uid}`} maskUnits="userSpaceOnUse" x="0" y="0" width="100" height={H}>
+          {generatedAsset && generatedPlacement && (
+            <mask
+              id={`generated-alpha-${uid}`}
+              maskUnits="userSpaceOnUse"
+              maskContentUnits="userSpaceOnUse"
+              x="0"
+              y="0"
+              width="100"
+              height={H}
+              style={{ maskType: "luminance" }}
+            >
               <rect x="0" y="0" width="100" height={H} fill="black" />
-              <path d={aussen} fill="white" />
-              {form.stem && (
-                <rect x={50 - form.stem.hw * 2.2} y={form.stem.top * H}
-                  width={form.stem.hw * 4.4} height={(form.stem.bottom - form.stem.top) * H}
-                  rx={form.stem.hw * 2.2} fill="white" />
-              )}
-              {form.stem?.knob && (
-                <ellipse cx="50" cy={form.stem.knob.y * H}
-                  rx={form.stem.knob.rx * 1.35} ry={form.stem.knob.ry * 1.35} fill="white" />
-              )}
-              {form.stem && form.foot && (
-                <path
-                  d={`M ${50 - form.stem.hw * 2.2} ${(form.stem.bottom - 0.1) * H}
-                      C ${50 - form.stem.hw * 2.4} ${form.stem.bottom * H}, ${50 - form.foot.rx * 0.9} ${(form.foot.cy - 0.06) * H}, ${50 - form.foot.rx * 1.05} ${(form.foot.cy + 0.045) * H}
-                      L ${50 + form.foot.rx * 1.05} ${(form.foot.cy + 0.045) * H}
-                      C ${50 + form.foot.rx * 0.9} ${(form.foot.cy - 0.06) * H}, ${50 + form.stem.hw * 2.4} ${form.stem.bottom * H}, ${50 + form.stem.hw * 2.2} ${(form.stem.bottom - 0.1) * H} Z`}
-                  fill="white"
-                />
-              )}
-              {form.foot && (
-                <ellipse cx="50" cy={form.foot.cy * H}
-                  rx={form.foot.rx * 1.08} ry={form.foot.ry * 1.75} fill="white" />
-              )}
+              <image
+                href={generatedAsset}
+                {...generatedPlacement}
+                preserveAspectRatio="none"
+              />
             </mask>
           )}
         </defs>
@@ -463,53 +486,48 @@ export function Glass({
           </>
         )}
 
-        {/* 4. Glaskoerper: Schale, Stiel, Knoten, Fuss. */}
-        <path d={aussen} fill="rgba(18,12,31,0.34)" stroke="rgba(255,255,255,0.12)" strokeWidth="2.8" />
-        <path d={aussen} fill={`url(#body-${uid})`} />
-        <path d={aussen} fill={`url(#kante-${uid})`} />
-        {form.stem && (
-          <rect x={50 - form.stem.hw} y={form.stem.top * H}
-            width={form.stem.hw * 2} height={(form.stem.bottom - form.stem.top) * H}
-            rx={form.stem.hw} fill={`url(#body-${uid})`} />
-        )}
-        {form.stem?.knob && (
-          <ellipse cx="50" cy={form.stem.knob.y * H} rx={form.stem.knob.rx} ry={form.stem.knob.ry}
-            fill={`url(#body-${uid})`} />
-        )}
-        {form.foot && (
-          <ellipse cx="50" cy={form.foot.cy * H} rx={form.foot.rx} ry={form.foot.ry}
-            fill={`url(#body-${uid})`} stroke="rgba(255,255,255,0.28)" strokeWidth="0.8" />
-        )}
-
-        {/* GPT-Image-Material liegt in derselben Silhouette wie die
-            Spielfluessigkeit. Die schwarze Renderflaeche wird durch die Maske
-            komplett entfernt; sichtbar bleiben nur Gefaess und Ornamente. */}
-        {generatedAsset && (
-          <image
-            href={generatedAsset}
-            x="0" y="0" width="100" height={H}
-            preserveAspectRatio="none"
-            mask={`url(#generated-vessel-${uid})`}
-            opacity={premium ? 1 : quality === "tv" ? 0.94 : 0.9}
-          />
+        {/* 4. Der technische Glaskoerper ist nur noch der Rueckfall fuer
+            Gewaender ohne GPT-Gefaess. Zwei Koerper zugleich erzeugen das in
+            der iPhone-QA sichtbare "Glas im Glas". */}
+        {!generatedAsset && (
+          <>
+            <path d={aussen} fill="rgba(18,12,31,0.34)" stroke="rgba(255,255,255,0.12)" strokeWidth="2.8" />
+            <path d={aussen} fill={`url(#body-${uid})`} />
+            <path d={aussen} fill={`url(#kante-${uid})`} />
+            {form.stem && (
+              <rect x={50 - form.stem.hw} y={form.stem.top * H}
+                width={form.stem.hw * 2} height={(form.stem.bottom - form.stem.top) * H}
+                rx={form.stem.hw} fill={`url(#body-${uid})`} />
+            )}
+            {form.stem?.knob && (
+              <ellipse cx="50" cy={form.stem.knob.y * H} rx={form.stem.knob.rx} ry={form.stem.knob.ry}
+                fill={`url(#body-${uid})`} />
+            )}
+            {form.foot && (
+              <ellipse cx="50" cy={form.foot.cy * H} rx={form.foot.rx} ry={form.foot.ry}
+                fill={`url(#body-${uid})`} stroke="rgba(255,255,255,0.28)" strokeWidth="0.8" />
+            )}
+          </>
         )}
 
         {/* 5. Fluessigkeit, an den Innenraum geklippt. */}
         <g clipPath={`url(#clip-${uid})`}>
           {layers.map((l, i) => {
             const ziel = bandPath(form, H, l.yTop, l.yBottom);
-            const flach = bandPath(form, H, l.yBottom, l.yBottom);
             // Schluessel NUR die Zutatenkennung: `sortGlassOrder` zieht die
             // Basiszutat nach vorn. Mit `id + y` mounteten sonst ALLE
             // Schichten neu und liefen von unten wieder hoch.
             return reduceMotion ? (
-              <path key={l.id} d={ziel} fill={`url(#${l.gradId})`} />
+              <path key={l.id} data-liquid-layer={l.id} d={ziel} fill={`url(#${l.gradId})`} />
             ) : (
               <motion.path
                 key={l.id}
+                data-liquid-layer={l.id}
+                d={ziel}
                 fill={`url(#${l.gradId})`}
-                initial={{ d: flach }}
-                animate={{ d: ziel }}
+                style={{ transformBox: "fill-box", transformOrigin: "50% 100%" }}
+                initial={{ scaleY: 0.02, opacity: 0.58 }}
+                animate={{ scaleY: 1, opacity: 1 }}
                 transition={{
                   type: "spring", stiffness: 140, damping: 12,
                   delay: i >= newFrom ? (arrivalDelay + (i - newFrom) * layerStagger) / 1000 : 0,
@@ -539,6 +557,41 @@ export function Glass({
               transition={{ duration: 4.8, repeat: showSurfaceMotion ? Infinity : 0, ease: "easeInOut" }}
             />
           )}
+
+          {/* Beim Eingiessen ziehen sich neue Farbe und bestehende Mischung
+              sichtbar ineinander. Die Schichten bleiben darunter lesbar. */}
+          {premium && mixtureColor && fillCount > 1 && (
+            <motion.ellipse
+              cx="50"
+              rx={Math.max(5, hwInnerAt(form, pegel / H) * 0.34)}
+              ry={Math.max(8, (grenzen[0] - pegel) * 0.42)}
+              fill={`url(#mix-${uid})`}
+              style={{ mixBlendMode: "screen" }}
+              initial={false}
+              animate={pouring && !reduceMotion
+                ? { cy: [pegel, (pegel + grenzen[0]) / 2, pegel], x: [-10, 12, -6], scaleX: [0.55, 1.25, 0.72], opacity: [0.15, 0.72, 0.22] }
+                : { cy: (pegel + grenzen[0]) / 2, x: 0, scaleX: 0.8, opacity: 0.16 }}
+              transition={pouring && !reduceMotion
+                ? { duration: 0.9, repeat: 1, ease: "easeInOut" }
+                : { duration: 0.3 }}
+            />
+          )}
+
+          {/* Kurzzeitige Luftblasen bei jedem Guss; Kohlensaeure-Perlen
+              darunter bleiben als eigener, dauerhafter Effekt erhalten. */}
+          {premium && pouring && !reduceMotion && [0, 1, 2, 3, 4, 5, 6].map((i) => (
+            <motion.circle
+              key={`pour-bubble-${splashTrigger}-${i}`}
+              cx={50 + ((i % 4) - 1.5) * 8}
+              r={1.1 + (i % 3) * 0.55}
+              fill="rgba(255,255,255,.68)"
+              stroke={mixtureColor ?? topColor ?? "#fff"}
+              strokeWidth="0.55"
+              initial={{ cy: Math.min(grenzen[0] - 2, pegel + 18 + (i % 3) * 9), opacity: 0, scale: 0.4 }}
+              animate={{ cy: pegel + 1, opacity: [0, 0.9, 0], scale: [0.4, 1.15, 0.75] }}
+              transition={{ duration: 0.65 + (i % 3) * 0.16, delay: i * 0.055, ease: "easeOut" }}
+            />
+          ))}
         </g>
 
         {/* 7. Meniskus: die Ellipse auf der Oberflaeche. Ohne sie sieht die
@@ -546,7 +599,7 @@ export function Glass({
         {topColor && fillCount > 0 && (
           <motion.ellipse
             cx="50" rx={hwInnerAt(form, pegel / H)} ry={Math.max(1.2, hwInnerAt(form, pegel / H) * 0.16)}
-            fill={topColor} stroke="rgba(255,255,255,0.45)" strokeWidth="0.7"
+            fill={mixtureColor ?? topColor} stroke="rgba(255,255,255,0.45)" strokeWidth="0.7"
             initial={false}
             animate={{
               cy: pegel,
@@ -555,12 +608,18 @@ export function Glass({
             }}
             transition={reduceMotion
               ? { duration: 0 }
-              : { type: "spring", stiffness: 140, damping: 12, delay: arrivalDelay / 1000 }}
+              : {
+                  cy: { type: "spring", stiffness: 140, damping: 12, delay: arrivalDelay / 1000 },
+                  scaleX: showSurfaceMotion
+                    ? { duration: 2.1, repeat: Infinity, ease: "easeInOut" }
+                    : { duration: 0.2 },
+                  opacity: { duration: 0.24 },
+                }}
           />
         )}
 
         {/* 8. Bodenellipse — nur bei flachem Boden. */}
-        {form.flatFloor && (
+        {form.flatFloor && !generatedAsset && (
           <ellipse cx="50" cy={form.cavity.bottom * H}
             rx={hwInnerAt(form, form.cavity.bottom)} ry={hwInnerAt(form, form.cavity.bottom) * 0.13}
             fill="rgba(0,0,0,0.3)" />
@@ -571,28 +630,50 @@ export function Glass({
             eine gerade Linie. */}
         {/* Vorderwand liegt ueber der Fluessigkeit und erzeugt echte
             Materialtiefe statt einer blossen Konturlinie. */}
-        <path d={aussen} fill={`url(#front-${uid})`} opacity={premium ? 0.72 : 0.52} />
-        <path d={aussen} fill="none" stroke="rgba(225,232,255,0.62)" strokeWidth={premium ? 1.45 : 1.1} strokeLinejoin="round" />
-        <ellipse cx="50" cy={bowlTop * H} rx={muendungHw} ry={Math.max(1.4, muendungHw * 0.17)}
-          fill={form.id === "kessel" ? "rgba(4,3,8,.9)" : "rgba(10,7,18,0.46)"}
-          stroke={`url(#rim-${uid})`} strokeWidth={form.id === "kessel" ? 4.2 : premium ? 2.1 : 1.4} />
-        <ellipse cx="50" cy={bowlTop * H + 0.8} rx={Math.max(1, muendungHw - form.wall * 0.65)}
-          ry={Math.max(0.8, muendungHw * 0.105)} fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="0.8" />
+        {!generatedAsset && (
+          <>
+            <path d={aussen} fill={`url(#front-${uid})`} opacity={premium ? 0.72 : 0.52} />
+            <path d={aussen} fill="none" stroke="rgba(225,232,255,0.62)" strokeWidth={premium ? 1.45 : 1.1} strokeLinejoin="round" />
+            <ellipse cx="50" cy={bowlTop * H} rx={muendungHw} ry={Math.max(1.4, muendungHw * 0.17)}
+              fill="rgba(10,7,18,0.46)" stroke={`url(#rim-${uid})`}
+              strokeWidth={premium ? 2.1 : 1.4} />
+            <ellipse cx="50" cy={bowlTop * H + 0.8} rx={Math.max(1, muendungHw - form.wall * 0.65)}
+              ry={Math.max(0.8, muendungHw * 0.105)} fill="none" stroke="rgba(255,255,255,0.32)" strokeWidth="0.8" />
+          </>
+        )}
 
         {/* 10. Glanzstreifen an der linken Wand — das eine Detail, das aus
             einer Flaeche ein Glas macht. Folgt der Kontur der Form. */}
-        <path
-          d={wallPath(form, H, form.cavity.top + 0.04, form.cavity.bottom - 0.06,
-            (s, t) => hwOuterAt(s, t) * 0.2, 10)}
-          transform={`translate(${-muendungHw * 0.52} 0)`}
-          fill={premium ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.14)"}
-        />
-        {premium && (
-          <path
-            d={wallPath(form, H, form.cavity.top + 0.1, form.cavity.bottom - 0.14,
-              (s, t) => hwOuterAt(s, t) * 0.085, 8)}
-            transform={`translate(${muendungHw * 0.63} 0)`}
-            fill="rgba(185,205,255,0.12)"
+        {!generatedAsset && (
+          <>
+            <path
+              d={wallPath(form, H, form.cavity.top + 0.04, form.cavity.bottom - 0.06,
+                (s, t) => hwOuterAt(s, t) * 0.2, 10)}
+              transform={`translate(${-muendungHw * 0.52} 0)`}
+              fill={premium ? "rgba(255,255,255,0.25)" : "rgba(255,255,255,0.14)"}
+            />
+            {premium && (
+              <path
+                d={wallPath(form, H, form.cavity.top + 0.1, form.cavity.bottom - 0.14,
+                  (s, t) => hwOuterAt(s, t) * 0.085, 8)}
+                transform={`translate(${muendungHw * 0.63} 0)`}
+                fill="rgba(185,205,255,0.12)"
+              />
+            )}
+          </>
+        )}
+
+        {/* Das GPT-Rendering ist die EINZIGE sichtbare Glaswand. Die
+            Luminanzmaske entfernt die schwarze Studioflaeche; dadurch bleibt
+            die SVG-Fluessigkeit im echten Innenraum sichtbar. */}
+        {generatedAsset && generatedPlacement && (
+          <image
+            data-testid={`brew-generated-glass-${form.id}`}
+            href={generatedAsset}
+            {...generatedPlacement}
+            preserveAspectRatio="none"
+            opacity={premium ? 1 : quality === "tv" ? 0.96 : 0.92}
+            mask={`url(#generated-alpha-${uid})`}
           />
         )}
       </svg>
