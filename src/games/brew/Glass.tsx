@@ -1,7 +1,8 @@
 /**
  * Glass — das Herzstueck von GEBRAEU: ein echtes Gefaess, das sich schichtweise
- * fuellt. Bewusst SVG statt Bilddatei: 30 Rezepte x 2 Gewaender als Grafiken
- * waeren nicht wartbar, ein paar Pfade mit Farbverlaeufen schon.
+ * fuellt. Im Bar-Gewand liefert GPT Image das hochwertige Gefaessmaterial;
+ * die Fuellung bleibt SVG, damit jede Zutat einzeln sichtbar und animierbar
+ * bleibt. Der Kessel nutzt dasselbe Prinzip mit seiner eigenen Bildkomposition.
  *
  * ZEHN FORMEN, EIN VERFAHREN: Die Geometrie steht in `glass-shapes.ts` als
  * Profil. Hier wird nur gezeichnet, nicht entschieden. Aussenkontur und
@@ -31,6 +32,7 @@ import {
   type GlassShape, type GlassShapeId,
 } from "./glass-shapes";
 import { PourStream, Splash, FinishSparkle } from "./BrewFX";
+import { BAR_GLASS_ASSETS } from "./glass-assets";
 
 /**
  * Wo der Glashals liegt, als Anteil der Gesamthoehe.
@@ -66,6 +68,8 @@ export interface GlassProps {
   size?: "sm" | "md" | "lg";
   /** Freie CSS-Breite, z. B. `clamp(56px,7.4vw,132px)`. */
   width?: string | number;
+  /** Freie CSS-Hoehe. Ideal fuer Slots, in denen keine Form abgeschnitten werden darf. */
+  height?: string | number;
   /** Gefaessform. Ohne Angabe die Standardform des Gewands. */
   shape?: GlassShapeId;
   /** Ohne Angabe die Palette des Gewands. */
@@ -120,7 +124,7 @@ function bandPath(shape: GlassShape, H: number, yTop: number, yBottom: number): 
 }
 
 export function Glass({
-  recipeNeeds, filled, skin, size = "md", width, shape, palette,
+  recipeNeeds, filled, skin, size = "md", width, height, shape, palette,
   bubbles = false, fxScale, className, arrivalDelay = 0, layerStagger = 70,
   quality = size === "lg" ? "hero" : "compact", intensity = 0, active = false,
 }: GlassProps) {
@@ -141,7 +145,7 @@ export function Glass({
   // Groesse null rendern.
   const boxRef = useRef<HTMLDivElement>(null);
   const [pxW, setPxW] = useState<number>(() =>
-    typeof width === "number" ? width : LEGACY_PX[size]);
+    typeof width === "number" ? width : typeof height === "number" ? height / form.aspect : LEGACY_PX[size]);
   useEffect(() => {
     if (typeof width === "number") { setPxW(width); return; }
     const el = boxRef.current;
@@ -152,7 +156,7 @@ export function Glass({
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, [width]);
+  }, [width, height]);
   const fx = fxScale ?? pxW / FX_REF_W;
   const pxH = pxW * form.aspect;
 
@@ -203,6 +207,12 @@ export function Glass({
   const premium = quality === "hero";
   const showSurfaceMotion = premium && ambient && !reduceMotion && fillCount > 0;
   const tensionGlow = intensity === 3 ? pal.bad : topColor ?? pal.accent;
+  const generatedAsset = skin === "bar"
+    ? BAR_GLASS_ASSETS[form.id as keyof typeof BAR_GLASS_ASSETS]
+    : undefined;
+  const sizing = height != null
+    ? { height, width: "auto", aspectRatio: `1 / ${form.aspect}`, display: "inline-block" }
+    : { width: width ?? SIZE_WIDTH[size], aspectRatio: `1 / ${form.aspect}` };
 
   /**
    * Der Kessel ist kein aus dem Glasprofil abgeleitetes SVG mehr. Seine alte
@@ -218,7 +228,7 @@ export function Glass({
         ref={boxRef}
         className={className}
         style={{
-          width: width ?? SIZE_WIDTH[size],
+          ...sizing,
           aspectRatio: "1 / 1",
           position: "relative",
           filter: premium
@@ -325,7 +335,7 @@ export function Glass({
       ref={boxRef}
       className={className}
       style={{
-        width: width ?? SIZE_WIDTH[size], position: "relative",
+        ...sizing, position: "relative",
         filter: premium
           ? `drop-shadow(0 18px 22px rgba(0,0,0,.46)) drop-shadow(0 0 ${12 + intensity * 7}px ${tensionGlow}44)`
           : undefined,
@@ -392,6 +402,34 @@ export function Glass({
             </radialGradient>
           )}
           <clipPath id={`clip-${uid}`}><path d={innen} /></clipPath>
+          {generatedAsset && (
+            <mask id={`generated-vessel-${uid}`} maskUnits="userSpaceOnUse" x="0" y="0" width="100" height={H}>
+              <rect x="0" y="0" width="100" height={H} fill="black" />
+              <path d={aussen} fill="white" />
+              {form.stem && (
+                <rect x={50 - form.stem.hw * 2.2} y={form.stem.top * H}
+                  width={form.stem.hw * 4.4} height={(form.stem.bottom - form.stem.top) * H}
+                  rx={form.stem.hw * 2.2} fill="white" />
+              )}
+              {form.stem?.knob && (
+                <ellipse cx="50" cy={form.stem.knob.y * H}
+                  rx={form.stem.knob.rx * 1.35} ry={form.stem.knob.ry * 1.35} fill="white" />
+              )}
+              {form.stem && form.foot && (
+                <path
+                  d={`M ${50 - form.stem.hw * 2.2} ${(form.stem.bottom - 0.1) * H}
+                      C ${50 - form.stem.hw * 2.4} ${form.stem.bottom * H}, ${50 - form.foot.rx * 0.9} ${(form.foot.cy - 0.06) * H}, ${50 - form.foot.rx * 1.05} ${(form.foot.cy + 0.045) * H}
+                      L ${50 + form.foot.rx * 1.05} ${(form.foot.cy + 0.045) * H}
+                      C ${50 + form.foot.rx * 0.9} ${(form.foot.cy - 0.06) * H}, ${50 + form.stem.hw * 2.4} ${form.stem.bottom * H}, ${50 + form.stem.hw * 2.2} ${(form.stem.bottom - 0.1) * H} Z`}
+                  fill="white"
+                />
+              )}
+              {form.foot && (
+                <ellipse cx="50" cy={form.foot.cy * H}
+                  rx={form.foot.rx * 1.08} ry={form.foot.ry * 1.75} fill="white" />
+              )}
+            </mask>
+          )}
         </defs>
 
         {/* 1. Aufsetzschatten — ohne ihn schwebt das Glas im Nichts. */}
@@ -441,6 +479,19 @@ export function Glass({
         {form.foot && (
           <ellipse cx="50" cy={form.foot.cy * H} rx={form.foot.rx} ry={form.foot.ry}
             fill={`url(#body-${uid})`} stroke="rgba(255,255,255,0.28)" strokeWidth="0.8" />
+        )}
+
+        {/* GPT-Image-Material liegt in derselben Silhouette wie die
+            Spielfluessigkeit. Die schwarze Renderflaeche wird durch die Maske
+            komplett entfernt; sichtbar bleiben nur Gefaess und Ornamente. */}
+        {generatedAsset && (
+          <image
+            href={generatedAsset}
+            x="0" y="0" width="100" height={H}
+            preserveAspectRatio="none"
+            mask={`url(#generated-vessel-${uid})`}
+            opacity={premium ? 1 : quality === "tv" ? 0.94 : 0.9}
+          />
         )}
 
         {/* 5. Fluessigkeit, an den Innenraum geklippt. */}

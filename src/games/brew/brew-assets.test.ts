@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { INGREDIENT_IDS, ingredientImage, type Skin } from './brew-content';
 import { playableGames } from '@/lib/playable-games';
+import { BAR_GLASS_ASSETS } from './glass-assets';
+import { BAR_SHAPES } from './glass-shapes';
 
 /**
  * Bindet die Bilddateien an den Code.
@@ -51,5 +53,12 @@ describe('GEBRAEU — Bildbestand', () => {
       }
     }
     expect(fehlt, `fehlende Hintergruende: ${fehlt.join(', ')}`).toEqual([]);
+  });
+
+  it('hat fuer jede Cocktailform ein GPT-Image-Gefaess', () => {
+    const fehlt = BAR_SHAPES
+      .map((shape) => BAR_GLASS_ASSETS[shape])
+      .filter((asset) => !exists(asset));
+    expect(fehlt, `fehlende Glasrenderings: ${fehlt.join(', ')}`).toEqual([]);
   });
 });

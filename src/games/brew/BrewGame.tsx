@@ -852,6 +852,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
                 skin={skin}
                 shape={shapeForRecipe(p.recipe.id, skin)}
                 size="sm"
+                height={skin === "bar" ? 74 : undefined}
                 quality="compact"
                 active={i === activeIdx}
                 // Dieselbe Verzoegerung wie das grosse Glas — sonst fuellt sich
@@ -920,7 +921,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
               skin={skin}
               shape={shapeForRecipe(me.recipe.id, skin)}
               bubbles
-              width="clamp(190px, 56vw, 260px)"
+              width={skin === "brew" ? "clamp(190px, 56vw, 260px)" : undefined}
+              height={skin === "bar" ? "clamp(230px, 38dvh, 292px)" : undefined}
               quality="hero"
               active
               intensity={chainLevel}
@@ -1151,20 +1153,33 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       <AnimatePresence>
         {penalty && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center px-6"
+            className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto overscroll-contain px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1rem,env(safe-area-inset-top))] sm:items-center"
             style={{ background: "rgba(11,15,26,0.88)" }}
             initial={reduceMotion ? { opacity: 1 } : { opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="brew-penalty-title"
           >
             <motion.div
-              className="w-full max-w-xs rounded-3xl p-6 text-center"
+              className="relative my-auto max-h-[calc(100dvh-2rem)] w-full max-w-xs overflow-y-auto overscroll-contain rounded-3xl p-5 text-center"
               style={{ background: theme.surface }}
               initial={reduceMotion ? { scale: 1, opacity: 1 } : { scale: 0.85, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
-              <p className="text-2xl font-black">
+              <button
+                type="button"
+                onClick={() => setConfirmExit(true)}
+                className="absolute right-3 top-3 grid h-10 w-10 place-items-center rounded-full border"
+                style={{ borderColor: `${theme.dim}66`, color: theme.text, background: `${theme.bg}cc` }}
+                aria-label={t("games.brew.leave")}
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+
+              <p id="brew-penalty-title" className="px-9 text-2xl font-black">
                 {skin === "brew" ? t("games.brew.bustTitleBrew") : t("games.brew.bustTitleBar")}
               </p>
               <p className="text-sm mt-1" style={{ color: theme.dim }}>
@@ -1200,6 +1215,15 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
                   {t("games.brew.bustContinue")}
                 </button>
               )}
+
+              <button
+                type="button"
+                onClick={() => setConfirmExit(true)}
+                className={`${isMyTurn || isHost ? "mt-2" : "mt-5"} h-11 w-full rounded-2xl border font-bold`}
+                style={{ borderColor: `${theme.dim}80`, color: theme.text }}
+              >
+                {t("games.brew.leave")}
+              </button>
             </motion.div>
           </motion.div>
         )}
@@ -1215,7 +1239,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
 
       {/* Verlassen bestätigen */}
       {confirmExit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6" style={{ background: "rgba(11,15,26,0.85)" }}>
+        <div className="fixed inset-0 z-[70] flex items-center justify-center overflow-y-auto px-6 py-4" style={{ background: "rgba(11,15,26,0.85)" }}>
           <div className="w-full max-w-xs rounded-3xl p-5 text-center" style={{ background: theme.surface }}>
             <p className="font-black">{t("games.brew.leaveTitle")}</p>
             <p className="text-xs mt-1" style={{ color: theme.dim }}>{t("games.brew.leaveBody")}</p>

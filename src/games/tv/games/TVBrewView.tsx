@@ -465,7 +465,10 @@ export default function TVBrewView({ gameState }: Props) {
                     skin={skin}
                     shape={form}
                     palette={p}
-                    width="clamp(56px, 7.4vw, 132px)"
+                    width={skin === 'brew' ? 'clamp(56px, 7.4vw, 132px)' : undefined}
+                    height={skin === 'bar'
+                      ? (vieleSpieler ? 'min(16vh, 118px)' : 'min(22vh, 176px)')
+                      : undefined}
                     className="relative"
                     quality="tv"
                     active={isActive}
