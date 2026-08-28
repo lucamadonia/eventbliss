@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Star, Clock, MapPin, Share2, Heart, ShieldCheck,
   ChevronRight, Check, AlertTriangle, Minus, Plus, Calendar,
-  Loader2, Lock, Wallet,
+  Loader2, Lock, Wallet, Globe2, ExternalLink,
 } from "lucide-react";
 import { useMarketplaceServiceBySlug, useCreateBooking } from "@/hooks/useMarketplaceServices";
 import { useSEO } from "@/hooks/useSEO";
@@ -60,6 +60,73 @@ const TABS: { key: Tab; label: string }[] = [
 
 function formatPrice(cents: number) {
   return (cents / 100).toFixed(2).replace(".", ",");
+}
+
+function providerWebsiteUrl(value: string | null | undefined) {
+  if (!value) return null;
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
+interface BookingContactFieldsProps {
+  name: string;
+  email: string;
+  phone: string;
+  notes: string;
+  onName: (value: string) => void;
+  onEmail: (value: string) => void;
+  onPhone: (value: string) => void;
+  onNotes: (value: string) => void;
+}
+
+function BookingContactFields({
+  name, email, phone, notes, onName, onEmail, onPhone, onNotes,
+}: BookingContactFieldsProps) {
+  const fieldClass = "w-full px-3 py-2.5 rounded-xl bg-muted border border-border text-sm font-['Be_Vietnam_Pro'] text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-[#cf96ff]/40 transition-colors";
+  return (
+    <div className="space-y-3 pt-1">
+      <div>
+        <p className="text-xs font-semibold font-['Be_Vietnam_Pro'] text-foreground">Deine Buchungsdaten</p>
+        <p className="mt-0.5 text-[11px] font-['Be_Vietnam_Pro'] text-muted-foreground">Direkt buchen — ein Konto ist nicht erforderlich.</p>
+      </div>
+      <div className="grid grid-cols-1 gap-2.5">
+        <input
+          type="text"
+          autoComplete="name"
+          value={name}
+          onChange={(event) => onName(event.target.value)}
+          placeholder="Vor- und Nachname *"
+          maxLength={120}
+          className={fieldClass}
+        />
+        <input
+          type="email"
+          autoComplete="email"
+          value={email}
+          onChange={(event) => onEmail(event.target.value)}
+          placeholder="E-Mail-Adresse *"
+          maxLength={320}
+          className={fieldClass}
+        />
+        <input
+          type="tel"
+          autoComplete="tel"
+          value={phone}
+          onChange={(event) => onPhone(event.target.value)}
+          placeholder="Telefon (optional)"
+          maxLength={40}
+          className={fieldClass}
+        />
+        <textarea
+          value={notes}
+          onChange={(event) => onNotes(event.target.value)}
+          placeholder="Wünsche oder Hinweise (optional)"
+          maxLength={1000}
+          rows={2}
+          className={`${fieldClass} resize-none`}
+        />
+      </div>
+    </div>
+  );
 }
 
 function StarRating({ rating, size = 16 }: { rating: number; size?: number }) {
@@ -168,9 +235,21 @@ export default function MarketplaceServicePage() {
   const [liked, setLiked] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [mobileBookingOpen, setMobileBookingOpen] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerNotes, setCustomerNotes] = useState("");
 
   const { data: s, isLoading, isError } = useMarketplaceServiceBySlug(slug);
   const createBooking = useCreateBooking();
+
+  useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) return;
+      setCustomerName((current) => current || data.user?.user_metadata?.full_name || "");
+      setCustomerEmail((current) => current || data.user?.email || "");
+    });
+  }, []);
 
   // Availability: derive year/month from selectedDate or current month
   const now = new Date();
@@ -297,15 +376,15 @@ export default function MarketplaceServicePage() {
   const handleBook = async () => {
     if (!s) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth?redirect=" + encodeURIComponent(window.location.pathname + window.location.search));
-      return;
-    }
-
     if (!selectedDate || !selectedTime) {
       const { toast } = await import("sonner");
       toast.error("Bitte wähle ein Datum und eine Uhrzeit.");
+      return;
+    }
+
+    if (!customerName.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())) {
+      const { toast } = await import("sonner");
+      toast.error("Bitte gib deinen Namen und eine gültige E-Mail-Adresse ein.");
       return;
     }
 
@@ -324,8 +403,10 @@ export default function MarketplaceServicePage() {
         participantCount: participants,
         unitPriceCents: s.price_cents,
         totalPriceCents: totalPrice,
-        customerName: user.user_metadata?.full_name || user.email || "",
-        customerEmail: user.email || "",
+        customerName: customerName.trim(),
+        customerEmail: customerEmail.trim(),
+        customerPhone: customerPhone.trim() || undefined,
+        customerNotes: customerNotes.trim() || undefined,
         autoConfirm: s.auto_confirm,
         paymentMethod: s.payment_method,
         eventId: eventId || undefined,
@@ -339,10 +420,12 @@ export default function MarketplaceServicePage() {
         // when the sheet closes. Web: plain window.location redirect.
         await openCheckout({
           url: result.checkoutUrl,
-          onFinishPath: result?.id
+          onFinishPath: result.publicPath ?? (result?.id
             ? `/booking-success?booking=${result.id}`
-            : "/my-bookings",
+            : "/my-bookings"),
         });
+      } else if (result?.publicPath) {
+        navigate(result.publicPath);
       } else if (result?.id) {
         navigate(`/booking-success?booking=${result.id}`);
       } else {
@@ -579,6 +662,16 @@ export default function MarketplaceServicePage() {
                   >
                     Profil ansehen
                   </button>
+                  {providerWebsiteUrl(s.agency_website) && (
+                    <a
+                      href={providerWebsiteUrl(s.agency_website)!}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 w-full py-2.5 rounded-xl text-sm font-semibold font-['Be_Vietnam_Pro'] bg-muted border border-border hover:border-[#00e3fd]/40 transition-colors flex items-center justify-center gap-2"
+                    >
+                      <Globe2 size={15} /> Website des Anbieters <ExternalLink size={13} />
+                    </a>
+                  )}
                   <button
                     onClick={() => navigate(`/marketplace/agency/${s.agency_slug}`)}
                     className="mt-2 w-full py-2 rounded-xl text-xs font-['Be_Vietnam_Pro'] text-[#cf96ff] hover:text-foreground transition-colors"
@@ -677,6 +770,17 @@ export default function MarketplaceServicePage() {
                 </div>
               </div>
             )}
+
+            <BookingContactFields
+              name={customerName}
+              email={customerEmail}
+              phone={customerPhone}
+              notes={customerNotes}
+              onName={setCustomerName}
+              onEmail={setCustomerEmail}
+              onPhone={setCustomerPhone}
+              onNotes={setCustomerNotes}
+            />
 
             {/* Total */}
             <div className="flex items-center justify-between pt-3 border-t border-border">
@@ -907,6 +1011,17 @@ export default function MarketplaceServicePage() {
                 </div>
               )}
 
+              <BookingContactFields
+                name={customerName}
+                email={customerEmail}
+                phone={customerPhone}
+                notes={customerNotes}
+                onName={setCustomerName}
+                onEmail={setCustomerEmail}
+                onPhone={setCustomerPhone}
+                onNotes={setCustomerNotes}
+              />
+
               {/* Total */}
               <div className="flex items-center justify-between pt-3 border-t border-border">
                 <span className="text-sm text-muted-foreground font-['Be_Vietnam_Pro']">Gesamt</span>
@@ -940,7 +1055,7 @@ export default function MarketplaceServicePage() {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={handleBook}
-                disabled={isBooking || !selectedDate || !selectedTime}
+                disabled={isBooking || !selectedDate || !selectedTime || !customerName.trim() || !customerEmail.trim()}
                 className="w-full py-3.5 rounded-xl font-bold font-game text-sm bg-gradient-to-r from-[#cf96ff] to-[#00e3fd] text-[#0d0d15] shadow-lg shadow-[#cf96ff]/20 disabled:opacity-50 disabled:cursor-not-allowed flex flex-col items-center justify-center gap-0.5"
               >
                 <span className="flex items-center justify-center gap-2">

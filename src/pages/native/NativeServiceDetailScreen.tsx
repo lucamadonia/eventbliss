@@ -2,12 +2,13 @@
  * NativeServiceDetailScreen — native mobile service detail + booking.
  * Full-bleed hero, tab sections, sticky booking bar.
  */
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, Star, Clock, MapPin, ShieldCheck, Heart, Share2,
   Check, AlertTriangle, Minus, Plus, Calendar, Loader2, ChevronRight,
+  Globe2, ExternalLink,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useMarketplaceServiceBySlug, useCreateBooking } from "@/hooks/useMarketplaceServices";
@@ -57,6 +58,41 @@ type Tab = "info" | "includes" | "reviews" | "agency";
 
 function formatPrice(cents: number) {
   return (cents / 100).toFixed(0);
+}
+
+function providerWebsiteUrl(value: string | null | undefined) {
+  if (!value) return null;
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
+interface BookingContactFieldsProps {
+  name: string;
+  email: string;
+  phone: string;
+  notes: string;
+  onName: (value: string) => void;
+  onEmail: (value: string) => void;
+  onPhone: (value: string) => void;
+  onNotes: (value: string) => void;
+}
+
+function BookingContactFields({
+  name, email, phone, notes, onName, onEmail, onPhone, onNotes,
+}: BookingContactFieldsProps) {
+  const { t } = useTranslation();
+  const fieldClass = "w-full px-3 py-2.5 rounded-xl bg-background border border-border text-sm text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-primary/40";
+  return (
+    <div className="space-y-2.5">
+      <div>
+        <p className="text-xs font-semibold text-foreground">{t("marketplace.bookingContact", "Deine Buchungsdaten")}</p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">{t("marketplace.guestBookingHint", "Direkt buchen — ein Konto ist nicht erforderlich.")}</p>
+      </div>
+      <input type="text" autoComplete="name" value={name} onChange={(event) => onName(event.target.value)} placeholder={t("marketplace.customerName", "Vor- und Nachname *")} maxLength={120} className={fieldClass} />
+      <input type="email" autoComplete="email" value={email} onChange={(event) => onEmail(event.target.value)} placeholder={t("marketplace.customerEmail", "E-Mail-Adresse *")} maxLength={320} className={fieldClass} />
+      <input type="tel" autoComplete="tel" value={phone} onChange={(event) => onPhone(event.target.value)} placeholder={t("marketplace.customerPhone", "Telefon (optional)")} maxLength={40} className={fieldClass} />
+      <textarea value={notes} onChange={(event) => onNotes(event.target.value)} placeholder={t("marketplace.customerNotes", "Wünsche oder Hinweise (optional)")} maxLength={1000} rows={2} className={`${fieldClass} resize-none`} />
+    </div>
+  );
 }
 
 function StarRating({ rating, size = 14 }: { rating: number; size?: number }) {
@@ -110,9 +146,21 @@ export default function NativeServiceDetailScreen() {
   const [liked, setLiked] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [showBookingSheet, setShowBookingSheet] = useState(false);
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerNotes, setCustomerNotes] = useState("");
 
   const { data: s, isLoading, isError } = useMarketplaceServiceBySlug(slug);
   const createBooking = useCreateBooking();
+
+  useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) return;
+      setCustomerName((current) => current || data.user?.user_metadata?.full_name || "");
+      setCustomerEmail((current) => current || data.user?.email || "");
+    });
+  }, []);
 
   const now = new Date();
   const availYear = selectedDate ? parseInt(selectedDate.slice(0, 4), 10) : now.getFullYear();
@@ -137,15 +185,15 @@ export default function NativeServiceDetailScreen() {
   const handleBook = async () => {
     if (!s) return;
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      navigate("/auth?redirect=" + encodeURIComponent(window.location.pathname + window.location.search));
-      return;
-    }
-
     if (!selectedDate || !selectedTime) {
       const { toast } = await import("sonner");
       toast.error("Bitte wähle Datum und Uhrzeit.");
+      return;
+    }
+
+    if (!customerName.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())) {
+      const { toast } = await import("sonner");
+      toast.error(t("marketplace.contactRequired", "Bitte gib deinen Namen und eine gültige E-Mail-Adresse ein."));
       return;
     }
 
@@ -160,8 +208,10 @@ export default function NativeServiceDetailScreen() {
         participantCount: participants,
         unitPriceCents: s.price_cents,
         totalPriceCents: totalPrice,
-        customerName: user.user_metadata?.full_name || user.email || "",
-        customerEmail: user.email || "",
+        customerName: customerName.trim(),
+        customerEmail: customerEmail.trim(),
+        customerPhone: customerPhone.trim() || undefined,
+        customerNotes: customerNotes.trim() || undefined,
         autoConfirm: s.auto_confirm,
         eventId: eventId || undefined,
       });
@@ -173,10 +223,12 @@ export default function NativeServiceDetailScreen() {
         // sync with the real session state.
         await openCheckout({
           url: result.checkoutUrl,
-          onFinishPath: result?.id
+          onFinishPath: result.publicPath ?? (result?.id
             ? `/booking-success?booking=${result.id}`
-            : "/my-bookings",
+            : "/my-bookings"),
         });
+      } else if (result?.publicPath) {
+        navigate(result.publicPath);
       } else if (result?.id) {
         navigate(`/booking-success?booking=${result.id}`);
       } else {
@@ -458,6 +510,16 @@ export default function NativeServiceDetailScreen() {
                 >
                   Profil ansehen <ChevronRight size={13} />
                 </button>
+                {providerWebsiteUrl(s.agency_website) && (
+                  <a
+                    href={providerWebsiteUrl(s.agency_website)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 w-full py-2 rounded-xl text-xs font-semibold bg-foreground/[0.04] border border-border text-foreground flex items-center justify-center gap-1.5"
+                  >
+                    <Globe2 size={13} /> {t("marketplace.providerWebsite", "Website des Anbieters")} <ExternalLink size={11} />
+                  </a>
+                )}
               </motion.div>
             )}
           </motion.div>
@@ -527,6 +589,17 @@ export default function NativeServiceDetailScreen() {
               </div>
             </div>
           )}
+
+          <BookingContactFields
+            name={customerName}
+            email={customerEmail}
+            phone={customerPhone}
+            notes={customerNotes}
+            onName={setCustomerName}
+            onEmail={setCustomerEmail}
+            onPhone={setCustomerPhone}
+            onNotes={setCustomerNotes}
+          />
 
           {/* Total */}
           <div className="flex items-center justify-between pt-2 border-t border-border">

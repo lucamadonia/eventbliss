@@ -111,6 +111,7 @@ export interface MarketplaceService {
   agency_slug: string;
   agency_logo: string | null;
   agency_tier: string;
+  agency_website: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -132,7 +133,7 @@ export function useMarketplaceServices(
 
       // Build base query on approved services
       let query = (supabase.from as any)("marketplace_services")
-        .select("*, agencies!inner(name, slug, logo_url, marketplace_tier)", { count: "exact" })
+        .select("*, agencies!inner(name, slug, logo_url, marketplace_tier, website)", { count: "exact" })
         .eq("status", "approved");
 
       // Apply sort
@@ -224,6 +225,7 @@ export function useMarketplaceServices(
           agency_slug: s.agencies?.slug || "",
           agency_logo: s.agencies?.logo_url || null,
           agency_tier: s.agencies?.marketplace_tier || "starter",
+          agency_website: s.agencies?.website || null,
         };
       });
 
@@ -258,7 +260,7 @@ export function useMarketplaceServiceBySlug(slug: string | undefined) {
     queryFn: async () => {
       // 1. Fetch the service with agency join
       const { data: service, error } = await (supabase.from as any)("marketplace_services")
-        .select("*, agencies!inner(name, slug, logo_url, marketplace_tier, city)")
+        .select("*, agencies!inner(name, slug, logo_url, marketplace_tier, city, website)")
         .eq("slug", slug)
         .eq("status", "approved")
         .maybeSingle();
@@ -310,6 +312,7 @@ export function useMarketplaceServiceBySlug(slug: string | undefined) {
         agency_slug: service.agencies?.slug || "",
         agency_logo: service.agencies?.logo_url || null,
         agency_tier: service.agencies?.marketplace_tier || "starter",
+        agency_website: service.agencies?.website || null,
         agency_city: service.agencies?.city || service.location_city || null,
       };
 
@@ -345,7 +348,51 @@ export function useCreateBooking() {
   return useMutation({
     mutationFn: async (input: CreateBookingInput) => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Du musst eingeloggt sein, um zu buchen.");
+
+      const locale = (i18n.language || "de").slice(0, 2).toLowerCase();
+
+      // Gäste buchen über die serverseitig validierte Edge Function. Preis,
+      // Agentur, Kapazität und Status werden dort aus der Datenbank gelesen —
+      // keine vom Browser gelieferten Geldwerte werden vertraut.
+      if (!user) {
+        const { data: guestData, error: guestError } = await supabase.functions.invoke(
+          "marketplace-checkout",
+          {
+            body: {
+              action: "create_guest_booking",
+              service_id: input.serviceId,
+              booking_date: input.bookingDate,
+              booking_time: input.bookingTime,
+              participant_count: input.participantCount,
+              customer_name: input.customerName,
+              customer_email: input.customerEmail,
+              customer_phone: input.customerPhone || null,
+              customer_notes: input.customerNotes || null,
+              locale,
+            },
+          },
+        );
+
+        if (guestError || guestData?.error) {
+          throw new Error(guestData?.error || guestError?.message || "Die Gastbuchung ist fehlgeschlagen.");
+        }
+
+        try {
+          await supabase.functions.invoke("booking-notify", {
+            body: { type: "confirmation", booking_id: guestData.id, locale },
+          });
+        } catch {
+          // E-Mail-Ausfall darf die bereits erstellte Buchung nicht zurückrollen.
+        }
+
+        return {
+          id: guestData.id as string,
+          booking_number: guestData.booking_number as string,
+          checkoutUrl: guestData.url as string | undefined,
+          paymentMethod: (guestData.paymentMethod || input.paymentMethod || "online") as "online" | "on_site",
+          publicPath: guestData.publicPath as string | undefined,
+        };
+      }
 
       const platformFeeCents = Math.round(input.totalPriceCents * 0.10);
       const agencyPayoutCents = input.totalPriceCents - platformFeeCents;
@@ -364,8 +411,6 @@ export function useCreateBooking() {
 
       // UI language at booking time — used to localise the confirmation +
       // 24h reminder emails (the reminder cron reads it back from this row).
-      const locale = (i18n.language || "de").slice(0, 2).toLowerCase();
-
       const { data, error } = await (supabase.from as any)("marketplace_bookings")
         .insert({
           service_id: input.serviceId,
@@ -431,6 +476,7 @@ export function useCreateBooking() {
         booking_number: booking.booking_number,
         checkoutUrl,
         paymentMethod,
+        publicPath: undefined,
       };
     },
     onSuccess: (data) => {
