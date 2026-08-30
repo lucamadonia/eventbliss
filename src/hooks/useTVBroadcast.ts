@@ -8,6 +8,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { stripTVMessageId, withTVMessageId } from "@/games/tv/tv-wire";
 
 const CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const TV_CODE_KEY = "eb.tv-code";
@@ -35,6 +36,25 @@ function wasActivated(): boolean {
   try { return sessionStorage.getItem(TV_ACTIVE_KEY) === "1"; } catch { return false; }
 }
 
+type TVBroadcastMessage = {
+  type: "broadcast";
+  event: string;
+  payload: Record<string, unknown>;
+};
+
+/** A shared Supabase topic can appear in more than one ref; send it only once. */
+function sendToDistinctChannels(
+  channels: Array<RealtimeChannel | null>,
+  message: TVBroadcastMessage,
+): void {
+  const sent = new Set<RealtimeChannel>();
+  channels.forEach((channel) => {
+    if (!channel || sent.has(channel)) return;
+    sent.add(channel);
+    void channel.send(message);
+  });
+}
+
 export interface TVBroadcastAPI {
   tvCode: string;
   /** Code shown to the user — the online room code when in a room, else the session TV code. */
@@ -58,34 +78,45 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
   const lastLeaderboardRef = useRef<Record<string, unknown> | null>(null);
   /** Buffered drawing segments (QuickDraw) so late-joining TVs don't see a blank canvas. */
   const drawingBufferRef = useRef<Record<string, unknown>[]>([]);
+  const drawingRevisionRef = useRef(0);
   const DRAWING_BUFFER_MAX = 500;
   const activatedRef = useRef(false);
   // supabase.channel() dedupes by topic and returns the EXISTING instance —
   // for online rooms that is useGameRoom's channel. We must never remove a
   // channel we don't own, or we'd kill the multiplayer connection.
   const onlineChannelOwnedRef = useRef(false);
+  const senderIdRef = useRef(`${Date.now().toString(36)}-${generateCode(4)}`);
+  const messageSeqRef = useRef(0);
+  const lastReadyHandledAtRef = useRef(0);
 
   const handleTVReady = useCallback(() => {
+    // The TV announces itself on both compatible channel prefixes. One replay
+    // reaches both listeners, so collapse the mirrored ready burst as well.
+    const now = Date.now();
+    if (now - lastReadyHandledAtRef.current < 250) return;
+    lastReadyHandledAtRef.current = now;
+    const channels = [channelRef.current, gameChannelRef.current, onlineChannelRef.current];
     if (lastStateRef.current) {
       const syncPayload = { type: "broadcast" as const, event: "tv-state-sync", payload: lastStateRef.current };
-      channelRef.current?.send(syncPayload);
-      gameChannelRef.current?.send(syncPayload);
-      onlineChannelRef.current?.send(syncPayload);
+      sendToDistinctChannels(channels, syncPayload);
     }
     // Late-joining TVs also need the current leaderboard — it is only
     // broadcast once on game end, so replay it alongside the state.
     if (lastLeaderboardRef.current) {
       const lbPayload = { type: "broadcast" as const, event: "tv-leaderboard", payload: lastLeaderboardRef.current };
-      channelRef.current?.send(lbPayload);
-      gameChannelRef.current?.send(lbPayload);
-      onlineChannelRef.current?.send(lbPayload);
+      sendToDistinctChannels(channels, lbPayload);
     }
     // Replay accumulated drawing strokes (QuickDraw) in one batch.
     if (drawingBufferRef.current.length > 0) {
-      const drawPayload = { type: "broadcast" as const, event: "tv-drawing-sync", payload: { segments: drawingBufferRef.current } };
-      channelRef.current?.send(drawPayload);
-      gameChannelRef.current?.send(drawPayload);
-      onlineChannelRef.current?.send(drawPayload);
+      const drawPayload = {
+        type: "broadcast" as const,
+        event: "tv-drawing-sync",
+        payload: withTVMessageId(
+          { segments: drawingBufferRef.current },
+          `${senderIdRef.current}:drawing:${drawingRevisionRef.current}`,
+        ),
+      };
+      sendToDistinctChannels(channels, drawPayload);
     }
   }, []);
 
@@ -158,17 +189,27 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
   }, [handleTVReady]);
 
   const broadcastTV = useCallback((event: string, data: Record<string, unknown>) => {
-    const msg = { type: "broadcast" as const, event, payload: data };
-    channelRef.current?.send(msg);
-    gameChannelRef.current?.send(msg);
-    onlineChannelRef.current?.send(msg);
+    // The same logical event may intentionally travel over both compatible
+    // room prefixes. Its shared ID lets the TV collapse those mirror packets.
+    const wireData = withTVMessageId(
+      data,
+      `${senderIdRef.current}:${++messageSeqRef.current}`,
+    );
+    const msg = { type: "broadcast" as const, event, payload: wireData };
+    sendToDistinctChannels(
+      [channelRef.current, gameChannelRef.current, onlineChannelRef.current],
+      msg,
+    );
     if (event === "tv-state" || event === "game-start") {
-      lastStateRef.current = data;
+      lastStateRef.current = wireData;
       if (event === "game-start") drawingBufferRef.current = [];
     } else if (event === "tv-leaderboard") {
-      lastLeaderboardRef.current = data;
+      lastLeaderboardRef.current = wireData;
     } else if (event === "game-end") {
-      lastStateRef.current = { ...(lastStateRef.current || {}), ...data };
+      lastStateRef.current = {
+        ...stripTVMessageId(lastStateRef.current || {}),
+        ...wireData,
+      };
     } else if (event === "tv-drawing") {
       if ((data as { type?: string }).type === "clear") {
         drawingBufferRef.current = [];
@@ -176,6 +217,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
         drawingBufferRef.current.push(data);
         if (drawingBufferRef.current.length > DRAWING_BUFFER_MAX) drawingBufferRef.current.shift();
       }
+      drawingRevisionRef.current++;
     }
   }, []);
 

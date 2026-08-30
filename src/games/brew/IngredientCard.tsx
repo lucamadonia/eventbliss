@@ -14,6 +14,7 @@
  * allen zehn Sprachen bereits gibt — `TVBrewView` benutzte ihn schon als
  * `title`, nur eben unsichtbar.
  */
+import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { ingredientPlate } from "./BrewFX";
 import { INGREDIENTS, ingredientKey, type IngredientId, type Skin } from "./brew-content";
@@ -43,7 +44,7 @@ const MASSE: Record<CardVariant, { width: string; icon: string; emoji: string; r
   chip: { width: "clamp(1.4rem, 2vw, 2.2rem)", icon: "82%", emoji: "clamp(0.8rem,1.2vw,1.1rem)", radius: brewRadius.sm },
 };
 
-export function IngredientCard({
+function IngredientCardImpl({
   id, skin, variant, state = "idle", showName = false, width, palette, className,
 }: IngredientCardProps) {
   const { t } = useTranslation();
@@ -113,3 +114,6 @@ export function IngredientCard({
     </div>
   );
 }
+
+/** Karten ohne geaenderten Zustand bleiben auf dem TV unangetastet. */
+export const IngredientCard = memo(IngredientCardImpl);

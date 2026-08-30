@@ -68,6 +68,25 @@ function TVParticlesImpl({ mood = 'ambient' }: Props) {
 
   const orbClass = `tv-glow-orb${ambient ? '' : ' tv-static'}`;
 
+  // Dedicated TV profile: one static gradient layer, no full-screen blur and
+  // no permanent compositor animation. Mood colors remain visible.
+  if (!ambient) {
+    return (
+      <div
+        className="fixed inset-0 pointer-events-none z-0"
+        aria-hidden
+        data-tv-performance="static-particles"
+        style={{
+          background: [
+            `radial-gradient(circle at 12% 18%, rgba(${moodRgb(config.colors[0])},${config.orbAlpha[0] * 1.25}) 0%, transparent 34%)`,
+            `radial-gradient(circle at 88% 82%, rgba(${moodRgb(config.colors[1])},${config.orbAlpha[1] * 1.35}) 0%, transparent 32%)`,
+            `radial-gradient(circle at 64% 48%, rgba(${moodRgb(config.colors[2])},${config.orbAlpha[2]}) 0%, transparent 27%)`,
+          ].join(','),
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <style>{CSS}</style>

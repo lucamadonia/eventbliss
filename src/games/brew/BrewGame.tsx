@@ -738,15 +738,10 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     bustTrayCount, pourSeq, pourPlan, riskTier, trayHits, chainLevel, pourPreview.awarded,
     audioCue, audioCueSeq, drawnCard, players]);
 
-  // Online sendet NUR der Gastgeber an den Fernseher — acht Geraete haetten
-  // sonst acht widersprüchliche Stroeme. Das ist ein anderer Kanal als
-  // useTVGameBridge darunter; die beiden ueberschneiden sich nicht.
-  useEffect(() => {
-    if (!online || !isHost) return;
-    online.broadcast("tv-state", { game: "brew", ...tvPayload });
-  }, [online, isHost, tvPayload]);
-
-  useTVGameBridge("brew", tvPayload, [phase, activeIdx, tray.length, counter.length, cardsRemaining, audioCueSeq]);
+  // Ein einziger Host-Pfad fuer Offline- und Online-TV. Die Bruecke kennt den
+  // aktiven Raum bereits ueber GamesHub; ein zusaetzlicher direkter Broadcast
+  // lieferte denselben Zustand zweimal an den Fernseher.
+  useTVGameBridge("brew", tvPayload, [tvPayload], !online || isHost);
 
   // =========================================================================
   if (phase === "setup") {

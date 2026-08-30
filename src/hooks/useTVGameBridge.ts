@@ -65,7 +65,9 @@ export function useTVGameBridge(
   gameId: string,
   state: Record<string, unknown>,
   /** Only broadcast when these deps change (prevents spam) */
-  deps: unknown[] = []
+  deps: unknown[] = [],
+  /** Online games mount on every phone; only the authoritative host may cast. */
+  broadcastEnabled = true,
 ) {
   const tv = useTVContext();
   const prevStateRef = useRef<string>("");
@@ -101,7 +103,7 @@ export function useTVGameBridge(
   );
 
   useEffect(() => {
-    if (!tv?.isActive) return;
+    if (!broadcastEnabled || !tv?.isActive) return;
 
     // Serialize current state to detect actual changes
     const serialized = JSON.stringify(state);
@@ -123,7 +125,7 @@ export function useTVGameBridge(
       // `tv-state` ohne `partyNight` ausdruecklich als unveraendert vor.
       ...(partyNight ? { partyNight } : {}),
     });
-  }, [tv, gameId, partyNightJson, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tv, gameId, partyNightJson, broadcastEnabled, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Broadcast game-start when the game first enters a playing phase.
   // Both refs reset when the game returns to setup/lobby ("Play again"
@@ -131,7 +133,7 @@ export function useTVGameBridge(
   const startedRef = useRef(false);
   const endedRef = useRef(false);
   useEffect(() => {
-    if (!tv?.isActive) return;
+    if (!broadcastEnabled || !tv?.isActive) return;
     const phase = state.phase as string | undefined;
     if (phase === "setup" || phase === "lobby") {
       startedRef.current = false;
@@ -153,11 +155,11 @@ export function useTVGameBridge(
       resetTvView();
       tv.broadcastTV("game-start", { game: gameId, ...state });
     }
-  }, [tv, gameId, state.phase]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tv, gameId, state.phase, broadcastEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Broadcast game-end when phase becomes gameOver/result/finished
   useEffect(() => {
-    if (!tv?.isActive) return;
+    if (!broadcastEnabled || !tv?.isActive) return;
     const phase = state.phase as string | undefined;
     if (phase && ["gameOver", "result", "finished", "ended"].includes(phase) && !endedRef.current) {
       endedRef.current = true;
@@ -173,7 +175,7 @@ export function useTVGameBridge(
         });
       }
     }
-  }, [tv, gameId, state.phase]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tv, gameId, state.phase, broadcastEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Party-Wertung (unabhaengig vom Fernseher) ─────────────────────
   // Die Route `/games/:gameId` traegt die Registry-Kennung; die Kennung, die

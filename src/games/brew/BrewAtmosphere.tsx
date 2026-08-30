@@ -81,30 +81,43 @@ export function BrewAtmosphere({ skin, variant }: BrewAtmosphereProps) {
         style={{ background: `radial-gradient(115% 78% at 50% 32%, transparent 38%, ${a(p.bgDeep, "CC")})` }}
       />
 
-      {/* 5 — Zwei statische Farbwaeschen. Vorbild TVOhrwurmView: Farbe ohne
-          Bewegung kostet nichts und traegt die Stimmung. */}
-      <div
-        className="absolute -top-[10%] -left-[10%] w-[34rem] h-[34rem] rounded-full"
-        style={{ background: a(p.accent, "1F"), filter: "blur(90px)" }}
-      />
-      <div
-        className="absolute -bottom-[14%] -right-[12%] w-[34rem] h-[34rem] rounded-full"
-        style={{ background: a(p.accent3, "17"), filter: "blur(90px)" }}
-      />
-
-      {/* 6 — Ein einzelner driftender Farbschleier in der Gewandfarbe.
-          Animiert nur `scaleY` und `opacity`: `y` auf einem 80vmax grossen
-          Element laesst den Compositor eine sehr grosse Flaeche schieben. */}
-      <motion.div
-        className="absolute -top-[20%] left-1/2 w-[80vmax] h-[80vmax] rounded-full"
-        style={{
-          x: "-50%",
-          background: `radial-gradient(circle, ${a(p.accent, "1F")} 0%, transparent 62%)`,
-          filter: "blur(40px)",
-        }}
-        animate={ambient ? { scaleY: [1, 1.08, 1], opacity: [0.55, 0.85, 0.55] } : undefined}
-        transition={ambient ? { duration: 18, repeat: Infinity, ease: "easeInOut" } : undefined}
-      />
+      {istTv ? (
+        /* TV: dieselbe Lichtstimmung als eine statische Verlaufsebene. Drei
+           grosse Blur-Texturen waren auf Smart-TVs dauerhaft teuer. */
+        <div
+          className="absolute inset-0"
+          data-tv-performance="static-brew-atmosphere"
+          style={{
+            background: [
+              `radial-gradient(circle at 7% 8%, ${a(p.accent, "24")} 0%, transparent 34%)`,
+              `radial-gradient(circle at 92% 88%, ${a(p.accent3, "20")} 0%, transparent 34%)`,
+              `radial-gradient(ellipse at 50% 12%, ${a(p.accent, "18")} 0%, transparent 58%)`,
+            ].join(","),
+          }}
+        />
+      ) : (
+        <>
+          {/* Telefon: bestehende Premium-Lichtwaeschen bleiben unveraendert. */}
+          <div
+            className="absolute -top-[10%] -left-[10%] w-[34rem] h-[34rem] rounded-full"
+            style={{ background: a(p.accent, "1F"), filter: "blur(90px)" }}
+          />
+          <div
+            className="absolute -bottom-[14%] -right-[12%] w-[34rem] h-[34rem] rounded-full"
+            style={{ background: a(p.accent3, "17"), filter: "blur(90px)" }}
+          />
+          <motion.div
+            className="absolute -top-[20%] left-1/2 w-[80vmax] h-[80vmax] rounded-full"
+            style={{
+              x: "-50%",
+              background: `radial-gradient(circle, ${a(p.accent, "1F")} 0%, transparent 62%)`,
+              filter: "blur(40px)",
+            }}
+            animate={ambient ? { scaleY: [1, 1.08, 1], opacity: [0.55, 0.85, 0.55] } : undefined}
+            transition={ambient ? { duration: 18, repeat: Infinity, ease: "easeInOut" } : undefined}
+          />
+        </>
+      )}
     </div>
   );
 }

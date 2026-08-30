@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/i18n';
+import { createTVPacketGate, stripTVMessageId } from './tv-wire';
 
 /**
  * Uebernimmt die Sprache des Telefons.
@@ -63,10 +64,45 @@ export function useTVConnection(roomCode: string) {
   const [gameState, setGameStateRaw] = useState<TVState | null>(
     () => lastStateByRoom.get(roomCode) ?? null
   );
-  const setGameState = (next: TVState) => {
-    lastStateByRoom.set(roomCode, next);
-    setGameStateRaw(next);
-  };
+  const initialSignature = gameState ? JSON.stringify(gameState) : '';
+  const committedStateSignatureRef = useRef(initialSignature);
+  const pendingStateRef = useRef<TVState | null>(null);
+  const pendingStateSignatureRef = useRef('');
+  const stateFrameRef = useRef<number | null>(null);
+  /**
+   * Collapse a burst to the newest state once per display frame. Supabase may
+   * deliver compatible channel copies only milliseconds apart; rendering both
+   * would make every transition visibly lag behind on a Smart TV.
+   */
+  const setGameState = useCallback((nextWire: TVState): boolean => {
+    const next = stripTVMessageId(nextWire);
+    const signature = JSON.stringify(next);
+    if (signature === pendingStateSignatureRef.current) return false;
+    if (stateFrameRef.current === null && signature === committedStateSignatureRef.current) return false;
+
+    pendingStateRef.current = next;
+    pendingStateSignatureRef.current = signature;
+    if (stateFrameRef.current !== null) return true;
+
+    const commit = () => {
+      stateFrameRef.current = null;
+      const pending = pendingStateRef.current;
+      const pendingSignature = pendingStateSignatureRef.current;
+      pendingStateRef.current = null;
+      pendingStateSignatureRef.current = '';
+      if (!pending || pendingSignature === committedStateSignatureRef.current) return;
+      committedStateSignatureRef.current = pendingSignature;
+      lastStateByRoom.set(roomCode, pending);
+      setGameStateRaw(pending);
+    };
+
+    if (typeof window.requestAnimationFrame === 'function') {
+      stateFrameRef.current = window.requestAnimationFrame(commit);
+    } else {
+      commit();
+    }
+    return true;
+  }, [roomCode]);
   const [leaderboard, setLeaderboard] = useState<TVScore[]>([]);
   const [drawing, setDrawing] = useState<unknown[]>([]);
   const [gameStarted, setGameStarted] = useState(() => startedRooms.has(roomCode));
@@ -77,6 +113,7 @@ export function useTVConnection(roomCode: string) {
   useEffect(() => {
     let bothSubscribed = 0;
     const totalChannels = 2;
+    const acceptPacket = createTVPacketGate();
 
     // Subscribe to BOTH channel prefixes so TV works for
     // online rooms (game-room:) AND offline TV mode (tv-room:)
@@ -116,61 +153,64 @@ export function useTVConnection(roomCode: string) {
       setPlayers(sorted.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar, isReady: p.isReady })));
     });
 
-    channel.on('broadcast', { event: 'tv-state' }, ({ payload }) => {
-      setGameState(payload as TVState);
-      applyPhoneLanguage(payload);
+    const handleTVState = (payload: unknown) => {
+      if (!acceptPacket(payload)) return;
+      const accepted = setGameState(payload as TVState);
+      if (accepted) applyPhoneLanguage(payload);
       // Auto-set gameStarted if we receive any tv-state — handles case where
       // TV connected AFTER game-start was broadcast (timing issue)
       markGameStarted();
-    });
-    channel.on('broadcast', { event: 'tv-leaderboard' }, ({ payload }) => { setLeaderboard(((payload as any).scores || []) as TVScore[]); });
-    channel.on('broadcast', { event: 'tv-drawing' }, ({ payload }) => {
-      if ((payload as any).type === 'clear') setDrawing([]);
-      else setDrawing(prev => [...prev, payload]);
-    });
-    // Batched stroke replay for TVs that connected mid-drawing
-    channel.on('broadcast', { event: 'tv-drawing-sync' }, ({ payload }) => {
-      const segments = (payload as { segments?: unknown[] }).segments;
-      if (Array.isArray(segments)) setDrawing(segments);
-    });
-    channel.on('broadcast', { event: 'game-start' }, ({ payload }) => {
-      markGameStarted(); setGameEnded(false);
+    };
+    const handleLeaderboard = (payload: unknown) => {
+      if (!acceptPacket(payload)) return;
+      const clean = stripTVMessageId((payload || {}) as Record<string, unknown>);
+      setLeaderboard(((clean as { scores?: unknown }).scores || []) as TVScore[]);
+    };
+    const handleGameStart = (payload: unknown) => {
+      if (!acceptPacket(payload)) return;
+      markGameStarted();
+      setGameEnded(false);
       if (payload) setGameState(payload as TVState);
-    });
-    channel.on('broadcast', { event: 'game-end' }, () => { setGameEnded(true); });
-    channel.on('broadcast', { event: 'bomb-state' }, ({ payload }) => {
-      const s = (payload as any).state;
-      if (s) setGameState({ game: 'bomb', phase: s.phase, ...s });
-    });
-    // Listen for state-sync responses from the host (sent when host sees tv-ready)
-    channel.on('broadcast', { event: 'tv-state-sync' }, ({ payload }) => {
-      if (payload) {
-        setGameState(payload as TVState);
-        markGameStarted();
-        setGameEnded(false);
-      }
-    });
-
-    // Mirror all TV events from the tv-room channel (offline TV mode)
-    tvChannel.on('broadcast', { event: 'tv-state' }, ({ payload }) => {
+    };
+    const handleStateSync = (payload: unknown) => {
+      if (!payload || !acceptPacket(payload)) return;
       setGameState(payload as TVState);
       applyPhoneLanguage(payload);
       markGameStarted();
+      setGameEnded(false);
+    };
+
+    channel.on('broadcast', { event: 'tv-state' }, ({ payload }) => handleTVState(payload));
+    channel.on('broadcast', { event: 'tv-leaderboard' }, ({ payload }) => handleLeaderboard(payload));
+    channel.on('broadcast', { event: 'tv-drawing' }, ({ payload }) => {
+      if (!acceptPacket(payload)) return;
+      const clean = stripTVMessageId((payload || {}) as Record<string, unknown>);
+      if ((clean as { type?: string }).type === 'clear') setDrawing([]);
+      else setDrawing(prev => [...prev, clean]);
     });
-    tvChannel.on('broadcast', { event: 'tv-leaderboard' }, ({ payload }) => { setLeaderboard(((payload as any).scores || []) as TVScore[]); });
-    tvChannel.on('broadcast', { event: 'game-start' }, ({ payload }) => {
-      markGameStarted(); setGameEnded(false);
-      if (payload) setGameState(payload as TVState);
+    // Batched stroke replay for TVs that connected mid-drawing
+    channel.on('broadcast', { event: 'tv-drawing-sync' }, ({ payload }) => {
+      if (!acceptPacket(payload)) return;
+      const clean = stripTVMessageId((payload || {}) as Record<string, unknown>);
+      const segments = (clean as { segments?: unknown[] }).segments;
+      if (Array.isArray(segments)) setDrawing(segments);
     });
+    channel.on('broadcast', { event: 'game-start' }, ({ payload }) => handleGameStart(payload));
+    channel.on('broadcast', { event: 'game-end' }, () => { setGameEnded(true); });
+    channel.on('broadcast', { event: 'bomb-state' }, ({ payload }) => {
+      const s = (payload as { state?: TVState }).state;
+      if (s) setGameState({ game: 'bomb', phase: s.phase, ...s });
+    });
+    // Listen for state-sync responses from the host (sent when host sees tv-ready)
+    channel.on('broadcast', { event: 'tv-state-sync' }, ({ payload }) => handleStateSync(payload));
+
+    // Mirror all TV events from the tv-room channel (offline TV mode)
+    tvChannel.on('broadcast', { event: 'tv-state' }, ({ payload }) => handleTVState(payload));
+    tvChannel.on('broadcast', { event: 'tv-leaderboard' }, ({ payload }) => handleLeaderboard(payload));
+    tvChannel.on('broadcast', { event: 'game-start' }, ({ payload }) => handleGameStart(payload));
     tvChannel.on('broadcast', { event: 'game-end' }, () => { setGameEnded(true); });
     // Listen for state-sync on tv-room channel too
-    tvChannel.on('broadcast', { event: 'tv-state-sync' }, ({ payload }) => {
-      if (payload) {
-        setGameState(payload as TVState);
-        markGameStarted();
-        setGameEnded(false);
-      }
-    });
+    tvChannel.on('broadcast', { event: 'tv-state-sync' }, ({ payload }) => handleStateSync(payload));
 
     const handleStatus = (status: string) => {
       if (status === 'SUBSCRIBED') broadcastTVReady();
@@ -196,10 +236,11 @@ export function useTVConnection(roomCode: string) {
     return () => {
       gameStartedRef.current = false;
       window.clearInterval(heartbeat);
+      if (stateFrameRef.current !== null) window.cancelAnimationFrame(stateFrameRef.current);
       supabase.removeChannel(channel);
       supabase.removeChannel(tvChannel);
     };
-  }, [roomCode]);
+  }, [roomCode, setGameState]);
 
   return { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded, error };
 }

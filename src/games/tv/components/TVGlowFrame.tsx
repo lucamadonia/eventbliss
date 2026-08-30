@@ -36,6 +36,28 @@ export default function TVGlowFrame({
   const ambient = useAmbientMotion();
   const doPulse = pulse && ambient;
 
+  // On a TV, large inset box-shadows allocate and repaint an oversized blur
+  // surface. A static edge gradient keeps the frame without that GPU cost.
+  if (!ambient) {
+    const background = rainbow
+      ? [
+          `radial-gradient(circle at 0% 0%, ${toRgba(RAINBOW[0], config.alpha)} 0%, transparent 34%)`,
+          `radial-gradient(circle at 100% 0%, ${toRgba(RAINBOW[1], config.alpha)} 0%, transparent 34%)`,
+          `radial-gradient(circle at 100% 100%, ${toRgba(RAINBOW[2], config.alpha)} 0%, transparent 34%)`,
+          `radial-gradient(circle at 0% 100%, ${toRgba(RAINBOW[3], config.alpha)} 0%, transparent 34%)`,
+        ].join(',')
+      : `radial-gradient(ellipse at center, transparent 58%, ${toRgba(color, config.alpha * 0.72)} 100%)`;
+
+    return (
+      <div
+        className="fixed inset-0 pointer-events-none z-10"
+        aria-hidden
+        data-tv-performance="static-glow"
+        style={{ background }}
+      />
+    );
+  }
+
   if (rainbow) {
     return (
       <div className="fixed inset-0 pointer-events-none z-10">

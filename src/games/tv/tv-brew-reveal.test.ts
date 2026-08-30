@@ -13,4 +13,10 @@ describe("TVBrewView ingredient reveal", () => {
   it("hides the large ingredient again after less than two seconds", () => {
     expect(source).toMatch(/setTimeout\(\(\) => setShowDraw\(null\), reduce \? 420 : 1800\)/);
   });
+
+  it("uses only the shared TV bridge instead of sending Brew state twice", () => {
+    const brewGame = fs.readFileSync(path.join(process.cwd(), "src/games/brew/BrewGame.tsx"), "utf8");
+    expect(brewGame).not.toContain('online.broadcast("tv-state"');
+    expect(brewGame).toContain('useTVGameBridge("brew", tvPayload, [tvPayload], !online || isHost)');
+  });
 });

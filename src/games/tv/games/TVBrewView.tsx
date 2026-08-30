@@ -28,7 +28,7 @@
  * unvollstaendigen Zustand. Ein Absturz hier macht den ganzen Bildschirm
  * schwarz — das ist in diesem Projekt schon passiert.
  */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FlaskConical, Martini } from 'lucide-react';
@@ -84,7 +84,7 @@ function withBaseFirst(ids: IngredientId[]): IngredientId[] {
   return [ids[baseIdx], ...ids.slice(0, baseIdx), ...ids.slice(baseIdx + 1)];
 }
 
-export default function TVBrewView({ gameState }: Props) {
+function TVBrewView({ gameState }: Props) {
   const { t } = useTranslation();
   const reduce = useReducedMotion();
   const s = (gameState ?? {}) as Record<string, unknown>;
@@ -574,3 +574,5 @@ export default function TVBrewView({ gameState }: Props) {
     </div>
   );
 }
+
+export default memo(TVBrewView);

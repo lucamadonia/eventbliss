@@ -22,7 +22,7 @@
  * Die Basis-Zutat liegt immer UNTEN. `filled` kommt von BrewGame bereits in
  * dieser Reihenfolge an; hier wird nicht sortiert.
  */
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useId, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useAmbientMotion } from "@/lib/useAmbientMotion";
 import { INGREDIENTS, type IngredientId, type Skin } from "./brew-content";
@@ -78,7 +78,8 @@ export interface GlassProps {
    * Perlen aufsteigen lassen, wenn das Rezept `fizz` enthaelt.
    * Der Fernseher setzt das NIE: acht Glaeser mit Dauerschleife sind acht
    * Dauerschleifen. `useAmbientMotion` allein reicht als Riegel nicht — es
-   * liefert nur nativ `false`, ein Browser-Cast bekommt `true`.
+   * liefert zwar nativ und auf `/tv` `false`, explizit fehlende Perlen sind
+   * fuer die Mehrglas-Ansicht aber der stabilere Komponentenvertrag.
    */
   bubbles?: boolean;
   /** Notausgang, falls die Messung einmal nicht greift. */
@@ -123,7 +124,7 @@ function bandPath(shape: GlassShape, H: number, yTop: number, yBottom: number): 
   return wallPath(shape, H, yTop / H, yBottom / H, hwInnerAt, 8);
 }
 
-export function Glass({
+function GlassImpl({
   recipeNeeds, filled, skin, size = "md", width, height, shape, palette,
   bubbles = false, fxScale, className, arrivalDelay = 0, layerStagger = 70,
   quality = size === "lg" ? "hero" : "compact", intensity = 0, active = false,
@@ -700,3 +701,29 @@ export function Glass({
     </motion.div>
   );
 }
+
+function sameIngredientList(a: IngredientId[], b: IngredientId[]): boolean {
+  return a === b || (a.length === b.length && a.every((id, index) => id === b[index]));
+}
+
+function sameGlassProps(a: GlassProps, b: GlassProps): boolean {
+  return sameIngredientList(a.recipeNeeds, b.recipeNeeds)
+    && sameIngredientList(a.filled, b.filled)
+    && a.skin === b.skin
+    && a.size === b.size
+    && a.width === b.width
+    && a.height === b.height
+    && a.shape === b.shape
+    && a.palette === b.palette
+    && a.bubbles === b.bubbles
+    && a.fxScale === b.fxScale
+    && a.className === b.className
+    && a.arrivalDelay === b.arrivalDelay
+    && a.layerStagger === b.layerStagger
+    && a.quality === b.quality
+    && a.intensity === b.intensity
+    && a.active === b.active;
+}
+
+/** Unveraenderte Mitspieler-Glaeser muessen bei fremden Zuegen nicht neu zeichnen. */
+export const Glass = memo(GlassImpl, sameGlassProps);
