@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { FINDIT_MODE_ASSETS } from '../ui/premium-game-assets';
 import { GEO_LOCATIONS, filterByRegion, type GeoLocation } from './geo-locations';
 import WorldFinderSetup from './WorldFinderSetup';
 import MapRound, { type MapRoundResult } from './MapRound';
@@ -755,6 +756,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       <GameSetup
         gameId="wo-ist-was"
         modes={getGameModes(t)}
+        modeAssets={FINDIT_MODE_ASSETS}
+        accent="#8ff5ff"
         settings={getSetupSettings(t)}
         onStart={handleSetupStart}
         title={t('games.findit.gameOverTitle')}

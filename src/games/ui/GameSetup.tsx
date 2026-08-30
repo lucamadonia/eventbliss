@@ -7,6 +7,7 @@ import { getPlayerColor, getPlayerInitial } from "./PlayerAvatars";
 import { PlayerSetup, type PlayerSetupPlayer } from "./PlayerSetup";
 import { useInitialRoster } from "./useInitialRoster";
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from "./GameRulesModal";
+import { PremiumImageChoiceCard } from "./PremiumImageChoiceCard";
 
 export interface GameMode {
   id: string;
@@ -45,6 +46,9 @@ interface GameSetupProps {
   minPlayers?: number;
   maxPlayers?: number;
   onlinePlayers?: OnlinePlayer[];
+  /** Optional generated artwork turns the compact mode grid into cinematic cards. */
+  modeAssets?: Record<string, string>;
+  accent?: string;
 }
 
 let nextPlayerId = 1;
@@ -62,6 +66,8 @@ export function GameSetup({
   minPlayers = 2,
   maxPlayers = 20,
   onlinePlayers,
+  modeAssets,
+  accent = "#df8eff",
 }: GameSetupProps) {
   const { t } = useTranslation();
   const { showRules, openRules, closeRules } = useAutoShowRules(gameId);
@@ -166,14 +172,48 @@ export function GameSetup({
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0e14] px-4 py-8 font-game">
-      <div className="mx-auto max-w-md space-y-6">
+    <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] px-4 py-8 font-game">
+      {modeAssets && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0 opacity-90"
+          style={{
+            background: `radial-gradient(circle at 15% 4%, ${accent}20, transparent 34%), radial-gradient(circle at 88% 18%, rgba(143,245,255,0.12), transparent 31%)`,
+          }}
+        />
+      )}
+      <div className={`relative mx-auto space-y-6 ${modeAssets ? 'max-w-2xl' : 'max-w-md'}`}>
         {/* Header with rules button */}
-        <div className="flex items-center justify-between">
-          <div className="w-10" /> {/* spacer */}
-          <h1 className="text-2xl font-extrabold text-white text-center font-game tracking-tight">{title ?? t('games.setup.title')}</h1>
-          {gameId ? <RulesHelpButton onClick={openRules} /> : <div className="w-10" />}
-        </div>
+        {modeAssets ? (
+          <section className="relative min-h-[210px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
+            <img
+              src={modeAssets[selectedMode] ?? Object.values(modeAssets)[0]}
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#090711] via-[#090711]/45 to-black/10" />
+            <div className="relative flex min-h-[210px] flex-col justify-end p-6">
+              <div className="absolute right-4 top-4">
+                {gameId ? <RulesHelpButton onClick={openRules} /> : null}
+              </div>
+              <p className="text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: accent }}>
+                {t('games.setup.selectMode')}
+              </p>
+              <h1 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">
+                {title ?? t('games.setup.title')}
+              </h1>
+            </div>
+          </section>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div className="w-10" /> {/* spacer */}
+            <h1 className="text-2xl font-extrabold text-white text-center font-game tracking-tight">{title ?? t('games.setup.title')}</h1>
+            {gameId ? <RulesHelpButton onClick={openRules} /> : <div className="w-10" />}
+          </div>
+        )}
 
         {/* Player list — einheitlicher PlayerSetup-Block (oben, 1. Sektion) */}
         <PlayerSetup
@@ -184,7 +224,7 @@ export function GameSetup({
           onImportNames={hasOnline ? undefined : handleImportNames}
           min={minPlayers}
           max={maxPlayers}
-          accent="#df8eff"
+          accent={accent}
           hint={hasOnline ? (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
               <Wifi className="w-3 h-3 text-[#df8eff]" />
@@ -197,23 +237,35 @@ export function GameSetup({
         {modes.length > 0 && (
           <section className="space-y-3">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">{t('games.setup.selectMode')}</h2>
-            <div className="grid grid-cols-2 gap-3">
+            <div className={`grid grid-cols-2 gap-3 ${modeAssets && modes.length >= 5 ? 'sm:grid-cols-3' : ''}`}>
               {modes.map((mode) => (
-                <motion.button
-                  key={mode.id}
-                  onClick={() => setSelectedMode(mode.id)}
-                  className={cn(
-                    "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-colors text-center",
-                    selectedMode === mode.id
-                      ? "border-purple-500 bg-purple-500/10 text-white"
-                      : "border-gray-700 bg-gray-800/40 text-gray-300 hover:border-gray-600"
-                  )}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <span className="text-2xl">{mode.icon}</span>
-                  <span className="text-sm font-semibold">{mode.name}</span>
-                  <span className="text-xs text-gray-400 leading-tight">{mode.desc}</span>
-                </motion.button>
+                modeAssets?.[mode.id] ? (
+                  <PremiumImageChoiceCard
+                    key={mode.id}
+                    title={mode.name}
+                    subtitle={mode.desc}
+                    image={modeAssets[mode.id]}
+                    selected={selectedMode === mode.id}
+                    onClick={() => setSelectedMode(mode.id)}
+                    accent={accent}
+                  />
+                ) : (
+                  <motion.button
+                    key={mode.id}
+                    onClick={() => setSelectedMode(mode.id)}
+                    className={cn(
+                      "flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-colors text-center",
+                      selectedMode === mode.id
+                        ? "border-purple-500 bg-purple-500/10 text-white"
+                        : "border-gray-700 bg-gray-800/40 text-gray-300 hover:border-gray-600"
+                    )}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <span className="text-2xl">{mode.icon}</span>
+                    <span className="text-sm font-semibold">{mode.name}</span>
+                    <span className="text-xs text-gray-400 leading-tight">{mode.desc}</span>
+                  </motion.button>
+                )
               ))}
             </div>
           </section>

@@ -46,6 +46,8 @@ import { RevealChart, type RevealMark } from './RevealChart';
 import { CloseEnoughAtmosphere, BullseyeBurst, CountUp } from './CloseEnoughAtmosphere';
 import { setReportContext, clearReportContext } from '@/games/ui/useReportContext';
 import { useInitialRoster } from '@/games/ui/useInitialRoster';
+import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
+import { CLOSE_ENOUGH_THEME_ASSETS } from '../ui/premium-game-assets';
 import {
   loadQuestions,
   questionText,
@@ -1225,8 +1227,36 @@ function CloseEnoughSetup({
           ← {t('games.closeenough.backToGames')}
         </GameSetupBackLink>
 
+        <motion.section
+          className="relative min-h-[220px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.36)]"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+        >
+          <img
+            src={CLOSE_ENOUGH_THEME_ASSETS[cats[0] ?? 'mix']}
+            alt=""
+            aria-hidden="true"
+            decoding="async"
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0b1120] via-[#0b1120]/48 to-black/5" />
+          <div className="relative flex min-h-[220px] flex-col justify-end p-6">
+            <motion.span
+              animate={{ scale: [1, 1.12, 1] }}
+              transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
+              className="mb-3 grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-black/35 backdrop-blur-md"
+            >
+              <Target className="w-6 h-6" style={{ color: CE.accent }} />
+            </motion.span>
+            <h1 className="text-3xl font-black text-white">{t('games.closeenough.title')}</h1>
+            <p className="mt-1 max-w-md text-sm text-white/70">{t('games.closeenough.tagline')}</p>
+          </div>
+        </motion.section>
+
         <motion.h1
-          className="text-3xl font-black flex items-center gap-2"
+          className="hidden"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 24 }}
@@ -1243,7 +1273,7 @@ function CloseEnoughSetup({
           {t('games.closeenough.title')}
         </motion.h1>
         <motion.p
-          className="text-sm mt-1"
+          className="hidden"
           style={{ color: CE.dim }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -1346,51 +1376,49 @@ function CloseEnoughSetup({
         </div>
 
         {/* Kategorien */}
-        <p
-          className="mt-7 mb-2 text-xs font-black uppercase tracking-wide"
-          style={{ color: CE.dim }}
-        >
-          {t('games.closeenough.categoriesLabel')}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <button
+        <section className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_62px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-5">
+          <div className="mb-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: CE.accent }}>
+              {t('games.closeenough.categoriesLabel')}
+            </p>
+            <p className="mt-1 text-xs" style={{ color: CE.dim }}>
+              {!contentReady
+                ? t('games.closeenough.loading')
+                : cats.length === 0
+                  ? t('games.closeenough.allCategories', { count: available })
+                  : t('games.closeenough.available', { count: available })}
+            </p>
+          </div>
+          <PremiumImageChoiceCard
+            title={t('games.closeenough.categories.mix')}
+            image={CLOSE_ENOUGH_THEME_ASSETS.mix}
+            selected={cats.length === 0}
             onClick={() => setCats([])}
-            aria-pressed={cats.length === 0}
-            className="px-3 py-2 rounded-full text-xs font-bold transition-colors"
-            style={{
-              background: cats.length === 0 ? CE.accent : CE.surface,
-              color: cats.length === 0 ? CE.bg : CE.text,
-            }}
-          >
-            {t('games.closeenough.categories.mix')}
-          </button>
-          {CE_CATEGORIES.map((c) => {
-            const count = perCategory[c] ?? 0;
-            // Leere Kategorien gar nicht erst anbieten. „Alltag" ist zum Start
-            // leer, weil Wikidata sie nicht liefern kann — ein Knopf, der zu
-            // null Fragen führt, ist schlimmer als kein Knopf.
-            if (contentReady && count === 0) return null;
-            const on = cats.includes(c);
-            return (
-              <button
-                key={c}
-                onClick={() => setCats((prev) => (on ? prev.filter((x) => x !== c) : [...prev, c]))}
-                aria-pressed={on}
-                className="px-3 py-2 rounded-full text-xs font-bold transition-colors"
-                style={{ background: on ? CE.truth : CE.surface, color: on ? CE.bg : CE.text }}
-              >
-                {t(categoryLabelKey(c))}
-              </button>
-            );
-          })}
-        </div>
-        <p className="text-[11px] mt-2" style={{ color: CE.dim }}>
-          {!contentReady
-            ? t('games.closeenough.loading')
-            : cats.length === 0
-              ? t('games.closeenough.allCategories', { count: available })
-              : t('games.closeenough.available', { count: available })}
-        </p>
+            accent={CE.accent}
+            layout="wide"
+            priority
+            className="mb-3"
+          />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {CE_CATEGORIES.map((c) => {
+              const count = perCategory[c] ?? 0;
+              // Empty categories stay unavailable even though their artwork exists.
+              if (contentReady && count === 0) return null;
+              const on = cats.includes(c);
+              return (
+                <PremiumImageChoiceCard
+                  key={c}
+                  title={t(categoryLabelKey(c))}
+                  subtitle={contentReady ? t('games.closeenough.available', { count }) : undefined}
+                  image={CLOSE_ENOUGH_THEME_ASSETS[c]}
+                  selected={on}
+                  onClick={() => setCats((prev) => (on ? prev.filter((x) => x !== c) : [...prev, c]))}
+                  accent={CE.truth}
+                />
+              );
+            })}
+          </div>
+        </section>
 
         {/* Runden */}
         <p

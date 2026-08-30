@@ -9,6 +9,8 @@ import {
 } from 'lucide-react';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import { PlayerSetup } from '../ui/PlayerSetup';
+import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
+import { WORDPRESS_MODE_ASSETS } from '../ui/premium-game-assets';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useInitialRoster } from "@/games/ui/useInitialRoster";
@@ -203,18 +205,28 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
     <motion.div className="min-h-screen bg-[#0a0e14] p-4 flex flex-col items-center relative"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <ParticleBackground />
-      <motion.div className="w-full max-w-md space-y-6 py-8 relative z-10"
+      <motion.div className="w-full max-w-2xl space-y-6 py-8 relative z-10"
         initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
 
         {/* Header */}
-        <div className="text-center space-y-2">
-          <motion.div animate={{ scale: [1, 1.1, 1] }}
-            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}>
-            <Type className="w-16 h-16 mx-auto text-[#df8eff]" />
-          </motion.div>
-          <h1 className="text-3xl font-bold text-white">{t('games.wordpress.title')}</h1>
-          <p className="text-[#df8eff]/60 text-sm">{t('games.wordpress.tagline')}</p>
-        </div>
+        <section className="relative min-h-[220px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
+          <img
+            src={WORDPRESS_MODE_ASSETS[mode]}
+            alt=""
+            aria-hidden="true"
+            decoding="async"
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#090711] via-[#090711]/40 to-transparent" />
+          <div className="relative flex min-h-[220px] flex-col justify-end p-6 text-left">
+            <div className="mb-3 grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-black/30 backdrop-blur-md">
+              <Type className="h-6 w-6 text-[#df8eff]" />
+            </div>
+            <h1 className="text-3xl font-black text-white sm:text-4xl">{t('games.wordpress.title')}</h1>
+            <p className="mt-1 max-w-md text-sm text-white/65">{t('games.wordpress.tagline')}</p>
+          </div>
+        </section>
 
         {/* Players */}
         <PlayerSetup
@@ -232,20 +244,17 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
         {/* Mode */}
         <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
           <h2 className="text-white font-semibold text-lg">{t('games.wordpress.modeHeading')}</h2>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             {modes.map(m => (
-              <button key={m.key} onClick={() => setMode(m.key)}
-                className={`text-left p-3 rounded-xl border transition-all ${
-                  mode === m.key
-                    ? 'bg-[#df8eff]/20 border-[#df8eff]/50 text-white'
-                    : 'bg-white/5 border-white/10 text-[#f1f3fc]/70 hover:bg-white/10'
-                }`}>
-                <div className="flex items-center gap-2 mb-1">
-                  {m.icon}
-                  <span className="font-medium text-sm">{m.label}</span>
-                </div>
-                <div className="text-xs text-[#a8abb3]">{m.desc}</div>
-              </button>
+              <PremiumImageChoiceCard
+                key={m.key}
+                title={m.label}
+                subtitle={m.desc}
+                image={WORDPRESS_MODE_ASSETS[m.key]}
+                selected={mode === m.key}
+                onClick={() => setMode(m.key)}
+                accent="#df8eff"
+              />
             ))}
           </div>
         </div>

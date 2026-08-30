@@ -33,6 +33,8 @@ import { loadSnapshot, saveSnapshot, clearSnapshot } from '../ui/useGameSnapshot
 import { setReportContext } from '../ui/useReportContext';
 import { TV_STALE_MS } from '../tv/useTVConnection';
 import { useInitialRoster } from '@/games/ui/useInitialRoster';
+import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
+import { OHRWURM_GENRE_ASSETS, OHRWURM_MODE_ASSETS } from '../ui/premium-game-assets';
 
 const ROUND_SECONDS = 60;      // Zeit zum Einordnen (Speed-Regel)
 const SPEED_BONUS_MS = 10_000; // innerhalb 10s → Speed-Bonus (+2 🎣)
@@ -1810,7 +1812,7 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
   ];
 
   return (
-    <div className="relative min-h-[100dvh] overflow-hidden pb-40 font-game" style={{ background: OW.bg, color: OW.text }}>
+    <div className="relative min-h-[100dvh] overflow-hidden font-game" style={{ background: OW.bg, color: OW.text }}>
       <style>{OW_STYLE}</style>
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-20 -left-20 w-72 h-72 rounded-full blur-[110px]" style={{ background: 'rgba(255,46,136,0.14)' }} />
@@ -1823,12 +1825,23 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
         </GameSetupBackLink>
 
         {/* Hero */}
-        <section className="mb-9">
-          <p className="font-black tracking-[0.25em] text-[11px] uppercase mb-2" style={{ color: OW.secondary }}>{t('games.ohrwurm.musicQuiz')}</p>
-          <h1 className="text-5xl font-black tracking-tighter leading-[0.95] mb-3 ow-glow-pink" style={{ color: OW.primary }}>OHRWURM</h1>
-          <p className="text-sm max-w-[320px]" style={{ color: OW.dim }}>
-            {t('games.ohrwurm.setupHeroDesc', { count: winTarget })}
-          </p>
+        <section className="relative mb-9 min-h-[230px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
+          <img
+            src={genre ? OHRWURM_GENRE_ASSETS[genre] : OHRWURM_MODE_ASSETS[mode]}
+            alt=""
+            aria-hidden="true"
+            decoding="async"
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#16101f] via-[#16101f]/42 to-transparent" />
+          <div className="relative flex min-h-[230px] flex-col justify-end p-6">
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: OW.secondary }}>{t('games.ohrwurm.musicQuiz')}</p>
+            <h1 className="text-5xl font-black tracking-tighter leading-[0.95] ow-glow-pink" style={{ color: OW.primary }}>OHRWURM</h1>
+            <p className="mt-2 max-w-sm text-sm text-white/65">
+              {t('games.ohrwurm.setupHeroDesc', { count: winTarget })}
+            </p>
+          </div>
         </section>
 
         {/* Teilnehmer — einheitlicher Spieler-Block, IMMER ganz oben (1. Sektion) */}
@@ -1857,13 +1870,15 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
             ] as const).map((m) => {
               const activeMode = mode === m.id;
               return (
-                <button key={m.id} onClick={() => { void haptics.select(); setMode(m.id); }}
-                  className="rounded-2xl p-4 text-left transition-all active:scale-[0.98]"
-                  style={{ background: OW.surface, border: `2px solid ${activeMode ? OW.primary : 'transparent'}`, boxShadow: activeMode ? `0 0 20px ${OW.primary}33` : 'none' }}>
-                  <div className="mb-2" style={{ color: activeMode ? OW.primary : OW.dim }}>{m.icon}</div>
-                  <div className="font-black">{m.label}</div>
-                  <div className="text-[11px]" style={{ color: OW.dim }}>{m.desc}</div>
-                </button>
+                <PremiumImageChoiceCard
+                  key={m.id}
+                  title={m.label}
+                  subtitle={m.desc}
+                  image={OHRWURM_MODE_ASSETS[m.id]}
+                  selected={activeMode}
+                  onClick={() => { void haptics.select(); setMode(m.id); }}
+                  accent={OW.primary}
+                />
               );
             })}
           </div>
@@ -1890,10 +1905,26 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
         {/* Genre-Filter */}
         <section className="mb-8">
           <h3 className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: OW.dim }}>{t('games.ohrwurm.sectionGenre')} <span className="opacity-50 normal-case tracking-normal">({t('games.ohrwurm.optional')})</span></h3>
-          <div className="flex flex-wrap gap-2">
-            <GenrePill label={t('games.ohrwurm.genreAll')} active={genre === null} onClick={() => { void haptics.select(); setGenre(null); }} />
+          <PremiumImageChoiceCard
+            title={t('games.ohrwurm.genreAll')}
+            image={OHRWURM_MODE_ASSETS.solo}
+            selected={genre === null}
+            onClick={() => { void haptics.select(); setGenre(null); }}
+            accent={OW.accent}
+            layout="wide"
+            className="mb-3"
+          />
+          <div className="-mx-6 flex snap-x gap-3 overflow-x-auto px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {OHRWURM_GENRES.map((g) => (
-              <GenrePill key={g} label={g} active={genre === g} onClick={() => { void haptics.select(); setGenre(g); }} />
+              <PremiumImageChoiceCard
+                key={g}
+                title={g}
+                image={OHRWURM_GENRE_ASSETS[g]}
+                selected={genre === g}
+                onClick={() => { void haptics.select(); setGenre(g); }}
+                accent={OW.accent}
+                className="!w-[154px] min-w-[154px] shrink-0 snap-start"
+              />
             ))}
           </div>
         </section>
@@ -1909,13 +1940,16 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
               const activeP = playback === m.id;
               const dimmed = m.id === 'spotify' && !spotifyModePossible();
               return (
-                <button key={m.id} disabled={dimmed}
+                <PremiumImageChoiceCard
+                  key={m.id}
+                  title={m.label}
+                  subtitle={dimmed ? t('games.ohrwurm.appOnly') : m.desc}
+                  image={OHRWURM_MODE_ASSETS[m.id]}
+                  selected={activeP}
+                  disabled={dimmed}
                   onClick={() => { if (dimmed) return; void haptics.select(); setPlayback(m.id); }}
-                  className="rounded-2xl p-4 text-left transition-all active:scale-[0.98] disabled:cursor-not-allowed"
-                  style={{ background: OW.surface, border: `2px solid ${activeP ? OW.secondary : 'transparent'}`, opacity: dimmed ? 0.5 : 1 }}>
-                  <div className="font-black" style={{ color: activeP ? OW.secondary : OW.text }}>{m.label}</div>
-                  <div className="text-[11px] mt-0.5" style={{ color: OW.dim }}>{dimmed ? t('games.ohrwurm.appOnly') : m.desc}</div>
-                </button>
+                  accent={OW.secondary}
+                />
               );
             })}
           </div>
@@ -1930,9 +1964,9 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
 
       {/* Start CTA — bei offener Tastatur ausblenden, damit das Namensfeld frei bleibt */}
       {!keyboardVisible && (
-        <div className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] inset-x-0 px-6 flex justify-center z-40 pointer-events-none">
+        <div className="relative z-40 flex justify-center px-6 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
           <motion.button onClick={start} disabled={!canStart} whileTap={canStart ? { scale: 0.97 } : {}}
-            className="w-full max-w-md h-16 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 pointer-events-auto transition-all"
+            className="w-full max-w-2xl h-16 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 transition-all"
             style={canStart
               ? { background: `linear-gradient(135deg, ${OW.primary}, ${OW.secondary})`, color: OW.bg, boxShadow: `0 20px 40px ${OW.primary}40` }
               : { background: OW.surface, color: OW.dim }}>
@@ -1941,16 +1975,6 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
         </div>
       )}
     </div>
-  );
-}
-
-function GenrePill({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button onClick={onClick}
-      className="px-3.5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95"
-      style={{ background: active ? OW.secondary : OW.surface, color: active ? OW.bg : OW.dim, border: `1px solid ${active ? OW.secondary : 'transparent'}` }}>
-      {label}
-    </button>
   );
 }
 

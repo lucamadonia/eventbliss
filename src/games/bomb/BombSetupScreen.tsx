@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Bomb, Users, Zap, Brain, Timer, Hash, Shuffle } from 'lucide-react';
 import { PlayerSetup } from '../ui/PlayerSetup';
+import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
+import { BOMB_MODE_ASSETS } from '../ui/premium-game-assets';
 import type { GameState, GameMode } from './BombGame';
 
 interface SetupScreenProps {
@@ -56,7 +58,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
       <div className="pointer-events-none absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#ff7350]/[0.06] blur-[120px]" />
       <div className="pointer-events-none absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#cf96ff]/[0.05] blur-[120px]" />
 
-      <div className="relative z-10 w-full max-w-md mx-auto px-4 pb-28 pt-8">
+      <div className="relative z-10 w-full max-w-2xl mx-auto px-4 pb-6 pt-8">
         {/* Hero Header */}
         <motion.div
           className="text-center space-y-3 mb-8"
@@ -64,19 +66,28 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.05 }}
         >
-          <motion.div
-            className="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-[#ff7350] to-[#fc3c00] flex items-center justify-center shadow-lg shadow-[#ff7350]/20"
-            animate={{ rotate: [0, -4, 4, -4, 0] }}
-            transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
-          >
-            <Bomb className="w-10 h-10 text-white" />
-          </motion.div>
-          <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            {t('games.bomb.name')}
-          </h1>
-          <p className="text-white/50 text-sm max-w-[280px] mx-auto">
-            {t('games.bomb.subtitle')}
-          </p>
+          <section className="relative min-h-[230px] overflow-hidden rounded-[32px] border border-white/10 text-left shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
+            <img
+              src={BOMB_MODE_ASSETS[state.mode]}
+              alt=""
+              aria-hidden="true"
+              decoding="async"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0d0d15] via-[#0d0d15]/42 to-transparent" />
+            <div className="relative flex min-h-[230px] flex-col justify-end p-6">
+              <span className="mb-3 grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-black/35 backdrop-blur-md">
+                <Bomb className="h-6 w-6 text-[#ff7350]" />
+              </span>
+              <h1 className="text-3xl font-black text-white sm:text-4xl" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                {t('games.bomb.name')}
+              </h1>
+              <p className="mt-1 max-w-md text-sm text-white/65">
+                {t('games.bomb.subtitle')}
+              </p>
+            </div>
+          </section>
         </motion.div>
 
         {/* Spieler — einheitlicher Block, IMMER ganz oben (1. Sektion) */}
@@ -109,20 +120,17 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
           {/* Spielmodus Card */}
           <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
             <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-3">{t('games.bomb.labelMode')}</h2>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {modes.map((m) => (
-                <button
+                <PremiumImageChoiceCard
                   key={m.key}
+                  title={m.label}
+                  subtitle={m.desc}
+                  image={BOMB_MODE_ASSETS[m.key]}
+                  selected={state.mode === m.key}
                   onClick={() => onUpdate({ mode: m.key })}
-                  className={`flex-1 flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl text-center transition-all duration-200 ${
-                    state.mode === m.key
-                      ? 'bg-[#cf96ff] text-white shadow-lg shadow-[#cf96ff]/20'
-                      : 'bg-[#13131b] text-white/50 hover:bg-[#1a1a24] hover:text-white/70'
-                  }`}
-                >
-                  {m.icon}
-                  <span className="text-xs font-medium">{m.label}</span>
-                </button>
+                  accent="#ff7350"
+                />
               ))}
             </div>
           </div>
@@ -226,9 +234,9 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
 
       </div>
 
-      {/* Fixed Bottom CTA */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0d0d15] via-[#0d0d15]/95 to-transparent">
-        <div className="max-w-md mx-auto">
+      {/* CTA stays in flow so the generated mode cards are never covered. */}
+      <div className="relative z-20 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <div className="max-w-2xl mx-auto">
           <motion.button
             onClick={onStart}
             disabled={!canStart}

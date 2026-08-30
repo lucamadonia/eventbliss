@@ -11,6 +11,7 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { getSTORY_STARTERS, getSTORY_PROMPTS } from './story-prompts';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { STORY_MODE_ASSETS } from '../ui/premium-game-assets';
 import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
@@ -360,6 +361,8 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
       <GameSetup
         gameId="storybuilder"
         modes={getTranslatedModes('storybuilder', GAME_MODES, t)}
+        modeAssets={STORY_MODE_ASSETS}
+        accent="#f6b94a"
         settings={setupSettings}
         onStart={handleStart}
         title="Story Builder"

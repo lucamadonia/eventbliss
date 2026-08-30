@@ -68,6 +68,8 @@ import {
   teamSizes,
   type TeamMap,
 } from './pantomime-teams';
+import { PANTOMIME_MIX_ASSET, PANTOMIME_THEME_ASSETS } from './pantomime-theme-assets';
+import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
 
 /**
  * Farbwelt Bühne: tiefes Aubergine als Saal, Scheinwerfergold für den
@@ -1171,8 +1173,27 @@ function PantomimeSetup({
   const canStart = contentReady && available > 0 && canPlay(teamOf);
 
   return (
-    <div className="min-h-[100dvh]" style={{ background: PM.bg, color: PM.text }}>
-      <main className="relative z-10 pt-14 px-5 max-w-2xl mx-auto pb-16">
+    <div
+      className="relative min-h-[100dvh] overflow-hidden"
+      style={{ background: PM.bg, color: PM.text }}
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0"
+        style={{
+          background:
+            'radial-gradient(circle at 15% 4%, rgba(244,114,182,0.17), transparent 34%), radial-gradient(circle at 88% 13%, rgba(34,211,238,0.14), transparent 31%), radial-gradient(ellipse at 50% 42%, rgba(251,191,36,0.10), transparent 42%)',
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed left-1/2 top-0 h-[560px] w-[360px] -translate-x-1/2 opacity-35 blur-2xl"
+        style={{
+          clipPath: 'polygon(42% 0, 58% 0, 100% 100%, 0 100%)',
+          background: 'linear-gradient(180deg, rgba(251,191,36,0.6), transparent 88%)',
+        }}
+      />
+      <main className="relative z-10 mx-auto max-w-3xl px-5 pb-20 pt-14">
         <GameSetupBackLink
           onClick={() => navigate('/games')}
           className="mb-5"
@@ -1181,13 +1202,36 @@ function PantomimeSetup({
           ← {t('games.pantomime.backToGames')}
         </GameSetupBackLink>
 
-        <h1 className="text-3xl font-black flex items-center gap-2">
-          <Drama className="w-7 h-7" style={{ color: PM.gold }} />
-          {t('games.pantomime.title')}
-        </h1>
-        <p className="text-sm mt-1" style={{ color: PM.dim }}>
-          {t('games.pantomime.tagline')}
-        </p>
+        <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.045] px-5 py-7 shadow-[0_24px_70px_rgba(0,0,0,0.32)] backdrop-blur-xl sm:px-7">
+          <div
+            aria-hidden="true"
+            className="absolute -right-12 -top-14 h-48 w-48 rounded-full blur-3xl"
+            style={{ background: 'rgba(251,191,36,0.15)' }}
+          />
+          <p className="relative text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: PM.gold }}>
+            {t('games.pantomime.categoriesLabel')}
+          </p>
+          <h1 className="relative mt-2 flex items-center gap-3 text-3xl font-black sm:text-4xl">
+            <span
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-white/15"
+              style={{ background: 'linear-gradient(145deg, rgba(251,191,36,0.24), rgba(244,114,182,0.15))' }}
+            >
+              <Drama className="h-7 w-7" style={{ color: PM.gold }} />
+            </span>
+            {t('games.pantomime.title')}
+          </h1>
+          <p className="relative mt-3 max-w-xl text-sm leading-relaxed" style={{ color: PM.dim }}>
+            {t('games.pantomime.tagline')}
+          </p>
+          <div className="relative mt-5 flex flex-wrap gap-2">
+            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[10px] font-black uppercase tracking-wide text-white/75">
+              {t(`gameModes.pantomime.${mode}.name`)} · {MODES.find((m) => m.id === mode)?.duration}s
+            </span>
+            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[10px] font-black uppercase tracking-wide text-white/75">
+              {rounds} {t('games.pantomime.rounds')}
+            </span>
+          </div>
+        </section>
 
         <div className="mt-6">
           <PlayerSetup
@@ -1370,57 +1414,62 @@ function PantomimeSetup({
           ))}
         </div>
 
-        {/* Kategorien */}
-        <p
-          className="mt-7 mb-2 text-xs font-black uppercase tracking-wide"
-          style={{ color: PM.dim }}
-        >
-          {t('games.pantomime.categoriesLabel')}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          <button
+        {/* Themenbuehne: GPT-Image liefert die Szene, native UI alle Texte. */}
+        <section className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_62px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-5">
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: PM.gold }}>
+                {t('games.pantomime.categoriesLabel')}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed" style={{ color: PM.dim }}>
+                {contentReady
+                  ? t('games.pantomime.available', { count: available })
+                  : t('games.pantomime.loading')}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-[10px] font-black text-white/70">
+              {cats.length === 0 ? 1 : cats.length}
+            </span>
+          </div>
+
+          <PremiumImageChoiceCard
+            title={t('games.pantomime.mix')}
+            image={PANTOMIME_MIX_ASSET}
+            selected={cats.length === 0}
             onClick={() => setCats([])}
-            aria-pressed={cats.length === 0}
-            className="px-3 py-2 rounded-full text-xs font-bold"
-            style={{
-              background: cats.length === 0 ? PM.gold : PM.surface,
-              color: cats.length === 0 ? PM.bg : PM.text,
-            }}
-          >
-            {t('games.pantomime.mix')}
-          </button>
-          {categories.map((c) => {
-            const on = cats.includes(c.id);
-            return (
-              <button
-                key={c.id}
-                onClick={() =>
-                  setCats((prev) => (on ? prev.filter((x) => x !== c.id) : [...prev, c.id]))
-                }
-                aria-pressed={on}
-                className="px-3 py-2 rounded-full text-xs font-bold"
-                style={{
-                  background: on ? (c.adult ? PM.bad : PM.teamB) : PM.surface,
-                  color: on ? PM.bg : PM.text,
-                }}
-              >
-                {c.emoji} {c.name}
-              </button>
-            );
-          })}
-        </div>
-        <p className="text-[11px] mt-2" style={{ color: PM.dim }}>
-          {contentReady
-            ? t('games.pantomime.available', { count: available })
-            : t('games.pantomime.loading')}
-        </p>
-        {/* Kein Hinweis auf die 18+-Kategorie, solange sie nicht freigeschaltet
-            ist — ein „hier fehlt etwas" wäre selbst schon der Hinweis. */}
-        {adultUnlocked && (
-          <p className="text-[11px] mt-1" style={{ color: PM.bad }}>
-            {t('games.pantomime.adultHint')}
-          </p>
-        )}
+            accent={PM.gold}
+            layout="wide"
+            priority
+            className="mb-3"
+          />
+
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {categories.map((c) => {
+              const on = cats.includes(c.id);
+              return (
+                <PremiumImageChoiceCard
+                  key={c.id}
+                  title={c.name}
+                  image={PANTOMIME_THEME_ASSETS[c.id]}
+                  selected={on}
+                  onClick={() =>
+                    setCats((prev) => (on ? prev.filter((x) => x !== c.id) : [...prev, c.id]))
+                  }
+                  badge={c.emoji}
+                  accent={c.adult ? PM.bad : PM.teamB}
+                />
+              );
+            })}
+          </div>
+
+          {/* Kein Hinweis auf die 18+-Kategorie, solange sie nicht freigeschaltet
+              ist — ein „hier fehlt etwas" waere selbst schon der Hinweis. */}
+          {adultUnlocked && (
+            <p className="mt-3 text-[11px] font-semibold" style={{ color: PM.bad }}>
+              {t('games.pantomime.adultHint')}
+            </p>
+          )}
+        </section>
 
         {/* Runden */}
         <p

@@ -37,6 +37,8 @@ import {
 } from './pixeljagd-content';
 import { loadExtraPuzzles } from './pixeljagd-extra';
 import { useInitialRoster } from '@/games/ui/useInitialRoster';
+import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
+import { PIXELJAGD_THEME_ASSETS } from '../ui/premium-game-assets';
 
 // Design-Tokens — eigene Farbwelt, gleiche Struktur wie OW in OhrwurmGame.
 const PJ = {
@@ -715,10 +717,24 @@ function PixeljagdSetup({ onStart, onlinePlayers, contentReady, allowText, toast
           ← {t('games.pixeljagd.backToGames')}
         </GameSetupBackLink>
 
-        <h1 className="text-3xl font-black flex items-center gap-2">
-          <Eye className="w-7 h-7" style={{ color: PJ.primary }} /> {t('games.pixeljagd.title')}
-        </h1>
-        <p className="text-sm mt-1" style={{ color: PJ.dim }}>{t('games.pixeljagd.tagline')}</p>
+        <section className="relative min-h-[220px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
+          <img
+            src={PIXELJAGD_THEME_ASSETS[cats[0] ?? 'mix']}
+            alt=""
+            aria-hidden="true"
+            decoding="async"
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0b1120] via-[#0b1120]/46 to-black/5" />
+          <div className="relative flex min-h-[220px] flex-col justify-end p-6">
+            <span className="mb-3 grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-black/35 backdrop-blur-md">
+              <Eye className="w-6 h-6" style={{ color: PJ.primary }} />
+            </span>
+            <h1 className="text-3xl font-black text-white">{t('games.pixeljagd.title')}</h1>
+            <p className="mt-1 max-w-md text-sm text-white/70">{t('games.pixeljagd.tagline')}</p>
+          </div>
+        </section>
 
         {/* Einzeln oder in Gruppen */}
         <p className="mt-6 mb-2 text-xs font-black uppercase tracking-wide" style={{ color: PJ.dim }}>
@@ -817,40 +833,41 @@ function PixeljagdSetup({ onStart, onlinePlayers, contentReady, allowText, toast
         </div>
 
         {/* Kategorien */}
-        <p className="mt-7 mb-2 text-xs font-black uppercase tracking-wide" style={{ color: PJ.dim }}>
-          {t('games.pixeljagd.categoriesLabel')}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {/* Zufall zuerst und als Voreinstellung: Eine leere Auswahl bedeutet
-              in getPixelPuzzles() bereits "alle Kategorien" — bisher war das
-              nur unsichtbar. Als Schaltflaeche ist es auffindbar, und der
-              Rueckweg zur Mischung braucht nicht das Abwaehlen aller Chips. */}
-          <button
+        <section className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_62px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-5">
+          <div className="mb-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: PJ.primary }}>
+              {t('games.pixeljagd.categoriesLabel')}
+            </p>
+            <p className="mt-1 text-xs" style={{ color: PJ.dim }}>
+              {cats.length === 0 ? t('games.pixeljagd.allCategories') : t('games.pixeljagd.available', { count: available })}
+            </p>
+          </div>
+          <PremiumImageChoiceCard
+            title={t('games.pixeljagd.categories.mix')}
+            image={PIXELJAGD_THEME_ASSETS.mix}
+            selected={cats.length === 0}
             onClick={() => setCats([])}
-            aria-pressed={cats.length === 0}
-            className="px-3 py-2 rounded-full text-xs font-bold cursor-pointer transition-colors"
-            style={{
-              background: cats.length === 0 ? PJ.primary : PJ.surface,
-              color: cats.length === 0 ? PJ.bg : PJ.text,
-            }}>
-            {t('games.pixeljagd.categories.mix')}
-          </button>
-          {PIXEL_CATEGORIES.map((c) => {
-            const on = cats.includes(c);
-            return (
-              <button key={c}
-                onClick={() => setCats((prev) => (on ? prev.filter((x) => x !== c) : [...prev, c]))}
-                aria-pressed={on}
-                className="px-3 py-2 rounded-full text-xs font-bold cursor-pointer transition-colors"
-                style={{ background: on ? PJ.accent : PJ.surface, color: on ? PJ.bg : PJ.text }}>
-                {t(categoryLabelKey(c))}
-              </button>
-            );
-          })}
-        </div>
-        <p className="text-[11px] mt-2" style={{ color: PJ.dim }}>
-          {cats.length === 0 ? t('games.pixeljagd.allCategories') : t('games.pixeljagd.available', { count: available })}
-        </p>
+            accent={PJ.primary}
+            layout="wide"
+            priority
+            className="mb-3"
+          />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {PIXEL_CATEGORIES.map((c) => {
+              const on = cats.includes(c);
+              return (
+                <PremiumImageChoiceCard
+                  key={c}
+                  title={t(categoryLabelKey(c))}
+                  image={PIXELJAGD_THEME_ASSETS[c]}
+                  selected={on}
+                  onClick={() => setCats((prev) => (on ? prev.filter((x) => x !== c) : [...prev, c]))}
+                  accent={PJ.accent}
+                />
+              );
+            })}
+          </div>
+        </section>
 
         {/* Runden */}
         <p className="mt-7 mb-2 text-xs font-black uppercase tracking-wide" style={{ color: PJ.dim }}>

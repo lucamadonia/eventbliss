@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { ArrowLeft, Compass } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
+import { WORLD_FINDER_REGION_ASSETS } from '../ui/premium-game-assets';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -22,12 +24,12 @@ interface WorldFinderSetupProps {
 // Stagger variants
 // ---------------------------------------------------------------------------
 
-const sectionVariants = {
+const sectionVariants: Variants = {
   hidden: { opacity: 0, y: 32 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: i * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
 
@@ -43,10 +45,10 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
   const [timer, setTimer] = useState(30);
 
   const REGIONS = [
-    { id: 'welt', label: t('games.findit.wfsRegionWelt'), icon: '\u{1F30D}', gradient: 'from-[#df8eff]/30 via-[#0a0e14] to-[#8ff5ff]/20' },
-    { id: 'europa', label: t('games.findit.wfsRegionEuropa'), icon: '\u{1F3F0}', gradient: 'from-[#ff6b98]/20 to-[#151a21]' },
-    { id: 'asien', label: t('games.findit.wfsRegionAsien'), icon: '\u{1F3EF}', gradient: 'from-[#8ff5ff]/20 to-[#151a21]' },
-    { id: 'deutschland', label: t('games.findit.wfsRegionDach'), icon: '\u{1F3DB}️', gradient: 'from-[#fbbf24]/20 to-[#151a21]' },
+    { id: 'welt', label: t('games.findit.wfsRegionWelt') },
+    { id: 'europa', label: t('games.findit.wfsRegionEuropa') },
+    { id: 'asien', label: t('games.findit.wfsRegionAsien') },
+    { id: 'deutschland', label: t('games.findit.wfsRegionDach') },
   ];
 
   const ROUND_OPTIONS = [
@@ -102,37 +104,19 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
         {/* ── REGION SECTION ─────────────────────────────── */}
         <motion.section custom={0} variants={sectionVariants} initial="hidden" animate="visible">
           <SectionHeader color="#df8eff" title={t('games.findit.wfsRegionLabel')} />
-          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-3">
             {REGIONS.map((r) => {
               const active = region === r.id;
               return (
-                <motion.button
+                <PremiumImageChoiceCard
                   key={r.id}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.97 }}
+                  title={r.label}
+                  image={WORLD_FINDER_REGION_ASSETS[r.id]}
+                  selected={active}
                   onClick={() => setRegion(r.id)}
-                  className={cn(
-                    'relative aspect-[4/5] rounded-xl overflow-hidden transition-all duration-300',
-                    'bg-gradient-to-br', r.gradient,
-                    active
-                      ? 'ring-2 ring-[#df8eff] shadow-[0_0_24px_rgba(223,142,255,0.35)]'
-                      : 'grayscale hover:grayscale-0 opacity-60 hover:opacity-100',
-                  )}
-                >
-                  {/* Icon */}
-                  <span className="absolute inset-0 flex items-center justify-center text-5xl opacity-80 select-none">
-                    {r.icon}
-                  </span>
-                  {/* Bottom label */}
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14]/80 to-transparent px-2 pb-3 pt-8">
-                    <p className="text-sm font-bold text-white">{r.label}</p>
-                    {active && (
-                      <span className="mt-1 inline-block rounded-full bg-[#df8eff]/20 px-2 py-0.5 text-[10px] font-semibold text-[#df8eff]">
-                        {t('games.findit.wfsActivated')}
-                      </span>
-                    )}
-                  </div>
-                </motion.button>
+                  accent="#df8eff"
+                  badge={active ? t('games.findit.wfsActivated') : undefined}
+                />
               );
             })}
           </div>

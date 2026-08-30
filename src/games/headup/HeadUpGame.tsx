@@ -11,6 +11,8 @@ import { getHeadUpCategories, type HeadUpCategory } from '../content/headup-word
 import { useGameTimer } from '../engine/TimerSystem';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import { PlayerSetup } from '../ui/PlayerSetup';
+import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
+import { HEADUP_THEME_ASSETS } from '../ui/premium-game-assets';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useInitialRoster } from "@/games/ui/useInitialRoster";
@@ -354,7 +356,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
 
         {/* ── SETUP ─────────────────────────────────────────────────── */}
         {screen === 'setup' && (
-          <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 pb-36 max-w-lg mx-auto">
+          <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] max-w-2xl mx-auto">
             <div className="text-center mb-8 pt-6">
               <h1 className="text-4xl font-extrabold tracking-tighter text-[#f1f3fc]">{t('games.headup.gameTitle')}</h1>
               <span className="inline-block mt-2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#ff6b98]/15 text-[#ff6b98] border border-[#ff6b98]/20">Party Game</span>
@@ -377,39 +379,34 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
 
             {/* Featured Category */}
             {featured && (
-              <motion.button whileTap={{ scale: 0.98 }} onClick={() => { setSelectedCategory(featured); handleStartRound(); }}
-                className={`relative w-full rounded-2xl overflow-hidden mb-6 text-left ${selectedCategory?.id === featured.id ? 'ring-2 ring-[#df8eff]' : ''}`}>
-                <div className="h-44 bg-gradient-to-br from-[#df8eff]/20 via-[#1b2028] to-[#ff6b98]/10 flex items-center justify-center">
-                  <span className="text-7xl">{featured.emoji}</span>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14]/60 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <div className="flex gap-2 mb-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#df8eff]/20 text-[#df8eff]">{t('games.headup.featuredBadge')}</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-[#8ff5ff]/15 text-[#8ff5ff]">{t('games.headup.topPickBadge')}</span>
-                  </div>
-                  <h3 className="text-4xl font-black italic text-[#f1f3fc] tracking-tight">{featured.name}</h3>
-                  <p className="text-[#a8abb3] text-sm mt-1">{t('games.headup.wordCount', { count: featured.words.length })}</p>
-                </div>
-                <div className="absolute right-4 bottom-4 w-12 h-12 rounded-full neon-btn flex items-center justify-center">
-                  <Play className="w-5 h-5 text-white ml-0.5" />
-                </div>
-              </motion.button>
+              <PremiumImageChoiceCard
+                title={featured.name}
+                subtitle={t('games.headup.wordCount', { count: featured.words.length })}
+                image={HEADUP_THEME_ASSETS[featured.id]}
+                selected={selectedCategory?.id === featured.id}
+                onClick={() => setSelectedCategory(featured)}
+                badge={`${t('games.headup.featuredBadge')} · ${t('games.headup.topPickBadge')}`}
+                accent="#df8eff"
+                layout="wide"
+                priority
+                className="mb-6"
+              />
             )}
 
             {/* Category Grid */}
             <h2 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-3 px-1">{t('games.headup.categoriesLabel')}</h2>
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-2 gap-3 mb-6 sm:grid-cols-3">
               {gridCats.map((cat) => (
-                <motion.button key={cat.id} whileTap={{ scale: 0.97 }} onClick={() => setSelectedCategory(cat)}
-                  className={`relative bg-[#1b2028] rounded-xl p-4 h-32 text-left transition-all border ${
-                    selectedCategory?.id === cat.id ? 'border-[#df8eff]/60 shadow-[0_0_20px_rgba(223,142,255,.15)]' : 'border-[#20262f] hover:border-[#df8eff]/20'
-                  }`}>
-                  <span className="text-3xl block mb-2">{cat.emoji}</span>
-                  <span className="text-sm font-bold text-[#f1f3fc]">{cat.name}</span>
-                  <span className="text-xs text-[#a8abb3] block mt-0.5">{t('games.headup.wordCount', { count: cat.words.length })}</span>
-                  {selectedCategory?.id === cat.id && <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#df8eff] to-transparent rounded-t-xl" />}
-                </motion.button>
+                <PremiumImageChoiceCard
+                  key={cat.id}
+                  title={cat.name}
+                  subtitle={t('games.headup.wordCount', { count: cat.words.length })}
+                  image={HEADUP_THEME_ASSETS[cat.id]}
+                  selected={selectedCategory?.id === cat.id}
+                  onClick={() => setSelectedCategory(cat)}
+                  badge={cat.emoji}
+                  accent="#df8eff"
+                />
               ))}
             </div>
 
@@ -424,8 +421,8 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
             </div>
 
             {/* Start Button */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
-              <div className="max-w-lg mx-auto text-center">
+            <div className="relative z-20 mt-2">
+              <div className="mx-auto text-center">
                 <motion.button whileTap={{ scale: 0.97 }} onClick={handleStartRound} disabled={!selectedCategory}
                   className={`w-full py-4 rounded-full text-base font-extrabold uppercase tracking-wide transition-all flex items-center justify-center gap-2 ${
                     selectedCategory ? 'neon-btn text-white' : 'bg-[#1b2028] text-[#a8abb3]/40 cursor-not-allowed'
