@@ -32,8 +32,16 @@ describe('premium game artwork', () => {
 
     expect(assets.length).toBeGreaterThan(20);
     for (const asset of assets) {
+      expect(asset).toMatch(/^\/images\/games\/editorial-themes\//);
       expect(asset).toMatch(/-gpt\.webp$/);
       expect(fs.existsSync(path.join(process.cwd(), 'public', asset))).toBe(true);
     }
+  });
+
+  it('uses a dedicated real-world Street View motif', () => {
+    expect(FINDIT_MODE_ASSETS.streetview).toBe(
+      '/images/games/editorial-themes/findit-streetview-gpt.webp',
+    );
+    expect(FINDIT_MODE_ASSETS.streetview).not.toBe(FINDIT_MODE_ASSETS.karte);
   });
 });

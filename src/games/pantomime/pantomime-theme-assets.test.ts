@@ -29,6 +29,9 @@ describe('OHNE WORTE — Themenmotive', () => {
   it('liefert alle referenzierten WebP-Dateien aus', () => {
     const assets = [PANTOMIME_MIX_ASSET, ...Object.values(PANTOMIME_THEME_ASSETS)];
     expect(assets.filter((asset) => !exists(asset))).toEqual([]);
+    expect(assets.every((asset) => asset.startsWith('/images/games/editorial-themes/'))).toBe(
+      true,
+    );
     expect(assets.every((asset) => asset.endsWith('-gpt.webp'))).toBe(true);
   });
 });

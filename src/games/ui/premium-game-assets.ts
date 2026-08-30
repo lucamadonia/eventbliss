@@ -2,25 +2,25 @@
  * Text-free GPT-Image artwork shared by the premium game setup cards.
  * Labels, descriptions and state intentionally stay in native React UI.
  */
-const ROOT = '/images/games/premium-themes';
-const PANTOMIME = '/images/games/pantomime';
+const ROOT = '/images/games/editorial-themes';
+const PANTOMIME = ROOT;
 
 export const CLOSE_ENOUGH_THEME_ASSETS = {
   mix: `${ROOT}/closeenough-mix-gpt.webp`,
   laender: `${ROOT}/world-gpt.webp`,
   bauwerke: `${ROOT}/architecture-gpt.webp`,
   natur: `${ROOT}/nature-gpt.webp`,
-  tierwelt: `${PANTOMIME}/theme-animals-gpt.webp`,
-  sport: `${PANTOMIME}/theme-sports-gpt.webp`,
+  tierwelt: `${PANTOMIME}/pantomime-animals-gpt.webp`,
+  sport: `${PANTOMIME}/pantomime-sports-gpt.webp`,
   technik: `${ROOT}/technology-gpt.webp`,
-  alltag: `${PANTOMIME}/theme-everyday-gpt.webp`,
+  alltag: `${PANTOMIME}/pantomime-everyday-gpt.webp`,
 } as const;
 
 export const PIXELJAGD_THEME_ASSETS = {
   mix: `${ROOT}/pixeljagd-mix-gpt.webp`,
-  tiere: `${PANTOMIME}/theme-animals-gpt.webp`,
+  tiere: `${PANTOMIME}/pantomime-animals-gpt.webp`,
   stars: `${ROOT}/celebrities-gpt.webp`,
-  filme: `${PANTOMIME}/theme-movies-gpt.webp`,
+  filme: `${PANTOMIME}/pantomime-movies-gpt.webp`,
   essen: `${ROOT}/food-gpt.webp`,
   orte: `${ROOT}/places-gpt.webp`,
   marken: `${ROOT}/brands-gpt.webp`,
@@ -28,14 +28,14 @@ export const PIXELJAGD_THEME_ASSETS = {
 
 export const HEADUP_THEME_ASSETS: Record<string, string> = {
   celebrities: `${ROOT}/celebrities-gpt.webp`,
-  animals: `${PANTOMIME}/theme-animals-gpt.webp`,
-  movies: `${PANTOMIME}/theme-movies-gpt.webp`,
+  animals: `${PANTOMIME}/pantomime-animals-gpt.webp`,
+  movies: `${PANTOMIME}/pantomime-movies-gpt.webp`,
   food: `${ROOT}/food-gpt.webp`,
-  sports: `${PANTOMIME}/theme-sports-gpt.webp`,
-  professions: `${PANTOMIME}/theme-professions-gpt.webp`,
-  actions: `${PANTOMIME}/theme-everyday-gpt.webp`,
+  sports: `${PANTOMIME}/pantomime-sports-gpt.webp`,
+  professions: `${PANTOMIME}/pantomime-professions-gpt.webp`,
+  actions: `${PANTOMIME}/pantomime-everyday-gpt.webp`,
   places: `${ROOT}/places-gpt.webp`,
-  fairytale: `${PANTOMIME}/theme-fairytales-gpt.webp`,
+  fairytale: `${PANTOMIME}/pantomime-fairytales-gpt.webp`,
   superheroes: `${ROOT}/superheroes-gpt.webp`,
   music: `${ROOT}/music-gpt.webp`,
   emojis: `${ROOT}/emojis-gpt.webp`,
@@ -53,7 +53,7 @@ export const FINDIT_MODE_ASSETS: Record<string, string> = {
   speed: `${ROOT}/findit-speed-gpt.webp`,
   unterschiede: `${ROOT}/findit-differences-gpt.webp`,
   karte: `${ROOT}/world-gpt.webp`,
-  streetview: `${ROOT}/places-gpt.webp`,
+  streetview: `${ROOT}/findit-streetview-gpt.webp`,
 };
 
 export const WORLD_FINDER_REGION_ASSETS: Record<string, string> = {
