@@ -159,7 +159,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
   const [view, setView] = useState<LobbyView>(urlRoom ? "join" : "menu");
   const [joinCode, setJoinCode] = useState(urlRoom);
   const [targetRoomCode, setTargetRoomCode] = useState(urlRoom.toUpperCase().trim());
-  const [joinName, setJoinName] = useState(urlName);
+  const [joinName, setJoinName] = useState(() => urlName || t("nativeExtra.gameLobby.defaultPlayerName"));
   const [hostName, setHostName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGame, setSelectedGame] = useState(gameId);
@@ -228,7 +228,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
 
   // Auto-join if name + room come from URL (personalized invite link)
   useEffect(() => {
-    if (urlRoom && urlName && view === "join" && !roomMatchesTarget) {
+    if (urlRoom && view === "join" && !roomMatchesTarget) {
       handleJoin();
     }
   }, []);

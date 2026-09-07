@@ -35,7 +35,9 @@ export default function JoinRoomScreen() {
     haptics.medium();
     // Generic lobby join — the actual game is decided by the host's
     // game-start broadcast, so never hardcode a specific game here.
-    navigate(`/games?room=${normalized}`);
+    // `/games` is the native dashboard; the room lobby lives in GamesHub's
+    // game route and resolves the actual host game after joining.
+    navigate(`/games/bomb?room=${normalized}`);
   };
 
   const handleCodeChange = (value: string) => {

@@ -99,7 +99,10 @@ export default function GameRoomSheet({
     haptics.medium();
     // Generic lobby join — the actual game is decided by the host's
     // game-start broadcast, so never hardcode a specific game here.
-    navigate(`/games?room=${normalized}`);
+    // Native `/games` is the tab dashboard. Enter through a game route so
+    // GamesHub can mount the shared online lobby; the host's selected game is
+    // resolved from the room handshake immediately afterwards.
+    navigate(`/games/bomb?room=${normalized}`);
     onOpenChange(false);
   };
 
