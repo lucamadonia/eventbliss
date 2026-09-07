@@ -147,7 +147,13 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
   const { t, i18n } = useTranslation();
   // Read name and room from URL params (for personalized invite links)
   const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
-  const urlName = urlParams?.get('name') || '';
+  // Invite links may omit the name (the native room sheet only collects the
+  // six character code). Reuse the last local player name so the join action
+  // completes immediately instead of closing the sheet and leaving the guest
+  // stranded on an empty join form.
+  const urlName = urlParams?.get('name') || (() => {
+    try { return localStorage.getItem('eventbliss_player_name') || ''; } catch { return ''; }
+  })();
   const urlRoom = urlParams?.get('room') || '';
 
   const [view, setView] = useState<LobbyView>(urlRoom ? "join" : "menu");
