@@ -49,7 +49,7 @@ export default function EventInvite({ roomCode, gameId }: EventInviteProps) {
   const [copiedAll, setCopiedAll] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const baseLink = `${getBaseUrl()}/games/${gameId}?room=${roomCode}`;
+  const baseLink = `${getBaseUrl()}/games?room=${roomCode}`;
   const personalLink = (name: string) => `${baseLink}&name=${encodeURIComponent(name)}`;
   const shareLink = baseLink;
 

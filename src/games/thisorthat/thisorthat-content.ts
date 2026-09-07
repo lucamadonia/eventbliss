@@ -12,7 +12,7 @@ import * as tr from './thisorthat-content-tr';
 import * as ar from './thisorthat-content-ar';
 export type { ThisOrThatPair } from './thisorthat-content-de';
 
-const BY_LANG: Record<string, typeof de> = { de, en, es, fr, it, nl, pl, pt, tr, ar };
+const BY_LANG: Record<string, typeof de> = { de, en, es, fr, it: { THISORTHAT_PAIRS: it.THISORTHAT_PAIRS_IT }, nl: { THISORTHAT_PAIRS: nl.THISORTHAT_PAIRS_NL }, pl: { THISORTHAT_PAIRS: pl.THISORTHAT_PAIRS_PL }, pt: { THISORTHAT_PAIRS: pt.THISORTHAT_PAIRS_PT }, tr: { THISORTHAT_PAIRS: tr.THISORTHAT_PAIRS_TR }, ar: { THISORTHAT_PAIRS: ar.THISORTHAT_PAIRS_AR } };
 function pack(): typeof de {
   const l = i18n.language?.split('-')[0] || 'de';
   return BY_LANG[l] || de;

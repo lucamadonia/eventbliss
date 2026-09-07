@@ -227,3 +227,11 @@ export function filterByRegion(locations: GeoLocation[], region: string): GeoLoc
   if (region === 'welt') return locations;
   return locations.filter(loc => getRegion(loc) === region);
 }
+
+/** Curated familiar capitals versus regional/insider destinations. */
+const FAMILIAR_CAPITALS = new Set(['Berlin', 'Paris', 'London', 'Madrid', 'Rom', 'Wien', 'Amsterdam', 'Prag', 'Athen', 'Dublin', 'Stockholm', 'Oslo', 'Helsinki', 'Lissabon', 'Tokio', 'Peking', 'Bangkok', 'Seoul', 'Neu-Delhi', 'Washington D.C.', 'Ottawa', 'Canberra', 'Kairo']);
+export function filterByDifficulty(locations: GeoLocation[], difficulty: number): GeoLocation[] {
+  if (difficulty === 1) return [...locations];
+  const pool = locations.filter(location => difficulty === 0 ? FAMILIAR_CAPITALS.has(location.name) : location.type === 'city' && !FAMILIAR_CAPITALS.has(location.name));
+  return pool.length ? pool : [...locations];
+}

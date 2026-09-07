@@ -8,6 +8,8 @@ import type { RoomPlayer } from "./useGameRoom";
 export interface OnlineGameProps {
   /** Always true when this object is present */
   isOnline: boolean;
+  /** False while any active participant is reconnecting; suspend clocks and actions. */
+  isConnected?: boolean;
   /** Whether the current device is the room host */
   isHost: boolean;
   /** The 6-char room code */
@@ -20,6 +22,8 @@ export interface OnlineGameProps {
   roomHasPremium: boolean;
   /** Send a named event + payload to all devices */
   broadcast: (event: string, data: Record<string, unknown>) => void;
+  /** Encrypted personal state. Never fall back to public broadcast for secrets. */
+  broadcastTo?: (playerId: string, event: string, data: Record<string, unknown>) => void;
   /** Subscribe to a named event — returns unsubscribe fn */
   onBroadcast: (event: string, cb: (data: Record<string, unknown>) => void) => () => void;
 }

@@ -1,3 +1,5 @@
+import { GameStage } from '../ui/GameStage';
+import './bomb-console.css';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -38,9 +40,9 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <motion.div
-      className="min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden relative"
-      style={{ background: '#0d0d15' }}
+    <GameStage gameId="bomb" className="bomb-console bomb-explosion"><motion.div
+      className="min-h-[75dvh] flex flex-col items-center justify-center p-4 overflow-hidden relative"
+      style={{ background: 'transparent' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
@@ -164,6 +166,6 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
           {t('games.bomb.nextRound')}
         </motion.button>
       </motion.div>
-    </motion.div>
+    </motion.div></GameStage>
   );
 }

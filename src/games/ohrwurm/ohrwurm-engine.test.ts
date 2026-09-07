@@ -8,6 +8,8 @@ import {
   hasWon,
   buildDeck,
   shuffle,
+  createFreshMatch,
+  START_HOOKS,
   type Song,
   type Participant,
 } from './ohrwurm-engine';
@@ -26,6 +28,45 @@ const song = (id: string, year: number, genre = 'Pop'): Song => ({
 
 const timeline = (...years: number[]): Song[] =>
   years.map((y, i) => song(`s${i}-${y}`, y));
+
+describe('fresh match initialization', () => {
+  it('resets a completed match to one start card and three hooks for every identity', () => {
+    const old: Participant[] = [
+      { id: 'host', name: 'Host', type: 'player', color: '#123', avatar: 'a', timeline: timeline(1970, 1980, 1990, 2000, 2010), hooks: 5 },
+      { id: 'guest', name: 'Guest', type: 'group', color: '#456', avatar: 'b', timeline: timeline(1980, 1990), hooks: 0 },
+    ];
+    const before = structuredClone(old);
+    const cards = Array.from({ length: 10 }, (_, i) => song(`new-${i}`, 1980 + i));
+    const fresh = createFreshMatch(old, cards);
+    expect(fresh.participants.map(p => p.timeline.length)).toEqual([1, 1]);
+    expect(fresh.participants.map(p => p.hooks)).toEqual([START_HOOKS, START_HOOKS]);
+    expect(START_HOOKS).toBe(3);
+    expect(fresh.participants.map(({ timeline, hooks, ...identity }) => identity))
+      .toEqual(old.map(({ timeline, hooks, ...identity }) => identity));
+    expect(fresh.participants.some(p => hasWon(p, 5))).toBe(false);
+    expect(old).toEqual(before);
+    expect(cards).toHaveLength(10);
+    const dealt = fresh.participants.flatMap(p => p.timeline.map(s => s.id));
+    expect(new Set(dealt).size).toBe(2);
+    expect(fresh.deck).toHaveLength(8);
+    expect(fresh.deck.every(s => !dealt.includes(s.id))).toBe(true);
+    expect(JSON.parse(JSON.stringify(fresh.participants))).toEqual(fresh.participants);
+  });
+
+  it('uses the identical deal for first start and replay, without score carryover', () => {
+    const roster = [{ id: '1', name: 'Player', type: 'player' as const, color: '#fff', avatar: '' }];
+    const cards = [song('a', 1980), song('b', 1990), song('c', 2000)];
+    const first = createFreshMatch(roster, cards);
+    first.participants[0].timeline.push(song('won', 2020));
+    first.participants[0].hooks = 0;
+    expect(createFreshMatch(first.participants, cards)).toEqual(createFreshMatch(roster, cards));
+  });
+
+  it('requires a separate draw card after the initial deal', () => {
+    const roster = [{ id: '1', name: 'Player', type: 'player' as const, color: '#fff', avatar: '' }];
+    expect(() => createFreshMatch(roster, [song('a', 1980)])).toThrow(/draw card/);
+  });
+});
 
 describe('slotBounds', () => {
   it('open left edge and right edge are ±Infinity', () => {

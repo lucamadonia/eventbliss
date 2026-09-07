@@ -1,3 +1,6 @@
+import { GameStage, StageHeader } from '../ui/GameStage';
+import './theater.css';
+import OnlineWaiting from '../multiplayer/OnlineWaiting';
 /**
  * OHNE WORTE — Pantomime.
  *
@@ -189,7 +192,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     endTurnRef.current?.();
   }, [isOnline, isHost, haptics]);
 
-  const timer = useGameTimer(modeDef.duration, handleTimeout);
+  const timer = useGameTimer(modeDef.duration, handleTimeout, online?.isConnected !== false);
   const timerRef = useRef<ReturnType<typeof useGameTimer> | null>(null);
   timerRef.current = timer;
 
@@ -233,14 +236,17 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       setPhase('extra');
     } else {
       setExtra(null);
+      drawWord();
+      timerRef.current?.reset(turnSeconds);
+      timerRef.current?.start();
       setPhase('playing');
     }
-  }, [extrasEnabled, lastExtraKind, teams, activeTeamIdx]);
+  }, [extrasEnabled, lastExtraKind, teams, activeTeamIdx, drawWord, turnSeconds]);
 
   /** Vom Angebot in die Runde — mit oder ohne Herausforderung. */
-  const startPlaying = useCallback(() => {
+  const startPlaying = useCallback((seconds = turnSeconds) => {
     drawWord();
-    timerRef.current?.reset(turnSeconds);
+    timerRef.current?.reset(seconds);
     setPhase('playing');
     window.setTimeout(() => timerRef.current?.start(), 50);
   }, [drawWord, turnSeconds]);
@@ -253,8 +259,8 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       setPhase('fetch');
       return;
     }
-    startPlaying();
-  }, [extra, haptics, startPlaying]);
+    startPlaying(extra?.halfTime ? Math.round(modeDef.duration / 2) : modeDef.duration);
+  }, [extra, modeDef.duration, haptics, startPlaying]);
 
   const declineExtra = useCallback(() => {
     setExtraAccepted(false);
@@ -263,14 +269,14 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
 
   // Holzeit für das Requisit. Die Rundenuhr steht so lange still.
   useEffect(() => {
-    if (phase !== 'fetch') return;
+    if (!isHost || online?.isConnected === false || phase !== 'fetch') return;
     if (fetchLeft <= 0) {
       startPlaying();
       return;
     }
     const id = window.setTimeout(() => setFetchLeft((s) => s - 1), 1000);
     return () => window.clearTimeout(id);
-  }, [phase, fetchLeft, startPlaying]);
+  }, [isHost, online?.isConnected, phase, fetchLeft, startPlaying]);
 
   const doGuessed = useCallback(() => {
     if (phase !== 'playing' || !word) return;
@@ -340,7 +346,12 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
 
   const applyAction = useCallback(
     (data: Record<string, unknown>) => {
+      if (data.type === 'again' && phase === 'gameOver' && teams.some(tm => tm.players.some(p => p.id === data.__senderId))) { replay(); return; }
+      if (data.__senderId !== actor?.id) return;
+      const allowed: Record<string, string> = { guessed: 'playing', skip: 'playing', accept: 'extra', decline: 'extra', begin: 'turnStart', next: 'turnSummary', ready: 'fetch' };
+      if (allowed[String(data.type)] !== phase) return;
       switch (data.type) {
+        case 'ready': startPlaying(); break;
         case 'guessed':
           doGuessed();
           break;
@@ -363,7 +374,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
           break;
       }
     },
-    [doGuessed, doSkip, acceptExtra, declineExtra, beginTurn, nextTurn],
+    [teams, actor, phase, startPlaying, doGuessed, doSkip, acceptExtra, declineExtra, beginTurn, nextTurn],
   );
 
   useEffect(() => {
@@ -371,34 +382,32 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     return online.onBroadcast('pantomime-action', (d) => applyAction(d));
   }, [online, isHost, applyAction]);
 
+  // The shared clock also restores the correct remaining time after reconnect.
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('pantomime-timer-state', { timeLeft: timer.timeLeft, running: timer.isRunning });
+  }, [online, timer.timeLeft, timer.isRunning]);
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('pantomime-timer-state', data => {
+      if (typeof data.timeLeft !== 'number') return;
+      timerRef.current?.reset(data.timeLeft);
+      if (data.running) timerRef.current?.start();
+    });
+  }, [online]);
+
   useEffect(() => {
     if (!online || !isHost) return;
-    online.broadcast('pantomime-state', {
-      snapshot: JSON.parse(
-        JSON.stringify({
-          phase,
-          teams,
-          activeTeamIdx,
-          actorIdx,
-          round,
-          totalRounds,
-          mode,
-          categories,
-          extrasEnabled,
-          skipLimit,
-          skipsUsed,
-          extra,
-          extraAccepted,
-          fetchLeft,
-          deck,
-          deckPos,
-          turnResults,
-          // Der Begriff geht an die Geräte, angezeigt wird er aber allein beim
-          // Darsteller. Der Fernseher bekommt ihn nie — siehe `tvPayload`.
-          word,
-        }),
-      ),
-    });
+    for (const recipient of online.players) {
+      if (recipient.id === online.myPlayerId) continue;
+      online.broadcastTo?.(recipient.id, 'pantomime-state', { snapshot: {
+        phase, teams, activeTeamIdx, actorIdx, round, totalRounds, mode, categories,
+        extrasEnabled, skipLimit, skipsUsed, extra, extraAccepted, fetchLeft,
+        deck: [], deckPos: 0,
+        turnResults: phase === 'turnSummary' || phase === 'gameOver' ? turnResults : turnResults.map(result => ({ ...result, word: '' })),
+        word: recipient.id === actor?.id ? word : null,
+      } });
+    }
   }, [
     online,
     isHost,
@@ -613,6 +622,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       extras: boolean;
       skipLimit: number | null;
     }) => {
+      if (!isHost) return;
       const words = shuffle(getPantomimeWords(cfg.categories, drinkingMode.isActivated));
       if (words.length === 0) return;
 
@@ -639,10 +649,15 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       restoredRef.current = true;
       setPhase('turnStart');
     },
-    [drinkingMode.isActivated, t],
+    [isHost, drinkingMode.isActivated, t],
   );
 
+  function replay() {
+    handleStart({ teamA: teams[0].players, teamB: teams[1].players, mode, categories, rounds: totalRounds, extras: extrasEnabled, skipLimit });
+  }
+
   // =========================================================================
+  if (phase === 'setup' && online && !isHost) return <OnlineWaiting />;
   if (phase === 'setup') {
     return (
       <PantomimeSetup
@@ -659,31 +674,10 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     teams[0].score === teams[1].score ? null : teams[0].score > teams[1].score ? teams[0] : teams[1];
 
   return (
-    <div className="min-h-[100dvh] relative" style={{ background: PM.bg, color: PM.text }}>
-      {/* Kopf */}
-      <div className="relative z-10 px-4 pt-14 pb-3 flex items-center justify-between">
-        {/* In der App löst der FloatingBackButton über den Back-Guard denselben
-            Dialog aus — dort nur unsichtbar schalten, nicht entfernen, damit
-            Runde und Punkte in der Kopfzeile stehen bleiben, wo sie waren. */}
-        <button
-          onClick={() => setConfirmExit(true)}
-          className={`text-xs font-bold${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
-          aria-hidden={hasShellBackButton()}
-          tabIndex={hasShellBackButton() ? -1 : undefined}
-          style={{ color: PM.dim }}
-        >
-          ← {t('games.pantomime.leave')}
-        </button>
-        <div className="text-xs font-bold" style={{ color: PM.dim }}>
-          {t('games.pantomime.roundOf', { round, total: totalRounds })}
-        </div>
-        <div className="flex items-center gap-2 text-xs font-black">
-          <span style={{ color: PM.teamA }}>{teams[0].score}</span>
-          <span style={{ color: PM.dim }}>:</span>
-          <span style={{ color: PM.teamB }}>{teams[1].score}</span>
-        </div>
-      </div>
-
+    <GameStage gameId="pantomime" className="pantomime-theater">
+      <StageHeader title={t('games.pantomime.actorIs')} subtitle={actor?.name} eyebrow={t('games.pantomime.roundOf',{round,total:totalRounds})}
+        leading={!hasShellBackButton() ? <button onClick={()=>setConfirmExit(true)} className="theater-exit">{t('games.pantomime.leave')}</button> : undefined} />
+      <div className="theater-teams">{teams.map((team,i)=><div key={i} data-active={i===activeTeamIdx}><span>{team.name}</span><strong>{team.score}</strong><small>{team.players.map(p=>p.name).join(' / ')}</small></div>)}</div>
       {/*
         Ohne `AnimatePresence`, wie in `TabooGame.tsx`, dem Vorbild dieses
         Spiels: Die Bildschirme ziehen einzeln ein (`initial`/`animate`), gehen
@@ -706,7 +700,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
             key="turnStart"
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="relative z-10 px-4 pt-8 text-center"
+            className="theater-ready relative z-10 px-4 pt-8 text-center"
           >
             <p
               className="inline-block px-4 py-1.5 rounded-full text-sm font-black"
@@ -807,7 +801,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
             </motion.p>
             {iAmActor && (
               <button
-                onClick={startPlaying}
+                disabled={!iAmActor} onClick={() => act('ready', {}, () => startPlaying())}
                 className="mt-10 w-full h-12 rounded-2xl font-bold"
                 style={{ background: PM.surface, color: PM.text }}
               >
@@ -871,13 +865,13 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
                   initial={{ opacity: 0, y: 16, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ type: 'spring', stiffness: 320, damping: 26 }}
-                  className="mt-6 rounded-3xl px-5 py-10 text-center"
+                  className="theater-cue mt-6 text-center"
                   style={{ background: PM.elevated }}
                 >
                   <p className="text-3xl font-black leading-tight">{word}</p>
                 </motion.div>
 
-                <div className="mt-5 grid grid-cols-1 gap-2">
+                <div className="theater-actions mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     onClick={() => act('guessed', {}, doGuessed)}
                     className="h-16 rounded-2xl font-black text-lg flex items-center justify-center gap-2"
@@ -908,7 +902,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
             ) : (
               // Alle anderen Geräte: bloß nicht der Begriff.
               <div
-                className="mt-6 rounded-3xl px-5 py-12 text-center"
+                className="theater-audience mt-6 text-center"
                 style={{ background: PM.elevated }}
               >
                 <Drama className="w-10 h-10 mx-auto" style={{ color: activeTeam.color }} />
@@ -1013,10 +1007,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
             </div>
 
             <button
-              onClick={() => {
-                clearSnapshot('pantomime');
-                setPhase('setup');
-              }}
+              onClick={() => act('again', {}, () => { clearSnapshot('pantomime'); replay(); })}
               className="mt-8 w-full h-14 rounded-2xl font-black"
               style={{ background: PM.gold, color: PM.bg }}
             >
@@ -1075,7 +1066,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </GameStage>
   );
 }
 
@@ -1173,8 +1164,8 @@ function PantomimeSetup({
   const canStart = contentReady && available > 0 && canPlay(teamOf);
 
   return (
-    <div
-      className="relative min-h-[100dvh] overflow-hidden"
+    <GameStage gameId="pantomime"
+      className="pantomime-theater theater-setup relative min-h-[100dvh] overflow-hidden"
       style={{ background: PM.bg, color: PM.text }}
     >
       <div
@@ -1234,7 +1225,7 @@ function PantomimeSetup({
         </section>
 
         <div className="mt-6">
-          <PlayerSetup
+          <PlayerSetup locked={!!onlinePlayers}
             players={list}
             onAdd={() => setList((p) => [...p, { id: `p${Date.now()}`, name: '' }])}
             onRemove={(id) => setList((p) => p.filter((x) => x.id !== id))}
@@ -1513,6 +1504,6 @@ function PantomimeSetup({
           </p>
         )}
       </main>
-    </div>
+    </GameStage>
   );
 }

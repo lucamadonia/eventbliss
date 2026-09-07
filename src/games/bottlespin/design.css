@@ -1,0 +1,61 @@
+
+.table-game { --local-accent: #e6b880; --local-secondary: #91b8a1; }
+.table-game { background: #17231f; }
+.table-game .table-play { padding-top: 2rem; padding-bottom: 2rem; gap: 2rem; }
+.table-game .table-play { padding-inline: 0; }
+.table-game [data-phase="card"] [class*="glass"] { background: #ede0bc; color: #26362a; border-color: #c3ac75; border-radius: 5px; }
+.table-game [data-phase="card"] [class*="glass"] [class*="text-white"] { color: #26362a; }
+.table-game [data-phase="vote"] button { min-height: 4rem; border-radius: 6px; }
+.table-game .bottle-table { isolation: isolate; flex-shrink: 0; margin: 1.5rem auto; }
+.table-game .bottle-table::before { content: ''; position: absolute; z-index: -1; inset: 20px; border-radius: 50%; background: radial-gradient(ellipse at 35% 25%, #375043, #263c31 60%, #1f3328); border: 1px solid #bd9d6566; box-shadow: 0 0 0 8px #18291f, 0 0 0 9px #9d825e33, inset 0 0 50px #0b1c1444, 0 18px 40px #0004; }
+.table-game .bottle-table::after { content: ''; position: absolute; z-index: -1; inset: 42px; border: 1px dashed #c4b48833; border-radius: 50%; }
+.table-game .table-bottle { height: 220px; width: 147px; max-width: none; flex-shrink: 0; object-fit: contain; pointer-events: none; filter: drop-shadow(3px 5px 3px #09151099); }
+.table-game .bottle-table > div[class*="rounded-full border"] { opacity: .3; }
+.table-game [class*="glass-panel"] { background: #24382e; border-color: #e6b88033; border-radius: 8px; box-shadow: none; }
+.table-game button[class*="bg-gradient"] { background: #e6b880; color: #233226; border-radius: 6px; box-shadow: none; }
+.table-game [class*="neon"] { animation: none; }
+.table-game h2 { font-family: Georgia, serif; font-size: clamp(1.7rem, 5vw, 2.5rem); font-weight: 500; }
+.table-game .table-results { max-width: 46rem; }
+.table-game .table-task { background: #e8ddbf; color: #23352b; border-color: #c6b789; border-radius: 5px; box-shadow: 6px 7px 0 #0002; }
+.table-game .table-task [class*="text-white"] { color: #23352b; }
+.table-game .table-task > div:first-child { background: #afbe98; }
+.table-game .table-task button { border-radius: 5px; }
+@media (max-width: 360px) { .table-game .bottle-table { transform: scale(.9); margin-inline: -4px; margin-block: .4rem; } }
+.table-game > div { background-color: transparent; }
+.table-game h1, .table-game h2, .table-game h3 { text-wrap: balance; }
+.table-game button:focus-visible, .table-game input:focus-visible, .table-game select:focus-visible { outline: 2px solid var(--local-accent); outline-offset: 4px; }
+.table-game button:disabled { opacity: .38; cursor: not-allowed; }
+.table-game button { touch-action: manipulation; }
+.table-game [class*="neon"], .table-game .trophy-glow { text-shadow: none; box-shadow: none; }
+.table-game [class*="blur-[120px]"], .table-game [class*="blur-[140px]"], .table-game .float-aura { display: none; }
+.table-game input, .table-game select { font-size: 16px; }
+.table-game [class*="glass-"] { backdrop-filter: none; -webkit-backdrop-filter: none; }
+.table-game [class*="max-w-sm"] { max-width: 36rem; }
+.table-game [class*="max-w-md"] { max-width: 42rem; }
+.table-game [class*="max-h-64"] { max-height: min(48dvh, 32rem); }
+@media (max-width: 380px) { .table-game [class*="px-6"] { padding-left: 1rem; padding-right: 1rem; } }
+@media (prefers-reduced-motion: reduce) { .table-game *, .table-game *::before, .table-game *::after { animation: none !important; scroll-behavior: auto !important; } }
+.table-game .bottle-selection { max-width: 56rem; margin: auto; padding: 1.5rem 1rem 3rem; }
+.table-game .bottle-selection-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.table-game .bottle-selection-heading .table-bottle { height: 160px; width: 100px; transform: rotate(12deg); }
+.table-game .bottle-selection-heading .stage-header { min-width: 0; }
+@media (max-width: 400px) { .table-game .bottle-selection-heading { gap: .5rem; } .table-game .bottle-selection-heading h1 { font-size: 1.2rem; letter-spacing: -.04em; } .table-game .bottle-selection-heading .table-bottle { width: 48px; height: 96px; flex-shrink: 0; } }
+.table-game .bottle-selection fieldset { border: 0; min-width: 0; padding: 0; margin: 1.5rem 0; }
+.table-game .bottle-selection legend { font-weight: 700; margin-bottom: .8rem; color: #e8ddbf; }
+.table-game .bottle-content-types { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .5rem; }
+.table-game .bottle-content-types button { display: flex; flex-direction: column; gap: .5rem; align-items: center; padding: .85rem .5rem; border: 1px solid #e6b88044; border-radius: 8px; font-size: .85rem; min-height: 80px; }
+.table-game .bottle-content-types button[aria-pressed="true"] { background: #e6b880; color: #233226; border-color: #e6b880; }
+.table-game .bottle-category-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .65rem; }
+.table-game .bottle-category-grid button { text-align: left; display: flex; align-items: center; gap: .7rem; min-height: 88px; padding: 1rem; border: 1px solid #e6b88033; border-radius: 8px; color: #d7dfd5; background: #1c2c24; }
+.table-game .bottle-category-grid button[aria-pressed="true"] { background: #304737; border-color: #d6b47e; }
+.table-game .bottle-category-grid strong { display: block; font-size: .95rem; line-height: 1.3; }
+.table-game .bottle-category-grid small { display: block; color: #b6c5b6; margin-top: .3rem; font-size: .75rem; }
+.table-game .bottle-category-index { color: #b49a71; font-variant-numeric: tabular-nums; font-size: .8rem; }
+.table-game .bottle-category-check { display: grid; place-items: center; width: 21px; height: 21px; flex-shrink: 0; margin-left: auto; border: 1px solid #b6c5b677; border-radius: 50%; }
+.table-game [aria-pressed="true"] .bottle-category-check { color: #18291f; background: #e6b880; border-color: #e6b880; }
+.table-game .bottle-selection-footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
+.table-game .bottle-selection-footer p, .table-game .bottle-content-summary { color: #b8c9bd; font-size: .85rem; }
+.table-game .bottle-content-summary { text-align: center; max-width: 34rem; padding: 0 1rem; line-height: 1.6; }
+.table-game .bottle-edit-selection { margin: 1rem; padding: .65rem 1rem; border: 1px solid #e6b88066; border-radius: 6px; color: #e6b880; min-height: 44px; }
+@media (max-width: 520px) { .table-game .bottle-category-grid { grid-template-columns: 1fr; } .table-game .bottle-selection-footer .stage-action { width: 100%; } }
+@media (max-width: 360px) { .table-game .bottle-selection-heading .table-bottle { width: 66px; height: 105px; } .table-game .bottle-content-types button { font-size: .75rem; } }

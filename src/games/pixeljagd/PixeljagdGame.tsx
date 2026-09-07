@@ -1,3 +1,5 @@
+import OnlineWaiting from '../multiplayer/OnlineWaiting';
+import { publicRoundItem } from '../multiplayer/public-round-item';
 /**
  * PIXELJAGD — Verpixel-Ratespiel.
  *
@@ -92,6 +94,8 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   const [totalRounds, setTotalRounds] = useState(8);
   const [round, setRound] = useState(0);
   const [deck, setDeck] = useState<PixelPuzzle[]>([]);
+  const [imageFailed, setImageFailed] = useState(false);
+  const [imageAttempt, setImageAttempt] = useState(0);
   const [puzzle, setPuzzle] = useState<PixelPuzzle | null>(null);
   const [buzzedBy, setBuzzedBy] = useState<string | null>(null);
   // Die Loesung bleibt bis zum bewussten Aufdecken verdeckt — sonst koennte die
@@ -130,7 +134,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setPhase('roundEnd');
   }, [isOnline, isHost, haptics]);
 
-  const roundTimer = useGameTimer(modeDef.duration, handleTimeout);
+  const roundTimer = useGameTimer(modeDef.duration, handleTimeout, online?.isConnected !== false);
   const roundTimerRef = useRef<ReturnType<typeof useGameTimer> | null>(null);
   roundTimerRef.current = roundTimer;
 
@@ -141,7 +145,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     : (steps[Math.min(elapsed, steps.length - 1)] ?? FINAL_STEP);
   const livePoints = frozenPoints ?? pointsAt(elapsed, modeDef.duration);
 
-  const beginRound = useCallback((d: PixelPuzzle[], idx: number, ps: Player[]) => {
+  const beginRound = useCallback((d: PixelPuzzle[], idx: number, ps: Player[], duration = modeDef.duration) => {
     const next = d[idx];
     setPuzzle(next ?? null);
     setRound(idx);
@@ -150,7 +154,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setWinnerId(null);
     setGuess('');
     setPlayers(ps.map((p) => ({ ...p, locked: false })));
-    roundTimerRef.current?.reset(modeDef.duration);
+    roundTimerRef.current?.reset(duration);
     setImageReady(false);
     setPhase('playing');
     // Kein start() hier: das uebernimmt der Effekt, sobald PixelCanvas
@@ -196,11 +200,17 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   }, [modeDef.penalty, haptics, flash, t, players]);
 
   useEffect(() => { setSolutionShown(false); }, [buzzedBy, round]);
+  useEffect(() => { setImageFailed(false); setImageReady(false); }, [puzzle?.id]);
 
   const doJudge = useCallback((correct: boolean) => {
     if (!buzzedBy) return;
     if (correct) award(buzzedBy, frozenPoints ?? 10);
-    else penalize(buzzedBy);
+    else {
+      penalize(buzzedBy);
+      // The solution has been shown for judging, so no further guesses are fair.
+      roundTimerRef.current?.pause();
+      setPhase('roundEnd');
+    }
   }, [buzzedBy, frozenPoints, award, penalize]);
 
   const doTextGuess = useCallback((pid: string, text: string) => {
@@ -224,29 +234,48 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     beginRound(deck, nextIdx, players);
   }, [round, totalRounds, deck, players, beginRound]);
 
+  const rematchRef = useRef<() => void>(() => {});
   // Host wendet Client-Aktionen an.
   const applyAction = useCallback((data: Record<string, unknown>) => {
+    if (data.type === 'again' && phase === 'gameOver' && players.some(p => p.id === data.__senderId)) { rematchRef.current(); return; }
+    const sender = data.__senderId;
+    if (typeof sender !== 'string' || !players.some(p => p.id === sender)) return;
+    if (data.type === 'buzz' || data.type === 'text') { if (data.pid !== sender) return; }
+    else return; // Judging and advancing are host controls.
     switch (data.type) {
       case 'buzz': doBuzz(data.pid as string); break;
-      case 'judge': doJudge(data.correct as boolean); break;
       case 'text': doTextGuess(data.pid as string, data.text as string); break;
-      case 'next': nextRound(); break;
       default: break;
     }
-  }, [doBuzz, doJudge, doTextGuess, nextRound]);
+  }, [phase, players, doBuzz, doTextGuess]);
 
   useEffect(() => {
     if (!online || !isHost) return;
     return online.onBroadcast('pixeljagd-action', (d) => applyAction(d));
   }, [online, isHost, applyAction]);
 
+  // The shared clock also restores the correct remaining time after reconnect.
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('pixeljagd-timer-state', { timeLeft: roundTimer.timeLeft, running: roundTimer.isRunning });
+  }, [online, roundTimer.timeLeft, roundTimer.isRunning]);
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('pixeljagd-timer-state', data => {
+      if (typeof data.timeLeft !== 'number') return;
+      roundTimerRef.current?.reset(data.timeLeft);
+      if (data.running) roundTimerRef.current?.start();
+    });
+  }, [online]);
+
   // Host → Snapshot. Ohne timeLeft (sonst 60 Nachrichten pro Runde).
   useEffect(() => {
     if (!online || !isHost) return;
     online.broadcast('pixeljagd-state', {
       snapshot: JSON.parse(JSON.stringify({
-        phase, players, round, totalRounds, puzzle, buzzedBy, frozenPoints, winnerId,
-        mode, answerMode, categories, deck,
+        phase, players, round, totalRounds,
+        puzzle: publicRoundItem(puzzle, phase === 'roundEnd' || phase === 'gameOver', ['answer', 'aliases', 'credit', 'sourceUrl']),
+        buzzedBy, frozenPoints, winnerId, mode, answerMode, categories,
       })),
     });
   }, [online, isHost, phase, players, round, totalRounds, puzzle, buzzedBy, frozenPoints, winnerId, mode, answerMode, categories, deck]);
@@ -267,7 +296,6 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
       setMode(s.mode as ModeId);
       setAnswerMode(s.answerMode as AnswerMode);
       setCategories(s.categories as PixelCategory[]);
-      setDeck(s.deck as PixelPuzzle[]);
     });
   }, [online, isHost]);
 
@@ -373,6 +401,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     players: { id: string; name: string }[];
     mode: ModeId; answerMode: AnswerMode; categories: PixelCategory[]; rounds: number;
   }) => {
+    if (!isHost) return;
     const pool = shuffle(getPixelPuzzles(cfg.categories.length ? cfg.categories : undefined));
     if (pool.length === 0) { flash(t('games.pixeljagd.noImages')); return; }
     const ps: Player[] = cfg.players.map((p, i) => ({
@@ -384,10 +413,12 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setTotalRounds(Math.min(cfg.rounds, pool.length));
     setDeck(pool);
     restoredRef.current = true;
-    beginRound(pool, 0, ps);
-  }, [beginRound, flash, t]);
+    beginRound(pool, 0, ps, (MODES.find(m => m.id === cfg.mode) ?? MODES[0]).duration);
+  }, [isHost, beginRound, flash, t]);
 
   // =========================================================================
+  rematchRef.current = () => handleStart({ players: players.map(p => ({ id: p.id, name: p.name })), mode, answerMode, categories, rounds: totalRounds });
+  if (phase === 'setup' && online && !isHost) return <OnlineWaiting />;
   if (phase === 'setup') {
     return (
       <PixeljagdSetup
@@ -407,10 +438,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
       <ResultScreen
         players={sorted.map((p) => ({ name: p.name, score: p.score, streak: 0 }))}
         gameTitle={t('games.pixeljagd.title')}
-        onPlayAgain={() => handleStart({
-          players: players.map((p) => ({ id: p.id, name: p.name })),
-          mode, answerMode, categories, rounds: totalRounds,
-        })}
+        onPlayAgain={() => act('again', {}, () => rematchRef.current())}
         onBackToHub={() => { clearSnapshot('pixeljagd'); navigate('/games'); }}
         totalRounds={totalRounds}
         gameId="pixeljagd"
@@ -450,17 +478,18 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
           {puzzle ? (
             <div className="relative">
               <PixelCanvas
+                key={`${puzzle.id}-${imageAttempt}`}
                 src={puzzle.image}
                 step={step}
                 className="w-full h-auto block"
-                onError={() => { flash(t('games.pixeljagd.imageFailed')); nextRound(); }}
+                onError={() => { flash(t('games.pixeljagd.imageFailed')); if (isHost) nextRound(); else setImageFailed(true); }}
                 onReady={() => setImageReady(true)}
               />
               {!imageReady && (
                 <div className="absolute inset-0 flex items-center justify-center"
                   style={{ background: PJ.elevated }}>
-                  <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
-                    style={{ borderColor: PJ.primary, borderTopColor: 'transparent' }} />
+                  {imageFailed ? <button className="min-h-12 rounded-2xl px-5 font-bold" style={{ background: PJ.primary, color: PJ.bg }} onClick={() => { setImageFailed(false); setImageAttempt(n => n + 1); }}>{t('games.pixeljagd.retryImage')}</button> : <div className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+                    style={{ borderColor: PJ.primary, borderTopColor: 'transparent' }} />}
                 </div>
               )}
             </div>
@@ -511,7 +540,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
                     wir die Bilder ausserhalb ihrer Lizenz. */}
                 {' · '}{t('games.pixeljagd.modified')}
               </p>
-              <button onClick={() => act('next', {}, nextRound)}
+              <button disabled={!isHost} onClick={() => act('next', {}, nextRound)}
                 className="mt-4 w-full h-12 rounded-2xl font-black flex items-center justify-center gap-2"
                 style={{ background: PJ.primary, color: PJ.bg }}>
                 {t('games.pixeljagd.next')} <ChevronRight className="w-4 h-4" />
@@ -541,6 +570,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
                     {t('games.pixeljagd.sayThenReveal')}
                   </p>
                   <button
+                    disabled={!isHost}
                     onClick={() => setSolutionShown(true)}
                     className="w-full h-12 rounded-2xl font-black mt-4 cursor-pointer transition-colors"
                     style={{ background: PJ.accent, color: PJ.bg }}>
@@ -559,12 +589,12 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
                     {t('games.pixeljagd.groupDecides')}
                   </p>
               <div className="flex gap-2 mt-4">
-                <button onClick={() => act('judge', { correct: false }, () => doJudge(false))}
+                <button disabled={!isHost} onClick={() => act('judge', { correct: false }, () => doJudge(false))}
                   className="flex-1 h-12 rounded-2xl font-black flex items-center justify-center gap-1"
                   style={{ background: PJ.bad, color: PJ.bg }}>
                   <X className="w-4 h-4" /> {t('games.pixeljagd.wrong')}
                 </button>
-                <button onClick={() => act('judge', { correct: true }, () => doJudge(true))}
+                <button disabled={!isHost} onClick={() => act('judge', { correct: true }, () => doJudge(true))}
                   className="flex-1 h-12 rounded-2xl font-black flex items-center justify-center gap-1"
                   style={{ background: PJ.primary, color: PJ.bg }}>
                   <Check className="w-4 h-4" /> {t('games.pixeljagd.correct')}

@@ -23,6 +23,8 @@ export interface PlayerSetupPlayer {
 }
 
 export interface PlayerSetupProps {
+  /** The connected room is the sole source of player identities. */
+  locked?: boolean;
   players: PlayerSetupPlayer[];
   onAdd: () => void;
   onRemove: (id: string) => void;
@@ -59,6 +61,7 @@ export function PlayerSetup({
   hint,
   maxNameLength = 20,
   onImportNames,
+  locked = false,
 }: PlayerSetupProps) {
   const { t } = useTranslation();
   // Faellt der Aufrufer nichts mit, gilt das uebersetzte "Spieler"/"Players".
@@ -67,10 +70,11 @@ export function PlayerSetup({
   const reduce = useReducedMotion();
   const [pickerOpen, setPickerOpen] = useState(false);
 
+  const rosterLocked = locked || players.some(player => player.readOnly);
   const atMax = players.length >= max;
-  const canRemove = players.length > min;
+  const canRemove = !rosterLocked && players.length > min;
 
-  const handleAdd = () => { void haptics.light(); onAdd(); };
+  const handleAdd = () => { if (rosterLocked) return; void haptics.light(); onAdd(); };
   const handleRemove = (id: string) => { void haptics.light(); onRemove(id); };
 
   const rowMotion = reduce
@@ -84,10 +88,10 @@ export function PlayerSetup({
       };
 
   return (
-    <section style={{ ['--accent' as string]: accent }} className="space-y-3">
+    <section style={{ ['--accent' as string]: accent }} className="player-setup space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
+        <h2 className="text-[11px] font-bold uppercase tracking-[0.16em] text-gray-300">
           {entity} ({players.length})
         </h2>
         {hint}
@@ -100,40 +104,40 @@ export function PlayerSetup({
             const color = player.color ?? getPlayerColor(i);
             const initial = player.avatar ?? (player.name ? getPlayerInitial(player.name) : null);
             return (
-              <motion.div key={player.id} {...rowMotion} className="flex items-center gap-3">
+              <motion.div key={player.id} {...rowMotion} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.025] px-3 py-2">
                 {/* Avatar */}
                 <div
-                  className="w-11 h-11 rounded-full flex items-center justify-center text-white font-black text-sm shrink-0"
-                  style={{ backgroundColor: color, boxShadow: `0 2px 8px -2px ${color}66, inset 0 1px 0 rgba(255,255,255,0.25)` }}
+                  className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm shrink-0"
+                  style={{ backgroundColor: `${color}24`, color, border:`1px solid ${color}60` }}
                   aria-hidden="true"
                 >
                   {initial ?? <User className="w-4 h-4 opacity-80" />}
                 </div>
 
                 {/* Name */}
-                <input
+                {rosterLocked || player.readOnly ? <p className="min-w-0 flex-1 break-words px-1 text-sm font-semibold text-white">{player.name}</p> : <input
                   type="text"
                   value={player.name}
-                  onChange={(e) => onRename(player.id, e.target.value)}
+                  onChange={(e) => { if (!rosterLocked) onRename(player.id, e.target.value); }}
                   placeholder={`${entity} ${i + 1}`}
                   maxLength={maxNameLength}
                   inputMode="text"
                   autoCorrect="off"
                   autoCapitalize="words"
                   spellCheck={false}
-                  readOnly={player.readOnly}
+                  readOnly={rosterLocked || player.readOnly}
                   aria-label={t('games.setup.nameOf', { label: entity, n: i + 1 })}
                   className={cn(
-                    'flex-1 min-w-0 rounded-xl px-3.5 py-2.5 text-base text-white bg-gray-800/60 border border-gray-700',
+                    'flex-1 min-w-0 rounded-lg px-2 py-2.5 text-base text-white bg-transparent border border-transparent',
                     'placeholder:text-gray-500 transition-[border-color,box-shadow] duration-150',
                     'focus:outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/45',
                     'focus-visible:ring-2 focus-visible:ring-[var(--accent)]/45',
-                    player.readOnly && 'border-[var(--accent)]/30 bg-[var(--accent)]/5 cursor-default',
+                    (rosterLocked || player.readOnly) && 'border-[var(--accent)]/30 bg-[var(--accent)]/5 cursor-default',
                   )}
-                />
+                />}
 
                 {/* Trailing slot: Online-Badge / Entfernen / Platzhalter (Breite stabil) */}
-                {player.readOnly ? (
+                {rosterLocked || player.readOnly ? (
                   <div className="shrink-0 grid place-items-center w-11 h-11 rounded-xl bg-[var(--accent)]/10"
                     title={t('games.setup.onlinePlayer')} aria-label={t('games.setup.onlinePlayer')}>
                     <Globe className="w-4 h-4 text-[var(--accent)]" />
@@ -165,7 +169,7 @@ export function PlayerSetup({
 
         {/* Hinzufügen */}
         <AnimatePresence initial={false}>
-          {!atMax && (
+          {!rosterLocked && !atMax && (
             <motion.button
               key="__add"
               type="button"
@@ -186,11 +190,11 @@ export function PlayerSetup({
         {/* Aus Event übernehmen — Teilnehmer eines eigenen Events laden.
             Bewusst prominent (gefüllter Akzent + Glow), damit die Funktion in
             jedem Spiel klar erkennbar ist. */}
-        {onImportNames && (
+        {!rosterLocked && onImportNames && (
           <button
             type="button"
             onClick={() => { void haptics.light(); setPickerOpen(true); }}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white bg-[var(--accent)] shadow-[0_6px_20px_-6px_var(--accent)] transition-transform duration-150 hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/60"
+            className="w-full min-h-12 flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-semibold text-[var(--accent)] border border-[var(--accent)]/30 bg-transparent transition-transform duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/60"
           >
             <CalendarPlus className="w-4 h-4" />
             {t('games.setup.importFromEvent')}
@@ -198,7 +202,7 @@ export function PlayerSetup({
         )}
       </div>
 
-      {onImportNames && (
+      {!rosterLocked && onImportNames && (
         <EventParticipantPicker
           open={pickerOpen}
           onClose={() => setPickerOpen(false)}

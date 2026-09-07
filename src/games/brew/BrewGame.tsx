@@ -1,3 +1,5 @@
+import { usePausableTasks } from '../bottlespin/pausable-tasks';
+import OnlineWaiting from '../multiplayer/OnlineWaiting';
 /**
  * GEBRÄU — Push-your-luck-Sammelspiel um ein offen liegendes Rezept.
  *
@@ -113,6 +115,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const haptics = useHaptics();
   const drinkingMode = useDrinkingMode();
   const isDrinkingMode = drinkingMode.isDrinkingMode;
+  const gameTasks = usePausableTasks(online?.isConnected !== false);
   const localSkin: Skin = isDrinkingMode ? "bar" : "brew";
   const reduceMotion = useReducedMotion();
   const { enabled: soundEnabled, setEnabled: setSoundEnabled, play: playSound } = useBrewAudio();
@@ -214,8 +217,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   /** Traegt den verzoegerten Wechsel zum Ergebnisschirm — beim Verlassen loeschen. */
   const finishTimerRef = useRef<number | null>(null);
   useEffect(() => () => {
-    if (finishTimerRef.current) window.clearTimeout(finishTimerRef.current);
-    pourTimersRef.current.forEach((id) => window.clearTimeout(id));
+    if (finishTimerRef.current) gameTasks.clearTimeout(finishTimerRef.current);
+    pourTimersRef.current.forEach((id) => gameTasks.clearTimeout(id));
   }, []);
 
   const penaltyTasks = useMemo(() => {
@@ -246,6 +249,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
 
   // --- Rundenstart -----------------------------------------------------
   const handleStart = useCallback((cfg: { players: { id: string; name: string }[]; length: RecipeLength }) => {
+    gameTasks.clear();
+    pourTimersRef.current = [];
     const recipes = dealRecipes(cfg.players.length, cfg.length);
     const ps: PlayerState[] = cfg.players.map((p, i) => ({
       id: p.id,
@@ -270,7 +275,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     setWinnerId(null);
     // Ein noch laufender Sieges-Timer wuerde die frische Runde sofort wieder
     // auf den Ergebnisschirm werfen.
-    if (finishTimerRef.current) { window.clearTimeout(finishTimerRef.current); finishTimerRef.current = null; }
+    if (finishTimerRef.current) { gameTasks.clearTimeout(finishTimerRef.current); finishTimerRef.current = null; }
     // Das Gewand des Gastgebers gilt ab jetzt fuer alle.
     setRoundSkin(localSkin);
     // Zaehler und Wachposten zuruecksetzen, sonst blockiert ein alter Stand die
@@ -295,7 +300,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     setPourSeq(0);
     setSipDisclaimer(null);
     setPhase("playing");
-  }, [localSkin]);
+  }, [localSkin, gameTasks]);
 
   const playAgainLocal = useCallback(() => {
     if (players.length === 0) return;
@@ -353,8 +358,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       // Erst die Unglueckskarte zeigen, DANN kippen und strafen. Ohne die
       // Wartezeit ueberholt die Vollbild-Strafe den Schreckmoment.
       setDrawnCard({ id: null, seq: Date.now(), outcome: "bust" });
-      window.setTimeout(() => emitCue("bust"), reduceMotion ? 80 : 330);
-      window.setTimeout(triggerPenalty, drawRevealDuration(true, !!reduceMotion) + (reduceMotion ? 0 : 700));
+      gameTasks.setTimeout(() => emitCue("bust"), reduceMotion ? 80 : 330);
+      gameTasks.setTimeout(triggerPenalty, drawRevealDuration(true, !!reduceMotion) + (reduceMotion ? 0 : 700));
     } else {
       void haptics.light();
       setDrawPile(nextDraw);
@@ -363,7 +368,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       const afterHits = active ? splitTray(active.recipe, active.glass, [...tray, card.id]).used.length : beforeHits;
       const hit = afterHits > beforeHits;
       setDrawnCard({ id: card.id, seq: Date.now(), outcome: hit ? "hit" : "miss" });
-      window.setTimeout(() => {
+      gameTasks.setTimeout(() => {
         emitCue(hit ? "hit" : "miss");
         if (hit) void haptics.medium();
       }, reduceMotion ? 80 : 360);
@@ -373,7 +378,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     if (reshuffled) {
       const msg = t("games.brew.reshuffled");
       setToast(msg);
-      window.setTimeout(() => setToast((cur) => (cur === msg ? null : cur)), 1600);
+      gameTasks.setTimeout(() => setToast((cur) => (cur === msg ? null : cur)), 1600);
       setReshuffleSeq((n) => n + 1);
     }
   }, [phase, penalty, winnerId, pourPlan, drawnCard, drawPile, discardPile, tray, active, reduceMotion, haptics, triggerPenalty, emitCue, t]);
@@ -415,7 +420,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     void haptics.light();
     emitCue("pour");
     if (bonus.perfect) {
-      pourTimersRef.current.push(window.setTimeout(() => {
+      pourTimersRef.current.push(gameTasks.setTimeout(() => {
         emitCue("perfect");
         void haptics.success();
       }, reduceMotion ? 140 : POUR_BEATS.depart + POUR_BEATS.flight));
@@ -426,11 +431,11 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       // lief — den schoensten Moment des Spiels sah dadurch nie jemand.
       // `winnerId` sperrt derweil jede weitere Aktion (siehe die Waechter oben).
       setWinnerId(active.id);
-      pourTimersRef.current.push(window.setTimeout(() => {
+      pourTimersRef.current.push(gameTasks.setTimeout(() => {
         emitCue("finish");
         void haptics.celebrate();
       }, reduceMotion ? 220 : pourDuration(used.length, leftover.length, false)));
-      finishTimerRef.current = window.setTimeout(
+      finishTimerRef.current = gameTasks.setTimeout(
         () => setPhase("gameOver"),
         pourDuration(used.length, leftover.length, !!reduceMotion) + FINISH_HOLD_MS,
       );
@@ -438,7 +443,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       // Der Zugwechsel MUSS warten: das grosse Glas gehoert der aktiven Person.
       // Wechselt der Zug sofort, wechselt mitten im Flug das Ziel — die Karten
       // floegen sichtbar ins Glas der naechsten Person.
-      pourTimersRef.current.push(window.setTimeout(
+      pourTimersRef.current.push(gameTasks.setTimeout(
         advanceTurn,
         pourDuration(used.length, leftover.length, !!reduceMotion),
       ));
@@ -486,14 +491,14 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   );
 
   const applyAction = useCallback((data: Record<string, unknown>) => {
-    const pid = typeof data.pid === "string" ? data.pid : undefined;
+    const pid = typeof data.__senderId === "string" ? data.__senderId : undefined;
     // Besitzpruefung: alle sehen dieselbe Theke, also koennte sonst jemand
     // ziehen, waehrend ein anderer dran ist — die Karte landete auf dem fremden
     // Tablett. Die `tray.length === 0`-Wache in doPourIn allein reicht nicht.
     const ownsTurn = !!pid && players[activeIdx]?.id === pid;
     switch (data.type) {
       case "start":
-        if (phase === "setup") {
+        if (phase === "setup" && pid === online?.myPlayerId) {
           const raw = Array.isArray(data.players) ? (data.players as { id: string; name: string }[]) : [];
           if (raw.length >= 2) handleStart({ players: raw, length: data.length as RecipeLength });
         }
@@ -502,10 +507,10 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       case "take": if (ownsTurn) doTakeFromCounter(data.id as IngredientId, Number(data.index)); break;
       case "pour": if (ownsTurn) doPourIn(); break;
       case "penalty": if (ownsTurn && penalty) confirmPenalty(); break;
-      case "again": if (phase === "gameOver") playAgainLocal(); break;
+      case "again": if (phase === "gameOver" && players.some(p => p.id === pid)) playAgainLocal(); break;
       default: break;
     }
-  }, [players, activeIdx, phase, penalty, handleStart, doDraw, doTakeFromCounter, doPourIn, confirmPenalty, playAgainLocal]);
+  }, [online, players, activeIdx, phase, penalty, handleStart, doDraw, doTakeFromCounter, doPourIn, confirmPenalty, playAgainLocal]);
 
   useEffect(() => {
     if (!online || !isHost) return;
@@ -631,13 +636,13 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     if (!plan) return;
     // KEIN clearPourTimers() hier: doPourIn hat den Zugwechsel-Timer soeben
     // gesetzt, und der Wachposten laeuft danach — er wuerde ihn mit loeschen.
-    pourTimersRef.current.push(window.setTimeout(
+    pourTimersRef.current.push(gameTasks.setTimeout(
       () => setPourFreeze(null),
       // Ohne Flug traegt allein die Lesepause die Erklaerung — sie waechst
       // deshalb von 300 auf 700 ms, statt einfach zu entfallen.
       reduceMotion ? POUR_BEATS.reducedHold : POUR_BEATS.depart,
     ));
-    pourTimersRef.current.push(window.setTimeout(() => {
+    pourTimersRef.current.push(gameTasks.setTimeout(() => {
       setPourPlan(null);
       void haptics.success();
     }, pourDuration(plan.used.length, plan.leftover.length, !!reduceMotion)));
@@ -650,7 +655,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     lastReshuffleRef.current = reshuffleSeq;
     const msg = t("games.brew.reshuffled");
     setToast(msg);
-    window.setTimeout(() => setToast((cur) => (cur === msg ? null : cur)), 1600);
+    gameTasks.setTimeout(() => setToast((cur) => (cur === msg ? null : cur)), 1600);
   }, [isOnline, isHost, reshuffleSeq, t]);
 
   // Zutatenbilder des gewaehlten Gewands vorwaermen, sobald die Runde laeuft.
@@ -744,6 +749,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   useTVGameBridge("brew", tvPayload, [tvPayload], !online || isHost);
 
   // =========================================================================
+  if (phase === "setup" && online && !isHost) return <OnlineWaiting />;
   if (phase === "setup") {
     return (
       <BrewSetup

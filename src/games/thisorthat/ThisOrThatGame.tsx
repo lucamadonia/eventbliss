@@ -1,3 +1,6 @@
+import { DuelBallot } from './DuelBallot';
+import { GameStage, StageHeader, StageAction } from '../ui/GameStage';
+import OnlineWaiting from '../multiplayer/OnlineWaiting';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -110,7 +113,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const gameRecordedRef = useRef(false);
   const [currentRound, setCurrentRound] = useState(1);
 
-  const [deck] = useState(() => shuffle(getTHISORTHAT_PAIRS()));
+  const [deck, setDeck] = useState(() => shuffle(getTHISORTHAT_PAIRS()));
   const [deckPos, setDeckPos] = useState(0);
   const [currentPair, setCurrentPair] = useState<ThisOrThatPair | null>(null);
   const [voterIdx, setVoterIdx] = useState(0);
@@ -141,13 +144,25 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     players,
   }, [phase, currentRound, roundVotes, players, currentPair]);
 
-  const handleDebateExpire = useCallback(() => setPhase('reveal'), []);
-  const debateTimer = useGameTimer(30, handleDebateExpire);
+  const handleDebateExpire = useCallback(() => { if (!online || online.isHost) setPhase('reveal'); }, [online]);
+  const debateTimer = useGameTimer(30, handleDebateExpire, online?.isConnected !== false);
+  const debateTimerRef = useRef(debateTimer);
+  debateTimerRef.current = debateTimer;
 
   // speedTimerHook must be declared before handleSpeedExpire uses it
   const speedTimerRef = useRef<ReturnType<typeof useGameTimer> | null>(null);
 
   const handleSpeedExpire = useCallback(() => {
+    if (online && !online.isHost) return;
+    if (online?.isHost) {
+      setRoundVotes(prev => {
+        const complete = { ...prev };
+        for (const p of players) if (!complete[p.id]) complete[p.id] = Math.random() > 0.5 ? 'A' : 'B';
+        return complete;
+      });
+      setPhase('reveal');
+      return;
+    }
     // auto-pick random if not voted in time
     setRoundVotes((prev) => {
       const p = players[voterIdx];
@@ -161,9 +176,9 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
       speedTimerRef.current?.reset(speedTimer);
       speedTimerRef.current?.start();
     }
-  }, [voterIdx, players, speedTimer]);
+  }, [online, voterIdx, players, speedTimer]);
 
-  const speedTimerHook = useGameTimer(speedTimer, handleSpeedExpire);
+  const speedTimerHook = useGameTimer(speedTimer, handleSpeedExpire, online?.isConnected !== false);
   speedTimerRef.current = speedTimerHook;
 
   // ---------------------------------------------------------------------------
@@ -183,17 +198,17 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     setCurrentRound(1);
     setDeckPos(0);
     setHistory([]);
-    startRound(0, p);
+    startRound(0, p, selectedMode, settings.timer);
   };
 
-  const startRound = (pos: number, pls?: Player[]) => {
-    const pair = deck[pos % deck.length];
+  const startRound = (pos: number, pls?: Player[], roundMode = mode, roundSeconds = speedTimer, roundDeck = deck) => {
+    const pair = roundDeck[pos % roundDeck.length];
     setCurrentPair(pair);
     setRoundVotes({});
     setVoterIdx(0);
     setPhase('voting');
-    if (mode === 'speed') {
-      speedTimerHook.reset(speedTimer);
+    if (roundMode === 'speed') {
+      speedTimerHook.reset(roundSeconds);
       speedTimerHook.start();
     }
   };
@@ -257,11 +272,12 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   // ---------------------------------------------------------------------------
 
   const nextRound = () => {
+    if (online && !online.isHost) return;
     if (currentPair) {
       setHistory((h) => [...h, { pair: currentPair, votes: { ...roundVotes } }]);
     }
     // Award points: majority gets 1 point per voter in majority
-    const majority = voteStats.aCount >= voteStats.bCount ? 'A' : 'B';
+    const majority = voteStats.aCount === voteStats.bCount ? null : voteStats.aCount > voteStats.bCount ? 'A' : 'B';
     setPlayers((prev) => prev.map((p) => ({
       ...p,
       score: p.score + (roundVotes[p.id] === majority ? 1 : 0),
@@ -277,7 +293,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     startRound(nextPos);
   };
 
-  const endDebate = () => setPhase('reveal');
+  const endDebate = () => { if (!online || online.isHost) setPhase('reveal'); };
 
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
@@ -289,6 +305,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   }, [phase]);
 
   const resetGame = () => {
+    if (online && !online.isHost) return;
     setPhase('setup');
     setPlayers([]);
     setCurrentRound(1);
@@ -298,11 +315,14 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   // accumulated scores (no reset to 0). Resets only per-match state (round,
   // deck position, history) then jumps straight to the first voting round.
   const playAgain = () => {
+    if (online && !online.isHost) return;
     gameRecordedRef.current = false;
     setCurrentRound(1);
     setDeckPos(0);
     setHistory([]);
-    startRound(0);
+    const freshDeck = shuffle(getTHISORTHAT_PAIRS());
+    setDeck(freshDeck);
+    startRound(0, undefined, mode, speedTimer, freshDeck);
   };
 
   const winner = useMemo(() =>
@@ -312,12 +332,13 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const broadcastGameState = useCallback(() => {
     if (!online?.isHost) return;
     online.broadcast('game-state', {
-      phase, currentRound, totalRounds,
-      currentPair: currentPair ? { optionA: currentPair.optionA, optionB: currentPair.optionB } : null,
+      phase, currentRound, totalRounds, mode, speedTimer, history,
+      speedRemaining: speedTimerHook.timeLeft, debateRemaining: debateTimer.timeLeft,
+      currentPair,
       roundVotes,
-      players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
+      players,
     });
-  }, [online, phase, currentRound, totalRounds, currentPair, roundVotes, players]);
+  }, [online, phase, currentRound, totalRounds, mode, speedTimer, history, currentPair, roundVotes, players, speedTimerHook.timeLeft, debateTimer.timeLeft]);
 
   /* ---- Online: host broadcasts on state change ---- */
   useEffect(() => {
@@ -355,25 +376,28 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast('player-action', (data) => {
-      if (data.type === 'vote' && typeof data.playerId === 'string' && (data.choice === 'A' || data.choice === 'B')) {
+      if (phase === 'voting' && players.some(p => p.id === data.__senderId) && data.playerId === data.__senderId && data.type === 'vote' && typeof data.playerId === 'string' && (data.choice === 'A' || data.choice === 'B')) {
         applyVoteLocally(data.playerId, data.choice);
       }
     });
-  }, [online, applyVoteLocally]);
+  }, [online, phase, players, applyVoteLocally]);
 
   /* ---- Online: non-host syncs game-state ---- */
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast('game-state', (data) => {
       if (data.phase) setPhase(data.phase as Phase);
+      if (data.mode) setMode(data.mode as string);
+      if (typeof data.speedRemaining === 'number') speedTimerRef.current?.reset(data.speedRemaining);
+      if (typeof data.debateRemaining === 'number') debateTimerRef.current.reset(data.debateRemaining);
+      if (typeof data.totalRounds === 'number') setTotalRounds(data.totalRounds);
+      if (typeof data.speedTimer === 'number') setSpeedTimer(data.speedTimer);
+      if (Array.isArray(data.history)) setHistory(data.history as RoundVote[]);
       if (data.currentRound) setCurrentRound(data.currentRound as number);
       if (data.currentPair) setCurrentPair(data.currentPair as ThisOrThatPair);
       if (data.roundVotes) setRoundVotes(data.roundVotes as Record<string, 'A' | 'B'>);
       if (data.players) {
-        const incoming = data.players as { id: string; name: string; score: number }[];
-        setPlayers(prev => prev.map((p, i) => ({
-          ...p, score: incoming[i]?.score ?? p.score,
-        })));
+        setPlayers(data.players as Player[]);
       }
     });
   }, [online]);
@@ -390,6 +414,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   // Render
   // ---------------------------------------------------------------------------
 
+  if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
   if (phase === 'setup') {
     return (
       <ThisOrThatSetup
@@ -406,7 +431,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const sentimentClose     = t('games.thisorthat.sentimentClose');
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
+    <GameStage gameId="this-or-that" className="duel-shell duel-shell relative min-h-[100dvh]  text-white flex flex-col font-game">
       <style>{EP_STYLE}</style>
       {/* Ambient glow orbs */}
       <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
@@ -454,7 +479,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
               {/* Title + progress strip */}
               <div className="mb-4 sm:mb-6 text-center">
                 <h2 className="text-3xl sm:text-4xl font-black tracking-tighter italic">
-                  THIS <span className="text-[#df8eff] drop-shadow-[0_0_10px_#df8eff]">or</span> THAT?
+                  THIS <span className="text-[#edb095] drop-shadow-[0_0_10px_#df8eff]">or</span> THAT?
                 </h2>
                 <div className="mt-3 flex justify-center gap-1">
                   {Array.from({ length: totalRounds }).slice(0, 12).map((_, i) => (
@@ -493,7 +518,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                     </span>
                   </>
                 )}
-                {mode === 'speed' && !online && (
+                {mode === 'speed' && (
                   <span className={cn(
                     "ml-2 px-2.5 py-0.5 rounded-full text-xs font-mono font-black",
                     speedTimerHook.timeLeft <= 2
@@ -505,100 +530,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                 )}
               </div>
 
-              {/* Two panels — column on mobile, row on larger */}
-              <div className="relative flex-1 flex flex-col sm:flex-row items-stretch gap-3 min-h-[440px]">
-                {/* Option A */}
-                <motion.button
-                  type="button"
-                  layout
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -30 }}
-                  transition={{ type: 'spring', stiffness: 180, damping: 20 }}
-                  whileTap={iAlreadyVoted ? {} : { scale: 0.97 }}
-                  onClick={() => tap('A')}
-                  disabled={iAlreadyVoted}
-                  aria-label={t('games.thisorthat.chooseOption', { option: currentPair.optionA })}
-                  className={cn(
-                    "group relative flex-1 rounded-2xl overflow-hidden text-left shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all",
-                    iAlreadyVoted ? 'opacity-60 cursor-default' : 'hover:shadow-[0_30px_60px_rgba(255,107,152,0.25)]',
-                  )}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#ff6b98] via-[#a1004b] to-[#47001d]" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(255,107,152,0.35),transparent_60%)]" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="relative h-full min-h-[200px] sm:min-h-[440px] flex flex-col justify-end p-6 sm:p-8">
-                    <span className="text-[#ffc1ce] font-black text-[10px] tracking-[0.3em] uppercase mb-1">
-                      {t('games.thisorthat.optionA')}
-                    </span>
-                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-[1.05] break-words">
-                      {currentPair.optionA}
-                    </h3>
-                    {!iAlreadyVoted && (
-                      <div className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#ff6b98] text-[#47001d] font-black text-[11px] tracking-wider uppercase w-fit opacity-90 group-hover:opacity-100">
-                        {t('games.thisorthat.choose')} <Check className="w-3.5 h-3.5" />
-                      </div>
-                    )}
-                  </div>
-                </motion.button>
-
-                {/* VS medallion — floats between the two panels */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
-                  <motion.div
-                    animate={{ rotate: [-2, 2, -2] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                    className="relative"
-                  >
-                    <div className="absolute inset-0 rounded-full bg-[#df8eff]/30 blur-xl" />
-                    <div
-                      className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(0,0,0,0.8)]"
-                      style={{
-                        background: 'radial-gradient(circle, #0a0e14 55%, #151a21 100%)',
-                        border: '4px solid #20262f',
-                      }}
-                    >
-                      <span className="text-3xl sm:text-4xl font-black italic tracking-tighter bg-gradient-to-br from-[#ff6b98] via-white to-[#8ff5ff] bg-clip-text text-transparent">
-                        VS
-                      </span>
-                    </div>
-                  </motion.div>
-                </div>
-
-                {/* Option B */}
-                <motion.button
-                  type="button"
-                  layout
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 30 }}
-                  transition={{ type: 'spring', stiffness: 180, damping: 20 }}
-                  whileTap={iAlreadyVoted ? {} : { scale: 0.97 }}
-                  onClick={() => tap('B')}
-                  disabled={iAlreadyVoted}
-                  aria-label={t('games.thisorthat.chooseOption', { option: currentPair.optionB })}
-                  className={cn(
-                    "group relative flex-1 rounded-2xl overflow-hidden text-left shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all",
-                    iAlreadyVoted ? 'opacity-60 cursor-default' : 'hover:shadow-[0_30px_60px_rgba(143,245,255,0.25)]',
-                  )}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-bl from-[#8ff5ff] via-[#005e64] to-[#003f43]" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_40%,rgba(143,245,255,0.35),transparent_60%)]" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="relative h-full min-h-[200px] sm:min-h-[440px] flex flex-col justify-end p-6 sm:p-8">
-                    <span className="text-[#8ff5ff] font-black text-[10px] tracking-[0.3em] uppercase mb-1">
-                      {t('games.thisorthat.optionB')}
-                    </span>
-                    <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-[1.05] break-words">
-                      {currentPair.optionB}
-                    </h3>
-                    {!iAlreadyVoted && (
-                      <div className="mt-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#8ff5ff] text-[#003f43] font-black text-[11px] tracking-wider uppercase w-fit opacity-90 group-hover:opacity-100">
-                        {t('games.thisorthat.choose')} <Check className="w-3.5 h-3.5" />
-                      </div>
-                    )}
-                  </div>
-                </motion.button>
-              </div>
+              <DuelBallot a={currentPair.optionA} b={currentPair.optionB} choose={tap} locked={iAlreadyVoted}
+                selected={online ? roundVotes[online.myPlayerId] : undefined} label={t('games.thisorthat.choose')} />
 
               {/* Voter progress dots */}
               <div className="flex justify-center gap-1.5 mt-4">
@@ -629,225 +562,30 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
             <div className="text-4xl font-mono font-black text-[#ff6b98]">{debateTimer.timeLeft}s</div>
             <div className="flex gap-4 w-full max-w-sm">
               <div className="flex-1 rounded-2xl bg-[#df8eff]/10 border border-[#df8eff]/20 p-4 text-center">
-                <span className="text-lg font-bold text-[#df8eff]">{currentPair.optionA}</span>
+                <span className="text-lg font-bold text-[#edb095]">{currentPair.optionA}</span>
               </div>
               <div className="text-white/20 self-center font-bold">vs</div>
               <div className="flex-1 rounded-2xl bg-[#8ff5ff]/10 border border-[#8ff5ff]/20 p-4 text-center">
                 <span className="text-lg font-bold text-[#8ff5ff]">{currentPair.optionB}</span>
               </div>
             </div>
-            <motion.button whileTap={{ scale: 0.97 }} onClick={endDebate}
+            <motion.button whileTap={{ scale: 0.97 }} disabled={!!online && !online.isHost} onClick={endDebate}
               className="mt-4 px-8 py-3 rounded-2xl bg-white/10 border border-white/10 text-white/60 font-bold text-sm">
               {t('games.thisorthat.debateSkip')}
             </motion.button>
           </motion.div>
         )}
 
-        {/* REVEAL — "THE VERDICT" bento with winner + runner-up */}
-        {phase === 'reveal' && currentPair && (() => {
-          const aIsWinner = voteStats.aCount >= voteStats.bCount;
-          const winnerLabel = aIsWinner ? currentPair.optionA : currentPair.optionB;
-          const loserLabel  = aIsWinner ? currentPair.optionB : currentPair.optionA;
-          const winnerPct   = aIsWinner ? voteStats.aPct : voteStats.bPct;
-          const loserPct    = aIsWinner ? voteStats.bPct : voteStats.aPct;
-          const winnerVotes = aIsWinner ? voteStats.aCount : voteStats.bCount;
-          const loserVotes  = aIsWinner ? voteStats.bCount : voteStats.aCount;
-          const winnerVoters = players.filter((p) => roundVotes[p.id] === (aIsWinner ? 'A' : 'B'));
-          const loserVoters  = players.filter((p) => roundVotes[p.id] === (aIsWinner ? 'B' : 'A'));
-          const landslide = winnerPct >= 75;
-          const sentiment = landslide
-            ? sentimentLandslide
-            : winnerPct >= 60
-              ? sentimentMajority
-              : sentimentClose;
+        {phase === 'reveal' && currentPair && <div className="duel-verdict">
+          <StageHeader title={t(voteStats.aCount===voteStats.bCount?'games.thisorthat.tie':'games.thisorthat.verdictTitle')} eyebrow={t('games.thisorthat.roundResult',{round:currentRound})} subtitle={t('games.thisorthat.voteCount',{count:voteStats.total})}/>
+          <div className="duel-results-grid">{(['A','B'] as const).map((side,i)=>{const count=i===0?voteStats.aCount:voteStats.bCount; const percent=i===0?voteStats.aPct:voteStats.bPct; return <section key={side} data-side={side} className="duel-result-column">
+            <div className="duel-result-top"><span>{side}</span><strong>{percent}<small>%</small></strong></div>
+            <h2>{i===0?currentPair.optionA:currentPair.optionB}</h2><div className="duel-result-track"><span style={{width:`${percent}%`}}/></div>
+            <p>{t('games.thisorthat.votes',{count})}</p><div className="duel-result-voters">{players.filter(p=>roundVotes[p.id]===side).map(p=><span key={p.id}>{p.name}</span>)}</div>
+          </section>;})}</div>
+          <StageAction className="w-full mt-7" disabled={!!online&&!online.isHost} onClick={()=>{void haptics.light();nextRound();}}>{t(currentRound>=totalRounds?'games.results.gameOver':'games.play.next')}<ArrowRight size={20}/></StageAction>
+        </div>}
 
-          return (
-            <motion.div
-              key="reveal"
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="flex-1 px-5 py-6 max-w-2xl mx-auto w-full"
-            >
-              {/* Hero header */}
-              <div className="relative mb-8 text-center">
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-56 h-56 bg-[#df8eff]/10 rounded-full blur-[80px] pointer-events-none" />
-                <p className="text-[#8ff5ff] font-bold tracking-[0.25em] uppercase text-[11px] mb-2">
-                  {t('games.thisorthat.roundResult', { round: currentRound })}
-                </p>
-                <motion.h2
-                  initial={{ scale: 0.92, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: 'spring', bounce: 0.35 }}
-                  className="text-4xl sm:text-5xl font-black tracking-tight italic drop-shadow-[0_0_12px_rgba(223,142,255,0.45)]"
-                >
-                  {t('games.thisorthat.verdictTitle')}
-                </motion.h2>
-                <div className="mt-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#20262f] border border-[#44484f]/40 text-xs">
-                  <Users className="w-3.5 h-3.5 text-[#ff6b98]" />
-                  <span className="font-bold">
-                    {t('games.thisorthat.voteCount', { count: voteStats.total })}
-                  </span>
-                </div>
-              </div>
-
-              {/* Winner + Runner-up bento */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-                {/* Winner card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 180, damping: 20, delay: 0.1 }}
-                  className="relative overflow-hidden rounded-2xl bg-[#1b2028] border-b-4 border-[#df8eff] p-6 flex flex-col items-center text-center shadow-[0_20px_50px_rgba(0,0,0,0.35)]"
-                >
-                  {/* Stars top-right with glow */}
-                  <motion.div
-                    animate={{ rotate: [0, 8, -8, 0], scale: [1, 1.08, 1] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                    className="absolute top-4 right-4"
-                  >
-                    <Stars className="w-6 h-6 text-[#df8eff] drop-shadow-[0_0_10px_rgba(223,142,255,0.6)]" />
-                  </motion.div>
-                  {/* Percentage puck */}
-                  <div className="relative mb-4">
-                    <motion.div
-                      className="absolute inset-0 rounded-full"
-                      animate={{
-                        boxShadow: [
-                          '0 0 0 0 rgba(223,142,255,0.5)',
-                          '0 0 0 16px rgba(223,142,255,0)',
-                        ],
-                      }}
-                      transition={{ duration: 1.8, repeat: Infinity }}
-                    />
-                    <div className="relative w-28 h-28 rounded-full bg-gradient-to-br from-[#df8eff]/30 to-[#d779ff]/10 border-4 border-[#df8eff]/40 flex flex-col items-center justify-center">
-                      <motion.span
-                        initial={{ opacity: 0, scale: 0.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ type: 'spring', stiffness: 240, damping: 14, delay: 0.4 }}
-                        className="text-3xl font-black text-white"
-                      >
-                        {winnerPct}%
-                      </motion.span>
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#a8abb3]">
-                        {t('games.thisorthat.winnerLabel')}
-                      </span>
-                    </div>
-                  </div>
-                  <h3 className="text-xl font-black tracking-tight mb-2 break-words">{winnerLabel}</h3>
-                  <div className="w-full h-2 rounded-full bg-[#20262f] overflow-hidden mb-2">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${winnerPct}%` }}
-                      transition={{ duration: 0.9, ease: 'easeOut', delay: 0.2 }}
-                      className="h-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_0_10px_rgba(223,142,255,0.5)]"
-                    />
-                  </div>
-                  <p className="text-[11px] text-[#a8abb3] font-medium">
-                    {t('games.thisorthat.votes', { count: winnerVotes })}
-                  </p>
-                  {/* Voter avatars */}
-                  <div className="flex flex-wrap justify-center gap-1 mt-3">
-                    {winnerVoters.slice(0, 8).map((p) => (
-                      <div
-                        key={p.id}
-                        className="w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center text-white border-2 border-[#1b2028]"
-                        style={{ backgroundColor: p.color }}
-                      >
-                        {p.avatar}
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-
-                {/* Runner-up card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 180, damping: 20, delay: 0.2 }}
-                  className="relative overflow-hidden rounded-2xl bg-[#151a21] border-b-4 border-[#ff6b98]/40 p-6 flex flex-col items-center text-center"
-                >
-                  <div className="relative mb-4">
-                    <div className="w-24 h-24 rounded-full bg-[#20262f] border-4 border-[#ff6b98]/20 flex flex-col items-center justify-center">
-                      <span className="text-2xl font-black text-white/80">{loserPct}%</span>
-                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#a8abb3]">
-                        {t('games.thisorthat.runnerUpLabel')}
-                      </span>
-                    </div>
-                  </div>
-                  <h3 className="text-lg font-black tracking-tight text-white/80 mb-2 break-words">{loserLabel}</h3>
-                  <div className="w-full h-2 rounded-full bg-[#20262f] overflow-hidden mb-2">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${loserPct}%` }}
-                      transition={{ duration: 0.9, ease: 'easeOut', delay: 0.3 }}
-                      className="h-full rounded-full bg-gradient-to-r from-[#ff6b98]/60 to-[#e4006c]/50 opacity-70"
-                    />
-                  </div>
-                  <p className="text-[11px] text-[#a8abb3] font-medium">
-                    {t('games.thisorthat.votes', { count: loserVotes })}
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-1 mt-3">
-                    {loserVoters.slice(0, 8).map((p) => (
-                      <div
-                        key={p.id}
-                        className="w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center text-white border-2 border-[#151a21] opacity-70"
-                        style={{ backgroundColor: p.color }}
-                      >
-                        {p.avatar}
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Sentiment row */}
-              <motion.div
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="rounded-2xl bg-[#0f141a] border border-[#44484f]/20 p-5 mb-6"
-              >
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-[10px] font-black text-[#ff6b98] uppercase tracking-[0.25em]">
-                    {t('games.thisorthat.groupMood')}
-                  </span>
-                  <div className="flex -space-x-1.5">
-                    {players.slice(0, 4).map((p) => (
-                      <div
-                        key={p.id}
-                        className="w-6 h-6 rounded-full border-2 border-[#0f141a] flex items-center justify-center text-[10px] font-bold text-white"
-                        style={{ backgroundColor: p.color }}
-                      >
-                        {p.avatar}
-                      </div>
-                    ))}
-                    {players.length > 4 && (
-                      <div className="w-6 h-6 rounded-full bg-[#20262f] border-2 border-[#0f141a] flex items-center justify-center text-[8px] font-bold">
-                        +{players.length - 4}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                <p className="text-sm text-[#a8abb3]">
-                  {sentiment}{' '}
-                  <span className="text-white font-bold">{winnerLabel}</span>
-                  {landslide ? t('games.thisorthat.winsLandslide') : '.'}
-                </p>
-              </motion.div>
-
-              {/* Next round CTA */}
-              <motion.button
-                whileTap={{ scale: 0.97 }}
-                onClick={() => { void haptics.light(); nextRound(); }}
-                className="w-full h-14 rounded-full flex items-center justify-center gap-2 text-[#0a0e14] font-black tracking-tight text-base shadow-[0_12px_24px_-8px_rgba(223,142,255,0.4)]"
-                style={{ background: 'linear-gradient(135deg, #df8eff, #d779ff)' }}
-              >
-                {t('games.thisorthat.nextRound')} <ArrowRight className="w-5 h-5" />
-              </motion.button>
-            </motion.div>
-          );
-        })()}
-
-        {/* GAME OVER */}
         {phase === 'gameOver' && winner && (
           <motion.div key="over" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
             className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full">
@@ -857,16 +595,16 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
                 <Trophy className="w-8 h-8 text-amber-400" />
               </div>
             </motion.div>
-            <h2 className="text-3xl font-extrabold text-[#df8eff] neon-glow">
+            <h2 className="text-3xl font-extrabold text-[#edb095] neon-glow">
               {t('games.results.gameOver')}
             </h2>
             <div className="text-lg font-bold text-[#8ff5ff]">
-              {t('games.thisorthat.playerWins', { name: winner.name })}
+              {t('games.thisorthat.playerWins', { name: players.filter(p => p.score === winner.score).map(p => p.name).join(', ') })}
             </div>
             <div className="w-full space-y-2 max-h-64 overflow-y-auto">
               {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
                 <div key={p.id} className="flex items-center gap-3 bg-[#1b2028] border border-[#44484f]/20 rounded-2xl px-4 py-3">
-                  <span className="text-white/30 text-sm font-bold w-5">#{i + 1}</span>
+                  <span className="text-white/30 text-sm font-bold w-5">#{players.filter(other => other.score > p.score).length + 1}</span>
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
                     style={{ backgroundColor: p.color }}>{p.avatar}</div>
                   <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
@@ -877,7 +615,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
+              <motion.button whileTap={{ scale: 0.97 }} disabled={!!online && !online.isHost} onClick={playAgain}
                 className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_25px_rgba(207,150,255,0.25)]">
                 <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
               </motion.button>
@@ -893,7 +631,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
       </AnimatePresence>
 
       <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
-    </div>
+    </GameStage>
   );
 }
 
@@ -917,7 +655,7 @@ interface ThisOrThatSetupProps {
 const TONE_STYLE: Record<'primary' | 'secondary' | 'tertiary', {
   border: string; chip: string; icon: string; text: string; glow: string;
 }> = {
-  primary:   { border: 'border-[#df8eff]', chip: 'bg-[#df8eff]/20 text-[#df8eff]',  icon: 'text-[#df8eff]',  text: 'text-[#df8eff]',  glow: 'shadow-[0_0_22px_rgba(223,142,255,0.22)]' },
+  primary:   { border: 'border-[#df8eff]', chip: 'bg-[#df8eff]/20 text-[#edb095]',  icon: 'text-[#edb095]',  text: 'text-[#edb095]',  glow: 'shadow-[0_0_22px_rgba(223,142,255,0.22)]' },
   secondary: { border: 'border-[#ff6b98]', chip: 'bg-[#ff6b98]/20 text-[#ff6b98]',  icon: 'text-[#ff6b98]',  text: 'text-[#ff6b98]',  glow: 'shadow-[0_0_22px_rgba(255,107,152,0.22)]' },
   tertiary:  { border: 'border-[#8ff5ff]', chip: 'bg-[#8ff5ff]/20 text-[#8ff5ff]',  icon: 'text-[#8ff5ff]',  text: 'text-[#8ff5ff]',  glow: 'shadow-[0_0_22px_rgba(143,245,255,0.22)]' },
 };
@@ -1046,7 +784,7 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc] pb-40">
+    <GameStage gameId="this-or-that" className="duel-shell relative min-h-screen overflow-hidden  text-[#f1f3fc] pb-40">
       {/* Ambient glows */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-20 -left-20 w-64 h-64 bg-[#df8eff]/10 rounded-full blur-[100px]" />
@@ -1070,7 +808,7 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
             {t('games.thisorthat.socialChallenge')}
           </p>
           <h2 className="text-5xl font-black tracking-tighter leading-[0.95] mb-3">
-            This <span className="text-[#df8eff] italic drop-shadow-[0_0_10px_rgba(223,142,255,0.5)]">{t('games.thisorthat.orWord')}</span> That
+            This <span className="text-[#edb095] italic drop-shadow-[0_0_10px_rgba(223,142,255,0.5)]">{t('games.thisorthat.orWord')}</span> That
           </h2>
           <p className="text-[#a8abb3] text-sm max-w-[300px]">
             {t('games.thisorthat.setupSubtitle')}
@@ -1220,6 +958,6 @@ function ThisOrThatSetup({ onStart, onlinePlayers, haptics }: ThisOrThatSetupPro
           )}
         </motion.button>
       </div>
-    </div>
+    </GameStage>
   );
 }

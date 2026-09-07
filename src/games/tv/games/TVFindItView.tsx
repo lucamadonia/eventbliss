@@ -1,17 +1,20 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useAmbientMotion } from '@/lib/useAmbientMotion';
 import { spring, ease } from '@/lib/motion';
 import { tvPanel, tvType, tvActiveRing } from '../tv-tokens';
 import TVScoreboard, { type TVScorePlayer } from '../components/TVScoreboard';
+import { ObjectBoard, ObjectPicture } from '../../findit/VisualObjects';
+import { parseObjectGrid } from '../../findit/visual-content';
 
 /**
  * TVFindItView — big-screen view for "Wo ist Was" (5 modes: memory/speed grid,
- * unterschiede, karte, streetview). FindIt has NO per-player secrets — everyone
+ * unterschiede, karte, streetview). Everyone
  * plays along — so the TV mirrors the phone's actual content and becomes the
  * shared screen the room watches:
  *
- *   memory/speed:  the EMOJI GRID large & central (study), then the QUESTION +
+ *   memory/speed:  the OBJECT BOARD large & central (study), then the QUESTION +
  *                  Kahoot-style answer tiles so the room guesses along; the reveal
  *                  highlights the correct tile.
  *   unterschiede:  both grids side by side; reveal rings the differing cells.
@@ -19,8 +22,8 @@ import TVScoreboard, { type TVScorePlayer } from '../components/TVScoreboard';
  *                  small hint; the target city is revealed at round end. (No live
  *                  Leaflet/StreetView embed — too heavy for the TV.)
  *
- * The ONLY thing hidden before the answer phase is the answer itself (the correct
- * option index / diff targets) — the grid, question and options are all shown.
+ * Memory hides the study board while answering; correct options and difference
+ * targets appear only when the host reveals the solution.
  */
 const FI = { primary: '#22d3ee', secondary: '#a78bfa', accent: '#fbbf24', good: '#34d399', bad: '#fb7185', text: '#eef6f8', dim: '#9fb4bd', bg: '#08121a' };
 
@@ -47,13 +50,6 @@ function phaseLabel(phase: string, t: (k: string, d: string) => string): string 
     case 'roundEnd': return t('tv.findit.roundEnd', 'Rundenende');
     default: return phase;
   }
-}
-
-/** Split the newline-emoji grid string into rows of grapheme cells. */
-function parseGrid(grid: string): string[][] {
-  if (!grid) return [];
-  const seg = typeof Intl !== 'undefined' && 'Segmenter' in Intl ? new Intl.Segmenter('en', { granularity: 'grapheme' }) : null;
-  return grid.split('\n').map((row) => (seg ? Array.from(seg.segment(row), (s) => s.segment) : Array.from(row)));
 }
 
 // Tile colors for the 2x2 (or N) answer board — Kahoot-style cue shapes.
@@ -90,6 +86,7 @@ export default function TVFindItView({ gameState }: { gameState: any }) {
   const diffCount: number = gameState?.diffCount ?? 0;
   const question: string = gameState?.question || '';
   const options: string[] = gameState?.options || [];
+  const optionObjects: string[] = gameState?.optionObjects || [];
   const correctOption: number | null = gameState?.correctOption ?? null;
   const geoName: string = gameState?.geoName || '';
   const answerCorrect: boolean | null = gameState?.answerCorrect ?? null;
@@ -123,7 +120,7 @@ export default function TVFindItView({ gameState }: { gameState: any }) {
   }
 
   return (
-    <div className="h-screen flex flex-col" style={{ background: FI.bg, color: FI.text }}>
+    <div className="relative h-screen flex flex-col overflow-hidden" style={{ background: FI.bg, color: FI.text }}>
       {/* soft brand wash (static, low blur) */}
       <div className="absolute -top-24 -left-24 w-[34rem] h-[34rem] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(34,211,238,0.10)' }} />
       <div className="absolute -bottom-24 -right-24 w-[34rem] h-[34rem] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(167,139,250,0.09)' }} />
@@ -131,7 +128,7 @@ export default function TVFindItView({ gameState }: { gameState: any }) {
       {/* Wordmark */}
       <div className="relative flex items-center justify-center gap-3 pt-[clamp(1rem,2vh,2rem)]">
         <span style={{ fontSize: tvType.label }}>🔎</span>
-        <span className="font-black tracking-[0.35em]" style={{ fontSize: tvType.label, color: FI.primary }}>WO IST WAS</span>
+        <span className="font-black tracking-[0.15em]" style={{ fontSize: tvType.label, color: FI.primary }}>{t('native.gameNames.woIstWas')}</span>
         {sceneName && <span className="font-bold" style={{ fontSize: tvType.label, color: FI.dim }}>· {sceneName}</span>}
       </div>
 
@@ -159,7 +156,9 @@ export default function TVFindItView({ gameState }: { gameState: any }) {
         {/* CENTER — mode/phase-appropriate HERO */}
         <div className="flex flex-col items-center justify-center gap-6 min-h-0 text-center w-full">
           <AnimatePresence mode="wait">
-            {isGeoMode ? (
+            {!isGeoMode && gameState?.imagesAvailable === false ? (
+              <motion.p key="loading-images" role="status" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center font-semibold" style={{ fontSize: tvType.body, color: FI.dim }}>{t('games.findit.visual.loading')}</motion.p>
+            ) : isGeoMode ? (
               <GeoHero key="geo" mode={mode} meta={meta} geoName={geoName} showAnswer={showAnswer} ambient={ambient} t={t} />
             ) : isDiff ? (
               <DiffHero key="diff" gridA={gridA} gridB={gridB} diffs={showAnswer ? diffs : []} found={foundDiffs} diffCount={diffCount} t={t} />
@@ -169,10 +168,11 @@ export default function TVFindItView({ gameState }: { gameState: any }) {
                   <span className="uppercase tracking-[0.3em] font-black" style={{ fontSize: tvType.label, color: FI.dim }}>{t('tv.findit.memorize', 'Einprägen!')}</span>
                   <span className="font-black tabular-nums px-4 py-1 rounded-full" style={{ fontSize: tvType.title, color: studyCountdown <= 3 ? FI.bad : FI.primary, background: '#0e1d28' }}>{studyCountdown}</span>
                 </div>
-                <EmojiGrid grid={grid} ambient={ambient} />
+                <div className="w-full max-w-[min(50vh,520px)]"><ObjectBoard grid={parseObjectGrid(grid)} /></div>
               </motion.div>
             ) : (
               <motion.div key="question" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={spring.soft} className="flex flex-col items-center gap-6 w-full">
+                {(mode === 'speed' || showAnswer) && grid && <div className="w-full max-w-[min(26vh,280px)]"><ObjectBoard grid={parseObjectGrid(grid)} /></div>}
                 {totalQuestions > 0 && (
                   <span className="uppercase tracking-[0.25em] font-bold" style={{ fontSize: tvType.micro, color: FI.dim }}>
                     {t('tv.findit.questionN', 'Frage')} {questionIdx + 1}/{totalQuestions}
@@ -196,7 +196,7 @@ export default function TVFindItView({ gameState }: { gameState: any }) {
                         <motion.div key={i} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: isWrongReveal ? 0.4 : 1, scale: isCorrect ? 1.04 : 1 }} transition={spring.bouncy}
                           className="flex items-center gap-3 rounded-2xl px-5 py-4 text-left"
                           style={{ background: tile.bg, ...(isCorrect ? tvActiveRing(FI.good) : {}) }}>
-                          <span className="font-black opacity-80" style={{ fontSize: tvType.body, color: 'white' }}>{tile.glyph}</span>
+                          {optionObjects[i] ? <div className="w-[clamp(48px,5vw,80px)] shrink-0"><ObjectPicture id={optionObjects[i]} label={opt} /></div> : <span className="font-black opacity-80" style={{ fontSize: tvType.body, color: 'white' }}>{tile.glyph}</span>}
                           <span className="font-black text-white flex-1" style={{ fontSize: tvType.body }}>{opt}</span>
                           <span className="font-black text-white/70" style={{ fontSize: tvType.micro }}>{OPT_LABELS[i]}</span>
                           {isCorrect && <span style={{ fontSize: tvType.body }}>✓</span>}
@@ -250,77 +250,20 @@ export default function TVFindItView({ gameState }: { gameState: any }) {
   );
 }
 
-/** The shared emoji scene — rendered as a real grid of large cells. */
-function EmojiGrid({ grid, ambient }: { grid: string; ambient: boolean }) {
-  const rows = parseGrid(grid);
-  if (rows.length === 0) return null;
-  const cols = Math.max(...rows.map((r) => r.length));
-  return (
-    <div className={`${tvPanel} p-[clamp(0.75rem,1.6vw,1.75rem)]`}>
-      <div className="grid gap-2.5" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}>
-        {rows.flatMap((row, r) =>
-          row.map((cell, c) => (
-            <motion.div key={`${r}-${c}`}
-              initial={{ opacity: 0, scale: 0.6 }} animate={{ opacity: 1, scale: 1 }}
-              transition={{ ...spring.bouncy, delay: ambient ? Math.min((r * cols + c) * 0.025, 0.5) : 0 }}
-              className="flex items-center justify-center rounded-2xl"
-              style={{ width: 'clamp(2.6rem,5.2vw,6rem)', height: 'clamp(2.6rem,5.2vw,6rem)', fontSize: 'clamp(1.6rem,3.4vw,4rem)', background: '#0e1d28', border: '1px solid rgba(255,255,255,0.06)' }}>
-              {cell}
-            </motion.div>
-          )),
-        )}
-      </div>
+/** Show the same object boards as the phones; target rings appear only at reveal. */
+function DiffHero({ gridA, gridB, diffs, found, diffCount, t }: { gridA: string; gridB: string; diffs: number[]; found: number[]; diffCount: number; t: TFunction }) {
+  return <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={spring.soft} className="flex flex-col items-center gap-5 w-full">
+    <h2 className="font-black" style={{ fontSize: tvType.body, color: FI.text }}>{t('tv.findit.spotDiff', 'Finde die Unterschiede')} · {found.length}/{diffCount}</h2>
+    <p style={{ fontSize: tvType.micro, color: FI.dim }}>{t('games.findit.visual.compareHint')}</p>
+    <div className="grid grid-cols-2 gap-5 w-full max-w-[min(70vh,760px)]">
+      <ObjectBoard grid={parseObjectGrid(gridA)} label="A" />
+      <ObjectBoard grid={parseObjectGrid(gridB)} label="B" found={found} targets={diffs} />
     </div>
-  );
-}
-
-/** Two emoji grids side by side; on reveal, the differing cells get a ring. */
-function DiffHero({ gridA, gridB, diffs, found, diffCount, t }: { gridA: string; gridB: string; diffs: number[]; found: number[]; diffCount: number; t: (k: string, d?: string) => string }) {
-  const rowsA = parseGrid(gridA);
-  const rowsB = parseGrid(gridB);
-  const colsB = Math.max(1, ...rowsB.map((r) => r.length));
-  const flatIndex = (r: number, c: number) => r * colsB + c;
-
-  const Grid = ({ rows, ringDiffs, label }: { rows: string[][]; ringDiffs: boolean; label: string }) => {
-    const cols = Math.max(1, ...rows.map((r) => r.length));
-    return (
-      <div className={`${tvPanel} p-[clamp(0.6rem,1.2vw,1.25rem)]`}>
-        <div className="uppercase tracking-[0.2em] font-bold mb-2 text-center" style={{ fontSize: tvType.micro, color: FI.dim }}>{label}</div>
-        <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}>
-          {rows.flatMap((row, r) =>
-            row.map((cell, c) => {
-              const idx = flatIndex(r, c);
-              const isDiff = ringDiffs && diffs.includes(idx);
-              const isFound = found.includes(idx);
-              return (
-                <motion.div key={`${r}-${c}`} animate={isDiff ? { scale: [1, 1.12, 1] } : { scale: 1 }} transition={isDiff ? { duration: 0.6, repeat: Infinity } : {}}
-                  className="flex items-center justify-center rounded-xl"
-                  style={{ width: 'clamp(1.9rem,3.4vw,3.6rem)', height: 'clamp(1.9rem,3.4vw,3.6rem)', fontSize: 'clamp(1.1rem,2.2vw,2.4rem)', background: '#0e1d28', border: `1px solid rgba(255,255,255,0.06)`, ...(isDiff || isFound ? tvActiveRing(isFound ? FI.good : FI.accent) : {}) }}>
-                  {cell}
-                </motion.div>
-              );
-            }),
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={spring.soft} className="flex flex-col items-center gap-4">
-      <span className="font-black" style={{ fontSize: tvType.body, color: FI.dim }}>
-        {t('tv.findit.spotDiff', 'Finde die Unterschiede')} · {found.length}/{diffCount}
-      </span>
-      <div className="flex items-start gap-[clamp(1rem,2vw,2.5rem)]">
-        <Grid rows={rowsA} ringDiffs={false} label="A" />
-        <Grid rows={rowsB} ringDiffs label="B" />
-      </div>
-    </motion.div>
-  );
+  </motion.div>;
 }
 
 /** Karte / Street View focal card — location reveal, not a live map embed. */
-function GeoHero({ mode, meta, geoName, showAnswer, ambient, t }: { mode: string; meta: { icon: string; label: string }; geoName: string; showAnswer: boolean; ambient: boolean; t: (k: string, d?: string) => string }) {
+function GeoHero({ mode, meta, geoName, showAnswer, ambient, t }: { mode: string; meta: { icon: string; label: string }; geoName: string; showAnswer: boolean; ambient: boolean; t: TFunction }) {
   return (
     <motion.div initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.97 }} transition={spring.soft}
       className={`${tvPanel} flex flex-col items-center gap-6 px-[clamp(2rem,5vw,5rem)] py-[clamp(1.5rem,3.5vw,3.5rem)] text-center`}>

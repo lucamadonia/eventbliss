@@ -17,7 +17,7 @@ export const FACTS: Fact[] = [
   { statement: 'Goldfische haben ein Gedächtnis von nur 3 Sekunden.', isTrue: false, explanation: 'Goldfische können sich monatelang an Dinge erinnern — der 3-Sekunden-Mythos ist falsch.', category: 'Natur' },
   { statement: 'Honig kann niemals schlecht werden.', isTrue: true, explanation: 'In ägyptischen Graebern wurde 3000 Jahre alter Honig gefunden, der noch essbar war.', category: 'Natur' },
   { statement: 'Krokodile können nicht mit der Zunge lecken.', isTrue: true, explanation: 'Die Zunge eines Krokodils ist am Gaumen festgewachsen und kann nicht herausgestreckt werden.', category: 'Natur' },
-  { statement: 'Elefanten sind die einzigen Tiere, die nicht springen können.', isTrue: true, explanation: 'Aufgrund ihres Gewichts und ihrer Knochenstruktur können Elefanten tatsächlich nicht springen.', category: 'Natur' },
+  { statement: 'Elefanten können nicht springen.', isTrue: true, explanation: 'Aufgrund ihres Gewichts und ihrer Knochenstruktur können Elefanten tatsächlich nicht springen.', category: 'Natur' },
   { statement: 'Bananen wachsen auf Bäumen.', isTrue: false, explanation: 'Bananenpflanzen sind keine Baeume, sondern riesige Staudenpflanzen.', category: 'Natur' },
   { statement: 'Ein Blitz kann die gleiche Stelle zweimal treffen.', isTrue: true, explanation: 'Hohe Gebäude wie das Empire State Building werden jedes Jahr bis zu 100 Mal getroffen.', category: 'Natur' },
   { statement: 'Delfine schlafen mit einem offenen Auge.', isTrue: true, explanation: 'Delfine schlafen mit einer Gehirnhälfte und halten ein Auge offen fürRaubtiere.', category: 'Natur' },

@@ -10,6 +10,8 @@ import { isPartySessionActive } from "@/hooks/usePartySession";
 import TVPartyPodium from "@/games/tv/components/TVPartyPodium";
 import type { PartyStanding } from "@/games/tv/party-types";
 import { getPlayerColor } from "./PlayerAvatars";
+import { rankPlayers } from '../engine/ranking';
+import { getGameTheme } from './GameStage';
 
 interface ResultPlayer {
   name: string;
@@ -68,10 +70,12 @@ export function ResultScreen({
   const navigate = useNavigate();
   const reduce = !!useReducedMotion();
   const partyActive = isPartySessionActive();
-  const theme = RESULT_THEMES[gameId ?? ""] ?? DEFAULT_THEME;
+  const theme = RESULT_THEMES[gameId ?? ""] ?? (gameId ? { ...getGameTheme(gameId), warm: '#efd298' } : DEFAULT_THEME);
 
-  const sorted = useMemo(() => [...players].sort((a, b) => b.score - a.score), [players]);
+  const sorted = useMemo(() => rankPlayers(players), [players]);
   const winner = sorted[0];
+  const winners = sorted.filter(player => player.rank === 1);
+  const hasTies = sorted.some((player, index) => player.rank !== index + 1);
   const bestRound = sorted.length ? Math.max(...sorted.map((player) => player.score)) : 0;
   const longestStreak = sorted.length ? Math.max(...sorted.map((player) => player.streak), 0) : 0;
 
@@ -81,9 +85,9 @@ export function ResultScreen({
       name: player.name,
       color: getPlayerColor(index),
       points: player.score,
-      rank: index + 1,
+      rank: player.rank,
       prevRank: null,
-      gamesWon: index === 0 ? 1 : 0,
+      gamesWon: player.rank === 1 ? 1 : 0,
       streak: player.streak,
     })),
     [sorted],
@@ -176,18 +180,24 @@ export function ResultScreen({
             <p className="mt-1 truncate text-sm font-bold text-white/55">{gameTitle}</p>
           </div>
           <div className="rounded-full border border-white/12 bg-white/[0.055] px-3 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/50 backdrop-blur-xl">
-            {t("games.results.winner")}
+            {t(winners.length > 1 ? 'games.results.sharedWin' : 'games.results.winner')}
           </div>
         </motion.header>
 
         <section className="mt-1 flex-1">
-          <TVPartyPodium
+          {hasTies ? <div className="mx-auto grid max-w-lg gap-3 py-10" style={{ gridTemplateColumns: `repeat(${Math.min(sorted.filter(player => player.rank <= 3).length, 2)}, minmax(0, 1fr))` }}>
+            {sorted.filter(player => player.rank <= 3).map((player, index) => <div key={`${player.name}-${index}`} className="min-w-0 rounded-3xl border border-white/15 bg-white/5 px-4 py-6 text-center">
+              {player.rank === 1 ? <Crown className="mx-auto mb-3 h-7 w-7" style={{ color: theme.warm }} aria-hidden /> : <span className="mb-3 block text-xl font-black text-white/60">{player.rank}</span>}
+              <p className="break-words text-xl font-black">{player.name}</p>
+              <p className="mt-2 text-3xl font-black tabular-nums" style={{ color: theme.warm }}>{player.score}</p>
+            </div>)}
+          </div> : <TVPartyPodium
             entries={podium}
             reveal={beat >= 1}
             variant="finale"
             compact
             className="mx-auto max-w-[25rem]"
-          />
+          />}
 
           <motion.div
             className="mx-auto -mt-1 flex max-w-sm items-center justify-center gap-2 rounded-full border px-4 py-2 text-center"
@@ -201,7 +211,7 @@ export function ResultScreen({
           >
             <Crown className="h-4 w-4 shrink-0" style={{ color: theme.warm }} aria-hidden />
             <p className="min-w-0 truncate text-sm font-black">
-              {winner.name} · {t("games.results.winnerPoints", { n: winner.score })}
+              {winners.length > 1 ? t('games.results.sharedWin') : winner.name} · {t("games.results.winnerPoints", { n: winner.score })}
             </p>
           </motion.div>
 
@@ -229,13 +239,13 @@ export function ResultScreen({
                     animate={beat >= 2 ? { opacity: 1, x: 0 } : { opacity: 0, x: reduce ? 0 : -14 }}
                     transition={{ duration: reduce ? 0.1 : 0.35, delay: reduce ? 0 : Math.min(index * 0.055, 0.3), ease: easeOut }}
                   >
-                    {index === 0 && <div className="absolute inset-y-2 left-0 w-0.5 rounded-full" style={{ background: theme.warm, boxShadow: `0 0 12px ${theme.warm}` }} />}
-                    <span className="w-6 shrink-0 text-center text-sm font-black tabular-nums" style={{ color: index < 3 ? [theme.warm, "#D9E1F2", "#E99A67"][index] : "rgba(255,255,255,.35)" }}>
-                      {String(index + 1).padStart(2, "0")}
+                    {player.rank === 1 && <div className="absolute inset-y-2 left-0 w-0.5 rounded-full" style={{ background: theme.warm, boxShadow: `0 0 12px ${theme.warm}` }} />}
+                    <span className="w-6 shrink-0 text-center text-sm font-black tabular-nums" style={{ color: player.rank <= 3 ? [theme.warm, "#D9E1F2", "#E99A67"][player.rank - 1] : "rgba(255,255,255,.35)" }}>
+                      {String(player.rank).padStart(2, "0")}
                     </span>
                     <span
                       className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-sm font-black"
-                      style={{ background: `${color}2e`, border: `1.5px solid ${color}9c`, boxShadow: index === 0 ? `0 0 20px ${color}48` : undefined }}
+                      style={{ background: `${color}2e`, border: `1.5px solid ${color}9c`, boxShadow: player.rank === 1 ? `0 0 20px ${color}48` : undefined }}
                     >
                       {player.name.slice(0, 1).toUpperCase()}
                     </span>
@@ -246,7 +256,7 @@ export function ResultScreen({
                         {player.streak}
                       </span>
                     )}
-                    <span className="shrink-0 text-base font-black tabular-nums" style={{ color: index === 0 ? theme.warm : "rgba(255,255,255,.78)" }}>
+                    <span className="shrink-0 text-base font-black tabular-nums" style={{ color: player.rank === 1 ? theme.warm : "rgba(255,255,255,.78)" }}>
                       {player.score}
                     </span>
                   </motion.div>

@@ -12,7 +12,7 @@
  *   />
  */
 import { useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { haptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
@@ -48,11 +48,11 @@ export function ActivePlayerBanner({
   const initials = playerName.slice(0, 1).toUpperCase();
 
   return (
-    <AnimatePresence mode="wait">
+    <MotionConfig reducedMotion="user"><AnimatePresence mode="wait">
       {!hidden && (
         <motion.div
           key={playerName}
-          className="w-full flex items-center justify-center gap-3 py-3 px-4"
+          className="w-full flex items-center gap-3 py-3 px-4"
           initial={{ opacity: 0, y: -20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -60,21 +60,20 @@ export function ActivePlayerBanner({
         >
           {/* Avatar */}
           <motion.div
-            className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg shrink-0"
+            className="w-11 h-11 rounded-xl flex items-center justify-center font-bold text-lg shrink-0"
             style={{
-              backgroundColor: playerColor,
-              boxShadow: `0 0 20px ${playerColor}66, 0 0 40px ${playerColor}22`,
+              backgroundColor: `${playerColor}20`,
+              color: playerColor,
+              border: `1px solid ${playerColor}50`,
             }}
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 0.6, delay: 0.1 }}
           >
             {playerAvatar || initials}
           </motion.div>
 
           {/* Name + subtitle */}
-          <div className="text-center min-w-0">
+          <div className="text-left min-w-0">
             <motion.p
-              className="text-xl font-display font-bold text-white truncate"
+              className="text-lg font-display font-bold text-white truncate"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1, ...spring.soft }}
@@ -92,6 +91,6 @@ export function ActivePlayerBanner({
           </div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence></MotionConfig>
   );
 }

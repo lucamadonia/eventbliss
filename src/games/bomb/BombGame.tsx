@@ -1,3 +1,5 @@
+import { speedFuseMs } from './rules';
+import OnlineWaiting from '../multiplayer/OnlineWaiting';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import i18next from 'i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
@@ -57,10 +59,12 @@ function useBombTimer(
   minMs: number,
   maxMs: number,
   onExplode: () => void,
+  enabled = true,
 ) {
   const [progress, setProgress] = useState(0);
   const durationRef = useRef(0);
   const startRef = useRef(0);
+  const elapsedRef = useRef(0);
   const rafRef = useRef<number>(0);
   const explodedRef = useRef(false);
   const onExplodeRef = useRef(onExplode);
@@ -69,19 +73,18 @@ function useBombTimer(
   const start = useCallback(() => {
     durationRef.current = minMs + Math.random() * (maxMs - minMs);
     startRef.current = performance.now();
+    elapsedRef.current = 0;
     explodedRef.current = false;
     setProgress(0);
   }, [minMs, maxMs]);
 
+  // Starting a round picks one fuse; transport pauses never pick another.
+  useEffect(() => { if (active) start(); }, [active, start]);
   useEffect(() => {
-    if (!active) {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      return;
-    }
-    start();
-
+    if (!active || !enabled) return;
+    startRef.current = performance.now();
     const tick = () => {
-      const elapsed = performance.now() - startRef.current;
+      const elapsed = elapsedRef.current + performance.now() - startRef.current;
       const p = Math.min(elapsed / durationRef.current, 1);
       setProgress(p);
       if (p >= 1 && !explodedRef.current) {
@@ -92,10 +95,13 @@ function useBombTimer(
       if (p < 1) rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [active, start]);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      elapsedRef.current += performance.now() - startRef.current;
+    };
+  }, [active, start, enabled]);
 
-  return { progress };
+  return { progress, durationMs: durationRef.current };
 }
 
 // ---------------------------------------------------------------------------
@@ -257,7 +263,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       if (incoming) {
         setState(incoming);
         if (incoming.phase === 'playing') {
-          setTimerActive(true);
+          setTimerActive(false);
           setTimerKey((k) => k + 1);
         } else {
           setTimerActive(false);
@@ -271,9 +277,11 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   useEffect(() => {
     if (!online || !online.isHost) return;
     const unsub = online.onBroadcast('bomb-action', (data) => {
+      if (state.phase !== 'playing' || online.players[state.currentPlayerIndex]?.id !== data.__senderId) return;
       if (data.action === 'weiter') {
-        // Host processes the advance
-        const { task, quiz } = generateTask(state.mode);
+        // Keep local and remote category rules identical.
+        const keepTask = state.sameCategory && (state.mode === 'kategorie' || state.mode === 'alle');
+        const { task, quiz } = keepTask ? { task: state.currentTask, quiz: state.currentQuiz } : generateTask(state.mode);
         setState((prev) => {
           const next = {
             ...prev,
@@ -285,6 +293,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
           return next;
         });
       } else if (data.action === 'alle-answer') {
+        if (state.mode !== 'alle' || typeof data.knows !== 'boolean') return;
         const knows = data.knows as boolean;
         setState((prev) => {
           const updated = [...prev.players];
@@ -303,6 +312,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
           return next;
         });
       } else if (data.action === 'quiz-answer') {
+        if (!state.currentQuiz || !Number.isInteger(data.answerIndex) || Number(data.answerIndex) < 0 || Number(data.answerIndex) > 3) return;
         const idx = data.answerIndex as number;
         if (state.currentQuiz && idx !== state.currentQuiz.correctIndex) {
           const { task, quiz } = generateTask(state.mode);
@@ -327,20 +337,21 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       }
     });
     return unsub;
-  }, [online, state.mode, state.currentQuiz, broadcastState]);
+  }, [online, state.phase, state.currentPlayerIndex, state.mode, state.sameCategory, state.currentTask, state.currentQuiz, broadcastState]);
 
   const effectiveTimerMin = state.randomTimer
     ? 15000
     : state.mode === 'speed'
-      ? Math.max(5, (state.timerMin * 1000) - speedReductionRef.current)
+      ? speedFuseMs(state.timerMin, state.timerMax, speedReductionRef.current).min
       : state.timerMin * 1000;
   const effectiveTimerMax = state.randomTimer
     ? 90000
     : state.mode === 'speed'
-      ? Math.max(8, (state.timerMax * 1000) - speedReductionRef.current)
+      ? speedFuseMs(state.timerMin, state.timerMax, speedReductionRef.current).max
       : state.timerMax * 1000;
 
   const handleExplode = useCallback(() => {
+    if (online && !online.isHost) return;
     setTimerActive(false);
     setState((prev) => {
       const updated = [...prev.players];
@@ -371,14 +382,30 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     });
   }, [online]);
 
-  const { progress } = useBombTimer(timerActive, effectiveTimerMin, effectiveTimerMax, handleExplode);
+  const { progress: localProgress, durationMs } = useBombTimer(timerActive, effectiveTimerMin, effectiveTimerMax, handleExplode, online?.isConnected !== false);
+  const [remoteDuration, setRemoteDuration] = useState(0);
+  const [remoteProgress, setRemoteProgress] = useState(0);
+  const timerBroadcastAt = useRef(0);
+  const progress = online && !online.isHost ? remoteProgress : localProgress;
+  useEffect(() => {
+    if (!online?.isHost || Date.now() - timerBroadcastAt.current < 250) return;
+    timerBroadcastAt.current = Date.now();
+    online.broadcast('bomb-timer-state', { progress: localProgress, durationMs });
+  }, [online, localProgress, durationMs]);
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('bomb-timer-state', data => {
+      if (typeof data.progress === 'number') setRemoteProgress(data.progress);
+      if (typeof data.durationMs === 'number') setRemoteDuration(data.durationMs);
+    });
+  }, [online]);
 
-  useTickSound(timerActive, progress);
+  useTickSound(timerActive && online?.isConnected !== false, progress);
 
   // TV bridge — placed AFTER useBombTimer so it can broadcast the live timer.
   // `timeLeft` is an integer (or -1 in random/hidden mode), so it re-broadcasts
   // ~once per second instead of per animation frame.
-  const bombAvgSec = (state.timerMin + state.timerMax) / 2;
+  const bombAvgSec = durationMs / 1000;
   const bombTimeLeft = state.randomTimer ? -1 : Math.max(0, Math.round((1 - progress) * bombAvgSec));
   useTVGameBridge('bomb', {
     phase: state.phase, mode: state.mode, players: state.players,
@@ -465,22 +492,12 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       online.broadcast('bomb-action', { action: 'alle-answer', knows });
       return;
     }
-    if (!knows) {
-      // Add +1 penalty to current player for not knowing
-      setState((prev) => {
-        const updated = [...prev.players];
-        updated[prev.currentPlayerIndex] = {
-          ...updated[prev.currentPlayerIndex],
-          penalties: updated[prev.currentPlayerIndex].penalties + 1,
-        };
-        return { ...prev, players: updated };
-      });
-    }
-    // Advance to next player — keep the same task/category for this round
-    setState((prev) => ({
-      ...prev,
-      currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
-    }));
+    setState(prev => {
+      const players = prev.players.map((p, i) => i === prev.currentPlayerIndex && !knows ? { ...p, penalties: p.penalties + 1 } : p);
+      const next = { ...prev, players, currentPlayerIndex: (prev.currentPlayerIndex + 1) % players.length };
+      broadcastState(next);
+      return next;
+    });
   };
 
   const handleTutorialDismiss = () => {
@@ -534,6 +551,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   };
 
   const handleRestart = () => {
+    if (online && !online.isHost) return;
     // Rematch: restart gameplay directly (no setup screen), keeping the same
     // players AND their accumulated penalties (carry over — do not zero).
     speedReductionRef.current = 0;
@@ -562,10 +580,12 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   };
 
   const handleExit = () => {
+    if (online && !online.isHost) return;
     setTimerActive(false);
     setState({ ...defaultState });
   };
 
+  if (state.phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
   return (
     // Fragment, damit der Verlassen-Dialog NEBEN der AnimatePresence liegt und
     // deren mode="wait"-Phasenwechsel nicht als zweites Kind stört.
@@ -573,7 +593,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     <AnimatePresence mode="wait">
       {state.phase === 'setup' && (
         <motion.div key="setup" exit={{ opacity: 0 }}>
-          <BombSetupScreen state={state} onUpdate={update} onStart={startGame} />
+          <BombSetupScreen locked={!!online} state={state} onUpdate={update} onStart={startGame} />
         </motion.div>
       )}
       {showTutorial && (
@@ -581,13 +601,10 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       )}
       {state.phase === 'playing' && !showTutorial && (
         <motion.div key={`playing-${timerKey}`} exit={{ opacity: 0 }}>
-          <ActivePlayerBanner
-            playerName={state.players[state.currentPlayerIndex]?.name ?? '???'}
-            hidden={false}
-          />
           <BombPlayingScreen
             state={state}
             progress={progress}
+            timeLeft={Math.max(0, Math.ceil((1 - progress) * (online && !online.isHost ? remoteDuration : durationMs) / 1000))}
             onWeiter={handleWeiter}
             onQuizAnswer={handleQuizAnswer}
             onAlleAnswer={handleAlleAnswer}

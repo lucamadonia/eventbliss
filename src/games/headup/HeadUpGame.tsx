@@ -1,5 +1,10 @@
+import '../headup/classic-stage.css';
+import { GameStage, StageHeader, StagePanel, StageAction, StageFooter } from '../ui/GameStage';
+import { usePausableTasks } from '../bottlespin/pausable-tasks';
+import { useOnlineActions, useOnlineSnapshot, useOnlinePrivateSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
+import { gravityPitch, HeadUpTiltTracker } from './tilt-tracker';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smartphone, RotateCcw, ChevronRight, Trophy, Check, X, Play, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
@@ -28,18 +33,9 @@ interface RoundScore { playerName: string; correct: number; skipped: number; wor
 
 // ── Neon Pulse Styles ──────────────────────────────────────────────────────────
 
-const PULSE_CSS = `
-.neon-glow{text-shadow:0 0 20px rgba(223,142,255,.6),0 0 40px rgba(223,142,255,.4),0 0 80px rgba(223,142,255,.2)}
-.glass-card{background:rgba(32,38,47,.4);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.pulse-bg{background:radial-gradient(circle at 50% 50%,rgba(223,142,255,.15) 0%,rgba(10,14,20,1) 70%)}
-.neon-btn{background:linear-gradient(135deg,#df8eff,#d779ff);box-shadow:0 0 30px rgba(223,142,255,.4),0 0 60px rgba(223,142,255,.15)}
-.neon-btn:disabled{background:#1b2028;box-shadow:none}
-.tilt-text-left{writing-mode:vertical-rl;transform:rotate(180deg)}
-.tilt-text-right{writing-mode:vertical-rl}
-`;
 
 // Nur für die einmalige Geräte-Feinjustage der Kipp-Schwellen. Danach auf false.
-const TILT_DEBUG = true;
+const TILT_DEBUG = false;
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -62,11 +58,11 @@ function TimerCircle({ timeLeft, percent, warn }: { timeLeft: number; percent: n
     <div className="relative w-16 h-16">
       <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
         <circle cx="32" cy="32" r={r} fill="none" stroke="#1b2028" strokeWidth="4" />
-        <circle cx="32" cy="32" r={r} fill="none" stroke={warn ? '#ff6e84' : '#df8eff'} strokeWidth="4"
+        <circle cx="32" cy="32" r={r} fill="none" stroke={warn ? '#ff6e84' : '#d5f46a'} strokeWidth="4"
           strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - percent / 100)}
           style={{ transition: 'stroke-dashoffset 0.5s ease, stroke 0.3s' }} />
       </svg>
-      <span className={`absolute inset-0 flex items-center justify-center font-mono text-sm font-bold ${warn ? 'text-[#ff6e84]' : 'text-[#df8eff]'}`}>
+      <span className={`absolute inset-0 flex items-center justify-center font-mono text-sm font-bold ${warn ? 'text-[#ff6e84]' : 'text-[#d5f46a]'}`}>
         {timeLeft}
       </span>
     </div>
@@ -76,6 +72,7 @@ function TimerCircle({ timeLeft, percent, warn }: { timeLeft: number; percent: n
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
+  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
   const { t } = useTranslation();
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
   // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
@@ -111,6 +108,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const orientationActiveRef = useRef(false);
   const armedRef = useRef(false); // Neutral-Zone-Re-Arm: eine Neigung = eine Antwort
   const [isArmed, setIsArmed] = useState(false); // sichtbarer „Bereit"-Status
+  const tiltTracker = useRef(new HeadUpTiltTracker());
   // Kalibrierte Neutral-Halteposition (Nick-Winkel). Auf der Stirn hält niemand
   // exakt 0° — die Erkennung misst die Neigung RELATIV zu dieser Baseline, sonst
   // wird eine Richtung (z.B. Skip) unerreichbar, wenn neutral schon leicht gekippt.
@@ -129,16 +127,19 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   // exakt so neu kalibrieren wie beim Rundenstart (Baseline verwerfen, 150ms
   // Lock, damit die erste Neigung nicht verschluckt wird).
   const suspendTilt = useCallback(() => {
+    tiltTracker.current.reset();
     orientationActiveRef.current = false;
     armedRef.current = false;
     setIsArmed(false);
   }, []);
   const resumeTilt = useCallback(() => {
-    if (screen !== 'playing') return;
+    if (screen !== 'playing' || (online && online.players[currentRound - 1]?.id !== online.myPlayerId)) return;
+    orientationActiveRef.current = true;
     armedRef.current = false;
     setIsArmed(false);
     baselineRef.current = null;
     smoothRef.current = null;
+    tiltTracker.current.reset();
     setTimeout(() => { orientationActiveRef.current = true; }, 150);
   }, [screen]);
 
@@ -156,17 +157,22 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   });
 
   const handleTimerExpire = useCallback(() => {
+    if (online && !online.isHost) return;
     orientationActiveRef.current = false;
     armedRef.current = false;
     setIsArmed(false);
     triggerHaptic('heavy');
     setScreen('roundResult');
-  }, []);
+  }, [online?.isHost]);
 
-  const { timeLeft, start: startTimer, reset: resetTimer, percentLeft } =
-    useGameTimer(timerDuration, handleTimerExpire);
+  const [remoteTime, setRemoteTime] = useState(60);
+  const actionRef = useRef<(name: string, ...args: unknown[]) => void>(() => {});
+  const { timeLeft: hostTime, start: startTimer, reset: resetTimer } =
+    useGameTimer(timerDuration, handleTimerExpire, online?.isConnected !== false);
+  const timeLeft = online && !online.isHost ? remoteTime : hostTime;
+  const percentLeft = timerDuration > 0 ? timeLeft / timerDuration * 100 : 0;
 
-  useTVGameBridge('headup', { phase: screen, currentRound, totalRounds, currentWord: wordQueue[currentWordIndex], players: playerNames, correctCount: roundWords.filter(w => w.correct).length, skippedCount: roundWords.filter(w => !w.correct).length, timeLeft, category: selectedCategory?.name || '' }, [screen, currentRound, currentWordIndex, timeLeft]);
+  useTVGameBridge('headup', { phase: screen, currentRound, totalRounds, currentWord: online ? '' : wordQueue[currentWordIndex], players: playerNames, correctCount: roundWords.filter(w => w.correct).length, skippedCount: roundWords.filter(w => !w.correct).length, timeLeft, category: selectedCategory?.name || '' }, [screen, currentRound, currentWordIndex, timeLeft]);
 
   const handleStartRound = useCallback(() => {
     if (!selectedCategory) return;
@@ -174,21 +180,21 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     setCurrentWordIndex(0);
     setRoundWords([]);
     setScreen('ready');
-    setCountdown(3);
+    setCountdown(null);
   }, [selectedCategory]);
 
   useEffect(() => {
-    if (countdown === null) return;
+    if (countdown === null || (online && !online.isHost)) return;
     if (countdown === 0) {
       setCountdown(null); setScreen('playing'); resetTimer(timerDuration); startTimer();
-      armedRef.current = false; setIsArmed(false); // erst flach halten (Neutral), bevor die erste Neigung zählt
-      baselineRef.current = null; smoothRef.current = null; // Neu kalibrieren
-      // Kurzer Lock (150ms statt 500ms), damit die ERSTE Neigung nicht verschluckt wird.
-      setTimeout(() => { orientationActiveRef.current = true; }, 150);
+      // The ready listener already calibrated the forehead pose. Do not reset
+      // or briefly disable it when the first word becomes visible.
+      armedRef.current = tiltTracker.current.armed;
+      setIsArmed(tiltTracker.current.armed);
       if (online?.isHost) {
         online.broadcast('tv-state', {
           game: 'headup', phase: 'playing',
-          word: wordQueue[0] || '',
+          word: '',
           currentPlayer: playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound }),
           correct: 0, skipped: 0, timeLeft: timerDuration,
           round: currentRound, totalRounds,
@@ -216,11 +222,10 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     setTimeout(() => setFlash(null), 300);
     setCurrentWordIndex((prev) => {
       const next = prev + 1;
-      const nextWord = wordQueue[next] ?? wordQueue[0] ?? '';
       if (online?.isHost) {
         online.broadcast('tv-state', {
           game: 'headup', phase: 'playing',
-          word: nextWord,
+          word: '',
           currentPlayer: playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound }),
           correct: newCorrect, skipped: newSkipped,
           timeLeft, round: currentRound, totalRounds,
@@ -238,57 +243,36 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   // und nahe der Senkrechten gimbal-instabil → Skip löste praktisch nie aus.
   // Jetzt: Nick-Winkel aus dem Schwerkraftvektor (accelerationIncludingGravity)
   // — eindeutig, kein Umschlag, roll-invariant (egal ob Hoch-/Querformat).
+  const [motionAllowed, setMotionAllowed] = useState(() => typeof DeviceMotionEvent !== 'undefined' && !('requestPermission' in DeviceMotionEvent));
+  const [motionPending, setMotionPending] = useState(false);
+  const motionPhase = screen === 'ready' || screen === 'playing';
+  const motionContext = useRef({ screen, connected: online?.isConnected !== false });
+  motionContext.current = { screen, connected: online?.isConnected !== false };
+  const requestMotion = async () => {
+    setMotionPending(true);
+    try {
+      const api = DeviceMotionEvent as unknown as { requestPermission?: () => Promise<string> };
+      setMotionAllowed(!api.requestPermission || await api.requestPermission() === 'granted');
+    } catch { setMotionAllowed(false); }
+    finally { setMotionPending(false); }
+  };
   useEffect(() => {
-    if (screen !== 'playing') return;
-    const THRESHOLD = 25; // Grad Nick aus der Halteposition → Antwort
-    const REARM = 12;     // wieder scharf, sobald zurück in dieser Zone
-
-    // Winkel der Bildschirm-Normalen (z) gegen die Horizontale. Screen senkrecht ≈ 0°.
-    const pitchFrom = (g: DeviceMotionEventAcceleration) => {
-      const gx = g.x ?? 0, gy = g.y ?? 0, gz = g.z ?? 0;
-      return Math.atan2(gz, Math.hypot(gx, gy)) * (180 / Math.PI);
+    if (!motionAllowed || !motionPhase || (online && online.players[currentRound - 1]?.id !== online.myPlayerId)) return;
+    tiltTracker.current.reset();
+    orientationActiveRef.current = true;
+    const handle = (event: DeviceMotionEvent) => {
+      if (!orientationActiveRef.current || !motionContext.current.connected || !event.accelerationIncludingGravity) return;
+      const pitch = gravityPitch(event.accelerationIncludingGravity);
+      if (pitch === null) return;
+      const action = tiltTracker.current.sample(pitch, motionContext.current.screen === 'playing');
+      armedRef.current = tiltTracker.current.armed;
+      setIsArmed(tiltTracker.current.armed);
+      if (action) actionRef.current('word', action === 'correct');
     };
-
-    const handle = (e: DeviceMotionEvent) => {
-      if (!orientationActiveRef.current) return;
-      const g = e.accelerationIncludingGravity;
-      if (!g) return;
-      const raw = pitchFrom(g);
-      // EMA-Glättung gegen Ruckel/Jolts.
-      smoothRef.current = smoothRef.current === null ? raw : smoothRef.current * 0.8 + raw * 0.2;
-      const pitch = smoothRef.current;
-      if (baselineRef.current === null) { baselineRef.current = pitch; }
-      const delta = pitch - baselineRef.current;
-
-      if (TILT_DEBUG && (debugTickRef.current++ % 6 === 0)) {
-        setTiltDebug({ pitch: Math.round(pitch), delta: Math.round(delta), armed: armedRef.current });
-      }
-
-      if (!armedRef.current) {
-        if (Math.abs(delta) < REARM) {
-          armedRef.current = true; setIsArmed(true);
-          baselineRef.current = pitch; // Ruhelage nachführen (Drift)
-        }
-        return;
-      }
-      if (delta > THRESHOLD) { armedRef.current = false; setIsArmed(false); advanceWord(true); }   // Nick down = Richtig
-      else if (delta < -THRESHOLD) { armedRef.current = false; setIsArmed(false); advanceWord(false); } // Nick up = Skip
-    };
-
-    const init = async () => {
-      try {
-        const DME = DeviceMotionEvent as unknown as { requestPermission?: () => Promise<string> };
-        if (typeof DME.requestPermission === 'function') {
-          try { if ((await DME.requestPermission()) !== 'granted') return; } catch { return; }
-        }
-        window.addEventListener('devicemotion', handle);
-      } catch {
-        // Bewegungssensor nicht verfügbar — manuelle Buttons bleiben nutzbar
-      }
-    };
-    init();
+    window.addEventListener('devicemotion', handle);
     return () => { window.removeEventListener('devicemotion', handle); };
-  }, [screen, advanceWord]);
+    // Keep the listener and ready-phase calibration across ready -> playing.
+  }, [motionPhase, currentRound, motionAllowed, online?.myPlayerId]);
 
   const handleNextRound = useCallback(() => {
     const name = playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound });
@@ -300,28 +284,14 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   useEffect(() => {
     if (screen === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
-      recordEnd('headup', totalCorrect, true);
+      const ownIndex = online?.players.findIndex(p => p.id === online.myPlayerId) ?? -1;
+      const ownScore = ownIndex >= 0 ? allRounds[ownIndex]?.correct ?? 0 : totalCorrect;
+      recordEnd('headup', ownScore, !online || ownScore === Math.max(...allRounds.map(r => r.correct)));
     }
     if (screen === 'setup') gameRecordedRef.current = false;
   }, [screen]);
 
-  /* ---- Online: host broadcasts game state ---- */
-  useEffect(() => {
-    if (!online?.isHost) return;
-    online.broadcast('game-state', {
-      screen, currentWord, currentRound, totalRounds, correctCount, skippedCount,
-      timeLeft, playerName: playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound }),
-    });
-  }, [screen, currentWord, currentRound, correctCount, skippedCount, timeLeft, online]);
 
-  /* ---- Online: non-host syncs state (sees word to shout) ---- */
-  useEffect(() => {
-    if (!online || online.isHost) return;
-    return online.onBroadcast('game-state', (data) => {
-      if (data.screen) setScreen(data.screen as GameScreen);
-      if (data.currentRound) setCurrentRound(data.currentRound as number);
-    });
-  }, [online]);
 
   const handleRestart = useCallback(() => {
     setScreen('setup'); setSelectedCategory(null); setCurrentRound(1); setAllRounds([]); setRoundWords([]);
@@ -340,9 +310,22 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     handleStartRound();
   }, [handleStartRound]);
 
-  const finalRounds = screen === 'gameOver'
-    ? [...allRounds, { playerName: t('games.headup.playerFallback', { n: currentRound }), correct: correctCount, skipped: skippedCount, words: [...roundWords] }]
-    : allRounds;
+  const actorId = online?.players[currentRound - 1]?.id ?? false;
+  const act = useOnlineActions(online, 'headup', `${screen}:${currentRound}:${currentWordIndex}:${countdown}`, {
+    start: { allowed: screen === 'setup' ? 'host' : false, run: () => { if (online) setPlayerNames(online.players.map(p => p.name)); handleStartRound(); } },
+    ready: { allowed: screen === 'ready' && countdown === null ? actorId : false, run: () => { if (screen === 'ready' && countdown === null) setCountdown(3); } },
+    word: { allowed: screen === 'playing' ? actorId : false, run: (correct: unknown) => { if (typeof correct === 'boolean') advanceWord(correct); } },
+    next: { allowed: screen === 'roundResult' ? 'host' : false, run: handleNextRound },
+    again: { allowed: screen === 'gameOver' ? 'host' : false, run: playAgain },
+    restart: { allowed: 'host', run: handleRestart },
+  });
+  actionRef.current = act;
+  useOnlinePrivateSnapshot(online, 'headup', { screen, playerNames, selectedCategory, timerDuration, currentRound, currentWordIndex, wordQueue, roundWords, allRounds, countdown, timeLeft }, (state, recipient) => ({ ...state, selectedCategory: state.selectedCategory ? { ...state.selectedCategory, words: [] } : null, wordQueue: state.wordQueue.map((word, index) => recipient === actorId || index !== state.currentWordIndex ? '' : word) }), state => {
+    setScreen(state.screen); setPlayerNames(state.playerNames); setSelectedCategory(state.selectedCategory); setTimerDuration(state.timerDuration); setCurrentRound(state.currentRound); setCurrentWordIndex(state.currentWordIndex); setWordQueue(state.wordQueue); setRoundWords(state.roundWords); setAllRounds(state.allRounds); setCountdown(state.countdown); setRemoteTime(state.timeLeft);
+  });
+  if (online && !online.isHost && screen === 'setup') return <OnlineWaiting />;
+
+  const finalRounds = allRounds;
   const totalCorrect = finalRounds.reduce((s, r) => s + r.correct, 0);
   const bestRound = finalRounds.reduce((b, r) => (r.correct > b.correct ? r : b), finalRounds[0] ?? { playerName: '', correct: 0, skipped: 0, words: [] });
 
@@ -350,21 +333,21 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const gridCats = getHeadUpCategories().slice(1);
 
   return (
-    <div className="min-h-[100dvh] bg-[#0a0e14] text-[#f1f3fc] overflow-hidden relative">
-      <style>{PULSE_CSS}</style>
+    <GameStage gameId="headup" className="headup-stage">
+
       <AnimatePresence mode="wait">
 
         {/* ── SETUP ─────────────────────────────────────────────────── */}
         {screen === 'setup' && (
-          <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] max-w-2xl mx-auto">
+          <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="py-3 max-w-3xl mx-auto">
             <div className="text-center mb-8 pt-6">
               <h1 className="text-4xl font-extrabold tracking-tighter text-[#f1f3fc]">{t('games.headup.gameTitle')}</h1>
-              <span className="inline-block mt-2 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#ff6b98]/15 text-[#ff6b98] border border-[#ff6b98]/20">Party Game</span>
+              <p className="mt-3 text-sm text-[var(--stage-muted)]">{t('games.headup.holdToForehead')}</p>
             </div>
 
             {/* Players */}
             <div className="mb-6">
-              <PlayerSetup
+              <PlayerSetup locked={!!online}
                 players={playerNames.map((name, i) => ({ id: String(i), name }))}
                 onAdd={() => setPlayerNames([...playerNames, ''])}
                 onRemove={(id) => setPlayerNames(playerNames.filter((_, j) => j !== Number(id)))}
@@ -372,7 +355,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 onImportNames={isOnlineOrParty ? undefined : handleImportNames}
                 min={2}
                 max={12}
-                accent="#df8eff"
+                accent="#d5f46a"
                 label={t('games.headup.playerLabel')}
               />
             </div>
@@ -386,7 +369,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 selected={selectedCategory?.id === featured.id}
                 onClick={() => setSelectedCategory(featured)}
                 badge={`${t('games.headup.featuredBadge')} · ${t('games.headup.topPickBadge')}`}
-                accent="#df8eff"
+                accent="#d5f46a"
                 layout="wide"
                 priority
                 className="mb-6"
@@ -404,276 +387,89 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                   image={HEADUP_THEME_ASSETS[cat.id]}
                   selected={selectedCategory?.id === cat.id}
                   onClick={() => setSelectedCategory(cat)}
-                  badge={cat.emoji}
-                  accent="#df8eff"
+
+                  accent="#d5f46a"
                 />
               ))}
             </div>
 
             {/* Settings */}
-            <div className="glass-card rounded-2xl p-5 border border-[#20262f] mb-6">
+            <div className="bg-[#181d1b] rounded-2xl p-5 border border-[#20262f] mb-6">
               <h3 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-4">{t('games.headup.settingsLabel')}</h3>
               <div>
-                <label className="text-xs text-[#a8abb3] mb-2 block">{t('games.headup.timerLabel', { duration: timerDuration })}</label>
+                <label className="text-xs text-[#a8abb3] mb-2 block"><Trans i18nKey="games.headup.timerLabel" values={{ duration: timerDuration }} components={{ 1: <strong className="font-semibold text-white" /> }} /></label>
                 <input type="range" min={15} max={120} step={5} value={timerDuration} onChange={(e) => setTimerDuration(+e.target.value)}
-                  className="w-full h-1 rounded-full appearance-none bg-[#1b2028] accent-[#df8eff]" />
+                  className="w-full h-1 rounded-full appearance-none bg-[#1b2028] accent-[#d5f46a]" />
               </div>
             </div>
 
             {/* Start Button */}
             <div className="relative z-20 mt-2">
               <div className="mx-auto text-center">
-                <motion.button whileTap={{ scale: 0.97 }} onClick={handleStartRound} disabled={!selectedCategory}
+                <motion.button whileTap={{ scale: 0.97 }} onClick={() => act('start')} disabled={!selectedCategory}
                   className={`w-full py-4 rounded-full text-base font-extrabold uppercase tracking-wide transition-all flex items-center justify-center gap-2 ${
-                    selectedCategory ? 'neon-btn text-white' : 'bg-[#1b2028] text-[#a8abb3]/40 cursor-not-allowed'
+                    selectedCategory ? 'bg-[#d5f46a] text-[#101513]' : 'bg-[#1b2028] text-[#b5bdbe] cursor-not-allowed'
                   }`}>
                   <Play className="w-5 h-5" /> {t('games.headup.startGame')}
                 </motion.button>
-                <p className="text-[10px] text-[#a8abb3] mt-2 uppercase tracking-widest">{t('games.headup.holdToForehead')}</p>
+                <p className="text-xs text-[#a8abb3] mt-2 uppercase tracking-widest">{t('games.headup.holdToForehead')}</p>
               </div>
             </div>
           </motion.div>
         )}
 
         {/* ── READY ─────────────────────────────────────────────────── */}
-        {screen === 'ready' && (
-          <motion.div key="ready" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-            className="flex flex-col items-center justify-center min-h-[100dvh] p-8 pulse-bg">
-            <ActivePlayerBanner
-              playerName={playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound })}
-              hidden={false}
-            />
-            {/* Current player name */}
-            <div className="mb-4 px-4 py-2 rounded-full bg-[#df8eff]/15 border border-[#df8eff]/25">
-              <span className="text-sm font-bold text-[#df8eff]">{playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound })}</span>
-              <span className="text-xs text-[#a8abb3] ml-2">{t('games.headup.playerTurn')}</span>
-            </div>
-            <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }} className="mb-8">
-              <div className="w-24 h-40 rounded-2xl border-2 border-[#df8eff]/40 bg-[#151a21]/80 backdrop-blur-xl flex items-center justify-center shadow-[0_0_40px_rgba(223,142,255,.15)]">
-                <Smartphone className="w-12 h-12 text-[#df8eff]" />
-              </div>
-            </motion.div>
-            <p className="text-xl font-extrabold text-center mb-3">{t('games.headup.holdToForehead')}</p>
-            <div className="flex flex-col gap-2 mb-6 w-full max-w-xs">
-              <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[#8ff5ff]/10 border border-[#8ff5ff]/25">
-                <ChevronDown className="w-6 h-6 text-[#8ff5ff] shrink-0" />
-                <span className="text-sm font-bold text-[#8ff5ff]">{t('games.headup.tiltDownCorrect')}</span>
-              </div>
-              <div className="flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[#ff6e84]/10 border border-[#ff6e84]/25">
-                <ChevronUp className="w-6 h-6 text-[#ff6e84] shrink-0" />
-                <span className="text-sm font-bold text-[#ff6e84]">{t('games.headup.tiltUpSkip')}</span>
-              </div>
-              <p className="text-[10px] text-center text-[#a8abb3] mt-1">{t('games.headup.tiltNeutralHint')}</p>
-            </div>
-            {countdown !== null && (
-              <motion.div key={countdown} initial={{ scale: 2, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }}
-                className="text-7xl font-black text-[#df8eff] neon-glow">{countdown === 0 ? t('games.headup.go') : countdown}</motion.div>
-            )}
-            <div className="mt-8 flex items-center gap-2 px-4 py-2 rounded-full glass-card border border-[#20262f]">
-              <span className="text-xs text-[#a8abb3]">{t('games.headup.roundLabel', { current: currentRound, total: totalRounds })}</span>
-              <span className="text-[#20262f]">|</span>
-              <span className="text-xs text-[#a8abb3]">{selectedCategory?.emoji} {selectedCategory?.name}</span>
-            </div>
-          </motion.div>
-        )}
+        {screen === 'ready' && <div className="mx-auto flex min-h-[75dvh] w-full max-w-3xl flex-col justify-center gap-7">
+          <StageHeader title={playerNames[currentRound - 1]} eyebrow={selectedCategory?.name} subtitle={t('games.headup.holdToForehead')} progress={{ value: currentRound, total: totalRounds }} />
+          <StagePanel tone="accent" className="grid min-h-60 place-items-center"><span className="text-[clamp(2.5rem,8vw,6rem)] font-black tabular-nums break-words">{countdown === null ? playerNames[currentRound - 1] : countdown === 0 ? t('games.headup.go') : countdown}</span></StagePanel>
+          <div className="grid gap-3 sm:grid-cols-2 text-sm text-[var(--stage-muted)]"><p className="flex items-center gap-3"><ChevronDown className="h-6 w-6" />{t('games.headup.tiltDownCorrect')}</p><p className="flex items-center gap-3"><ChevronUp className="h-6 w-6" />{t('games.headup.tiltUpSkip')}</p></div>
+          <p className="text-sm text-[var(--stage-muted)]">{t('games.headup.tiltNeutralHint')}</p>
+          {countdown === null && <StageFooter className="flex-col sm:flex-row">
+            <StageAction className="w-full" disabled={!act.can('ready') || motionPending} onClick={async () => { await requestMotion(); act('ready'); }}>{t('games.headup.readyBtn', { defaultValue: 'Ready — enable tilt' })}</StageAction>
+            <StageAction className="w-full" variant="secondary" disabled={!act.can('ready') || motionPending} onClick={() => { setMotionAllowed(false); act('ready'); }}>{t('games.headup.buttonsOnly', { defaultValue: 'Play with buttons' })}</StageAction>
+          </StageFooter>}
+        </div>}
 
-        {/* ── PLAYING ───────────────────────────────────────────────── */}
-        {screen === 'playing' && (
-          <motion.div key="playing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="relative flex flex-col min-h-[100dvh] pulse-bg overflow-hidden">
-            {/* Kipp-Debug (nur während der Feinjustage) */}
-            {TILT_DEBUG && tiltDebug && (
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50 px-3 py-1 rounded-full bg-black/70 border border-white/20 text-[11px] font-mono text-white/90 pointer-events-none">
-                pitch {tiltDebug.pitch}° · Δ {tiltDebug.delta}° · {tiltDebug.armed ? 'armed' : 'wait'}
-              </div>
-            )}
-            {/* Ambient blurs */}
-            <div className="absolute top-0 left-0 w-64 h-64 bg-[#df8eff]/[0.07] rounded-full blur-[100px] pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#ff6b98]/[0.05] rounded-full blur-[120px] pointer-events-none" />
+        {screen === 'playing' && <div className="mx-auto flex w-full max-w-5xl min-h-[80dvh] flex-col gap-5">
+          <StageHeader title={playerNames[currentRound - 1]} eyebrow={t('games.headup.gameTitle')}
+            subtitle={selectedCategory?.name} trailing={<span className="text-3xl font-semibold tabular-nums">{timeLeft}s</span>}
+            progress={{ value: currentRound, total: totalRounds }} />
+          <StagePanel tone="accent" className="flex flex-1 min-h-72 sm:min-h-96 items-center justify-center !rounded-2xl !p-6 sm:!p-12">
+            <div className="w-full text-center" style={!online ? { transform: 'rotate(180deg)' } : undefined}>
+              <p className="mb-5 text-xs font-bold tracking-[0.18em] uppercase">{t('games.headup.currentWord')}</p>
+              <p className="break-words text-[clamp(2.7rem,10vw,7rem)] font-black tracking-tight leading-[1.05]">{online && actorId === online.myPlayerId ? playerNames[currentRound - 1] : currentWord}</p>
+            </div>
+          </StagePanel>
+          <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--stage-muted)]">
+            <p>{correctCount} {t('games.headup.correct')} · {skippedCount} {t('games.headup.skip')}</p>
+            {(!online || actorId === online.myPlayerId) && <p>{isArmed ? t('games.headup.armed') : t('games.headup.holdFlat')}</p>}
+          </div>
+          <StageFooter className="!grid grid-cols-2 gap-3">
+            <StageAction variant="secondary" disabled={!act.can('word')} onClick={() => act('word', false)}><X className="h-5 w-5" />{t('games.headup.skip')}</StageAction>
+            <StageAction disabled={!act.can('word')} onClick={() => act('word', true)}><Check className="h-5 w-5" />{t('games.headup.correct')}</StageAction>
+          </StageFooter>
+        </div>}
 
-            <AnimatePresence>
-              {flash && (
-                <motion.div key={flash} initial={{ opacity: 0.7 }} animate={{ opacity: 0 }} transition={{ duration: 0.3 }}
-                  className={`absolute inset-0 z-30 pointer-events-none ${flash === 'green' ? 'bg-[#8ff5ff]/30' : 'bg-[#ff6e84]/30'}`} />
-              )}
-            </AnimatePresence>
-
-            {/* Timer top-right */}
-            <div className="flex justify-between items-center px-4 pt-3 pb-1 z-10">
-              <div className="px-3 py-1 rounded-full glass-card border border-[#20262f] flex items-center gap-1.5">
-                <span className="text-[10px] text-[#a8abb3]">{t('games.headup.roundShort')}</span>
-                <span className="text-xs font-bold text-[#df8eff]">{currentRound}/{totalRounds}</span>
-              </div>
-              <TimerCircle timeLeft={timeLeft} percent={percentLeft} warn={timeLeft <= 10} />
-            </div>
-
-            {/* Tilt indicators + word */}
-            <div className="flex-1 flex relative">
-              {/* Left tilt indicator */}
-              <div className="absolute left-0 inset-y-0 w-16 flex flex-col items-center justify-center bg-gradient-to-r from-[#ff6e84]/10 to-transparent pointer-events-none">
-                <ChevronUp className="w-5 h-5 text-[#ff6e84]/50 mb-2" />
-                <span className="tilt-text-left text-[10px] font-bold uppercase tracking-widest text-[#ff6e84]/40">{t('games.headup.skip')}</span>
-              </div>
-              {/* Right tilt indicator */}
-              <div className="absolute right-0 inset-y-0 w-16 flex flex-col items-center justify-center bg-gradient-to-l from-[#8ff5ff]/10 to-transparent pointer-events-none">
-                <ChevronDown className="w-5 h-5 text-[#8ff5ff]/50 mb-2" />
-                <span className="tilt-text-right text-[10px] font-bold uppercase tracking-widest text-[#8ff5ff]/40">{t('games.headup.correct')}</span>
-              </div>
-
-              {/* Active word */}
-              <div className="flex-1 flex items-center justify-center px-20">
-                <AnimatePresence mode="wait">
-                  <motion.div key={currentWord} initial={{ x: 80, opacity: 0 }} animate={{ x: 0, opacity: 1 }} exit={{ x: -80, opacity: 0 }}
-                    transition={{ duration: 0.2 }} className="text-center" style={{ transform: 'rotate(180deg)' }}>
-                    <span className="block text-[10px] uppercase tracking-[0.3em] text-[#8ff5ff]/60 mb-2 font-semibold">{t('games.headup.currentWord')}</span>
-                    <span className="text-5xl md:text-8xl font-black tracking-tighter italic text-[#df8eff] neon-glow leading-none">{currentWord}</span>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </div>
-
-            {/* Bereit-/Re-Arm-Status — zeigt, wann die nächste Neigung zählt */}
-            <div className="flex justify-center pb-1 z-10">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-bold transition-all"
-                style={isArmed
-                  ? { background: 'rgba(143,245,255,0.12)', color: '#8ff5ff', border: '1px solid rgba(143,245,255,0.30)' }
-                  : { background: 'rgba(255,210,63,0.10)', color: '#ffd23f', border: '1px solid rgba(255,210,63,0.25)' }}>
-                {isArmed ? t('games.headup.armed') : t('games.headup.holdFlat')}
-              </div>
-            </div>
-
-            {/* Score pill */}
-            <div className="flex justify-center pb-3 z-10">
-              <div className="inline-flex items-center gap-4 px-6 py-2.5 rounded-full glass-card border border-[#20262f]">
-                <div className="flex items-center gap-1.5"><Check className="w-4 h-4 text-[#8ff5ff]" /><span className="text-sm font-bold text-[#8ff5ff]">{correctCount}</span><span className="text-[10px] text-[#a8abb3]">{t('games.headup.correct')}</span></div>
-                <div className="w-px h-4 bg-[#20262f]" />
-                <div className="flex items-center gap-1.5"><X className="w-4 h-4 text-[#ff6e84]" /><span className="text-sm font-bold text-[#ff6e84]">{skippedCount}</span><span className="text-[10px] text-[#a8abb3]">{t('games.headup.skip')}</span></div>
-              </div>
-            </div>
-
-            {/* Desktop fallback */}
-            <div className="flex gap-3 px-4 pb-4 z-10">
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => advanceWord(false)}
-                className="flex-1 py-3.5 rounded-full bg-[#1b2028] border border-[#ff6e84]/20 text-[#ff6e84] font-semibold text-sm flex items-center justify-center gap-2">
-                <X className="w-4 h-4" /> {t('games.headup.skip')}
-              </motion.button>
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => advanceWord(true)}
-                className="flex-1 py-3.5 rounded-full bg-gradient-to-r from-[#8ff5ff] to-[#00eefc] text-[#0a0e14] font-semibold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(143,245,255,.2)]">
-                <Check className="w-4 h-4" /> {t('games.headup.correct')}!
-              </motion.button>
-            </div>
-
-            {/* Forehead hint (mobile) */}
-            <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 border-2 border-dashed border-[#df8eff]/10 rounded-3xl pointer-events-none h-48 md:hidden" />
-          </motion.div>
-        )}
-
-        {/* ── ROUND RESULT ──────────────────────────────────────────── */}
-        {screen === 'roundResult' && (
-          <motion.div key="roundResult" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }}
-            className="p-4 pb-8 max-w-lg mx-auto min-h-[100dvh] flex flex-col">
-            <div className="text-center pt-8 mb-6">
-              <h2 className="text-2xl font-extrabold text-[#f1f3fc] mb-1">{t('games.headup.roundOver', { round: currentRound })}</h2>
-              <p className="text-[#a8abb3] text-sm">{selectedCategory?.emoji} {selectedCategory?.name}</p>
-            </div>
-            <div className="flex gap-3 mb-6">
-              <div className="flex-1 p-4 rounded-2xl bg-[#151a21] border-l-4 border-[#8ff5ff] text-center">
-                <div className="text-3xl font-black text-[#8ff5ff] neon-glow">{correctCount}</div>
-                <div className="text-xs text-[#a8abb3] mt-1">{t('games.headup.correct')}</div>
-              </div>
-              <div className="flex-1 p-4 rounded-2xl bg-[#151a21] border-l-4 border-[#ff6e84] text-center">
-                <div className="text-3xl font-black text-[#ff6e84]">{skippedCount}</div>
-                <div className="text-xs text-[#a8abb3] mt-1">{t('games.headup.skipped')}</div>
-              </div>
-            </div>
-            <div className="flex-1 overflow-y-auto space-y-2 mb-6">
-              {roundWords.map((w, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
-                  className={`flex items-center gap-3 p-3 rounded-xl ${w.correct ? 'bg-[#8ff5ff]/[0.06] border border-[#8ff5ff]/10' : 'bg-[#151a21] border border-[#20262f]'}`}>
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${w.correct ? 'bg-[#8ff5ff]/15' : 'bg-[#1b2028]'}`}>
-                    {w.correct ? <Check className="w-4 h-4 text-[#8ff5ff]" /> : <X className="w-4 h-4 text-[#ff6e84]/40" />}
-                  </div>
-                  <span className={`text-sm font-medium ${w.correct ? 'text-[#f1f3fc]' : 'text-[#a8abb3]/50 line-through'}`}>{w.word}</span>
-                </motion.div>
-              ))}
-            </div>
-            <motion.button whileTap={{ scale: 0.97 }} onClick={handleNextRound}
-              className="w-full py-4 rounded-full neon-btn text-white text-base font-extrabold uppercase tracking-wide flex items-center justify-center gap-2">
-              {currentRound >= totalRounds ? <><Trophy className="w-5 h-5" /> {t('games.headup.results')}</> : <>{t('games.headup.nextPlayer')} <ChevronRight className="w-5 h-5" /></>}
-            </motion.button>
-          </motion.div>
-        )}
-
-        {/* ── GAME OVER ─────────────────────────────────────────────── */}
-        {screen === 'gameOver' && (
-          <motion.div key="gameOver" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -30 }}
-            className="p-4 pb-8 max-w-lg mx-auto min-h-[100dvh] flex flex-col pulse-bg">
-            <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-            <div className="text-center pt-8 mb-6">
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
-                <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/30 mb-4 shadow-[0_0_40px_rgba(223,142,255,.2)]">
-                  <Trophy className="w-10 h-10 text-[#df8eff]" />
-                </div>
-              </motion.div>
-              <h2 className="text-3xl font-extrabold neon-glow text-[#df8eff]">{t('games.headup.gameOver')}</h2>
-              <p className="text-6xl font-black text-[#f1f3fc] mt-2 neon-glow">{totalCorrect}</p>
-              <p className="text-[#a8abb3] text-sm mt-1">{t('games.headup.wordsGuessedLabel')}</p>
-            </div>
-            <div className="flex gap-3 mb-6">
-              <div className="flex-1 p-4 rounded-2xl glass-card border border-[#20262f] text-center">
-                <div className="text-2xl font-black text-[#8ff5ff]">{totalCorrect}</div>
-                <div className="text-[10px] text-[#a8abb3] mt-1 uppercase tracking-wider">{t('games.headup.total')}</div>
-              </div>
-              <div className="flex-1 p-4 rounded-2xl glass-card border border-[#20262f] text-center">
-                <div className="text-2xl font-black text-[#df8eff]">{finalRounds.length}</div>
-                <div className="text-[10px] text-[#a8abb3] mt-1 uppercase tracking-wider">{t('games.headup.rounds')}</div>
-              </div>
-              <div className="flex-1 p-4 rounded-2xl glass-card border border-[#20262f] text-center">
-                <div className="text-2xl font-black text-[#ff6b98]">{bestRound?.correct ?? 0}</div>
-                <div className="text-[10px] text-[#a8abb3] mt-1 uppercase tracking-wider">{t('games.headup.best')}</div>
-              </div>
-            </div>
-            <h3 className="text-xs font-semibold text-[#a8abb3] uppercase tracking-widest mb-3 px-1">{t('games.headup.resultsPerRound')}</h3>
-            <div className="flex-1 overflow-y-auto space-y-2 mb-6">
-              {finalRounds.map((round, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                  className={`flex items-center gap-3 p-3.5 rounded-xl glass-card border ${i === 0 ? 'border-[#df8eff]/30 shadow-[0_0_15px_rgba(223,142,255,.08)]' : 'border-[#20262f]'}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 ${
-                    i === 0 ? 'bg-[#df8eff]/20 text-[#df8eff]' : i === 1 ? 'bg-[#ff6b98]/15 text-[#ff6b98]' : 'bg-[#1b2028] text-[#a8abb3]'}`}>
-                    {i + 1}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold truncate text-[#f1f3fc]">{round.playerName}</div>
-                    <div className="text-xs text-[#a8abb3]">{t('games.headup.wordCount', { count: round.words.length })}</div>
-                  </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className="text-[#8ff5ff] font-bold text-sm">{round.correct}</span>
-                    <span className="text-[#20262f]">|</span>
-                    <span className="text-[#ff6e84]/60 text-sm">{round.skipped}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            <div className="space-y-3">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
-                className="w-full py-4 rounded-full neon-btn text-white text-base font-extrabold uppercase tracking-wide flex items-center justify-center gap-2">
-                <RotateCcw className="w-5 h-5" /> {t('games.headup.playAgain')}
-              </motion.button>
-              <button onClick={handleRestart}
-                className="w-full py-3.5 rounded-full border border-[#df8eff]/20 text-[#df8eff]/70 text-sm font-semibold hover:bg-[#df8eff]/5 transition-colors">
-                {t('games.headup.back')}
-              </button>
-            </div>
-          </motion.div>
-        )}
+        {screen === 'roundResult' && <div className="mx-auto w-full max-w-3xl space-y-7 py-4">
+          <StageHeader title={playerNames[currentRound - 1]} eyebrow={t('games.headup.results')} trailing={<span className="text-5xl font-bold tabular-nums text-[#d5f46a]">{correctCount}</span>} subtitle={`${correctCount} ${t('games.headup.correct')} · ${skippedCount} ${t('games.headup.skipped')}`} />
+          <ul className="divide-y divide-white/15">{roundWords.map((word, index) => <li key={index} className="flex items-center gap-4 py-4 text-lg">{word.correct ? <Check className="h-5 w-5 shrink-0 text-[#d5f46a]" /> : <X className="h-5 w-5 shrink-0 text-[#e5a79a]" />}<span className="break-words">{word.word}</span></li>)}</ul>
+          <StageFooter><StageAction disabled={!act.can('next')} onClick={() => act('next')}>{currentRound >= totalRounds ? t('games.headup.results') : t('games.headup.nextPlayer')}<ChevronRight className="h-5 w-5" /></StageAction></StageFooter>
+        </div>}
+        {screen === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-7 py-4">
+          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
+          <StageHeader title={t('games.headup.gameOver')} subtitle={t('games.headup.wordsGuessedLabel')} trailing={<span className="text-6xl font-black tabular-nums text-[#d5f46a]">{totalCorrect}</span>} />
+          <div className="grid grid-cols-2 gap-4"><StagePanel tone="quiet"><p className="text-xs text-[var(--stage-muted)]">{t('games.headup.rounds')}</p><p className="mt-3 text-3xl font-bold">{finalRounds.length}</p></StagePanel><StagePanel tone="quiet"><p className="text-xs text-[var(--stage-muted)]">{t('games.headup.best')}</p><p className="mt-3 text-3xl font-bold">{bestRound.correct}</p></StagePanel></div>
+          <section><h2 className="mb-3 text-sm text-[var(--stage-muted)]">{t('games.headup.resultsPerRound')}</h2><ol className="divide-y divide-white/15">{finalRounds.map((result, index) => <li key={index} className="flex items-center gap-4 py-5"><span className="text-sm tabular-nums text-[var(--stage-muted)]">{index + 1}</span><div className="flex-1 min-w-0"><p className="text-xl font-semibold break-words">{result.playerName}</p><p className="mt-1 text-sm text-[var(--stage-muted)]">{result.skipped} {t('games.headup.skipped')}</p></div><strong className="text-3xl text-[#d5f46a]">{result.correct}</strong></li>)}</ol></section>
+          <StageFooter className="flex-wrap"><StageAction disabled={!act.can('again')} onClick={() => act('again')}><RotateCcw className="h-5 w-5" />{t('games.headup.playAgain')}</StageAction><StageAction variant="secondary" disabled={!act.can('restart')} onClick={() => act('restart')}>{t('games.headup.back')}</StageAction></StageFooter>
+        </div>}
 
       </AnimatePresence>
       <ConfirmExitDialog
         open={exitGuard.open}
         onStay={() => { exitGuard.cancel(); resumeTilt(); }}
         onLeave={exitGuard.confirm}
-        accent="#df8eff"
+        accent="#d5f46a"
       />
-    </div>
+    </GameStage>
   );
 }

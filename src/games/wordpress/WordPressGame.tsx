@@ -1,3 +1,9 @@
+import { generateWord, getWordPack, forbiddenWords, wordLanguage, translateReactionWord, type WordLanguage } from './word-content';
+import '../headup/classic-stage.css';
+import { GameStage, StageHeader, StagePanel, StageAction, StageFooter } from '../ui/GameStage';
+import { usePausableTasks } from '../bottlespin/pausable-tasks';
+import { REACTION_TRANSPORT_GRACE_MS, validReaction } from './reaction-window';
+import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useTranslation } from "react-i18next";
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -46,32 +52,6 @@ interface WordItem {
 // Word Lists
 // ---------------------------------------------------------------------------
 
-const ANIMALS = [
-  'Hund', 'Katze', 'Elefant', 'Loewe', 'Adler', 'Delfin', 'Tiger',
-  'Pinguin', 'Fuchs', 'Hase', 'Baer', 'Pferd', 'Affe', 'Wolf', 'Schlange',
-  'Papagei', 'Krokodil', 'Giraffe', 'Wal', 'Frosch',
-];
-
-const FOOD = [
-  'Pizza', 'Apfel', 'Kuchen', 'Sushi', 'Brot', 'Nudeln', 'Schokolade',
-  'Banane', 'Kaese', 'Wurst', 'Salat', 'Eis', 'Suppe', 'Steak', 'Reis',
-  'Kartoffel', 'Tomate', 'Brezel', 'Torte', 'Keks',
-];
-
-const COLORS_WORDS = ['Rot', 'Blau', 'Gruen', 'Gelb', 'Lila', 'Orange', 'Rosa', 'Weiss', 'Schwarz', 'Braun'];
-
-const COLOR_HEX: Record<string, string> = {
-  Rot: '#ef4444', Blau: '#3b82f6', Gruen: '#22c55e', Gelb: '#eab308',
-  Lila: '#a855f7', Orange: '#f97316', Rosa: '#ec4899', Weiss: '#f8fafc',
-  Schwarz: '#94a3b8', Braun: '#a16207',
-};
-
-const RANDOM_WORDS = [
-  'Tisch', 'Lampe', 'Auto', 'Fenster', 'Stuhl', 'Buch', 'Telefon',
-  'Schuh', 'Brille', 'Tasche', 'Uhr', 'Schluessel', 'Stern', 'Wolke',
-  'Berg', 'Fluss', 'Mond', 'Sonne', 'Blume', 'Baum',
-];
-
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -95,38 +75,6 @@ function randomFrom<T>(arr: T[]): T {
 
 const SPEED_MS: Record<Speed, number> = { slow: 1500, medium: 1000, fast: 600 };
 
-function generateWord(mode: GameMode, forbiddenWord: string, speedLevel: number): WordItem {
-  switch (mode) {
-    case 'kategorie': {
-      const isTarget = Math.random() < 0.4;
-      if (isTarget) {
-        return { text: randomFrom(ANIMALS), isTarget: true };
-      }
-      const pool = [...FOOD, ...COLORS_WORDS, ...RANDOM_WORDS];
-      return { text: randomFrom(pool), isTarget: false };
-    }
-    case 'stroop': {
-      const word = randomFrom(COLORS_WORDS);
-      const isMatch = Math.random() < 0.35;
-      const displayColor = isMatch ? COLOR_HEX[word] : COLOR_HEX[randomFrom(COLORS_WORDS.filter(c => c !== word))];
-      return { text: word, isTarget: isMatch, displayColor };
-    }
-    case 'verboten': {
-      const allWords = [...ANIMALS, ...FOOD, ...RANDOM_WORDS, ...COLORS_WORDS];
-      const word = randomFrom(allWords);
-      return { text: word, isTarget: word !== forbiddenWord };
-    }
-    case 'speed-rush': {
-      const isTarget = Math.random() < 0.45;
-      if (isTarget) {
-        return { text: randomFrom(ANIMALS), isTarget: true };
-      }
-      const pool = [...FOOD, ...COLORS_WORDS, ...RANDOM_WORDS];
-      return { text: randomFrom(pool), isTarget: false };
-    }
-  }
-}
-
 // ---------------------------------------------------------------------------
 // Particle Background
 // ---------------------------------------------------------------------------
@@ -147,7 +95,7 @@ function ParticleBackground() {
       {particles.map(p => (
         <motion.div
           key={p.id}
-          className="absolute rounded-full bg-[#df8eff]/15"
+          className="absolute rounded-full bg-[#d5f46a]/15"
           style={{ left: `${p.x}%`, top: `${p.y}%`, width: p.size, height: p.size }}
           animate={{ y: [0, -30, 0], opacity: [0.2, 0.5, 0.2] }}
           transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: 'easeInOut' }}
@@ -164,9 +112,10 @@ function ParticleBackground() {
 interface SetupProps {
   onStart: (players: PlayerState[], mode: GameMode, speed: Speed, rounds: number) => void;
   onlinePlayerNames?: string[];
+  locked?: boolean;
 }
 
-function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
+function SetupScreen({ onStart, onlinePlayerNames = [], locked = false }: SetupProps) {
   const { t } = useTranslation();
   const [players, setPlayers] = useState<string[]>(
     onlinePlayerNames.length >= 2 ? onlinePlayerNames : [t('games.wordpress.defaultPlayer1'), t('games.wordpress.defaultPlayer2')]
@@ -202,34 +151,17 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
   };
 
   return (
-    <motion.div className="min-h-screen bg-[#0a0e14] p-4 flex flex-col items-center relative"
+    <motion.div className="min-h-0 bg-transparent p-0 flex flex-col items-center relative"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <ParticleBackground />
-      <motion.div className="w-full max-w-2xl space-y-6 py-8 relative z-10"
+
+      <motion.div className="w-full max-w-3xl space-y-7 py-3 relative z-10"
         initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
 
         {/* Header */}
-        <section className="relative min-h-[220px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
-          <img
-            src={WORDPRESS_MODE_ASSETS[mode]}
-            alt=""
-            aria-hidden="true"
-            decoding="async"
-            fetchPriority="high"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#090711] via-[#090711]/40 to-transparent" />
-          <div className="relative flex min-h-[220px] flex-col justify-end p-6 text-left">
-            <div className="mb-3 grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-black/30 backdrop-blur-md">
-              <Type className="h-6 w-6 text-[#df8eff]" />
-            </div>
-            <h1 className="text-3xl font-black text-white sm:text-4xl">{t('games.wordpress.title')}</h1>
-            <p className="mt-1 max-w-md text-sm text-white/65">{t('games.wordpress.tagline')}</p>
-          </div>
-        </section>
+        <StageHeader title={t('games.wordpress.title')} subtitle={t('games.wordpress.tagline')} />
 
         {/* Players */}
-        <PlayerSetup
+        <PlayerSetup locked={locked}
           players={players.map((name, i) => ({ id: String(i), name }))}
           onAdd={() => setPlayers([...players, ''])}
           onRemove={(id) => setPlayers(players.filter((_, idx) => idx !== Number(id)))}
@@ -237,14 +169,14 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
           onImportNames={isOnlineOrParty ? undefined : handleImportNames}
           min={1}
           max={8}
-          accent="#df8eff"
+          accent="#d5f46a"
           label={t('games.wordpress.playerLabel')}
         />
 
         {/* Mode */}
-        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
+        <div className=" bg-white/5 border border-[#d5f46a]/20 rounded-2xl p-5 space-y-3">
           <h2 className="text-white font-semibold text-lg">{t('games.wordpress.modeHeading')}</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="!grid grid-cols-2 gap-3">
             {modes.map(m => (
               <PremiumImageChoiceCard
                 key={m.key}
@@ -253,14 +185,14 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
                 image={WORDPRESS_MODE_ASSETS[m.key]}
                 selected={mode === m.key}
                 onClick={() => setMode(m.key)}
-                accent="#df8eff"
+                accent="#d5f46a"
               />
             ))}
           </div>
         </div>
 
         {/* Speed & Rounds */}
-        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-4">
+        <div className=" bg-white/5 border border-[#d5f46a]/20 rounded-2xl p-5 space-y-4">
           <h2 className="text-white font-semibold text-lg">{t('games.wordpress.settingsHeading')}</h2>
           <div>
             <label className="text-[#f1f3fc]/70 text-sm block mb-2">{t('games.wordpress.speedLabel')}</label>
@@ -269,7 +201,7 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
                 <button key={s} onClick={() => setSpeed(s)}
                   className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
                     speed === s
-                      ? 'bg-[#df8eff] text-white'
+                      ? 'bg-[#d5f46a] text-white'
                       : 'bg-white/10 text-[#a8abb3] hover:bg-white/15'
                   }`}>
                   {s === 'slow' ? t('games.wordpress.speedSlow') : s === 'medium' ? t('games.wordpress.speedMedium') : t('games.wordpress.speedFast')}
@@ -281,7 +213,7 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
             <label className="text-[#f1f3fc]/70 text-sm block mb-1">{t('games.wordpress.roundsLabel', { count: rounds })}</label>
             <input type="range" min={3} max={15} step={1} value={rounds}
               onChange={e => setRounds(Number(e.target.value))}
-              className="w-full h-2 rounded-full appearance-none bg-[#20262f] accent-[#df8eff] cursor-pointer" />
+              className="w-full h-2 rounded-full appearance-none bg-[#20262f] accent-[#d5f46a] cursor-pointer" />
           </div>
         </div>
 
@@ -290,8 +222,8 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
           aria-label={t('games.wordpress.startAriaLabel')}
           className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${
             canStart
-              ? 'bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white shadow-[0_0_20px_rgba(223,142,255,0.3)] hover:shadow-[0_0_30px_rgba(223,142,255,0.4)]'
-              : 'bg-[#1b2028] text-[#a8abb3]/50 cursor-not-allowed'
+              ? 'bg-[#d5f46a] text-white  '
+              : 'bg-[#1b2028] text-[#b5bdbe] cursor-not-allowed'
           }`}
           whileHover={canStart ? { scale: 1.02 } : {}}
           whileTap={canStart ? { scale: 0.98 } : {}}>
@@ -307,22 +239,29 @@ function SetupScreen({ onStart, onlinePlayerNames = [] }: SetupProps) {
 // ---------------------------------------------------------------------------
 
 interface PlayingProps {
+  online?: OnlineGameProps;
   players: PlayerState[];
   mode: GameMode;
   speed: Speed;
   round: number;
   totalRounds: number;
   currentPlayerIndex: number;
+  forbiddenWord: string;
+  contentLanguage: WordLanguage;
   onPlayerDone: (updatedPlayer: PlayerState) => void;
   /** Live snapshot hoisted to the controller for the TV broadcast. */
-  onLive?: (live: { word: string; wordIndex: number; combo: number; score: number }) => void;
+  onLive?: (live: { word: string; displayColor?: string; wordIndex: number; combo: number; score: number }) => void;
 }
 
 const WORDS_PER_TURN = 12;
-const FORBIDDEN_WORDS = ['Hund', 'Pizza', 'Blau', 'Lampe', 'Katze', 'Apfel', 'Rot', 'Stern'];
 
-function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayerIndex, onPlayerDone, onLive }: PlayingProps) {
-  const { t } = useTranslation();
+
+function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayerIndex, forbiddenWord, contentLanguage, onPlayerDone, onLive, online }: PlayingProps) {
+  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
+  const { t, i18n } = useTranslation();
+  const words = getWordPack(contentLanguage);
+  const displayWords = getWordPack(i18n.language);
+  const displayForbidden = translateReactionWord(forbiddenWord, contentLanguage, i18n.language);
   const player = players[currentPlayerIndex];
   const [wordIndex, setWordIndex] = useState(0);
   const [currentWord, setCurrentWord] = useState<WordItem | null>(null);
@@ -339,40 +278,53 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const tappedRef = useRef(false);
-  const forbiddenWord = useRef(randomFrom(FORBIDDEN_WORDS));
+  const [turnStarted, setTurnStarted] = useState(false);
   const speedMs = useRef(SPEED_MS[speed]);
+  const [presentedIndex, setPresentedIndex] = useState(0);
+  const visibleDuration = mode === 'speed-rush' ? Math.max(300, speedMs.current - wordIndex * 25) : speedMs.current;
+  const activeId = online?.players[currentPlayerIndex]?.id;
+  const isActiveDevice = !online || activeId === online.myPlayerId;
+  const remoteActor = online && activeId !== online.players.find(p => p.isHost)?.id;
+  const reactionStarted = useRef(0);
+  const reactionPause = useRef<number | null>(null);
+  const submitted = useRef(false);
+  useEffect(() => {
+    if (online?.isConnected === false) reactionPause.current = performance.now();
+    else if (reactionPause.current !== null) { reactionStarted.current += performance.now() - reactionPause.current; reactionPause.current = null; }
+  }, [online?.isConnected]);
 
   const modeLabel = useMemo(() => {
     switch (mode) {
       case 'kategorie': return t('games.wordpress.promptKategorie');
       case 'stroop': return t('games.wordpress.promptStroop');
-      case 'verboten': return t('games.wordpress.promptVerboten', { word: forbiddenWord.current });
+      case 'verboten': return t('games.wordpress.promptVerboten', { word: displayForbidden });
       case 'speed-rush': return t('games.wordpress.promptSpeedRush');
     }
-  }, [mode, t]);
+  }, [mode, t, displayForbidden]);
+  const ruleExample = mode === 'stroop' ? t('games.wordpress.exampleStroop', { red: displayWords.colors[0], blue: displayWords.colors[1] })
+    : mode === 'verboten' ? t('games.wordpress.exampleForbidden', { word: displayForbidden })
+    : t('games.wordpress.exampleCategory', { animal: displayWords.animals[0], object: displayWords.objects[0] });
 
   const showNextWord = useCallback(() => {
     setWordIndex(prev => {
       const next = prev + 1;
-      if (next > WORDS_PER_TURN) {
-        return prev; // will be handled by effect
-      }
       return next;
     });
   }, []);
 
   // Generate word when index changes
   useEffect(() => {
-    if (wordIndex === 0 || wordIndex > WORDS_PER_TURN) return;
+    if ((online && !online.isHost) || wordIndex === 0 || wordIndex > WORDS_PER_TURN) return;
 
-    const word = generateWord(mode, forbiddenWord.current, wordIndex);
+    const word = generateWord(mode, forbiddenWord, words);
     setCurrentWord(word);
+    setPresentedIndex(wordIndex);
     tappedRef.current = false;
     setFlyAway(false);
     setFeedback(null);
 
     // Random position offset
-    const xOff = (Math.random() - 0.5) * 120;
+    const xOff = (Math.random() - 0.5) * 32;
     const yOff = (Math.random() - 0.5) * 60;
     setWordPos({ x: xOff, y: yOff });
 
@@ -381,8 +333,9 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
       ? Math.max(300, speedMs.current - wordIndex * 25)
       : speedMs.current;
 
-    timeoutRef.current = setTimeout(() => {
+    const expireWord = () => {
       if (!tappedRef.current) {
+        tappedRef.current = true;
         // Time expired without tap
         if (word.isTarget) {
           // Missed a target
@@ -393,20 +346,22 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
         }
         feedbackTimeoutRef.current = setTimeout(() => showNextWord(), 300);
       }
-    }, currentSpeed);
+    };
+    timeoutRef.current = setTimeout(expireWord, currentSpeed + (remoteActor ? REACTION_TRANSPORT_GRACE_MS : 0));
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
     };
-  }, [wordIndex, mode, showNextWord]);
+  }, [wordIndex, mode, showNextWord, forbiddenWord, words]);
 
   // Hoist a live snapshot to the controller so the TV view can show the current
-  // word + this player's live combo/score/progress. Only the visible word leaks —
-  // never which word is the target/forbidden (that stays a phone-only decision).
+  // word, actual display color and live score/progress. The matching rule is
+  // public; whether this particular word matches is evaluated only by the host.
   useEffect(() => {
     onLive?.({
       word: wordIndex <= WORDS_PER_TURN ? (currentWord?.text ?? '') : '',
+      displayColor: currentWord?.displayColor,
       wordIndex: Math.min(wordIndex, WORDS_PER_TURN),
       combo,
       score,
@@ -415,13 +370,14 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
 
   // Start first word
   useEffect(() => {
+    if (!turnStarted || (online && !online.isHost)) return;
     const t = setTimeout(() => setWordIndex(1), 800);
     return () => clearTimeout(t);
-  }, []);
+  }, [turnStarted]);
 
   // End turn when all words done
   useEffect(() => {
-    if (wordIndex > WORDS_PER_TURN) {
+    if ((!online || online.isHost) && wordIndex > WORDS_PER_TURN) {
       const t = setTimeout(() => {
         onPlayerDone({
           ...player,
@@ -465,124 +421,65 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
     feedbackTimeoutRef.current = setTimeout(() => showNextWord(), 350);
   }, [currentWord, combo, wordIndex, showNextWord]);
 
+  const tap = useOnlineActions(online, 'wordpress-word', `${round}:${currentPlayerIndex}:${wordIndex}`, {
+    ready: { allowed: !turnStarted && wordIndex === 0 ? activeId ?? false : false, run: () => setTurnStarted(true) },
+    tap: { allowed: wordIndex > 0 && wordIndex <= WORDS_PER_TURN ? activeId ?? false : false, run: (elapsed: unknown) => { if (!online || validReaction(elapsed, visibleDuration)) handleTap(); } },
+    expire: { allowed: wordIndex > 0 && wordIndex <= WORDS_PER_TURN ? activeId ?? false : false, run: () => {
+      if (tappedRef.current || !currentWord) return;
+      tappedRef.current = true;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (currentWord.isTarget) { setMissed(p => p + 1); setScore(p => p - 3); setCombo(0); setFeedback('missed'); }
+      feedbackTimeoutRef.current = setTimeout(showNextWord, 300);
+    } },
+  });
+  useOnlineSnapshot(online, 'wordpress-word', { round, currentPlayerIndex, turnStarted, wordIndex, presentedIndex, currentWord: currentWord ? { ...currentWord, isTarget: false } : null, score, combo, maxCombo, correct, wrong, missed, feedback, shakeScreen, flyAway, wordPos, forbidden: forbiddenWord }, state => {
+    if (state.round !== round || state.currentPlayerIndex !== currentPlayerIndex) return;
+    setTurnStarted(state.turnStarted); setWordIndex(state.wordIndex); setCurrentWord(state.currentWord); setScore(state.score); setCombo(state.combo); setMaxCombo(state.maxCombo); setCorrect(state.correct); setWrong(state.wrong); setMissed(state.missed); setFeedback(state.feedback); setShakeScreen(state.shakeScreen); setFlyAway(state.flyAway); setWordPos(state.wordPos);
+    setPresentedIndex(state.presentedIndex);
+  });
+  useEffect(() => {
+    if (!isActiveDevice || presentedIndex !== wordIndex || wordIndex < 1 || wordIndex > WORDS_PER_TURN) return;
+    reactionStarted.current = performance.now(); submitted.current = false;
+    if (!online || online.isHost) return;
+    const pending = setTimeout(() => { if (!submitted.current) { submitted.current = true; tap('expire'); } }, visibleDuration);
+    return () => clearTimeout(pending);
+  }, [presentedIndex, wordIndex, isActiveDevice]);
+  const submitTap = () => {
+    if (!isActiveDevice || submitted.current || presentedIndex !== wordIndex || online?.isConnected === false) return;
+    const elapsed = performance.now() - reactionStarted.current;
+    if (!validReaction(elapsed, visibleDuration)) return;
+    submitted.current = true; tap('tap', elapsed);
+  };
+
   const progress = wordIndex / WORDS_PER_TURN;
 
   return (
-    <motion.div
-      className="fixed inset-0 bg-[#0a0e14] flex flex-col select-none cursor-pointer z-50"
-      onClick={handleTap}
-      animate={shakeScreen ? { x: [0, -8, 8, -6, 6, -3, 3, 0] } : {}}
-      transition={{ duration: 0.4 }}
-    >
-      <ParticleBackground />
-
-      {/* Timer bar */}
-      <div className="w-full h-1.5 bg-[#1b2028] relative z-10">
-        <motion.div className="h-full bg-gradient-to-r from-[#df8eff] to-[#8ff5ff]"
-          animate={{ width: `${progress * 100}%` }}
-          transition={{ duration: 0.3 }} />
-      </div>
-
-      {/* HUD */}
-      <div className="flex items-center justify-between px-4 py-3 relative z-10">
-        <div className="text-white text-sm">
-          <span className="text-[#df8eff]/60">{t('games.play.round')}</span>{' '}
-          <span className="font-bold">{round}/{totalRounds}</span>
-        </div>
-        <div className="text-[#df8eff]/80 text-xs font-medium px-3 py-1 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
-          {modeLabel}
-        </div>
-        <div className="text-white text-sm font-bold">{player.name}</div>
-      </div>
-
-      {/* Word Area */}
-      <div className="flex-1 flex flex-col items-center justify-center relative z-10">
-        <AnimatePresence mode="wait">
-          {currentWord && wordIndex <= WORDS_PER_TURN && (
-            <motion.div
-              key={`${wordIndex}-${currentWord.text}`}
-              className="text-center"
-              style={{ x: wordPos.x, y: wordPos.y }}
-              initial={{ scale: 0.3, opacity: 0 }}
-              animate={flyAway
-                ? { y: -200, opacity: 0, scale: 0.5 }
-                : { scale: 1, opacity: 1 }
-              }
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-            >
-              <span
-                className="text-5xl sm:text-6xl font-black tracking-tight"
-                style={{ color: currentWord.displayColor || '#ffffff' }}
-              >
-                {currentWord.text}
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Feedback flash */}
-        <AnimatePresence>
-          {feedback === 'correct' && (
-            <motion.div className="absolute inset-0 bg-[#df8eff]/10 pointer-events-none"
-              initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} />
-          )}
-          {feedback === 'wrong' && (
-            <motion.div className="absolute inset-0 bg-red-500/15 pointer-events-none"
-              initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }} />
-          )}
-          {feedback === 'missed' && (
-            <motion.div className="absolute inset-0 bg-yellow-500/10 pointer-events-none"
-              initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }} />
-          )}
-        </AnimatePresence>
-
-        {/* Word count indicator */}
-        {wordIndex > WORDS_PER_TURN && (
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}
-            className="text-[#df8eff] text-2xl font-bold">
-            {t('games.wordpress.done')}
-          </motion.div>
-        )}
-      </div>
-
-      {/* Bottom HUD */}
-      <div className="flex items-center justify-between px-6 py-4 relative z-10">
-        <div className="text-center">
-          <div className="text-[#a8abb3] text-[10px] uppercase tracking-wider">{t('games.play.score')}</div>
-          <motion.div className="text-white text-2xl font-bold"
-            key={score} animate={{ scale: [1, 1.2, 1] }} transition={{ duration: 0.2 }}>
-            {score}
-          </motion.div>
-        </div>
-
-        {/* Combo */}
-        {combo > 0 && (
-          <motion.div className="text-center"
-            initial={{ scale: 0 }} animate={{ scale: 1 }}
-            key={`combo-${combo}`}>
-            <div className="flex items-center gap-1">
-              <Flame className="w-5 h-5 text-orange-400" />
-              <motion.span
-                className="text-3xl font-black text-orange-400"
-                style={{ textShadow: '0 0 20px rgba(251,146,60,0.5)' }}
-                animate={{ scale: [1, 1.3, 1] }}
-                transition={{ duration: 0.25 }}>
-                {combo}x
-              </motion.span>
-            </div>
-            <div className="text-orange-400/60 text-[10px] uppercase tracking-wider">{t('games.wordpress.comboLabel')}</div>
-          </motion.div>
-        )}
-
-        <div className="text-center">
-          <div className="text-[#a8abb3] text-[10px] uppercase tracking-wider">{t('games.wordpress.wordLabel')}</div>
-          <div className="text-white text-lg font-bold">
-            {Math.min(wordIndex, WORDS_PER_TURN)}/{WORDS_PER_TURN}
-          </div>
-        </div>
-      </div>
-    </motion.div>
+    <GameStage gameId="wordpress" className="reaction-display flex min-h-[100dvh] flex-col">
+      <StageHeader title={player.name} eyebrow={t('games.play.round') + ' ' + round + '/' + totalRounds}
+        trailing={<span dir="ltr" className="font-semibold tabular-nums">{Math.min(wordIndex, WORDS_PER_TURN)} / {WORDS_PER_TURN}</span>}
+        progress={{ value: Math.min(wordIndex, WORDS_PER_TURN), total: WORDS_PER_TURN }} />
+      <StagePanel tone="accent" className="reaction-rule !p-5" aria-labelledby="reaction-rule-title">
+        <p className="text-xs font-bold uppercase tracking-widest opacity-70">{t('games.wordpress.yourTask')}</p>
+        <h2 id="reaction-rule-title" className="mt-2 text-2xl font-extrabold leading-tight">{modeLabel}</h2>
+        <p className="mt-3 text-sm leading-relaxed">{ruleExample}</p>
+      </StagePanel>
+      {!turnStarted ? <div className="flex flex-1 flex-col justify-center gap-5 py-8">
+        <p className="text-base leading-relaxed text-[var(--stage-muted)]">{t('games.wordpress.waitForMatch')}</p>
+        {isActiveDevice ? <StageAction onClick={() => tap('ready')}>{t('games.wordpress.readyStart')}<ChevronRight className="h-5 w-5" /></StageAction>
+          : <p className="text-center text-[var(--stage-muted)]">{t('games.wordpress.waitForPlayer', { name: player.name })}</p>}
+      </div> : <button type="button" disabled={!isActiveDevice || !currentWord || !!feedback} aria-label={t('games.wordpress.tapWord')} aria-describedby="reaction-rule-title" onClick={submitTap}
+        style={mode === 'stroop' ? { background: '#eee9da', borderColor: '#c8c1b0' } : undefined}
+        className="relative my-5 flex min-h-[30dvh] flex-1 items-center justify-center overflow-hidden rounded-2xl border border-[#d5f46a]/30 bg-[#151e16] px-7 py-8 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d5f46a] disabled:cursor-default">
+        {currentWord && wordIndex <= WORDS_PER_TURN && <span dir="auto" key={`${wordIndex}-${currentWord.text}`} className="relative z-10 block max-w-full break-words text-[clamp(2.75rem,10vw,7rem)] font-black leading-none tracking-tight" style={{ color: currentWord.displayColor || '#d5f46a', WebkitTextStroke: mode === 'stroop' ? '1px rgba(0,0,0,.25)' : undefined }}>{translateReactionWord(currentWord.text, contentLanguage, i18n.language)}</span>}
+        {wordIndex > WORDS_PER_TURN && <span className="text-3xl font-bold text-[#d5f46a]">{t('games.wordpress.done')}</span>}
+        {feedback && <span aria-hidden="true" className="pointer-events-none absolute inset-0 border-4 rounded-2xl" style={{ borderColor: feedback === 'correct' ? '#d5f46a' : feedback === 'wrong' ? '#ff8572' : '#e6ce81' }} />}
+      </button>}
+      <StageFooter className="!grid grid-cols-3 gap-3 text-center">
+        <div><p className="text-xs text-[var(--stage-muted)]">{t('games.play.score')}</p><p className="mt-1 text-3xl font-bold tabular-nums">{score}</p></div>
+        <div><p className="text-xs text-[var(--stage-muted)]">{t('games.wordpress.comboLabel')}</p><p dir="ltr" className="mt-1 text-3xl font-bold tabular-nums text-[#d5f46a]">{combo}×</p></div>
+        <div><p className="text-xs text-[var(--stage-muted)]">{t('games.wordpress.wordLabel')}</p><p className="mt-1 text-3xl font-bold tabular-nums">{Math.min(wordIndex, WORDS_PER_TURN)}</p></div>
+      </StageFooter>
+    </GameStage>
   );
 }
 
@@ -601,48 +498,11 @@ function RoundEndScreen({ players, round, totalRounds, onNextRound }: RoundEndPr
   const { t } = useTranslation();
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
-  return (
-    <motion.div className="min-h-screen bg-[#0a0e14] p-4 flex flex-col items-center justify-center relative"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <ParticleBackground />
-      <motion.div className="w-full max-w-md space-y-6 relative z-10"
-        initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-white">{t('games.wordpress.roundHeading', { round, total: totalRounds })}</h2>
-          <p className="text-[#df8eff]/60 text-sm mt-1">{t('games.wordpress.interimStandings')}</p>
-        </div>
-
-        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
-          {sorted.map((p, i) => {
-            const total = p.correct + p.wrong + p.missed;
-            const accuracy = total > 0 ? Math.round((p.correct / total) * 100) : 0;
-            return (
-              <motion.div key={p.name}
-                className="flex items-center gap-3 p-3 rounded-xl bg-white/5"
-                initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: i * 0.1 }}>
-                <span className="text-lg font-bold text-[#df8eff] w-8">{i === 0 ? <Crown className="w-5 h-5 text-[#df8eff]" /> : `#${i + 1}`}</span>
-                <div className="flex-1">
-                  <div className="text-white font-semibold">{p.name}</div>
-                  <div className="text-[#a8abb3] text-xs">
-                    {t('games.wordpress.accuracyCombo', { accuracy, maxCombo: p.maxCombo })}
-                  </div>
-                </div>
-                <span className="text-[#df8eff] font-bold text-lg">{p.score}</span>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        <motion.button onClick={onNextRound}
-          className="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white flex items-center justify-center gap-2"
-          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <ChevronRight className="w-5 h-5" />
-          {round < totalRounds ? t('games.wordpress.nextRound') : t('games.wordpress.showResults')}
-        </motion.button>
-      </motion.div>
-    </motion.div>
-  );
+  return <div className="mx-auto w-full max-w-3xl space-y-7">
+    <StageHeader title={t('games.wordpress.roundHeading', { round, total: totalRounds })} subtitle={t('games.wordpress.interimStandings')} />
+    <ReactionStandings players={sorted} />
+    <StageFooter><StageAction onClick={onNextRound}>{round < totalRounds ? t('games.wordpress.nextRound') : t('games.wordpress.showResults')}<ChevronRight className="h-5 w-5" /></StageAction></StageFooter>
+  </div>;
 }
 
 // ---------------------------------------------------------------------------
@@ -658,85 +518,25 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
   const { t } = useTranslation();
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
-  return (
-    <motion.div className="min-h-screen bg-[#0a0e14] p-4 flex flex-col items-center justify-center relative"
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <ParticleBackground />
+  return <div className="mx-auto w-full max-w-3xl space-y-7">
+    <StageHeader title={t('games.wordpress.gameOver')} eyebrow={t('games.results.leaderboard')} />
+    <ReactionStandings players={sorted} />
+    <StageFooter><StageAction onClick={onRestart}><RotateCcw className="h-5 w-5" />{t('games.results.playAgain')}</StageAction></StageFooter>
+  </div>;
+}
 
-      {/* Confetti */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
-        {Array.from({ length: 24 }, (_, i) => (
-          <motion.div key={i}
-            className="absolute w-3 h-3 rounded-full"
-            style={{
-              backgroundColor: ['#df8eff', '#d779ff', '#8ff5ff', '#ff6b98', '#00deec', '#df8eff'][i % 6],
-              left: `${(i / 24) * 100 + Math.random() * 4}%`,
-            }}
-            initial={{ y: -20, opacity: 1, rotate: 0 }}
-            animate={{
-              y: typeof window !== 'undefined' ? window.innerHeight + 20 : 800,
-              opacity: [1, 1, 0],
-              rotate: 360 * (i % 2 === 0 ? 1 : -1),
-              x: [0, (i % 2 === 0 ? 1 : -1) * (20 + Math.random() * 40)],
-            }}
-            transition={{ duration: 2.5 + Math.random() * 1.5, delay: Math.random() * 0.8, ease: 'easeIn' }}
-          />
-        ))}
-      </div>
-
-      <motion.div className="w-full max-w-md space-y-6 relative z-10"
-        initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-        <div className="text-center space-y-2">
-          <motion.div animate={{ rotate: [0, -10, 10, -10, 0] }}
-            transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}>
-            <Trophy className="w-16 h-16 mx-auto text-[#df8eff]" />
-          </motion.div>
-          <h1 className="text-3xl font-bold text-white">{t('games.wordpress.gameOver')}</h1>
-          {sorted.length > 0 && (
-            <p className="text-[#df8eff]">
-              <Crown className="w-4 h-4 inline mr-1" />
-              {t('games.wordpress.winnerAnnounce', { name: sorted[0].name, score: sorted[0].score })}
-            </p>
-          )}
-        </div>
-
-        {/* Leaderboard */}
-        <div className="backdrop-blur-md bg-white/5 border border-[#df8eff]/20 rounded-2xl p-5 space-y-3">
-          <h2 className="text-white font-semibold text-lg flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-[#df8eff]" /> {t('games.results.leaderboard')}
-          </h2>
-          {sorted.map((p, i) => {
-            const total = p.correct + p.wrong + p.missed;
-            const accuracy = total > 0 ? Math.round((p.correct / total) * 100) : 0;
-            const medals = ['text-[#df8eff]', 'text-[#f1f3fc]/70', 'text-[#8ff5ff]'];
-            return (
-              <motion.div key={p.name}
-                className={`flex items-center gap-3 p-4 rounded-xl ${i === 0 ? 'bg-[#df8eff]/10 border border-[#df8eff]/30' : 'bg-white/5'}`}
-                initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: i * 0.15 }}>
-                <span className={`text-xl font-bold w-8 ${medals[i] || 'text-[#a8abb3]/50'}`}>#{i + 1}</span>
-                <div className="flex-1">
-                  <div className="text-white font-semibold">{p.name}</div>
-                  <div className="text-[#a8abb3] text-xs flex gap-3">
-                    <span>{t('games.wordpress.accuracyPct', { accuracy })}</span>
-                    <span>{t('games.wordpress.comboStat', { maxCombo: p.maxCombo })}</span>
-                    <span>{t('games.wordpress.correctStat', { count: p.correct })}</span>
-                  </div>
-                </div>
-                <span className="text-[#df8eff] font-bold text-xl">{p.score}</span>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        <motion.button onClick={onRestart}
-          className="w-full py-4 rounded-2xl font-bold text-lg bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white flex items-center justify-center gap-2"
-          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <RotateCcw className="w-5 h-5" /> {t('games.results.playAgain')}
-        </motion.button>
-      </motion.div>
-    </motion.div>
-  );
+function ReactionStandings({ players }: { players: PlayerState[] }) {
+  const { t } = useTranslation();
+  const best = Math.max(...players.map(player => player.score));
+  return <ol className="divide-y divide-white/15 border-y border-white/15">{players.map((player, index) => {
+    const attempts = player.correct + player.wrong + player.missed;
+    const accuracy = attempts ? Math.round(player.correct / attempts * 100) : 0;
+    return <li key={`${player.name}-${index}`} className="flex items-start gap-4 py-6">
+      <span className="pt-1 text-sm tabular-nums text-[var(--stage-muted)]">{String(index + 1).padStart(2, '0')}</span>
+      <div className="flex-1 min-w-0"><p className="text-xl font-semibold break-words">{player.name}</p><p className="mt-2 text-sm leading-relaxed text-[var(--stage-muted)]">{t('games.wordpress.accuracyCombo', { accuracy, maxCombo: player.maxCombo })}</p></div>
+      <strong className={player.score === best ? 'text-4xl text-[#d5f46a] tabular-nums' : 'text-4xl tabular-nums'}>{player.score}</strong>
+    </li>;
+  })}</ol>;
 }
 
 // ---------------------------------------------------------------------------
@@ -744,6 +544,10 @@ function GameOverScreen({ players, onRestart }: GameOverProps) {
 // ---------------------------------------------------------------------------
 
 export default function WordPressGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { i18n } = useTranslation();
+  const [contentLanguage, setContentLanguage] = useState(() => wordLanguage(i18n.language));
+  const matchWords = getWordPack(contentLanguage);
+  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
   // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
   // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
@@ -776,11 +580,12 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
   const [round, setRound] = useState(1);
   const [totalRounds, setTotalRounds] = useState(5);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [forbiddenWord, setForbiddenWord] = useState(() => randomFrom(forbiddenWords(matchWords)));
   const [turnQueue, setTurnQueue] = useState<number[]>([]);
   // Live-Snapshot aus PlayingScreen hochgereicht (currentWord/combo/score leben
   // dort als State — ein direkter Verweis hier warf "Can't find variable" und
   // crashte das Spiel). Dient nur der TV-Ansicht.
-  const [live, setLive] = useState({ word: '', wordIndex: 0, combo: 0, score: 0 });
+  const [live, setLive] = useState<{ word: string; displayColor?: string; wordIndex: number; combo: number; score: number }>({ word: '', wordIndex: 0, combo: 0, score: 0 });
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
 
@@ -788,23 +593,29 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     phase, round, currentPlayerIndex, players, totalRounds,
     mode,
     currentWord: live.word,
+    displayColor: live.displayColor,
+    forbiddenWord, contentLanguage,
     wordIndex: live.wordIndex,
     wordsPerTurn: WORDS_PER_TURN,
     liveCombo: live.combo,
     liveScore: live.score,
-  }, [phase, round, currentPlayerIndex, mode, live]);
+  }, [phase, round, currentPlayerIndex, mode, forbiddenWord, contentLanguage, live]);
 
   const handleStart = useCallback((ps: PlayerState[], m: GameMode, s: Speed, r: number) => {
-    setPlayers(ps);
+    const roster = online ? online.players.map((member, i) => ({ ...ps[i % ps.length], name: member.name })) : ps;
+    const language = wordLanguage(i18n.language);
+    setContentLanguage(language);
+    setPlayers(roster);
     setMode(m);
     setSpeed(s);
     setTotalRounds(r);
     setRound(1);
     setCurrentPlayerIndex(0);
+    setForbiddenWord(randomFrom(forbiddenWords(getWordPack(language))));
     // Build queue: all players take a turn in round 1
-    setTurnQueue(ps.map((_, i) => i).slice(1));
+    setTurnQueue(roster.map((_, i) => i).slice(1));
     setPhase('playing');
-  }, []);
+  }, [online, i18n.language]);
 
   const handlePlayerDone = useCallback((updatedPlayer: PlayerState) => {
     setPlayers(prev => prev.map((p, i) => i === currentPlayerIndex ? updatedPlayer : p));
@@ -813,6 +624,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
       // More players in this round
       const [next, ...rest] = turnQueue;
       setCurrentPlayerIndex(next);
+      setForbiddenWord(randomFrom(forbiddenWords(matchWords)));
       setTurnQueue(rest);
       // Re-enter playing phase to reset PlayingScreen
       setPhase('roundEnd');
@@ -821,7 +633,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
       // Round complete
       setPhase('roundEnd');
     }
-  }, [currentPlayerIndex, turnQueue]);
+  }, [currentPlayerIndex, turnQueue, matchWords]);
 
   const handleNextRound = useCallback(() => {
     const nextRound = round + 1;
@@ -831,15 +643,17 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     }
     setRound(nextRound);
     setCurrentPlayerIndex(0);
+    setForbiddenWord(randomFrom(forbiddenWords(matchWords)));
     setTurnQueue(players.map((_, i) => i).slice(1));
     setPhase('playing');
-  }, [round, totalRounds, players]);
+  }, [round, totalRounds, players, matchWords]);
 
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
       const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      recordEnd('drueck-das-wort', winner?.score ?? 0, true);
+      const me = online ? players[online.players.findIndex(p => p.id === online.myPlayerId)] : winner;
+      recordEnd('drueck-das-wort', me?.score ?? 0, !online || me === winner);
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -861,58 +675,46 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     gameRecordedRef.current = false;
     setRound(1);
     setCurrentPlayerIndex(0);
+    setForbiddenWord(randomFrom(forbiddenWords(matchWords)));
     setTurnQueue(players.map((_, i) => i).slice(1));
     setPhase('playing');
-  }, [players, handleRestart]);
+  }, [players, handleRestart, matchWords]);
 
-  /* ---- Online: host broadcasts game state ---- */
-  useEffect(() => {
-    if (!online?.isHost) return;
-    online.broadcast('game-state', {
-      phase, round, totalRounds, currentPlayerIndex,
-      players: players.map(p => ({ name: p.name, score: p.score })),
-    });
-  }, [phase, round, currentPlayerIndex, players, online]);
+  const act = useOnlineActions(online, 'wordpress', `${phase}:${round}:${currentPlayerIndex}`, {
+    start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },
+    next: { allowed: phase === 'roundEnd' && turnQueue.length === 0 ? 'host' : false, run: handleNextRound },
+    again: { allowed: phase === 'gameOver' ? 'host' : false, run: rematch },
+  });
+  useOnlineSnapshot(online, 'wordpress', { phase, players, mode, speed, round, totalRounds, currentPlayerIndex, turnQueue, forbiddenWord, contentLanguage }, state => {
+    setPhase(state.phase); setPlayers(state.players); setMode(state.mode); setSpeed(state.speed); setRound(state.round); setTotalRounds(state.totalRounds); setCurrentPlayerIndex(state.currentPlayerIndex); setTurnQueue(state.turnQueue);
+    setForbiddenWord(state.forbiddenWord);
+    setContentLanguage(wordLanguage(state.contentLanguage));
+  });
+  if (online && !online.isHost && phase === 'setup') return <OnlineWaiting />;
 
-  /* ---- Online: non-host syncs state ---- */
-  useEffect(() => {
-    if (!online || online.isHost) return;
-    return online.onBroadcast('game-state', (data) => {
-      if (data.phase) setPhase(data.phase as GamePhase);
-      if (data.round) setRound(data.round as number);
-      if (data.currentPlayerIndex !== undefined) setCurrentPlayerIndex(data.currentPlayerIndex as number);
-      if (data.players) {
-        const incoming = data.players as { name: string; score: number }[];
-        setPlayers(prev => prev.map((p, i) => ({
-          ...p, score: incoming[i]?.score ?? p.score,
-        })));
-      }
-    });
-  }, [online]);
 
   return (
     // Fragment, damit der Verlassen-Dialog NEBEN der AnimatePresence liegt und
     // deren mode="wait"-Phasenwechsel nicht als zweites Kind stört.
-    <>
+    <GameStage gameId="wordpress" className={phase === 'playing' ? 'wordpress-controller !p-0' : 'wordpress-controller'}>
     <AnimatePresence mode="wait">
       {phase === 'setup' && (
         <motion.div key="setup" exit={{ opacity: 0 }}>
-          <SetupScreen onStart={handleStart} onlinePlayerNames={resolvedPlayerNames} />
+          <SetupScreen locked={!!online} onStart={(...args) => act('start', ...args)} onlinePlayerNames={resolvedPlayerNames} />
         </motion.div>
       )}
       {phase === 'playing' && (
         <motion.div key={`playing-${round}-${currentPlayerIndex}`} exit={{ opacity: 0 }}>
-          <ActivePlayerBanner
-            playerName={players[currentPlayerIndex]?.name ?? '???'}
-            hidden={false}
-          />
           <PlayingScreen
+            online={online}
             players={players}
             mode={mode}
             speed={speed}
             round={round}
             totalRounds={totalRounds}
             currentPlayerIndex={currentPlayerIndex}
+            forbiddenWord={forbiddenWord}
+            contentLanguage={contentLanguage}
             onPlayerDone={handlePlayerDone}
             onLive={setLive}
           />
@@ -924,18 +726,18 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
             players={players}
             round={round}
             totalRounds={totalRounds}
-            onNextRound={handleNextRound}
+            onNextRound={() => act('next')}
           />
         </motion.div>
       )}
       {phase === 'gameOver' && (
         <motion.div key="gameOver" exit={{ opacity: 0 }}>
           <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-          <GameOverScreen players={players} onRestart={rematch} />
+          <GameOverScreen players={players} onRestart={() => act('again')} />
         </motion.div>
       )}
     </AnimatePresence>
-    <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
-    </>
+    <ConfirmExitDialog {...exitGuard.dialogProps} accent="#d5f46a" />
+    </GameStage>
   );
 }

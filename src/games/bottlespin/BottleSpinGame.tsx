@@ -1,3 +1,11 @@
+import { BottleObject } from './BottleObject';
+import { BottleContentSelection } from './ContentSelection';
+import { createBottleDeck, filterBottleCards, type ContentSelection } from './deck';
+import { GameStage } from '../ui/GameStage';
+import './design.css';
+import { toggleSelectedCategory } from './category-selection';
+import { usePausableTasks } from '../bottlespin/pausable-tasks';
+import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,7 +23,7 @@ import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameTimer } from '../engine/TimerSystem';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
-import { getBOTTLE_CARDS, getCATEGORY_META, type BottleCard, type BottleCategory } from './bottlespin-content';
+import { getBOTTLE_CARDS, getCATEGORY_META, localizeBottleCard, type BottleCard, type BottleCategory } from './bottlespin-content';
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
 import { hasShellBackButton } from '@/games/ui/shell-back';
@@ -23,17 +31,11 @@ import { hasShellBackButton } from '@/games/ui/shell-back';
 type Phase = 'setup' | 'spinning' | 'card' | 'vote' | 'gameOver';
 interface Player { id: string; name: string; color: string; avatar: string; score: number; }
 
-const PLAYER_COLORS = ['#df8eff','#ff6b98','#8ff5ff','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
+const PLAYER_COLORS = ['#e6b880','#ff6b98','#91b8a1','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
 const GAME_MODES: GameMode[] = [
   { id: 'fragen', name: 'Mit Fragen', desc: 'Flasche + Fragen & Aufgaben', icon: <MessageCircle className="w-6 h-6" /> },
   { id: 'nur-flasche', name: 'Nur Flasche', desc: 'Reines Flaschendrehen', icon: <Wine className="w-6 h-6" /> },
 ];
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-  return a;
-}
 
 function playStopSound() {
   try {
@@ -49,15 +51,15 @@ function playStopSound() {
 const RADIUS = 130;
 
 const neonStyles = `
-  .neon-text { text-shadow: 0 0 15px rgba(255,107,152,0.6), 0 0 40px rgba(223,142,255,0.2); }
+  .neon-text { text-shadow: 0 0 15px rgba(255,107,152,0.6), 0 0 40px rgba(150,160,165,0.2); }
   .neon-text-cyan { text-shadow: 0 0 15px rgba(143,245,255,0.6), 0 0 40px rgba(0,238,252,0.2); }
-  .neon-text-purple { text-shadow: 0 0 15px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.2); }
+  .neon-text-purple { text-shadow: 0 0 15px rgba(150,160,165,0.6), 0 0 40px rgba(150,160,165,0.2); }
   .glass-panel { backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border: 1.5px solid rgba(223,142,255,0.1); background: rgba(21,26,33,0.8); }
+    border: 1.5px solid rgba(150,160,165,0.1); background: rgba(21,26,33,0.8); }
   .glass-panel-elevated { backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border: 1.5px solid rgba(223,142,255,0.08); background: rgba(27,32,40,0.85); }
-  .card-glow { box-shadow: 0 0 40px -10px rgba(255,107,152,0.4), 0 0 80px -20px rgba(223,142,255,0.2); }
-  .btn-glow { box-shadow: 0 0 30px -5px rgba(223,142,255,0.4), 0 0 60px -10px rgba(255,107,152,0.2); }
+    border: 1.5px solid rgba(150,160,165,0.08); background: rgba(27,32,40,0.85); }
+  .card-glow { box-shadow: 0 0 40px -10px rgba(255,107,152,0.4), 0 0 80px -20px rgba(150,160,165,0.2); }
+  .btn-glow { box-shadow: 0 0 30px -5px rgba(150,160,165,0.4), 0 0 60px -10px rgba(255,107,152,0.2); }
   .trophy-glow { box-shadow: 0 0 30px rgba(251,191,36,0.3), 0 0 60px rgba(251,191,36,0.1); }
   @keyframes pulse-ring { 0%,100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
   .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
@@ -65,8 +67,9 @@ const neonStyles = `
   .float-aura { animation: float-aura 6s ease-in-out infinite; }
 `;
 
-export default function BottleSpinGame({ online }: { online?: OnlineGameProps } = {}) {
-  const { t } = useTranslation();
+function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
+  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   // Confirm before leaving mid-round (accidental back tap during active play).
   const exitGuard = useConfirmExit(() => navigate('/games'));
@@ -95,6 +98,16 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
   const [totalRounds, setTotalRounds] = useState(15);
   const [currentRound, setCurrentRound] = useState(1);
   const [selectedCategories, setSelectedCategories] = useState<BottleCategory[]>(['spass', 'party', 'eisbrecher']);
+  const [contentSelection, setContentSelection] = useState<ContentSelection>('mixed');
+  const [contentReady, setContentReady] = useState(false);
+  useEffect(() => {
+    if (phase !== 'setup' || (online && !online.isHost)) return;
+    const available = new Set(getBOTTLE_CARDS().map(card => card.category));
+    setSelectedCategories(previous => {
+      const retained = previous.filter(category => available.has(category));
+      return retained.length === previous.length ? previous : retained.length ? retained : ['eisbrecher'];
+    });
+  }, [i18n.language, phase, online?.isHost]);
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedIdx, setSelectedIdx] = useState(-1);
@@ -111,30 +124,33 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
       selectedName: selectedIdx >= 0 ? players[selectedIdx]?.name ?? '' : '',
       // Task text stays hidden until the card phase (and lingers through the vote).
       task: (phase === 'card' || phase === 'vote') ? (currentCard?.text ?? '') : '',
+      taskId: (phase === 'card' || phase === 'vote') ? currentCard?.id : undefined,
       taskType: currentCard?.type ?? '',
       // Live yes/no tally for the vote-distribution bar (only meaningful in 'vote').
       voteYes: Object.values(votes).filter(Boolean).length,
       voteNo: Object.values(votes).filter((v) => !v).length,
     },
-    [phase, currentRound, selectedIdx, votes],
+    [phase, currentRound, selectedIdx, votes], !online || online.isHost,
   );
 
-  const deck = useMemo(() => {
-    const filtered = getBOTTLE_CARDS().filter((c) => selectedCategories.includes(c.category));
-    return shuffle(filtered.length > 0 ? filtered : getBOTTLE_CARDS());
-  }, [selectedCategories]);
-  const deckPos = useRef(0);
+  // The host freezes the selected language/content at match start, including replay.
+  const matchCards = useRef<BottleCard[]>([]);
+  const deck = useRef(createBottleDeck([]));
 
-  const handleTimerExpire = useCallback(() => { if (phase === 'card') startVote(); }, [phase]);
-  const timer = useGameTimer(timerSec, handleTimerExpire);
+  const handleTimerExpire = useCallback(() => { if ((!online || online.isHost) && phase === 'card') startVote(); }, [phase, online?.isHost]);
+  const timer = useGameTimer(timerSec, handleTimerExpire, online?.isConnected !== false);
 
   const handleStart = (
     mapped: { id: string; name: string; color: string; avatar: string }[],
     selectedMode: string, settings: { timer: number; rounds: number },
   ) => {
+    const selected = filterBottleCards(getBOTTLE_CARDS(), selectedCategories, contentSelection);
+    if (selectedMode !== 'nur-flasche' && !selected.length) { setContentReady(false); return; }
+    matchCards.current = selected;
+    deck.current = createBottleDeck(selected);
     setPlayers(mapped.map((p, i) => ({ ...p, color: PLAYER_COLORS[i % PLAYER_COLORS.length], score: 0 })));
     setMode(selectedMode); setTimerSec(settings.timer); setTotalRounds(settings.rounds);
-    setCurrentRound(1); setSelectedIdx(-1); lastSelectedRef.current = -1; deckPos.current = 0;
+    setCurrentRound(1); setSelectedIdx(-1); lastSelectedRef.current = -1;
     setPhase('spinning');
   };
 
@@ -162,8 +178,8 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
   };
 
   const showCard = () => {
-    if (deckPos.current >= deck.length) deckPos.current = 0;
-    const card = deck[deckPos.current++];
+    const card = deck.current.draw();
+    if (!card) { setPhase('setup'); setContentReady(false); return; }
     setCurrentCard(card); setDeclined(false);
     if (card.type === 'aufgabe') { timer.reset(timerSec); timer.start(); }
     setPhase('card');
@@ -207,19 +223,20 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
       const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      recordEnd('flaschendrehen', winner?.score ?? 0, true);
+      const me = online ? players.find(p => p.id === online.myPlayerId) : winner;
+      recordEnd('flaschendrehen', me?.score ?? 0, mode !== 'nur-flasche' && !!me && me.score === Math.max(...players.map(p => p.score)));
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
-  // Rematch: restart gameplay directly, keeping players AND their scores.
-  // Only per-match/transient state is reset; deck reshuffles on category-deps already.
+  // Rematch retains the selected content, resets scores, and starts a fresh shuffled deck.
   const playAgain = () => {
     setCurrentRound(1);
     setSelectedIdx(-1); lastSelectedRef.current = -1;
     setCurrentCard(null); setDeclined(false);
     setVotes({}); setVoterIdx(0);
-    deckPos.current = 0;
+    deck.current = createBottleDeck(matchCards.current);
+    setPlayers(prev => prev.map(p => ({ ...p, score: 0 })));
     gameRecordedRef.current = false;
     timer.reset(timerSec);
     setPhase('spinning');
@@ -229,71 +246,68 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
   const selectedPlayer = selectedIdx >= 0 ? players[selectedIdx] : null;
 
   const toggleCategory = (cat: BottleCategory) => {
-    setSelectedCategories((prev) => prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]);
+    setSelectedCategories((prev) => toggleSelectedCategory(prev, cat));
   };
 
-  /* ---- Online: host broadcasts game state ---- */
-  useEffect(() => {
-    if (!online?.isHost) return;
-    online.broadcast('game-state', {
-      phase, currentRound, totalRounds, selectedIdx, rotation,
-      players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
-    });
-  }, [phase, currentRound, selectedIdx, rotation, players, online]);
+  const actor = players[selectedIdx]?.id ?? false;
+  const voter = players.filter((_, i) => i !== selectedIdx)[voterIdx]?.id ?? false;
+  const act = useOnlineActions(online, 'bottlespin', `${phase}:${currentRound}:${selectedIdx}:${voterIdx}:${isSpinning}:${declined}`, {
+    start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },
+    spin: { allowed: phase === 'spinning' && !isSpinning ? 'host' : false, run: doSpin },
+    accept: { allowed: phase === 'card' && !declined ? actor : false, run: handleAccept },
+    decline: { allowed: phase === 'card' && !declined ? actor : false, run: handleDecline },
+    vote: { allowed: phase === 'vote' ? voter : false, run: (yes: unknown) => { if (typeof yes === 'boolean') castVote(yes); } },
+    next: { allowed: phase === 'spinning' && !isSpinning && selectedIdx >= 0 ? 'host' : false, run: nextRoundBottleOnly },
+    again: { allowed: phase === 'gameOver' ? 'host' : false, run: playAgain },
+  });
+  useOnlineSnapshot(online, 'bottlespin', { phase, players, mode, timerSec, totalRounds, currentRound, selectedCategories, contentSelection, rotation, isSpinning, selectedIdx, currentCard, declined, votes, voterIdx, timeLeft: timer.timeLeft }, s => {
+    setPhase(s.phase); setPlayers(s.players); setMode(s.mode); setTimerSec(s.timerSec); setTotalRounds(s.totalRounds); setCurrentRound(s.currentRound); setSelectedCategories(s.selectedCategories); setContentSelection(s.contentSelection ?? 'mixed'); setRotation(s.rotation); setIsSpinning(s.isSpinning); setSelectedIdx(s.selectedIdx); setCurrentCard(s.currentCard); setDeclined(s.declined); setVotes(s.votes); setVoterIdx(s.voterIdx); timer.reset(s.timeLeft);
+  });
+  if (online && !online.isHost && phase === 'setup') return <OnlineWaiting />;
 
-  /* ---- Online: non-host syncs state ---- */
-  useEffect(() => {
-    if (!online || online.isHost) return;
-    return online.onBroadcast('game-state', (data) => {
-      if (data.phase) setPhase(data.phase as Phase);
-      if (data.currentRound) setCurrentRound(data.currentRound as number);
-      if (data.selectedIdx !== undefined) setSelectedIdx(data.selectedIdx as number);
-      if (data.rotation !== undefined) setRotation(data.rotation as number);
-      if (data.players) {
-        const incoming = data.players as { id: string; name: string; score: number }[];
-        setPlayers(prev => prev.map((p, i) => ({
-          ...p, score: incoming[i]?.score ?? p.score,
-        })));
-      }
-    });
-  }, [online]);
 
   if (phase === 'setup') {
+    if (!contentReady) return <BottleContentSelection cards={getBOTTLE_CARDS()} categories={getCATEGORY_META()}
+      selected={selectedCategories} type={contentSelection} onToggle={toggleCategory} onType={setContentSelection}
+      onContinue={() => setContentReady(true)} disabled={online?.isConnected === false} />;
     return (
-      <GameSetup gameId="bottlespin" modes={getTranslatedModes('bottlespin', GAME_MODES, t)} settings={setupSettings} onStart={handleStart}
+      <div>
+      <button type="button" className="bottle-edit-selection" onClick={() => setContentReady(false)}>{t('games.bottlespin.editSelection')}</button>
+      <GameSetup gameId="bottlespin" modes={getTranslatedModes('bottlespin', GAME_MODES, (key, fallback) => t(key, { defaultValue: fallback }))} settings={setupSettings} onStart={(...args) => act('start', ...args)}
         title={t('gameNames.flaschendrehen')} minPlayers={2} maxPlayers={12} onlinePlayers={online?.players} />
+      </div>
     );
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game overflow-hidden">
+    <div data-phase={phase} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game overflow-hidden">
       <style>{neonStyles}</style>
 
       {/* Background aura blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="float-aura absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#df8eff]/[0.06] blur-[120px]" />
+        <div className="float-aura absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#e6b880]/[0.06] blur-[120px]" />
         <div className="float-aura absolute top-1/2 -right-48 w-[500px] h-[500px] rounded-full bg-[#ff6b98]/[0.05] blur-[140px]" style={{ animationDelay: '2s' }} />
-        <div className="float-aura absolute -bottom-24 left-1/3 w-80 h-80 rounded-full bg-[#8ff5ff]/[0.04] blur-[100px]" style={{ animationDelay: '4s' }} />
+        <div className="float-aura absolute -bottom-24 left-1/3 w-80 h-80 rounded-full bg-[#91b8a1]/[0.04] blur-[100px]" style={{ animationDelay: '4s' }} />
       </div>
 
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b border-[#df8eff]/[0.06]">
+      <div className="relative z-10 flex items-center justify-between px-4 py-3 border-b border-[#e6b880]/[0.06]">
         {/* In der App liegt der FloatingBackButton genau auf diesem Pfeil und
             tut über den Back-Guard dasselbe — dort nur unsichtbar schalten,
             nicht entfernen: der Platzhalter hält die Kopfzeile im Gleichgewicht
             und den Platz unter dem schwebenden Pfeil frei. */}
         <button
           onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())}
-          className={`p-2 text-white/40 hover:text-[#df8eff] transition-colors${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
+          className={`p-2 text-white/40 hover:text-[#e6b880] transition-colors${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
           aria-hidden={hasShellBackButton()}
           tabIndex={hasShellBackButton() ? -1 : undefined}
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#8ff5ff]/60">
+        <div className="text-xs font-bold uppercase tracking-[0.2em] text-[#91b8a1]/60">
           {t('games.bottlespin.roundCounter', { current: currentRound, total: totalRounds })}
         </div>
-        <div className="px-3 py-1 rounded-full glass-panel text-sm font-bold text-[#df8eff]">
+        <div className="px-3 py-1 rounded-full glass-panel text-sm font-bold text-[#e6b880]">
           {mode === 'fragen' ? t('gameModes.bottlespin.fragen.name') : t('gameModes.bottlespin.nur-flasche.name')}
         </div>
       </div>
@@ -302,18 +316,18 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
         {/* SPINNING PHASE */}
         {phase === 'spinning' && (
           <motion.div key="spinning" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4">
+            className="table-play relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4">
             <h2 className="text-xl font-extrabold">
               {selectedPlayer ? (
                 <motion.span initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-                  className="neon-text-purple text-[#df8eff]">
+                  className="neon-text-purple text-[#e6b880]">
                   {selectedPlayer.name}!
                 </motion.span>
               ) : <span className="text-white/60">{t('games.bottlespin.whoWillItBe')}</span>}
             </h2>
 
             {/* Player circle + bottle */}
-            <div className="relative" style={{ width: RADIUS * 2 + 60, height: RADIUS * 2 + 60 }}>
+            <div className="bottle-table relative" style={{ width: RADIUS * 2 + 60, height: RADIUS * 2 + 60 }}>
               {players.map((p, i) => {
                 const angle = (i / players.length) * 2 * Math.PI - Math.PI / 2;
                 const x = Math.cos(angle) * RADIUS, y = Math.sin(angle) * RADIUS;
@@ -336,7 +350,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                     <span className={cn('text-[10px] font-semibold truncate max-w-[54px] text-center transition-colors',
                       isSel ? 'text-white' : 'text-white/40')}>{p.name}</span>
                     {mode === 'fragen' && (
-                      <span className="text-[9px] font-bold text-[#df8eff]/70">{p.score}</span>
+                      <span className="text-[9px] font-bold text-[#e6b880]/70">{p.score}</span>
                     )}
                   </motion.div>
                 );
@@ -346,59 +360,43 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
               <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[140px] h-[140px] rounded-full border border-white/[0.06] bg-white/[0.03]"
                 style={{ boxShadow: 'inset 0 0 30px rgba(139,92,246,0.06), 0 0 60px rgba(139,92,246,0.04)' }} />
 
-              {/* Spinning bottle — uses emoji for photorealistic look */}
+              {/* Spinning bottle — shared bottle silhouette */}
               <motion.div
                 className="absolute left-1/2 top-1/2 origin-center"
                 style={{ marginLeft: -60, marginTop: -60, width: 120, height: 120 }}
                 animate={{ rotate: rotation }}
                 transition={{ type: 'tween', duration: 3, ease: [0.15, 0.85, 0.25, 1] }}>
-                {/* The bottle: a real wine bottle emoji, perfectly centered.
+                {/* The bottle stays perfectly centered.
                     Neck points UP (0° = top = toward first player). */}
                 <div className="w-full h-full flex items-center justify-center relative">
-                  {/* Bottle emoji — system-native rendering = photorealistic on iOS/Android */}
-                  <span className="text-[80px] leading-none select-none" style={{ filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.5))' }}>
-                    🍾
-                  </span>
+                  <BottleObject />
                   {/* Pointer indicator at the cork/top end */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1">
-                    <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[10px] border-b-[#df8eff]"
-                      style={{ filter: 'drop-shadow(0 0 6px rgba(223,142,255,0.6))' }} />
+                  <div className="absolute left-1/2 -translate-x-1/2" style={{ top: -61 }}>
+                    <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[10px] border-b-[#e6b880]"
+                      style={{ filter: 'drop-shadow(0 0 6px rgba(150,160,165,0.6))' }} />
                   </div>
                 </div>
               </motion.div>
             </div>
 
-            {/* Category pills */}
-            {mode === 'fragen' && !isSpinning && selectedIdx < 0 && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className="flex flex-wrap gap-2 justify-center max-w-xs">
-                {(Object.keys(getCATEGORY_META()) as BottleCategory[]).map((cat) => {
-                  const meta = getCATEGORY_META()[cat], active = selectedCategories.includes(cat);
-                  return (
-                    <button key={cat} onClick={() => toggleCategory(cat)}
-                      className={cn('px-3.5 py-1.5 rounded-full text-xs font-bold transition-all duration-200',
-                        active ? 'text-white glass-panel' : 'text-white/25 border border-white/[0.06] hover:border-white/10')}
-                      style={active ? { borderColor: `${meta.color}44`, boxShadow: `0 0 15px -5px ${meta.color}33` } : {}}>
-                      {meta.emoji} {meta.name}
-                    </button>
-                  );
-                })}
-              </motion.div>
-            )}
+            {mode === 'fragen' && <p className="bottle-content-summary">
+              {t(`games.bottlespin.${contentSelection === 'frage' ? 'questionsOnly' : contentSelection === 'aufgabe' ? 'tasksOnly' : 'mixedCards'}`)}
+              {' · '}{selectedCategories.map(category => getCATEGORY_META()[category]?.name ?? category).join(' · ')}
+            </p>}
 
             {/* Action button */}
             {selectedIdx >= 0 && !isSpinning ? (
               mode === 'nur-flasche' ? (
-                <motion.button whileTap={{ scale: 0.97 }} onClick={nextRoundBottleOnly}
-                  className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base btn-glow">
+                <motion.button whileTap={{ scale: 0.97 }} disabled={!act.can('next')} onClick={() => act('next')}
+                  className="flex items-center gap-2 bg-gradient-to-r from-[#e6b880] to-[#d779ff] text-white px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base btn-glow">
                   <Sparkles className="w-5 h-5" /> {t('games.bottlespin.nextRound')}
                 </motion.button>
               ) : null
             ) : (
-              <motion.button whileTap={{ scale: 0.97 }} onClick={doSpin} disabled={isSpinning}
+              <motion.button whileTap={{ scale: 0.97 }} onClick={() => act('spin')} disabled={isSpinning || !act.can('spin')}
                 className={cn('flex items-center gap-2 px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base transition-all',
                   isSpinning ? 'glass-panel text-white/30 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white btn-glow')}>
+                    : 'bg-gradient-to-r from-[#e6b880] to-[#d779ff] text-white btn-glow')}>
                 <Zap className="w-5 h-5" /> {isSpinning ? t('games.bottlespin.spinning') : t('games.bottlespin.spin')}
               </motion.button>
             )}
@@ -414,8 +412,8 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
             {currentCard.type === 'aufgabe' && !declined && (
               <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
                 className="flex items-center gap-2">
-                <Timer className={cn('w-5 h-5', timer.timeLeft <= 10 ? 'text-[#ff6e84] animate-pulse' : 'text-[#8ff5ff]')} />
-                <span className={cn('text-2xl font-mono font-bold', timer.timeLeft <= 10 ? 'text-[#ff6e84]' : 'neon-text-cyan text-[#8ff5ff]')}>
+                <Timer className={cn('w-5 h-5', timer.timeLeft <= 10 ? 'text-[#ff6e84] animate-pulse' : 'text-[#91b8a1]')} />
+                <span className={cn('text-2xl font-mono font-bold', timer.timeLeft <= 10 ? 'text-[#ff6e84]' : 'neon-text-cyan text-[#91b8a1]')}>
                   {timer.timeLeft}s
                 </span>
               </motion.div>
@@ -436,11 +434,11 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
               transition={{ duration: 0.5, ease: 'easeOut' }}
               className="w-full max-w-sm relative">
               {/* Gradient glow backlight */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#ff6b98] via-[#df8eff] to-[#8ff5ff] rounded-2xl blur opacity-20" />
+              <div className="absolute -inset-1 bg-gradient-to-r from-[#ff6b98] via-[#e6b880] to-[#91b8a1] rounded-2xl blur opacity-20" />
               {/* Card surface */}
-              <div className="relative rounded-2xl overflow-hidden bg-[#20262f]/80 backdrop-blur-[24px] border border-[#df8eff]/10 card-glow">
+              <div className="table-task relative overflow-hidden border">
                 {/* Gradient top stripe */}
-                <div className="h-2 w-full bg-gradient-to-r from-[#ff6b98] to-[#df8eff]" />
+                <div className="h-2 w-full bg-gradient-to-r from-[#ff6b98] to-[#e6b880]" />
                 <div className="p-6 flex flex-col items-center gap-4">
                   {/* Category label */}
                   <span className="text-[10px] font-bold uppercase tracking-[0.25em] italic"
@@ -449,17 +447,13 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                   </span>
                   {/* Type label */}
                   <h3 className={cn('text-5xl font-black tracking-tight',
-                    currentCard.type === 'frage' ? 'text-[#8ff5ff] neon-text-cyan' : 'text-[#ff6b98] neon-text')}>
+                    currentCard.type === 'frage' ? 'text-[#91b8a1] neon-text-cyan' : 'text-[#ff6b98] neon-text')}>
                     {currentCard.type === 'frage' ? t('games.bottlespin.cardTypeQuestion') : t('games.bottlespin.cardTypeChallenge')}
                   </h3>
                   {/* Divider */}
                   <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#44484f] to-transparent" />
                   {/* Card text */}
-                  <p className="text-2xl font-bold text-white leading-tight text-center">{currentCard.text}</p>
-                  {/* Decorative icon */}
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white/[0.04] border border-white/[0.06]">
-                    <span className="text-lg">{getCATEGORY_META()[currentCard.category].emoji}</span>
-                  </div>
+                  <p dir="auto" className="text-2xl font-bold text-white leading-tight text-center">{localizeBottleCard(currentCard).text}</p>
                 </div>
               </div>
             </motion.div>
@@ -467,11 +461,11 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
             {/* Action buttons */}
             {!declined ? (
               <div className="flex flex-col gap-3 w-full max-w-sm">
-                <motion.button whileTap={{ scale: 0.97 }} onClick={handleAccept}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white py-4 rounded-2xl h-14 font-extrabold btn-glow">
+                <motion.button whileTap={{ scale: 0.97 }} disabled={!act.can('accept')} onClick={() => act('accept')}
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#e6b880] to-[#d779ff] text-white py-4 rounded-2xl h-14 font-extrabold btn-glow">
                   <ThumbsUp className="w-5 h-5" /> {currentCard.type === 'aufgabe' ? t('games.bottlespin.done') : t('games.bottlespin.accept')}
                 </motion.button>
-                <motion.button whileTap={{ scale: 0.97 }} onClick={handleDecline}
+                <motion.button whileTap={{ scale: 0.97 }} disabled={!act.can('decline')} onClick={() => act('decline')}
                   className="w-full flex items-center justify-center gap-2 bg-transparent border border-[#ff6e84]/30 text-[#ff6e84]/70 px-6 py-3.5 rounded-2xl font-bold hover:border-[#ff6e84]/50 hover:text-[#ff6e84] transition-all">
                   {t('games.bottlespin.decline')}
                 </motion.button>
@@ -487,10 +481,10 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
               <div className="flex gap-1">
                 {Array.from({ length: Math.min(totalRounds, 12) }).map((_, i) => (
                   <div key={i} className={cn('w-1.5 h-1.5 rounded-full',
-                    i < currentRound ? 'bg-[#df8eff]' : 'bg-white/[0.08]')} />
+                    i < currentRound ? 'bg-[#e6b880]' : 'bg-white/[0.08]')} />
                 ))}
               </div>
-              <span className="text-[10px] text-[#df8eff]/30 font-bold tracking-widest">EventBliss</span>
+              <span className="text-[10px] text-[#e6b880]/30 font-bold tracking-widest">EventBliss</span>
             </div>
           </motion.div>
         )}
@@ -503,24 +497,24 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
           return (
             <motion.div key="vote" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="relative z-10 flex-1 flex flex-col items-center justify-center gap-6 px-4">
-              <h2 className="text-xl font-extrabold neon-text-purple text-[#df8eff]">
+              <h2 className="text-xl font-extrabold neon-text-purple text-[#e6b880]">
                 {t('games.bottlespin.voteQuestion', { name: selectedPlayer.name })}
               </h2>
               <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}
                 className="relative">
-                <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[#df8eff]/20 to-[#ff6b98]/20 blur-lg" />
-                <div className="relative w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white ring-2 ring-[#df8eff]/30"
+                <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[#e6b880]/20 to-[#ff6b98]/20 blur-lg" />
+                <div className="relative w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white ring-2 ring-[#e6b880]/30"
                   style={{ backgroundColor: voter.color, boxShadow: `0 0 20px ${voter.color}44` }}>
                   {voter.avatar}
                 </div>
               </motion.div>
               <p className="text-white/50 font-semibold">{t('games.bottlespin.voting', { name: voter.name })}</p>
               <div className="flex gap-5">
-                <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={() => castVote(true)}
+                <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} disabled={!act.can('vote')} onClick={() => act('vote', true)}
                   className="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-emerald-500/20 hover:border-emerald-500/40 transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]">
                   <ThumbsUp className="w-8 h-8 text-emerald-400" />
                 </motion.button>
-                <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} onClick={() => castVote(false)}
+                <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} disabled={!act.can('vote')} onClick={() => act('vote', false)}
                   className="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-[#ff6e84]/20 hover:border-[#ff6e84]/40 transition-all hover:shadow-[0_0_20px_rgba(255,110,132,0.2)]">
                   <ThumbsDown className="w-8 h-8 text-[#ff6e84]" />
                 </motion.button>
@@ -528,7 +522,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
               <div className="flex gap-1.5">
                 {otherPlayers.map((_, i) => (
                   <div key={i} className={cn('w-2.5 h-2.5 rounded-full transition-all duration-300',
-                    i < voterIdx ? 'bg-[#df8eff]' : i === voterIdx ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'bg-white/[0.08]')} />
+                    i < voterIdx ? 'bg-[#e6b880]' : i === voterIdx ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'bg-white/[0.08]')} />
                 ))}
               </div>
             </motion.div>
@@ -538,7 +532,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
         {/* GAME OVER */}
         {phase === 'gameOver' && (
           <motion.div key="over" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-            className="relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full">
+            className="table-results relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full">
             <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
               <div className="relative">
@@ -548,12 +542,12 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                 </div>
               </div>
             </motion.div>
-            <h2 className="text-3xl font-black neon-text bg-gradient-to-r from-amber-400 via-[#ff6b98] to-[#df8eff] bg-clip-text text-transparent">
+            <h2 className="text-3xl font-black neon-text bg-gradient-to-r from-amber-400 via-[#ff6b98] to-[#e6b880] bg-clip-text text-transparent">
               {t('games.bottlespin.gameOver')}
             </h2>
             {mode === 'fragen' && winner && (
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className="text-lg font-bold text-[#df8eff] neon-text-purple">{t('games.bottlespin.wins', { name: winner.name })}</motion.div>
+                className="text-lg font-bold text-[#e6b880] neon-text-purple">{t('games.bottlespin.wins', { name: players.filter(p => p.score === winner.score).map(p => p.name).join(' & ') })}</motion.div>
             )}
             {mode === 'fragen' && (
               <div className="w-full space-y-2.5 max-h-64 overflow-y-auto">
@@ -566,7 +560,7 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
                     <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white ring-2 ring-white/[0.08]"
                       style={{ backgroundColor: p.color }}>{p.avatar}</div>
                     <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
-                    <span className="text-[#df8eff] font-bold">{t('games.bottlespin.scorePoints', { score: p.score })}</span>
+                    <span className="text-[#e6b880] font-bold">{t('games.bottlespin.scorePoints', { score: p.score })}</span>
                   </motion.div>
                 ))}
               </div>
@@ -575,13 +569,13 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
               <p className="text-white/30 text-center text-sm">{t('games.bottlespin.roundsPlayed', { rounds: totalRounds })}</p>
             )}
             <div className="w-full space-y-3 mt-3">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-white py-4 rounded-2xl h-14 font-extrabold btn-glow">
+              <motion.button whileTap={{ scale: 0.97 }} disabled={!act.can('again')} onClick={() => act('again')}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#e6b880] to-[#d779ff] text-white py-4 rounded-2xl h-14 font-extrabold btn-glow">
                 <RotateCcw className="w-4 h-4" /> {t('games.bottlespin.playAgain')}
               </motion.button>
               {!hasShellBackButton() && (
                 <button onClick={() => navigate('/games')}
-                  className="w-full py-3.5 rounded-2xl border border-[#df8eff]/10 text-white/40 text-sm font-semibold hover:bg-white/[0.02] hover:border-[#df8eff]/20 transition-all">
+                  className="w-full py-3.5 rounded-2xl border border-[#e6b880]/10 text-white/40 text-sm font-semibold hover:bg-white/[0.02] hover:border-[#e6b880]/20 transition-all">
                   {t('games.bottlespin.otherGame')}
                 </button>
               )}
@@ -590,7 +584,11 @@ export default function BottleSpinGame({ online }: { online?: OnlineGameProps } 
         )}
       </AnimatePresence>
 
-      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#e6b880" />
     </div>
   );
+}
+
+export default function BottleSpinGame({ online }: { online?: OnlineGameProps } = {}) {
+  return <GameStage gameId="flaschendrehen" className="table-game"><BottleSpinGameContent online={online} /></GameStage>;
 }

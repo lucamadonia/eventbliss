@@ -20,7 +20,7 @@ interface RoomInviteProps {
 
 export default function RoomInvite({ gameId, roomCode, gameName }: RoomInviteProps) {
   const [copied, setCopied] = useState(false);
-  const shareUrl = `${getBaseUrl()}/games/${gameId}?room=${roomCode}`;
+  const shareUrl = `${getBaseUrl()}/games?room=${roomCode}`;
 
   const handleCopy = useCallback(() => {
     navigator.clipboard.writeText(shareUrl).then(() => {

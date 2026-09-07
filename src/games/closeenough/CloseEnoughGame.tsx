@@ -1,3 +1,4 @@
+import OnlineWaiting from '../multiplayer/OnlineWaiting';
 /**
  * CLOSE ENOUGH (deutsch „Nah Dran") — Schätzspiel.
  *
@@ -29,6 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { Target, Trophy, ChevronRight, Check, Clock, ExternalLink } from 'lucide-react';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useGameTimer } from '../engine/TimerSystem';
+import { publicRoundItem } from '../multiplayer/public-round-item';
 import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
 import { getPlayerColor } from '../ui/PlayerAvatars';
 import { ResultScreen } from '../ui/ResultScreen';
@@ -199,10 +201,16 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   const handleTimeout = useCallback(() => {
     if (isOnline && !isHost) return;
     void haptics.warning();
-    finishRoundRef.current?.();
-  }, [isOnline, isHost, haptics]);
+    if (isOnline) { finishRoundRef.current?.(); return; }
+    const player = players[entryIndex];
+    if (!player) return;
+    setGuesses(previous => ({ ...previous, [player.id]: null }));
+    setRaw(''); setHintShown(false);
+    if (entryIndex + 1 < players.length) { setEntryIndex(entryIndex + 1); setAwaitingPass(true); }
+    // The all-submitted effect resolves the final person's timeout once state commits.
+  }, [isOnline, isHost, haptics, players, entryIndex]);
 
-  const roundTimer = useGameTimer(modeDef.duration, handleTimeout);
+  const roundTimer = useGameTimer(modeDef.duration, handleTimeout, online?.isConnected !== false);
   const roundTimerRef = useRef<ReturnType<typeof useGameTimer> | null>(null);
   roundTimerRef.current = roundTimer;
 
@@ -229,7 +237,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   finishRoundRef.current = finishRound;
 
   const beginRound = useCallback(
-    (d: CeQuestion[], idx: number, ps: Player[]) => {
+    (d: CeQuestion[], idx: number, ps: Player[], duration = modeDef.duration) => {
       const next = d[idx];
       setQuestion(next ?? null);
       // Damit der Melde-Knopf in der Titelleiste weiss, worauf er sich bezieht.
@@ -260,7 +268,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
       setEntryIndex(0);
       setAwaitingPass(false);
       setPlayers(ps);
-      roundTimerRef.current?.reset(modeDef.duration);
+      roundTimerRef.current?.reset(duration);
       setShowIntro(true);
       setPhase('guessing');
       // Kein start() hier: die Uhr läuft erst, wenn der Auftakt durch ist.
@@ -281,11 +289,11 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   );
 
   const doGuess = useCallback((pid: string, value: number) => {
-    if (!Number.isFinite(value)) return;
+    if (phase !== 'guessing' || !players.some(p => p.id === pid) || !Number.isFinite(value)) return;
     // Nur der erste Tipp zählt. Ohne die Sperre könnte ein Client denselben
     // Spieler beliebig oft korrigieren, während die anderen schon fertig sind.
     setGuesses((prev) => (pid in prev ? prev : { ...prev, [pid]: value }));
-  }, []);
+  }, [phase, players]);
 
   /**
    * Alle abgegeben? Dann auflösen.
@@ -311,27 +319,41 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
     beginRound(deck, nextIdx, players);
   }, [round, totalRounds, deck, players, beginRound]);
 
+  const rematchRef = useRef<() => void>(() => {});
   // Host wendet Client-Aktionen an.
   const applyAction = useCallback(
     (data: Record<string, unknown>) => {
+      if (data.type === 'again' && phase === 'gameOver' && players.some(p => p.id === data.__senderId)) { rematchRef.current(); return; }
+      if (phase !== 'guessing' || data.type !== 'guess' || data.pid !== data.__senderId || !players.some(p => p.id === data.__senderId)) return;
       switch (data.type) {
         case 'guess':
           doGuess(data.pid as string, Number(data.value));
-          break;
-        case 'next':
-          nextRound();
           break;
         default:
           break;
       }
     },
-    [doGuess, nextRound],
+    [phase, players, doGuess],
   );
 
   useEffect(() => {
     if (!online || !isHost) return;
     return online.onBroadcast('closeenough-action', (d) => applyAction(d));
   }, [online, isHost, applyAction]);
+
+  // The shared clock also restores the correct remaining time after reconnect.
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('closeenough-timer-state', { timeLeft: roundTimer.timeLeft, running: roundTimer.isRunning });
+  }, [online, roundTimer.timeLeft, roundTimer.isRunning]);
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('closeenough-timer-state', data => {
+      if (typeof data.timeLeft !== 'number') return;
+      roundTimerRef.current?.reset(data.timeLeft);
+      if (data.running) roundTimerRef.current?.start();
+    });
+  }, [online]);
 
   /** Wer schon abgegeben hat — das ist alles, was während des Tippens rausgeht. */
   const submittedIds = useMemo(() => Object.keys(guesses), [guesses]);
@@ -346,10 +368,9 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
           players,
           round,
           totalRounds,
-          question,
+          question: publicRoundItem(question, phase === 'reveal' || phase === 'gameOver', ['answer', 'tolerancePct', 'sourceUrl', 'sourceLabel']),
           mode,
           categories,
-          deck,
           submittedIds,
           // Die Tipps und die Wertung erst ab der Auflösung. Vorher stünden
           // sie im Datenstrom und jeder Mitspieler könnte abschreiben.
@@ -386,7 +407,6 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
       setQuestion(s.question as CeQuestion | null);
       setMode(s.mode as ModeId);
       setCategories(s.categories as CeCategory[]);
-      setDeck(s.deck as CeQuestion[]);
       setGuesses((s.guesses as Record<string, number | null>) ?? {});
       setResults((s.results as CeResult[] | null) ?? null);
       setRemoteSubmitted((s.submittedIds as string[]) ?? []);
@@ -442,7 +462,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   }, [results, players]);
 
   const truthLabel = useMemo(() => {
-    if (!question) return '';
+    if (!question || typeof question.answer !== 'number') return '';
     return withUnit(
       formatAnswer(question.answer, question.unitKey, lang),
       question.unitKey,
@@ -613,6 +633,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
       categories: CeCategory[];
       rounds: number;
     }) => {
+      if (!isHost) return;
       const source = cfg.categories.length
         ? pool.filter((q) => cfg.categories.includes(q.category))
         : pool;
@@ -632,12 +653,14 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
       setTotalRounds(Math.min(cfg.rounds, shuffled.length));
       setDeck(shuffled);
       restoredRef.current = true;
-      beginRound(shuffled, 0, ps);
+      beginRound(shuffled, 0, ps, (MODES.find(option => option.id === cfg.mode) ?? MODES[1]).duration);
     },
-    [pool, beginRound, flash, t],
+    [isHost, pool, beginRound, flash, t],
   );
 
   // =========================================================================
+  rematchRef.current = () => handleStart({ players: players.map(p => ({ id: p.id, name: p.name })), mode, categories, rounds: totalRounds });
+  if (phase === 'setup' && online && !isHost) return <OnlineWaiting />;
   if (phase === 'setup') {
     return (
       <CloseEnoughSetup
@@ -657,14 +680,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
       <ResultScreen
         players={sorted.map((p) => ({ name: p.name, score: p.score, streak: 0 }))}
         gameTitle={t('games.closeenough.title')}
-        onPlayAgain={() =>
-          handleStart({
-            players: players.map((p) => ({ id: p.id, name: p.name })),
-            mode,
-            categories,
-            rounds: totalRounds,
-          })
-        }
+        onPlayAgain={() => act('again', {}, () => rematchRef.current())}
         onBackToHub={() => {
           clearSnapshot('closeenough');
           navigate('/games');

@@ -1,4 +1,9 @@
-import { useTranslation } from "react-i18next";
+import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
+import './design.css';
+import { phaseAfterQuestion, identityMatches } from './question-rules';
+import { whoamiSnapshotFor } from './private-state';
+import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
+import { Trans, useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -66,11 +71,11 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const EP_STYLE = `
-.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
+.neon-glow { text-shadow: 0 0 20px rgba(150,160,165,0.6), 0 0 40px rgba(150,160,165,0.4); }
 .glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 `;
 
-export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}) {
+function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   // Confirm-before-quit for the in-game header back button (active play only).
@@ -123,6 +128,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
     selectedMode: string,
     settings: { timer: number; rounds: number },
   ) => {
+    if (online && (!online.isHost || online.isConnected === false)) return;
     const pool = drawPool(selectedMode);
     if (!pool) { setContentError(true); return; }
     const p: Player[] = mapped.map((m, i) => ({
@@ -144,7 +150,21 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   // Assign: show each player who is who (except themselves)
   // ---------------------------------------------------------------------------
 
+  const route = useOnlineAuthority(online, 'whoami', `${phase}:${currentRound}:${activeIdx}:${voterIdx}:${revealIdx}`, {
+    submitQuestion: { allow: sender => phase === 'asking' && sender === players[activeIdx]?.id, run: (...args) => submitQuestion(args[0]) },
+    tryGuess: { allow: (sender, args) => phase === 'guessing' && sender === players[activeIdx]?.id && typeof args[0] === 'string' && args[0].length <= 100, run: (...args) => tryGuess(args[0]) },
+    skipToGuess: { allow: sender => phase === 'asking' && sender === players[activeIdx]?.id, run: () => skipToGuess() },
+    nextReveal: { allow: (sender, args) => phase === "assign" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => nextReveal() },
+    castAnswer: { allow: (sender, args) => phase === "answerVote" && ["yes","no","maybe"].includes(args[0]) && sender === players.filter((_, i) => i !== activeIdx)[voterIdx]?.id, run: (...args) => castAnswer(args[0]) },
+    afterGuess: { allow: (sender, args) => phase === "guessResult" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => afterGuess() },
+    handleSolvedDirect: { allow: (sender, args) => false, run: (...args) => handleSolvedDirect() },
+    handleSkipDirect: { allow: (sender, args) => phase === "asking" && sender === players[activeIdx]?.id, run: (...args) => handleSkipDirect() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+  });
+
   const nextReveal = () => {
+    if (route("nextReveal", [])) return;
+    if (online) { setPhase('asking'); return; }
     setCharacterRevealed(false); // Hide character for next player
     if (revealIdx + 1 >= players.length) {
       setRevealIdx(0);
@@ -161,15 +181,18 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
 
   const activePlayer = players[activeIdx];
 
-  const submitQuestion = () => {
-    if (!currentQuestion.trim()) return;
+  const submitQuestion = (question = currentQuestion) => {
+    if (typeof question !== 'string' || !question.trim() || question.length > 200) return;
+    if (route('submitQuestion', [question])) return;
+    setCurrentQuestion(question);
     setVoteResults({});
     setVoterIdx(0);
     setPhase('answerVote');
   };
 
   const castAnswer = (answer: 'yes' | 'no' | 'maybe') => {
-    const otherPlayers = players.filter((_, i) => i !== activeIdx && !players[i].eliminated);
+    if (route("castAnswer", [answer])) return;
+    const otherPlayers = players.filter((_, i) => i !== activeIdx);
     const voter = otherPlayers[voterIdx];
     if (!voter) return;
     const newVotes = { ...voteResults, [voter.id]: answer };
@@ -180,7 +203,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
         i === activeIdx ? { ...p, questionsAsked: p.questionsAsked + 1 } : p,
       ));
       setCurrentQuestion('');
-      setPhase('asking');
+      setPhase(phaseAfterQuestion(activePlayer?.questionsAsked ?? 0, maxQ));
     } else {
       setVoterIdx((v) => v + 1);
     }
@@ -196,22 +219,23 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   }, [voteResults]);
 
   useTVGameBridge('whoami', {
-    phase, currentRound, totalRounds, activeIdx, players,
+    phase, currentRound, totalRounds, activeIdx, players: online && phase !== 'gameOver' ? players.map(p => ({ ...p, character: '' })) : players,
     // What's being asked + the live aggregate answer tally (never per-voter)
     currentQuestion,
     voteTally: voteSummary,
     maxQuestions: maxQ,
     // Banner state for the guess result
     guessCorrect,
-  }, [phase, currentRound, activeIdx, currentQuestion, voteSummary, guessCorrect]);
+  }, [phase, currentRound, activeIdx, currentQuestion, voteSummary, guessCorrect], !online || online.isHost);
 
   // ---------------------------------------------------------------------------
   // Guessing
   // ---------------------------------------------------------------------------
 
-  const tryGuess = () => {
-    if (!guessAttempt.trim()) return;
-    const correct = guessAttempt.trim().toLowerCase() === activePlayer?.character.toLowerCase();
+  const tryGuess = (guess = guessAttempt) => {
+    if (typeof guess !== 'string' || !guess.trim()) return;
+    if (route('tryGuess', [guess])) return;
+    const correct = identityMatches(guess, activePlayer?.character ?? '');
     setGuessCorrect(correct);
     if (correct) {
       const qAsked = (activePlayer?.questionsAsked ?? 0) + 1;
@@ -224,6 +248,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   };
 
   const afterGuess = () => {
+    if (route("afterGuess", [])) return;
     setGuessAttempt('');
     setGuessCorrect(null);
     if (guessCorrect) {
@@ -273,6 +298,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   };
 
   const skipToGuess = () => {
+    if (route('skipToGuess')) return;
     setPhase('guessing');
   };
 
@@ -280,6 +306,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   // taps SOLVED when the active player guessed correctly, or SKIP to
   // surrender this round to the next player.
   const handleSolvedDirect = () => {
+    if (route("handleSolvedDirect", [])) return;
     if (!activePlayer) return;
     void haptics.celebrate();
     const qAsked = activePlayer.questionsAsked + 1;
@@ -292,6 +319,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   };
 
   const handleSkipDirect = () => {
+    if (route("handleSkipDirect", [])) return;
     if (!activePlayer) return;
     void haptics.warning();
     // Give up this character — count as eliminated, advance to next.
@@ -306,7 +334,8 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
       const best = [...players].sort((a, b) => b.score - a.score)[0];
-      recordEnd('wer-bin-ich', best?.score ?? 0, true);
+      const me = online ? players.find(p => p.id === online.myPlayerId) : best;
+      recordEnd('wer-bin-ich', me?.score ?? 0, !!me && me.score === Math.max(...players.map(p => p.score)));
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -315,10 +344,11 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   // (a new game must reveal new secret roles). Reset per-match counts and
   // go straight into the assign/reveal phase — never back to setup.
   const playAgain = () => {
+    if (route("playAgain", [])) return;
     const pool = drawPool(mode);
     if (!pool) { setContentError(true); return; }
     setPlayers((prev) => prev.map((p, i) => ({
-      ...p,
+      ...p, score: 0,
       character: pool[i % pool.length].name,
       questionsAsked: 0, guessedCorrectly: false, eliminated: false,
     })));
@@ -335,30 +365,33 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
     setPhase('assign');
   };
 
-  /* ---- Online: host broadcasts game state ---- */
+  const privateSnapshot = JSON.stringify({ phase, currentRound, totalRounds, activeIdx, players, mode, maxQ, revealIdx, currentQuestion, voteResults, voterIdx, guessCorrect });
   useEffect(() => {
     if (!online?.isHost) return;
-    online.broadcast('game-state', {
-      phase, currentRound, totalRounds, activeIdx,
-      players: players.map(p => ({ id: p.id, name: p.name, score: p.score, character: p.character, questionsAsked: p.questionsAsked })),
-    });
-  }, [phase, currentRound, activeIdx, players, online]);
-
-  /* ---- Online: non-host syncs state ---- */
+    const state = JSON.parse(privateSnapshot);
+    for (const recipient of online.players) {
+      if (recipient.id === online.myPlayerId) continue;
+      online.broadcastTo?.(recipient.id, "whoami-state", whoamiSnapshotFor(state, recipient.id));
+    }
+  }, [privateSnapshot, online?.isHost, online?.broadcastTo, online?.players]);
   useEffect(() => {
     if (!online || online.isHost) return;
-    return online.onBroadcast('game-state', (data) => {
-      if (data.phase) setPhase(data.phase as Phase);
-      if (data.currentRound) setCurrentRound(data.currentRound as number);
-      if (data.activeIdx !== undefined) setActiveIdx(data.activeIdx as number);
-      if (data.players) {
-        const incoming = data.players as { id: string; name: string; score: number; character: string; questionsAsked: number }[];
-        setPlayers(prev => prev.map((p, i) => ({
-          ...p, score: incoming[i]?.score ?? p.score, character: incoming[i]?.character ?? p.character,
-        })));
-      }
+    return online.onBroadcast("whoami-state", data => {
+      if (data.__senderId !== online.players.find(p => p.isHost)?.id) return;
+      setPhase(data.phase as Phase);
+      setCurrentRound(data.currentRound as number);
+      setTotalRounds(data.totalRounds as number);
+      setActiveIdx(data.activeIdx as number);
+      setPlayers(data.players as Player[]);
+      setMode(data.mode as string);
+      setMaxQ(data.maxQ as number);
+      setRevealIdx(data.revealIdx as number);
+      setCurrentQuestion(data.currentQuestion as string);
+      setVoteResults(data.voteResults as Record<string, 'yes'|'no'|'maybe'>);
+      setVoterIdx(data.voterIdx as number);
+      setGuessCorrect(data.guessCorrect as boolean | null);
     });
-  }, [online]);
+  }, [online?.isHost, online?.onBroadcast, online?.players]);
 
   const winner = useMemo(() =>
     [...players].sort((a, b) => b.score - a.score)[0], [players]);
@@ -367,6 +400,17 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   // Render
   // ---------------------------------------------------------------------------
 
+  if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
+  if (online && phase === 'assign') return <div className="identity-distribution min-h-[100dvh] text-white p-4 space-y-5 mx-auto">
+    <StageHeader eyebrow={t('games.whoami.setup.heading')} title={t('native.gameNames.werBinIch')} subtitle={t('games.whoami.onlineRoles')} />
+    <div className="identity-grid">{players.filter(p => p.id !== online.myPlayerId).map(p => <StagePanel tone="paper" className="identity-card" key={p.id}>
+      <span className="identity-monogram" aria-hidden="true">{p.name.slice(0, 1)}</span>
+      <div><p className="identity-holder">{p.name}</p><p className="identity-name">{p.character}</p></div>
+    </StagePanel>)}</div>
+    {online.isHost ? <StageAction className="w-full" onClick={nextReveal}>{t('games.whoami.assign.startGame')}</StageAction> : <OnlineWaiting />}
+    <StageAction variant="ghost" onClick={exitGuard.request}>{t('games.whoami.exitGame')}</StageAction>
+    <ConfirmExitDialog {...exitGuard.dialogProps} accent="#ef987e" />
+  </div>;
   if (phase === 'setup') {
     return (
       <WhoAmISetup
@@ -380,10 +424,10 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
+    <div data-phase={phase} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
       <style>{EP_STYLE}</style>
-      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#ef987e]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#e4cec0]/8 rounded-full blur-[120px] pointer-events-none" />
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
         {/* In der App liegt der FloatingBackButton genau auf diesem Pfeil und
@@ -401,7 +445,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
         <div className="text-xs font-bold uppercase tracking-widest text-white/40">
           {t('games.whoami.round', { round: currentRound, total: totalRounds })}
         </div>
-        <div className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs font-bold text-[#df8eff]">
+        <div className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs font-bold text-[#ef987e]">
           {t(`gameModes.whoami.${mode}.name`)}
         </div>
       </div>
@@ -410,8 +454,8 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
         {/* ASSIGN: Show characters to everyone except the player */}
         {phase === 'assign' && (
           <motion.div key="assign" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
-            <Users className="w-8 h-8 text-[#df8eff]" />
+            className="identity-phase flex-1 flex flex-col items-center justify-center gap-5 px-4">
+            <Users className="w-8 h-8 text-[#ef987e]" />
             <h2 className="text-xl font-extrabold text-center">
               {t('games.whoami.assign.passPhone', { name: players[revealIdx]?.name })}
             </h2>
@@ -422,9 +466,9 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
             <motion.button
               onClick={() => { if (!characterRevealed) setCharacterRevealed(true); }}
               whileTap={!characterRevealed ? { scale: 0.97 } : {}}
-              className="w-full max-w-sm rounded-2xl bg-[#1b2028] border border-[#df8eff]/20 p-6 text-center relative overflow-hidden cursor-pointer"
+              className="identity-flip w-full max-w-sm p-6 text-center relative overflow-hidden cursor-pointer"
             >
-              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff]" />
+              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#ef987e] to-[#e4cec0]" />
               <div className="flex items-center justify-center gap-2 mb-3">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
                   style={{ backgroundColor: players[revealIdx]?.color }}>
@@ -437,12 +481,12 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
               <AnimatePresence mode="wait">
                 {characterRevealed ? (
                   <motion.div key="revealed" initial={{ rotateY: 90, opacity: 0 }} animate={{ rotateY: 0, opacity: 1 }} transition={{ duration: 0.4 }}>
-                    <div className="text-3xl font-extrabold text-[#df8eff] mb-1">{players[revealIdx]?.character}</div>
+                    <div className="text-3xl font-extrabold text-[#ef987e] mb-1">{players[revealIdx]?.character}</div>
                   </motion.div>
                 ) : (
                   <motion.div key="hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <div className="text-5xl mb-2">❓</div>
-                    <div className="text-sm text-[#8ff5ff] font-bold animate-pulse">
+                    <div className="text-sm text-[#e4cec0] font-bold animate-pulse">
                       {t('games.whoami.assign.tapToReveal')}
                     </div>
                     <div className="text-xs text-white/30 mt-1">
@@ -455,7 +499,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
             {/* Continue button — only visible AFTER character is revealed */}
             {characterRevealed && (
               <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} whileTap={{ scale: 0.97 }} onClick={nextReveal}
-                className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
+                className="identity-handoff-next flex items-center justify-center gap-2 bg-[#ef987e] text-[#302624] px-6 py-3.5 rounded h-auto min-h-14 font-extrabold">
                 {revealIdx + 1 >= players.length
                   ? <><Play className="w-5 h-5" /> {t('games.whoami.assign.startGame')}</>
                   : <>{t('games.whoami.assign.next')} <ArrowRight className="w-5 h-5" /></>}
@@ -477,7 +521,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                 <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-[#a8abb3]">
                   {t('games.whoami.round', { round: currentRound, total: totalRounds })}
                 </span>
-                <span className="text-[#df8eff] font-black text-sm mt-0.5">
+                <span className="text-[#ef987e] font-black text-sm mt-0.5">
                   {t(`gameModes.whoami.${mode}.name`)}
                 </span>
               </div>
@@ -498,14 +542,14 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
             </div>
 
             {/* Neon post-it card — tilt + glow */}
-            <div className="relative w-full max-w-sm aspect-square" style={{ perspective: '1000px' }}>
+            <div className="identity-live relative w-full max-w-sm aspect-square" style={{ perspective: '1000px' }}>
               <motion.div
                 initial={{ rotate: -6, opacity: 0, y: 20 }}
                 animate={{ rotate: -2, opacity: 1, y: 0 }}
                 transition={{ type: 'spring', stiffness: 120, damping: 16 }}
                 className="relative h-full w-full"
               >
-                <div className="absolute inset-0 bg-[#8ff5ff]/20 rounded-2xl blur-2xl" />
+                <div className="absolute inset-0 bg-[#e4cec0]/20 rounded-2xl blur-2xl" />
                 <div
                   className="relative h-full w-full rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-2xl"
                   style={{
@@ -516,14 +560,14 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                   }}
                 >
                   {/* Top-fold visual — the "tape" */}
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-2 bg-[#8ff5ff] rounded-b-full shadow-[0_4px_14px_rgba(143,245,255,0.6)]" />
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-2 bg-[#e4cec0] rounded-b-full shadow-[0_4px_14px_rgba(143,245,255,0.6)]" />
                   <span className="text-[#00deec] font-bold tracking-[0.2em] text-[11px] uppercase mb-4">
                     {t('games.whoami.asking.yourIdentity')}
                   </span>
                   <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-none text-white break-words px-2">
-                    {activePlayer.character}
+                    {online && activePlayer.id === online.myPlayerId ? '???' : activePlayer.character}
                   </h1>
-                  <div className="h-1 w-24 mt-6 rounded-full bg-gradient-to-r from-transparent via-[#8ff5ff] to-transparent opacity-60" />
+                  <div className="h-1 w-24 mt-6 rounded-full bg-gradient-to-r from-transparent via-[#e4cec0] to-transparent opacity-60" />
                 </div>
               </motion.div>
             </div>
@@ -538,10 +582,20 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
               </p>
             </div>
 
+            <div className="identity-console w-full max-w-sm space-y-3">
+              <p className="text-center text-purple-200">{activePlayer.questionsAsked} / {maxQ}</p>
+              {!!Object.keys(voteResults).length && <p role="status" className="text-center">{t('games.whoami.voteSummary', { yes: voteSummary.yes, no: voteSummary.no })}</p>}
+              <input aria-label={t('games.whoami.questionLabel')} maxLength={200} disabled={!!online && activePlayer.id !== online.myPlayerId} value={currentQuestion} onChange={e => setCurrentQuestion(e.target.value)} placeholder={t('games.whoami.questionLabel')} className="w-full p-4 rounded-xl bg-white/10 border border-white/20" />
+              <div className="flex gap-3">
+                <button className="flex-1 p-3 rounded-xl bg-purple-700 disabled:opacity-40" disabled={!currentQuestion.trim() || (!!online && activePlayer.id !== online.myPlayerId)} onClick={() => submitQuestion()}>{t('games.whoami.sendQuestion')}</button>
+                <button className="flex-1 p-3 rounded-xl bg-cyan-800 disabled:opacity-40" disabled={!!online && activePlayer.id !== online.myPlayerId} onClick={skipToGuess}>{t('games.whoami.guessNow')}</button>
+              </div>
+            </div>
             {/* Action buttons */}
             <div className="w-full max-w-sm grid grid-cols-2 gap-3">
               <motion.button
                 whileTap={{ scale: 0.95 }}
+                disabled={!!online && activePlayer.id !== online.myPlayerId}
                 onClick={handleSkipDirect}
                 className="h-14 rounded-full bg-[#0f141a] border border-[#44484f]/60 flex items-center justify-center gap-2 font-black tracking-[0.15em] uppercase text-[#a8abb3] hover:bg-[#20262f] transition-colors"
               >
@@ -550,9 +604,10 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.95 }}
+                disabled={!!online}
                 onClick={handleSolvedDirect}
                 className="h-14 rounded-full flex items-center justify-center gap-2 font-black tracking-[0.15em] uppercase text-[#003f43] shadow-[0_0_25px_rgba(143,245,255,0.4)] transition-all"
-                style={{ background: 'linear-gradient(135deg, #8ff5ff, #00eefc)' }}
+                style={{ background: 'linear-gradient(135deg, #e4cec0, #00eefc)' }}
               >
                 <Check className="w-4 h-4" />
                 {t('games.whoami.asking.solved')}
@@ -564,9 +619,9 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
         {/* ANSWER VOTE */}
         {phase === 'answerVote' && activePlayer && (
           <motion.div key="answerVote" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
+            className="identity-phase flex-1 flex flex-col items-center justify-center gap-5 px-4">
             {(() => {
-              const otherPlayers = players.filter((_, i) => i !== activeIdx && !players[i].eliminated);
+              const otherPlayers = players.filter((_, i) => i !== activeIdx);
               const voter = otherPlayers[voterIdx];
               if (!voter) return null;
               return (
@@ -585,21 +640,21 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                     </span>
                   </div>
                   <div className="flex gap-3">
-                    <motion.button whileTap={{ scale: 0.9 }} onClick={() => castAnswer('yes')}
+                    <motion.button whileTap={{ scale: 0.9 }} disabled={!!online && online.myPlayerId !== players.filter((_, i) => i !== activeIdx)[voterIdx]?.id} onClick={() => castAnswer('yes')}
                       className="w-20 h-20 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex flex-col items-center justify-center gap-1">
                       <Check className="w-7 h-7 text-emerald-400" />
                       <span className="text-xs text-emerald-400 font-bold">
                         {t('games.whoami.answerVote.yes')}
                       </span>
                     </motion.button>
-                    <motion.button whileTap={{ scale: 0.9 }} onClick={() => castAnswer('no')}
+                    <motion.button whileTap={{ scale: 0.9 }} disabled={!!online && online.myPlayerId !== players.filter((_, i) => i !== activeIdx)[voterIdx]?.id} onClick={() => castAnswer('no')}
                       className="w-20 h-20 rounded-2xl bg-red-500/20 border border-red-500/30 flex flex-col items-center justify-center gap-1">
                       <X className="w-7 h-7 text-red-400" />
                       <span className="text-xs text-red-400 font-bold">
                         {t('games.whoami.answerVote.no')}
                       </span>
                     </motion.button>
-                    <motion.button whileTap={{ scale: 0.9 }} onClick={() => castAnswer('maybe')}
+                    <motion.button whileTap={{ scale: 0.9 }} disabled={!!online && online.myPlayerId !== players.filter((_, i) => i !== activeIdx)[voterIdx]?.id} onClick={() => castAnswer('maybe')}
                       className="w-20 h-20 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex flex-col items-center justify-center gap-1">
                       <Minus className="w-7 h-7 text-amber-400" />
                       <span className="text-xs text-amber-400 font-bold">
@@ -610,7 +665,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                   <div className="flex gap-1">
                     {otherPlayers.map((_, i) => (
                       <div key={i} className={cn("w-2 h-2 rounded-full",
-                        i < voterIdx ? 'bg-[#df8eff]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
+                        i < voterIdx ? 'bg-[#ef987e]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
                     ))}
                   </div>
                 </>
@@ -622,19 +677,18 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
         {/* GUESSING */}
         {phase === 'guessing' && activePlayer && (
           <motion.div key="guessing" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
+            className="identity-phase flex-1 flex flex-col items-center justify-center gap-5 px-4">
             <Sparkles className="w-8 h-8 text-amber-400" />
             <h2 className="text-xl font-extrabold">
               {t('games.whoami.guessing.playerGuesses', { name: activePlayer.name })}
             </h2>
-            <input type="text" value={guessAttempt} onChange={(e) => setGuessAttempt(e.target.value)}
+            <input type="text" disabled={!!online && online.myPlayerId !== activePlayer?.id} value={guessAttempt} onChange={(e) => setGuessAttempt(e.target.value)}
               placeholder={t('games.whoami.guessing.placeholder')}
-              className="w-full max-w-sm bg-[#1b2028] border border-[#df8eff]/20 rounded-2xl px-4 py-3 text-white text-center text-lg font-bold placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/50" />
-            <motion.button whileTap={{ scale: 0.97 }} onClick={tryGuess}
-              disabled={!guessAttempt.trim()}
+              className="w-full max-w-sm bg-[#1b2028] border border-[#ef987e]/20 rounded-2xl px-4 py-3 text-white text-center text-lg font-bold placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#ef987e]/50" />
+            <motion.button whileTap={{ scale: 0.97 }} disabled={!guessAttempt.trim() || (!!online && online.myPlayerId !== activePlayer?.id)} onClick={() => tryGuess()}
               className={cn("w-full max-w-sm py-4 rounded-2xl h-14 font-extrabold",
                 guessAttempt.trim()
-                  ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-[#0a0e14] shadow-[0_0_20px_rgba(223,142,255,0.3)]'
+                  ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-[#0a0e14] shadow-[0_0_20px_rgba(150,160,165,0.3)]'
                   : 'bg-white/5 text-white/20 cursor-not-allowed')}>
               {t('games.whoami.guessing.guess')}
             </motion.button>
@@ -657,10 +711,10 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                       <Sparkles className="w-6 h-6 text-[#ff6b98]" />
                     </motion.div>
                     <motion.div initial={{ rotate: -12, y: 0 }} animate={{ rotate: 12, y: -8 }} transition={{ repeat: Infinity, repeatType: 'reverse', duration: 2.4 }}>
-                      <Star className="w-8 h-8 text-[#df8eff]" style={{ filter: 'drop-shadow(0 0 8px #df8eff)' }} />
+                      <Star className="w-8 h-8 text-[#ef987e]" style={{ filter: 'drop-shadow(0 0 8px #ef987e)' }} />
                     </motion.div>
                     <motion.div initial={{ rotate: 180, y: 4 }} animate={{ rotate: 200, y: -4 }} transition={{ repeat: Infinity, repeatType: 'reverse', duration: 2.2 }}>
-                      <Sparkles className="w-6 h-6 text-[#8ff5ff]" />
+                      <Sparkles className="w-6 h-6 text-[#e4cec0]" />
                     </motion.div>
                   </div>
                   <p className="text-[#ff6b98] font-bold tracking-[0.25em] text-[11px] uppercase">
@@ -670,7 +724,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: 'spring', bounce: 0.4 }}
-                    className="text-4xl sm:text-5xl font-black tracking-tight leading-none drop-shadow-[0_0_15px_rgba(223,142,255,0.5)]"
+                    className="text-4xl sm:text-5xl font-black tracking-tight leading-none drop-shadow-[0_0_15px_rgba(150,160,165,0.5)]"
                   >
                     {t('games.whoami.result.correct')}
                   </motion.h2>
@@ -678,7 +732,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
 
                 {/* Character result card */}
                 <div
-                  className="rounded-2xl p-8 border border-[#df8eff]/15 relative overflow-hidden"
+                  className="rounded-2xl p-8 border border-[#ef987e]/15 relative overflow-hidden"
                   style={{
                     background: 'rgba(32, 38, 47, 0.45)',
                     backdropFilter: 'blur(20px)',
@@ -686,19 +740,19 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                   }}
                 >
                   <div className="absolute top-0 right-0 p-6 opacity-15 pointer-events-none">
-                    <HelpCircle className="w-24 h-24 text-[#df8eff]" />
+                    <HelpCircle className="w-24 h-24 text-[#ef987e]" />
                   </div>
                   <div className="relative z-10 flex flex-col items-center text-center space-y-4">
                     <div
-                      className="w-36 h-36 rounded-full p-1 shadow-[0_0_40px_rgba(223,142,255,0.3)]"
-                      style={{ background: 'linear-gradient(135deg, #df8eff, #ff6b98)' }}
+                      className="w-36 h-36 rounded-full p-1 shadow-[0_0_40px_rgba(150,160,165,0.3)]"
+                      style={{ background: 'linear-gradient(135deg, #ef987e, #ff6b98)' }}
                     >
                       <div className="w-full h-full rounded-full bg-[#20262f] border-4 border-[#0a0e14] flex items-center justify-center text-5xl font-black text-white">
                         {activePlayer.avatar}
                       </div>
                     </div>
                     <div>
-                      <h3 className="text-3xl font-black">{activePlayer.character}</h3>
+                      <h3 className="text-3xl font-black">{online && activePlayer.id === online.myPlayerId ? '???' : activePlayer.character}</h3>
                       <p className="text-[#a8abb3] font-medium text-sm mt-1">
                         {t('games.whoami.result.category', { category: t(`gameModes.whoami.${mode}.name`) })}
                       </p>
@@ -709,8 +763,8 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                 {/* Stats grid */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-[#0f141a] rounded-2xl p-4 flex items-center gap-3 border border-[#44484f]/20">
-                    <div className="w-11 h-11 rounded-lg bg-[#8ff5ff]/10 flex items-center justify-center shrink-0">
-                      <HelpCircle className="w-5 h-5 text-[#8ff5ff]" />
+                    <div className="w-11 h-11 rounded-lg bg-[#e4cec0]/10 flex items-center justify-center shrink-0">
+                      <HelpCircle className="w-5 h-5 text-[#e4cec0]" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-[#a8abb3]">
@@ -720,8 +774,8 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                     </div>
                   </div>
                   <div className="bg-[#0f141a] rounded-2xl p-4 flex items-center gap-3 border border-[#44484f]/20">
-                    <div className="w-11 h-11 rounded-lg bg-[#df8eff]/10 flex items-center justify-center shrink-0">
-                      <Star className="w-5 h-5 text-[#df8eff]" />
+                    <div className="w-11 h-11 rounded-lg bg-[#ef987e]/10 flex items-center justify-center shrink-0">
+                      <Star className="w-5 h-5 text-[#ef987e]" />
                     </div>
                     <div className="min-w-0">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-[#a8abb3]">
@@ -734,7 +788,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
 
                 {/* Reward card */}
                 <div
-                  className="rounded-2xl p-5 border border-[#df8eff]/20 flex justify-between items-center"
+                  className="rounded-2xl p-5 border border-[#ef987e]/20 flex justify-between items-center"
                   style={{ background: 'linear-gradient(90deg, rgba(187,0,88,0.15), rgba(215,121,255,0.15))' }}
                 >
                   <div className="flex items-center gap-3">
@@ -756,9 +810,9 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                 <div className="flex flex-col gap-3 pt-2">
                   <motion.button
                     whileTap={{ scale: 0.97 }}
-                    onClick={afterGuess}
-                    className="w-full h-14 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 text-[#0a0e14] shadow-[0_12px_24px_-8px_rgba(223,142,255,0.4)]"
-                    style={{ background: 'linear-gradient(90deg, #df8eff, #d779ff)' }}
+                    disabled={!!online && !online.isHost} onClick={afterGuess}
+                    className="w-full h-14 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 text-[#0a0e14] shadow-[0_12px_24px_-8px_rgba(150,160,165,0.4)]"
+                    style={{ background: 'linear-gradient(90deg, #ef987e, #d779ff)' }}
                   >
                     <Play className="w-5 h-5" />
                     {t('games.whoami.result.nextPlayer')}
@@ -777,13 +831,13 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                   {t('games.whoami.result.skipped')}
                 </h2>
                 <div className="text-[#a8abb3] text-sm text-center">
-                  {t('games.whoami.result.wasCharacter', { name: activePlayer.name, character: activePlayer.character })}
+                  <Trans i18nKey="games.whoami.result.wasCharacter" values={{ name: activePlayer.name, character: activePlayer.character }} components={{ 1: <strong className="font-bold text-white" /> }} />
                 </div>
                 <motion.button
                   whileTap={{ scale: 0.97 }}
-                  onClick={afterGuess}
-                  className="flex items-center gap-2 px-8 py-3.5 rounded-full h-14 font-extrabold text-[#0a0e14] shadow-[0_0_20px_rgba(223,142,255,0.3)]"
-                  style={{ background: 'linear-gradient(90deg, #df8eff, #d779ff)' }}
+                  disabled={!!online && !online.isHost} onClick={afterGuess}
+                  className="flex items-center gap-2 px-8 py-3.5 rounded-full h-14 font-extrabold text-[#0a0e14] shadow-[0_0_20px_rgba(150,160,165,0.3)]"
+                  style={{ background: 'linear-gradient(90deg, #ef987e, #d779ff)' }}
                 >
                   {t('games.whoami.assign.next')} <ArrowRight className="w-5 h-5" />
                 </motion.button>
@@ -802,11 +856,11 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                 <Trophy className="w-8 h-8 text-amber-400" />
               </div>
             </motion.div>
-            <h2 className="text-3xl font-extrabold text-[#df8eff] neon-glow">
+            <h2 className="text-3xl font-extrabold text-[#ef987e] neon-glow">
               {t('games.whoami.gameOver.title')}
             </h2>
-            <div className="text-lg font-bold text-[#df8eff]">
-              {t('games.whoami.gameOver.winner', { name: winner.name })}
+            <div className="text-lg font-bold text-[#ef987e]">
+              {t('games.whoami.gameOver.winner', { name: players.filter(p => p.score === winner.score).map(p => p.name).join(' & ') })}
             </div>
             <div className="w-full space-y-2 max-h-64 overflow-y-auto">
               {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
@@ -823,15 +877,15 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
                         : t('games.whoami.gameOver.notGuessed')}
                     </div>
                   </div>
-                  <span className="text-[#df8eff] font-bold">
+                  <span className="text-[#ef987e] font-bold">
                     {t('games.whoami.gameOver.pts', { score: p.score })}
                   </span>
                 </div>
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
+              <motion.button whileTap={{ scale: 0.97 }} disabled={!!online && !online.isHost} onClick={playAgain}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#ef987e] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(150,160,165,0.3)]">
                 <RotateCcw className="w-4 h-4" /> {t('games.whoami.gameOver.playAgain')}
               </motion.button>
               {!hasShellBackButton() && (
@@ -844,7 +898,7 @@ export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}
           </motion.div>
         )}
       </AnimatePresence>
-      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#ef987e" />
     </div>
   );
 }
@@ -862,7 +916,7 @@ interface WhoAmISetupProps {
     settings: { timer: number; rounds: number },
   ) => void;
   onlinePlayers?: { id: string; name: string; color?: string; avatar?: string }[];
-  t: (key: string, options?: Record<string, unknown> | string) => string;
+  t: ReturnType<typeof useTranslation>['t'];
   haptics: ReturnType<typeof useHaptics>;
 }
 
@@ -879,10 +933,10 @@ const SETUP_CATEGORY_IDS: Array<{
 ];
 
 const TONE_CLASSES: Record<'primary' | 'secondary' | 'tertiary' | 'accent', { ring: string; glow: string; iconBg: string; iconFg: string; text: string }> = {
-  primary:   { ring: 'border-[#df8eff]', glow: 'shadow-[0_0_24px_rgba(223,142,255,0.22)]', iconBg: 'bg-[#df8eff]', iconFg: 'text-[#0a0e14]', text: 'text-[#df8eff]' },
+  primary:   { ring: 'border-[#ef987e]', glow: 'shadow-[0_0_24px_rgba(150,160,165,0.22)]', iconBg: 'bg-[#ef987e]', iconFg: 'text-[#0a0e14]', text: 'text-[#ef987e]' },
   secondary: { ring: 'border-[#ff6b98]', glow: 'shadow-[0_0_24px_rgba(255,107,152,0.22)]', iconBg: 'bg-[#ff6b98]', iconFg: 'text-[#0a0e14]', text: 'text-[#ff6b98]' },
-  tertiary:  { ring: 'border-[#8ff5ff]', glow: 'shadow-[0_0_24px_rgba(143,245,255,0.22)]', iconBg: 'bg-[#8ff5ff]', iconFg: 'text-[#003f43]', text: 'text-[#8ff5ff]' },
-  accent:    { ring: 'border-[#df8eff]', glow: 'shadow-[0_0_24px_rgba(223,142,255,0.22)]', iconBg: 'bg-[#df8eff]', iconFg: 'text-[#0a0e14]', text: 'text-[#df8eff]' },
+  tertiary:  { ring: 'border-[#e4cec0]', glow: 'shadow-[0_0_24px_rgba(143,245,255,0.22)]', iconBg: 'bg-[#e4cec0]', iconFg: 'text-[#003f43]', text: 'text-[#e4cec0]' },
+  accent:    { ring: 'border-[#ef987e]', glow: 'shadow-[0_0_24px_rgba(150,160,165,0.22)]', iconBg: 'bg-[#ef987e]', iconFg: 'text-[#0a0e14]', text: 'text-[#ef987e]' },
 };
 
 function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAmISetupProps) {
@@ -919,10 +973,13 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAm
     ];
   });
   const [categoryId, setCategoryId] = useState('prominente');
+  const [questionLimit, setQuestionLimit] = useState(20);
+  const [roundLimit, setRoundLimit] = useState(1);
   const MIN = 2;
   const MAX = 10;
 
   const addPlayer = () => {
+    if (isOnline) return;
     if (players.length >= MAX) return;
     const nextIdx = players.length;
     const id = `p-${Date.now()}-${nextIdx}`;
@@ -935,10 +992,12 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAm
   };
 
   const removePlayer = (id: string) => {
+    if (isOnline) return;
     setPlayers((prev) => prev.length > MIN ? prev.filter((p) => p.id !== id) : prev);
   };
 
   const renamePlayer = (id: string, name: string) => {
+    if (isOnline) return;
     setPlayers((prev) => prev.map((p) => p.id === id ? { ...p, name, avatar: name.slice(0, 1).toUpperCase() || '?' } : p));
   };
 
@@ -974,14 +1033,14 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAm
   const handleStart = () => {
     if (!canStart) return;
     void haptics.celebrate();
-    onStart(players, categoryId, { timer: 20, rounds: 1 });
+    onStart(players, categoryId, { timer: questionLimit, rounds: roundLimit });
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
+    <div className="identity-setup relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
       {/* Ambient glows */}
       <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-[#df8eff]/10 blur-[100px]" />
+        <div className="absolute -top-12 -left-12 w-64 h-64 rounded-full bg-[#ef987e]/10 blur-[100px]" />
         <div className="absolute -bottom-12 -right-12 w-64 h-64 rounded-full bg-[#ff6b98]/10 blur-[100px]" />
       </div>
 
@@ -991,7 +1050,7 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAm
           <p className="text-[#ff6b98] font-bold tracking-[0.25em] text-[11px] uppercase mb-2">
             {t('games.whoami.setup.heading')}
           </p>
-          <h2 className="text-4xl font-extrabold tracking-tight leading-tight drop-shadow-[0_0_8px_rgba(223,142,255,0.35)]">
+          <h2 className="text-4xl font-extrabold tracking-tight leading-tight drop-shadow-[0_0_8px_rgba(150,160,165,0.35)]">
             {t('games.whoami.setup.title')}
           </h2>
           <p className="text-[#a8abb3] text-sm mt-2 max-w-md">
@@ -1007,18 +1066,22 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAm
             onRemove={removePlayer}
             onRename={renamePlayer}
             onImportNames={isOnline ? undefined : handleImportNames}
-            min={MIN}
+            min={isOnline ? players.length : MIN}
             max={isOnline ? players.length : MAX}
-            accent="#df8eff"
+            accent="#ef987e"
             label={t('games.whoami.setup.playerLabel')}
             maxNameLength={14}
           />
         </section>
 
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <label className="space-y-2">{t('games.whoami.questionLimit')}<select className="block w-full bg-[#20262f] p-3 rounded-xl" value={questionLimit} onChange={e => setQuestionLimit(Number(e.target.value))}>{[5, 10, 15, 20].map(n => <option key={n} value={n}>{n}</option>)}</select></label>
+          <label className="space-y-2">{t('games.setup.rounds')}<select className="block w-full bg-[#20262f] p-3 rounded-xl" value={roundLimit} onChange={e => setRoundLimit(Number(e.target.value))}>{[1, 2, 3, 5].map(n => <option key={n} value={n}>{n}</option>)}</select></label>
+        </div>
         {/* Category bento grid */}
         <section className="mb-16">
           <div className="flex items-center gap-2 mb-5">
-            <Sparkles className="w-4 h-4 text-[#8ff5ff]" />
+            <Sparkles className="w-4 h-4 text-[#e4cec0]" />
             <h3 className="text-sm font-bold tracking-[0.2em] uppercase text-[#a8abb3]">
               {t('games.whoami.setup.pickTheme')}
             </h3>
@@ -1035,8 +1098,8 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAm
                   className={cn(
                     'group relative overflow-hidden rounded-2xl p-5 text-left transition-all active:scale-[0.98]',
                     active
-                      ? cn('bg-[#df8eff]/10 border-2', tone.ring, tone.glow)
-                      : 'bg-[#0f141a] border border-[#44484f]/20 hover:border-[#df8eff]/30',
+                      ? cn('bg-[#ef987e]/10 border-2', tone.ring, tone.glow)
+                      : 'bg-[#0f141a] border border-[#44484f]/20 hover:border-[#ef987e]/30',
                   )}
                 >
                   {/* Oversized bg icon */}
@@ -1089,10 +1152,10 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAm
           className={cn(
             'w-full max-w-md h-16 rounded-full font-black tracking-tight text-base flex items-center justify-center gap-3 pointer-events-auto transition-all',
             canStart
-              ? 'text-[#0a0e14] shadow-[0_20px_40px_rgba(223,142,255,0.35)]'
+              ? 'text-[#0a0e14] shadow-[0_20px_40px_rgba(150,160,165,0.35)]'
               : 'bg-[#20262f] text-[#44484f] cursor-not-allowed',
           )}
-          style={canStart ? { background: 'linear-gradient(90deg, #df8eff, #d779ff)' } : {}}
+          style={canStart ? { background: 'linear-gradient(90deg, #ef987e, #d779ff)' } : {}}
         >
           {canStart ? (
             <>
@@ -1110,4 +1173,8 @@ function WhoAmISetup({ onStart, onlinePlayers, t, haptics, contentError }: WhoAm
       <span className="hidden">{t('whoami.setup.hidden', '')}</span>
     </div>
   );
+}
+
+export default function WhoAmIGame({ online }: { online?: OnlineGameProps } = {}) {
+  return <GameStage gameId="wer-bin-ich" className="identity-game"><WhoAmIGameContent online={online} /></GameStage>;
 }

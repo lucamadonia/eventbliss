@@ -12,6 +12,7 @@ import { GameTitleBar } from "@/games/ui/GameTitleBar";
 import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
 import { playableGames, GAME_BADGE_KEY } from "@/lib/playable-games";
+import { useGameRoom, gameRoomSession, type RoomPlayer } from '@/games/multiplayer/useGameRoom';
 import { PartyNightFlow } from "@/components/native/party/PartyNightFlow";
 import { getActivePartySession } from "@/hooks/usePartySession";
 import { partyGameName } from "@/hooks/useTVGameBridge";
@@ -281,6 +282,29 @@ const GamesHubInner = () => {
   const roomCode = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("room") : null;
   const lobbyParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("lobby") : null;
   const [onlineGameId, setOnlineGameId] = useState<string | null>(lobbyParam);
+  const { room: activeRoom, leaveRoom } = useGameRoom();
+  const previousOnlineRoute = useRef({ roomCode, lobbyParam });
+  useEffect(() => {
+    if (!roomCode && !lobbyParam && (previousOnlineRoute.current.roomCode || previousOnlineRoute.current.lobbyParam)) {
+      setOnlineGameId(null); leaveRoom();
+    }
+    previousOnlineRoute.current = { roomCode, lobbyParam };
+  }, [roomCode, lobbyParam, leaveRoom]);
+  useEffect(() => {
+    if (roomCode && activeRoom?.roomCode === roomCode && activeRoom.status !== 'lobby' && activeRoom.gameId !== gameId) {
+      navigate(`/games/${activeRoom.gameId}?room=${roomCode}`, { replace: true });
+    }
+  }, [roomCode, activeRoom?.roomCode, activeRoom?.gameId, activeRoom?.status, gameId, navigate]);
+  useEffect(() => {
+    if (!roomCode && !onlineGameId && !lobbyParam) leaveRoom();
+  }, [roomCode, onlineGameId, lobbyParam, leaveRoom]);
+  useEffect(() => () => {
+    // Allow the lobby -> game handoff, but release presence on actual exit.
+    setTimeout(() => {
+      const code = new URLSearchParams(window.location.search).get('room');
+      if (!window.location.pathname.startsWith('/games') || code !== gameRoomSession.getSnapshot().room?.roomCode) gameRoomSession.leaveRoom();
+    }, 0);
+  }, []);
   const [paywallGame, setPaywallGame] = useState<GameCardData | null>(null);
   const [activeCategory, setActiveCategory] = useState("alle");
 
@@ -440,7 +464,7 @@ const GamesHubInner = () => {
     return entry ? t(entry.nameKey) : t("nativeExtra.gamesHub.fallbackGameName");
   }, [t]);
 
-  const handleOnlineStart = (players: any[], roomCode: string, selectedGameId?: string) => {
+  const handleOnlineStart = (players: RoomPlayer[], roomCode: string, selectedGameId?: string) => {
     const targetGame = selectedGameId || onlineGameId;
     if (targetGame) {
       navigate(`/games/${targetGame}?room=${roomCode}`);
@@ -480,11 +504,12 @@ const GamesHubInner = () => {
   // Share/invite link: /games?room=CODE without a game — open the lobby join
   // flow with the code prefilled (GameLobby reads ?room= itself). Guests are
   // navigated into the right game automatically when the host starts.
-  if (roomCode && !gameId) {
+  if (roomCode && (!gameId || activeRoom?.roomCode !== roomCode || activeRoom.status === 'lobby')) {
     return (
       <Suspense fallback={GameFallback}>
         <GameLobby
-          gameId="bomb"
+          key={roomCode}
+          gameId={gameId || 'bomb'}
           gameName={t("nativeExtra.gameLobby.title")}
           onStart={handleOnlineStart}
           onBack={() => navigate('/games', { replace: true })}
@@ -494,6 +519,7 @@ const GamesHubInner = () => {
   }
 
   // Online game routing — when ?room=XXXXX is present, wrap game in OnlineGameWrapper
+  if (roomCode && gameId && activeRoom?.gameId !== gameId) return GameFallback;
   if (roomCode && gameId) {
     const renderOnlineGame = (onlineProps: import("@/games/multiplayer/OnlineGameTypes").OnlineGameProps) => {
       if (gameId === "bomb") return <BombGame online={onlineProps} />;

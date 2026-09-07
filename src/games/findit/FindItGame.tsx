@@ -1,3 +1,8 @@
+import { GameStage, StageHeader, StageAction, StageFooter } from '../ui/GameStage';
+import './expedition.css';
+import { ObjectBoard, ObjectPicture } from './VisualObjects';
+import { OBJECT_ATLAS, createVisualScene, createVisualDifference, parseObjectGrid, projectVisualState, type VisualScene as Scene, type VisualDiffScene as DiffScene } from './visual-content';
+import OnlineWaiting from '../multiplayer/OnlineWaiting';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Eye, Zap, GitCompare, RotateCcw, ArrowLeft, Trophy, Medal, Play, Clock, Check, X, Target, MapPin, Camera } from 'lucide-react';
@@ -6,9 +11,10 @@ import { GameEndOverlay } from '../social/GameEndOverlay';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { FINDIT_MODE_ASSETS } from '../ui/premium-game-assets';
-import { GEO_LOCATIONS, filterByRegion, type GeoLocation } from './geo-locations';
+import { GEO_LOCATIONS, filterByRegion, filterByDifficulty, type GeoLocation } from './geo-locations';
 import WorldFinderSetup from './WorldFinderSetup';
 import MapRound, { type MapRoundResult } from './MapRound';
 import StreetViewRound, { type StreetViewResult } from './StreetViewRound';
@@ -25,19 +31,6 @@ import { hasShellBackButton } from '@/games/ui/shell-back';
 
 type Phase = 'setup' | 'karteSetup' | 'streetviewPlay' | 'study' | 'question' | 'answer' | 'roundEnd' | 'gameOver';
 type Mode = 'memory' | 'speed' | 'unterschiede' | 'karte' | 'streetview';
-
-interface Scene {
-  name: string;
-  grid: string;
-  questions: { q: string; options: string[]; correct: number }[];
-}
-
-interface DiffScene {
-  name: string;
-  gridA: string;
-  gridB: string;
-  diffs: number[]; // indices of differing cells in gridB
-}
 
 interface Player {
   id: string;
@@ -56,194 +49,6 @@ interface Player {
 // Scenes Data (16 scenes)
 // ---------------------------------------------------------------------------
 
-const SCENES: Scene[] = [
-  {
-    name: 'Am Strand',
-    grid: '🌴🏖️☀️⛱️🌊\n🐚🦀🏄‍♂️🐬🎣\n🍦🥥🧴👙🩱',
-    questions: [
-      { q: 'Welches Tier war im Bild?', options: ['Krabbe', 'Hund', 'Vogel', 'Fisch'], correct: 0 },
-      { q: 'Was für ein Sport war zu sehen?', options: ['Surfen', 'Tennis', 'Fußball', 'Golf'], correct: 0 },
-      { q: 'Welche Frucht war dabei?', options: ['Apfel', 'Kokosnuss', 'Banane', 'Orange'], correct: 1 },
-    ],
-  },
-  {
-    name: 'In der Stadt',
-    grid: '🏢🏪🚗🚦🏛️\n👨‍💼🧑‍🎨🚲🚌🏍️\n🌳🐕🗑️🪧📮',
-    questions: [
-      { q: 'Welches Fahrzeug war NICHT zu sehen?', options: ['Auto', 'Zug', 'Bus', 'Fahrrad'], correct: 1 },
-      { q: 'Welches Tier war in der Stadt?', options: ['Katze', 'Hund', 'Vogel', 'Pferd'], correct: 1 },
-      { q: 'Was stand am Straßenrand?', options: ['Briefkasten', 'Telefon', 'Brunnen', 'Statue'], correct: 0 },
-    ],
-  },
-  {
-    name: 'In der Küche',
-    grid: '🍳🥘🧑‍🍳🍰🧁\n🥕🍅🧄🌶️🥦\n🍴🥄🔪🍷🧂',
-    questions: [
-      { q: 'Welches Gemüse war NICHT dabei?', options: ['Karotte', 'Gurke', 'Tomate', 'Knoblauch'], correct: 1 },
-      { q: 'Welches Besteck war zu sehen?', options: ['Gabel', 'Essstäbchen', 'Löffel', 'Gabel und Löffel'], correct: 3 },
-      { q: 'Was für ein Getränk war dabei?', options: ['Bier', 'Wein', 'Wasser', 'Saft'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Im Wald',
-    grid: '🌲🌳🍄🦊🐿️\n🍂🌿🦉🐛🕷️\n🏕️🔥🪵🎒🧭',
-    questions: [
-      { q: 'Welches Tier war im Wald?', options: ['Bär', 'Fuchs', 'Hirsch', 'Hase'], correct: 1 },
-      { q: 'Was war auf dem Boden?', options: ['Pilz', 'Blume', 'Stein', 'Bach'], correct: 0 },
-      { q: 'Was war beim Campingplatz?', options: ['Zelt', 'Feuer', 'Auto', 'Hütte'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Im Büro',
-    grid: '💻🖨️📱📊📋\n☕🖊️📁📌📎\n🪴🕰️📞🗂️💡',
-    questions: [
-      { q: 'Welches Gerät war zu sehen?', options: ['Drucker', 'Scanner', 'Kamera', 'Radio'], correct: 0 },
-      { q: 'Was hing an der Wand?', options: ['Bild', 'Uhr', 'Spiegel', 'Kalender'], correct: 1 },
-      { q: 'Welches Getränk stand auf dem Tisch?', options: ['Tee', 'Wasser', 'Kaffee', 'Saft'], correct: 2 },
-    ],
-  },
-  {
-    name: 'Im Weltraum',
-    grid: '🚀🌍🌙⭐🪐\n👨‍🚀🛸🌌☄️🔭\n🛰️🌑🌞🌠💫',
-    questions: [
-      { q: 'Was flog durch den Weltraum?', options: ['Rakete', 'Flugzeug', 'Ballon', 'Drache'], correct: 0 },
-      { q: 'Welcher Himmelskörper war dabei?', options: ['Jupiter', 'Mond', 'Mars', 'Venus'], correct: 1 },
-      { q: 'Was nutzte der Astronaut?', options: ['Fernglas', 'Teleskop', 'Kamera', 'Kompass'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Unter Wasser',
-    grid: '🐠🐙🦈🐡🐳\n🪸🌊🐢🦞🐚\n⚓🔱🧜‍♀️🏴‍☠️💎',
-    questions: [
-      { q: 'Welcher Fisch war zu sehen?', options: ['Hai', 'Lachs', 'Goldfisch', 'Karpfen'], correct: 0 },
-      { q: 'Was lag auf dem Meeresboden?', options: ['Anker', 'Boot', 'Kiste', 'Netz'], correct: 0 },
-      { q: 'Welche Figur war unter Wasser?', options: ['Taucher', 'Meerjungfrau', 'Pirat', 'Fischer'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Auf dem Bauernhof',
-    grid: '🐄🐔🐷🐴🐑\n🌾🚜🏠🌻🥚\n🐶🐱🦆🥛🧀',
-    questions: [
-      { q: 'Welches Tier war NICHT dabei?', options: ['Kuh', 'Ziege', 'Pferd', 'Huhn'], correct: 1 },
-      { q: 'Welche Blume war zu sehen?', options: ['Rose', 'Sonnenblume', 'Tulpe', 'Lilie'], correct: 1 },
-      { q: 'Welches Fahrzeug war auf dem Hof?', options: ['Auto', 'Traktor', 'LKW', 'Motorrad'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Im Krankenhaus',
-    grid: '🏥🚑💊🩺🩹\n👩‍⚕️🧑‍⚕️🛏️💉🌡️\n🦽🧪📋❤️‍🩹🔬',
-    questions: [
-      { q: 'Was benutzte der Arzt?', options: ['Stethoskop', 'Hammer', 'Lupe', 'Waage'], correct: 0 },
-      { q: 'Welches Fahrzeug war zu sehen?', options: ['Taxi', 'Krankenwagen', 'Bus', 'Polizei'], correct: 1 },
-      { q: 'Was stand im Labor?', options: ['Computer', 'Mikroskop', 'Telefon', 'Drucker'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Auf der Party',
-    grid: '🎉🎈🎂🎁🎊\n🎵🎤🕺💃🥂\n🍕🍿🎸🎹🪩',
-    questions: [
-      { q: 'Welches Instrument war dabei?', options: ['Trompete', 'Gitarre', 'Violine', 'Flöte'], correct: 1 },
-      { q: 'Was gab es zu essen?', options: ['Burger', 'Pizza', 'Hotdog', 'Salat'], correct: 1 },
-      { q: 'Was hing an der Decke?', options: ['Lampe', 'Luftballons', 'Banner', 'Sterne'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Am Flughafen',
-    grid: '✈️🛫🧳🪪🎫\n👮‍♂️🛃🛒🏧💺\n🌐🕐📡🚖🅿️',
-    questions: [
-      { q: 'Was brauchte man am Check-in?', options: ['Pass', 'Schlüssel', 'Brille', 'Handy'], correct: 0 },
-      { q: 'Welches Fahrzeug wartete draußen?', options: ['Bus', 'Taxi', 'Zug', 'Straßenbahn'], correct: 1 },
-      { q: 'Was hing an der Wand?', options: ['Bildschirm', 'Uhr', 'Karte', 'Spiegel'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Im Spielzimmer',
-    grid: '🧸🪀🎲🧩🎮\n🖍️📚🪁🤖🦸\n🎨🪆🏎️🛹🪃',
-    questions: [
-      { q: 'Welches Spielzeug war dabei?', options: ['Ball', 'Teddybär', 'Puppe', 'Kreisel'], correct: 1 },
-      { q: 'Was konnte man damit malen?', options: ['Kreide', 'Pinsel', 'Buntstifte', 'Filzstifte'], correct: 2 },
-      { q: 'Welches Fahrzeug war im Zimmer?', options: ['Zug', 'Rennauto', 'Flugzeug', 'Schiff'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Im Zoo',
-    grid: '🦁🐘🦒🐆🦩\n🐒🐧🦜🐊🦘\n🎋🪨🌴🎟️📸',
-    questions: [
-      { q: 'Welches Tier war am größten?', options: ['Löwe', 'Elefant', 'Giraffe', 'Krokodil'], correct: 1 },
-      { q: 'Welcher Vogel war dabei?', options: ['Adler', 'Flamingo', 'Schwan', 'Storch'], correct: 1 },
-      { q: 'Was brauchte man am Eingang?', options: ['Ausweis', 'Ticket', 'Gutschein', 'Karte'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Beim Sport',
-    grid: '⚽🏀🎾🏈🏐\n🥊🏋️🤸🚴🏊\n🏟️🥇🏆📣🎽',
-    questions: [
-      { q: 'Welche Sportart war NICHT zu sehen?', options: ['Fußball', 'Hockey', 'Tennis', 'Boxen'], correct: 1 },
-      { q: 'Wo fand der Sport statt?', options: ['Park', 'Stadion', 'Halle', 'Strand'], correct: 1 },
-      { q: 'Welche Auszeichnung war dabei?', options: ['Medaille', 'Pokal', 'Urkunde', 'Medaille und Pokal'], correct: 3 },
-    ],
-  },
-  {
-    name: 'Weihnachten',
-    grid: '🎄⭐🎅🤶🦌\n🎁🕯️❄️⛄🔔\n🍪🥛🎶🛷🧦',
-    questions: [
-      { q: 'Welches Tier zog den Schlitten?', options: ['Pferd', 'Rentier', 'Hund', 'Esel'], correct: 1 },
-      { q: 'Was lag unter dem Baum?', options: ['Geschenke', 'Nüsse', 'Äpfel', 'Spielzeug'], correct: 0 },
-      { q: 'Was stand auf dem Tisch?', options: ['Punsch', 'Milch', 'Tee', 'Kakao'], correct: 1 },
-    ],
-  },
-  {
-    name: 'Im Garten',
-    grid: '🌸🌷🌻🌺🌹\n🦋🐝🐞🐌🪺\n🌱💧🧤🪴🏡',
-    questions: [
-      { q: 'Welches Insekt war im Garten?', options: ['Fliege', 'Biene', 'Ameise', 'Käfer'], correct: 1 },
-      { q: 'Welche Blume war NICHT zu sehen?', options: ['Rose', 'Tulpe', 'Orchidee', 'Sonnenblume'], correct: 2 },
-      { q: 'Was brauchte man zum Gärtnern?', options: ['Schaufel', 'Handschuhe', 'Harke', 'Schere'], correct: 1 },
-    ],
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Difference Scenes (for "Unterschiede" mode)
-// ---------------------------------------------------------------------------
-
-const DIFF_SCENES: DiffScene[] = [
-  {
-    name: 'Strand-Unterschiede',
-    gridA: '🌴🏖️☀️⛱️🌊\n🐚🦀🏄‍♂️🐬🎣\n🍦🥥🧴👙🩱',
-    gridB: '🌴🏖️🌙⛱️🌊\n🐚🐙🏄‍♂️🐬🎣\n🍦🥥🧴👗🩱',
-    diffs: [2, 6, 13],
-  },
-  {
-    name: 'Stadt-Unterschiede',
-    gridA: '🏢🏪🚗🚦🏛️\n👨‍💼🧑‍🎨🚲🚌🏍️\n🌳🐕🗑️🪧📮',
-    gridB: '🏢🏪🚕🚦🏛️\n👨‍💼🧑‍🎨🛴🚌🏍️\n🌳🐈🗑️🪧📮',
-    diffs: [2, 7, 11],
-  },
-  {
-    name: 'Küche-Unterschiede',
-    gridA: '🍳🥘🧑‍🍳🍰🧁\n🥕🍅🧄🌶️🥦\n🍴🥄🔪🍷🧂',
-    gridB: '🍳🥘🧑‍🍳🍩🧁\n🥕🍆🧄🌶️🥦\n🍴🥄🔪🍺🧂',
-    diffs: [3, 6, 13],
-  },
-  {
-    name: 'Wald-Unterschiede',
-    gridA: '🌲🌳🍄🦊🐿️\n🍂🌿🦉🐛🕷️\n🏕️🔥🪵🎒🧭',
-    gridB: '🌲🌳🍄🐺🐿️\n🍂🌿🦅🐛🕷️\n🏕️🔥🪵🎒🗺️',
-    diffs: [3, 7, 14],
-  },
-  {
-    name: 'Party-Unterschiede',
-    gridA: '🎉🎈🎂🎁🎊\n🎵🎤🕺💃🥂\n🍕🍿🎸🎹🪩',
-    gridB: '🎉🎈🧁🎁🎊\n🎵🎤🕺💃🍷\n🍕🍿🎸🥁🪩',
-    diffs: [2, 9, 13],
-  },
-];
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 function shuffleArray<T>(arr: T[]): T[] {
   const copy = [...arr];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -251,17 +56,6 @@ function shuffleArray<T>(arr: T[]): T[] {
     [copy[i], copy[j]] = [copy[j], copy[i]];
   }
   return copy;
-}
-
-function parseGrid(grid: string): string[][] {
-  const segmenter = typeof Intl !== 'undefined' && 'Segmenter' in Intl
-    ? new Intl.Segmenter('en', { granularity: 'grapheme' })
-    : null;
-  return grid.split('\n').map(row =>
-    segmenter
-      ? Array.from(segmenter.segment(row), s => s.segment)
-      : Array.from(row)
-  );
 }
 
 const PLAYER_COLORS = [
@@ -275,7 +69,7 @@ function getColor(i: number) { return PLAYER_COLORS[i % PLAYER_COLORS.length]; }
 // Game Modes Config
 // ---------------------------------------------------------------------------
 
-function getGameModes(t: (key: string, fallback?: string) => string): GameMode[] {
+function getGameModes(t: TFunction): GameMode[] {
   return [
     { id: 'memory', name: t('woIstWas.modes.memory', 'Memory'), desc: t('woIstWas.modes.memoryDesc', 'Merke dir die Szene und beantworte Fragen'), icon: <Eye className="w-6 h-6" /> },
     { id: 'speed', name: t('woIstWas.modes.speed', 'Speed'), desc: t('woIstWas.modes.speedDesc', 'Wer findet es am schnellsten?'), icon: <Zap className="w-6 h-6" /> },
@@ -285,7 +79,7 @@ function getGameModes(t: (key: string, fallback?: string) => string): GameMode[]
   ];
 }
 
-function getSetupSettings(t: (key: string, fallback?: string) => string): SettingsConfig {
+function getSetupSettings(t: TFunction): SettingsConfig {
   return {
     timer: { min: 5, max: 60, default: 10, step: 1, label: t('woIstWas.settings.time', 'Zeit (Sek.)') },
     rounds: { min: 3, max: 15, default: 8, step: 1, label: t('woIstWas.settings.rounds', 'Runden') },
@@ -334,8 +128,6 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const [svRound, setSvRound] = useState(0);
 
   // Scene state
-  const [scenePool, setScenePool] = useState<Scene[]>([]);
-  const [diffPool, setDiffPool] = useState<DiffScene[]>([]);
   const [currentScene, setCurrentScene] = useState<Scene | null>(null);
   const [currentDiff, setCurrentDiff] = useState<DiffScene | null>(null);
   const [questionIdx, setQuestionIdx] = useState(0);
@@ -349,13 +141,41 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const [answerCorrect, setAnswerCorrect] = useState<boolean | null>(null);
   const [foundDiffs, setFoundDiffs] = useState<number[]>([]);
 
-  // TV broadcast: the TV is the group's shared screen, so it mirrors the phone's
-  // actual content (FindIt has no per-player secrets — everyone plays along):
-  //   - the emoji GRID + scene name for memory/speed (and both grids for unterschiede)
-  //   - the current QUESTION + its answer OPTIONS (audience guesses along)
-  //   - on the answer phase only: which option is `correct` and the found diffs
-  //     (these are answer-spoiling, so they're gated until the reveal)
-  //   - the target location name/coords for karte/streetview (no live map embed)
+  // Do not consume competitive time until each participating device has decoded the atlas.
+  const [imageReady, setImageReady] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [imageAttempt, setImageAttempt] = useState(0);
+  const [readyPeers, setReadyPeers] = useState<string[]>([]);
+  const [hostImagesAvailable, setHostImagesAvailable] = useState(false);
+  const imagesAvailable = imageReady && (!online || (online.isHost
+    ? players.every(p => p.id === online.myPlayerId || readyPeers.includes(p.id))
+    : hostImagesAvailable));
+  useEffect(() => {
+    let active = true;
+    const picture = new Image();
+    setImageError(false);
+    picture.onload = () => { if (active) setImageReady(true); };
+    picture.onerror = () => { if (active) setImageError(true); };
+    picture.src = OBJECT_ATLAS;
+    return () => { active = false; picture.onload = null; picture.onerror = null; };
+  }, [imageAttempt]);
+  useEffect(() => {
+    if (!online?.isHost) return;
+    return online.onBroadcast('findit-assets-ready', data => {
+      if (typeof data.__senderId !== 'string') return;
+      const id = data.__senderId;
+      setReadyPeers(previous => previous.includes(id) ? previous : [...previous, id]);
+    });
+  }, [online]);
+  useEffect(() => {
+    if (!online || online.isHost || !imageReady) return;
+    const announce = () => online.broadcast('findit-assets-ready', {});
+    announce();
+    const retry = setInterval(announce, 1500);
+    return () => clearInterval(retry);
+  }, [online, imageReady]);
+
+  // Public display receives images and translated labels; solutions only on reveal.
   const tvQuestion = currentScene?.questions[questionIdx];
   const tvRevealed = phase === 'answer' || phase === 'roundEnd';
   useTVGameBridge('findit', {
@@ -363,20 +183,22 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     mode,
     studyCountdown,
     questionCountdown,
+    imagesAvailable,
     questionIdx,
     totalQuestions: currentScene?.questions.length ?? 0,
-    sceneName: currentScene?.name ?? currentDiff?.name ?? '',
+    sceneName: t(currentScene?.name ?? currentDiff?.name ?? 'games.findit.visual.boardTitle'),
     // shared emoji grid (memory/speed) + diff grids (unterschiede)
-    grid: currentScene?.grid ?? '',
+    grid: mode === 'memory' && phase !== 'study' && phase !== 'roundEnd' ? '' : currentScene?.grid ?? '',
     gridA: currentDiff?.gridA ?? '',
     gridB: currentDiff?.gridB ?? '',
     // diff target indices + found cells are answer-spoiling → reveal only
     diffs: tvRevealed && currentDiff ? currentDiff.diffs : [],
     foundDiffs,
-    diffCount: currentDiff?.diffs.length ?? 0,
+    diffCount: currentDiff?.count ?? 0,
     // question + options for the audience; the correct index leaks only on reveal
-    question: tvQuestion?.q ?? '',
-    options: tvQuestion?.options ?? [],
+    question: tvQuestion ? t(tvQuestion.q, { position: tvQuestion.position }) : '',
+    options: tvQuestion?.options.map(id => t(`games.findit.objects.${id}`)) ?? [],
+    optionObjects: tvQuestion?.options ?? [],
     correctOption: tvRevealed ? (tvQuestion?.correct ?? null) : null,
     geoName: currentGeo?.name ?? '',
     geoLat: currentGeo?.lat ?? null,
@@ -390,6 +212,21 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const studyTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const questionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  useEffect(() => {
+    if (imagesAvailable && phase === 'question') questionStartRef.current = performance.now();
+  }, [imagesAvailable]);
+
+  const disconnectedAtRef = useRef<{ at: number; started: number | null } | null>(null);
+  useEffect(() => {
+    if (online?.isConnected === false) {
+      disconnectedAtRef.current ??= { at: performance.now(), started: questionStartRef.current };
+    } else if (disconnectedAtRef.current) {
+      const paused = disconnectedAtRef.current;
+      if (questionStartRef.current !== null && questionStartRef.current === paused.started) questionStartRef.current += performance.now() - paused.at;
+      disconnectedAtRef.current = null;
+    }
+  }, [online?.isConnected]);
+
   // Latest-ref pattern: avoids stale closures across timer callbacks and forward references
   const handleTimeoutRef = useRef<() => void>(() => {});
   const advanceQuestionRef = useRef<() => void>(() => {});
@@ -399,6 +236,16 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   useEffect(() => {
     if (!online || online.isHost) return;
     const unsub = online.onBroadcast('findit-state', (data) => {
+      if (data.imagesAvailable !== undefined) setHostImagesAvailable(data.imagesAvailable === true);
+      if (data.mode !== undefined) setMode(data.mode as Mode);
+      if (data.totalRounds !== undefined) setTotalRounds(data.totalRounds as number);
+      if (data.studyTime !== undefined) setStudyTime(data.studyTime as number);
+      if (data.currentScene !== undefined) setCurrentScene(data.currentScene as Scene | null);
+      if (data.currentDiff !== undefined) setCurrentDiff(data.currentDiff as DiffScene | null);
+      if (data.questionIdx !== undefined) setQuestionIdx(data.questionIdx as number);
+      if (data.foundDiffs !== undefined) setFoundDiffs(data.foundDiffs as number[]);
+      if (data.studyCountdown !== undefined) setStudyCountdown(data.studyCountdown as number);
+      if (data.questionCountdown !== undefined) setQuestionCountdown(data.questionCountdown as number);
       if (data.phase !== undefined) setPhase(data.phase as Phase);
       if (data.round !== undefined) setRound(data.round as number);
       if (data.currentPlayerIdx !== undefined) setCurrentPlayerIdx(data.currentPlayerIdx as number);
@@ -425,22 +272,23 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
   const broadcastFindItState = useCallback((overrides?: Record<string, unknown>) => {
     if (!online?.isHost) return;
-    online.broadcast('findit-state', {
+    online.broadcast('findit-state', projectVisualState({
+      imagesAvailable, mode, totalRounds, studyTime, currentScene, currentDiff, questionIdx, foundDiffs, studyCountdown, questionCountdown,
       phase, round, currentPlayerIdx, players: JSON.parse(JSON.stringify(players)),
       selectedAnswer, answerCorrect,
       // Include geo data so non-hosts can render the same map/streetview
       currentGeo: currentGeo ? { lat: currentGeo.lat, lng: currentGeo.lng, name: currentGeo.name } : null,
-      svLocations: svLocations.length > 0 ? svLocations.map(l => ({ lat: l.lat, lng: l.lng, name: l.name, heading: l.heading, pitch: l.pitch })) : null,
+      svLocations,
       svRound,
       ...overrides,
-    });
-  }, [online, phase, round, currentPlayerIdx, players, selectedAnswer, answerCorrect, currentGeo, svLocations, svRound]);
+    }));
+  }, [online, imagesAvailable, mode, totalRounds, studyTime, currentScene, currentDiff, questionIdx, foundDiffs, studyCountdown, questionCountdown, phase, round, currentPlayerIdx, players, selectedAnswer, answerCorrect, currentGeo, svLocations, svRound]);
 
   useEffect(() => {
-    if (online?.isHost && phase !== 'setup') {
+    if (online?.isHost) {
       broadcastFindItState();
     }
-  }, [phase, round, currentPlayerIdx, selectedAnswer, currentGeo, svRound]);
+  }, [online, broadcastFindItState]);
 
   // Initial-state handshake: late joiners request current state, host replies.
   useEffect(() => {
@@ -463,6 +311,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     modeId: string,
     settings: { timer: number; rounds: number },
   ) => {
+    if (online && !online.isHost) return;
     const mapped: Player[] = setupPlayers.map((p, i) => ({
       ...p,
       color: getColor(i),
@@ -474,8 +323,6 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     setStudyTime(settings.timer);
     setRound(0);
     setCurrentPlayerIdx(0);
-    setScenePool(shuffleArray([...SCENES]));
-    setDiffPool(shuffleArray([...DIFF_SCENES]));
 
     if (modeId === 'karte') {
       setPhase('karteSetup');
@@ -492,35 +339,26 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     }
 
     // Start first round
-    startRound(modeId as Mode, shuffleArray([...SCENES]), shuffleArray([...DIFF_SCENES]), 0, settings.timer);
+    startRound(modeId as Mode, settings.timer);
   }, []);
 
   // ------- Start a round -------
-  const startRound = useCallback((
-    m: Mode, scenes: Scene[], diffs: DiffScene[], roundIdx: number, studySec: number,
-  ) => {
-    if (m === 'unterschiede') {
-      const diff = diffs[roundIdx % diffs.length];
-      setCurrentDiff(diff);
-      setCurrentScene(null);
-      setFoundDiffs([]);
-      setPhase('study');
-      setStudyCountdown(studySec);
-    } else {
-      const scene = scenes[roundIdx % scenes.length];
-      setCurrentScene(scene);
-      setCurrentDiff(null);
-      setQuestionIdx(0);
-      setSelectedAnswer(null);
-      setAnswerCorrect(null);
-      setPhase('study');
-      setStudyCountdown(studySec);
-    }
+  const startRound = useCallback((m: Mode, studySec: number) => {
+    setSelectedAnswer(null);
+    setAnswerCorrect(null);
+    setQuestionIdx(0);
+    setFoundDiffs([]);
+    setCurrentDiff(m === 'unterschiede' ? createVisualDifference() : null);
+    setCurrentScene(m === 'unterschiede' ? null : createVisualScene());
+    setPhase(m === 'memory' ? 'study' : 'question');
+    setStudyCountdown(studySec);
+    setQuestionCountdown(m === 'unterschiede' ? Math.max(30, studySec * 3) : 15);
+    questionStartRef.current = performance.now();
   }, []);
 
   // ------- Study countdown timer -------
   useEffect(() => {
-    if (phase !== 'study') return;
+    if ((online && (!online.isHost || online.isConnected === false)) || !imagesAvailable || phase !== 'study') return;
     studyTimerRef.current = setInterval(() => {
       setStudyCountdown(prev => {
         if (prev <= 1) {
@@ -543,11 +381,11 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       });
     }, 1000);
     return () => { if (studyTimerRef.current) clearInterval(studyTimerRef.current); };
-  }, [phase, mode]);
+  }, [online, imagesAvailable, phase, mode]);
 
   // ------- Question countdown timer (NOT for karte/streetview — they have their own) -------
   useEffect(() => {
-    if (phase !== 'question') return;
+    if ((online && (!online.isHost || online.isConnected === false)) || !imagesAvailable || phase !== 'question') return;
     if (mode === 'karte' || mode === 'streetview') return; // MapRound/StreetViewRound handle their own timers
     questionTimerRef.current = setInterval(() => {
       setQuestionCountdown(prev => {
@@ -560,12 +398,13 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       });
     }, 1000);
     return () => { if (questionTimerRef.current) clearInterval(questionTimerRef.current); };
-  }, [phase, mode, questionIdx, round, currentPlayerIdx]);
+  }, [online, imagesAvailable, phase, mode, questionIdx, round, currentPlayerIdx]);
 
   // ------- Handle timeout -------
   const handleTimeout = useCallback(() => {
     if (mode === 'unterschiede') {
-      advanceRoundRef.current();
+      setPhase('answer');
+      setTimeout(() => advanceRoundRef.current(), 3000);
     } else {
       setAnswerCorrect(false);
       setPlayers(prev => prev.map((p, i) => i === currentPlayerIdx ? { ...p, wrong: p.wrong + 1, streak: 0 } : p));
@@ -577,12 +416,14 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
   // ------- Handle answer selection -------
   const handleAnswer = useCallback((optionIdx: number) => {
-    if (selectedAnswer !== null || phase !== 'question') return;
+    if (online && !online.isHost) { online.broadcast('findit-action', { type: 'answer', optionIdx, round, questionIdx }); return; }
+    if (!imagesAvailable || online?.isConnected === false) return;
+    if (selectedAnswer !== null || !imagesAvailable || phase !== 'question') return;
     if (questionTimerRef.current) clearInterval(questionTimerRef.current);
 
     const elapsed = performance.now() - questionStartRef.current;
     const question = currentScene?.questions[questionIdx];
-    if (!question) return;
+    if (!question || !Number.isInteger(optionIdx) || optionIdx < 0 || optionIdx >= question.options.length) return;
 
     const correct = optionIdx === question.correct;
     setSelectedAnswer(optionIdx);
@@ -608,11 +449,13 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
     setPhase('answer');
     setTimeout(() => advanceQuestionRef.current(), 1500);
-  }, [selectedAnswer, phase, currentScene, questionIdx, currentPlayerIdx]);
+  }, [online, imagesAvailable, round, selectedAnswer, phase, currentScene, questionIdx, currentPlayerIdx]);
 
   // ------- Handle diff tap -------
   const handleDiffTap = useCallback((cellIdx: number) => {
-    if (phase !== 'question' || !currentDiff) return;
+    if (online && !online.isHost) { online.broadcast('findit-action', { type: 'diff', cellIdx, round, questionIdx }); return; }
+    if (!imagesAvailable || online?.isConnected === false) return;
+    if (phase !== 'question' || !currentDiff || !Number.isInteger(cellIdx) || cellIdx < 0 || cellIdx >= 6) return;
     if (foundDiffs.includes(cellIdx)) return;
 
     if (currentDiff.diffs.includes(cellIdx)) {
@@ -624,7 +467,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       ));
       if (newFound.length >= currentDiff.diffs.length) {
         if (questionTimerRef.current) clearInterval(questionTimerRef.current);
-        setTimeout(() => advanceRoundRef.current(), 1000);
+        setPhase('answer');
+        setTimeout(() => advanceRoundRef.current(), 3000);
       }
     } else {
       // Wrong tap penalty
@@ -632,7 +476,16 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
         i === currentPlayerIdx ? { ...p, score: Math.max(0, p.score - 10), wrong: p.wrong + 1 } : p
       ));
     }
-  }, [phase, currentDiff, foundDiffs, currentPlayerIdx]);
+  }, [online, imagesAvailable, round, questionIdx, phase, currentDiff, foundDiffs, currentPlayerIdx]);
+
+  useEffect(() => {
+    if (!online?.isHost) return;
+    return online.onBroadcast('findit-action', data => {
+      if (phase !== 'question' || data.__senderId !== players[currentPlayerIdx]?.id || data.round !== round || data.questionIdx !== questionIdx) return;
+      if (data.type === 'answer' && Number.isInteger(data.optionIdx)) handleAnswer(data.optionIdx as number);
+      if (data.type === 'diff' && Number.isInteger(data.cellIdx)) handleDiffTap(data.cellIdx as number);
+    });
+  }, [online, phase, players, currentPlayerIdx, round, questionIdx, handleAnswer, handleDiffTap]);
 
   // ------- Advance to next question or next round -------
   const advanceQuestion = useCallback(() => {
@@ -667,9 +520,9 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     setTimeout(() => {
       setCurrentPlayerIdx(nextPlayer);
       setRound(nextRound);
-      startRound(mode, scenePool, diffPool, nextRound * players.length + nextPlayer, studyTime);
+      startRound(mode, studyTime);
     }, 1500);
-  }, [currentPlayerIdx, players.length, round, totalRounds, mode, scenePool, diffPool, studyTime, startRound]);
+  }, [currentPlayerIdx, players.length, round, totalRounds, mode, studyTime, startRound]);
   advanceRoundRef.current = advanceRound;
 
   // ------- Restart -------
@@ -684,7 +537,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
   const handleKarteSetup = useCallback((settings: { region: string; difficulty: number; rounds: number; timer?: number }) => {
     const filtered = filterByRegion(GEO_LOCATIONS, settings.region);
-    const pool = filtered.length > 0 ? filtered : [...GEO_LOCATIONS];
+    const pool = filterByDifficulty(filtered.length > 0 ? filtered : [...GEO_LOCATIONS], settings.difficulty);
     const shuffled = shuffleArray(pool);
     setGeoPool(shuffled);
     setCurrentGeo(shuffled[0]);
@@ -704,6 +557,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   // bleed across matches). We replicate handleSetupStart's gameplay-entry —
   // reshuffle pools, restart the first round per mode — and never go to 'setup'.
   const rematch = useCallback(() => {
+    if (online && !online.isHost) { online.broadcast('findit-rematch', {}); return; }
     if (players.length === 0) { handleRestart(); return; }
     gameRecordedRef.current = false;
     setPlayers(prev => prev.map(p => ({ ...p, streak: 0 })));
@@ -713,10 +567,6 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     setAnswerCorrect(null);
     setFoundDiffs([]);
 
-    const scenes = shuffleArray([...SCENES]);
-    const diffs = shuffleArray([...DIFF_SCENES]);
-    setScenePool(scenes);
-    setDiffPool(diffs);
 
     if (mode === 'karte') {
       const shuffled = shuffleArray(geoPool.length > 0 ? geoPool : [...GEO_LOCATIONS]);
@@ -734,23 +584,29 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       return;
     }
 
-    startRound(mode, scenes, diffs, 0, studyTime);
-  }, [players, mode, geoPool, totalRounds, studyTime, startRound, handleRestart]);
+    startRound(mode, studyTime);
+  }, [online, players, mode, geoPool, totalRounds, studyTime, startRound, handleRestart]);
+
+  useEffect(() => {
+    if (!online?.isHost) return;
+    return online.onBroadcast('findit-rematch', data => { if (phase === 'gameOver' && players.some(p => p.id === data.__senderId)) rematch(); });
+  }, [online, phase, players, rematch]);
 
   // ------- Parsed grid memo -------
   const parsedGrid = useMemo(() => {
-    if (currentScene) return parseGrid(currentScene.grid);
+    if (currentScene) return parseObjectGrid(currentScene.grid);
     return null;
   }, [currentScene]);
 
-  const parsedDiffA = useMemo(() => currentDiff ? parseGrid(currentDiff.gridA) : null, [currentDiff]);
-  const parsedDiffB = useMemo(() => currentDiff ? parseGrid(currentDiff.gridB) : null, [currentDiff]);
+  const parsedDiffA = useMemo(() => currentDiff ? parseObjectGrid(currentDiff.gridA) : null, [currentDiff]);
+  const parsedDiffB = useMemo(() => currentDiff ? parseObjectGrid(currentDiff.gridB) : null, [currentDiff]);
 
   // ------- Sorted results -------
   const sortedPlayers = useMemo(() => [...players].sort((a, b) => b.score - a.score), [players]);
 
   // ===== RENDER =====
 
+  if (online && !online.isHost && (phase === 'setup' || phase === 'karteSetup')) return <OnlineWaiting />;
   if (phase === 'setup') {
     return (
       <GameSetup
@@ -788,56 +644,29 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const currentPlayer = players[currentPlayerIdx];
 
   return (
-    <div className="min-h-screen bg-gray-950 px-4 py-6 select-none">
-      <div className="mx-auto max-w-lg space-y-4">
+    <GameStage gameId="wo-ist-was" className="expedition select-none">
+      <div className="expedition-workbench mx-auto max-w-4xl space-y-6">
 
-        {/* Header bar */}
-        <div className="flex items-center justify-between">
-          {/* In der App liegt der FloatingBackButton genau auf diesem Pfeil und
-              öffnet über den Back-Guard denselben Dialog — dort nur unsichtbar
-              schalten, nicht entfernen: der Platzhalter hält die Kopfzeile im
-              Gleichgewicht und den Platz unter dem schwebenden Pfeil frei. */}
-          <button
-            onClick={exitGuard.request}
-            className={`text-gray-400 hover:text-white transition-colors${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
-            aria-hidden={hasShellBackButton()}
-            tabIndex={hasShellBackButton() ? -1 : undefined}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="text-center">
-            <p className="text-xs text-cyan-400 font-semibold uppercase tracking-wider">{t('games.findit.roundLabel', { current: round + 1, total: totalRounds })}</p>
-            <p className="text-white font-bold text-sm">{currentScene?.name ?? currentDiff?.name ?? ''}</p>
-          </div>
-          <div className="flex items-center gap-1">
-            <div className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: currentPlayer?.color }}>
-              {currentPlayer?.avatar}
-            </div>
-            <span className="text-white text-xs font-semibold">{currentPlayer?.score}</span>
-          </div>
-        </div>
-
-        {/* Player indicator */}
-        <motion.div
-          key={currentPlayerIdx}
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <span className="text-sm font-semibold px-3 py-1 rounded-full" style={{ backgroundColor: `${currentPlayer?.color}30`, color: currentPlayer?.color }}>
-            {t('games.findit.playerTurn', { name: currentPlayer?.name })}
-          </span>
-        </motion.div>
+        <StageHeader title={t(currentScene?.name ?? currentDiff?.name ?? 'games.findit.gameOverTitle')}
+          eyebrow={t('games.findit.roundLabel',{current:round+1,total:totalRounds})}
+          subtitle={t('games.findit.playerTurn',{name:currentPlayer?.name})}
+          leading={!hasShellBackButton() ? <button onClick={exitGuard.request} aria-label={t('common.back')} className="expedition-back"><ArrowLeft size={20}/></button> : undefined}
+          trailing={<div className="expedition-clock"><span>{phase === 'study' ? studyCountdown : phase === 'question' ? questionCountdown : currentPlayer?.score}</span><small>{phase === 'study' || phase === 'question' ? 's' : t('games.results.points')}</small></div>}
+          progress={{value:round+1,total:totalRounds}} />
 
         {/* Study Phase */}
+        {!imagesAvailable && mode !== 'karte' && mode !== 'streetview' && <div className="findit-content-loading" role="status">
+          {t(imageError ? 'games.findit.visual.imageError' : 'games.findit.visual.loading')}
+          {imageError && <StageAction onClick={() => setImageAttempt(value => value + 1)}>{t('games.findit.visual.retryImages')}</StageAction>}
+        </div>}
         <AnimatePresence mode="wait">
-          {phase === 'study' && (
+          {imagesAvailable && phase === 'study' && (
             <motion.div
               key="study"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="space-y-4"
+              className="expedition-phase space-y-4"
             >
               <div className="text-center space-y-1">
                 <p className="text-cyan-300 font-bold text-lg">{t('games.findit.studyMemorize')}</p>
@@ -863,12 +692,12 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
               {/* Emoji Grid */}
               {mode === 'unterschiede' && parsedDiffA && parsedDiffB ? (
-                <div className="grid grid-cols-2 gap-3">
-                  <EmojiGrid grid={parsedDiffA} label={t('games.findit.imgA')} pulsing />
-                  <EmojiGrid grid={parsedDiffB} label={t('games.findit.imgB')} pulsing />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <ObjectBoard grid={parsedDiffA} label={t('games.findit.imgA')} />
+                  <ObjectBoard grid={parsedDiffB} label={t('games.findit.imgB')} />
                 </div>
               ) : parsedGrid ? (
-                <EmojiGrid grid={parsedGrid} pulsing />
+                <ObjectBoard grid={parsedGrid} />
               ) : null}
             </motion.div>
           )}
@@ -876,17 +705,17 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
           {/* Karte Mode is rendered OUTSIDE AnimatePresence below */}
 
           {/* Question Phase */}
-          {(phase === 'question' || phase === 'answer') && mode !== 'unterschiede' && mode !== 'karte' && currentScene && (
+          {imagesAvailable && (phase === 'question' || phase === 'answer') && mode !== 'unterschiede' && mode !== 'karte' && currentScene && (
             <motion.div
               key={`q-${questionIdx}`}
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
-              className="space-y-4"
+              className="expedition-phase space-y-4"
             >
               {/* Show grid in speed mode */}
               {mode === 'speed' && parsedGrid && (
-                <EmojiGrid grid={parsedGrid} small />
+                <ObjectBoard grid={parsedGrid} compact />
               )}
 
               {/* Question timer */}
@@ -903,11 +732,11 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               {/* Question */}
               <div className="bg-gray-800/60 backdrop-blur border border-cyan-500/20 rounded-2xl p-5 text-center">
                 <p className="text-xs text-cyan-400 mb-1 font-semibold">{t('games.findit.questionLabel', { current: questionIdx + 1, total: currentScene.questions.length })}</p>
-                <p className="text-white font-bold text-lg leading-tight">{currentScene.questions[questionIdx].q}</p>
+                <p className="text-white font-bold text-lg leading-tight">{t(currentScene.questions[questionIdx].q, { position: currentScene.questions[questionIdx].position })}</p>
               </div>
 
               {/* Options */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="findit-answer-options">
                 {currentScene.questions[questionIdx].options.map((opt, idx) => {
                   const isSelected = selectedAnswer === idx;
                   const isCorrectOpt = idx === currentScene.questions[questionIdx].correct;
@@ -917,9 +746,9 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
                     <motion.button
                       key={idx}
                       onClick={() => handleAnswer(idx)}
-                      disabled={phase === 'answer'}
+                      disabled={phase === 'answer' || !imagesAvailable || (!!online && online.myPlayerId !== players[currentPlayerIdx]?.id)}
                       className={cn(
-                        'p-4 rounded-xl border-2 font-semibold text-sm transition-all',
+                        'findit-answer-option rounded-xl border-2 font-semibold text-sm transition-all',
                         showResult && isCorrectOpt
                           ? 'border-green-400 bg-green-500/20 text-green-300'
                           : showResult && isSelected && !isCorrectOpt
@@ -930,10 +759,11 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
                       )}
                       whileTap={phase !== 'answer' ? { scale: 0.95 } : {}}
                     >
+                      <ObjectPicture id={opt} label={t(`games.findit.objects.${opt}`)} />
                       <span className="flex items-center justify-center gap-2">
                         {showResult && isCorrectOpt && <Check className="w-4 h-4 text-green-400" />}
                         {showResult && isSelected && !isCorrectOpt && <X className="w-4 h-4 text-red-400" />}
-                        {opt}
+                        {t(`games.findit.objects.${opt}`)}
                       </span>
                     </motion.button>
                   );
@@ -960,17 +790,17 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
           )}
 
           {/* Unterschiede Question Phase */}
-          {(phase === 'question' || phase === 'answer') && mode === 'unterschiede' && currentDiff && parsedDiffA && parsedDiffB && (
+          {imagesAvailable && (phase === 'question' || phase === 'answer') && mode === 'unterschiede' && currentDiff && parsedDiffA && parsedDiffB && (
             <motion.div
               key="diff-q"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="space-y-4"
+              className="expedition-phase space-y-4"
             >
               <div className="text-center">
-                <p className="text-cyan-300 font-bold">{t('games.findit.diffFindTitle', { count: currentDiff.diffs.length })}</p>
-                <p className="text-gray-400 text-xs">{t('games.findit.diffFindHint')}</p>
+                <p className="text-cyan-300 font-bold">{t('games.findit.diffFindTitle', { count: currentDiff.count })}</p>
+                <p className="text-gray-400 text-xs">{t('games.findit.visual.compareHint')}</p>
               </div>
 
               {/* Timer */}
@@ -980,17 +810,17 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
                     'h-full rounded-full',
                     questionCountdown > 5 ? 'bg-gradient-to-r from-cyan-400 to-cyan-600' : 'bg-gradient-to-r from-red-400 to-red-600'
                   )}
-                  style={{ width: `${(questionCountdown / 15) * 100}%` }}
+                  style={{ width: `${(questionCountdown / Math.max(30, studyTime * 3)) * 100}%` }}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <EmojiGrid grid={parsedDiffA} label={t('games.findit.imgOriginal')} small />
-                <DiffGrid grid={parsedDiffB} label={t('games.findit.imgChanged')} diffs={currentDiff.diffs} found={foundDiffs} onTap={handleDiffTap} />
+              <div className="findit-comparison">
+                <ObjectBoard grid={parsedDiffA} label={t('games.findit.imgOriginal')} compact />
+                <ObjectBoard grid={parsedDiffB} label={t('games.findit.imgChanged')} targets={phase === 'answer' ? currentDiff.diffs : []} found={foundDiffs} onTap={handleDiffTap} disabled={phase !== 'question' || !imagesAvailable || (!!online && online.myPlayerId !== players[currentPlayerIdx]?.id)} />
               </div>
 
               <div className="flex justify-center gap-2">
-                {currentDiff.diffs.map((_, i) => (
+                {Array.from({ length: currentDiff.count }).map((_, i) => (
                   <div
                     key={i}
                     className={cn(
@@ -1047,12 +877,13 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               timerSeconds={studyTime}
               online={online}
               onRoundComplete={(results: MapRoundResult[]) => {
+                if (online && !online.isHost) return;
                 const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
                 setPlayers(prev => prev.map(p => {
                   const res = results.find(r => r.playerId === p.id);
                   if (!res) return p;
                   const pts = Math.max(0, Math.round(1000 * Math.exp(-res.distanceKm / 2000)));
-                  const isWinner = sorted[0]?.playerId === p.id;
+                  const isWinner = res.distanceKm < 20000 && res.distanceKm === sorted[0]?.distanceKm;
                   const bonus = isWinner ? 100 : 0;
                   return { ...p, score: p.score + pts + bonus, correct: p.correct + (isWinner ? 1 : 0) };
                 }));
@@ -1078,15 +909,16 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
               players={players}
               roundNumber={svRound + 1}
               totalRounds={totalRounds}
-              timerSeconds={30}
+              timerSeconds={studyTime}
               online={online}
               onRoundComplete={(results: StreetViewResult[]) => {
+                if (online && !online.isHost) return;
                 const sorted = [...results].sort((a, b) => a.distanceKm - b.distanceKm);
                 setPlayers(prev => prev.map(p => {
                   const res = results.find(r => r.playerId === p.id);
                   if (!res) return p;
                   const pts = Math.max(0, Math.round(1000 * Math.exp(-res.distanceKm / 2000)));
-                  const isWinner = sorted[0]?.playerId === p.id;
+                  const isWinner = res.distanceKm < 20000 && res.distanceKm === sorted[0]?.distanceKm;
                   return { ...p, score: p.score + pts + (isWinner ? 100 : 0), correct: p.correct + (isWinner ? 1 : 0) };
                 }));
                 const next = svRound + 1;
@@ -1100,76 +932,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       </div>
 
       <ConfirmExitDialog {...exitGuard.dialogProps} accent="#06b6d4" />
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Emoji Grid Component
-// ---------------------------------------------------------------------------
-
-function EmojiGrid({ grid, label, pulsing, small }: { grid: string[][]; label?: string; pulsing?: boolean; small?: boolean }) {
-  return (
-    <div className={cn(
-      'rounded-2xl border-2 p-3 backdrop-blur bg-gray-800/40 transition-all',
-      pulsing ? 'border-cyan-400/60 shadow-[0_0_20px_rgba(6,182,212,0.2)] animate-pulse' : 'border-gray-700/50'
-    )}>
-      {label && <p className="text-[10px] text-gray-400 text-center mb-1 font-semibold uppercase tracking-wider">{label}</p>}
-      <div className="flex flex-col items-center gap-1">
-        {grid.map((row, ri) => (
-          <div key={ri} className="flex gap-1">
-            {row.map((cell, ci) => (
-              <span key={ci} className={cn('text-center', small ? 'text-xl w-7 h-7' : 'text-3xl w-10 h-10')} role="img">
-                {cell}
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Diff Grid (tappable)
-// ---------------------------------------------------------------------------
-
-function DiffGrid({ grid, label, diffs, found, onTap }: {
-  grid: string[][];
-  label?: string;
-  diffs: number[];
-  found: number[];
-  onTap: (idx: number) => void;
-}) {
-  let cellIdx = 0;
-  return (
-    <div className="rounded-2xl border-2 border-cyan-500/30 p-3 backdrop-blur bg-gray-800/40">
-      {label && <p className="text-[10px] text-gray-400 text-center mb-1 font-semibold uppercase tracking-wider">{label}</p>}
-      <div className="flex flex-col items-center gap-1">
-        {grid.map((row, ri) => (
-          <div key={ri} className="flex gap-1">
-            {row.map((cell, ci) => {
-              const idx = cellIdx++;
-              const isFound = found.includes(idx);
-              const isDiff = diffs.includes(idx);
-              return (
-                <motion.button
-                  key={ci}
-                  onClick={() => onTap(idx)}
-                  className={cn(
-                    'text-xl w-7 h-7 rounded-lg transition-all',
-                    isFound ? 'bg-green-500/30 ring-2 ring-green-400' : 'hover:bg-cyan-500/10 active:bg-cyan-500/20'
-                  )}
-                  whileTap={{ scale: 0.85 }}
-                >
-                  {cell}
-                </motion.button>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    </div>
+    </GameStage>
   );
 }
 
@@ -1198,130 +961,10 @@ function GameOverScreen({ players, onRestart, onBack, totalRounds }: {
   const totalCorrect = players.reduce((s, p) => s + p.correct, 0);
   const bestStreak = Math.max(...players.map(p => p.bestStreak), 0);
 
-  return (
-    <div className="min-h-screen bg-gray-950 px-4 py-8 relative">
-      {/* Confetti */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
-        {confettiColors.map((color, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-3 h-3 rounded-full"
-            style={{ backgroundColor: color, left: `${(i / 20) * 100 + Math.random() * 5}%` }}
-            initial={{ y: -20, opacity: 1, rotate: 0 }}
-            animate={{
-              y: typeof window !== 'undefined' ? window.innerHeight + 20 : 800,
-              opacity: [1, 1, 0],
-              rotate: 360 * (i % 2 === 0 ? 1 : -1),
-              x: [0, (i % 2 === 0 ? 1 : -1) * (30 + Math.random() * 40)],
-            }}
-            transition={{ duration: 2.5 + Math.random() * 1.5, delay: Math.random() * 0.8, ease: 'easeIn' }}
-          />
-        ))}
-      </div>
-
-      <div className="mx-auto max-w-md space-y-6 relative z-10">
-        {/* Trophy */}
-        <motion.div
-          className="flex justify-center"
-          initial={{ scale: 0, rotate: -20 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 10, delay: 0.2 }}
-        >
-          <div className="w-20 h-20 rounded-full bg-cyan-500/20 flex items-center justify-center">
-            <Trophy className="w-10 h-10 text-cyan-400" />
-          </div>
-        </motion.div>
-
-        {/* Winner */}
-        <motion.div className="text-center space-y-1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-          <p className="text-sm text-gray-400 uppercase tracking-wider">{t('games.findit.gameOverTitle')}</p>
-          <div className="flex items-center justify-center gap-3">
-            <div
-              className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-              style={{ backgroundColor: winner?.color, boxShadow: `0 0 20px ${winner?.color}60` }}
-            >
-              {winner?.avatar}
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white">{winner?.name}</h2>
-              <p className="text-cyan-400 font-semibold">{t('games.findit.points', { score: winner?.score })}</p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Leaderboard */}
-        <motion.section className="space-y-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}>
-          <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400">{t('games.findit.leaderboard')}</h3>
-          <div className="space-y-2">
-            {players.map((player, i) => (
-              <motion.div
-                key={player.id}
-                className={cn(
-                  'flex items-center gap-3 p-3 rounded-xl border',
-                  i === 0 ? 'bg-cyan-500/10 border-cyan-500/30' : 'bg-gray-800/40 border-gray-700/50'
-                )}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.8 + i * 0.1 }}
-              >
-                <div className="w-8 flex items-center justify-center">
-                  {i < 3 ? rankIcons[i] : <span className="text-sm font-bold text-gray-500">{i + 1}</span>}
-                </div>
-                <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0" style={{ backgroundColor: player.color }}>
-                  {player.avatar}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <span className="text-white font-medium text-sm truncate block">{player.name}</span>
-                  <span className="text-[10px] text-gray-400">{t('games.findit.correctOf', { correct: player.correct, wrong: player.wrong })}</span>
-                </div>
-                {player.bestStreak >= 3 && (
-                  <span className="text-xs bg-cyan-500/20 text-cyan-400 px-2 py-0.5 rounded-full font-semibold">
-                    {player.bestStreak}x
-                  </span>
-                )}
-                <span className="text-sm font-bold text-gray-300 min-w-[40px] text-right">{player.score}</span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
-
-        {/* Stats */}
-        <motion.section className="grid grid-cols-3 gap-3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 }}>
-          {[
-            { label: t('games.findit.statsRounds'), value: totalRounds },
-            { label: t('games.findit.statsCorrect'), value: totalCorrect },
-            { label: t('games.findit.statsBestStreak'), value: bestStreak },
-          ].map((stat) => (
-            <div key={stat.label} className="bg-gray-800/40 border border-gray-700/50 rounded-xl p-3 text-center">
-              <p className="text-lg font-bold text-white">{stat.value}</p>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wider">{stat.label}</p>
-            </div>
-          ))}
-        </motion.section>
-
-        {/* Actions */}
-        <motion.div className="flex gap-3 pt-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}>
-          {!hasShellBackButton() && (
-            <motion.button
-              onClick={onBack}
-              className="flex-1 py-3.5 rounded-2xl border-2 border-gray-600 text-gray-300 font-semibold flex items-center justify-center gap-2 hover:border-gray-500 transition-colors text-sm"
-              whileTap={{ scale: 0.97 }}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {t('games.findit.btnOtherGame')}
-            </motion.button>
-          )}
-          <motion.button
-            onClick={onRestart}
-            className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(6,182,212,0.4)] text-sm"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <RotateCcw className="w-4 h-4" />
-            {t('games.findit.btnPlayAgain')}
-          </motion.button>
-        </motion.div>
-      </div>
-    </div>
-  );
+  return <GameStage gameId="wo-ist-was" className="expedition"><div className="expedition-results">
+    <StageHeader title={players.filter(p=>p.score===winner?.score).map(p=>p.name).join(' / ')} eyebrow={t('games.findit.gameOverTitle')} subtitle={t('games.findit.points',{score:winner?.score})}/>
+    <div className="expedition-facts">{[{label:t('games.findit.statsRounds'),value:totalRounds},{label:t('games.findit.statsCorrect'),value:totalCorrect},{label:t('games.findit.statsBestStreak'),value:bestStreak}].map(stat=><div key={stat.label}><strong>{stat.value}</strong><span>{stat.label}</span></div>)}</div>
+    <div className="expedition-ranking">{players.map(player=><div key={player.id}><span>{String(players.filter(p=>p.score>player.score).length+1).padStart(2,'0')}</span><div><strong>{player.name}</strong><small>{t('games.findit.correctOf',{correct:player.correct,wrong:player.wrong})}</small></div><b>{player.score}</b></div>)}</div>
+    <StageFooter><StageAction onClick={onRestart}><RotateCcw size={19}/>{t('games.findit.btnPlayAgain')}</StageAction>{!hasShellBackButton()&&<StageAction variant="secondary" onClick={onBack}>{t('games.findit.btnOtherGame')}</StageAction>}</StageFooter>
+  </div></GameStage>;
 }

@@ -1,3 +1,5 @@
+import { GameStage } from '../ui/GameStage';
+import './expedition.css';
 import { useState } from 'react';
 import { motion, type Variants } from 'framer-motion';
 import { ArrowLeft, Compass } from 'lucide-react';
@@ -68,8 +70,8 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
   ];
 
   return (
-    <div
-      className="relative min-h-screen overflow-y-auto pb-28"
+    <GameStage gameId="wo-ist-was"
+      className="expedition expedition-setup relative min-h-screen overflow-y-auto pb-28"
       style={{ background: '#0a0e14', fontFamily: "'Plus Jakarta Sans', sans-serif" }}
     >
       {/* Decorative glow blurs */}
@@ -275,7 +277,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
           border: none;
         }
       `}</style>
-    </div>
+    </GameStage>
   );
 }
 

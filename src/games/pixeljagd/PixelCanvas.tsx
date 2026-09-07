@@ -40,21 +40,31 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
   useEffect(() => {
     setReady(false);
     imgRef.current = null;
-    if (!src) return;
+    if (!src) { errorRef.current?.(); return; }
     let cancelled = false;
+    let settled = false;
     const img = new Image();
+    const fail = () => {
+      if (cancelled || settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      errorRef.current?.();
+    };
+    const timeout = window.setTimeout(fail, 12_000);
     img.decoding = 'async';
     img.onload = () => {
-      if (cancelled) return;
+      if (cancelled || settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
       imgRef.current = img;
       setReady(true);
       // Erst jetzt darf die Runde loslaufen: Vorher ist die Zeichenflaeche
       // leer, und die Enthuellung liefe gegen ein Bild, das niemand sieht.
       readyRef.current?.();
     };
-    img.onerror = () => { if (!cancelled) errorRef.current?.(); };
+    img.onerror = fail;
     img.src = src;
-    return () => { cancelled = true; };
+    return () => { cancelled = true; window.clearTimeout(timeout); img.onload = null; img.onerror = null; };
   }, [src]);
 
   // Neu zeichnen, wenn Bild oder Stufe sich ändern.

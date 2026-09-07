@@ -1,3 +1,5 @@
+import { GameStage } from '../ui/GameStage';
+import './bomb-console.css';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -9,11 +11,12 @@ import type { GameState, GameMode } from './BombGame';
 
 interface SetupScreenProps {
   state: GameState;
+  locked?: boolean;
   onUpdate: (partial: Partial<GameState>) => void;
   onStart: () => void;
 }
 
-export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScreenProps) {
+export default function BombSetupScreen({ state, onUpdate, onStart, locked }: SetupScreenProps) {
   const { t } = useTranslation();
   const canStart = state.players.length >= 2 && state.players.every((p) => p.name.trim().length > 0);
 
@@ -49,16 +52,12 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
   };
 
   return (
-    <motion.div
-      className="min-h-screen bg-[#0d0d15] relative overflow-hidden"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
+    <GameStage gameId="bomb" className="bomb-console">
       {/* Background auras */}
-      <div className="pointer-events-none absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#ff7350]/[0.06] blur-[120px]" />
-      <div className="pointer-events-none absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#cf96ff]/[0.05] blur-[120px]" />
+      <div className="hidden pointer-events-none absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#ff7350]/[0.06] blur-[120px]" />
+      <div className="hidden pointer-events-none absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#cf96ff]/[0.05] blur-[120px]" />
 
-      <div className="relative z-10 w-full max-w-2xl mx-auto px-4 pb-6 pt-8">
+      <div className="relative z-10 w-full max-w-4xl mx-auto px-4 pb-6 pt-8">
         {/* Hero Header */}
         <motion.div
           className="text-center space-y-3 mb-8"
@@ -97,7 +96,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.08 }}
         >
-          <PlayerSetup
+          <PlayerSetup locked={locked}
             players={state.players.map((p, i) => ({ id: `b-${i}`, name: p.name }))}
             onAdd={addPlayer}
             onRemove={(id) => removePlayer(Number(id.slice(2)))}
@@ -256,6 +255,6 @@ export default function BombSetupScreen({ state, onUpdate, onStart }: SetupScree
           </motion.button>
         </div>
       </div>
-    </motion.div>
+    </GameStage>
   );
 }

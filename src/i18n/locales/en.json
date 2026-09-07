@@ -6253,7 +6253,8 @@
       "teamModeGroups": "In teams",
       "playersLabel": "Players",
       "groupsLabel": "Teams",
-      "teamN": "Team {{n}}"
+      "teamN": "Team {{n}}",
+      "retryImage": "Reload image"
     },
     "hub": {
       "title": "EventBliss Games",
@@ -6324,7 +6325,8 @@
       "streak": "Best Streak",
       "playAgain": "Play Again",
       "otherGame": "Other Game",
-      "share": "Share Results"
+      "share": "Share Results",
+      "sharedWin": "Shared victory"
     },
     "bomb": {
       "name": "Ticking Bomb",
@@ -6381,7 +6383,8 @@
       "tutorialStep5": "Answers must not repeat!",
       "tutorialDismiss": "GOT IT!",
       "taskAllePrompt": "Name: {{category}} with \"{{letter}}\"",
-      "taskKategoriePrompt": "Name a {{category}} with \"{{letter}}\"!"
+      "taskKategoriePrompt": "Name a {{category}} with \"{{letter}}\"!",
+      "fewestPenalties": "Fewest penalties"
     },
     "headup": {
       "name": "Heads Up",
@@ -6425,7 +6428,10 @@
       "best": "Best",
       "resultsPerRound": "Results per round",
       "playAgain": "Play again",
-      "back": "Back"
+      "back": "Back",
+      "enableMotion": "Enable tilt controls (or use the buttons)",
+      "readyBtn": "Ready — enable tilt",
+      "buttonsOnly": "Play with buttons"
     },
     "taboo": {
       "name": "Word Ban",
@@ -6485,7 +6491,9 @@
       },
       "result": {
         "cheers": "Cheers!"
-      }
+      },
+      "refereeRole": "Referee: listen for forbidden words.",
+      "voiceHint": "Guess aloud with your team. When playing remotely, use a voice call."
     },
     "categoryGame": {
       "name": "Category Timer",
@@ -6590,7 +6598,36 @@
       "timerNormal": "Normal",
       "timerRelaxed": "Relaxed",
       "timerExplorer": "Explorer",
-      "wfsStartBtn": "START GAME"
+      "wfsStartBtn": "START GAME",
+      "panoramaLoading": "Loading panorama…",
+      "panoramaError": "This panorama could not be loaded. Return to the games and try again.",
+      "visual": {
+        "boardTitle": "Object collection",
+        "whichPresent": "Which object was on the board?",
+        "whichMissing": "Which object was NOT on the board?",
+        "whichPosition": "Which object was on card {{position}}?",
+        "card": "Card {{position}}: {{object}}",
+        "loading": "Loading object images…",
+        "compareHint": "Find the three replaced objects in board B.",
+        "imageError": "Object images could not be loaded. Check your connection and try again.",
+        "retryImages": "Reload images"},
+      "objects": {
+        "apple": "Apple",
+        "banana": "Banana",
+        "pear": "Pear",
+        "orange": "Orange",
+        "strawberry": "Strawberry",
+        "lemon": "Lemon",
+        "mug": "Mug",
+        "book": "Book",
+        "key": "Key",
+        "camera": "Camera",
+        "teddy": "Teddy bear",
+        "car": "Toy car",
+        "shoe": "Sneaker",
+        "ball": "Football",
+        "plant": "Potted plant",
+        "umbrella": "Umbrella"}
     },
     "impostor": {
       "title": "Impostor",
@@ -6647,7 +6684,14 @@
       "impostorBadge": "Impostor",
       "resetGame": "Start over",
       "playAgain": "Play again!",
-      "votingPhase": "Voting · {{current}}/{{total}}"
+      "votingPhase": "Voting · {{current}}/{{total}}",
+      "privateRole": "Your secret role",
+      "viewRole": "View role",
+      "waitPlayers": "Waiting for the others…",
+      "readyRole": "Ready",
+      "exitGame": "Leave game",
+      "voteTie": "Tie: nobody is eliminated. The impostors survive.",
+      "multiScoring": "Civilians earn 10 points for a caught impostor. Each surviving impostor earns 15 points and shares the bonus."
     },
     "ohrwurm": {
       "leaveTitle": "Leave the game?",
@@ -6822,7 +6866,8 @@
       "off": "Off",
       "otherGame": "Other game",
       "playAgain": "Play again",
-      "title": "Split Quiz"
+      "title": "Split Quiz",
+      "wagerRisk": "Correct: +100/+200/+300. Wrong: 0/−100/−200 for bets 1/2/3."
     },
     "truthdare": {
       "yes": "Yes",
@@ -6939,7 +6984,14 @@
           }
         },
         "noContent": "No characters available for this group right now"
-      }
+      },
+      "onlineRoles": "You can see everyone’s identity except your own.",
+      "exitGame": "Leave game",
+      "questionLabel": "Ask a yes/no question",
+      "sendQuestion": "Ask question",
+      "guessNow": "Guess identity",
+      "voteSummary": "Yes: {{yes}} · No: {{no}}",
+      "questionLimit": "Questions per identity"
     },
     "bottlespin": {
       "setupTimerLabel": "Challenge Timer (sec.)",
@@ -6963,7 +7015,27 @@
       "scorePoints": "{{score}} pts.",
       "roundsPlayed": "{{rounds}} rounds played. That was fun!",
       "playAgain": "Play Again",
-      "otherGame": "Other Game"
+      "otherGame": "Other Game",
+      "categories": {
+        "eisbrecher": "Icebreakers",
+        "spass": "Humor & quirks",
+        "party": "Parties & music",
+        "freundschaft": "Friendship",
+        "liebe": "Connection & relationships",
+        "erinnerungen": "Memories",
+        "reisen": "Travel & discovery",
+        "traeume": "Dreams & future",
+        "entscheidungen": "Choices & values",
+        "kreativ": "Imagination & creativity"},
+      "categorySelection": "Choose categories",
+      "contentSelection": "What goes on the card?",
+      "questionsOnly": "Questions only",
+      "tasksOnly": "Challenges only",
+      "mixedCards": "Questions & challenges",
+      "availableCards": "{{count}} cards available",
+      "selectionRequired": "Choose at least one category.",
+      "prepareRound": "Prepare round",
+      "editSelection": "Change content"
     },
     "category": {
       "title": "Speed Category",
@@ -6999,7 +7071,22 @@
       "pointsAvailable": "points possible",
       "hintPrefix": "Starts with: {{letter}}",
       "showAnswer": "Show answer",
-      "guessed": "Guessed it!"
+      "guessed": "Guessed it!",
+      "answerLabel": "Your answer",
+      "teamLabel": "Team {{team}}",
+      "readyTitle": "Your puzzle is ready",
+      "readyBody": "Read the pictures from left to right. Guess a title or phrase in the shown category.",
+      "readyStart": "Ready – show puzzle",
+      "waitingFor": "Waiting for {{name}}",
+      "submitAnswer": "Check answer",
+      "tryAgain": "Not quite. Try another answer.",
+      "skipPuzzle": "Skip puzzle",
+      "solved": "Solved",
+      "solution": "Solution",
+      "acceptedAnswers": "Also accepted",
+      "nextPlayer": "Up next: {{name}}",
+      "clueLabel": "Picture puzzle",
+      "poolBudget": "{{puzzleCount}} curated puzzles. Larger groups get fewer rounds: equal turns for everyone, without repeats."
     },
     "fakeorfact": {
       "title": "Liar — Fake or Fact",
@@ -7016,7 +7103,8 @@
       "theTruthIs": "The truth is ...",
       "correctPct": "Correct: {{pct}}%",
       "incorrectPct": "Wrong: {{pct}}%",
-      "continue": "Continue"
+      "continue": "Continue",
+      "noAnswer": "No answer (time expired)"
     },
     "quickdraw": {
       "tagline": "Draw fast — the others guess!",
@@ -7039,7 +7127,12 @@
       "playerGuesses": "{{name}} guesses",
       "guessPlaceholder": "What is this?",
       "theWordWas": "The word was",
-      "showResults": "Results"
+      "showResults": "Results",
+      "pass": "Pass",
+      "penSize": "Pen width {{size}}",
+      "eraser": "Eraser",
+      "undo": "Undo",
+      "clear": "Clear drawing"
     },
     "sharedquiz": {
       "title": "Shared & Quizzed",
@@ -7061,7 +7154,10 @@
       "ready": "Ready",
       "hintLabel": "Hint",
       "readHintAndAnswer": "Read the hint aloud and choose your answer!",
-      "resultBtn": "Results"
+      "resultBtn": "Results",
+      "modeAnswerTurn": "{{name}} · Answer {{n}} of 3",
+      "chainRules": "Answer in sequence. Each correct answer earns one point for your trio. Answers stay hidden until all three submit.",
+      "allRules": "All three must answer correctly. Your trio earns three points, otherwise zero."
     },
     "storybuilder": {
       "setupTimerLabel": "Sentences per player",
@@ -7076,7 +7172,8 @@
       "ourStory": "Your Story",
       "showAll": "Show all",
       "playAgain": "Play again",
-      "otherGame": "Other game"
+      "otherGame": "Other game",
+      "skipTurn": "Skip turn"
     },
     "thisorthat": {
       "modeTagPopular": "Popular",
@@ -7112,7 +7209,8 @@
       "socialChallenge": "Social Challenge",
       "orWord": "or",
       "setupSubtitle": "Pick your mode and start the preference battle.",
-      "startGame": "Start Game"
+      "startGame": "Start game",
+      "tie": "Tie"
     },
     "wordpress": {
       "modes": {
@@ -7150,7 +7248,15 @@
       "winnerAnnounce": "{{name}} wins with {{score}} points!",
       "accuracyPct": "{{accuracy}}% accuracy",
       "comboStat": "Combo: {{maxCombo}}x",
-      "correctStat": "{{count}} correct"
+      "correctStat": "{{count}} correct",
+      "tapWord": "Tap the word",
+      "yourTask": "Your task",
+      "readyStart": "Got it — start",
+      "waitForMatch": "Tap the large word only when it matches the rule. Otherwise, let it pass.",
+      "waitForPlayer": "Waiting for {{name}} to start.",
+      "exampleCategory": "“{{animal}}”: tap. “{{object}}”: wait.",
+      "exampleStroop": "“{{red}}” in red: tap. “{{red}}” in blue: wait.",
+      "exampleForbidden": "“{{word}}”: wait. Every other word: tap."
     },
     "closeenough": {
       "anchors": {
@@ -7698,7 +7804,10 @@
     },
     "multiplayer": {
       "inviteEventGuests": "Invite event guests"
-    }
+    },
+    "connectionPaused": "Game paused",
+    "connectionPausedHint": "Reconnect to continue your game. Your current turn is kept.",
+    "reconnect": "Reconnect"
   },
   "native": {
     "home": {
@@ -8387,11 +8496,11 @@
       },
       "chain": {
         "name": "Chain Quiz",
-        "desc": "Hint chain from player to player"
+        "desc": "Answer in sequence. Each correct answer earns one point for your trio. Answers stay hidden until all three submit."
       },
       "allornothing": {
         "name": "All or Nothing",
-        "desc": "Points only if everyone is right"
+        "desc": "All three must answer correctly. Your trio earns three points, otherwise zero."
       }
     },
     "quickdraw": {
@@ -9589,7 +9698,8 @@
       "startGame": "Start game!",
       "notReadyCount": "Not ready yet: {{players}}",
       "shareText": "Join my game! Code: {{code}}",
-      "defaultPlayerName": "Player"
+      "defaultPlayerName": "Player",
+      "recoveredAfterReload": "The host reloaded the page. The previous game has ended. You can start a new game together here."
     },
     "gamesHub": {
       "quickStart": "Quick start",

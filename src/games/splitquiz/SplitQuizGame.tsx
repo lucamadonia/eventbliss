@@ -1,3 +1,8 @@
+import { GameStage } from '../ui/GameStage';
+import { TeamRail } from './TeamRail';
+import { partitionRoster, wagerPoints } from './rules';
+import { splitQuizSnapshotFor } from './private-state';
+import { useOnlineAuthority, useOnlineSnapshot, usePrivateSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
@@ -128,8 +133,8 @@ const SPLIT_QUESTIONS: QuizQuestion[] = [
 
 const ALL_CATEGORIES: Category[] = ['Geografie', 'Geschichte', 'Wissenschaft', 'Sport', 'Unterhaltung', 'Allgemeinwissen'];
 
-const TEAM_A_COLOR = '#df8eff';
-const TEAM_B_COLOR = '#8ff5ff';
+const TEAM_A_COLOR = '#a3d6ee';
+const TEAM_B_COLOR = '#f2b792';
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -172,7 +177,7 @@ interface SplitQuizGameProps {
 
 export default function SplitQuizGame({ players: initialPlayers, onClose, online }: SplitQuizGameProps) {
   const { t } = useTranslation();
-  const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
+  const onlinePlayerNames = online?.players?.map((p, i, all) => all.filter(other => other.name === p.name).length > 1 ? `${p.name} (${i + 1})` : p.name) ?? [];
   // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
   // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
   // genau einmal beim Mount und verpassten jede spaetere Aenderung.
@@ -196,9 +201,12 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   const gameRecordedRef = useRef(false);
   const [selectedCategories, setSelectedCategories] = useState<Set<Category>>(new Set(ALL_CATEGORIES));
 
+  const [rosterIds, setRosterIds] = useState(() => startPlayers.map((_, i) => online?.players[i]?.id ?? `local-${i}`));
+  const nameFor = (id: string) => playerNames[rosterIds.indexOf(id)] ?? id;
+  const initialOrder = useRef(shuffle(rosterIds));
   /* ---- Team state ---- */
-  const [teamA, setTeamA] = useState<TeamState>(() => buildTeam(t('games.splitquiz.teamA'), TEAM_A_COLOR, startPlayers, 0));
-  const [teamB, setTeamB] = useState<TeamState>(() => buildTeam(t('games.splitquiz.teamB'), TEAM_B_COLOR, startPlayers, 1));
+  const [teamA, setTeamA] = useState<TeamState>(() => buildTeam(t('games.splitquiz.teamA'), TEAM_A_COLOR, initialOrder.current, 0));
+  const [teamB, setTeamB] = useState<TeamState>(() => buildTeam(t('games.splitquiz.teamB'), TEAM_B_COLOR, initialOrder.current, 1));
 
   /* ---- Game state ---- */
   const [phase, setPhase] = useState<Phase>('setup');
@@ -222,6 +230,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   const [currentRound, setCurrentRound] = useState(1);
   const [activeTeamIdx, setActiveTeamIdx] = useState(0); // 0 = A answers first, then B
   const [teamAnswered, setTeamAnswered] = useState<[boolean, boolean]>([false, false]);
+  const sealedAnswers = useRef<[number | null, number | null]>([null, null]);
+  const sealedBets = useRef<[number, number]>([1, 1]);
+  const [roundOutcomes, setRoundOutcomes] = useState<{ answer: number; points: number }[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [currentBet, setCurrentBet] = useState(1);
   const [showBetting, setShowBetting] = useState(false);
@@ -238,56 +249,26 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   const playerCorrectMap = useRef<Record<string, number>>({});
 
   useTVGameBridge('splitquiz', {
-    phase, currentRound, players: playerNames, teamA, teamB, totalRounds,
-    question: currentQuestion?.question || '',
-    answers: currentQuestion?.answers || [],
+    phase, currentRound, players: playerNames, teamA: { ...teamA, players: teamA.players.map(nameFor) }, teamB: { ...teamB, players: teamB.players.map(nameFor) }, totalRounds,
+    question: !online || (phase === 'reveal' && teamAnswered[activeTeamIdx === 0 ? 1 : 0]) ? currentQuestion?.question || '' : '',
+    answers: !online || (phase === 'reveal' && teamAnswered[activeTeamIdx === 0 ? 1 : 0]) ? currentQuestion?.answers || [] : [],
     category: currentQuestion?.category || '',
-    correctAnswer: phase === 'reveal' ? currentQuestion?.correct ?? -1 : -1,
-  }, [phase, currentRound, activeTeamIdx]);
+    correctAnswer: phase === 'reveal' && teamAnswered.every(Boolean) ? currentQuestion?.correct ?? -1 : -1,
+  }, [phase, currentRound, activeTeamIdx], !online || online.isHost);
 
-  // --- Online sync: host broadcasts state, non-host receives ---
-  useEffect(() => {
-    if (!online || online.isHost) return;
-    const unsub = online.onBroadcast('splitquiz-state', (data) => {
-      if (data.phase !== undefined) setPhase(data.phase as Phase);
-      if (data.teamA) setTeamA(data.teamA as TeamState);
-      if (data.teamB) setTeamB(data.teamB as TeamState);
-      if (data.currentRound !== undefined) setCurrentRound(data.currentRound as number);
-      if (data.activeTeamIdx !== undefined) setActiveTeamIdx(data.activeTeamIdx as number);
-      if (data.currentQuestion !== undefined) setCurrentQuestion(data.currentQuestion as QuizQuestion | null);
-      if (data.answerSplit) setAnswerSplit(data.answerSplit as [number[], number[]]);
-      if (data.selectedAnswer !== undefined) setSelectedAnswer(data.selectedAnswer as number | null);
-      if (data.teamAnswered) setTeamAnswered(data.teamAnswered as [boolean, boolean]);
-    });
-    return unsub;
-  }, [online]);
-
-  const broadcastQuizState = useCallback((overrides?: Record<string, unknown>) => {
-    if (!online?.isHost) return;
-    online.broadcast('splitquiz-state', {
-      phase, teamA, teamB, currentRound, activeTeamIdx,
-      currentQuestion, answerSplit, selectedAnswer, teamAnswered,
-      ...overrides,
-    });
-  }, [online, phase, teamA, teamB, currentRound, activeTeamIdx, currentQuestion, answerSplit, selectedAnswer, teamAnswered]);
-
-  // Broadcast on key state changes
-  useEffect(() => {
-    if (online?.isHost && phase !== 'setup') {
-      broadcastQuizState();
-    }
-  }, [phase, currentRound, activeTeamIdx, selectedAnswer]);
-
+  const commitAnswerRef = useRef<(answer: number) => void>(() => {});
   /* ---- Timer ---- */
   const handleTimerExpire = useCallback(() => {
     // auto-skip if no answer given
     if (phase === 'question' || phase === 'betting') {
-      handleAnswer(-1);
+      if (online && !online.isHost) return;
+      timer.pause();
+      commitAnswerRef.current(-1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
-  const timer = useGameTimer(20, handleTimerExpire);
+  const timer = useGameTimer(20, handleTimerExpire, !online || (online.isHost && online.isConnected !== false));
 
   /* ---- Derived ---- */
   const activeTeam = activeTeamIdx === 0 ? teamA : teamB;
@@ -296,12 +277,12 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
   /* ---- Build team helper ---- */
   function buildTeam(name: string, color: string, pls: string[], half: number): TeamState {
-    const shuffled = shuffle(pls);
+    const shuffled = pls;
     const mid = Math.ceil(shuffled.length / 2);
     return {
       name,
       color,
-      players: half === 0 ? shuffled.slice(0, mid) : shuffled.slice(mid),
+      players: partitionRoster(shuffled)[half],
       score: 0,
       correctCount: 0,
     };
@@ -337,34 +318,36 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
   /* ---- Player management ---- */
   function addPlayer() {
-    if (playerNames.length >= 30) return;
+    if (online || playerNames.length >= 30) return;
     const name = t('games.splitquiz.defaultPlayer', { n: playerNames.length + 1 });
     setPlayerNames(prev => [...prev, name]);
+    const id = crypto.randomUUID();
+    setRosterIds(prev => [...prev, id]);
     // Add to smaller team
     if (teamA.players.length <= teamB.players.length) {
-      setTeamA(prev => ({ ...prev, players: [...prev.players, name] }));
+      setTeamA(prev => ({ ...prev, players: [...prev.players, id] }));
     } else {
-      setTeamB(prev => ({ ...prev, players: [...prev.players, name] }));
+      setTeamB(prev => ({ ...prev, players: [...prev.players, id] }));
     }
   }
 
   function removePlayer(idx: number) {
-    if (playerNames.length <= 4) return;
-    const name = playerNames[idx];
+    if (online || playerNames.length <= 4) return;
+    const name = rosterIds[idx];
+    setRosterIds(prev => prev.filter((_, i) => i !== idx));
     setPlayerNames(prev => prev.filter((_, i) => i !== idx));
     setTeamA(prev => ({ ...prev, players: prev.players.filter(p => p !== name) }));
     setTeamB(prev => ({ ...prev, players: prev.players.filter(p => p !== name) }));
   }
 
   function updatePlayerName(idx: number, name: string) {
-    const oldName = playerNames[idx];
+    if (online) return;
     setPlayerNames(prev => prev.map((p, i) => i === idx ? name : p));
-    setTeamA(prev => ({ ...prev, players: prev.players.map(p => p === oldName ? name : p) }));
-    setTeamB(prev => ({ ...prev, players: prev.players.map(p => p === oldName ? name : p) }));
   }
 
   const isOnlineOrParty = onlinePlayerNames.length >= 4 || partyPlayerNames.length >= 4;
   function handleImportNames(names: string[]) {
+    if (online) return;
     // REPLACE the entire roster with the imported names (drop all existing players
     // incl. placeholders), then pad up to the minimum of 4 with blank entries.
     const roster = names.slice(0, 30);
@@ -373,9 +356,11 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
       roster.push(t('games.splitquiz.defaultPlayer', { n: idx++ }));
     }
     setPlayerNames(roster);
+    const ids = roster.map(() => crypto.randomUUID());
+    setRosterIds(ids);
     const mid = Math.ceil(roster.length / 2);
-    setTeamA(prev => ({ ...prev, players: roster.slice(0, mid) }));
-    setTeamB(prev => ({ ...prev, players: roster.slice(mid) }));
+    setTeamA(prev => ({ ...prev, players: ids.slice(0, mid) }));
+    setTeamB(prev => ({ ...prev, players: ids.slice(mid) }));
   }
 
   /* ---- Drag player between teams ---- */
@@ -400,8 +385,40 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     setTeamB(prev => ({ ...prev, players: shuffled.slice(mid) }));
   }
 
+  const route = useOnlineAuthority(online, 'splitquiz', `${phase}:${currentRound}:${activeTeamIdx}`, {
+    startGame: { allow: (sender, args) => phase === "setup" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => startGame() },
+    beginQuestion: { allow: (sender, args) => phase === "handoff" && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => beginQuestion() },
+    confirmBet: { allow: (sender, args) => phase === "betting" && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => confirmBet() },
+    handleAnswer: { allow: (sender, args) => phase === "question" && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 4 && answerSplit[activeTeamIdx].includes(args[0]) && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => handleAnswer(args[0]) },
+    nextAfterReveal: { allow: (sender, args) => phase === "reveal" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => nextAfterReveal() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+    chooseBet: { allow: (sender, args) => phase === "betting" && [1,2,3].includes(args[0]) && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => chooseBet(args[0]) },
+  });
+
+  usePrivateSnapshot(online, 'splitquiz-state', { phase, teamA, teamB, currentRound, activeTeamIdx, currentQuestion, answerSplit, selectedAnswer, roundOutcomes, teamAnswered, totalRounds, bettingEnabled, currentBet, showBetting, playerNames, rosterIds, correctMap: playerCorrectMap.current }, (state, recipient) => splitQuizSnapshotFor(state, recipient), data => {
+    setPhase(data.phase);
+    setTeamA(data.teamA);
+    setTeamB(data.teamB);
+    setCurrentRound(data.currentRound);
+    setActiveTeamIdx(data.activeTeamIdx);
+    setCurrentQuestion(data.currentQuestion);
+    setAnswerSplit(data.answerSplit);
+    setSelectedAnswer(data.selectedAnswer);
+    setRoundOutcomes(data.roundOutcomes ?? []);
+    setTeamAnswered(data.teamAnswered);
+    setTotalRounds(data.totalRounds);
+    setBettingEnabled(data.bettingEnabled);
+    setCurrentBet(data.currentBet);
+    setShowBetting(data.showBetting);
+    setPlayerNames(data.playerNames);
+    setRosterIds(data.rosterIds);
+    playerCorrectMap.current = data.correctMap ?? {};
+  });
+  useOnlineSnapshot(online, 'splitquiz-clock-state', { timeLeft: timer.timeLeft }, data => timer.reset(data.timeLeft));
+  function chooseBet(value: number) { if (route('chooseBet', [value])) return; setCurrentBet(value); }
   /* ---- Start game ---- */
   function startGame() {
+    if (route("startGame", [])) return;
     buildDeck();
     playerCorrectMap.current = {};
     [...teamA.players, ...teamB.players].forEach(p => { playerCorrectMap.current[p] = 0; });
@@ -410,6 +427,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     setCurrentRound(1);
     setActiveTeamIdx(0);
     setTeamAnswered([false, false]);
+    setRoundOutcomes([]);
+    sealedAnswers.current = [null, null];
+    sealedBets.current = [1, 1];
     setPhase('handoff');
     const q = drawQuestion();
     setCurrentQuestion(q);
@@ -418,6 +438,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
   /* ---- Begin question for active team ---- */
   function beginQuestion() {
+    if (route("beginQuestion", [])) return;
     setSelectedAnswer(null);
     setCurrentBet(1);
     setShowBetting(false);
@@ -433,34 +454,46 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
   /* ---- Confirm bet ---- */
   function confirmBet() {
+    if (route("confirmBet", [])) return;
     setShowBetting(false);
     setPhase('question');
   }
 
   /* ---- Handle answer ---- */
   function handleAnswer(answerIdx: number) {
+    if (route("handleAnswer", [answerIdx])) return;
+    commitAnswer(answerIdx);
+  }
+
+  function commitAnswer(answerIdx: number) {
+    if (sealedAnswers.current[activeTeamIdx] !== null) return;
     timer.pause();
-    setSelectedAnswer(answerIdx);
-
-    if (currentQuestion && answerIdx >= 0 && answerIdx === currentQuestion.correct) {
-      const points = 100 * currentBet;
-      const setActive = activeTeamIdx === 0 ? setTeamA : setTeamB;
-      setActive(prev => ({
-        ...prev,
-        score: prev.score + points,
-        correctCount: prev.correctCount + 1,
-      }));
-      // Track MVP
-      activeTeam.players.forEach(p => {
-        playerCorrectMap.current[p] = (playerCorrectMap.current[p] || 0) + 1;
-      });
+    sealedAnswers.current[activeTeamIdx] = answerIdx;
+    sealedBets.current[activeTeamIdx] = currentBet;
+    const answered: [boolean, boolean] = [...teamAnswered];
+    answered[activeTeamIdx] = true;
+    setTeamAnswered(answered);
+    if (!answered[activeTeamIdx === 0 ? 1 : 0]) {
+      setActiveTeamIdx(activeTeamIdx === 0 ? 1 : 0);
+      setSelectedAnswer(null);
+      setPhase('handoff');
+      return;
     }
-
+    setRoundOutcomes(sealedAnswers.current.map((answer, i) => ({ answer: answer ?? -1, points: wagerPoints(answer === currentQuestion?.correct, sealedBets.current[i]) })));
+    [setTeamA, setTeamB].forEach((setTeam, i) => {
+      const correct = sealedAnswers.current[i] === currentQuestion?.correct;
+      const points = wagerPoints(correct, sealedBets.current[i]);
+      setTeam(prev => ({ ...prev, score: prev.score + points, correctCount: prev.correctCount + (correct ? 1 : 0) }));
+    });
+    setSelectedAnswer(answerIdx);
     setPhase('reveal');
   }
 
+  commitAnswerRef.current = commitAnswer;
+
   /* ---- Next after reveal ---- */
   function nextAfterReveal() {
+    if (route("nextAfterReveal", [])) return;
     const newAnswered: [boolean, boolean] = [...teamAnswered];
     newAnswered[activeTeamIdx] = true;
     setTeamAnswered(newAnswered);
@@ -482,6 +515,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
     setCurrentRound(r => r + 1);
     setTeamAnswered([false, false]);
+    setRoundOutcomes([]);
+    sealedAnswers.current = [null, null];
+    sealedBets.current = [1, 1];
     setActiveTeamIdx(0);
     setSelectedAnswer(null);
     setCurrentBet(1);
@@ -512,11 +548,15 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   // deck, resets per-match round/turn state, then jumps straight to handoff
   // (never back to setup).
   function playAgain() {
+    if (route("playAgain", [])) return;
     gameRecordedRef.current = false;
     buildDeck();
     setCurrentRound(1);
     setActiveTeamIdx(0);
     setTeamAnswered([false, false]);
+    setRoundOutcomes([]);
+    sealedAnswers.current = [null, null];
+    sealedBets.current = [1, 1];
     setSelectedAnswer(null);
     setCurrentBet(1);
     setShowBetting(false);
@@ -555,6 +595,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
   /* Jede Phase hat hier ihr eigenes `return`. Damit der Verlassen-Dialog
      nicht mehrfach im Quelltext steht, wird er einmal gebaut. */
+  const arenaRail = <TeamRail teams={[teamA,teamB].map(team=>({...team,players:team.players.map(nameFor)}))} active={activeTeamIdx} round={currentRound} total={totalRounds}/>;
   const exitDialog = <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />;
 
   /* ================================================================== */
@@ -562,9 +603,26 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   /* ================================================================== */
 
   /* ---- SETUP ---- */
+  const myTeamName = online?.myPlayerId ?? '';
+  const myTeamIndex = teamA.players.includes(myTeamName) ? 0 : teamB.players.includes(myTeamName) ? 1 : -1;
+  if (online && phase !== 'setup' && phase !== 'gameOver' && phase !== 'reveal' && myTeamIndex !== activeTeamIdx) {
+    return <GameStage gameId="split-quiz" className="quiz-arena min-h-[100dvh]  text-white px-5 py-10 flex flex-col items-center justify-center gap-6">
+      {exitDialog}
+        {arenaRail}
+      <h1 className="text-2xl font-bold">{t('games.splitquiz.title')}</h1>
+      <p>{t('games.splitquiz.roundOf', { current: currentRound, total: totalRounds })}</p>
+      <div className="max-w-md w-full rounded-3xl bg-white/5 border border-white/10 p-8 text-center space-y-4">
+        <h2 className="text-3xl font-bold" style={{ color: activeTeam.color }}>{activeTeam.name}</h2>
+        <p className="text-white/50">{activeTeam.players.map(nameFor).join(' · ')}</p>
+        <p>{t('nativeExtra.gameLobby.waitingForPlayers')}</p>
+      </div>
+      <p>{teamA.name}: {teamA.score} · {teamB.name}: {teamB.score}</p>
+    </GameStage>;
+  }
+  if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
   if (phase === 'setup') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-6">
+      <GameStage gameId="split-quiz" className="quiz-arena min-h-screen     px-4 py-6">
         <div className="mx-auto max-w-lg space-y-6">
           {/* Header */}
           <div className="text-center space-y-1">
@@ -580,7 +638,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
           </div>
 
           {/* Player names */}
-          <PlayerSetup
+          <PlayerSetup locked={!!online}
             players={playerNames.map((name, i) => ({ id: String(i), name }))}
             onAdd={addPlayer}
             onRemove={(id) => removePlayer(Number(id))}
@@ -607,9 +665,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                     whileTap={{ scale: 0.95 }}
                   >
                     <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ backgroundColor: TEAM_A_COLOR }}>
-                      {p.charAt(0).toUpperCase()}
+                      {nameFor(p).charAt(0).toUpperCase()}
                     </span>
-                    <span className="truncate">{p}</span>
+                    <span className="truncate">{nameFor(p)}</span>
                     <ChevronRight className="w-3 h-3 ml-auto opacity-40" />
                   </motion.button>
                 ))}
@@ -629,9 +687,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                     whileTap={{ scale: 0.95 }}
                   >
                     <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold" style={{ backgroundColor: TEAM_B_COLOR }}>
-                      {p.charAt(0).toUpperCase()}
+                      {nameFor(p).charAt(0).toUpperCase()}
                     </span>
-                    <span className="truncate">{p}</span>
+                    <span className="truncate">{nameFor(p)}</span>
                     <ChevronRight className="w-3 h-3 ml-auto opacity-40 rotate-180" />
                   </motion.button>
                 ))}
@@ -683,7 +741,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
           {/* Betting toggle */}
           <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-[#f1f3fc]">{t('games.splitquiz.bettingEnabled')}</span>
+            <span className="text-sm text-[#f1f3fc]">{t('games.splitquiz.bettingEnabled')}<span className="block text-xs text-white/50 mt-1">{t('games.splitquiz.wagerRisk')}</span></span>
             <button
               onClick={() => setBettingEnabled(!bettingEnabled)}
               className={cn(
@@ -710,17 +768,18 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             <Play className="w-5 h-5" /> {t('games.splitquiz.startGame')}
           </motion.button>
         </div>
-      </div>
+      </GameStage>
     );
   }
 
   /* ---- HANDOFF (pass the phone) ---- */
   if (phase === 'handoff') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] flex items-center justify-center px-4">
+      <GameStage gameId="split-quiz" className="quiz-arena arena-stacked min-h-screen flex flex-col items-center px-4">
         {exitDialog}
+        {arenaRail}
         <motion.div
-          className="text-center space-y-6 max-w-sm"
+          className="arena-handoff text-center space-y-6 w-full max-w-xl"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: 'spring', stiffness: 200, damping: 20 }}
@@ -734,7 +793,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
           <div>
             <p className="text-[#a8abb3] text-sm">{t('games.splitquiz.roundOf', { current: currentRound, total: totalRounds })}</p>
             <h2 className="text-2xl font-bold text-white mt-1">
-              {t('games.splitquiz.passDevice')}
+              {online ? t('games.splitquiz.ready') : t('games.splitquiz.passDevice')}
             </h2>
             <h2 className="text-3xl font-black mt-1" style={{ color: activeTeam.color }}>
               {activeTeam.name}
@@ -742,31 +801,32 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             <div className="flex flex-wrap justify-center gap-1.5 mt-3">
               {activeTeam.players.map(p => (
                 <span key={p} className="px-2 py-1 rounded-full text-xs font-medium text-white/80" style={{ backgroundColor: `${activeTeam.color}30` }}>
-                  {p}
+                  {nameFor(p)}
                 </span>
               ))}
             </div>
           </div>
-          <p className="text-[#a8abb3]/60 text-xs">{t('games.splitquiz.nopeekWarning')}</p>
+          {!online && <p className="text-[#a8abb3]/60 text-xs">{t('games.splitquiz.nopeekWarning')}</p>}
           <motion.button
             onClick={beginQuestion}
-            className="px-8 py-3.5 rounded-2xl text-white font-bold text-lg shadow-lg"
-            style={{ backgroundColor: activeTeam.color, boxShadow: `0 0 30px ${activeTeam.color}50` }}
+            className="arena-primary px-8 py-3.5 rounded-lg font-bold text-lg"
+            style={{ backgroundColor: activeTeam.color, boxShadow: 'none' }}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
           >
             {t('games.splitquiz.ready')} <ArrowRight className="w-5 h-5 inline ml-1" />
           </motion.button>
         </motion.div>
-      </div>
+      </GameStage>
     );
   }
 
   /* ---- BETTING ---- */
   if (phase === 'betting' && showBetting && currentQuestion) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] flex items-center justify-center px-4">
+      <GameStage gameId="split-quiz" className="quiz-arena arena-stacked min-h-screen flex flex-col items-center px-4">
         {exitDialog}
+        {arenaRail}
         <motion.div
           className="w-full max-w-sm space-y-6 text-center"
           initial={{ opacity: 0, y: 20 }}
@@ -793,9 +853,10 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             {[1, 2, 3].map(bet => (
               <motion.button
                 key={bet}
-                onClick={() => setCurrentBet(bet)}
+                data-selected={currentBet === bet}
+                onClick={() => chooseBet(bet)}
                 className={cn(
-                  'w-20 h-20 rounded-2xl font-bold text-xl border-2 transition-all',
+                  'arena-chip font-bold text-2xl transition-all',
                   currentBet === bet
                     ? 'text-white scale-105'
                     : 'text-[#a8abb3] bg-[#1b2028]/50 border-[#44484f]'
@@ -807,8 +868,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                 } : undefined}
                 whileTap={{ scale: 0.95 }}
               >
-                <Zap className="w-4 h-4 mx-auto mb-1" />
-                {bet}x
+                <span>{bet}x</span><small>+{bet*100} / {100*(1-bet)}</small>
               </motion.button>
             ))}
           </div>
@@ -819,14 +879,14 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
           <motion.button
             onClick={confirmBet}
-            className="w-full py-3.5 rounded-2xl text-white font-bold text-base"
+            className="arena-primary w-full py-3.5 rounded-lg font-bold text-base"
             style={{ backgroundColor: activeTeam.color }}
             whileTap={{ scale: 0.97 }}
           >
             {t('games.splitquiz.confirmBet')}
           </motion.button>
         </motion.div>
-      </div>
+      </GameStage>
     );
   }
 
@@ -836,8 +896,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     const answerLabels = activeTeamIdx === 0 ? ['A', 'B'] : ['C', 'D'];
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-6 flex flex-col">
+      <GameStage gameId="split-quiz" className="quiz-arena min-h-screen     px-4 py-6 flex flex-col">
         {exitDialog}
+        {arenaRail}
         {/* HUD */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
@@ -887,7 +948,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
           animate={{ opacity: 1, y: 0 }}
           key={`q-${currentRound}-${activeTeamIdx}`}
         >
-          <div className="w-full max-w-md rounded-3xl p-6 backdrop-blur-xl bg-white/5 border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] mb-6">
+          <div className="arena-question-card w-full max-w-3xl mb-6">
             <p className="text-xs text-[#a8abb3]/60 mb-2 uppercase tracking-wider">{t(`games.splitquiz.cat_${currentQuestion.category}`)}</p>
             <h2 className="text-xl font-bold text-white leading-tight">{currentQuestion.question}</h2>
             {currentBet > 1 && (
@@ -898,12 +959,12 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
           </div>
 
           {/* Answer buttons */}
-          <div className="w-full max-w-md space-y-3">
+          <div className="w-full max-w-3xl grid gap-3 sm:grid-cols-2">
             {visibleAnswerIndices.map((ansIdx, i) => (
               <motion.button
                 key={ansIdx}
                 onClick={() => handleAnswer(ansIdx)}
-                className="w-full py-4 px-5 rounded-2xl text-left font-medium text-white border-2 transition-all backdrop-blur-sm bg-white/5 hover:bg-white/10 flex items-center gap-3"
+                className="arena-answer w-full text-left font-medium text-white border-2 transition-all flex items-center gap-3"
                 style={{ borderColor: `${activeTeam.color}60` }}
                 whileHover={{ scale: 1.01, borderColor: activeTeam.color }}
                 whileTap={{ scale: 0.98 }}
@@ -922,21 +983,22 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             ))}
           </div>
         </motion.div>
-      </div>
+      </GameStage>
     );
   }
 
   /* ---- REVEAL ---- */
   if (phase === 'reveal' && currentQuestion) {
     const isCorrect = selectedAnswer === currentQuestion.correct;
-    const points = isCorrect ? 100 * currentBet : 0;
+    const points = wagerPoints(isCorrect, currentBet);
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-6 flex flex-col items-center justify-center">
+      <GameStage gameId="split-quiz" className="quiz-arena min-h-screen     px-4 py-6 flex flex-col items-center justify-center">
         {exitDialog}
+        {arenaRail}
         <AnimatePresence>
           <motion.div
-            className="w-full max-w-md space-y-6 text-center"
+            className="w-full max-w-3xl space-y-6 text-center"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             key="reveal"
@@ -971,13 +1033,15 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                 'text-4xl font-black',
                 isCorrect ? 'text-green-400' : 'text-red-400'
               )}>
-                {isCorrect ? `+${points}` : '+0'}
+                {points > 0 ? `+${points}` : points}
               </p>
             </motion.div>
 
+            <div className="arena-reveal-table">{roundOutcomes.map((outcome, i) => <div key={i} className="rounded-xl bg-white/5 p-3"><strong>{i === 0 ? teamA.name : teamB.name}</strong><p>{outcome.answer >= 0 ? 'ABCD'[outcome.answer] : '-'} / {outcome.points > 0 ? '+' : ''}{outcome.points}</p></div>)}</div>
             {/* All answers revealed */}
             <div className="space-y-2 text-left">
               {currentQuestion.answers.map((ans, i) => {
+                if (online && !ans) return null;
                 const isCorrectAnswer = i === currentQuestion.correct;
                 const wasSelected = i === selectedAnswer;
                 return (
@@ -1034,7 +1098,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
             {/* Next button */}
             <motion.button
-              onClick={nextAfterReveal}
+              disabled={!!online && !online.isHost} onClick={nextAfterReveal}
               className="w-full py-3.5 rounded-2xl bg-white/10 border border-white/20 text-white font-bold text-base backdrop-blur-sm hover:bg-white/15 transition-colors"
               whileTap={{ scale: 0.97 }}
               initial={{ opacity: 0 }}
@@ -1045,7 +1109,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             </motion.button>
           </motion.div>
         </AnimatePresence>
-      </div>
+      </GameStage>
     );
   }
 
@@ -1056,7 +1120,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     const isDraw = teamA.score === teamB.score;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0a0e14] via-[#0f141a] to-[#0a0e14] px-4 py-8">
+      <GameStage gameId="split-quiz" className="quiz-arena min-h-screen     px-4 py-8">
         <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
         <div className="mx-auto max-w-md space-y-6">
           {/* Confetti dots */}
@@ -1154,7 +1218,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
                 <p className="text-xs text-[#a8abb3]">{t('games.splitquiz.correctCount', { count: team.correctCount })}</p>
                 <div className="space-y-1">
                   {team.players.map(p => (
-                    <span key={p} className="block text-xs text-[#a8abb3] truncate">{p}</span>
+                    <span key={p} className="block text-xs text-[#a8abb3] truncate">{nameFor(p)}</span>
                   ))}
                 </div>
               </div>
@@ -1162,7 +1226,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
           </motion.div>
 
           {/* MVP */}
-          {mvp && (
+          {false && mvp && (
             <motion.div
               className="rounded-2xl border border-yellow-500/30 bg-yellow-500/10 p-3 text-center relative z-10"
               initial={{ opacity: 0, y: 10 }}
@@ -1212,7 +1276,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
               </motion.button>
             )}
             <motion.button
-              onClick={playAgain}
+              disabled={!!online && !online.isHost} onClick={playAgain}
               className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(59,130,246,0.4)] text-sm"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
@@ -1222,7 +1286,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
             </motion.button>
           </motion.div>
         </div>
-      </div>
+      </GameStage>
     );
   }
 

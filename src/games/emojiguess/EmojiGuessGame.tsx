@@ -1,6 +1,10 @@
+import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
+import './design.css';
+import { matchesEmojiAnswer, awardEmojiPoints, publicEmojiPuzzle, nextEmojiTurn, emojiRoundBudget } from './game-rules';
+import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   Play, Trophy, RotateCcw, Timer, ArrowLeft, ArrowRight,
@@ -23,7 +27,7 @@ import { hasShellBackButton } from '@/games/ui/shell-back';
 // Types
 // ---------------------------------------------------------------------------
 
-type Phase = 'setup' | 'playing' | 'reveal' | 'roundEnd' | 'gameOver';
+type Phase = 'ready' | 'setup' | 'playing' | 'reveal' | 'roundEnd' | 'gameOver';
 
 interface Player {
   id: string;
@@ -66,7 +70,7 @@ const GAME_MODES: GameMode[] = [
 // Component
 // ---------------------------------------------------------------------------
 
-export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } = {}) {
+function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   // Zurück mitten in der Runde darf die Partie nicht wegwerfen.
@@ -74,7 +78,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
 
   const SETUP_SETTINGS: SettingsConfig = {
     timer: { min: 5, max: 60, default: 30, step: 5, label: t('games.setup.timer') },
-    rounds: { min: 5, max: 30, default: 10, step: 1, label: t('games.setup.rounds') },
+    rounds: { min: 1, max: 30, default: 10, step: 1, label: t('games.setup.rounds') },
   };
 
   // Setup state
@@ -93,6 +97,10 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
   });
   const [players, setPlayers] = useState<Player[]>([]);
   const [mode, setMode] = useState('classic');
+  const [answerInput, setAnswerInput] = useState('');
+  const [answerError, setAnswerError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const [roundPoints, setRoundPoints] = useState(0);
   const [timerDuration, setTimerDuration] = useState(30);
   const [totalRounds, setTotalRounds] = useState(10);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
@@ -112,18 +120,23 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
 
   // Timer
   const handleTimerExpire = useCallback(() => {
+    if (online && (!online.isHost || online.isConnected === false)) return;
+    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
+    if (pointsIntervalRef.current) clearInterval(pointsIntervalRef.current);
+    setPlayers(prev => awardEmojiPoints(prev, currentPlayerIdx, 0, mode === 'team'));
     setPhase('reveal');
-  }, []);
-  const timer = useGameTimer(timerDuration, handleTimerExpire);
+  }, [online, currentPlayerIdx, mode]);
+  const timer = useGameTimer(timerDuration, handleTimerExpire, !online || (online.isHost && online.isConnected !== false));
+  useOnlineSnapshot(online, 'emojiguess-clock-state', { timeLeft: timer.timeLeft }, data => timer.reset(data.timeLeft));
 
   useTVGameBridge('emojiguess', {
     phase, currentRound, currentPlayerIdx, players, totalRounds,
-    emojis: currentPuzzle?.emojis || '',
-    category: currentPuzzle?.category || '',
-    answer: showAnswer ? (currentPuzzle?.answer || '') : '',
+    emojis: phase === 'ready' ? '' : currentPuzzle?.emojis || '',
+    category: phase === 'ready' ? '' : currentPuzzle?.category || '',
+    answer: phase === 'reveal' ? (currentPuzzle?.answer || '') : '',
     timeLeft: timer.timeLeft,
     maxTime: timerDuration,
-  }, [phase, currentRound, currentPlayerIdx, showAnswer, timer.timeLeft]);
+  }, [phase, currentRound, currentPlayerIdx, showAnswer, timer.timeLeft], !online || online.isHost);
 
   // Derived
   const currentPlayer = players[currentPlayerIdx] ?? null;
@@ -138,6 +151,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
       selectedMode: string,
       settings: { timer: number; rounds: number },
     ) => {
+      if (online && (!online.isHost || online.isConnected === false)) return;
       const mapped: Player[] = setupPlayers.map((p, i) => ({
         ...p,
         color: PLAYER_COLORS[i % PLAYER_COLORS.length],
@@ -147,52 +161,58 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
       setPlayers(mapped);
       setMode(selectedMode);
       setTimerDuration(selectedMode === 'speed' ? 10 : settings.timer);
-      setTotalRounds(settings.rounds);
       deck.current = shuffle(getEMOJI_PUZZLES());
+      setTotalRounds(emojiRoundBudget(settings.rounds, mapped.length, deck.current.length));
       deckPos.current = 0;
       setCurrentRound(1);
       setCurrentPlayerIdx(0);
       startRound(selectedMode === 'speed' ? 10 : settings.timer);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
+    [online],
   );
 
   // ---------------------------------------------------------------------------
   // Game logic
   // ---------------------------------------------------------------------------
 
+  const route = useOnlineAuthority(online, 'emojiguess', `${phase}:${currentRound}:${currentPlayerIdx}:${attempt}`, {
+    ready: { allow: sender => phase === 'ready' && sender === players[currentPlayerIdx]?.id, run: () => ready() },
+    toggleAnswer: { allow: sender => phase === 'playing' && sender === players[currentPlayerIdx]?.id, run: () => toggleAnswer() },
+    handleCorrectGuess: { allow: (sender, args) => phase === "playing" && typeof args[0] === "string" && args[0].length <= 120 && sender === players[currentPlayerIdx]?.id, run: (...args) => handleCorrectGuess(args[0]) },
+    handleSkip: { allow: (sender, args) => phase === "playing" && sender === players[currentPlayerIdx]?.id, run: (...args) => handleSkip() },
+    advanceRound: { allow: (sender, args) => phase === "reveal" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => advanceRound() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+  });
+
+  function ready() { if (route('ready')) return; timer.start(); setPhase('playing'); }
+
+  function toggleAnswer() { if (route('toggleAnswer')) return; stopTimers(); setShowAnswer(true); setPlayers(prev => awardEmojiPoints(prev, currentPlayerIdx, 0, mode === 'team')); setPhase('reveal'); }
+
   function drawPuzzle(): EmojiPuzzle {
-    if (deckPos.current >= deck.current.length) {
-      deck.current = shuffle(getEMOJI_PUZZLES());
-      deckPos.current = 0;
-    }
     return deck.current[deckPos.current++];
   }
 
   function startRound(dur?: number) {
     const puzzle = drawPuzzle();
     setCurrentPuzzle(puzzle);
+    setRoundPoints(0);
+    setAnswerInput(''); setAnswerError(false); setAttempt(0);
     setShowHint(false);
+    setShowAnswer(false);
     setPointsAvailable(100);
     timer.reset(dur ?? timerDuration);
-    timer.start();
-    setPhase('playing');
+    timer.pause();
+    setPhase('ready');
 
-    // Hint after 15 seconds
-    if (hintTimerRef.current) clearTimeout(hintTimerRef.current);
-    hintTimerRef.current = setTimeout(() => setShowHint(true), 15000);
-
-    // Decrease available points over time
-    if (pointsIntervalRef.current) clearInterval(pointsIntervalRef.current);
-    const effectiveDur = dur ?? timerDuration;
-    const interval = (effectiveDur * 1000) / 100;
-    let pts = 100;
-    pointsIntervalRef.current = setInterval(() => {
-      pts = Math.max(10, pts - 1);
-      setPointsAvailable(pts);
-    }, interval);
   }
+
+  // Derive hints and points from the authoritative pausable clock.
+  useEffect(() => {
+    if (phase !== 'playing' || (online && (!online.isHost || online.isConnected === false))) return;
+    setPointsAvailable(Math.max(10, Math.round(timer.timeLeft / timerDuration * 100)));
+    setShowHint(timerDuration - timer.timeLeft >= Math.ceil(timerDuration / 2));
+  }, [phase, timer.timeLeft, timerDuration, online?.isHost, online?.isConnected]);
 
   function stopTimers() {
     if (hintTimerRef.current) { clearTimeout(hintTimerRef.current); hintTimerRef.current = null; }
@@ -200,34 +220,32 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
     timer.pause();
   }
 
-  function handleCorrectGuess() {
+  function handleCorrectGuess(answer = answerInput) {
+    if (route("handleCorrectGuess", [answer])) return;
+    if (typeof answer !== 'string' || !matchesEmojiAnswer(answer, currentPuzzle?.answer ?? '', currentPuzzle?.aliases)) {
+      setAnswerError(true);
+      setAttempt(value => value + 1);
+      return;
+    }
     stopTimers();
-    const pts = pointsAvailable;
-    setPlayers(prev => prev.map((p, i) =>
-      i === currentPlayerIdx ? { ...p, score: p.score + pts, streak: p.streak + 1 } : p
-    ));
+    setRoundPoints(showAnswer ? 0 : pointsAvailable);
+    setPlayers(prev => awardEmojiPoints(prev, currentPlayerIdx, showAnswer ? 0 : pointsAvailable, mode === 'team'));
     setPhase('reveal');
   }
 
   function handleSkip() {
+    if (route("handleSkip", [])) return;
     stopTimers();
-    setPlayers(prev => prev.map((p, i) =>
-      i === currentPlayerIdx ? { ...p, streak: 0 } : p
-    ));
+    setPlayers(prev => awardEmojiPoints(prev, currentPlayerIdx, 0, mode === 'team'));
     setPhase('reveal');
   }
 
   function advanceRound() {
-    const nextPlayer = (currentPlayerIdx + 1) % players.length;
-    const isNewRound = nextPlayer === 0;
-
-    if (isNewRound && currentRound >= totalRounds) {
-      setPhase('gameOver');
-      return;
-    }
-
-    setCurrentPlayerIdx(nextPlayer);
-    if (isNewRound) setCurrentRound(r => r + 1);
+    if (route("advanceRound", [])) return;
+    const next = nextEmojiTurn(currentPlayerIdx, currentRound, players.length, totalRounds);
+    if (next.finished) { setPhase('gameOver'); return; }
+    setCurrentPlayerIdx(next.nextPlayer);
+    setCurrentRound(next.round);
     startRound();
   }
 
@@ -235,7 +253,8 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
       const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      recordEnd('emoji-raten', winner?.score ?? 0, true);
+      const me = online ? players.find(p => p.id === online.myPlayerId) : winner;
+      recordEnd('emoji-raten', me?.score ?? 0, !!me && me.score === Math.max(...players.map(p => p.score)));
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -249,11 +268,13 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
   }
 
   // Rematch: restart gameplay directly with the SAME players and their
-  // accumulated scores/streaks. Only per-match content is reset (fresh deck,
+  // settings. Scores and content reset for the new match (fresh deck,
   // round/player counters), then we jump straight into the first round.
   function playAgain() {
+    if (route("playAgain", [])) return;
     stopTimers();
     gameRecordedRef.current = false;
+    setPlayers(prev => prev.map(p => ({ ...p, score: 0, streak: 0 })));
     deck.current = shuffle(getEMOJI_PUZZLES());
     deckPos.current = 0;
     setCurrentRound(1);
@@ -261,6 +282,8 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
     setShowAnswer(false);
     startRound();
   }
+
+  useEffect(() => { setAnswerInput(''); }, [currentRound, currentPlayerIdx]);
 
   // Cleanup
   useEffect(() => {
@@ -276,58 +299,59 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
     [players],
   );
 
-  /* ---- Online: host broadcasts game state (question sync) ---- */
-  useEffect(() => {
-    if (!online?.isHost) return;
-    online.broadcast('game-state', {
-      phase, currentRound, totalRounds, currentPlayerIdx,
-      currentPuzzle: currentPuzzle ? { emojis: currentPuzzle.emojis, hint: currentPuzzle.hint, answer: currentPuzzle.answer } : null,
-      players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
-    });
-  }, [phase, currentRound, currentPlayerIdx, currentPuzzle, players, online]);
-
-  /* ---- Online: non-host syncs state ---- */
-  useEffect(() => {
-    if (!online || online.isHost) return;
-    return online.onBroadcast('game-state', (data) => {
-      if (data.phase) setPhase(data.phase as Phase);
-      if (data.currentRound) setCurrentRound(data.currentRound as number);
-      if (data.currentPlayerIdx !== undefined) setCurrentPlayerIdx(data.currentPlayerIdx as number);
-      if (data.currentPuzzle) setCurrentPuzzle(data.currentPuzzle as EmojiPuzzle);
-      if (data.players) {
-        const incoming = data.players as { id: string; name: string; score: number }[];
-        setPlayers(prev => prev.map((p, i) => ({
-          ...p, score: incoming[i]?.score ?? p.score,
-        })));
-      }
-    });
-  }, [online]);
+  useOnlineSnapshot(online, 'game-state', { phase, currentRound, totalRounds, currentPlayerIdx, currentPuzzle: phase === 'ready' ? null : publicEmojiPuzzle(currentPuzzle, phase === 'reveal' || phase === 'gameOver', showHint), players, mode, timerDuration, showHint, showAnswer, pointsAvailable, answerError, attempt, roundPoints }, data => {
+    setRoundPoints(data.roundPoints);
+    setAnswerError(data.answerError); setAttempt(data.attempt ?? 0);
+    setPhase(data.phase);
+    setCurrentRound(data.currentRound);
+    setTotalRounds(data.totalRounds);
+    setCurrentPlayerIdx(data.currentPlayerIdx);
+    setCurrentPuzzle(data.currentPuzzle);
+    setPlayers(data.players);
+    setMode(data.mode);
+    setTimerDuration(data.timerDuration);
+    setShowHint(data.showHint);
+    setShowAnswer(data.showAnswer);
+    setPointsAvailable(data.pointsAvailable);
+  });
 
   // =========================================================================
   // RENDER
   // =========================================================================
 
+  if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
   if (phase === 'setup') {
     return (
+      <>
+      <p className="rebus-budget">{t('games.emojiguess.poolBudget', { puzzleCount: getEMOJI_PUZZLES().length, defaultValue: '{{puzzleCount}} kuratierte Rätsel. Die Rundenzahl wird bei großen Gruppen begrenzt: gleich viele Züge für alle, ohne Wiederholung.' })}</p>
       <GameSetup
         gameId="emojiguess"
-        modes={getTranslatedModes('emojiguess', GAME_MODES, t)}
+        modes={getTranslatedModes('emojiguess', GAME_MODES, (key, fallback) => t(key, { defaultValue: fallback }))}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
         title={t('games.emojiguess.title')}
+        maxPlayers={20}
         onlinePlayers={online?.players}
       />
+      </>
     );
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
-      <style>{`
-.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
-.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-      `}</style>
-      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
+    <div data-phase={phase} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
+      {phase === 'ready' && <section className="rebus-ready">
+        <StageHeader eyebrow={t('games.emojiguess.title')} title={currentPlayer?.name}
+          subtitle={t('games.findit.roundLabel', { current: currentRound, total: totalRounds })} />
+        <StagePanel tone="paper" className="rebus-ready-card">
+          <span className="rebus-issue">{String(currentRound).padStart(2, '0')}</span>
+          <h2>{t('games.emojiguess.readyTitle', { defaultValue: 'Dein Rätsel wartet' })}</h2>
+          <p>{t('games.emojiguess.readyBody', { defaultValue: 'Lies die Bilder von links nach rechts. Gesucht ist ein Begriff aus der angezeigten Kategorie.' })}</p>
+          <p className="rebus-ready-time">{timerDuration} s · {t('games.emojiguess.pointsAvailable')} 100</p>
+        </StagePanel>
+        {!online || online.myPlayerId === currentPlayer?.id
+          ? <StageAction onClick={ready}>{t('games.emojiguess.readyStart', { defaultValue: 'Bereit – Rätsel zeigen' })}<ArrowRight className="h-5 w-5" /></StageAction>
+          : <p role="status">{t('games.emojiguess.waitingFor', { name: currentPlayer?.name, defaultValue: 'Warte auf {{name}}' })}</p>}
+      </section>}
       {/* ---- PLAYING ---- */}
       {phase === 'playing' && currentPuzzle && (
         <div className="flex-1 flex flex-col">
@@ -335,7 +359,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
           <div className="h-1 bg-white/[0.04]">
             <motion.div
               className={cn('h-full', timer.percentLeft > 25
-                ? 'bg-gradient-to-r from-[#df8eff] to-[#8ff5ff]'
+                ? 'bg-gradient-to-r from-[#eed867] to-[#e9e4d3]'
                 : 'bg-red-500')}
               initial={{ width: '100%' }}
               animate={{ width: `${timer.percentLeft}%` }}
@@ -343,104 +367,41 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
             />
           </div>
 
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                style={{ backgroundColor: currentPlayer?.color }}
-              >
-                {currentPlayer?.avatar}
-              </div>
-              <span className="text-sm text-white/60">{currentPlayer?.name}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-white/40">{t('games.findit.roundLabel', { current: currentRound, total: totalRounds })}</span>
-              <div className={cn(
-                'px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-lg font-mono font-bold',
-                timer.timeLeft <= 5 ? 'text-red-400 animate-pulse' : 'text-white/80',
-              )}>
-                {timer.timeLeft}s
-              </div>
-            </div>
-          </div>
-
+          <StageHeader eyebrow={t('games.emojiguess.title')} title={currentPlayer?.name}
+            subtitle={t('games.findit.roundLabel', { current: currentRound, total: totalRounds })}
+            trailing={<span className="rebus-clock" role="timer">{timer.timeLeft}<small>s</small></span>} />
           {/* Category badge */}
           <div className="flex justify-center mb-2">
-            <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs font-semibold text-[#df8eff]">
-              {currentPuzzle.category} {'⭐'.repeat(currentPuzzle.difficulty)}
+            <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs font-semibold text-[#eed867]">
+              {currentPuzzle.category} · {currentPuzzle.difficulty}/3
             </span>
           </div>
 
-          {/* Emoji display */}
-          <div className="flex-1 flex items-center justify-center px-4">
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="w-full max-w-sm rounded-[1rem] glass-card border border-[#44484f]/20 p-8 shadow-2xl text-center relative overflow-hidden"
-            >
-              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#df8eff] via-[#8ff5ff] to-[#ff6b98]" />
-              <motion.div
-                className="text-7xl leading-tight mb-6 pt-2"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                {currentPuzzle.emojis}
-              </motion.div>
-
-              {/* Points available */}
-              <div className="text-sm text-white/40 mb-3">
-                <span className="text-[#8ff5ff] font-bold">{pointsAvailable}</span>{' '}
-                {t('games.emojiguess.pointsAvailable')}
-              </div>
-
-              {/* Hint */}
-              <AnimatePresence>
-                {showHint && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center justify-center gap-2 text-sm text-[#ff6b98]"
-                  >
-                    <Lightbulb className="w-4 h-4" />
-                    <span>{t('games.emojiguess.hintPrefix', { letter: currentPuzzle.answer.charAt(0) })}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          </div>
-
-          {/* Answer reveal + Action buttons */}
-          <div className="px-4 pb-6 pt-3 space-y-3">
-            {/* Show answer button */}
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={() => setShowAnswer(prev => !prev)}
-              className="w-full flex items-center justify-center gap-2 rounded-full py-3 text-sm font-bold border border-[#df8eff]/30 text-[#df8eff] bg-[#df8eff]/5"
-            >
-              <Eye className="w-4 h-4" />
-              {showAnswer ? currentPuzzle.answer : t('games.emojiguess.showAnswer')}
-            </motion.button>
-
-            <div className="flex items-center gap-3">
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => { setShowAnswer(false); handleCorrectGuess(); }}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full py-4 font-bold text-base text-white shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-              >
-                {t('games.emojiguess.guessed')}
-              </motion.button>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => { setShowAnswer(false); handleSkip(); }}
-                className="flex-none flex items-center justify-center bg-[#1b2028] border border-[#44484f]/20 rounded-full py-4 px-5 text-white/40"
-              >
-                <ArrowRight className="w-5 h-5" />
-              </motion.button>
+          <div className="rebus-poster" aria-label={t('games.emojiguess.clueLabel', { defaultValue: 'Bilderrätsel' })}>
+            <span className="rebus-caption">{t('games.emojiguess.clueLabel', { defaultValue: 'Bilderrätsel' })}</span>
+            <div className="rebus-glyphs">{currentPuzzle.emojis}</div>
+            <div className="rebus-clue-meta"><span><strong>{pointsAvailable}</strong> {t('games.emojiguess.pointsAvailable')}</span>
+              {showHint && <span className="rebus-hint"><Lightbulb className="h-4 w-4" />{t('games.emojiguess.hintPrefix', { letter: currentPuzzle.answer.charAt(0) })}</span>}
             </div>
           </div>
+
+          {mode === 'team' && <div className="flex justify-center gap-6 p-3">{[0, 1].map(team => <p key={team}>{t('games.emojiguess.teamLabel', { team: team === 0 ? 'A' : 'B' })}: {players.filter((_, i) => i % 2 === team).map(p => p.name).join(', ')} · {players[team]?.score ?? 0}</p>)}</div>}
+          <form className="rebus-controls" onSubmit={e => { e.preventDefault(); if (answerInput.trim()) handleCorrectGuess(); }}>
+            {!online || online.myPlayerId === currentPlayer?.id ? <>
+              <label htmlFor="rebus-answer">{t('games.emojiguess.answerLabel')}</label>
+              <div className="rebus-entry">
+                <input id="rebus-answer" value={answerInput} onChange={e => { setAnswerInput(e.target.value); }} maxLength={120}
+                  autoComplete="off" autoCorrect="off" spellCheck={false} enterKeyHint="send" aria-invalid={answerError} aria-describedby={answerError ? 'rebus-error' : undefined}
+                  placeholder={t('games.emojiguess.answerLabel')} />
+                <StageAction type="submit" disabled={!answerInput.trim()}>{t('games.emojiguess.submitAnswer', { defaultValue: 'Antwort prüfen' })}<ArrowRight className="h-5 w-5" /></StageAction>
+              </div>
+              {answerError && <p id="rebus-error" role="status" className="rebus-error">{t('games.emojiguess.tryAgain', { defaultValue: 'Noch nicht richtig. Versuche einen anderen Begriff.' })}</p>}
+              <div className="rebus-secondary-actions">
+                <StageAction type="button" variant="ghost" onClick={toggleAnswer}><Eye className="h-4 w-4" />{t('games.emojiguess.showAnswer')}</StageAction>
+                <StageAction type="button" variant="ghost" onClick={handleSkip}>{t('games.emojiguess.skipPuzzle', { defaultValue: 'Überspringen' })}</StageAction>
+              </div>
+            </> : <p role="status">{t('games.emojiguess.waitingFor', { name: currentPlayer?.name, defaultValue: 'Warte auf {{name}}' })}</p>}
+          </form>
         </div>
       )}
 
@@ -449,30 +410,27 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full"
+          className="rebus-result flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full"
         >
-          <div className="text-6xl mb-2">{currentPuzzle.emojis}</div>
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', bounce: 0.4 }}
-            className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent text-center"
-          >
-            {currentPuzzle.answer}
-          </motion.div>
-          <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs text-white/40">
-            {currentPuzzle.category}
-          </span>
-
+          <span className="rebus-caption">{t(roundPoints > 0 ? 'games.emojiguess.solved' : 'games.emojiguess.solution', { defaultValue: roundPoints > 0 ? 'Gelöst' : 'Auflösung' })}</span>
+          <StagePanel tone="paper" className="rebus-solution">
+            <div className="rebus-glyphs">{currentPuzzle.emojis}</div>
+            <p className="rebus-caption">{currentPuzzle.category}</p>
+            <h2>{currentPuzzle.answer}</h2>
+          </StagePanel>
+          <p role="status" className="rebus-score">+{roundPoints}</p>
+          {!(currentPlayerIdx === players.length - 1 && currentRound >= totalRounds) && <p>{t('games.emojiguess.nextPlayer', { name: players[(currentPlayerIdx + 1) % players.length]?.name, defaultValue: 'Als Nächstes: {{name}}' })}</p>}
           <motion.button
             whileTap={{ scale: 0.97 }}
+            disabled={!!online && !online.isHost}
             onClick={advanceRound}
-            className="w-full mt-4 flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
+            className="w-full mt-4 flex items-center justify-center gap-2 bg-[#eed867] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(150,160,165,0.3)]"
           >
             {t('games.play.next')} <ArrowRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
       )}
+
 
       {/* ---- GAME OVER ---- */}
       {phase === 'gameOver' && (
@@ -491,7 +449,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
               <Trophy className="w-8 h-8 text-amber-400" />
             </div>
           </motion.div>
-          <h2 className="text-3xl font-extrabold font-[Plus_Jakarta_Sans] text-[#df8eff] neon-glow">
+          <h2 className="text-3xl font-extrabold font-sans text-[#eed867] neon-glow">
             {t('games.results.gameOver')}
           </h2>
 
@@ -504,7 +462,7 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
                 {sortedPlayers[0].avatar}
               </div>
               <div>
-                <div className="font-bold text-white">{sortedPlayers[0].name}</div>
+                <div className="font-bold text-white">{sortedPlayers.filter(p => p.score === sortedPlayers[0].score).map(p => p.name).join(' & ')}</div>
                 <div className="text-amber-400 text-sm font-semibold">{t('games.findit.points', { score: sortedPlayers[0].score })}</div>
               </div>
             </div>
@@ -542,8 +500,9 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
           <div className="w-full space-y-3 mt-2">
             <motion.button
               whileTap={{ scale: 0.97 }}
+              disabled={!!online && !online.isHost}
               onClick={playAgain}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
+              className="w-full flex items-center justify-center gap-2 bg-[#eed867] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(150,160,165,0.3)]"
             >
               <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
             </motion.button>
@@ -559,7 +518,11 @@ export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } 
           </div>
         </motion.div>
       )}
-      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#eed867" />
     </div>
   );
+}
+
+export default function EmojiGuessGame({ online }: { online?: OnlineGameProps } = {}) {
+  return <GameStage gameId="emoji-raten" className="rebus-game"><EmojiGuessGameContent online={online} /></GameStage>;
 }

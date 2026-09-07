@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { getOnlineRoomPlayers } from "@/games/multiplayer/useGameRoom";
+import { getOnlineRoomPlayers, subscribeOnlineRoom } from "@/games/multiplayer/useGameRoom";
 import { getActivePartySession, subscribePartySession } from "@/hooks/usePartySession";
 
 /**
@@ -66,10 +66,10 @@ export function useInitialRoster(options: InitialRosterOptions = {}): RosterPlay
   const { onlinePlayers, min = 2 } = options;
 
   const session = useSyncExternalStore(subscribePartySession, getActivePartySession, noSession);
+  const room = useSyncExternalStore(subscribeOnlineRoom, getOnlineRoomPlayers, getOnlineRoomPlayers);
 
   if (onlinePlayers && onlinePlayers.length >= min) return normalise(onlinePlayers);
 
-  const room = getOnlineRoomPlayers();
   if (room.length >= min) return normalise(room);
 
   if (session?.players && session.players.length >= min) return normalise(session.players);

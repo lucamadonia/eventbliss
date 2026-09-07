@@ -1,3 +1,8 @@
+import { GameStage, StageHeader, StageAction } from '../ui/GameStage';
+import './design.css';
+import { uniqueVoteLeader, impostorRoundPoints } from './round-rules';
+import { impostorSnapshotFor } from './private-state';
+import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -115,7 +120,7 @@ function pickRandom<T>(arr: T[]): T {
  */
 function ParticleBurst({
   count = 14,
-  color = '#df8eff',
+  color = '#e6b76a',
   radius = 120,
   size = 6,
   duration = 0.9,
@@ -164,7 +169,7 @@ function RotatingGlowRing({ impostor, ambient }: { impostor: boolean; ambient: b
         style={{
           background: impostor
             ? 'conic-gradient(from 0deg, transparent 0%, #ff6e84 25%, transparent 50%, #a70138 75%, transparent 100%)'
-            : 'conic-gradient(from 0deg, transparent 0%, #8ff5ff 25%, transparent 50%, #df8eff 75%, transparent 100%)',
+            : 'conic-gradient(from 0deg, transparent 0%, #eee3cb 25%, transparent 50%, #e6b76a 75%, transparent 100%)',
         }}
       />
     </motion.div>
@@ -196,7 +201,7 @@ function DangerScanLine() {
 // Component
 // ---------------------------------------------------------------------------
 
-export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
+function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   const { t } = useTranslation();
   // Decorative infinite loops (rings, sparkles, breathing lock, scan line,
   // glows) are gated behind this — FALSE on native WebView & reduced-motion,
@@ -215,7 +220,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // --- Setup state ---
   const [players, setPlayers] = useState<Player[]>(() =>
     resolvedNames.length >= 4
-      ? resolvedNames.map(name => createPlayer(name))
+      ? resolvedNames.map((name, i) => { const player = createPlayer(name); return { ...player, id: online?.players[i]?.id ?? player.id }; })
       : [
           createPlayer(`${t('games.impostor.playerLabel')} 1`),
           createPlayer(`${t('games.impostor.playerLabel')} 2`),
@@ -286,56 +291,49 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   const [bonusGuess, setBonusGuess] = useState('');
   const [bonusResult, setBonusResult] = useState<boolean | null>(null);
   const [round, setRound] = useState(1);
+  const [roleReady, setRoleReady] = useState<string[]>([]);
 
   // Score/speaker/timer changes within a round must reach the TV too — the
   // deps list is what triggers a re-broadcast, so it carries a score signature.
   useTVGameBridge(
     'impostor',
-    { phase, round, players, currentSpeaker, timeLeft },
+    { phase, round, players: online && !['reveal', 'bonusGuess', 'results'].includes(phase) ? players.map(p => ({ ...p, isImpostor: false, votedFor: null })) : players, currentSpeaker, timeLeft },
     [phase, round, currentSpeaker, timeLeft, players.map((p) => p.score).join(',')],
+    !online || online.isHost,
   );
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // --- Online sync ---
+  const privateSnapshot = JSON.stringify({ players, phase, currentWordSet, timeLeft, currentSpeaker, votingPlayer, countdownNum, round, hideCategory, order, impostorCount, timerDuration, randomOrder, bonusResult, roleReady });
   useEffect(() => {
-    if (!online) return;
-    // Host broadcasts full impostor state on every phase change
-    if (online.isHost) {
-      const payload = {
-        players: JSON.parse(JSON.stringify(players)),
-        phase, currentWordSet, revealIndex, wordVisible, timeLeft,
-        currentSpeaker, votingPlayer, countdownNum, round, hideCategory,
-      };
-      online.broadcast('impostor-state', payload);
+    if (!online?.isHost) return;
+    const state = JSON.parse(privateSnapshot);
+    for (const recipient of online.players) {
+      if (recipient.id === online.myPlayerId) continue;
+      online.broadcastTo?.(recipient.id, "impostor-state", impostorSnapshotFor(state, recipient.id));
     }
-  }, [online, phase, revealIndex, wordVisible, currentSpeaker, votingPlayer, countdownNum, round, hideCategory]);
-
+  }, [privateSnapshot, online?.isHost, online?.broadcastTo, online?.players]);
   useEffect(() => {
     if (!online || online.isHost) return;
-    const unsub = online.onBroadcast('impostor-state', (data) => {
-      if (data.players) setPlayers(data.players as Player[]);
-      if (data.phase) setPhase(data.phase as Phase);
-      if (data.currentWordSet !== undefined) setCurrentWordSet(data.currentWordSet as WordSet | null);
-      if (data.revealIndex !== undefined) setRevealIndex(data.revealIndex as number);
-      if (data.timeLeft !== undefined) setTimeLeft(data.timeLeft as number);
-      if (data.currentSpeaker !== undefined) setCurrentSpeaker(data.currentSpeaker as number);
-      if (data.votingPlayer !== undefined) setVotingPlayer(data.votingPlayer as number);
-      if (data.round !== undefined) setRound(data.round as number);
-      if (data.hideCategory !== undefined) setHideCategory(data.hideCategory as boolean);
+    return online.onBroadcast("impostor-state", data => {
+      if (data.__senderId !== online.players.find(p => p.isHost)?.id) return;
+      setPlayers(data.players as any);
+      setPhase(data.phase as any);
+      setCurrentWordSet(data.currentWordSet as any);
+      setTimeLeft(data.timeLeft as any);
+      setCurrentSpeaker(data.currentSpeaker as any);
+      setVotingPlayer(data.votingPlayer as any);
+      setCountdownNum(data.countdownNum as any);
+      setRound(data.round as any);
+      setHideCategory(data.hideCategory as any);
+      setOrder(data.order as any);
+      setImpostorCount(data.impostorCount as any);
+      setTimerDuration(data.timerDuration as any);
+      setRandomOrder(data.randomOrder as any);
+      setBonusResult(data.bonusResult as any);
+      setRoleReady(data.roleReady as any);
     });
-    return unsub;
-  }, [online]);
-
-  useEffect(() => {
-    if (!online || !online.isHost) return;
-    const unsub = online.onBroadcast('impostor-action', (data) => {
-      if (data.action === 'vote' && typeof data.voterId === 'string' && typeof data.targetId === 'string') {
-        setPlayers((prev) => prev.map((p) => p.id === data.voterId ? { ...p, votedFor: data.targetId as string } : p));
-      }
-    });
-    return unsub;
-  }, [online]);
+  }, [online?.isHost, online?.onBroadcast, online?.players]);
 
   // --- Derived ---
   const impostors = useMemo(() => players.filter((p) => p.isImpostor), [players]);
@@ -349,17 +347,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     return tally;
   }, [players]);
 
-  const mostVotedId = useMemo(() => {
-    let maxVotes = 0;
-    let maxId = '';
-    Object.entries(voteTally).forEach(([id, count]) => {
-      if (count > maxVotes) {
-        maxVotes = count;
-        maxId = id;
-      }
-    });
-    return maxId;
-  }, [voteTally]);
+  const mostVotedId = useMemo(() => uniqueVoteLeader(voteTally), [voteTally]);
 
   const mostVotedPlayer = players.find((p) => p.id === mostVotedId);
   const impostorCaught = mostVotedPlayer?.isImpostor ?? false;
@@ -398,13 +386,33 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     });
   }, [t]);
 
+  const route = useOnlineAuthority(online, 'impostor', `${phase}:${round}:${currentSpeaker}:${votingPlayer}`, {
+    readyRole: { allow: (sender, args) => phase === "wordReveal" && Number.isInteger(args[0]) && sender === players[args[0]]?.id && !roleReady.includes(sender), run: (...args) => readyRole(args[0]) },
+    markSpoken: { allow: (sender, args) => phase === "discussion" && args[0] === currentSpeaker && sender === players[seat(currentSpeaker)]?.id, run: (...args) => markSpoken(args[0]) },
+    skipToVoting: { allow: (sender, args) => phase === "discussion" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => skipToVoting() },
+    castVote: { allow: (sender, args) => phase === "voting" && sender === players[seat(votingPlayer)]?.id && players.some(p => p.id === args[0] && p.id !== sender), run: (...args) => castVote(args[0]) },
+    submitBonusGuess: { allow: (sender, args) => phase === "bonusGuess" && bonusResult === null && players.some(p => p.id === sender && p.isImpostor && p.id !== mostVotedId) && typeof args[0] === "string" && args[0].length <= 100, run: (...args) => submitBonusGuess(args[0]) },
+    proceedFromReveal: { allow: (sender, args) => phase === "reveal" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => proceedFromReveal() },
+    playAgain: { allow: (sender, args) => phase === "results" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+    resetGame: { allow: (sender, args) => phase === "results" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => resetGame() },
+  });
+
+  function readyRole(index: number) {
+    if (route('readyRole', [index])) return;
+    const ready = [...roleReady, players[index].id];
+    setRoleReady(ready);
+    if (ready.length === players.length) { setCurrentSpeaker(0); setPhase('discussion'); }
+  }
+
   // --- Start game ---
   const startGame = useCallback(() => {
+    if (online && (!online.isHost || online.isConnected === false || phase !== "setup")) return;
+    setRoleReady([]);
     const wordSet = pickRandom(getWordSets());
     setCurrentWordSet(wordSet);
 
     const shuffledIndices = shuffle(players.map((_, i) => i));
-    const impostorIndices = new Set(shuffledIndices.slice(0, impostorCount));
+    const impostorIndices = new Set(shuffledIndices.slice(0, Math.min(impostorCount, Math.floor((players.length - 1) / 2))));
     // Bei aktivem Schalter jede Runde neu mischen, sonst die Setup-Reihenfolge.
     const seats = players.map((_, i) => i);
     setOrder(randomOrder ? shuffle(seats) : seats);
@@ -421,12 +429,18 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     setRevealIndex(0);
     setWordVisible(false);
     setPhase('wordReveal');
-  }, [players, impostorCount]);
+  }, [players, impostorCount, randomOrder, online, phase]);
+
+  useEffect(() => {
+    if (phase === 'discussion' && (!online || online.isHost)) setTimeLeft(timerDuration);
+  }, [phase, timerDuration]);
+  useEffect(() => {
+    if (phase === 'revealCountdown' && (!online || online.isHost)) setCountdownNum(3);
+  }, [phase]);
 
   // --- Discussion timer ---
   useEffect(() => {
-    if (phase !== 'discussion') return;
-    setTimeLeft(timerDuration);
+    if ((online && (!online.isHost || online.isConnected === false)) || phase !== 'discussion') return;
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
@@ -441,12 +455,11 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [phase, timerDuration]);
+  }, [phase, online?.isHost, online?.isConnected]);
 
   // --- Reveal countdown ---
   useEffect(() => {
-    if (phase !== 'revealCountdown') return;
-    setCountdownNum(3);
+    if ((online && (!online.isHost || online.isConnected === false)) || phase !== 'revealCountdown') return;
     const timer = setInterval(() => {
       setCountdownNum((prev) => {
         if (prev <= 1) {
@@ -458,7 +471,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [phase]);
+  }, [phase, online?.isHost, online?.isConnected]);
 
   // --- Word reveal navigation ---
   // First tap triggers the lock-unlock sequence (~1100ms). Second tap
@@ -501,6 +514,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
    * richtigen Menschen landen, weitergeschaltet wird aber entlang der Abfolge.
    */
   const markSpoken = (index: number) => {
+    if (route("markSpoken", [index])) return;
     const player = seat(index);
     setPlayers((prev) =>
       prev.map((p, i) => (i === player ? { ...p, hasSpoken: true } : p))
@@ -512,6 +526,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
   // --- Skip to voting ---
   const skipToVoting = () => {
+    if (route("skipToVoting", [])) return;
     if (timerRef.current) clearInterval(timerRef.current);
     setPhase('voting');
     setVotingPlayer(0);
@@ -519,17 +534,18 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
   // --- Cast vote ---
   const castVote = (targetId: string) => {
+    if (route("castVote", [targetId])) return;
     const voter = players[seat(votingPlayer)];
     if (targetId === voter.id) return;
 
     setPlayers((prev) =>
-      prev.map((p, i) => (i === votingPlayer ? { ...p, votedFor: targetId } : p))
+      prev.map((p, i) => (i === seat(votingPlayer) ? { ...p, votedFor: targetId } : p))
     );
 
     if (votingPlayer < players.length - 1) {
       setVotingPlayer((i) => i + 1);
     } else {
-      setTimeout(() => setPhase('revealCountdown'), 300);
+      setPhase('revealCountdown');
     }
   };
 
@@ -537,34 +553,37 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   const calculateScores = useCallback(() => {
     setPlayers((prev) =>
       prev.map((p) => {
-        let points = p.score;
-        if (impostorCaught) {
-          if (!p.isImpostor) points += 10;
-        } else {
-          if (p.isImpostor) points += 15;
-        }
+        const points = p.score + impostorRoundPoints(p.isImpostor, p.id, mostVotedId, impostorCaught);
         return { ...p, score: points };
       })
     );
-  }, [impostorCaught]);
+  }, [impostorCaught, mostVotedId]);
 
   // --- Bonus guess ---
-  const submitBonusGuess = () => {
+  const submitBonusGuess = (guess = bonusGuess) => {
+    if (route("submitBonusGuess", [guess])) return;
     const correct =
-      bonusGuess.trim().toLowerCase() === currentWordSet?.word.toLowerCase();
+      guess.trim().toLowerCase() === currentWordSet?.word.toLowerCase();
     setBonusResult(correct);
     if (correct) {
       setPlayers((prev) =>
-        prev.map((p) => (p.isImpostor ? { ...p, score: p.score + 10 } : p))
+        prev.map((p) => (p.isImpostor && p.id !== mostVotedId ? { ...p, score: p.score + 10 } : p))
       );
     }
-    setTimeout(() => setPhase('results'), 1500);
+
   };
+
+  useEffect(() => {
+    if (phase !== 'bonusGuess' || bonusResult === null || (online && (!online.isHost || online.isConnected === false))) return;
+    const timeout = setTimeout(() => setPhase('results'), 1500);
+    return () => clearTimeout(timeout);
+  }, [phase, bonusResult, online?.isHost, online?.isConnected]);
 
   // --- Move to bonus or results after reveal ---
   const proceedFromReveal = () => {
+    if (route("proceedFromReveal", [])) return;
     calculateScores();
-    if (!impostorCaught && impostors.length > 0) {
+    if (impostors.some(p => p.id !== mostVotedId)) {
       setBonusGuess('');
       setBonusResult(null);
       setPhase('bonusGuess');
@@ -576,14 +595,16 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   // --- Play again (rematch): restart gameplay directly (no setup screen),
   // keeping the same players AND their accumulated scores (carry over). ---
   const playAgain = () => {
+    if (route("playAgain", [])) return;
     gameRecordedRef.current = false;
     setRound((r) => r + 1);
+    setRoleReady([]);
 
     const wordSet = pickRandom(getWordSets());
     setCurrentWordSet(wordSet);
 
     const shuffledIndices = shuffle(players.map((_, i) => i));
-    const impostorIndices = new Set(shuffledIndices.slice(0, impostorCount));
+    const impostorIndices = new Set(shuffledIndices.slice(0, Math.min(impostorCount, Math.floor((players.length - 1) / 2))));
     // Bei aktivem Schalter jede Runde neu mischen, sonst die Setup-Reihenfolge.
     const seats = players.map((_, i) => i);
     setOrder(randomOrder ? shuffle(seats) : seats);
@@ -594,7 +615,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
         isImpostor: impostorIndices.has(i),
         hasSpoken: false,
         votedFor: null,
-        // score carried over from prev — not reset.
+        score: 0,
       }))
     );
 
@@ -609,12 +630,14 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
     if (phase === 'results' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
       const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      recordEnd('hochstapler', winner?.score ?? 0, true);
+      const me = online ? players.find(p => p.id === online.myPlayerId) : winner;
+      recordEnd('hochstapler', me?.score ?? 0, !!me && me.score === Math.max(...players.map(p => p.score)));
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
   const resetGame = () => {
+    if (route("resetGame", [])) return;
     setRound(1);
     setPhase('setup');
     setPlayers((prev) =>
@@ -642,36 +665,47 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
 
   // Jede Phase hat hier ihr eigenes `return`. Damit der Verlassen-Dialog nicht
   // sechsmal im Quelltext steht, wird er einmal gebaut und unten eingesetzt.
-  const exitDialog = <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />;
+  const exitDialog = <ConfirmExitDialog {...exitGuard.dialogProps} accent="#e6b76a" />;
 
   // =========================================================================
   // RENDER
   // =========================================================================
 
   // --- SETUP ---
+  if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
+  if (online && phase === 'wordReveal') {
+    const index = players.findIndex(p => p.id === online.myPlayerId);
+    const me = players[index];
+    return <div className="dossier-private min-h-[100dvh] p-4 mx-auto flex flex-col justify-center gap-5">
+      <StageHeader eyebrow={t('games.impostor.privateRole')} title={me?.name} progress={{ value: roleReady.length, total: players.length }} />
+      <button className="dossier-file" aria-pressed={wordVisible} onClick={() => setWordVisible(v => !v)}>
+        <span className="dossier-file-number" aria-hidden="true">{String(index + 1).padStart(2, '0')} / {String(players.length).padStart(2, '0')}</span>
+        <span className="dossier-file-title">{wordVisible ? me?.isImpostor ? t('native.gameNames.hochstapler') : currentWordSet?.word : t('games.impostor.viewRole')}</span>
+        {!hideCategory && <span className="dossier-category">{currentWordSet?.category}</span>}
+      </button>
+      <StageAction disabled={index < 0 || roleReady.includes(online.myPlayerId)} onClick={() => readyRole(index)}>
+        {roleReady.includes(online.myPlayerId) ? t('games.impostor.waitPlayers') : t('games.impostor.readyRole')}
+      </StageAction>
+      <StageAction variant="ghost" onClick={exitGuard.request}>{t('games.impostor.exitGame')}</StageAction>
+      {exitDialog}
+    </div>;
+  }
+
   if (phase === 'setup') {
     return (
       <div className="min-h-screen bg-[#0a0e14] px-4 py-8">
         <div className="mx-auto max-w-md space-y-6">
-          <motion.h1
-            className="text-2xl font-bold text-center bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] bg-clip-text text-transparent"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            {t('games.impostor.title')}
-          </motion.h1>
-          <p className="text-center text-[#a8abb3] text-sm">
-            {t('games.impostor.subtitle')}
-          </p>
+          <StageHeader title={t('games.impostor.title')} subtitle={t('games.impostor.subtitle')} />
 
           {round > 1 && (
-            <div className="text-center text-xs text-[#df8eff] font-semibold">
+            <div className="text-center text-xs text-[#e6b76a] font-semibold">
               {t('games.impostor.round', { round })}
             </div>
           )}
 
           {/* Player list */}
           <PlayerSetup
+            locked={!!online}
             players={players.map((p) => ({ id: p.id, name: p.name }))}
             onAdd={addPlayer}
             onRemove={removePlayer}
@@ -679,7 +713,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             onImportNames={isOnlineOrParty ? undefined : handleImportNames}
             min={4}
             max={15}
-            accent="#df8eff"
+            accent="#e6b76a"
             label={t('games.impostor.playerLabel')}
           />
 
@@ -689,7 +723,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               {t('games.impostor.impostorCountLabel')}
             </h2>
             <div className="flex gap-3">
-              {[1, 2].map((n) => (
+              {[1, 2].filter(n => n < players.length / 2).map((n) => (
                 <motion.button
                   key={n}
                   onClick={() => setImpostorCount(n)}
@@ -720,7 +754,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                   className={cn(
                     'flex-1 py-3 rounded-2xl border-2 font-semibold text-sm transition-colors',
                     timerDuration === t
-                      ? 'border-[#df8eff] bg-[#df8eff]/10 text-[#df8eff]'
+                      ? 'border-[#e6b76a] bg-[#e6b76a]/10 text-[#e6b76a]'
                       : 'border-[#44484f] bg-[#151a21]/40 text-[#a8abb3] hover:border-[#44484f]/60'
                   )}
                   whileTap={{ scale: 0.97 }}
@@ -777,12 +811,12 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               className={cn(
                 'w-full flex items-center gap-3 py-3 px-4 rounded-2xl border-2 text-left transition-colors',
                 randomOrder
-                  ? 'border-[#df8eff] bg-[#df8eff]/10'
+                  ? 'border-[#e6b76a] bg-[#e6b76a]/10'
                   : 'border-[#44484f] bg-[#151a21]/40 hover:border-[#44484f]/60'
               )}
             >
               <div className="flex-1 min-w-0">
-                <p className={cn('text-sm font-semibold', randomOrder ? 'text-[#df8eff]' : 'text-[#f1f3fc]')}>
+                <p className={cn('text-sm font-semibold', randomOrder ? 'text-[#e6b76a]' : 'text-[#f1f3fc]')}>
                   {t('games.impostor.randomOrder')}
                 </p>
                 <p className="text-xs text-[#a8abb3] mt-0.5">
@@ -792,7 +826,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               <span
                 className={cn(
                   'shrink-0 w-12 h-7 rounded-full p-0.5 transition-colors',
-                  randomOrder ? 'bg-[#df8eff]' : 'bg-[#44484f]'
+                  randomOrder ? 'bg-[#e6b76a]' : 'bg-[#44484f]'
                 )}
               >
                 <span
@@ -812,7 +846,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             className={cn(
               'w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 transition-all',
               canStart
-                ? 'bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] text-white shadow-[0_0_20px_rgba(223,142,255,0.3)] hover:shadow-[0_0_30px_rgba(223,142,255,0.4)]'
+                ? 'bg-gradient-to-r from-[#e6b76a] via-[#ff6b98] to-[#e6b76a] text-white shadow-[0_0_20px_rgba(230,183,106,0.3)] hover:shadow-[0_0_30px_rgba(230,183,106,0.4)]'
                 : 'bg-[#1b2028] text-gray-500 cursor-not-allowed'
             )}
             whileHover={canStart ? { scale: 1.02 } : {}}
@@ -836,8 +870,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
         {exitDialog}
         {/* Ambient glow layer */}
         <div className="pointer-events-none absolute inset-0 -z-0">
-          <div className="absolute top-1/4 -left-20 w-64 h-64 rounded-full bg-[#df8eff]/10 blur-[100px]" />
-          <div className="absolute bottom-1/4 -right-20 w-80 h-80 rounded-full bg-[#ff6b98]/10 blur-[120px]" />
+          <div className="absolute top-1/4 -left-20 w-64 h-64 rounded-full bg-[#e6b76a]/10 blur-[100px]" />
+          <div className="absolute bottom-1/4 -right-20 w-80 h-80 rounded-full bg-[#e6b76a]/10 blur-[120px]" />
           <div className="absolute bottom-0 inset-x-0 h-[40%] bg-gradient-to-t from-[#0a0e14] to-transparent" />
         </div>
 
@@ -845,8 +879,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
           <div className="w-full max-w-md space-y-8">
             {/* Phase pill */}
             <div className="flex justify-center">
-              <div className="px-4 py-1 rounded-full bg-[#20262f] border border-[#df8eff]/20 text-[#df8eff] text-[10px] font-bold tracking-[0.25em] uppercase">
-                Secret Reveal · {phaseNum}/{totalPhases}
+              <div className="px-4 py-1 rounded-full bg-[#20262f] border border-[#e6b76a]/20 text-[#e6b76a] text-[10px] font-bold tracking-[0.25em] uppercase">
+                {t('games.impostor.privateRole')} · {phaseNum}/{totalPhases}
               </div>
             </div>
 
@@ -854,21 +888,21 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             <div className="relative group">
               {/* Decorative rotating square top-left */}
               <motion.div
-                className="absolute -top-4 -left-4 w-16 h-16 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#ff6b98] to-[#df8eff]"
+                className="absolute -top-4 -left-4 w-16 h-16 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#e6b76a] to-[#e6b76a]"
                 animate={ambient ? { rotate: [12, 45, 12] } : undefined}
                 transition={ambient ? { duration: 12, repeat: Infinity, ease: 'easeInOut' } : undefined}
               />
 
-              <div className="relative z-10 rounded-2xl p-8 flex flex-col items-center text-center space-y-6 shadow-2xl overflow-hidden"
+              <div className="dossier-offline relative z-10 p-8 flex flex-col items-center text-center space-y-6 overflow-hidden"
                 style={{
                   background: 'rgba(32, 38, 47, 0.4)',
                   backdropFilter: 'blur(20px)',
                   WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(223, 142, 255, 0.12)',
+                  border: '1px solid rgba(230, 183, 106, 0.25)',
                 }}
               >
                 {/* Radial texture */}
-                <div className="pointer-events-none absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,rgba(223,142,255,0.4),transparent_60%)]" />
+                <div className="pointer-events-none absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,rgba(230,183,106,0.4),transparent_60%)]" />
 
                 <AnimatePresence mode="wait">
                   {!wordVisible && !unlocking && (
@@ -880,15 +914,15 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                       className="relative z-10 w-full space-y-6"
                     >
                       <div className="space-y-2">
-                        <span className="text-[#ff6b98] font-bold tracking-[0.25em] text-[10px] uppercase">
-                          Phase {phaseNum}
+                        <span className="text-[#e6b76a] font-bold tracking-[0.25em] text-[10px] uppercase">
+                          {phaseNum}
                         </span>
                         <h2 className="text-3xl font-extrabold tracking-tight leading-tight">
                           {t('games.impostor.passPhone')}
                         </h2>
                       </div>
                       <div className="relative w-full aspect-[4/3] rounded-xl border-2 border-dashed border-[#44484f]/40 flex flex-col items-center justify-center overflow-hidden bg-black/40">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-[#df8eff]/5 to-[#ff6b98]/5" />
+                        <div className="absolute inset-0 bg-gradient-to-tr from-[#e6b76a]/5 to-[#e6b76a]/5" />
                         {/* Ambient lock — gently breathes to signal "tap to unlock".
                             Infinite loop → only when ambient (off on native). */}
                         <motion.div
@@ -896,17 +930,17 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                           transition={ambient ? { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } : undefined}
                           className="relative"
                         >
-                          <Lock className="w-14 h-14 text-[#df8eff]/60 drop-shadow-[0_0_16px_rgba(223,142,255,0.35)]" />
+                          <Lock className="w-14 h-14 text-[#e6b76a]/60 drop-shadow-[0_0_16px_rgba(230,183,106,0.35)]" />
                         </motion.div>
-                        <p className="relative mt-3 text-2xl font-black bg-gradient-to-r from-[#df8eff] to-[#ff6b98] bg-clip-text text-transparent">
+                        <p className="relative mt-3 text-2xl font-black bg-gradient-to-r from-[#e6b76a] to-[#e6b76a] bg-clip-text text-transparent">
                           {currentPlayer.name}
                         </p>
                       </div>
                       <motion.button
                         onClick={handleRevealTap}
                         whileTap={{ scale: 0.95 }}
-                        className="w-full py-4 px-8 rounded-full text-[#0a0e14] font-extrabold text-sm tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(223,142,255,0.4)] hover:shadow-[0_0_30px_rgba(223,142,255,0.6)] transition-all"
-                        style={{ background: 'linear-gradient(90deg, #df8eff, #d779ff)' }}
+                        className="w-full py-4 px-8 rounded-full text-[#0a0e14] font-extrabold text-sm tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(230,183,106,0.4)] hover:shadow-[0_0_30px_rgba(230,183,106,0.6)] transition-all"
+                        style={{ background: '#e6b76a', color: '#24281f', boxShadow: 'none', borderRadius: 5 }}
                       >
                         <span className="inline-flex items-center gap-2">
                           <Eye className="w-4 h-4" /> {t('games.impostor.showSecret')}
@@ -962,9 +996,9 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                         transition={{ duration: 1.1, times: [0, 0.12, 0.24, 0.36, 0.48, 0.6, 0.78, 1] }}
                       >
                         <Lock
-                          className="w-20 h-20 drop-shadow-[0_0_24px_rgba(223,142,255,0.6)]"
+                          className="w-20 h-20 drop-shadow-[0_0_24px_rgba(230,183,106,0.6)]"
                           style={{
-                            color: currentPlayer.isImpostor ? '#ff6e84' : '#df8eff',
+                            color: currentPlayer.isImpostor ? '#ff6e84' : '#e6b76a',
                           }}
                         />
                         {/* Swap-in open-lock on the tail end for a crisp unlock beat */}
@@ -976,7 +1010,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                         >
                           <LockOpen
                             className="w-20 h-20"
-                            style={{ color: currentPlayer.isImpostor ? '#ffb2b9' : '#8ff5ff' }}
+                            style={{ color: currentPlayer.isImpostor ? '#ffb2b9' : '#eee3cb' }}
                           />
                         </motion.div>
                       </motion.div>
@@ -992,7 +1026,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                         >
                           <ParticleBurst
                             count={18}
-                            color={currentPlayer.isImpostor ? '#ff6e84' : '#8ff5ff'}
+                            color={currentPlayer.isImpostor ? '#ff6e84' : '#eee3cb'}
                             radius={140}
                             size={6}
                             duration={0.6}
@@ -1007,7 +1041,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: [0, 1, 1, 0], y: [6, 0, 0, -4] }}
                         transition={{ duration: 1.1, times: [0, 0.2, 0.8, 1] }}
-                        style={{ color: currentPlayer.isImpostor ? '#ffb2b9' : '#8ff5ff' }}
+                        style={{ color: currentPlayer.isImpostor ? '#ffb2b9' : '#eee3cb' }}
                       >
                         {currentPlayer.isImpostor ? t('games.impostor.intrusionDetected') : t('games.impostor.accessGranted')}
                       </motion.span>
@@ -1119,7 +1153,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                               style={{
                                 top:   `${15 + Math.sin(i) * 30 + i * 8}%`,
                                 left:  `${10 + (i * 83) % 80}%`,
-                                color: i % 2 === 0 ? '#8ff5ff' : '#df8eff',
+                                color: i % 2 === 0 ? '#eee3cb' : '#e6b76a',
                               }}
                               initial={{ opacity: 0, y: 10, scale: 0.4 }}
                               animate={{
@@ -1139,7 +1173,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                           ))}
 
                           <motion.span
-                            className="relative text-[#8ff5ff] font-bold tracking-[0.25em] text-[10px] uppercase"
+                            className="relative text-[#eee3cb] font-bold tracking-[0.25em] text-[10px] uppercase"
                             initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4 }}
@@ -1158,7 +1192,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                               to one cheap opacity/translateY fade of the whole word. */}
                           {ambient ? (
                             <motion.p
-                              className="relative text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(223,142,255,0.45)] tracking-tight flex justify-center flex-wrap"
+                              className="relative text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(230,183,106,0.45)] tracking-tight flex justify-center flex-wrap"
                               initial="hidden"
                               animate="show"
                               variants={{ show: { transition: { staggerChildren: 0.06, delayChildren: 0.2 } } }}
@@ -1179,12 +1213,12 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                             </motion.p>
                           ) : (
                             <motion.p
-                              className="relative text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(223,142,255,0.45)] tracking-tight flex justify-center flex-wrap"
+                              className="relative text-5xl font-black leading-none text-white drop-shadow-[0_0_24px_rgba(230,183,106,0.45)] tracking-tight flex justify-center flex-wrap"
                               initial={{ opacity: 0, y: 12 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.28 }}
                             >
-                              {currentWordSet?.word}
+                              {online && players.find(p => p.id === online.myPlayerId)?.isImpostor ? '???' : currentWordSet?.word}
                             </motion.p>
                           )}
                           <p className="relative text-xs text-[#a8abb3]/80">
@@ -1195,7 +1229,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                               appearance a cheap transform/opacity reveal. */}
                           {ambient && (
                             <div className="relative">
-                              <ParticleBurst count={14} color="#8ff5ff" radius={150} size={5} duration={1.1} delay={0} />
+                              <ParticleBurst count={14} color="#eee3cb" radius={150} size={5} duration={1.1} delay={0} />
                             </div>
                           )}
                         </div>
@@ -1204,10 +1238,10 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                         onClick={handleRevealTap}
                         whileTap={{ scale: 0.95 }}
                         className={cn(
-                          "relative w-full py-4 px-8 rounded-full border font-extrabold text-sm tracking-[0.2em] uppercase transition-colors",
+                          "dossier-acknowledge relative w-full py-4 px-8 border font-extrabold text-sm tracking-[0.2em] uppercase transition-colors",
                           currentPlayer.isImpostor
                             ? "bg-[#20262f] border-[#ff6e84]/30 text-[#ff6e84] hover:bg-[#262c36]"
-                            : "bg-[#20262f] border-[#8ff5ff]/30 text-[#8ff5ff] hover:bg-[#262c36]",
+                            : "bg-[#20262f] border-[#eee3cb]/30 text-[#eee3cb] hover:bg-[#262c36]",
                         )}
                       >
                         <span className="inline-flex items-center gap-2">
@@ -1220,7 +1254,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               </div>
 
               {/* Decorative corner bracket bottom-right */}
-              <div className="pointer-events-none absolute -bottom-2 -right-2 w-24 h-24 border-b-2 border-r-2 border-[#8ff5ff]/30 rounded-br-3xl" />
+              <div className="pointer-events-none absolute -bottom-2 -right-2 w-24 h-24 border-b-2 border-r-2 border-[#eee3cb]/30 rounded-br-3xl" />
             </div>
 
             {/* Players ready mini grid */}
@@ -1240,13 +1274,13 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     <div
                       className={cn(
                         'w-12 h-12 rounded-full border-2 flex items-center justify-center text-white text-xs font-bold',
-                        done && 'bg-[#df8eff]/20 border-[#df8eff]',
-                        current && 'bg-[#ff6b98]/20 border-[#ff6b98] shadow-[0_0_16px_rgba(255,107,152,0.4)]',
+                        done && 'bg-[#e6b76a]/20 border-[#e6b76a]',
+                        current && 'bg-[#e6b76a]/20 border-[#e6b76a] shadow-[0_0_16px_rgba(230,183,106,0.22)]',
                         !done && !current && 'bg-[#20262f] border-[#44484f]',
                       )}
                     >
                       {done ? (
-                        <CheckCircle2 className="w-5 h-5 text-[#df8eff]" />
+                        <CheckCircle2 className="w-5 h-5 text-[#e6b76a]" />
                       ) : (
                         getPlayerInitial(p.name)
                       )}
@@ -1254,7 +1288,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     <span
                       className={cn(
                         'text-[9px] font-bold uppercase tracking-wider',
-                        current ? 'text-[#ff6b98]' : done ? 'text-[#df8eff]/80' : 'text-[#a8abb3]',
+                        current ? 'text-[#e6b76a]' : done ? 'text-[#e6b76a]/80' : 'text-[#a8abb3]',
                       )}
                     >
                       {p.name.length > 8 ? p.name.slice(0, 8) : p.name}
@@ -1279,14 +1313,14 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
         {exitDialog}
         {/* Ambient glow */}
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute top-0 -right-20 w-72 h-72 rounded-full bg-[#df8eff]/10 blur-[110px]" />
+          <div className="absolute top-0 -right-20 w-72 h-72 rounded-full bg-[#e6b76a]/10 blur-[110px]" />
           <div className="absolute bottom-0 -left-20 w-80 h-80 rounded-full bg-[#ff6b98]/10 blur-[130px]" />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-md px-6 py-8 space-y-6">
+        <div className="dossier-proceedings relative z-10 mx-auto max-w-md px-6 py-8 space-y-6">
           {/* Phase pill */}
           <div className="flex justify-center">
-            <div className="px-4 py-1 rounded-full bg-[#20262f] border border-[#df8eff]/20 text-[#df8eff] text-[10px] font-bold tracking-[0.25em] uppercase">
+            <div className="px-4 py-1 rounded-full bg-[#20262f] border border-[#e6b76a]/20 text-[#e6b76a] text-[10px] font-bold tracking-[0.25em] uppercase">
               {t('games.impostor.discussionPhase')}
             </div>
           </div>
@@ -1294,14 +1328,14 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
           {/* Timer card */}
           <div className="relative group">
             <motion.div
-              className="absolute -top-3 -right-3 w-14 h-14 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#8ff5ff] to-[#df8eff]"
+              className="absolute -top-3 -right-3 w-14 h-14 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#eee3cb] to-[#e6b76a]"
               animate={ambient ? { rotate: [12, -12, 12] } : undefined}
               transition={ambient ? { duration: 10, repeat: Infinity, ease: 'easeInOut' } : undefined}
             />
             <motion.div
               className={cn(
                 'relative z-10 rounded-2xl p-6 text-center overflow-hidden',
-                urgency ? 'border border-[#ff6e84]/50' : 'border border-[#df8eff]/20',
+                urgency ? 'border border-[#ff6e84]/50' : 'border border-[#e6b76a]/20',
               )}
               style={{
                 background: 'rgba(32, 38, 47, 0.4)',
@@ -1325,7 +1359,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               </p>
               {!hideCategory && (
                 <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#0a0e14]/60 border border-[#44484f]/40 text-[11px] text-[#a8abb3]">
-                  {t('games.impostor.categoryDot')} <span className="text-[#df8eff] font-semibold">{currentWordSet?.category}</span>
+                  {t('games.impostor.categoryDot')} <span className="text-[#e6b76a] font-semibold">{currentWordSet?.category}</span>
                 </div>
               )}
             </motion.div>
@@ -1337,14 +1371,14 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               <h2 className="text-xs font-black uppercase tracking-[0.25em] text-[#a8abb3]">
                 {t('games.impostor.takeTurns')}
               </h2>
-              <span className="text-[11px] font-mono text-[#8ff5ff]">
+              <span className="text-[11px] font-mono text-[#eee3cb]">
                 {spokenCount} / {players.length}
               </span>
             </div>
             <div className="h-1 w-full rounded-full bg-[#20262f] overflow-hidden">
               {/* Animate scaleX (compositor) instead of width (layout reflow). */}
               <motion.div
-                className="h-full w-full origin-left bg-gradient-to-r from-[#8ff5ff] via-[#df8eff] to-[#ff6b98]"
+                className="h-full w-full origin-left bg-gradient-to-r from-[#eee3cb] via-[#e6b76a] to-[#ff6b98]"
                 animate={{ scaleX: progress }}
                 transition={{ type: 'spring', stiffness: 140, damping: 22 }}
               />
@@ -1361,13 +1395,13 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     whileTap={{ scale: player.hasSpoken ? 1 : 0.98 }}
                     className={cn(
                       'w-full flex items-center gap-3 p-3 rounded-2xl border text-left transition-colors overflow-hidden relative',
-                      isActive && 'border-[#df8eff]/60 shadow-[0_0_16px_rgba(223,142,255,0.18)]',
+                      isActive && 'border-[#e6b76a]/60 shadow-[0_0_16px_rgba(230,183,106,0.18)]',
                       player.hasSpoken && 'border-[#44484f]/30 opacity-50',
-                      !isActive && !player.hasSpoken && 'border-[#44484f]/50 hover:border-[#df8eff]/30',
+                      !isActive && !player.hasSpoken && 'border-[#44484f]/50 hover:border-[#e6b76a]/30',
                     )}
                     style={{
                       background: isActive
-                        ? 'linear-gradient(90deg, rgba(223,142,255,0.12), rgba(255,107,152,0.08))'
+                        ? 'linear-gradient(90deg, rgba(230,183,106,0.12), rgba(255,107,152,0.08))'
                         : 'rgba(21, 26, 33, 0.4)',
                     }}
                   >
@@ -1379,12 +1413,12 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
                     </div>
                     <span className="flex-1 text-sm font-semibold">{player.name}</span>
                     {player.hasSpoken ? (
-                      <CheckCircle2 className="w-5 h-5 text-[#8ff5ff]" />
+                      <CheckCircle2 className="w-5 h-5 text-[#eee3cb]" />
                     ) : isActive ? (
                       <motion.div
                         animate={ambient ? { x: [0, 3, 0] } : undefined}
                         transition={ambient ? { repeat: Infinity, duration: 1.2 } : undefined}
-                        className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#df8eff]"
+                        className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-[#e6b76a]"
                       >
                         {t('games.impostor.yourTurn')}
                         <ChevronRight className="w-4 h-4" />
@@ -1401,7 +1435,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             onClick={skipToVoting}
             whileTap={{ scale: 0.97 }}
             className="w-full py-4 rounded-full text-[#0a0e14] font-extrabold text-sm tracking-[0.2em] uppercase shadow-[0_0_25px_rgba(255,107,152,0.35)] flex items-center justify-center gap-2"
-            style={{ background: 'linear-gradient(90deg, #df8eff, #ff6b98)' }}
+            style={{ background: '#e6b76a', color: '#24281f', boxShadow: 'none', borderRadius: 5 }}
           >
             {t('games.impostor.toVoting')}
             <ChevronRight className="w-4 h-4" />
@@ -1419,9 +1453,9 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
         {exitDialog}
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute top-1/3 -right-20 w-80 h-80 rounded-full bg-[#ff6b98]/12 blur-[120px]" />
-          <div className="absolute bottom-0 -left-20 w-64 h-64 rounded-full bg-[#df8eff]/10 blur-[100px]" />
+          <div className="absolute bottom-0 -left-20 w-64 h-64 rounded-full bg-[#e6b76a]/10 blur-[100px]" />
         </div>
-        <div className="relative z-10 mx-auto max-w-md px-6 py-8 space-y-6">
+        <div className="dossier-proceedings relative z-10 mx-auto max-w-md px-6 py-8 space-y-6">
           <div className="flex justify-center">
             <div className="px-4 py-1 rounded-full bg-[#20262f] border border-[#ff6b98]/30 text-[#ff6b98] text-[10px] font-bold tracking-[0.25em] uppercase">
               {t('games.impostor.votingPhase', { current: votingPlayer + 1, total: players.length })}
@@ -1429,7 +1463,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
           </div>
           <div className="relative group">
             <motion.div
-              className="absolute -top-3 -left-3 w-14 h-14 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#ff6b98] to-[#df8eff]"
+              className="absolute -top-3 -left-3 w-14 h-14 rounded-xl rotate-12 opacity-20 bg-gradient-to-br from-[#ff6b98] to-[#e6b76a]"
               animate={ambient ? { rotate: [12, 40, 12] } : undefined}
               transition={ambient ? { duration: 14, repeat: Infinity, ease: 'easeInOut' } : undefined}
             />
@@ -1549,6 +1583,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             </p>
           </motion.div>
 
+          {!mostVotedId && <p role="status" className="p-4 rounded-xl bg-amber-500/10 text-amber-200">{t('games.impostor.voteTie')}</p>}
+          {impostorCount > 1 && <p className="text-sm text-white/60">{t('games.impostor.multiScoring')}</p>}
           {/* Most voted */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1610,19 +1646,19 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
-            className="bg-[#df8eff]/10 border border-[#df8eff]/30 rounded-2xl p-4"
+            className="bg-[#e6b76a]/10 border border-[#e6b76a]/30 rounded-2xl p-4"
           >
             <p className="text-[#a8abb3] text-xs uppercase tracking-wider mb-1">{t('games.impostor.theWordWas')}</p>
             <p className="text-3xl font-black text-white drop-shadow-[0_0_20px_rgba(168,85,247,0.3)]">
-              {currentWordSet?.word}
+              {phase === 'reveal' && impostors.some(p => p.id !== mostVotedId) ? '???' : online && players.find(p => p.id === online.myPlayerId)?.isImpostor ? '???' : currentWordSet?.word}
             </p>
-            <p className="text-[#df8eff] text-xs mt-1">{currentWordSet?.category}</p>
+            <p className="text-[#e6b76a] text-xs mt-1">{currentWordSet?.category}</p>
           </motion.div>
 
           {/* Continue */}
           <motion.button
             onClick={proceedFromReveal}
-            className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)]"
+            className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#e6b76a] via-[#ff6b98] to-[#e6b76a] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)]"
             whileTap={{ scale: 0.97 }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -1655,7 +1691,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               {t('games.impostor.bonusQuestion', { names: impostors.map((i) => i.name).join(' & ') })}
             </p>
             {!hideCategory && (
-              <p className="text-[#df8eff] text-xs">
+              <p className="text-[#e6b76a] text-xs">
                 {t('games.impostor.bonusCategory', { category: currentWordSet?.category })}
               </p>
             )}
@@ -1670,13 +1706,14 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
               <input
                 type="text"
                 value={bonusGuess}
+                disabled={!!online && !players.some(p => p.id === online.myPlayerId && p.isImpostor && p.id !== mostVotedId)}
                 onChange={(e) => setBonusGuess(e.target.value)}
                 placeholder={t('games.impostor.wordPlaceholder')}
                 className="w-full bg-[#151a21]/60 border border-[#44484f] rounded-xl px-4 py-3 text-white text-center text-lg placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                 onKeyDown={(e) => e.key === 'Enter' && bonusGuess.trim() && submitBonusGuess()}
               />
               <motion.button
-                onClick={submitBonusGuess}
+                onClick={() => submitBonusGuess()}
                 disabled={!bonusGuess.trim()}
                 className={cn(
                   'w-full py-3.5 rounded-2xl font-bold flex items-center justify-center gap-2',
@@ -1797,7 +1834,7 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
             </motion.button>
             <motion.button
               onClick={playAgain}
-              className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#df8eff] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)] text-sm"
+              className="flex-[1.5] py-3.5 rounded-2xl bg-gradient-to-r from-[#e6b76a] via-[#ff6b98] to-[#e6b76a] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)] text-sm"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
             >
@@ -1811,4 +1848,8 @@ export default function ImpostorGame({ online }: { online?: OnlineGameProps }) {
   }
 
   return exitDialog;
+}
+
+export default function ImpostorGame({ online }: { online?: OnlineGameProps } = {}) {
+  return <GameStage gameId="hochstapler" className="dossier-game"><ImpostorGameContent online={online} /></GameStage>;
 }

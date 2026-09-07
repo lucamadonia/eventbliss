@@ -1,232 +1,41 @@
-/**
- * GameRulesModal — Epic, animated rules overlay for all 17 games.
- * Glassmorphism design, spring animations, auto-show on first play.
- */
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from "react-i18next";
-import { HelpCircle, Lightbulb, Sparkles, X, ChevronRight } from "lucide-react";
-import { useBackGuard } from "@/lib/back-guard";
-import { cn } from "@/lib/utils";
-import { normalizeGameId } from "./game-rules";
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { HelpCircle, Lightbulb, X, Check } from 'lucide-react';
+import * as Dialog from '@radix-ui/react-dialog';
+import { useBackGuard } from '@/lib/back-guard';
+import { normalizeGameId } from './game-rules';
+import { gameStageStyle, StageAction } from './GameStage';
 
-const GAME_ICONS: Record<string, string> = {
-  bomb: "💣", taboo: "🚫", headup: "🧠", category: "⏱️",
-  emojiguess: "😀", fakeorfact: "🎲", truthdare: "❤️",
-  thisorthat: "↔️", whoami: "❓", bottlespin: "🍾",
-  storybuilder: "📖", sharedquiz: "🔗", quickdraw: "🎨",
-  splitquiz: "🧩", hochstapler: "🎭", "wo-ist-was": "🗺️",
-  flaschendrehen: "🍾", "drueck-das-wort": "🔤",
-  "wer-bin-ich": "❓", "emoji-raten": "😀", "fake-or-fact": "🎲",
-  "this-or-that": "↔️", "wahrheit-pflicht": "❤️",
-  "story-builder": "📖", "geteilt-gequizzt": "🔗",
-  "schnellzeichner": "🎨", "split-quiz": "🧩",
-  ohrwurm: "🎵",
-  pixeljagd: "🔍",
-  closeenough: "🎯",
-  pantomime: "🎭",
-  brew: "🧪",
-};
-
-const GAME_GRADIENTS: Record<string, string> = {
-  bomb: "from-red-500 to-orange-500", taboo: "from-violet-500 to-purple-500",
-  headup: "from-cyan-500 to-blue-500", category: "from-amber-500 to-yellow-500",
-  emojiguess: "from-emerald-500 to-teal-500", fakeorfact: "from-blue-500 to-indigo-500",
-  truthdare: "from-pink-500 to-rose-500", thisorthat: "from-sky-500 to-cyan-500",
-  whoami: "from-fuchsia-500 to-pink-500", bottlespin: "from-green-500 to-emerald-500",
-  storybuilder: "from-indigo-500 to-violet-500", sharedquiz: "from-teal-500 to-green-500",
-  quickdraw: "from-orange-500 to-red-500", splitquiz: "from-purple-500 to-indigo-500",
-  hochstapler: "from-slate-500 to-zinc-600", "wo-ist-was": "from-lime-500 to-green-500",
-  flaschendrehen: "from-green-500 to-emerald-500",
-  ohrwurm: "from-[#FF2E88] to-[#26E0C4]",
-  pixeljagd: "from-[#38BDF8] to-[#A78BFA]",
-  closeenough: "from-[#FBBF24] to-[#34D399]",
-  pantomime: "from-[#FBBF24] to-[#F472B6]",
-  brew: "from-[#FF9F2E] to-[#9B5DE5]",
-};
-
-const STEP_COLORS = [
-  "from-violet-500 to-fuchsia-500",
-  "from-cyan-500 to-blue-500",
-  "from-amber-500 to-orange-500",
-  "from-emerald-500 to-teal-500",
-  "from-pink-500 to-rose-500",
-];
-
-
-interface GameRulesModalProps {
-  gameId: string;
-  open: boolean;
-  onClose: () => void;
-}
-
-export function GameRulesModal({ gameId, open, onClose }: GameRulesModalProps) {
-  const { t } = useTranslation();
-  const nid = normalizeGameId(gameId);
-  const icon = GAME_ICONS[gameId] || GAME_ICONS[nid] || "🎮";
-  const gradient = GAME_GRADIENTS[nid] || "from-violet-500 to-fuchsia-500";
-
-  const title = t(`gameRules.${nid}.title`, "");
-  const tagline = t(`gameRules.${nid}.tagline`, "");
-  const tip = t(`gameRules.${nid}.tip`, "");
-
-  // Steps are stored as step1, step2, step3, step4, step5
-  const steps: string[] = [];
-  for (let i = 1; i <= 5; i++) {
-    const s = t(`gameRules.${nid}.step${i}`, "");
-    if (s) steps.push(s);
-  }
-
-  // Ohne Text gibt es nichts zu zeigen — und dann darf der Dialog auch kein
-  // Zurück verschlucken (siehe Rang unten).
-  const renderable = !!title || steps.length > 0;
-
-  /**
-   * Zurück schließt die Regeln, statt die Seite darunter zu verlassen.
-   *
-   * Der schwebende Pfeil und die Android-Hardware-Taste fragen beide
-   * `runBackGuards()`. Ohne diesen Eintrag lief das Zurück an den offenen
-   * Regeln vorbei und navigierte die Route darunter weg — mitten im Spiel.
-   *
-   * Rang `overlay` ist zwingend: `route` ist systemweit für genau einen
-   * Anmelder reserviert (`GameBackTarget`), siehe `src/lib/back-guard.ts`.
-   */
-  useBackGuard(
-    () => {
-      onClose();
-      return true;
-    },
-    open && renderable,
-  );
-
-  if (!renderable) return null;
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {/* Backdrop */}
-          <motion.div
-            className="absolute inset-0 bg-black/70 backdrop-blur-xl"
-            onClick={onClose}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
-
-          {/* Card */}
-          <motion.div
-            className="relative w-full max-w-md max-h-[85vh] overflow-y-auto rounded-3xl bg-[#0d0f14]/95 border border-white/10 shadow-[0_0_80px_rgba(139,92,246,0.15)]"
-            initial={{ scale: 0.8, y: 60, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.8, y: 60, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          >
-            {/* Ambient glow */}
-            <div className={cn("absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 rounded-full blur-[100px] opacity-20 bg-gradient-to-br", gradient)} />
-
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
-            >
-              <X className="w-4 h-4 text-white/60" />
-            </button>
-
-            <div className="relative p-6 space-y-5">
-              {/* Header — Icon + Title + Tagline */}
-              <motion.div
-                className="text-center space-y-3"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-              >
-                <motion.div
-                  className={cn("w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br flex items-center justify-center text-4xl shadow-lg", gradient)}
-                  initial={{ scale: 0, rotate: -20 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 15, delay: 0.15 }}
-                >
-                  {icon}
-                </motion.div>
-                <h2 className="text-2xl font-extrabold text-white font-game tracking-tight">
-                  {title}
-                </h2>
-                {tagline && (
-                  <p className="text-sm text-white/50 font-['Be_Vietnam_Pro'] max-w-xs mx-auto leading-relaxed">
-                    {tagline}
-                  </p>
-                )}
-              </motion.div>
-
-              {/* Divider */}
-              <div className="h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-              {/* Steps */}
-              <div className="space-y-3">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold text-center">
-                  {t("gameRules.howToPlay")}
-                </p>
-                {steps.map((step, i) => (
-                  <motion.div
-                    key={i}
-                    className="flex items-start gap-3"
-                    initial={{ x: -30, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 + i * 0.08, type: "spring", stiffness: 300, damping: 20 }}
-                  >
-                    <div className={cn("w-8 h-8 rounded-xl bg-gradient-to-br flex items-center justify-center text-xs font-black text-white shadow-lg shrink-0", STEP_COLORS[i % STEP_COLORS.length])}>
-                      {i + 1}
-                    </div>
-                    <p className="text-sm text-white/80 font-['Be_Vietnam_Pro'] leading-relaxed pt-1">
-                      {step}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-
-              {/* Pro Tip */}
-              {tip && (
-                <motion.div
-                  className="flex items-start gap-3 px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/20"
-                  initial={{ y: 15, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <Lightbulb className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-[10px] uppercase tracking-wider text-amber-400 font-bold mb-0.5">Pro-Tipp</p>
-                    <p className="text-xs text-amber-200/80 font-['Be_Vietnam_Pro'] leading-relaxed">{tip}</p>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* CTA Button */}
-              <motion.button
-                onClick={onClose}
-                whileTap={{ scale: 0.96 }}
-                className={cn(
-                  "w-full py-3.5 rounded-2xl text-sm font-bold text-white flex items-center justify-center gap-2 shadow-lg bg-gradient-to-r",
-                  gradient,
-                )}
-                initial={{ y: 15, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5 }}
-              >
-                <Sparkles className="w-4 h-4" />
-                {t("gameRules.understood")}
-              </motion.button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+interface GameRulesModalProps { gameId:string; open:boolean; onClose:()=>void; }
+export function GameRulesModal({gameId,open,onClose}:GameRulesModalProps) {
+  const {t}=useTranslation();
+  const nid=normalizeGameId(gameId);
+  const title=t(`gameRules.${nid}.title`,'');
+  const tagline=t(`gameRules.${nid}.tagline`,'');
+  const tip=t(`gameRules.${nid}.tip`,'');
+  const steps=Array.from({length:5},(_,index)=>t(`gameRules.${nid}.step${index+1}`,'')).filter(Boolean);
+  const renderable=!!title||steps.length>0;
+  useBackGuard(()=>{onClose();return true;},open&&renderable);
+  if(!renderable)return null;
+  return <Dialog.Root open={open} onOpenChange={value=>{if(!value)onClose();}}>
+    <Dialog.Portal>
+      <Dialog.Overlay className="fixed inset-0 z-[180] bg-black/75 backdrop-blur-sm" />
+      <Dialog.Content style={gameStageStyle(gameId)} className="fixed left-1/2 top-1/2 z-[181] flex max-h-[calc(100dvh-32px)] w-[calc(100%-32px)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-3xl border border-white/15 bg-[var(--stage-bg)] text-[var(--stage-ink)] shadow-2xl font-sans">
+        <div className="shrink-0 border-b border-white/10 px-6 pb-5 pt-7 pr-16">
+          <p className="stage-eyebrow">{t('gameRules.howToPlay')}</p>
+          <Dialog.Title className="text-3xl font-extrabold tracking-tight leading-tight">{title}</Dialog.Title>
+          <Dialog.Description className="mt-3 text-sm leading-relaxed text-[var(--stage-muted)]">{tagline}</Dialog.Description>
+        </div>
+        <Dialog.Close className="absolute top-5 right-4 grid h-11 w-11 place-items-center rounded-full border border-white/15 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--stage-accent)]" aria-label={t('common.close')}><X className="h-5 w-5" /></Dialog.Close>
+        <div className="min-h-0 overflow-y-auto px-6 py-6">
+          <ol className="space-y-5">{steps.map((step,index)=><li key={index} className="flex items-start gap-4"><span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[var(--stage-accent)]/40 text-xs font-bold text-[var(--stage-accent)]">{index+1}</span><p className="text-sm leading-relaxed">{step}</p></li>)}</ol>
+          {tip&&<div className="mt-7 flex gap-3 border-t border-white/10 pt-5 text-sm leading-relaxed text-[var(--stage-secondary)]"><Lightbulb className="mt-0.5 h-5 w-5 shrink-0"/><p>{tip}</p></div>}
+        </div>
+        <div className="shrink-0 border-t border-white/10 p-4"><StageAction className="w-full" onClick={onClose}><Check className="h-5 w-5"/>{t('gameRules.understood')}</StageAction></div>
+      </Dialog.Content>
+    </Dialog.Portal>
+  </Dialog.Root>;
 }
 
 /**
@@ -264,8 +73,8 @@ export function RulesHelpButton({ onClick }: { onClick: () => void }) {
     <motion.button
       whileTap={{ scale: 0.85 }}
       onClick={(e) => { e.stopPropagation(); onClick(); }}
-      className="w-10 h-10 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center hover:bg-white/10 active:bg-white/15 transition-colors"
-      title={t('gameRules.howToPlay')}
+      className="w-11 h-11 rounded-xl bg-white/[0.06] border border-white/10 flex items-center justify-center hover:bg-white/10 active:bg-white/15 transition-colors"
+      title={t('gameRules.howToPlay')} aria-label={t('gameRules.howToPlay')}
     >
       <HelpCircle className="w-[18px] h-[18px] text-white/40" />
     </motion.button>

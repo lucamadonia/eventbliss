@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -143,7 +143,7 @@ function PlayerRow({ player, isCurrentHost, onKick }: { player: RoomPlayer; isCu
 
 type LobbyView = "menu" | "create" | "join" | "lobby";
 
-export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, minPlayers = 2 }: GameLobbyProps) {
+export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps) {
   const { t, i18n } = useTranslation();
   // Read name and room from URL params (for personalized invite links)
   const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
@@ -152,6 +152,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
 
   const [view, setView] = useState<LobbyView>(urlRoom ? "join" : "menu");
   const [joinCode, setJoinCode] = useState(urlRoom);
+  const [targetRoomCode, setTargetRoomCode] = useState(urlRoom.toUpperCase().trim());
   const [joinName, setJoinName] = useState(urlName);
   const [hostName, setHostName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -160,8 +161,12 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
 
   const { isPremium } = usePremium();
   const { user } = useAuth();
-  const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, startGame, kickPlayer, error } = useGameRoom();
+  const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, selectGame, startGame, kickPlayer, error, connection } = useGameRoom();
   const openRooms = useOpenRooms();
+  const roomMatchesTarget = !!room && room.roomCode === targetRoomCode;
+  useEffect(() => {
+    if (roomMatchesTarget && connection === 'connected' && view === 'join') setView('lobby');
+  }, [roomMatchesTarget, connection, view]);
 
   // Join failed (e.g. room not found) — drop back to the join form instead
   // of showing an empty lobby.
@@ -177,7 +182,10 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   }, [room?.gameId, isHost, selectedGame]);
 
   const savedRoom = getSavedRoom();
-  const allReady = players.length >= minPlayers && players.every((p) => p.isReady);
+  const selectedConfig = playableGames.find(g => g.id === selectedGame);
+  const minPlayers = Math.max(2, selectedConfig?.minPlayers ?? 2);
+  const maxPlayers = selectedConfig?.maxPlayers ?? 30;
+  const allReady = connection === 'connected' && players.length >= minPlayers && players.length <= maxPlayers && players.every((p) => p.isReady);
 
   // Übersetzte Spielnamen, einmal je Sprachwechsel statt je Render.
   const gameList = useMemo(
@@ -188,9 +196,10 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   // Rejoin a saved room
   const handleRejoin = useCallback(async () => {
     if (!savedRoom) return;
+    setTargetRoomCode(savedRoom.roomCode);
     setIsLoading(true);
     const name = hostName.trim() || joinName.trim() || t("nativeExtra.gameLobby.defaultPlayerName");
-    try { await joinRoom(savedRoom.roomCode, name, isPremium); setView("lobby"); } finally { setIsLoading(false); }
+    try { await joinRoom(savedRoom.roomCode, name, isPremium); setView("lobby"); } catch { /* Session displays error. */ } finally { setIsLoading(false); }
   }, [savedRoom, joinRoom, hostName, joinName, isPremium, t]);
 
   const handleCreate = useCallback(async () => {
@@ -198,39 +207,44 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
     setIsLoading(true);
     try {
       const code = await createRoom(gameId, isPremium, hostName.trim());
+      setTargetRoomCode(code);
       broadcastRoomCreated({ roomCode: code, gameId, hostName: hostName.trim(), playerCount: 1, timestamp: Date.now() });
       setView("lobby");
-    } finally { setIsLoading(false); }
+    } catch { /* Session displays error. */ } finally { setIsLoading(false); }
   }, [createRoom, gameId, hostName, isPremium]);
 
   const handleJoin = useCallback(async () => {
     if (!joinName.trim() || !joinCode.trim()) return;
+    setTargetRoomCode(joinCode.toUpperCase().trim());
     setIsLoading(true);
-    try { await joinRoom(joinCode, joinName.trim(), isPremium); setView("lobby"); } finally { setIsLoading(false); }
+    try { await joinRoom(joinCode, joinName.trim(), isPremium); localStorage.setItem('eventbliss_player_name', joinName.trim()); setView("lobby"); } catch { /* Session displays error. */ } finally { setIsLoading(false); }
   }, [joinRoom, joinCode, joinName, isPremium]);
 
   // Auto-join if name + room come from URL (personalized invite link)
   useEffect(() => {
-    if (urlRoom && urlName && view === "join" && !room) {
+    if (urlRoom && urlName && view === "join" && !roomMatchesTarget) {
       handleJoin();
     }
   }, []);
 
   // When game starts (for guests): auto-navigate to the SAME game the host selected.
   // CRITICAL: Use room.gameId (from host's broadcast), NOT local selectedGame.
+  const navigatedSession = useRef('');
   useEffect(() => {
-    if (room?.status === "playing" && !isHost && room.roomCode) {
+    if (room?.status === 'lobby') navigatedSession.current = '';
+    if (roomMatchesTarget && connection === "connected" && room?.status === "playing" && room.roomCode && navigatedSession.current !== room.sessionId) {
+      navigatedSession.current = room.sessionId;
       onStart(players, room.roomCode, room.gameId || selectedGame);
     }
-  }, [room?.status]);
+  }, [roomMatchesTarget, connection, room?.status, room?.sessionId, room?.gameId]);
 
-  const handleStart = useCallback(() => {
+  const handleStart = useCallback(async () => {
     if (!isHost || !allReady || !room) return;
-    startGame(selectedGame);
+    if (!await startGame(selectedGame)) return;
     // Remove from public discovery — the room is no longer waiting in lobby.
     broadcastRoomClosed(room.roomCode);
-    onStart(players, room.roomCode, selectedGame);
-  }, [isHost, allReady, room, startGame, onStart, players, selectedGame]);
+    // The shared-room effect above is the single navigation path.
+  }, [isHost, allReady, room, startGame, selectedGame]);
 
   const handleLeave = useCallback(() => {
     if (isHost && room) broadcastRoomClosed(room.roomCode);
@@ -265,12 +279,12 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
   }, [room, gameName, t]);
 
   return (
-    <div className="min-h-screen px-4 py-6" style={{ backgroundColor: EP.bg }}>
+    <div className="h-full min-h-0 overflow-y-auto overscroll-contain px-4 py-6 pb-36" style={{ backgroundColor: EP.bg }}>
       <div className="mx-auto max-w-md space-y-5">
         {/* Header */}
         <div className="flex items-center gap-3">
           <motion.button whileTap={{ scale: 0.9 }}
-            onClick={view === "lobby" ? handleLeave : view === "menu" ? onBack : () => setView("menu")}
+            onClick={view === "lobby" ? handleLeave : view === "menu" ? onBack : () => { if (isLoading) leaveRoom(); setView("menu"); }}
             className="flex h-10 w-10 items-center justify-center rounded-xl" style={{ backgroundColor: EP.surface2 }}>
             <ArrowLeft className="h-5 w-5 text-white/60" />
           </motion.button>
@@ -284,6 +298,9 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
         </div>
 
         <AnimatePresence>
+          {room?.settings.recoveredAfterReload === true && (
+            <p role="status" className="rounded-xl bg-white/5 px-4 py-3 text-sm text-white/70">{t('nativeExtra.gameLobby.recoveredAfterReload')}</p>
+          )}
           {error && (
             <motion.div {...fadeUp} className="rounded-xl px-4 py-3 text-sm font-medium"
               style={{ backgroundColor: "rgba(255,107,152,0.12)", color: EP.neonPink }}>{error}</motion.div>
@@ -530,7 +547,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                         <div className="px-3 pb-3 grid grid-cols-3 gap-1.5 max-h-48 overflow-y-auto">
                           {gameList.map(g => (
                             <motion.button key={g.id} whileTap={{ scale: 0.95 }}
-                              onClick={() => { setSelectedGame(g.id); setShowGamePicker(false); }}
+                              onClick={() => { setSelectedGame(g.id); selectGame(g.id); setShowGamePicker(false); }}
                               className="flex flex-col items-center gap-1 rounded-xl py-2 px-1 text-center transition-colors"
                               style={{
                                 backgroundColor: selectedGame === g.id ? "rgba(223,142,255,0.12)" : EP.surface2,
@@ -597,7 +614,9 @@ export function GameLobby({ gameId, gameName, onStart, onBack, maxPlayers = 12, 
                   <Play className="h-5 w-5" />
                   {allReady
                     ? t("nativeExtra.gameLobby.startGame")
-                    : t("nativeExtra.gameLobby.notReadyCount", { players: players.filter((p) => !p.isReady).length })}
+                    : players.length < minPlayers || players.length > maxPlayers
+                      ? `${players.length} / ${minPlayers}–${maxPlayers}`
+                      : t("nativeExtra.gameLobby.notReadyCount", { players: players.filter((p) => !p.isReady).length })}
                 </span>
               </motion.button>
             )}

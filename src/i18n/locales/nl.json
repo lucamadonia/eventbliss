@@ -6339,7 +6339,8 @@
       "streak": "Beste Reeks",
       "playAgain": "Opnieuw Spelen",
       "otherGame": "Ander Spel",
-      "share": "Resultaten Delen"
+      "share": "Resultaten Delen",
+      "sharedWin": "Gedeelde overwinning"
     },
     "bomb": {
       "name": "Tikkende Bom",
@@ -6396,7 +6397,8 @@
       "tutorialStep5": "Antwoorden mogen niet herhaald worden!",
       "tutorialDismiss": "BEGREPEN!",
       "taskAllePrompt": "Noem: {{category}} met \"{{letter}}\"",
-      "taskKategoriePrompt": "Noem een {{category}} met \"{{letter}}\"!"
+      "taskKategoriePrompt": "Noem een {{category}} met \"{{letter}}\"!",
+      "fewestPenalties": "Minste strafpunten"
     },
     "headup": {
       "name": "Heads Up",
@@ -6440,7 +6442,10 @@
       "best": "Beste",
       "resultsPerRound": "Resultaten per ronde",
       "playAgain": "Opnieuw spelen",
-      "back": "Terug"
+      "back": "Terug",
+      "enableMotion": "Kantelbesturing inschakelen (of knoppen gebruiken)",
+      "readyBtn": "Klaar — kantelen inschakelen",
+      "buttonsOnly": "Met knoppen spelen"
     },
     "taboo": {
       "name": "Woordverbod",
@@ -6500,7 +6505,9 @@
       },
       "result": {
         "cheers": "Proost!"
-      }
+      },
+      "refereeRole": "Scheidsrechter: let op verboden woorden.",
+      "voiceHint": "Raad hardop met je team. Gebruik op afstand een spraakoproep."
     },
     "categoryGame": {
       "name": "Categorie Timer",
@@ -6605,7 +6612,36 @@
       "timerNormal": "Normaal",
       "timerRelaxed": "Ontspannen",
       "timerExplorer": "Verkenner",
-      "wfsStartBtn": "SPEL STARTEN"
+      "wfsStartBtn": "SPEL STARTEN",
+      "panoramaLoading": "Panorama laden…",
+      "panoramaError": "Dit panorama kon niet worden geladen. Ga terug naar de spellen en probeer het opnieuw.",
+      "visual": {
+        "boardTitle": "Voorwerpenverzameling",
+        "whichPresent": "Welk voorwerp stond op het bord?",
+        "whichMissing": "Welk voorwerp stond NIET op het bord?",
+        "whichPosition": "Welk voorwerp stond op kaart {{position}}?",
+        "card": "Kaart {{position}}: {{object}}",
+        "loading": "Afbeeldingen laden…",
+        "compareHint": "Vind de drie vervangen voorwerpen op bord B.",
+        "imageError": "De afbeeldingen konden niet worden geladen. Controleer je verbinding en probeer opnieuw.",
+        "retryImages": "Afbeeldingen opnieuw laden"},
+      "objects": {
+        "apple": "Appel",
+        "banana": "Banaan",
+        "pear": "Peer",
+        "orange": "Sinaasappel",
+        "strawberry": "Aardbei",
+        "lemon": "Citroen",
+        "mug": "Mok",
+        "book": "Boek",
+        "key": "Sleutel",
+        "camera": "Camera",
+        "teddy": "Teddybeer",
+        "car": "Speelgoedauto",
+        "shoe": "Sneaker",
+        "ball": "Voetbal",
+        "plant": "Potplant",
+        "umbrella": "Paraplu"}
     },
     "impostor": {
       "title": "Bedrieger",
@@ -6662,7 +6698,14 @@
       "impostorBadge": "Bedrieger",
       "resetGame": "Opnieuw starten",
       "playAgain": "Nog een keer!",
-      "votingPhase": "Stemming · {{current}}/{{total}}"
+      "votingPhase": "Stemming · {{current}}/{{total}}",
+      "privateRole": "Jouw geheime rol",
+      "viewRole": "Rol bekijken",
+      "waitPlayers": "Wachten op de anderen…",
+      "readyRole": "Klaar",
+      "exitGame": "Spel verlaten",
+      "voteTie": "Gelijkspel: niemand valt af. De bedriegers overleven.",
+      "multiScoring": "Burgers krijgen 10 punten voor een ontmaskerde bedrieger. Elke overlevende bedrieger krijgt 15 punten en deelt de bonus."
     },
     "ohrwurm": {
       "leaveTitle": "Spel verlaten?",
@@ -6837,7 +6880,8 @@
       "off": "Uit",
       "otherGame": "Ander spel",
       "playAgain": "Opnieuw",
-      "title": "Split Quiz"
+      "title": "Split Quiz",
+      "wagerRisk": "Goed: +100/+200/+300. Fout: 0/−100/−200 bij inzet 1/2/3."
     },
     "truthdare": {
       "yes": "Ja",
@@ -6954,7 +6998,14 @@
           }
         },
         "noContent": "Er zijn nu geen personages voor deze groep"
-      }
+      },
+      "onlineRoles": "Je ziet alle identiteiten behalve die van jezelf.",
+      "exitGame": "Spel verlaten",
+      "questionLabel": "Stel een ja/nee-vraag",
+      "sendQuestion": "Vraag stellen",
+      "guessNow": "Identiteit raden",
+      "voteSummary": "Ja: {{yes}} · Nee: {{no}}",
+      "questionLimit": "Vragen per identiteit"
     },
     "bottlespin": {
       "setupTimerLabel": "Opdrachtentimer (sec.)",
@@ -6978,7 +7029,27 @@
       "scorePoints": "{{score}} pnt.",
       "roundsPlayed": "{{rounds}} rondes gespeeld. Dat was leuk!",
       "playAgain": "Nog een keer",
-      "otherGame": "Ander spel"
+      "otherGame": "Ander spel",
+      "categories": {
+        "eisbrecher": "IJsbrekers",
+        "spass": "Humor en eigenaardigheden",
+        "party": "Feesten en muziek",
+        "freundschaft": "Vriendschap",
+        "liebe": "Verbinding en relaties",
+        "erinnerungen": "Herinneringen",
+        "reisen": "Reizen en ontdekken",
+        "traeume": "Dromen en toekomst",
+        "entscheidungen": "Keuzes en waarden",
+        "kreativ": "Fantasie en creativiteit"},
+      "categorySelection": "Categorieën kiezen",
+      "contentSelection": "Wat komt er op de kaart?",
+      "questionsOnly": "Alleen vragen",
+      "tasksOnly": "Alleen opdrachten",
+      "mixedCards": "Vragen en opdrachten",
+      "availableCards": "{{count}} kaarten beschikbaar",
+      "selectionRequired": "Kies minstens één categorie.",
+      "prepareRound": "Ronde voorbereiden",
+      "editSelection": "Inhoud wijzigen"
     },
     "category": {
       "title": "Snelcategorie",
@@ -7014,7 +7085,22 @@
       "pointsAvailable": "punten mogelijk",
       "hintPrefix": "Begint met: {{letter}}",
       "showAnswer": "Antwoord tonen",
-      "guessed": "Geraden!"
+      "guessed": "Geraden!",
+      "answerLabel": "Jouw antwoord",
+      "teamLabel": "Team {{team}}",
+      "readyTitle": "Je raadsel staat klaar",
+      "readyBody": "Lees de beelden van links naar rechts. Raad een titel of begrip uit de getoonde categorie.",
+      "readyStart": "Klaar — toon het raadsel",
+      "waitingFor": "Wachten op {{name}}",
+      "submitAnswer": "Antwoord controleren",
+      "tryAgain": "Nog niet goed. Probeer een ander antwoord.",
+      "skipPuzzle": "Raadsel overslaan",
+      "solved": "Opgelost",
+      "solution": "Oplossing",
+      "acceptedAnswers": "Ook geldig",
+      "nextPlayer": "Hierna: {{name}}",
+      "clueLabel": "Beeldraadsel",
+      "poolBudget": "{{puzzleCount}} geselecteerde raadsels. Grotere groepen spelen minder rondes: evenveel beurten voor iedereen, zonder herhaling."
     },
     "fakeorfact": {
       "title": "Leugenaar — Fake or Fact",
@@ -7031,7 +7117,8 @@
       "theTruthIs": "De waarheid is ...",
       "correctPct": "Goed: {{pct}}%",
       "incorrectPct": "Fout: {{pct}}%",
-      "continue": "Verder"
+      "continue": "Verder",
+      "noAnswer": "Geen antwoord (tijd verstreken)"
     },
     "quickdraw": {
       "tagline": "Teken snel — de anderen raden!",
@@ -7054,7 +7141,12 @@
       "playerGuesses": "{{name}} raadt",
       "guessPlaceholder": "Wat is dit?",
       "theWordWas": "Het woord was",
-      "showResults": "Resultaten"
+      "showResults": "Resultaten",
+      "pass": "Passen",
+      "penSize": "Pendikte {{size}}",
+      "eraser": "Gum",
+      "undo": "Ongedaan maken",
+      "clear": "Tekening wissen"
     },
     "sharedquiz": {
       "title": "Gedeeld & Gequizt",
@@ -7076,7 +7168,10 @@
       "ready": "Klaar",
       "hintLabel": "Hint",
       "readHintAndAnswer": "Lees de hint hardop en kies het antwoord!",
-      "resultBtn": "Resultaat"
+      "resultBtn": "Resultaat",
+      "modeAnswerTurn": "{{name}} · Antwoord {{n}} van 3",
+      "chainRules": "Antwoord om de beurt. Elk goed antwoord levert jullie trio één punt op. Antwoorden blijven verborgen tot alle drie hebben geantwoord.",
+      "allRules": "Alle drie moeten goed antwoorden. Jullie trio krijgt drie punten, anders nul."
     },
     "storybuilder": {
       "setupTimerLabel": "Zinnen per speler",
@@ -7091,7 +7186,8 @@
       "ourStory": "Jullie verhaal",
       "showAll": "Alles tonen",
       "playAgain": "Opnieuw spelen",
-      "otherGame": "Ander spel"
+      "otherGame": "Ander spel",
+      "skipTurn": "Beurt overslaan"
     },
     "thisorthat": {
       "modeTagPopular": "Populair",
@@ -7127,7 +7223,8 @@
       "socialChallenge": "Sociale Uitdaging",
       "orWord": "of",
       "setupSubtitle": "Kies je modus en start de voorkeursbattle.",
-      "startGame": "Spel starten"
+      "startGame": "Spel starten",
+      "tie": "Gelijkspel"
     },
     "wordpress": {
       "modes": {
@@ -7165,7 +7262,15 @@
       "winnerAnnounce": "{{name}} wint met {{score}} punten!",
       "accuracyPct": "{{accuracy}}% nauwkeurigheid",
       "comboStat": "Combo: {{maxCombo}}x",
-      "correctStat": "{{count}} goed"
+      "correctStat": "{{count}} goed",
+      "tapWord": "Tik op het woord",
+      "yourTask": "Jouw opdracht",
+      "readyStart": "Begrepen — starten",
+      "waitForMatch": "Tik alleen op het grote woord als het aan de regel voldoet. Laat andere woorden voorbijgaan.",
+      "waitForPlayer": "Wachten tot {{name}} begint.",
+      "exampleCategory": "“{{animal}}”: tikken. “{{object}}”: wachten.",
+      "exampleStroop": "“{{red}}” in rood: tikken. “{{red}}” in blauw: wachten.",
+      "exampleForbidden": "“{{word}}”: wachten. Elk ander woord: tikken."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
@@ -7224,7 +7329,8 @@
       "teamModeGroups": "In teams",
       "playersLabel": "Spelers",
       "groupsLabel": "Teams",
-      "teamN": "Team {{n}}"
+      "teamN": "Team {{n}}",
+      "retryImage": "Afbeelding opnieuw laden"
     },
     "closeenough": {
       "title": "Bijna Raak",
@@ -7772,7 +7878,10 @@
       "counterLabelBar": "Toonbank",
       "trayNote": "nog niet veilig",
       "counterNote": "vrij voor iedereen · 1 kaart per beurt"
-    }
+    },
+    "connectionPaused": "Spel gepauzeerd",
+    "connectionPausedHint": "Maak opnieuw verbinding om verder te spelen. De huidige beurt blijft behouden.",
+    "reconnect": "Opnieuw verbinden"
   },
   "native": {
     "home": {
@@ -8461,11 +8570,11 @@
       },
       "chain": {
         "name": "Kettingquiz",
-        "desc": "Hintketting van speler naar speler"
+        "desc": "Antwoord om de beurt. Elk goed antwoord levert jullie trio één punt op. Antwoorden blijven verborgen tot alle drie hebben geantwoord."
       },
       "allornothing": {
         "name": "Alles of niets",
-        "desc": "Alleen punten als iedereen goed zit"
+        "desc": "Alle drie moeten goed antwoorden. Jullie trio krijgt drie punten, anders nul."
       }
     },
     "quickdraw": {
@@ -9663,7 +9772,8 @@
       "startGame": "Spel starten!",
       "notReadyCount": "Nog niet klaar: {{players}}",
       "shareText": "Doe mee met mijn spel! Code: {{code}}",
-      "defaultPlayerName": "Speler"
+      "defaultPlayerName": "Speler",
+      "recoveredAfterReload": "De host heeft de pagina opnieuw geladen. Het vorige spel is beëindigd. Jullie kunnen hier samen een nieuw spel starten."
     },
     "gamesHub": {
       "quickStart": "Snelstart",

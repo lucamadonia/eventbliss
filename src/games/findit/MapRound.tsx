@@ -1,3 +1,6 @@
+import './expedition.css';
+import { usePausableTimeout } from '../engine/TimerSystem';
+import { appendOnlineGuess } from './online-guesses';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Check, ChevronRight, Trophy, Timer, Share2, Crosshair } from 'lucide-react';
@@ -75,29 +78,44 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   useEffect(() => { currentPlayerRef.current = currentPlayer; }, [currentPlayer]);
   useEffect(() => { pinPosRef.current = pinPos; }, [pinPos]);
 
-  // --- Online: Host listens for guesses from all players ---
+  // Broadcast has no self echo: apply the host's guess locally.
+  const receiveGuess = useCallback((playerId: string, lat: number, lng: number, submitted = true) => {
+    if (!online?.isHost || phase !== 'guessing') return;
+    const updated = appendOnlineGuess(guessesRef.current, players, playerId, lat, lng, location, submitted);
+    if (updated === guessesRef.current) return;
+    guessesRef.current = updated;
+    setGuesses(updated);
+    if (updated.length >= players.length) {
+      online.broadcast('findit-map-results', { results: updated });
+      setAllDoneGuesses(updated);
+      setWaitingForResults(false);
+      setPhase('result');
+    }
+  }, [online, phase, players, location]);
   useEffect(() => {
     if (!online?.isHost) return;
-    const unsub = online.onBroadcast('findit-map-guess', (data) => {
-      const { playerId, lat, lng } = data as { playerId: string; lat: number; lng: number };
-      const player = players.find(p => p.id === playerId);
-      if (!player) return;
-      const distanceKm = haversineKm(lat, lng, location.lat, location.lng);
-      const guess: PlayerGuess = { playerId: player.id, playerName: player.name, playerColor: player.color, lat, lng, distanceKm };
-      setGuesses(prev => {
-        if (prev.some(g => g.playerId === playerId)) return prev;
-        const updated = [...prev, guess];
-        if (updated.length >= players.length) {
-          const results = updated.map(g => ({ playerId: g.playerId, playerName: g.playerName, playerColor: g.playerColor, lat: g.lat, lng: g.lng, distanceKm: g.distanceKm }));
-          online.broadcast('findit-map-results', { results });
-          setAllDoneGuesses(updated);
-          setPhase('result');
-        }
-        return updated;
-      });
+    return online.onBroadcast('findit-map-guess', data => {
+      if (data.roundNumber !== roundNumber || typeof data.__senderId !== 'string') return;
+      receiveGuess(data.__senderId, Number(data.lat), Number(data.lng), data.submitted !== false);
     });
-    return unsub;
-  }, [online, players, location]);
+  }, [online, receiveGuess, roundNumber]);
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('findit-map-state', { roundNumber, phase, countdown, guesses });
+  }, [online, roundNumber, phase, countdown, guesses]);
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('findit-map-state', data => {
+      if (data.roundNumber !== roundNumber) return;
+      setPhase(data.phase as MapPhase);
+      setCountdown(data.countdown as number);
+      const incoming = data.guesses as typeof guesses;
+      setGuesses(incoming);
+      setMyGuessPlaced(incoming.some(g => g.playerId === online.myPlayerId));
+      if (data.phase === 'result') { setAllDoneGuesses(incoming); setWaitingForResults(false); }
+
+    });
+  }, [online, roundNumber]);
 
   // --- Online: Non-host listens for results ---
   useEffect(() => {
@@ -129,13 +147,8 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     return unsub;
   }, [online, myGuessPlaced]);
 
-  // Showing → Guessing (only host drives in online mode)
-  useEffect(() => {
-    if (phase !== 'showing') return;
-    if (online && !online.isHost) return;
-    const t = setTimeout(() => { setPhase('guessing'); setCountdown(timerSeconds); }, 2500);
-    return () => clearTimeout(t);
-  }, [phase, timerSeconds, online]);
+  usePausableTimeout(() => { setPhase('guessing'); setCountdown(timerSeconds); },
+    phase === 'showing' && (!online || online.isHost) ? 2500 : null, online?.isConnected !== false);
 
   const confirmGuess = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
@@ -143,7 +156,8 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     const lat = pos?.lat ?? 0, lng = pos?.lng ?? 0;
 
     if (online) {
-      online.broadcast('findit-map-guess', { playerId: online.myPlayerId, lat, lng });
+      if (online.isHost) receiveGuess(online.myPlayerId, lat, lng, !!pos);
+      else online.broadcast('findit-map-guess', { playerId: online.myPlayerId, lat, lng, roundNumber, submitted: !!pos });
       setMyGuessPlaced(true);
       setWaitingForResults(true);
       return;
@@ -159,11 +173,11 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     const nextIdx = guessingIdxRef.current + 1;
     if (nextIdx >= players.length) { setAllDoneGuesses(updated); setPhase('result'); }
     else { setGuessingPlayerIdx(nextIdx); setPhase('handoff'); }
-  }, [location, players.length, online]);
+  }, [location, players.length, online, receiveGuess, roundNumber]);
 
   // Countdown (skip if online and already guessed)
   useEffect(() => {
-    if (phase !== 'guessing') return;
+    if (online?.isConnected === false || phase !== 'guessing') return;
     if (online && myGuessPlaced) return;
     timerRef.current = setInterval(() => {
       setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
@@ -171,22 +185,18 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
   }, [phase, guessingPlayerIdx, confirmGuess, online, myGuessPlaced]);
 
-  // --- Online: Host force-completes round if timer expires and not all guessed ---
-  useEffect(() => {
-    if (!online?.isHost || phase !== 'guessing') return;
-    const forceTimeout = setTimeout(() => {
-      setGuesses(prev => {
-        if (prev.length >= players.length) return prev;
-        const missing = players.filter(p => !prev.some(g => g.playerId === p.id));
-        const filled = [...prev, ...missing.map(p => ({ playerId: p.id, playerName: p.name, playerColor: p.color, lat: 0, lng: 0, distanceKm: 20000 }))];
-        online.broadcast('findit-map-results', { results: filled });
-        setAllDoneGuesses(filled);
-        setPhase('result');
-        return filled;
-      });
-    }, (timerSeconds + 2) * 1000);
-    return () => clearTimeout(forceTimeout);
-  }, [online, phase, players, timerSeconds]);
+  // Preserve the deadline across disconnects, even after this host submitted.
+  usePausableTimeout(() => {
+    const previous = guessesRef.current;
+    if (previous.length >= players.length) return;
+    const missing = players.filter(p => !previous.some(g => g.playerId === p.id));
+    const filled = [...previous, ...missing.map(p => ({ playerId: p.id, playerName: p.name, playerColor: p.color, lat: 0, lng: 0, distanceKm: 20000 }))];
+    guessesRef.current = filled;
+    setGuesses(filled);
+    online?.broadcast('findit-map-results', { results: filled });
+    setAllDoneGuesses(filled);
+    setPhase('result');
+  }, online?.isHost && phase === 'guessing' ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     if (online && myGuessPlaced) return;
@@ -200,7 +210,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
 
   return (
     <APIProvider apiKey={GMAP_KEY}>
-      <div className="fixed inset-0 bg-[#0a0e14] overflow-hidden" style={{ fontFamily: "'Plus Jakarta Sans', system-ui" }}>
+      <div className="expedition-map fixed inset-0 bg-[#14281f] overflow-hidden" style={{ fontFamily: "'Plus Jakarta Sans', system-ui" }}>
         <style>{CSS}</style>
 
         {/* SHOWING */}
@@ -371,7 +381,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                 ))}
               </div>
 
-              <motion.button onClick={handleNextRound}
+              <motion.button disabled={!!online && !online.isHost} onClick={handleNextRound}
                 className="w-full py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)]"
                 whileTap={{ scale: 0.95 }}>
                 <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{roundNumber >= totalRounds ? t('games.findit.mapResults') : t('games.findit.mapNextRound')}</span>

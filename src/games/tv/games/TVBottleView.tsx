@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAmbientMotion } from '@/lib/useAmbientMotion';
 import { tvPanel, tvPanelRaised, tvType, tvActiveRing } from '../tv-tokens';
 import TVScoreboard, { type TVScorePlayer } from '../components/TVScoreboard';
+import { getBottleCardById } from '../../bottlespin/bottlespin-content';
 
 /**
  * TVBottleView — big-screen view for the Bottle-Spin (Flaschendrehen) game.
@@ -26,7 +27,7 @@ export default function TVBottleView({ gameState }: { gameState: any }) {
   const phase: string = gameState?.phase || 'spinning';
   const selectedIdx: number = gameState?.selectedIdx ?? -1;
   const selectedName: string = gameState?.selectedName || (selectedIdx >= 0 ? players[selectedIdx]?.name ?? '' : '');
-  const task: string = gameState?.task || '';
+  const task: string = gameState?.task ? getBottleCardById(gameState?.taskId)?.text ?? gameState.task : '';
   const taskType: string = gameState?.taskType || '';
   const mode: string = gameState?.mode || 'fragen';
   const round = gameState?.currentRound || gameState?.round || 1;

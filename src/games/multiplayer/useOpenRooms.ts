@@ -1,73 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
+import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { gameRoomSession } from './useGameRoom';
 
 export interface OpenRoom {
-  roomCode: string;
-  gameId: string;
-  hostName: string;
-  playerCount: number;
-  timestamp: number;
+  roomCode: string; gameId: string; hostName: string; playerCount: number; timestamp: number;
 }
+let channel: RealtimeChannel | null = null;
+let rooms: OpenRoom[] = [];
+const listeners = new Set<() => void>();
+let consumers = 0;
+let advertised = '';
+let stopSession: (() => void) | null = null;
+const empty: OpenRoom[] = [];
 
+function currentAdvertisement(): OpenRoom | null {
+  const { room, players, myPlayerId, connection } = gameRoomSession.getSnapshot();
+  if (!room || room.hostId !== myPlayerId || room.status !== 'lobby' || connection !== 'connected') return null;
+  return { roomCode: room.roomCode, gameId: room.gameId, hostName: players.find(p => p.id === myPlayerId)?.name || '', playerCount: players.length, timestamp: 0 };
+}
+function updateAdvertisement() {
+  if (!channel || channel.state !== 'joined') return;
+  const room = currentAdvertisement();
+  const signature = JSON.stringify(room);
+  if (signature === advertised) return;
+  advertised = signature;
+  if (room) void channel.track({ ...room, timestamp: Date.now() });
+  else void channel.untrack();
+}
+function ensureChannel() {
+  if (channel) return;
+  const active = supabase.channel('open-rooms', { config: { presence: { key: crypto.randomUUID() } } });
+  channel = active;
+  active.on('presence', { event: 'sync' }, () => {
+    const available = Object.values(active.presenceState<OpenRoom>()).flat()
+      .filter(r => /^[A-HJ-NP-Z2-9]{6}$/.test(r.roomCode) && typeof r.hostName === 'string' && typeof r.gameId === 'string' && Number.isFinite(r.playerCount));
+    rooms = [...new Map(available.map(r => [r.roomCode, r])).values()].sort((a,b) => b.timestamp - a.timestamp).slice(0, 10);
+    listeners.forEach(listener => listener());
+  });
+  active.subscribe(status => { if (status === 'SUBSCRIBED') { advertised = ''; updateAdvertisement(); } });
+  stopSession = gameRoomSession.subscribe(updateAdvertisement);
+}
+const subscribe = (listener: () => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; };
+const getRooms = () => rooms;
 export function useOpenRooms() {
-  const [rooms, setRooms] = useState<OpenRoom[]>([]);
-
+  const result = useSyncExternalStore(subscribe, getRooms, () => empty);
   useEffect(() => {
-    const channel = supabase.channel('open-rooms');
-
-    channel.on('broadcast', { event: 'room-created' }, ({ payload }) => {
-      const room = payload as OpenRoom;
-      setRooms(prev => [room, ...prev.filter(r => r.roomCode !== room.roomCode)].slice(0, 10));
-    });
-
-    channel.on('broadcast', { event: 'room-closed' }, ({ payload }) => {
-      setRooms(prev => prev.filter(r => r.roomCode !== (payload as any).roomCode));
-    });
-
-    channel.on('broadcast', { event: 'room-updated' }, ({ payload }) => {
-      const update = payload as Partial<OpenRoom> & { roomCode: string };
-      setRooms(prev => prev.map(r => r.roomCode === update.roomCode ? { ...r, ...update } : r));
-    });
-
-    channel.subscribe();
-    return () => { supabase.removeChannel(channel); };
+    consumers++; ensureChannel();
+    return () => {
+      if (--consumers > 0) return;
+      const old = channel; channel = null; advertised = ''; rooms = [];
+      stopSession?.(); stopSession = null;
+      if (old) void supabase.removeChannel(old);
+    };
   }, []);
-
-  return rooms;
+  return result;
 }
-
-/**
- * Best-effort send on the shared 'open-rooms' channel. Broadcast sends are
- * only delivered once the channel is actually joined — a bare
- * `supabase.channel(...).send(...)` on a fresh channel is silently dropped.
- * supabase.channel() dedupes by topic, so this reuses the useOpenRooms
- * listener channel when one is mounted.
- */
-async function sendOpenRooms(event: string, payload: Record<string, unknown>) {
-  try {
-    const ch = supabase.channel('open-rooms');
-    if (ch.state !== 'joined' && ch.state !== 'joining') ch.subscribe();
-    const start = Date.now();
-    while (ch.state !== 'joined' && Date.now() - start < 3000) {
-      await new Promise((r) => setTimeout(r, 50));
-    }
-    if (ch.state === 'joined') {
-      await ch.send({ type: 'broadcast', event, payload });
-    }
-  } catch { /* discovery is best-effort */ }
-}
-
-/** Broadcast that a room was created */
-export function broadcastRoomCreated(room: OpenRoom) {
-  void sendOpenRooms('room-created', room as unknown as Record<string, unknown>);
-}
-
-/** Broadcast that a room was closed */
-export function broadcastRoomClosed(roomCode: string) {
-  void sendOpenRooms('room-closed', { roomCode });
-}
-
-/** Broadcast a player-count / metadata update for an open room */
-export function broadcastRoomUpdated(update: Partial<OpenRoom> & { roomCode: string }) {
-  void sendOpenRooms('room-updated', update as unknown as Record<string, unknown>);
-}
+// Compatibility for callers: presence now supplies an initial snapshot and
+// removes disconnected hosts automatically, instead of one-off broadcasts.
+export function broadcastRoomCreated(_room: OpenRoom) { updateAdvertisement(); }
+export function broadcastRoomClosed(_roomCode: string) { if (channel) void channel.untrack(); advertised = ''; }
+export function broadcastRoomUpdated(_update: Partial<OpenRoom> & { roomCode: string }) { updateAdvertisement(); }

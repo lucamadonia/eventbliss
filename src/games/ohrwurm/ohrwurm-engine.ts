@@ -22,6 +22,21 @@ export interface Participant {
   hooks: number;
 }
 
+export const START_HOOKS = 3;
+
+/** A new match keeps the roster, but never its previous score or resources. */
+export function createFreshMatch(
+  roster: readonly Omit<Participant, 'timeline' | 'hooks'>[],
+  cards: readonly Song[],
+): { participants: Participant[]; deck: Song[] } {
+  if (cards.length <= roster.length) throw new Error('Ohrwurm needs a start card per participant and a draw card');
+  const deck = [...cards];
+  const participants = roster.map(({ id, name, type, color, avatar }) => ({
+    id, name, type, color, avatar, timeline: [deck.pop()!], hooks: START_HOOKS,
+  }));
+  return { participants, deck };
+}
+
 export type Phase =
   | 'setup'
   | 'draw'        // aktive Person zieht & hört (QR sichtbar)

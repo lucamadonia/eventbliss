@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { translateReactionWord } from '../../wordpress/word-content';
 import { useAmbientMotion } from '@/lib/useAmbientMotion';
 import { spring, ease } from '@/lib/motion';
 import { tvPanel, tvType, tvActiveRing } from '../tv-tokens';
@@ -18,13 +19,10 @@ import TVScoreboard, { type TVScorePlayer } from '../components/TVScoreboard';
  *   │ TVScoreboard — the WHOLE party, always on screen │
  *   └──────────────────────────────────────────────────┘
  *
- * HIDDEN by design: which word is the target/forbidden one — that decision lives
- * only on the phone. The TV shows only the word text everyone already sees.
+ * The public rule, forbidden word and actual ink color match the phone.
+ * Per-word correctness (isTarget) remains private and is never rendered here.
  */
 const WP = { primary: '#df8eff', secondary: '#8ff5ff', accent: '#ffb84d', text: '#f4eefb', dim: '#a99cc4', bg: '#0a0e14' };
-
-// Stroop mode tints the word; pick a stable per-word hue so it does not flicker.
-const STROOP_HUES = ['#ff5d73', '#8ff5ff', '#ffd23f', '#7CFFB2', '#df8eff', '#ffb84d'];
 
 interface TVPlayer { name: string; score: number; combo: number; maxCombo: number; correct: number; wrong: number; missed: number }
 
@@ -45,7 +43,7 @@ function accuracyOf(p: TVPlayer | undefined): number | null {
 }
 
 export default function TVWordPressView({ gameState }: { gameState: any }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const ambient = useAmbientMotion();
 
   const phase: string = gameState?.phase || 'playing';
@@ -54,21 +52,28 @@ export default function TVWordPressView({ gameState }: { gameState: any }) {
   const mode: string = gameState?.mode || 'kategorie';
   const players: TVPlayer[] = gameState?.players || [];
   const currentPlayerIndex: number = gameState?.currentPlayerIndex ?? 0;
-  const word: string = gameState?.currentWord || '';
+  const word = translateReactionWord(gameState?.currentWord || '', gameState?.contentLanguage, i18n.language);
   const wordIndex: number = gameState?.wordIndex ?? 0;
   const wordsPerTurn: number = gameState?.wordsPerTurn ?? 12;
   const combo: number = gameState?.liveCombo ?? 0;
-  const liveScore: number = gameState?.liveScore ?? 0;
+  const liveScore: number | null = typeof gameState?.liveScore === 'number' && Number.isFinite(gameState.liveScore)
+    ? gameState.liveScore : null;
 
   const active = players[currentPlayerIndex];
   // Live score from the active turn beats the (stale until turn ends) players[] score.
-  const activeScore = active ? Math.max(active.score, liveScore) : liveScore;
+  const activeScore = phase === 'playing' && liveScore !== null ? liveScore : active?.score ?? 0;
   const accuracy = accuracyOf(active);
   const progress = Math.max(0, Math.min(1, wordsPerTurn ? wordIndex / wordsPerTurn : 0));
 
-  const wordColor = mode === 'stroop' && word
-    ? STROOP_HUES[Math.abs(hashStr(word)) % STROOP_HUES.length]
-    : WP.text;
+  // The host-generated color carries Stroop's rule. A text hash would invent
+  // a different puzzle on the TV, including for repeated identical words.
+  const wordColor = typeof gameState?.displayColor === 'string' && gameState.displayColor
+    ? gameState.displayColor : '#d5f46a';
+  const forbiddenWord = translateReactionWord(typeof gameState?.forbiddenWord === 'string' ? gameState.forbiddenWord : '—', gameState?.contentLanguage, i18n.language);
+  const rule = mode === 'stroop' ? t('games.wordpress.promptStroop')
+    : mode === 'verboten' ? t('games.wordpress.promptVerboten', { word: forbiddenWord })
+    : mode === 'speed-rush' ? t('games.wordpress.promptSpeedRush')
+    : t('games.wordpress.promptKategorie');
 
   // The whole party, always on screen. Active player gets the ring; their chip
   // shows live combo/accuracy so the bottom strip stays meaningful all game.
@@ -101,7 +106,7 @@ export default function TVWordPressView({ gameState }: { gameState: any }) {
   }
 
   return (
-    <div className="h-screen flex flex-col" style={{ background: WP.bg, color: WP.text }}>
+    <div className="relative h-screen flex flex-col overflow-hidden" style={{ background: WP.bg, color: WP.text }}>
       {/* soft brand wash (static, low blur) */}
       <div className="absolute -top-24 -left-24 w-[34rem] h-[34rem] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(223,142,255,0.10)' }} />
       <div className="absolute -bottom-24 -right-24 w-[34rem] h-[34rem] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(143,245,255,0.08)' }} />
@@ -109,7 +114,7 @@ export default function TVWordPressView({ gameState }: { gameState: any }) {
       {/* Wordmark */}
       <div className="relative flex items-center justify-center gap-3 pt-[clamp(1rem,2vh,2rem)]">
         <span style={{ fontSize: tvType.label }}>👆</span>
-        <span className="font-black tracking-[0.35em]" style={{ fontSize: tvType.label, color: WP.primary }}>DRÜCK DAS WORT</span>
+        <span className="font-black tracking-[0.15em]" style={{ fontSize: tvType.label, color: WP.primary }}>{t('games.wordpress.title')}</span>
       </div>
 
       {/* 3-zone broadcast grid */}
@@ -135,11 +140,16 @@ export default function TVWordPressView({ gameState }: { gameState: any }) {
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.14 } }}
               transition={spring.game}
               className="font-black text-center leading-none px-4 max-w-[18ch] break-words"
-              style={{ fontSize: tvType.hero, color: wordColor, textShadow: `0 0 70px ${wordColor}55` }}
+              style={{ fontSize: tvType.hero, color: wordColor, ...(mode === 'stroop' ? { background: '#eee9da', padding: '24px 40px', borderRadius: 24, WebkitTextStroke: '1px rgba(0,0,0,.25)' } : {}) }}
             >
               {word || '…'}
             </motion.div>
           </AnimatePresence>
+
+          <p className="max-w-[32ch] text-center font-bold leading-snug px-4"
+            style={{ fontSize: tvType.body, color: WP.secondary }}>
+            {rule}
+          </p>
 
           {/* progress bar — scaleX (compositor) */}
           <div className="h-3 rounded-full overflow-hidden" style={{ width: 'min(44vw,560px)', background: 'rgba(255,255,255,0.08)' }}>
@@ -199,10 +209,4 @@ export default function TVWordPressView({ gameState }: { gameState: any }) {
       </div>
     </div>
   );
-}
-
-function hashStr(s: string): number {
-  let h = 0;
-  for (let i = 0; i < s.length; i++) h = (h << 5) - h + s.charCodeAt(i);
-  return h;
 }

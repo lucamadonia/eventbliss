@@ -1,0 +1,16 @@
+/* Shared interaction mechanics; each game's JSX owns its object and composition. */
+.headup-stage button,.taboo-stage button,.category-stage button,.wordpress-controller button,.reaction-display button,.sketchbook-stage button,.story-manuscript button{min-height:44px;touch-action:manipulation}
+.headup-stage input[type=range],.taboo-stage input[type=range],.category-stage input[type=range],.wordpress-controller input[type=range],.sketchbook-stage input[type=range]{min-height:44px}
+.headup-stage .stage-header,.taboo-stage .stage-header,.category-stage .stage-header,.reaction-display .stage-header,.sketchbook-stage .stage-header,.story-manuscript .stage-header{margin-bottom:8px}
+.headup-stage .stage-header:has(.stage-header-tools),.taboo-stage .stage-header:has(.stage-header-tools),.category-stage .stage-header:has(.stage-header-tools),.reaction-display .stage-header:has(.stage-header-tools),.sketchbook-stage .stage-header:has(.stage-header-tools),.story-manuscript .stage-header:has(.stage-header-tools){display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:16px}
+.headup-stage .stage-header-tools,.taboo-stage .stage-header-tools,.category-stage .stage-header-tools,.reaction-display .stage-header-tools,.sketchbook-stage .stage-header-tools,.story-manuscript .stage-header-tools{grid-column:2;grid-row:1 / span 3;margin-bottom:0}
+.headup-stage .stage-header-tools>div:empty,.taboo-stage .stage-header-tools>div:empty,.category-stage .stage-header-tools>div:empty,.reaction-display .stage-header-tools>div:empty,.sketchbook-stage .stage-header-tools>div:empty,.story-manuscript .stage-header-tools>div:empty{display:none}
+.headup-stage .stage-progress,.taboo-stage .stage-progress,.category-stage .stage-progress,.reaction-display .stage-progress,.sketchbook-stage .stage-progress,.story-manuscript .stage-progress{grid-column:1/-1;margin-top:16px}
+.reaction-display .stage-title,.category-stage .stage-title,.sketchbook-stage .stage-title,.taboo-stage .stage-title,.story-manuscript .stage-title{font-size:clamp(25px,4vw,38px)}
+.wordpress-controller .reaction-display{padding:20px;padding-top:max(20px,env(safe-area-inset-top));padding-bottom:max(20px,env(safe-area-inset-bottom));min-height:100dvh;gap:12px}
+.reaction-display .stage-header{flex-shrink:0}.reaction-display .reaction-rule{flex-shrink:0}.reaction-display .stage-footer{position:relative;margin-top:0;padding-top:12px;flex-shrink:0}
+.story-manuscript .stage-panel--paper{box-shadow:0 8px 24px #20332d0d}
+.story-manuscript textarea{background-image:repeating-linear-gradient(transparent,transparent calc(2.4rem - 1px),#22776812 calc(2.4rem - 1px),#22776812 2.4rem);line-height:2.4rem}
+.story-manuscript .stage-footer{border-color:#20332d20}
+@media(max-width:430px){.taboo-stage .stage-action{font-size:13px}.story-manuscript .stage-footer{flex-direction:column;align-items:stretch}.story-manuscript .stage-footer .stage-action{flex:none;width:100%;overflow-wrap:normal;word-break:normal}.story-manuscript .stage-action svg{flex-shrink:0}}
+@media(prefers-reduced-motion:reduce){.headup-stage *,.taboo-stage *,.category-stage *,.wordpress-controller *,.sketchbook-stage *,.story-manuscript *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

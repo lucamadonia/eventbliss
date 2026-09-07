@@ -1,0 +1,36 @@
+
+.newsroom-game { --local-accent: #78d9db; --local-secondary: #ede9dc; }
+.newsroom-game { background: #131a1b; }
+.newsroom-game .fact-sheet { width: 100%; max-width: 56rem; margin: 1.5rem auto; position: relative; background: #eeeadd; color: #152326; padding: clamp(1.5rem, 6vw, 4rem); border-radius: 2px; border-top: 7px solid #78d9db; min-height: clamp(19rem, 42dvh, 30rem); display: flex; flex-direction: column; justify-content: center; }
+.newsroom-game .fact-sheet > [class*="absolute"] { display: none; }
+.newsroom-game .fact-sheet > span { background: none; border: 0; border-radius: 0; color: #38595b; padding: 0 0 .8rem; margin-bottom: 1.2rem; border-bottom: 1px solid #15232633; font: 700 .7rem/1.3 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .18em; }
+.newsroom-game .fact-headline { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(1.8rem, 5.2vw, 3.4rem); line-height: 1.2; letter-spacing: -.025em; color: #172b2d; text-wrap: pretty; }
+.newsroom-game .newsroom-clock { font: 700 2.5rem/1 ui-monospace, monospace; color: #78d9db; }
+.newsroom-game .newsroom-clock small { font-size: .45em; }
+.newsroom-game .fact-ballot { width: 100%; max-width: 58rem; margin: auto; }
+.newsroom-game .fact-ballot button { border-radius: 3px; min-height: 4.5rem; box-shadow: none; text-transform: uppercase; letter-spacing: .08em; }
+.newsroom-game .fact-ballot button:first-child { background: #78d9db; color: #11282a; }
+.newsroom-game .fact-ballot button:last-child { background: #233034; border: 1px solid #b8c6c6; color: #eeeadd; }
+.newsroom-game .fact-reveal { max-width: 52rem; }
+.newsroom-game .fact-option { width: 100%; max-width: 54rem; min-height: 7rem; padding: 1.4rem 1.6rem; text-align: left; border-radius: 2px; border: 1px solid #d4d1c2; background: #eeeadd; color: #172b2d; }
+.newsroom-game .fact-option p { color: #172b2d; font-family: Georgia, serif; font-size: clamp(1.1rem, 3vw, 1.5rem); line-height: 1.4; }
+.newsroom-game .fact-option span { border-radius: 2px; background: #172b2d; color: #eeeadd; min-width: 2rem; min-height: 2rem; }
+.newsroom-game .fact-option:enabled:hover { background: #dbede4; border-color: #78d9db; }
+.newsroom-game [data-phase="gameOver"] { padding-block: 1.5rem; }
+.newsroom-game .fact-reveal h2 { font-family: Georgia, serif; font-size: clamp(2rem, 6vw, 3.5rem); }
+.newsroom-game .fact-reveal > div[class*="rounded"] { border-radius: 3px; }
+.newsroom-game [class*="font-[Plus_Jakarta_Sans]"] { letter-spacing: -.025em; }
+.newsroom-game > div { background-color: transparent; }
+.newsroom-game h1, .newsroom-game h2, .newsroom-game h3 { text-wrap: balance; }
+.newsroom-game button:focus-visible, .newsroom-game input:focus-visible, .newsroom-game select:focus-visible { outline: 2px solid var(--local-accent); outline-offset: 4px; }
+.newsroom-game button:disabled { opacity: .38; cursor: not-allowed; }
+.newsroom-game button { touch-action: manipulation; }
+.newsroom-game [class*="neon"], .newsroom-game .trophy-glow { text-shadow: none; box-shadow: none; }
+.newsroom-game [class*="blur-[120px]"], .newsroom-game [class*="blur-[140px]"], .newsroom-game .float-aura { display: none; }
+.newsroom-game input, .newsroom-game select { font-size: 16px; }
+.newsroom-game [class*="glass-"] { backdrop-filter: none; -webkit-backdrop-filter: none; }
+.newsroom-game [class*="max-w-sm"] { max-width: 36rem; }
+.newsroom-game [class*="max-w-md"] { max-width: 42rem; }
+.newsroom-game [class*="max-h-64"] { max-height: min(48dvh, 32rem); }
+@media (max-width: 380px) { .newsroom-game [class*="px-6"] { padding-left: 1rem; padding-right: 1rem; } }
+@media (prefers-reduced-motion: reduce) { .newsroom-game *, .newsroom-game *::before, .newsroom-game *::after { animation: none !important; scroll-behavior: auto !important; } }

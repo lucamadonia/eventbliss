@@ -1,3 +1,7 @@
+import '../headup/classic-stage.css';
+import { GameStage, StageHeader, StagePanel, StageAction, StageFooter } from '../ui/GameStage';
+import { usePausableTasks } from '../bottlespin/pausable-tasks';
+import { useOnlineActions, useOnlineSnapshot, useOnlinePrivateSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
@@ -54,18 +58,6 @@ function shuffle<T>(arr: T[]): T[] {
 /*  Electric Pulse Styles                                              */
 /* ------------------------------------------------------------------ */
 
-const EP = `
-.ep-bg { background: #0a0e14; }
-.pulse-bg { background: radial-gradient(circle at center, rgba(223,142,255,0.15) 0%, rgba(10,14,20,1) 70%); }
-.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
-.neon-glow-secondary { text-shadow: 0 0 15px rgba(255,107,152,0.6); }
-.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-.ep-surface { background: #0f141a; }
-.ep-container { background: #151a21; }
-.ep-high { background: #1b2028; }
-.ep-highest { background: #20262f; }
-.timer-ring { transition: stroke-dashoffset 1s linear; }
-`;
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -74,6 +66,7 @@ const EP = `
 interface TabooGameProps { players?: string[]; onClose?: () => void; online?: OnlineGameProps }
 
 export default function TabooGame({ players = [], onClose, online }: TabooGameProps) {
+  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
   const { t } = useTranslation();
   const drinkingMode = useDrinkingMode();
   const isDrinkingMode = drinkingMode.isDrinkingMode;
@@ -128,8 +121,8 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const activeTeam = teams[activeTeamIdx];
   const explainer = activeTeam.players[explainerIdx[activeTeamIdx]];
 
-  const handleTimerExpire = useCallback(() => { setPhase('turnSummary'); }, []);
-  const timer = useGameTimer(timerOption, handleTimerExpire);
+  const handleTimerExpire = useCallback(() => { if (!online || online.isHost) setPhase('turnSummary'); }, [online?.isHost]);
+  const timer = useGameTimer(timerOption, handleTimerExpire, online?.isConnected !== false);
 
   useTVGameBridge('taboo', {
     phase, currentRound, totalRounds, teams, activeTeamIdx, explainer,
@@ -140,10 +133,10 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   }, [phase, currentRound, activeTeamIdx, timer.timeLeft, turnResults.length]);
 
   function buildTeams(pls: string[]): [Team, Team] {
-    const s = shuffle(pls); const mid = Math.ceil(s.length / 2);
+    const s = online ? pls : shuffle(pls); const mid = Math.ceil(s.length / 2);
     return [
-      { name: 'Team A', color: 'bg-[#df8eff]', textColor: 'text-[#df8eff]', borderColor: 'border-[#df8eff]', players: s.slice(0, mid), score: 0 },
-      { name: 'Team B', color: 'bg-[#8ff5ff]', textColor: 'text-[#8ff5ff]', borderColor: 'border-[#8ff5ff]', players: s.slice(mid), score: 0 },
+      { name: 'Team A', color: 'bg-[#ff8572]', textColor: 'text-[#ff8572]', borderColor: 'border-[#ff8572]', players: s.slice(0, mid), score: 0 },
+      { name: 'Team B', color: 'bg-[#e6ce81]', textColor: 'text-[#e6ce81]', borderColor: 'border-[#e6ce81]', players: s.slice(mid), score: 0 },
     ];
   }
 
@@ -176,7 +169,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     setTeams(buildTeams(padded));
   }
 
-  const canStart = teams[0].players.length >= 1 && teams[1].players.length >= 1;
+  const canStart = teams[0].players.length >= 2 && teams[1].players.length >= 2 && playerNames.every(name => name.trim());
 
   function drawCard(): TabooCard {
     if (deckPos.current >= deck.current.length) { deck.current = shuffle(getTabooCards()); deckPos.current = 0; }
@@ -184,9 +177,14 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   }
 
   function startTurn() { setTurnResults([]); setCountdown(3); }
+  useEffect(() => {
+    if (phase !== 'turnStart' || countdown !== null || (online && !online.isHost)) return;
+    const pending = setTimeout(startTurn, 30000);
+    return () => clearTimeout(pending);
+  }, [phase, countdown, activeTeamIdx, currentRound]);
 
   useEffect(() => {
-    if (countdown === null) return;
+    if (countdown === null || (online && !online.isHost)) return;
     if (countdown === 0) {
       setCountdown(null); setCurrentCard(drawCard()); setCardKey(k => k + 1); timer.reset(timerOption); timer.start(); setPhase('playing');
       if (online?.isHost) {
@@ -262,7 +260,9 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     if (phase === 'gameOver' && !recordedRef.current) {
       recordedRef.current = true;
       const winnerScore = Math.max(teams[0].score, teams[1].score);
-      recordEnd('taboo', winnerScore, true);
+      const myIndex = online?.players.findIndex(p => p.id === online.myPlayerId) ?? -1;
+      const myTeam = online && myIndex >= 0 ? teams[myIndex < Math.ceil(online.players.length / 2) ? 0 : 1] : null;
+      recordEnd('taboo', myTeam?.score ?? winnerScore, !online || myTeam?.score === winnerScore);
     }
     if (phase === 'setup') recordedRef.current = false;
   }, [phase]);
@@ -285,40 +285,26 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     setPhase('turnStart');
   }
 
-  /* ---- Online: host broadcasts game state ---- */
-  useEffect(() => {
-    if (!online?.isHost) return;
-    online.broadcast('game-state', {
-      phase, activeTeamIdx, explainerIdx, currentRound, totalRounds,
-      teams: teams.map(tm => ({ name: tm.name, score: tm.score, players: tm.players })),
-      timeLeft: timer.timeLeft,
-      currentCard: currentCard ? { term: currentCard.term, forbidden: currentCard.forbidden } : null,
-    });
-  }, [phase, activeTeamIdx, currentRound, teams, timer.timeLeft, online]);
+  const actorId = (activeTeamIdx === 0 ? online?.players.slice(0, Math.ceil(online.players.length / 2)) : online?.players.slice(Math.ceil(online.players.length / 2)))?.[explainerIdx[activeTeamIdx]]?.id ?? false;
+  const refereeTeam = activeTeamIdx === 0 ? online?.players.slice(Math.ceil(online.players.length / 2)) : online?.players.slice(0, Math.ceil(online.players.length / 2));
+  const refereeId = refereeTeam?.[explainerIdx[1 - activeTeamIdx] % (refereeTeam.length || 1)]?.id ?? false;
+  const act = useOnlineActions(online, 'taboo', `${phase}:${currentRound}:${activeTeamIdx}:${explainerIdx.join(',')}:${cardKey}:${countdown}`, {
+    start: { allowed: phase === 'setup' ? 'host' : false, run: () => { const names = online ? online.players.map(p => p.name) : playerNames; if (names.length < 4 || names.some(name => !name.trim())) return; setPlayerNames(names); setTeams(buildTeams(names)); const cycle = Math.ceil(names.length / 2); setTotalRounds(Math.ceil(totalRounds / cycle) * cycle); setPhase('turnStart'); } },
+    begin: { allowed: phase === 'turnStart' && countdown === null ? actorId : false, run: startTurn },
+    correct: { allowed: phase === 'playing' ? actorId : false, run: handleCorrect },
+    skip: { allowed: phase === 'playing' ? actorId : false, run: handleSkip },
+    taboo: { allowed: phase === 'playing' ? actorId : false, run: handleTaboo },
+    referee: { allowed: phase === 'playing' ? refereeId : false, run: handleTaboo },
+    next: { allowed: phase === 'turnSummary' ? 'host' : false, run: endTurn },
+    again: { allowed: phase === 'gameOver' ? 'host' : false, run: playAgain },
+  });
+  useOnlinePrivateSnapshot(online, 'taboo', { phase, teams, playerNames, activeTeamIdx, explainerIdx, currentRound, totalRounds, timerOption, currentCard, turnResults, cardKey, countdown, timeLeft: timer.timeLeft }, (state, recipient) => ({ ...state, currentCard: recipient === actorId || recipient === refereeId ? state.currentCard : null }), state => {
+    setPhase(state.phase); setTeams(state.teams); setPlayerNames(state.playerNames); setActiveTeamIdx(state.activeTeamIdx); setExplainerIdx(state.explainerIdx); setCurrentRound(state.currentRound); setTotalRounds(state.totalRounds); setTimerOption(state.timerOption); setCurrentCard(state.currentCard); setTurnResults(state.turnResults); setCardKey(state.cardKey); setCountdown(state.countdown); timer.reset(state.timeLeft);
+  });
 
-  /* ---- Online: non-host syncs state ---- */
-  useEffect(() => {
-    if (!online || online.isHost) return;
-    return online.onBroadcast('game-state', (data) => {
-      if (data.phase) setPhase(data.phase as Phase);
-      if (data.activeTeamIdx !== undefined) setActiveTeamIdx(data.activeTeamIdx as number);
-      if (data.currentRound) setCurrentRound(data.currentRound as number);
-      if (data.teams) {
-        const incoming = data.teams as { name: string; score: number; players: string[] }[];
-        setTeams(prev => [
-          { ...prev[0], score: incoming[0].score, players: incoming[0].players },
-          { ...prev[1], score: incoming[1].score, players: incoming[1].players },
-        ]);
-      }
-      if (data.currentCard) setCurrentCard(data.currentCard as TabooCard);
-    });
-  }, [online]);
 
   /* ---- Online: determine if it's my turn ---- */
-  const isMyTurn = !online || online.isHost || (() => {
-    const myIdx = online.players.findIndex(p => p.id === online.myPlayerId);
-    return myIdx === activeTeamIdx;
-  })();
+  const isMyTurn = !online || actorId === online.myPlayerId;
 
   const mvp = useMemo(() => { const w = teams[0].score >= teams[1].score ? teams[0] : teams[1]; return w.players[0] ?? t('games.taboo.gameover.unknown'); }, [teams]);
   const turnCorrect = turnResults.filter(r => r.result === 'correct').length;
@@ -331,353 +317,71 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   /* ================================================================ */
   /*  RENDER                                                          */
   /* ================================================================ */
+  if (online && !online.isHost && phase === 'setup') return <OnlineWaiting />;
   return (
-    <div className="relative min-h-[100dvh] ep-bg text-[#f1f3fc] flex flex-col overflow-hidden">
-      <style>{EP}</style>
-
-      {/* Ambient blur orbs */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#ff6b98]/8 rounded-full blur-[120px]" />
-      </div>
-
-      {/* TABOO flash overlay */}
-      <AnimatePresence>
-        {showFlash && (
-          <motion.div initial={{ opacity: 1 }} animate={{ opacity: 0 }} exit={{ opacity: 0 }} transition={{ duration: isDrinkingMode ? 0.6 : 0.35 }}
-            className={`fixed inset-0 z-50 flex items-center justify-center pointer-events-none flex-col gap-3 ${isDrinkingMode ? 'bg-amber-500/60' : 'bg-[#ff6b98]/70'}`}>
-            <motion.span initial={{ scale: 0.3, opacity: 1 }} animate={{ scale: 2.5, opacity: 0 }} transition={{ duration: 0.35 }}
-              className="text-7xl font-black text-white neon-glow-secondary italic tracking-tight">
-              {isDrinkingMode ? '🍺' + ' ' + t('games.taboo.flash.drink') : t('games.taboo.buzzer')}
-            </motion.span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Disclaimer banner — appears when drink threshold is hit */}
-      <AnimatePresence>
-        {disclaimer && (
-          <motion.div
-            className="fixed bottom-24 left-0 right-0 z-50 mx-6 px-5 py-3 rounded-2xl bg-amber-900/40 border border-amber-500/30 backdrop-blur text-center"
-            initial={{ y: 30, opacity: 0, scale: 0.8 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ type: "spring", bounce: 0.3 }}
-          >
-            <span className="text-2xl">{disclaimer.emoji}</span>
-            <p className="text-sm text-amber-200 font-semibold mt-1">{disclaimer.message}</p>
-            <p className="text-[10px] text-amber-300/50 mt-1">
-              {t('games.taboo.drink', { count: drinkingMode.drinkCount })}
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ---- SETUP ---- */}
-      {phase === 'setup' && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 flex-1 flex flex-col px-4 py-8 pb-32 max-w-lg mx-auto w-full">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl ep-high border border-[#df8eff]/20 mb-4">
-              <MessageCircle className="w-8 h-8 text-[#df8eff]" />
-            </div>
-            <h1 className="text-3xl font-black italic tracking-tight text-[#df8eff] neon-glow">{t('games.taboo.name').toUpperCase()}</h1>
-            <p className="text-[#a8abb3] text-sm mt-2 max-w-xs mx-auto">{t('games.taboo.setup.subtitle')}</p>
-          </div>
-          {/* Player input */}
-          <div className="mb-4">
-            <PlayerSetup
-              players={playerNames.map((name, i) => ({ id: String(i), name }))}
-              onAdd={addPlayer}
-              onRemove={(id) => removePlayer(Number(id))}
-              onRename={(id, name) => renamePlayer(Number(id), name)}
-              onImportNames={isOnlineOrParty ? undefined : handleImportNames}
-              min={2}
-              max={20}
-              accent="#df8eff"
-              label={t('games.taboo.setup.playerLabel')}
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            {teams.map((t2, i) => (
-              <div key={i} className={`rounded-2xl glass-card border p-4 ${i === 0 ? 'border-[#df8eff]/20' : 'border-[#8ff5ff]/20'}`}>
-                <div className={`text-xs font-bold uppercase tracking-widest mb-3 ${i === 0 ? 'text-[#df8eff]' : 'text-[#8ff5ff]'}`}>{t2.name}</div>
-                <div className="space-y-1.5">{t2.players.length === 0 ? (
-                  <div className="text-xs text-[#a8abb3]/40 italic">{t('games.taboo.setup.teamEmpty')}</div>
-                ) : t2.players.map(p => (
-                  <div key={p} className="flex items-center gap-2 min-w-0 group">
-                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${i === 0 ? 'bg-[#df8eff]' : 'bg-[#8ff5ff]'}`} />
-                    <span className="text-sm text-[#f1f3fc]/70 truncate">{p}</span>
-                  </div>
-                ))}</div>
-              </div>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="glass-card border border-[#44484f]/30 rounded-2xl p-4">
-              <div className="flex items-center gap-2 mb-3"><Timer className="w-4 h-4 text-[#df8eff]/70" /><span className="text-xs font-semibold text-[#a8abb3] uppercase tracking-wider">{t('games.taboo.setup.timerLabel')}</span></div>
-              <div className="flex flex-col gap-1.5">{[60, 90, 120].map(s => (
-                <button key={s} onClick={() => setTimerOption(s)}
-                  className={`py-2 rounded-full text-xs font-bold transition-all ${timerOption === s ? 'bg-[#df8eff] text-[#0a0e14] shadow-[0_0_12px_rgba(223,142,255,0.4)]' : 'bg-[#f1f3fc]/[0.06] text-[#a8abb3] hover:bg-[#f1f3fc]/10'}`}>{s}s</button>
-              ))}</div>
-            </div>
-            <div className="glass-card border border-[#44484f]/30 rounded-2xl p-4">
-              <div className="flex items-center gap-2 mb-3"><RotateCcw className="w-4 h-4 text-[#df8eff]/70" /><span className="text-xs font-semibold text-[#a8abb3] uppercase tracking-wider">{t('games.taboo.setup.roundsLabel')}</span></div>
-              <div className="flex flex-col gap-1.5">{[1, 2, 3, 4].map(r => (
-                <button key={r} onClick={() => setTotalRounds(r)}
-                  className={`py-2 rounded-full text-xs font-bold transition-all ${totalRounds === r ? 'bg-[#df8eff] text-[#0a0e14] shadow-[0_0_12px_rgba(223,142,255,0.4)]' : 'bg-[#f1f3fc]/[0.06] text-[#a8abb3] hover:bg-[#f1f3fc]/10'}`}>{r}</button>
-              ))}</div>
-            </div>
-          </div>
-          <div className="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
-            <div className="max-w-lg mx-auto space-y-3">
-              <motion.button
-                whileTap={canStart ? { scale: 0.97 } : undefined}
-                onClick={() => canStart && setPhase('turnStart')}
-                disabled={!canStart}
-                className={`w-full py-4 rounded-full text-base font-black italic uppercase tracking-wide flex items-center justify-center gap-2 transition-all ${
-                  canStart
-                    ? 'bg-gradient-to-r from-[#df8eff] to-[#b44dff] text-[#0a0e14] shadow-[0_0_30px_rgba(223,142,255,0.3)]'
-                    : 'bg-[#f1f3fc]/[0.06] text-[#a8abb3]/40 cursor-not-allowed'
-                }`}
-              >
-                <Play className="w-5 h-5" />
-                {canStart ? t('games.taboo.setup.startBtn') : t('games.taboo.setup.addPlayerBtn')}
-              </motion.button>
-              {onClose && <button onClick={onClose} className="w-full py-3 text-[#a8abb3]/50 text-sm hover:text-[#a8abb3] transition">{t('games.taboo.setup.backBtn')}</button>}
-            </div>
-          </div>
-        </motion.div>
-      )}
-
-      {/* ---- TURN START ---- */}
-      {phase === 'turnStart' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative z-10 flex-1 flex flex-col items-center justify-center gap-6 px-4 pulse-bg">
-          <ActivePlayerBanner
-            playerName={explainer}
-            subtitle={t('games.taboo.turn.explainsSuffix')}
-            hidden={false}
-          />
-          <div className="px-4 py-1.5 rounded-full glass-card border border-[#44484f]/30">
-            <span className={`text-xs font-bold uppercase tracking-widest ${activeTeam.textColor}`}>{t('games.taboo.turn.roundLabel', { current: currentRound, total: totalRounds })}</span>
-          </div>
-          <h2 className="text-2xl font-black italic tracking-tight text-[#f1f3fc]">{t('games.taboo.turn.isUp', { team: activeTeam.name })}</h2>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-2xl glass-card border border-[#44484f]/30">
-            <Users className="w-4 h-4 text-[#a8abb3]" />
-            <span className="font-semibold text-[#f1f3fc]/70">{explainer}</span>
-            <span className="text-[#a8abb3] text-sm">{t('games.taboo.turn.explainsSuffix')}</span>
-          </div>
-          <NeonScoreBar teams={teams} />
-          {countdown !== null ? (
-            <motion.div key={countdown} initial={{ scale: 2, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.5, opacity: 0 }}
-              className="text-8xl font-black italic text-[#df8eff] neon-glow">{countdown}</motion.div>
-          ) : (
-            <motion.button whileTap={{ scale: 0.97 }} onClick={startTurn}
-              className="mt-2 flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#b44dff] text-[#0a0e14] px-8 py-3 rounded-full font-black italic text-lg shadow-[0_0_25px_rgba(223,142,255,0.3)]">
-              <Play className="w-5 h-5" /> {t('games.taboo.turn.startBtn')}
-            </motion.button>
-          )}
-        </motion.div>
-      )}
-
-      {/* ---- PLAYING ---- */}
-      {phase === 'playing' && currentCard && (
-        <div className="relative z-10 flex-1 flex flex-col pulse-bg">
-          {/* Top bar */}
-          <div className="flex items-center justify-between px-4 py-3 bg-[#0a0e14]/40 backdrop-blur-xl">
-            <div className="flex items-center gap-2">
-              <Timer className="w-4 h-4 text-[#df8eff]" />
-              <span className={`text-lg font-mono font-bold ${timer.timeLeft <= 10 ? 'text-[#ff6e84] animate-pulse' : 'text-[#f1f3fc]/80'}`}>{timer.timeLeft}s</span>
-            </div>
-            <span className="text-sm font-black italic text-[#df8eff] drop-shadow-[0_0_10px_rgba(223,142,255,0.4)]">{t('games.taboo.name').toUpperCase()}</span>
-            <NeonScoreBar teams={teams} compact />
-          </div>
-
-          {/* Timer SVG circle - top right */}
-          <div className="absolute top-16 right-4 z-20">
-            <svg width="56" height="56" viewBox="0 0 96 96">
-              <circle cx="48" cy="48" r="40" fill="none" stroke="#1b2028" strokeWidth="6" />
-              <circle cx="48" cy="48" r="40" fill="none" stroke={timer.timeLeft <= 10 ? '#ff6e84' : '#df8eff'} strokeWidth="6"
-                strokeDasharray={circumference} strokeDashoffset={timerDash} strokeLinecap="round"
-                transform="rotate(-90 48 48)" className="timer-ring" style={{ filter: `drop-shadow(0 0 6px ${timer.timeLeft <= 10 ? 'rgba(255,110,132,0.6)' : 'rgba(223,142,255,0.5)'})` }} />
-              <text x="48" y="52" textAnchor="middle" fill="#f1f3fc" fontSize="20" fontWeight="900" fontFamily="monospace">{timer.timeLeft}</text>
-            </svg>
-          </div>
-
-          {/* Main word display */}
-          <div className="flex-1 flex flex-col items-center justify-center px-6">
-            <AnimatePresence mode="wait">
-              <motion.div key={cardKey} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} transition={{ duration: 0.2 }}
-                className="w-full max-w-sm flex flex-col items-center">
-                <span className="text-xs font-bold uppercase tracking-[0.25em] text-[#8ff5ff] mb-3">{t('games.taboo.playing.currentWord')}</span>
-                <h2 className="text-6xl md:text-8xl font-black tracking-tighter italic text-[#df8eff] neon-glow text-center uppercase leading-none mb-8">
-                  {currentCard.term}
-                </h2>
-                {/* Forbidden words */}
-                <div className="w-full flex flex-col gap-2">
-                  {currentCard.forbidden.map((word, i) => (
-                    <motion.div key={i} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 - i * 0.15 }} transition={{ delay: i * 0.05 }}
-                      className="flex items-center justify-between bg-[#0f141a]/60 rounded-full border-l-4 border-[#ff6b98] px-5 py-2.5">
-                      <span className="font-bold text-lg text-[#f1f3fc]/90">{word}</span>
-                      <Ban className="w-4 h-4 text-[#ff6b98]" />
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Score pill at bottom */}
-          <div className="flex justify-center mb-2">
-            <div className="glass-card rounded-full px-5 py-2 flex items-center gap-3 border border-[#44484f]/20">
-              <span className="text-sm font-bold text-[#8ff5ff]">{t('games.taboo.playing.correctCount', { count: turnCorrect })}</span>
-              <div className="w-px h-4 bg-[#44484f]" />
-              <span className="text-sm font-bold text-[#ff6e84]">{t('games.taboo.playing.skipCount', { count: turnTaboo + turnSkipped })}</span>
-            </div>
-          </div>
-
-          {/* Action buttons */}
-          <div className="grid grid-cols-3 gap-3 px-4 pb-6 pt-2">
-            <motion.button whileTap={{ scale: 0.95 }} onClick={handleTaboo}
-              aria-label={t('games.taboo.playing.tabooBtn')}
-              className="col-span-1 relative flex flex-col items-center justify-center gap-1 bg-[#ff6b98] rounded-2xl py-4 font-black text-base text-white shadow-[0_0_20px_rgba(255,107,152,0.4)] active:scale-95 transition-all overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
-              <X className="w-6 h-6" /><span className="text-xs">{t('games.taboo.playing.tabooBtn')}</span>
-            </motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={handleSkip}
-              aria-label={t('games.taboo.playing.skipBtn')}
-              className="col-span-1 flex flex-col items-center justify-center gap-1 bg-[#1b2028] border border-[#44484f]/40 rounded-2xl py-4 text-[#a8abb3] active:scale-95 transition-all">
-              <SkipForward className="w-6 h-6" /><span className="text-xs font-bold">{t('games.taboo.playing.skipBtn')}</span>
-            </motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={handleCorrect}
-              aria-label={t('games.taboo.playing.correctBtn')}
-              className="col-span-1 relative flex flex-col items-center justify-center gap-1 bg-[#00deec] rounded-2xl py-4 font-black text-base text-white shadow-[0_0_20px_rgba(0,222,236,0.4)] active:scale-95 transition-all overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
-              <Check className="w-6 h-6" /><span className="text-xs">{t('games.taboo.playing.correctBtn')}</span>
-            </motion.button>
-          </div>
-        </div>
-      )}
-
-      {/* ---- TURN SUMMARY ---- */}
-      {phase === 'turnSummary' && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 flex-1 flex flex-col items-center gap-5 px-4 py-8 max-w-lg mx-auto w-full pulse-bg overflow-y-auto">
-          <div className="mt-4">
-            <h2 className="text-3xl font-black italic tracking-tight text-center">
-              <span className="text-[#df8eff] neon-glow">{t('games.taboo.summary.roundWord')}</span>{' '}
-              <span className="text-[#f1f3fc]">{t('games.taboo.summary.endedWord')}</span>
-            </h2>
-          </div>
-          <div className={`px-5 py-2 rounded-full glass-card border ${activeTeamIdx === 0 ? 'border-[#df8eff]/30' : 'border-[#8ff5ff]/30'}`}>
-            <span className={`text-sm font-bold ${activeTeam.textColor}`}>{activeTeam.name}</span>
-          </div>
-          {/* Score board */}
-          <div className="w-full glass-card rounded-2xl border border-[#44484f]/20 p-5">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-[#a8abb3] text-sm font-semibold">{t('games.taboo.summary.pointsLabel')}</span>
-              <span className={`text-2xl font-black ${turnCorrect - turnTaboo >= 0 ? 'text-[#8ff5ff]' : 'text-[#ff6e84]'}`}>
-                {turnCorrect - turnTaboo >= 0 ? '+' : ''}{turnCorrect - turnTaboo}
-              </span>
-            </div>
-            <div className="h-2 rounded-full bg-[#0f141a] overflow-hidden">
-              <motion.div initial={{ width: 0 }} animate={{ width: `${Math.min(100, turnCorrect * 20)}%` }}
-                className="h-full rounded-full bg-gradient-to-r from-[#df8eff] to-[#8ff5ff]" />
-            </div>
-            <div className="flex gap-3 mt-3">
-              <div className="flex-1 text-center"><div className="text-2xl font-black text-[#8ff5ff]">{turnCorrect}</div><div className="text-xs text-[#a8abb3]">{t('games.taboo.summary.correct')}</div></div>
-              <div className="flex-1 text-center"><div className="text-2xl font-black text-[#ff6e84]">{turnTaboo}</div><div className="text-xs text-[#a8abb3]">{t('games.taboo.summary.taboo')}</div></div>
-              <div className="flex-1 text-center"><div className="text-2xl font-black text-[#a8abb3]/40">{turnSkipped}</div><div className="text-xs text-[#a8abb3]">{t('games.taboo.summary.skipped')}</div></div>
-            </div>
-          </div>
-          {/* Word protocol */}
-          <div className="w-full max-h-48 overflow-y-auto space-y-1.5">
-            {turnResults.map((r, i) => (
-              <div key={i} className="flex items-center gap-3 glass-card border border-[#44484f]/10 rounded-xl px-4 py-2.5 text-sm">
-                {r.result === 'correct' && <Check className="w-4 h-4 text-[#8ff5ff] shrink-0" />}
-                {r.result === 'taboo' && <X className="w-4 h-4 text-[#ff6e84] shrink-0" />}
-                {r.result === 'skipped' && <ArrowRight className="w-4 h-4 text-[#a8abb3]/40 shrink-0" />}
-                <span className={`${r.result === 'taboo' ? 'line-through text-[#f1f3fc]/40' : 'text-[#f1f3fc]/80'}`}>{r.card.term}</span>
-                <span className={`ml-auto text-xs font-bold ${r.result === 'correct' ? 'text-[#8ff5ff]' : r.result === 'taboo' ? (isDrinkingMode ? 'text-amber-400' : 'text-[#ff6e84]') : 'text-[#a8abb3]/40'}`}>
-                  {r.result === 'correct'
-                    ? (isDrinkingMode ? '🎉 ' + t('games.taboo.result.cheers') : '+1')
-                    : r.result === 'taboo'
-                      ? (isDrinkingMode ? '🍺 ' + t('games.taboo.flash.drink') : '-1')
-                      : '0'}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div className="w-full space-y-3 mt-2">
-            <motion.button whileTap={{ scale: 0.97 }} onClick={endTurn}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#b44dff] text-[#0a0e14] px-8 py-4 rounded-full font-black italic text-base shadow-[0_0_25px_rgba(223,142,255,0.3)]">
-              {t('games.taboo.summary.nextRoundBtn')} <ArrowRight className="w-5 h-5" />
-            </motion.button>
-          </div>
-        </motion.div>
-      )}
-
-      {/* ---- GAME OVER ---- */}
-      {phase === 'gameOver' && (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-          className="relative z-10 flex-1 flex flex-col items-center justify-center gap-6 px-4 py-8 max-w-lg mx-auto w-full pulse-bg">
-          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20">
-              <Trophy className="w-8 h-8 text-[#df8eff]" />
-            </div>
-          </motion.div>
-          <h2 className="text-3xl font-black italic tracking-tight text-[#df8eff] neon-glow">{t('games.taboo.gameover.title')}</h2>
-          {teams[0].score !== teams[1].score ? (
-            <div className={`px-6 py-2 rounded-full glass-card border text-lg font-bold ${teams[0].score > teams[1].score ? 'border-[#df8eff]/30 text-[#df8eff]' : 'border-[#8ff5ff]/30 text-[#8ff5ff]'}`}>
-              {t('games.taboo.gameover.wins', { team: teams[0].score > teams[1].score ? teams[0].name : teams[1].name })}
-            </div>
-          ) : (
-            <div className="px-6 py-2 rounded-full glass-card border border-[#44484f] text-lg font-bold text-[#a8abb3]">{t('games.taboo.gameover.draw')}</div>
-          )}
-          <div className="flex gap-6 w-full max-w-xs">
-            {teams.map((t2, i) => (
-              <div key={i} className={`flex-1 p-4 rounded-2xl glass-card border text-center ${i === 0 ? 'border-[#df8eff]/20' : 'border-[#8ff5ff]/20'}
-                ${(teams[0].score > teams[1].score && i === 0) || (teams[1].score > teams[0].score && i === 1) ? 'shadow-[0_0_20px_rgba(223,142,255,0.15)]' : ''}`}>
-                <div className={`text-xs font-bold uppercase tracking-widest mb-2 ${t2.textColor}`}>{t2.name}</div>
-                <div className="text-4xl font-black text-[#f1f3fc]">{t2.score}</div>
-              </div>
-            ))}
-          </div>
-          <div className="text-sm text-[#a8abb3]">{t('games.taboo.gameover.mvpLabel')}: <span className="text-[#f1f3fc] font-semibold">{mvp}</span></div>
-          <div className="w-full space-y-3 mt-2">
-            <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#b44dff] text-[#0a0e14] py-4 rounded-full font-black italic text-base shadow-[0_0_25px_rgba(223,142,255,0.3)]">
-              <RotateCcw className="w-4 h-4" /> {t('games.taboo.gameover.playAgainBtn')}
-            </motion.button>
-            {onClose && (
-              <button onClick={onClose} className="w-full py-3.5 rounded-full border border-[#44484f] text-[#a8abb3] text-sm font-semibold hover:bg-[#f1f3fc]/[0.04] transition-colors">
-                {t('games.taboo.gameover.otherGameBtn')}
-              </button>
-            )}
-          </div>
-        </motion.div>
-      )}
-      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
-    </div>
+    <GameStage gameId="taboo" className="taboo-stage">
+      {showFlash && <p role="status" className="mb-4 rounded-xl bg-[#ff8572] px-5 py-3 font-bold text-[#211311]">{isDrinkingMode ? t('games.taboo.flash.drink') : t('games.taboo.buzzer')}</p>}
+      {disclaimer && <p role="status" className="mb-4 rounded-xl border border-[#e6ce81]/40 p-4 text-sm text-[#e6ce81]">{disclaimer.message}</p>}
+      {phase === 'setup' && <div className="mx-auto w-full max-w-3xl space-y-7">
+        <StageHeader title={t('games.taboo.name')} subtitle={t('games.taboo.voiceHint')} />
+        <PlayerSetup locked={!!online} players={playerNames.map((name, index) => ({ id: String(index), name }))}
+          onAdd={addPlayer} onRemove={id => removePlayer(Number(id))} onRename={(id, name) => renamePlayer(Number(id), name)}
+          onImportNames={isOnlineOrParty ? undefined : handleImportNames} min={4} max={20} accent="#ff8572" label={t('games.setup.players')} />
+        <div className="grid grid-cols-2 gap-4">{teams.map((team, index) => <StagePanel key={team.name} tone="quiet" className="!rounded-xl !p-4 border-t-4" style={{ borderTopColor: index === 0 ? '#ff8572' : '#e6ce81' }}><p className="mb-3 text-sm font-bold">{team.name}</p><p className="text-sm leading-relaxed text-[var(--stage-muted)] break-words">{team.players.filter(Boolean).join(', ')}</p></StagePanel>)}</div>
+        <section className="grid gap-5 sm:grid-cols-2">
+          <label className="space-y-4 rounded-xl border border-white/15 p-5"><span className="flex justify-between gap-3 text-sm">{t('games.taboo.setup.timerLabel')}<strong>{timerOption}s</strong></span><input type="range" min={60} max={120} step={30} value={timerOption} onChange={event => setTimerOption(Number(event.target.value))} className="h-11 w-full accent-[#ff8572]" /></label>
+          <label className="space-y-4 rounded-xl border border-white/15 p-5"><span className="flex justify-between gap-3 text-sm">{t('games.taboo.setup.roundsLabel')}<strong>{totalRounds}</strong></span><input type="range" min={1} max={4} value={totalRounds} onChange={event => setTotalRounds(Number(event.target.value))} className="h-11 w-full accent-[#ff8572]" /></label>
+        </section>
+        <StageFooter><StageAction className="w-full" disabled={!canStart} onClick={() => act('start')}><Play className="h-5 w-5" />{t('games.taboo.setup.startBtn')}</StageAction></StageFooter>
+      </div>}
+      {phase === 'turnStart' && <div className="mx-auto flex min-h-[75dvh] w-full max-w-3xl flex-col justify-center gap-8">
+        <StageHeader title={explainer} eyebrow={t('games.taboo.turn.isUp', { team: activeTeam.name })} subtitle={t('games.taboo.turn.roundLabel', { current: currentRound, total: totalRounds })} />
+        <StagePanel tone="accent" className="grid min-h-56 place-items-center text-center"><p className="text-5xl sm:text-7xl font-black tracking-tight">{countdown ?? explainer}</p></StagePanel>
+        <StageAction disabled={!act.can('begin')} onClick={() => act('begin')}><Play className="h-5 w-5" />{t('games.taboo.turn.startBtn')}</StageAction>
+      </div>}
+      {phase === 'playing' && <div className="mx-auto flex w-full max-w-4xl min-h-[80dvh] flex-col gap-5">
+        <StageHeader title={explainer} eyebrow={t('games.taboo.name')} trailing={<span className="tabular-nums text-3xl font-semibold">{timer.timeLeft}s</span>}
+          subtitle={<span>{teams[0].name} {teams[0].score} · {teams[1].name} {teams[1].score}</span>} progress={{ value: timer.timeLeft, total: timerOption }} />
+        {currentCard && (isMyTurn || online?.myPlayerId === refereeId) ? <StagePanel className="flex-1 !bg-[#0d1010] !rounded-2xl !p-6 sm:!p-10">
+          <p className="mb-5 text-xs font-semibold tracking-wide text-[#c5bbb3]">{isMyTurn ? t('games.taboo.playing.currentWord') : t('games.taboo.refereeRole')}</p>
+          <h2 className="mb-8 text-[clamp(2.5rem,8vw,5.8rem)] font-black tracking-tight leading-none text-[#fff9ed] break-words">{currentCard.term}</h2>
+          <ul className="divide-y divide-[#ff8572]/20">{currentCard.forbidden.map((word, index) => <li key={index} className="flex items-center gap-4 py-3 text-xl sm:text-2xl text-[#ff9b88]"><Ban className="h-5 w-5 shrink-0" /><span className="break-words min-w-0">{word}</span></li>)}</ul>
+        </StagePanel> : <StagePanel tone="quiet" className="flex-1 flex items-center justify-center min-h-64"><p className="max-w-lg text-2xl leading-relaxed">{t('games.taboo.voiceHint')}</p></StagePanel>}
+        <p className="text-sm text-[var(--stage-muted)]">{t('games.taboo.playing.correctCount', { count: turnCorrect })} · {t('games.taboo.playing.skipCount', { count: turnTaboo + turnSkipped })}</p>
+        {isMyTurn ? <StageFooter className="!grid grid-cols-3 gap-2 sm:gap-3">
+          <StageAction variant="danger" className="!px-2 flex-col sm:flex-row" disabled={!act.can('taboo')} onClick={() => act('taboo')}><X className="h-5 w-5" />{t('games.taboo.playing.tabooBtn')}</StageAction>
+          <StageAction variant="secondary" className="!px-2 flex-col sm:flex-row" disabled={!act.can('skip')} onClick={() => act('skip')}><SkipForward className="h-5 w-5" />{t('games.taboo.playing.skipBtn')}</StageAction>
+          <StageAction className="!px-2 flex-col sm:flex-row" disabled={!act.can('correct')} onClick={() => act('correct')}><Check className="h-5 w-5" />{t('games.taboo.playing.correctBtn')}</StageAction>
+        </StageFooter> : online?.myPlayerId === refereeId && <StageFooter><StageAction variant="danger" disabled={!act.can('referee')} onClick={() => act('referee')}>{t('games.taboo.playing.tabooBtn')}</StageAction></StageFooter>}
+      </div>}
+      {phase === 'turnSummary' && <div className="mx-auto w-full max-w-3xl space-y-7">
+        <StageHeader title={t('games.taboo.summary.pointsLabel')} eyebrow={activeTeam.name} trailing={<span className="text-5xl font-bold tabular-nums">{turnCorrect - turnTaboo > 0 ? '+' : ''}{turnCorrect - turnTaboo}</span>} />
+        <div className="grid grid-cols-3 divide-x divide-white/15 text-center">{[[turnCorrect, t('games.taboo.summary.correct')], [turnTaboo, t('games.taboo.summary.taboo')], [turnSkipped, t('games.taboo.summary.skipped')]].map(([value, label]) => <div key={String(label)} className="px-2"><p className="text-3xl font-bold">{value}</p><p className="mt-2 text-xs text-[var(--stage-muted)]">{label}</p></div>)}</div>
+        <ul className="divide-y divide-white/10">{turnResults.map((result, index) => <li key={index} className="flex items-center justify-between gap-4 py-4"><span className="text-lg break-words">{result.card.term}</span><span className="font-semibold tabular-nums text-[#ff9b88]">{result.result === 'correct' ? '+1' : result.result === 'taboo' ? '-1' : '0'}</span></li>)}</ul>
+        <StageFooter><StageAction disabled={!act.can('next')} onClick={() => act('next')}>{t('games.taboo.summary.nextRoundBtn')}<ArrowRight className="h-5 w-5" /></StageAction></StageFooter>
+      </div>}
+      {phase === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-8">
+        <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
+        <StageHeader title={t('games.taboo.gameover.title')} subtitle={teams[0].score === teams[1].score ? t('games.taboo.gameover.draw') : t('games.taboo.gameover.wins', { team: teams[0].score > teams[1].score ? teams[0].name : teams[1].name })} />
+        <div className="grid grid-cols-2 gap-4">{teams.map(team => <StagePanel key={team.name} tone={team.score === Math.max(...teams.map(item => item.score)) ? 'accent' : 'quiet'}><p className="text-sm font-semibold">{team.name}</p><p className="my-5 text-6xl font-black tabular-nums">{team.score}</p><p className="text-sm leading-relaxed break-words">{team.players.join(', ')}</p></StagePanel>)}</div>
+        <StageFooter className="flex-wrap"><StageAction disabled={!act.can('again')} onClick={() => act('again')}><RotateCcw className="h-5 w-5" />{t('games.taboo.gameover.playAgainBtn')}</StageAction>{onClose && <StageAction variant="secondary" onClick={onClose}>{t('games.taboo.gameover.otherGameBtn')}</StageAction>}</StageFooter>
+      </div>}
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#ff8572" />
+    </GameStage>
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Neon Score Bar                                                     */
-/* ------------------------------------------------------------------ */
-
 function NeonScoreBar({ teams, compact }: { teams: [Team, Team]; compact?: boolean }) {
   return (
-    <div className={`flex items-center gap-3 px-4 py-2 rounded-full glass-card border border-[#44484f]/20 ${compact ? '' : 'mt-2'}`}>
+    <div className={`flex items-center gap-3 px-4 py-2 rounded-xl bg-[#181d1b] border border-[#44484f]/20 ${compact ? '' : 'mt-2'}`}>
       <div className="flex items-center gap-1.5">
-        <div className="w-2.5 h-2.5 rounded-full bg-[#df8eff] shadow-[0_0_6px_rgba(223,142,255,0.5)]" />
-        <span className={`${compact ? 'text-sm' : 'text-base'} font-bold text-[#df8eff]`}>{teams[0].score}</span>
+        <div className="w-2.5 h-2.5 rounded-full bg-[#ff8572] " />
+        <span className={`${compact ? 'text-sm' : 'text-base'} font-bold text-[#ff8572]`}>{teams[0].score}</span>
       </div>
       <span className="text-[#44484f] text-xs">vs</span>
       <div className="flex items-center gap-1.5">
-        <div className="w-2.5 h-2.5 rounded-full bg-[#8ff5ff] shadow-[0_0_6px_rgba(143,245,255,0.5)]" />
-        <span className={`${compact ? 'text-sm' : 'text-base'} font-bold text-[#8ff5ff]`}>{teams[1].score}</span>
+        <div className="w-2.5 h-2.5 rounded-full bg-[#ff8572] " />
+        <span className={`${compact ? 'text-sm' : 'text-base'} font-bold text-[#ff8572]`}>{teams[1].score}</span>
       </div>
     </div>
   );

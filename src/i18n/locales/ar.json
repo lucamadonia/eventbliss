@@ -6131,7 +6131,8 @@
       "streak": "أفضل سلسلة",
       "playAgain": "العب مرة أخرى",
       "otherGame": "لعبة أخرى",
-      "share": "مشاركة النتائج"
+      "share": "مشاركة النتائج",
+      "sharedWin": "فوز مشترك"
     },
     "bomb": {
       "name": "القنبلة الموقوتة",
@@ -6188,7 +6189,8 @@
       "tutorialStep5": "يجب ألا تتكرر الإجابات!",
       "tutorialDismiss": "فهمت!",
       "taskAllePrompt": "اذكر: {{category}} بـ \"{{letter}}\"",
-      "taskKategoriePrompt": "اذكر {{category}} بـ \"{{letter}}\"!"
+      "taskKategoriePrompt": "اذكر {{category}} بـ \"{{letter}}\"!",
+      "fewestPenalties": "أقل نقاط جزاء"
     },
     "headup": {
       "name": "خمّن الكلمة",
@@ -6232,7 +6234,10 @@
       "best": "الأفضل",
       "resultsPerRound": "النتائج لكل جولة",
       "playAgain": "العب مجدداً",
-      "back": "رجوع"
+      "back": "رجوع",
+      "enableMotion": "تفعيل التحكم بالإمالة (أو استخدام الأزرار)",
+      "readyBtn": "جاهز — تفعيل الإمالة",
+      "buttonsOnly": "اللعب بالأزرار"
     },
     "taboo": {
       "name": "الكلمة المحظورة",
@@ -6292,7 +6297,9 @@
       },
       "result": {
         "cheers": "في صحتك!"
-      }
+      },
+      "refereeRole": "الحكم: انتبه للكلمات الممنوعة.",
+      "voiceHint": "خمّنوا بصوت عالٍ مع فريقكم. عند اللعب عن بُعد، استخدموا مكالمة صوتية."
     },
     "categoryGame": {
       "name": "فئة بالوقت",
@@ -6397,7 +6404,36 @@
       "timerNormal": "عادي",
       "timerRelaxed": "مريح",
       "timerExplorer": "مستكشف",
-      "wfsStartBtn": "ابدأ اللعبة"
+      "wfsStartBtn": "ابدأ اللعبة",
+      "panoramaLoading": "جارٍ تحميل المشهد البانورامي…",
+      "panoramaError": "تعذر تحميل هذا المشهد البانورامي. عُد إلى الألعاب وحاول مرة أخرى.",
+      "visual": {
+        "boardTitle": "مجموعة الأغراض",
+        "whichPresent": "أي غرض كان على اللوحة؟",
+        "whichMissing": "أي غرض لم يكن على اللوحة؟",
+        "whichPosition": "أي غرض كان على البطاقة {{position}}؟",
+        "card": "البطاقة {{position}}: {{object}}",
+        "loading": "جارٍ تحميل صور الأغراض…",
+        "compareHint": "اعثر على الأغراض الثلاثة التي تغيرت في اللوحة B.",
+        "imageError": "تعذّر تحميل صور الأغراض. تحقق من اتصالك وحاول مجددًا.",
+        "retryImages": "إعادة تحميل الصور"},
+      "objects": {
+        "apple": "تفاحة",
+        "banana": "موزة",
+        "pear": "كمثرى",
+        "orange": "برتقالة",
+        "strawberry": "فراولة",
+        "lemon": "ليمونة",
+        "mug": "كوب",
+        "book": "كتاب",
+        "key": "مفتاح",
+        "camera": "كاميرا",
+        "teddy": "دب لعبة",
+        "car": "سيارة لعبة",
+        "shoe": "حذاء رياضي",
+        "ball": "كرة قدم",
+        "plant": "نبتة في أصيص",
+        "umbrella": "مظلة"}
     },
     "impostor": {
       "title": "المخادع",
@@ -6454,7 +6490,14 @@
       "impostorBadge": "المخادع",
       "resetGame": "ابدأ من جديد",
       "playAgain": "العب مرة أخرى!",
-      "votingPhase": "التصويت · {{current}}/{{total}}"
+      "votingPhase": "التصويت · {{current}}/{{total}}",
+      "privateRole": "دورك السري",
+      "viewRole": "عرض الدور",
+      "waitPlayers": "بانتظار الآخرين…",
+      "readyRole": "جاهز",
+      "exitGame": "مغادرة اللعبة",
+      "voteTie": "تعادل: لا يُستبعد أحد. ينجو المحتالون.",
+      "multiScoring": "يحصل المدنيون على 10 نقاط عند كشف محتال. يحصل كل محتال ناجٍ على 15 نقطة ويشارك المكافأة."
     },
     "ohrwurm": {
       "leaveTitle": "مغادرة اللعبة؟",
@@ -6629,7 +6672,8 @@
       "off": "معطّل",
       "otherGame": "لعبة أخرى",
       "playAgain": "العب مجدداً",
-      "title": "Split Quiz"
+      "title": "Split Quiz",
+      "wagerRisk": "صحيح: +100/+200/+300. خطأ: 0/−100/−200 للرهانات 1/2/3."
     },
     "truthdare": {
       "yes": "نعم",
@@ -6746,7 +6790,14 @@
           }
         },
         "noContent": "لا توجد شخصيات لهذه المجموعة حالياً"
-      }
+      },
+      "onlineRoles": "يمكنك رؤية هويات الجميع باستثناء هويتك.",
+      "exitGame": "مغادرة اللعبة",
+      "questionLabel": "اطرح سؤالًا إجابته نعم أو لا",
+      "sendQuestion": "اطرح السؤال",
+      "guessNow": "خمّن الهوية",
+      "voteSummary": "نعم: {{yes}} · لا: {{no}}",
+      "questionLimit": "أسئلة لكل هوية"
     },
     "bottlespin": {
       "setupTimerLabel": "مؤقت المهمة (ث.)",
@@ -6770,7 +6821,27 @@
       "scorePoints": "{{score}} نقاط",
       "roundsPlayed": "تم لعب {{rounds}} جولة. كانت ممتعة!",
       "playAgain": "العب مجددًا",
-      "otherGame": "لعبة أخرى"
+      "otherGame": "لعبة أخرى",
+      "categories": {
+        "eisbrecher": "كسر الجليد",
+        "spass": "المرح والغرائب",
+        "party": "الحفلات والموسيقى",
+        "freundschaft": "الصداقة",
+        "liebe": "التقارب والعلاقات",
+        "erinnerungen": "الذكريات",
+        "reisen": "السفر والاكتشاف",
+        "traeume": "الأحلام والمستقبل",
+        "entscheidungen": "القرارات والقيم",
+        "kreativ": "الخيال والإبداع"},
+      "categorySelection": "اختر الفئات",
+      "contentSelection": "ماذا يظهر على البطاقة؟",
+      "questionsOnly": "أسئلة فقط",
+      "tasksOnly": "تحديات فقط",
+      "mixedCards": "أسئلة وتحديات",
+      "availableCards": "{{count}} بطاقة متاحة",
+      "selectionRequired": "اختر فئة واحدة على الأقل.",
+      "prepareRound": "حضّر الجولة",
+      "editSelection": "تغيير المحتوى"
     },
     "category": {
       "title": "الفئة السريعة",
@@ -6806,7 +6877,22 @@
       "pointsAvailable": "نقطة ممكنة",
       "hintPrefix": "يبدأ بـ: {{letter}}",
       "showAnswer": "عرض الإجابة",
-      "guessed": "أصبت!"
+      "guessed": "أصبت!",
+      "answerLabel": "إجابتك",
+      "teamLabel": "الفريق {{team}}",
+      "readyTitle": "لغزك جاهز",
+      "readyBody": "اقرأ الصور من اليسار إلى اليمين. خمّن عنوانًا أو تعبيرًا من الفئة المعروضة.",
+      "readyStart": "جاهز — اعرض اللغز",
+      "waitingFor": "بانتظار {{name}}",
+      "submitAnswer": "تحقق من الإجابة",
+      "tryAgain": "ليست صحيحة بعد. جرّب إجابة أخرى.",
+      "skipPuzzle": "تخطَّ اللغز",
+      "solved": "تم الحل",
+      "solution": "الحل",
+      "acceptedAnswers": "إجابات مقبولة أيضًا",
+      "nextPlayer": "التالي: {{name}}",
+      "clueLabel": "لغز مصوّر",
+      "poolBudget": "{{puzzleCount}} لغزًا مختارًا. تلعب المجموعات الكبيرة جولات أقل: أدوار متساوية للجميع، دون تكرار."
     },
     "fakeorfact": {
       "title": "كاذب — Fake or Fact",
@@ -6823,7 +6909,8 @@
       "theTruthIs": "الحقيقة هي ...",
       "correctPct": "صحيح: {{pct}}%",
       "incorrectPct": "خاطئ: {{pct}}%",
-      "continue": "متابعة"
+      "continue": "متابعة",
+      "noAnswer": "لا إجابة (انتهى الوقت)"
     },
     "quickdraw": {
       "tagline": "ارسم بسرعة — الآخرون يخمّنون!",
@@ -6846,7 +6933,12 @@
       "playerGuesses": "{{name}} يخمّن",
       "guessPlaceholder": "ما هذا؟",
       "theWordWas": "الكلمة كانت",
-      "showResults": "النتائج"
+      "showResults": "النتائج",
+      "pass": "تخطّ",
+      "penSize": "عرض القلم {{size}}",
+      "eraser": "ممحاة",
+      "undo": "تراجع",
+      "clear": "مسح الرسم"
     },
     "sharedquiz": {
       "title": "مقسّم ومُختبَر",
@@ -6868,7 +6960,10 @@
       "ready": "جاهز",
       "hintLabel": "تلميح",
       "readHintAndAnswer": "اقرأ التلميح بصوت عالٍ واختر الإجابة!",
-      "resultBtn": "النتائج"
+      "resultBtn": "النتائج",
+      "modeAnswerTurn": "{{name}} · الإجابة {{n}} من 3",
+      "chainRules": "أجيبوا بالتتابع. كل إجابة صحيحة تمنح فريقكم الثلاثي نقطة. تبقى الإجابات مخفية حتى يجيب الثلاثة.",
+      "allRules": "يجب أن يجيب الثلاثة بشكل صحيح. يحصل فريقكم على ثلاث نقاط، وإلا فصفر."
     },
     "storybuilder": {
       "setupTimerLabel": "الجمل لكل لاعب",
@@ -6883,7 +6978,8 @@
       "ourStory": "قصتكم",
       "showAll": "عرض الكل",
       "playAgain": "العب مجددًا",
-      "otherGame": "لعبة أخرى"
+      "otherGame": "لعبة أخرى",
+      "skipTurn": "تخطي الدور"
     },
     "thisorthat": {
       "modeTagPopular": "شائع",
@@ -6919,7 +7015,8 @@
       "socialChallenge": "تحدٍّ اجتماعي",
       "orWord": "أو",
       "setupSubtitle": "اختر الوضع وابدأ معركة التفضيلات.",
-      "startGame": "ابدأ اللعبة"
+      "startGame": "ابدأ اللعبة",
+      "tie": "تعادل"
     },
     "wordpress": {
       "modes": {
@@ -6957,7 +7054,15 @@
       "winnerAnnounce": "{{name}} يفوز بـ {{score}} نقطة!",
       "accuracyPct": "دقة {{accuracy}}%",
       "comboStat": "كومبو: {{maxCombo}}x",
-      "correctStat": "{{count}} صحيح"
+      "correctStat": "{{count}} صحيح",
+      "tapWord": "اضغط على الكلمة",
+      "yourTask": "مهمتك",
+      "readyStart": "فهمت — ابدأ",
+      "waitForMatch": "اضغط على الكلمة الكبيرة فقط عندما تطابق القاعدة. دع الكلمات الأخرى تمر.",
+      "waitForPlayer": "بانتظار أن يبدأ {{name}}.",
+      "exampleCategory": "«{{animal}}»: اضغط. «{{object}}»: انتظر.",
+      "exampleStroop": "«{{red}}» باللون الأحمر: اضغط. باللون الأزرق: انتظر.",
+      "exampleForbidden": "«{{word}}»: انتظر. اضغط على كل كلمة أخرى."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
@@ -7016,7 +7121,8 @@
       "teamModeGroups": "ضمن فرق",
       "playersLabel": "اللاعبون",
       "groupsLabel": "الفرق",
-      "teamN": "الفريق {{n}}"
+      "teamN": "الفريق {{n}}",
+      "retryImage": "إعادة تحميل الصورة"
     },
     "closeenough": {
       "title": "قريب جدًا",
@@ -7612,7 +7718,10 @@
       "counterLabelBar": "الطاولة",
       "trayNote": "ليست آمنة بعد",
       "counterNote": "متاحة للجميع · بطاقة واحدة في الدور"
-    }
+    },
+    "connectionPaused": "اللعبة متوقفة مؤقتًا",
+    "connectionPausedHint": "أعِد الاتصال لمتابعة اللعب. يتم الاحتفاظ بالدور الحالي.",
+    "reconnect": "إعادة الاتصال"
   },
   "native": {
     "home": {
@@ -8818,11 +8927,11 @@
       },
       "chain": {
         "name": "أسئلة متسلسلة",
-        "desc": "سلسلة تلميحات من لاعب إلى آخر"
+        "desc": "أجيبوا بالتتابع. كل إجابة صحيحة تمنح فريقكم الثلاثي نقطة. تبقى الإجابات مخفية حتى يجيب الثلاثة."
       },
       "allornothing": {
         "name": "الكل أو لا شيء",
-        "desc": "نقاط فقط إذا أصاب الجميع"
+        "desc": "يجب أن يجيب الثلاثة بشكل صحيح. يحصل فريقكم على ثلاث نقاط، وإلا فصفر."
       }
     },
     "quickdraw": {
@@ -9600,7 +9709,8 @@
       "startGame": "ابدأ اللعبة!",
       "notReadyCount": "غير جاهزين بعد: {{players}}",
       "shareText": "انضم إلى لعبتي! الرمز: {{code}}",
-      "defaultPlayerName": "لاعب"
+      "defaultPlayerName": "لاعب",
+      "recoveredAfterReload": "أعاد المضيف تحميل الصفحة. انتهت اللعبة السابقة. يمكنكم بدء لعبة جديدة معًا هنا."
     },
     "gamesHub": {
       "quickStart": "بداية سريعة",

@@ -1,3 +1,7 @@
+import { GameStage } from '../ui/GameStage';
+import './design.css';
+import { completeTruth } from './scoring';
+import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -77,12 +81,12 @@ function getIntensityForRound(mode: string, round: number, total: number): (1|2|
 // ---------------------------------------------------------------------------
 
 const EP_STYLE = `
-.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
+.neon-glow { text-shadow: 0 0 20px rgba(150,160,165,0.6), 0 0 40px rgba(150,160,165,0.4); }
 .neon-glow-secondary { text-shadow: 0 0 15px rgba(255,107,152,0.6); }
 .glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 `;
 
-export default function TruthDareGame({ online }: { online?: OnlineGameProps } = {}) {
+function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   // Confirm-before-quit for the in-game header back button (active play only).
@@ -120,16 +124,19 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   const [votes, setVotes] = useState<Record<string, boolean>>({});
   const [voterIdx, setVoterIdx] = useState(0);
 
-  const truthDeck = useMemo(() => shuffle(getTRUTH_QUESTIONS()), []);
-  const dareDeck = useMemo(() => shuffle(getDARE_CHALLENGES()), []);
+  const [truthDeck, setTruthDeck] = useState(() => shuffle(getTRUTH_QUESTIONS()));
+  const turnQueue = useRef<number[]>([]);
+  const [dareDeck, setDareDeck] = useState(() => shuffle(getDARE_CHALLENGES()));
   const truthPos = useMemo(() => ({ current: 0 }), []);
   const darePos = useMemo(() => ({ current: 0 }), []);
 
   const handleTimerExpire = useCallback(() => {
-    if (choiceType === 'dare') setPhase('vote');
-  }, [choiceType]);
+    if (online && (!online.isHost || online.isConnected === false)) return;
+    if (choiceType === 'dare') { setVotes({}); setVoterIdx(0); setPhase('vote'); }
+  }, [choiceType, online]);
 
-  const timer = useGameTimer(timerSec, handleTimerExpire);
+  const timer = useGameTimer(timerSec, handleTimerExpire, !online || (online.isHost && online.isConnected !== false));
+  useOnlineSnapshot(online, 'truthdare-clock-state', { timeLeft: timer.timeLeft }, data => timer.reset(data.timeLeft));
 
   const activePlayer = players[activeIdx];
 
@@ -138,16 +145,26 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   useTVGameBridge('truthdare', {
     phase, currentRound, totalRounds, activeIdx, players,
     choiceType,
-    task: currentItem ? ('question' in currentItem ? currentItem.question : currentItem.challenge) : '',
+    task: currentItem?.text ?? '',
     timeLeft: timer.timeLeft,
     maxTime: timerSec,
     voteTally: {
       yes: Object.values(votes).filter(Boolean).length,
       no: Object.values(votes).filter((v) => !v).length,
     },
-  }, [phase, currentRound, activeIdx, choiceType, timer.timeLeft, votes]);
+  }, [phase, currentRound, activeIdx, choiceType, timer.timeLeft, votes], !online || online.isHost);
 
   // ---------------------------------------------------------------------------
+  const route = useOnlineAuthority(online, 'truthdare', `${phase}:${currentRound}:${activeIdx}:${voterIdx}`, {
+    doSpin: { allow: (sender, args) => phase === "spin" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => doSpin() },
+    handleChoice: { allow: (sender, args) => phase === "choice" && ["truth", "dare"].includes(args[0]) && sender === players[activeIdx]?.id, run: (...args) => handleChoice(args[0]) },
+    rerollCurrent: { allow: (sender, args) => phase === "reveal" && sender === players[activeIdx]?.id, run: (...args) => rerollCurrent() },
+    startVote: { allow: (sender, args) => phase === "reveal" && sender === players[activeIdx]?.id, run: (...args) => startVote() },
+    castVote: { allow: (sender, args) => phase === "vote" && typeof args[0] === "boolean" && sender === players.filter((_, i) => i !== activeIdx)[voterIdx]?.id, run: (...args) => castVote(args[0]) },
+    nextRound: { allow: (sender, args) => ["choice", "reveal"].includes(phase) && sender === players[activeIdx]?.id, run: (...args) => nextRound() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+  });
+
   // Setup handler
   // ---------------------------------------------------------------------------
 
@@ -156,6 +173,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
     selectedMode: string,
     settings: { timer: number; rounds: number },
   ) => {
+    if (online && (!online.isHost || online.isConnected === false)) return;
     setPlayers(mapped.map((p, i) => ({
       ...p, color: PLAYER_COLORS[i % PLAYER_COLORS.length],
       score: 0, truthCount: 0, dareCount: 0,
@@ -172,18 +190,34 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   // Spin
   // ---------------------------------------------------------------------------
 
+  const spinPending = useRef(false);
+  const spinRemaining = useRef(2800);
   const doSpin = () => {
-    const target = Math.floor(Math.random() * players.length);
+    if (route("doSpin", [])) return;
+    if (spinPending.current) return;
+    spinPending.current = true;
+    spinRemaining.current = 2800;
+    if (!turnQueue.current.length) turnQueue.current = shuffle(players.map((_, i) => i));
+    const target = turnQueue.current.shift()!;
     setSpinTarget(target);
     const extraSpins = 3 + Math.floor(Math.random() * 3);
     const sliceAngle = 360 / players.length;
     const angle = extraSpins * 360 + target * sliceAngle + sliceAngle / 2;
     setSpinAngle((prev) => prev + angle);
-    setTimeout(() => {
-      setActiveIdx(target);
-      setPhase('choice');
-    }, 2800);
   };
+  useEffect(() => {
+    if (!spinPending.current || phase !== 'spin' || (online && (!online.isHost || online.isConnected === false))) return;
+    const started = Date.now();
+    const timeout = setTimeout(() => {
+      spinPending.current = false;
+      setActiveIdx(spinTarget);
+      setPhase('choice');
+    }, spinRemaining.current);
+    return () => {
+      clearTimeout(timeout);
+      spinRemaining.current = Math.max(0, spinRemaining.current - (Date.now() - started));
+    };
+  }, [spinAngle, spinTarget, phase, online?.isHost, online?.isConnected]);
 
   // ---------------------------------------------------------------------------
   // Draw card
@@ -212,6 +246,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   };
 
   const handleChoice = (type: 'truth' | 'dare') => {
+    if (route("handleChoice", [type])) return;
     if (mode === 'nur-wahrheit') return drawTruth();
     if (mode === 'nur-pflicht') return drawDare();
     if (type === 'truth') drawTruth();
@@ -221,6 +256,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   // Re-draw the same type without advancing the round. Used by the
   // "Neue Aufgabe"-Button on the reveal card.
   const rerollCurrent = () => {
+    if (route("rerollCurrent", [])) return;
     haptics.light();
     if (choiceType === 'truth') drawTruth();
     else if (choiceType === 'dare') drawDare();
@@ -231,6 +267,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   // ---------------------------------------------------------------------------
 
   const startVote = () => {
+    if (route("startVote", [])) return;
     setVotes({});
     setVoterIdx(0);
     setPhase('vote');
@@ -238,6 +275,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   };
 
   const castVote = (yes: boolean) => {
+    if (route("castVote", [yes])) return;
     const otherPlayers = players.filter((_, i) => i !== activeIdx);
     const voter = otherPlayers[voterIdx];
     if (!voter) return;
@@ -255,7 +293,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
           dareCount: p.dareCount + (choiceType === 'dare' ? 1 : 0),
         } : p,
       ));
-      nextRound();
+      advanceAfterVote();
     } else {
       setVoterIdx((v) => v + 1);
     }
@@ -266,6 +304,13 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   // ---------------------------------------------------------------------------
 
   const nextRound = () => {
+    if (route("nextRound", [])) return;
+    if (phase === 'reveal' && choiceType === 'truth') {
+      setPlayers(prev => prev.map((p, i) => i === activeIdx ? completeTruth(p) : p));
+    }
+    advanceAfterVote();
+  };
+  const advanceAfterVote = () => {
     if (currentRound >= totalRounds) { setPhase('gameOver'); return; }
     setCurrentRound((r) => r + 1);
     setChoiceType(null);
@@ -281,7 +326,8 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
       const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      recordEnd('wahrheit-pflicht', winner?.score ?? 0, true);
+      const me = online ? players.find(p => p.id === online.myPlayerId) : winner;
+      recordEnd('wahrheit-pflicht', me?.score ?? 0, !!me && me.score === Math.max(...players.map(p => p.score)));
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -289,6 +335,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   // Rematch: jump straight back into gameplay, keeping players AND their
   // scores/truthCount/dareCount. Only round + transient card/vote state resets.
   const playAgain = () => {
+    if (route("playAgain", [])) return;
     setCurrentRound(1);
     setActiveIdx(0);
     setChoiceType(null);
@@ -297,36 +344,30 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
     setVoterIdx(0);
     truthPos.current = 0;
     darePos.current = 0;
+    turnQueue.current = [];
+    setTruthDeck(shuffle(getTRUTH_QUESTIONS()));
+    setDareDeck(shuffle(getDARE_CHALLENGES()));
+    setPlayers(prev => prev.map(p => ({ ...p, score: 0, truthCount: 0, dareCount: 0 })));
     gameRecordedRef.current = false;
     timer.reset(timerSec);
     setPhase('spin');
   };
 
-  /* ---- Online: host broadcasts game state ---- */
-  useEffect(() => {
-    if (!online?.isHost) return;
-    online.broadcast('game-state', {
-      phase, currentRound, totalRounds, activeIdx,
-      choiceType, currentItem: currentItem ? { text: (currentItem as TruthQuestion).question ?? (currentItem as DareChallenge).challenge } : null,
-      players: players.map(p => ({ id: p.id, name: p.name, score: p.score })),
-    });
-  }, [phase, currentRound, activeIdx, choiceType, currentItem, players, online]);
-
-  /* ---- Online: non-host syncs state ---- */
-  useEffect(() => {
-    if (!online || online.isHost) return;
-    return online.onBroadcast('game-state', (data) => {
-      if (data.phase) setPhase(data.phase as Phase);
-      if (data.currentRound) setCurrentRound(data.currentRound as number);
-      if (data.activeIdx !== undefined) setActiveIdx(data.activeIdx as number);
-      if (data.players) {
-        const incoming = data.players as { id: string; name: string; score: number }[];
-        setPlayers(prev => prev.map((p, i) => ({
-          ...p, score: incoming[i]?.score ?? p.score,
-        })));
-      }
-    });
-  }, [online]);
+  useOnlineSnapshot(online, 'game-state', { phase, currentRound, totalRounds, activeIdx, choiceType, currentItem, players, mode, timerSec, votes, voterIdx, spinAngle, spinTarget }, data => {
+    setPhase(data.phase);
+    setCurrentRound(data.currentRound);
+    setTotalRounds(data.totalRounds);
+    setActiveIdx(data.activeIdx);
+    setChoiceType(data.choiceType);
+    setCurrentItem(data.currentItem);
+    setPlayers(data.players);
+    setMode(data.mode);
+    setTimerSec(data.timerSec);
+    setVotes(data.votes);
+    setVoterIdx(data.voterIdx);
+    setSpinAngle(data.spinAngle);
+    setSpinTarget(data.spinTarget);
+  });
 
   const winner = useMemo(() =>
     [...players].sort((a, b) => b.score - a.score)[0], [players]);
@@ -335,12 +376,13 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   // Render
   // ---------------------------------------------------------------------------
 
+  if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
   if (phase === 'setup') {
     return (
       <GameSetup
         gameId="truthdare"
-        modes={getTranslatedModes('truthdare', GAME_MODES, t)}
-        settings={getSetupSettings(t)}
+        modes={getTranslatedModes('truthdare', GAME_MODES, (key, fallback) => t(key, { defaultValue: fallback }))}
+        settings={getSetupSettings((key, fallback) => t(key, { defaultValue: fallback }))}
         onStart={handleStart}
         title={t('games.truthdare.gameTitle', 'Truth or Dare 2.0')}
         minPlayers={2}
@@ -351,10 +393,10 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
+    <div data-phase={phase} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
       <style>{EP_STYLE}</style>
       {/* Ambient glow orbs */}
-      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#f09a8a]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#ff6b98]/8 rounded-full blur-[120px] pointer-events-none" />
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
@@ -373,7 +415,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
         <div className="text-xs font-bold uppercase tracking-widest text-[#a8abb3]">
           {t('games.truthdare.roundHeader', { current: currentRound, total: totalRounds })}
         </div>
-        <div className="px-3 py-1 rounded-full glass-card border border-[#44484f]/30 text-sm font-bold text-[#df8eff]">
+        <div className="px-3 py-1 rounded-full glass-card border border-[#44484f]/30 text-sm font-bold text-[#f09a8a]">
           {mode === 'eskalation' ? <Flame className="w-4 h-4 inline" /> : null} {mode}
         </div>
       </div>
@@ -387,7 +429,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
             {/* Wheel */}
             <div className="relative w-52 h-52">
               <motion.div
-                className="w-full h-full rounded-full border-4 border-[#df8eff]/30 relative"
+                className="w-full h-full rounded-full border-4 border-[#f09a8a]/30 relative"
                 animate={{ rotate: spinAngle }}
                 transition={{ duration: 2.5, ease: [0.2, 0.8, 0.3, 1] }}
               >
@@ -407,10 +449,10 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 })}
               </motion.div>
               {/* Pointer */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-4 h-4 bg-[#df8eff] rotate-45 shadow-[0_0_12px_rgba(223,142,255,0.5)]" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-4 h-4 bg-[#f09a8a] rotate-45 shadow-[0_0_12px_rgba(150,160,165,0.5)]" />
             </div>
-            <motion.button whileTap={{ scale: 0.97 }} onClick={doSpin}
-              className="flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]">
+            <motion.button whileTap={{ scale: 0.97 }} disabled={!!online && !online.isHost} onClick={doSpin}
+              className="flex items-center gap-2 bg-gradient-to-r from-[#f09a8a] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base shadow-[0_0_20px_rgba(150,160,165,0.3)]">
               <Zap className="w-5 h-5" /> {t('games.truthdare.spin')}
             </motion.button>
           </motion.div>
@@ -435,15 +477,15 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
               {isDrinkingMode ? t('games.truthdare.chooseOrDrink') : t('games.truthdare.choosePrompt')}
             </p>
             <div className="flex gap-4 w-full max-w-sm">
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('truth')}
-                disabled={mode === 'nur-pflicht'}
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('truth')} data-choice="truth"
+                disabled={mode === 'nur-pflicht' || (!!online && online.myPlayerId !== players[activeIdx]?.id)}
                 className={cn("flex-1 py-5 rounded-2xl font-extrabold text-lg transition-all",
                   mode === 'nur-pflicht' ? 'bg-white/5 text-white/20 cursor-not-allowed' :
-                  'bg-gradient-to-br from-[#df8eff] to-[#d779ff] text-white shadow-[0_0_20px_rgba(223,142,255,0.3)]')}>
+                  'bg-gradient-to-br from-[#f09a8a] to-[#d779ff] text-white shadow-[0_0_20px_rgba(150,160,165,0.3)]')}>
                 <Heart className="w-6 h-6 mx-auto mb-1" /> {t('games.truthdare.truth')}
               </motion.button>
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('dare')}
-                disabled={mode === 'nur-wahrheit'}
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('dare')} data-choice="dare"
+                disabled={mode === 'nur-wahrheit' || (!!online && online.myPlayerId !== players[activeIdx]?.id)}
                 className={cn("flex-1 py-5 rounded-2xl font-extrabold text-lg transition-all",
                   mode === 'nur-wahrheit' ? 'bg-white/5 text-white/20 cursor-not-allowed' :
                   'bg-gradient-to-br from-[#ff6b98] to-[#ff6b98]/80 text-white shadow-[0_0_20px_rgba(255,107,152,0.3)]')}>
@@ -462,7 +504,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                     haptics.warning();
                     setDisclaimer(d);
                     setTimeout(() => setDisclaimer(null), 5000);
-                    setTimeout(() => nextRound(), 2000);
+                    nextRound();
                   } else {
                     nextRound();
                   }
@@ -499,7 +541,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
           const isTruth = choiceType === 'truth';
           // Tone tokens — full color palette per type
           const tone = isTruth
-            ? { main: '#df8eff', dim: '#d779ff', onChip: '#3d0055', glow: 'rgba(223,142,255,0.3)' }
+            ? { main: '#f09a8a', dim: '#d779ff', onChip: '#3d0055', glow: 'rgba(150,160,165,0.3)' }
             : { main: '#ff6b98', dim: '#e4006c', onChip: '#47001d', glow: 'rgba(255,107,152,0.3)' };
           const others = players.filter((_, i) => i !== activeIdx);
           const urgent = isTruth ? false : timer.timeLeft <= 10;
@@ -511,7 +553,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
             <motion.div
               key="reveal"
               initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="flex-1 flex flex-col items-center px-5 py-6 max-w-xl mx-auto w-full"
+              className="split-challenge flex-1 flex flex-col items-center px-5 py-6 max-w-xl mx-auto w-full" data-kind={isTruth ? 'truth' : 'dare'}
             >
               {/* Timer chip — only for dares */}
               {!isTruth && (
@@ -547,7 +589,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 <motion.div
                   className="absolute -inset-1 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-1000"
                   style={{
-                    background: 'linear-gradient(45deg, #ff6b98, #df8eff, #8ff5ff)',
+                    background: 'linear-gradient(45deg, #ff6b98, #f09a8a, #8dd4d6)',
                   }}
                   animate={{ opacity: [0.25, 0.45, 0.25] }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
@@ -557,7 +599,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                   initial={{ rotateY: 80, opacity: 0 }}
                   animate={{ rotateY: 0, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-                  className="relative rounded-2xl p-6 sm:p-8 flex flex-col items-center text-center border border-white/5 overflow-hidden"
+                  className="split-prompt relative p-6 sm:p-8 flex flex-col items-center text-center border border-white/5 overflow-hidden"
                   style={{
                     background: 'rgba(27, 32, 40, 0.85)',
                     backdropFilter: 'blur(20px)',
@@ -598,7 +640,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                         : <Flame className="w-14 h-14" style={{ color: tone.main, filter: `drop-shadow(0 0 16px ${tone.glow})` }} />
                       }
                     </motion.div>
-                    <span className="text-[#8ff5ff] text-[10px] font-black uppercase tracking-[0.3em]">
+                    <span className="text-[#8dd4d6] text-[10px] font-black uppercase tracking-[0.3em]">
                       {t('games.truthdare.yourTask')}
                     </span>
                   </div>
@@ -666,7 +708,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                     ) : (
                       <motion.button
                         whileTap={{ scale: 0.97 }}
-                        onClick={() => { haptics.celebrate(); nextRound(); }}
+                        disabled={!!online && online.myPlayerId !== players[activeIdx]?.id} onClick={() => { haptics.celebrate(); nextRound(); }}
                         className="w-full h-14 rounded-full font-black uppercase tracking-[0.2em] text-sm flex items-center justify-center gap-2"
                         style={{
                           background: `linear-gradient(90deg, ${tone.main}, ${tone.dim})`,
@@ -681,7 +723,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
 
                     <motion.button
                       whileTap={{ scale: 0.97 }}
-                      onClick={rerollCurrent}
+                      disabled={!!online && online.myPlayerId !== players[activeIdx]?.id} onClick={rerollCurrent}
                       className="w-full h-12 rounded-full flex items-center justify-center gap-2 bg-[#20262f]/50 border border-[#44484f]/30 text-[#a8abb3] font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-[#262c36] transition-colors"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
@@ -706,7 +748,7 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
         {/* VOTE PHASE */}
         {phase === 'vote' && activePlayer && (
           <motion.div key="vote" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center gap-5 px-4">
+            className="split-arena flex-1 flex flex-col items-center justify-center gap-5 px-4">
             {(() => {
               const otherPlayers = players.filter((_, i) => i !== activeIdx);
               const voter = otherPlayers[voterIdx];
@@ -724,18 +766,18 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                   </div>
                   <p className="text-white/60">{t('games.truthdare.voting', { name: voter.name })}</p>
                   <div className="flex gap-4">
-                    <motion.button whileTap={{ scale: 0.9 }} onClick={() => castVote(true)}
+                    <motion.button whileTap={{ scale: 0.9 }} disabled={!!online && online.myPlayerId !== players.filter((_, i) => i !== activeIdx)[voterIdx]?.id} onClick={() => castVote(true)}
                       className="w-20 h-20 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
                       <ThumbsUp className="w-8 h-8 text-emerald-400" />
                     </motion.button>
-                    <motion.button whileTap={{ scale: 0.9 }} onClick={() => castVote(false)}
+                    <motion.button whileTap={{ scale: 0.9 }} disabled={!!online && online.myPlayerId !== players.filter((_, i) => i !== activeIdx)[voterIdx]?.id} onClick={() => castVote(false)}
                       className="w-20 h-20 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
                       <ThumbsDown className="w-8 h-8 text-red-400" />
                     </motion.button>
                   </div>
                   <div className="flex gap-1">
                     {otherPlayers.map((_, i) => (
-                      <div key={i} className={cn("w-2 h-2 rounded-full", i < voterIdx ? 'bg-[#df8eff]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
+                      <div key={i} className={cn("w-2 h-2 rounded-full", i < voterIdx ? 'bg-[#f09a8a]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
                     ))}
                   </div>
                 </>
@@ -754,10 +796,10 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                 <Trophy className="w-8 h-8 text-amber-400" />
               </div>
             </motion.div>
-            <h2 className="text-3xl font-extrabold text-[#df8eff] neon-glow">
+            <h2 className="text-3xl font-extrabold text-[#f09a8a] neon-glow">
               {t('games.truthdare.gameOver')}
             </h2>
-            <div className="text-lg font-bold text-[#df8eff]">{t('games.truthdare.wins', { name: winner.name })}</div>
+            <div className="text-lg font-bold text-[#f09a8a]">{t('games.truthdare.wins', { name: players.filter(p => p.score === winner.score).map(p => p.name).join(' & ') })}</div>
             <div className="w-full space-y-2 max-h-64 overflow-y-auto">
               {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
                 <div key={p.id} className="flex items-center gap-3 bg-[#1b2028] border border-[#44484f]/20 rounded-2xl px-4 py-3">
@@ -765,13 +807,13 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
                   <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
                     style={{ backgroundColor: p.color }}>{p.avatar}</div>
                   <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
-                  <span className="text-[#df8eff] font-bold">{t('games.truthdare.points', { count: p.score })}</span>
+                  <span className="text-[#f09a8a] font-bold">{t('games.truthdare.points', { count: p.score })}</span>
                 </div>
               ))}
             </div>
             <div className="w-full space-y-3 mt-2">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={playAgain}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(223,142,255,0.3)]">
+              <motion.button whileTap={{ scale: 0.97 }} disabled={!!online && !online.isHost} onClick={playAgain}
+                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#f09a8a] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(150,160,165,0.3)]">
                 <RotateCcw className="w-4 h-4" /> {t('games.truthdare.playAgain')}
               </motion.button>
               {!hasShellBackButton() && (
@@ -784,7 +826,11 @@ export default function TruthDareGame({ online }: { online?: OnlineGameProps } =
           </motion.div>
         )}
       </AnimatePresence>
-      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#f09a8a" />
     </div>
   );
+}
+
+export default function TruthDareGame({ online }: { online?: OnlineGameProps } = {}) {
+  return <GameStage gameId="wahrheit-pflicht" className="split-game"><TruthDareGameContent online={online} /></GameStage>;
 }

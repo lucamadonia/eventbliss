@@ -1,3 +1,8 @@
+import '../headup/classic-stage.css';
+import { GameStage, StageHeader, StagePanel, StageAction, StageFooter } from '../ui/GameStage';
+import { usePausableTasks } from '../bottlespin/pausable-tasks';
+import { advanceReveal } from './reveal-rules';
+import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -76,6 +81,7 @@ const GAME_MODES: GameMode[] = [
 // ---------------------------------------------------------------------------
 
 export default function StoryBuilderGame({ online }: { online?: OnlineGameProps } = {}) {
+  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
   const { t } = useTranslation();
   const navigate = useNavigate();
   // Zurück mitten in der Runde darf die Partie nicht wegwerfen.
@@ -212,9 +218,9 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
     return '';
   }
 
-  function submitSentence() {
-    const trimmed = inputText.trim();
-    if (!trimmed || !currentPlayer) return;
+  function submitSentence(text = inputText, skip = false) {
+    const trimmed = text.trim().slice(0, MAX_CHARS);
+    if ((!trimmed && !skip) || !currentPlayer) return;
 
     const newSentence: StorySentence = {
       playerId: currentPlayer.id,
@@ -223,7 +229,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
       prompt: mode === 'vorgabe' ? currentPrompt : undefined,
     };
 
-    const updatedSentences = [...sentences, newSentence];
+    const updatedSentences = skip ? sentences : [...sentences, newSentence];
     setSentences(updatedSentences);
     setInputText('');
 
@@ -239,11 +245,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
           // Story complete, go to reveal
           setRevealIdx(0);
           setIsRevealing(false);
-          setPhase('passing');
-          // Use a short delay then go to reveal
-          setTimeout(() => {
-            setPhase('storyReveal');
-          }, 100);
+          setPhase('storyReveal');
           return;
         }
         setCurrentRound(nextRound);
@@ -257,7 +259,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
     }
 
     setCurrentPrompt(getNextPrompt());
-    setPhase('passing');
+    setPhase(online ? 'writing' : 'passing');
   }
 
   function confirmPass() {
@@ -266,22 +268,31 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
 
   // Reveal animation
   useEffect(() => {
-    if (phase !== 'storyReveal' || isRevealing) return;
+    if (phase !== 'storyReveal') return;
     setIsRevealing(true);
     setRevealIdx(0);
 
-    const interval = setInterval(() => {
-      setRevealIdx(prev => {
-        if (prev >= sentences.length - 1) {
-          clearInterval(interval);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 2000);
+    let index = 0;
+    let pending: number;
+    const revealNext = () => {
+      index = Math.min(index + 1, sentences.length - 1);
+      setRevealIdx(previous => advanceReveal(previous, index));
+      if (index < sentences.length - 1) pending = setTimeout(revealNext, 2000);
+    };
+    pending = setTimeout(revealNext, 2000);
+    return () => clearTimeout(pending);
+  }, [phase, sentences.length]);
 
-    return () => clearInterval(interval);
-  }, [phase, sentences.length, isRevealing]);
+  const [writingSeconds, setWritingSeconds] = useState(90);
+  useEffect(() => { setWritingSeconds(90); }, [phase, currentRound, currentPlayerIdx, currentSentenceNum]);
+  useEffect(() => {
+    if ((phase !== 'writing' && phase !== 'passing') || writingSeconds <= 0 || (online && !online.isHost)) return;
+    const pending = setTimeout(() => setWritingSeconds(s => Math.max(0, s - 1)), 1000);
+    return () => clearTimeout(pending);
+  }, [phase, writingSeconds, currentRound, currentPlayerIdx, currentSentenceNum]);
+  useEffect(() => {
+    if (writingSeconds === 0 && (phase === 'writing' || phase === 'passing') && (!online || online.isHost) && online?.isConnected !== false) submitSentence('', true);
+  }, [writingSeconds, phase, online?.isConnected]);
 
   useEffect(() => {
     if (phase === 'storyReveal' && !gameRecordedRef.current) {
@@ -329,28 +340,20 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
     setPhase('writing');
   }
 
-  /* ---- Online: host broadcasts game state ---- */
-  useEffect(() => {
-    if (!online?.isHost) return;
-    online.broadcast('game-state', {
-      phase, currentRound, totalRounds, currentPlayerIdx,
-      sentences: sentences.map(s => ({ playerName: s.playerName, text: s.text })),
-    });
-  }, [phase, currentRound, currentPlayerIdx, sentences, online]);
+  const act = useOnlineActions(online, 'storybuilder', `${phase}:${currentRound}:${currentPlayerIdx}:${currentSentenceNum}:${sentences.length}`, {
+    start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },
+    sentence: { allowed: phase === 'writing' ? currentPlayer?.id ?? false : false, run: (text: unknown) => { if (typeof text === 'string') submitSentence(text); } },
+    ready: { allowed: phase === 'passing' ? currentPlayer?.id ?? false : false, run: confirmPass },
+    skip: { allowed: phase === 'writing' || phase === 'passing' ? currentPlayer?.id ?? false : false, run: () => submitSentence('', true) },
+    again: { allowed: phase === 'storyReveal' || phase === 'gameOver' ? 'host' : false, run: rematch },
+  });
+  useOnlineSnapshot(online, 'storybuilder', { phase, players, mode, sentencesPerPlayer, totalRounds, currentRound, currentPlayerIdx, currentSentenceNum, sentences, currentPrompt, writingSeconds }, s => {
+    setWritingSeconds(s.writingSeconds);
+    setPhase(s.phase); setPlayers(s.players); setMode(s.mode); setSentencesPerPlayer(s.sentencesPerPlayer); setTotalRounds(s.totalRounds); setCurrentRound(s.currentRound); setCurrentPlayerIdx(s.currentPlayerIdx); setCurrentSentenceNum(s.currentSentenceNum); setSentences(s.sentences); setCurrentPrompt(s.currentPrompt);
+  });
+  useEffect(() => { setInputText(''); }, [sentences.length, currentPlayerIdx, currentRound, currentSentenceNum]);
+  if (online && !online.isHost && phase === 'setup') return <OnlineWaiting />;
 
-  /* ---- Online: non-host syncs state ---- */
-  useEffect(() => {
-    if (!online || online.isHost) return;
-    return online.onBroadcast('game-state', (data) => {
-      if (data.phase) setPhase(data.phase as Phase);
-      if (data.currentRound) setCurrentRound(data.currentRound as number);
-      if (data.currentPlayerIdx !== undefined) setCurrentPlayerIdx(data.currentPlayerIdx as number);
-      if (data.sentences) {
-        const incoming = data.sentences as { playerName: string; text: string }[];
-        setSentences(incoming.map(s => ({ playerId: '', playerName: s.playerName, text: s.text })));
-      }
-    });
-  }, [online]);
 
   // =========================================================================
   // RENDER
@@ -360,11 +363,11 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
     return (
       <GameSetup
         gameId="storybuilder"
-        modes={getTranslatedModes('storybuilder', GAME_MODES, t)}
+        modes={getTranslatedModes('storybuilder', GAME_MODES, (key, fallback) => t(key, { defaultValue: fallback }))}
         modeAssets={STORY_MODE_ASSETS}
         accent="#f6b94a"
         settings={setupSettings}
-        onStart={handleStart}
+        onStart={(...args) => act('start', ...args)}
         title="Story Builder"
         onlinePlayers={online?.players}
       />
@@ -372,234 +375,55 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
   }
 
   return (
-    <div className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
-      <style>{`
-.neon-glow { text-shadow: 0 0 20px rgba(223,142,255,0.6), 0 0 40px rgba(223,142,255,0.4); }
-.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-      `}</style>
-      <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
+    <GameStage gameId="storybuilder" className="story-manuscript" style={{ '--stage-bg': '#f4eee0', '--stage-surface': '#e9e2d3', '--stage-accent': '#227768', '--stage-secondary': '#227768', '--stage-ink': '#20332d', '--stage-muted': '#52605a' } as React.CSSProperties}>
+      <StageHeader title={phase === 'storyReveal' ? t('games.storybuilder.ourStory') : currentPlayer?.name ?? 'StoryBuilder'}
+        eyebrow="StoryBuilder" progress={phase === 'storyReveal' ? { value: Math.min(revealIdx + 1, sentences.length), total: sentences.length } : { value: currentTurn, total: totalTurns }}
+        trailing={(phase === 'writing' || phase === 'passing') && <span className="tabular-nums text-lg font-semibold">{writingSeconds}s</span>} />
 
-      {/* ---- WRITING ---- */}
       {phase === 'writing' && currentPlayer && (
-        <motion.div
-          key={`write-${sentences.length}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex-1 flex flex-col"
-        >
-          <ActivePlayerBanner
-            playerName={currentPlayer.name}
-            playerColor={currentPlayer.color}
-            playerAvatar={currentPlayer.avatar}
-            hidden={false}
-          />
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                style={{ backgroundColor: currentPlayer.color }}
-              >
-                {currentPlayer.avatar}
-              </div>
-              <span className="text-sm text-white/60">{currentPlayer.name}</span>
-            </div>
-            <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs text-white/40">
-              {currentTurn}/{totalTurns}
-            </span>
-          </div>
-
-          <div className="flex-1 flex flex-col items-center justify-center gap-5 px-4 max-w-lg mx-auto w-full">
-            {/* Previous sentence (only last one visible) */}
-            {lastSentence && (
-              <div className="w-full rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-4">
-                <div className="text-[10px] uppercase tracking-widest text-white/30 mb-2">
-                  {t('games.storybuilder.lastSentenceBy', { name: lastSentence.playerName })}
-                </div>
-                <p className="text-sm text-white/60 italic leading-relaxed">
-                  "{lastSentence.text}"
-                </p>
-              </div>
-            )}
-
-            {/* Prompt (if vorgabe mode) */}
-            {mode === 'vorgabe' && currentPrompt && (
-              <div className="flex items-center gap-2 text-[#ff6b98] text-sm font-semibold">
-                <Sparkles className="w-4 h-4" />
-                <span>{currentPrompt}</span>
-              </div>
-            )}
-
-            {mode === 'reimzeit' && (
-              <div className="flex items-center gap-2 text-[#8ff5ff] text-sm font-semibold">
-                <Music className="w-4 h-4" />
-                <span>{t('games.storybuilder.rhymeMustRhyme')}</span>
-              </div>
-            )}
-
-            {/* Input */}
-            <div className="w-full relative">
-              <textarea
-                value={inputText}
-                onChange={e => {
-                  if (e.target.value.length <= MAX_CHARS) setInputText(e.target.value);
-                }}
-                placeholder={t('games.storybuilder.inputPlaceholder')}
-                rows={3}
-                className="w-full bg-[#151a21] border-0 text-white rounded-xl px-4 py-3 text-sm placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-[#df8eff]/40 resize-none"
-              />
-              <div className="absolute bottom-2 right-3 text-[10px] text-white/20">
-                {inputText.length}/{MAX_CHARS}
-              </div>
-            </div>
-
-            {/* Submit */}
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={submitSentence}
-              disabled={inputText.trim().length === 0}
-              className={cn(
-                'w-full flex items-center justify-center gap-2 py-4 rounded-full font-extrabold text-base transition-all',
-                inputText.trim().length > 0
-                  ? 'bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] shadow-[0_0_20px_rgba(223,142,255,0.3)]'
-                  : 'bg-[#1b2028] text-white/20 cursor-not-allowed',
-              )}
-            >
-              <Pen className="w-4 h-4" /> {t('games.storybuilder.submitBtn')}
-            </motion.button>
-          </div>
-        </motion.div>
+        <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 py-5">
+          {lastSentence && <section className="border-l-2 border-[#227768]/30 pl-5 py-2">
+            <p className="mb-2 text-xs font-semibold tracking-wide text-[#52605a]">{t('games.storybuilder.lastSentenceBy', { name: lastSentence.playerName })}</p>
+            <p className="font-serif text-xl sm:text-2xl leading-relaxed text-[#20332d]">{lastSentence.text}</p>
+          </section>}
+          {mode === 'vorgabe' && currentPrompt && <p className="text-sm font-semibold text-[#227768]">{currentPrompt}</p>}
+          {mode === 'reimzeit' && <p className="text-sm font-semibold text-[#227768]">{t('games.storybuilder.rhymeMustRhyme')}</p>}
+          <StagePanel tone="paper" className="flex-1 !rounded-sm !p-5 sm:!p-8 min-h-64 border-t-4 !border-t-[#227768]">
+            <label htmlFor="story-sentence" className="mb-5 block text-sm font-semibold text-[#52605a]">{t('games.storybuilder.inputPlaceholder')}</label>
+            <textarea id="story-sentence" value={inputText} disabled={!act.can('sentence')}
+              onChange={e => { if (e.target.value.length <= MAX_CHARS) setInputText(e.target.value); }}
+              placeholder={t('games.storybuilder.inputPlaceholder')} rows={5}
+              className="min-h-48 w-full resize-y bg-transparent font-serif text-2xl leading-relaxed text-[#20332d] placeholder:text-[#6b786f] outline-none focus-visible:ring-2 focus-visible:ring-[#227768] disabled:opacity-60" />
+            <p className="text-right text-xs tabular-nums text-[#52605a]">{inputText.length} / {MAX_CHARS}</p>
+          </StagePanel>
+          <StageFooter className="!bg-transparent !px-0 flex flex-wrap gap-3">
+            <StageAction variant="secondary" disabled={!act.can('skip')} onClick={() => act('skip')}>{t('games.storybuilder.skipTurn')}</StageAction>
+            <StageAction className="flex-1" disabled={!inputText.trim() || !act.can('sentence')} onClick={() => act('sentence', inputText)}><Pen className="h-5 w-5" />{t('games.storybuilder.submitBtn')}</StageAction>
+          </StageFooter>
+        </div>
       )}
-
-      {/* ---- PASSING DEVICE ---- */}
-      {phase === 'passing' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex-1 flex flex-col items-center justify-center gap-6 px-4"
-        >
-          <motion.div
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ repeat: Infinity, duration: 2, ease: 'easeInOut' }}
-            className="w-20 h-20 rounded-full bg-[#1b2028] border border-[#44484f]/20 flex items-center justify-center"
-          >
-            <ArrowRight className="w-8 h-8 text-[#df8eff]" />
-          </motion.div>
-          <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] text-white text-center">
-            {t('games.storybuilder.passDevice')}
-          </h2>
-          {players[currentPlayerIdx] && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#1b2028] border border-[#44484f]/20">
-              <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                style={{ backgroundColor: players[currentPlayerIdx].color }}
-              >
-                {players[currentPlayerIdx].avatar}
-              </div>
-              <span className="text-sm text-white/70">{t('games.storybuilder.playerIsNext', { name: players[currentPlayerIdx].name })}</span>
-            </div>
-          )}
-
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={confirmPass}
-            className="mt-4 flex items-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] px-8 py-3 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
-          >
-            <Play className="w-5 h-5" /> {t('games.storybuilder.readyBtn')}
-          </motion.button>
-        </motion.div>
-      )}
-
-      {/* ---- STORY REVEAL ---- */}
-      {phase === 'storyReveal' && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex-1 flex flex-col px-4 py-6 max-w-lg mx-auto w-full"
-        >
-          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#df8eff]/10 border border-[#df8eff]/20 mb-3">
-              <BookOpen className="w-6 h-6 text-[#df8eff]" />
-            </div>
-            <h2 className="text-2xl font-extrabold font-[Plus_Jakarta_Sans] bg-gradient-to-r from-[#df8eff] to-[#8ff5ff] bg-clip-text text-transparent">
-              {t('games.storybuilder.ourStory')}
-            </h2>
-          </div>
-
-          {/* Scrollable story */}
-          <div className="flex-1 overflow-y-auto space-y-3 pb-24">
-            {sentences.map((s, i) => (
-              <AnimatePresence key={i}>
-                {i <= revealIdx && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-4"
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] text-white font-bold"
-                        style={{ backgroundColor: players.find(p => p.id === s.playerId)?.color ?? '#8b5cf6' }}
-                      >
-                        {s.playerName.charAt(0).toUpperCase()}
-                      </div>
-                      <span className="text-[10px] text-white/30 uppercase tracking-widest">
-                        {s.playerName}
-                      </span>
-                    </div>
-                    <motion.p
-                      className="text-white/80 text-sm leading-relaxed font-[Plus_Jakarta_Sans]"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.3 }}
-                    >
-                      {s.text}
-                    </motion.p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            ))}
-          </div>
-
-          {/* Bottom actions */}
-          <div className="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
-            <div className="max-w-lg mx-auto space-y-3">
-              {revealIdx < sentences.length - 1 ? (
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setRevealIdx(sentences.length - 1)}
-                  className="w-full flex items-center justify-center gap-2 bg-[#1b2028] border border-[#44484f]/20 text-white/60 py-3 rounded-full font-semibold text-sm"
-                >
-                  <Eye className="w-4 h-4" /> {t('games.storybuilder.showAll')}
-                </motion.button>
-              ) : (
-                <div className="space-y-3">
-                  <motion.button
-                    whileTap={{ scale: 0.97 }}
-                    onClick={rematch}
-                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(223,142,255,0.3)]"
-                  >
-                    <RotateCcw className="w-4 h-4" /> {t('games.storybuilder.playAgain')}
-                  </motion.button>
-                  {/* Nur im Web. In der App macht das der FloatingBackButton. */}
-                  {!hasShellBackButton() && (
-                    <button
-                      onClick={() => navigate('/games')}
-                      className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors"
-                    >
-                      {t('games.storybuilder.otherGame')}
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      )}
-      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#df8eff" />
-    </div>
+      {phase === 'passing' && <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-8 py-10">
+        <p className="font-serif text-4xl sm:text-6xl leading-tight">{t('games.storybuilder.passDevice')}</p>
+        <p className="text-lg text-[#52605a]">{t('games.storybuilder.playerIsNext', { name: players[currentPlayerIdx]?.name })}</p>
+        <StageAction disabled={!act.can('ready')} onClick={() => act('ready')}><ArrowRight className="h-5 w-5" />{t('games.storybuilder.readyBtn')}</StageAction>
+        <StageAction variant="ghost" disabled={!act.can('skip')} onClick={() => act('skip')}>{t('games.storybuilder.skipTurn')}</StageAction>
+      </div>}
+      {phase === 'storyReveal' && <div className="mx-auto w-full max-w-3xl py-5">
+        <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
+        <StagePanel tone="paper" className="!rounded-sm !p-6 sm:!p-10">
+          <article className="space-y-8">
+            {sentences.map((sentence, index) => index <= revealIdx && <section key={`${sentence.playerId}-${index}`} className="border-b border-[#20332d]/10 pb-7 last:border-0">
+              <div className="mb-3 flex gap-3 text-xs text-[#52605a]"><span className="tabular-nums">{String(index + 1).padStart(2, '0')}</span><span>{sentence.playerName}</span></div>
+              <p className="font-serif text-xl sm:text-2xl leading-relaxed text-[#20332d] break-words">{sentence.text}</p>
+            </section>)}
+          </article>
+        </StagePanel>
+        <StageFooter className="mt-6 flex flex-wrap gap-3">
+          {revealIdx < sentences.length - 1 ? <StageAction className="flex-1" onClick={() => setRevealIdx(sentences.length - 1)}><Eye className="h-5 w-5" />{t('games.storybuilder.showAll')}</StageAction> : <StageAction className="flex-1" disabled={!act.can('again')} onClick={() => act('again')}><RotateCcw className="h-5 w-5" />{t('games.storybuilder.playAgain')}</StageAction>}
+          {!hasShellBackButton() && <StageAction variant="secondary" onClick={() => navigate('/games')}>{t('games.storybuilder.otherGame')}</StageAction>}
+        </StageFooter>
+      </div>}
+      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#227768" />
+    </GameStage>
   );
 }

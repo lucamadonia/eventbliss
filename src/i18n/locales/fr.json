@@ -6289,7 +6289,8 @@
       "streak": "Meilleure Série",
       "playAgain": "Rejouer",
       "otherGame": "Autre Jeu",
-      "share": "Partager les Résultats"
+      "share": "Partager les Résultats",
+      "sharedWin": "Victoire partagée"
     },
     "bomb": {
       "name": "Bombe à Retardement",
@@ -6346,7 +6347,8 @@
       "tutorialStep5": "Les réponses ne doivent pas se répéter!",
       "tutorialDismiss": "COMPRIS!",
       "taskAllePrompt": "Cite: {{category}} avec \"{{letter}}\"",
-      "taskKategoriePrompt": "Cite un/une {{category}} avec \"{{letter}}\"!"
+      "taskKategoriePrompt": "Cite un/une {{category}} avec \"{{letter}}\"!",
+      "fewestPenalties": "Le moins de pénalités"
     },
     "headup": {
       "name": "Devine-Tête",
@@ -6390,7 +6392,10 @@
       "best": "Meilleur",
       "resultsPerRound": "Résultats par manche",
       "playAgain": "Rejouer",
-      "back": "Retour"
+      "back": "Retour",
+      "enableMotion": "Activer l’inclinaison (ou utiliser les boutons)",
+      "readyBtn": "Prêt — activer l’inclinaison",
+      "buttonsOnly": "Jouer avec les boutons"
     },
     "taboo": {
       "name": "Mot Interdit",
@@ -6450,7 +6455,9 @@
       },
       "result": {
         "cheers": "Santé !"
-      }
+      },
+      "refereeRole": "Arbitre : surveille les mots interdits.",
+      "voiceHint": "Devinez à voix haute avec votre équipe. À distance, utilisez un appel vocal."
     },
     "categoryGame": {
       "name": "Chrono Catégorie",
@@ -6555,7 +6562,36 @@
       "timerNormal": "Normal",
       "timerRelaxed": "Détendu",
       "timerExplorer": "Explorateur",
-      "wfsStartBtn": "DÉMARRER LE JEU"
+      "wfsStartBtn": "DÉMARRER LE JEU",
+      "panoramaLoading": "Chargement du panorama…",
+      "panoramaError": "Ce panorama n’a pas pu être chargé. Revenez aux jeux et réessayez.",
+      "visual": {
+        "boardTitle": "Collection d’objets",
+        "whichPresent": "Quel objet était sur le tableau ?",
+        "whichMissing": "Quel objet n’était PAS sur le tableau ?",
+        "whichPosition": "Quel objet était sur la carte {{position}} ?",
+        "card": "Carte {{position}} : {{object}}",
+        "loading": "Chargement des images…",
+        "compareHint": "Trouve les trois objets remplacés sur le tableau B.",
+        "imageError": "Les images n’ont pas pu être chargées. Vérifie ta connexion et réessaie.",
+        "retryImages": "Recharger les images"},
+      "objects": {
+        "apple": "Pomme",
+        "banana": "Banane",
+        "pear": "Poire",
+        "orange": "Orange",
+        "strawberry": "Fraise",
+        "lemon": "Citron",
+        "mug": "Tasse",
+        "book": "Livre",
+        "key": "Clé",
+        "camera": "Appareil photo",
+        "teddy": "Ours en peluche",
+        "car": "Voiture miniature",
+        "shoe": "Basket",
+        "ball": "Ballon de football",
+        "plant": "Plante en pot",
+        "umbrella": "Parapluie"}
     },
     "impostor": {
       "title": "Imposteur",
@@ -6612,7 +6648,14 @@
       "impostorBadge": "Imposteur",
       "resetGame": "Recommencer",
       "playAgain": "Encore !",
-      "votingPhase": "Vote · {{current}}/{{total}}"
+      "votingPhase": "Vote · {{current}}/{{total}}",
+      "privateRole": "Ton rôle secret",
+      "viewRole": "Voir le rôle",
+      "waitPlayers": "En attente des autres…",
+      "readyRole": "Prêt",
+      "exitGame": "Quitter la partie",
+      "voteTie": "Égalité : personne n’est éliminé. Les imposteurs survivent.",
+      "multiScoring": "Les civils gagnent 10 points par imposteur démasqué. Chaque imposteur survivant gagne 15 points et partage le bonus."
     },
     "ohrwurm": {
       "leaveTitle": "Quitter la partie ?",
@@ -6787,7 +6830,8 @@
       "off": "Désactivé",
       "otherGame": "Autre jeu",
       "playAgain": "Rejouer",
-      "title": "Split Quiz"
+      "title": "Split Quiz",
+      "wagerRisk": "Juste : +100/+200/+300. Faux : 0/−100/−200 pour les mises 1/2/3."
     },
     "truthdare": {
       "yes": "Oui",
@@ -6904,7 +6948,14 @@
           }
         },
         "noContent": "Aucun personnage disponible pour ce groupe"
-      }
+      },
+      "onlineRoles": "Tu vois toutes les identités sauf la tienne.",
+      "exitGame": "Quitter la partie",
+      "questionLabel": "Pose une question oui/non",
+      "sendQuestion": "Poser la question",
+      "guessNow": "Deviner l’identité",
+      "voteSummary": "Oui : {{yes}} · Non : {{no}}",
+      "questionLimit": "Questions par identité"
     },
     "bottlespin": {
       "setupTimerLabel": "Minuteur de défi (sec.)",
@@ -6928,7 +6979,27 @@
       "scorePoints": "{{score}} pts",
       "roundsPlayed": "{{rounds}} tours joués. C'était amusant !",
       "playAgain": "Rejouer",
-      "otherGame": "Autre jeu"
+      "otherGame": "Autre jeu",
+      "categories": {
+        "eisbrecher": "Brise-glace",
+        "spass": "Humour et particularités",
+        "party": "Fêtes et musique",
+        "freundschaft": "Amitié",
+        "liebe": "Liens et relations",
+        "erinnerungen": "Souvenirs",
+        "reisen": "Voyages et découvertes",
+        "traeume": "Rêves et avenir",
+        "entscheidungen": "Choix et valeurs",
+        "kreativ": "Imagination et créativité"},
+      "categorySelection": "Choisir les catégories",
+      "contentSelection": "Que mettre sur les cartes ?",
+      "questionsOnly": "Questions uniquement",
+      "tasksOnly": "Défis uniquement",
+      "mixedCards": "Questions et défis",
+      "availableCards": "{{count}} cartes disponibles",
+      "selectionRequired": "Choisis au moins une catégorie.",
+      "prepareRound": "Préparer la partie",
+      "editSelection": "Modifier le contenu"
     },
     "category": {
       "title": "Catégorie Chrono",
@@ -6964,7 +7035,22 @@
       "pointsAvailable": "points possibles",
       "hintPrefix": "Commence par : {{letter}}",
       "showAnswer": "Afficher la réponse",
-      "guessed": "Deviné !"
+      "guessed": "Deviné !",
+      "answerLabel": "Ta réponse",
+      "teamLabel": "Équipe {{team}}",
+      "readyTitle": "Ton énigme est prête",
+      "readyBody": "Lis les images de gauche à droite. Trouve un titre ou une expression de la catégorie affichée.",
+      "readyStart": "Prêt — afficher l’énigme",
+      "waitingFor": "En attente de {{name}}",
+      "submitAnswer": "Vérifier la réponse",
+      "tryAgain": "Pas encore. Essaie une autre réponse.",
+      "skipPuzzle": "Passer l’énigme",
+      "solved": "Résolu",
+      "solution": "Solution",
+      "acceptedAnswers": "Également accepté",
+      "nextPlayer": "À suivre : {{name}}",
+      "clueLabel": "Rébus",
+      "poolBudget": "{{puzzleCount}} énigmes sélectionnées. Les grands groupes jouent moins de manches : autant de tours pour chacun, sans répétition."
     },
     "fakeorfact": {
       "title": "Menteur — Fake or Fact",
@@ -6981,7 +7067,8 @@
       "theTruthIs": "La vérité est ...",
       "correctPct": "Correct : {{pct}} %",
       "incorrectPct": "Faux : {{pct}} %",
-      "continue": "Continuer"
+      "continue": "Continuer",
+      "noAnswer": "Aucune réponse (temps écoulé)"
     },
     "quickdraw": {
       "tagline": "Dessine vite — les autres devinent !",
@@ -7004,7 +7091,12 @@
       "playerGuesses": "{{name}} devine",
       "guessPlaceholder": "Qu'est-ce que c'est ?",
       "theWordWas": "Le mot était",
-      "showResults": "Résultats"
+      "showResults": "Résultats",
+      "pass": "Passer",
+      "penSize": "Épaisseur {{size}}",
+      "eraser": "Gomme",
+      "undo": "Annuler",
+      "clear": "Effacer le dessin"
     },
     "sharedquiz": {
       "title": "Partagé & Questionné",
@@ -7026,7 +7118,10 @@
       "ready": "Prêt",
       "hintLabel": "Indice",
       "readHintAndAnswer": "Lis l'indice à haute voix et choisis la réponse !",
-      "resultBtn": "Résultats"
+      "resultBtn": "Résultats",
+      "modeAnswerTurn": "{{name}} · Réponse {{n}} sur 3",
+      "chainRules": "Répondez à tour de rôle. Chaque bonne réponse rapporte un point au trio. Les réponses restent cachées jusqu’à la troisième réponse.",
+      "allRules": "Vous devez tous les trois répondre correctement. Le trio gagne trois points, sinon zéro."
     },
     "storybuilder": {
       "setupTimerLabel": "Phrases par joueur",
@@ -7041,7 +7136,8 @@
       "ourStory": "Votre histoire",
       "showAll": "Tout afficher",
       "playAgain": "Rejouer",
-      "otherGame": "Autre jeu"
+      "otherGame": "Autre jeu",
+      "skipTurn": "Passer son tour"
     },
     "thisorthat": {
       "modeTagPopular": "Populaire",
@@ -7077,7 +7173,8 @@
       "socialChallenge": "Défi Social",
       "orWord": "ou",
       "setupSubtitle": "Choisis ton mode et lance la bataille des préférences.",
-      "startGame": "Lancer le jeu"
+      "startGame": "Commencer",
+      "tie": "Égalité"
     },
     "wordpress": {
       "modes": {
@@ -7115,7 +7212,15 @@
       "winnerAnnounce": "{{name}} gagne avec {{score}} points !",
       "accuracyPct": "{{accuracy}}% précision",
       "comboStat": "Combo : {{maxCombo}}x",
-      "correctStat": "{{count}} correct"
+      "correctStat": "{{count}} correct",
+      "tapWord": "Toucher le mot",
+      "yourTask": "Ta mission",
+      "readyStart": "Compris — commencer",
+      "waitForMatch": "Touche le grand mot seulement s’il respecte la règle. Sinon, laisse-le passer.",
+      "waitForPlayer": "En attendant que {{name}} commence.",
+      "exampleCategory": "« {{animal}} » : touche. « {{object}} » : attends.",
+      "exampleStroop": "« {{red}} » écrit en rouge : touche. En bleu : attends.",
+      "exampleForbidden": "« {{word}} » : attends. Tout autre mot : touche."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
@@ -7174,7 +7279,8 @@
       "teamModeGroups": "En équipes",
       "playersLabel": "Joueurs",
       "groupsLabel": "Équipes",
-      "teamN": "Équipe {{n}}"
+      "teamN": "Équipe {{n}}",
+      "retryImage": "Recharger l’image"
     },
     "closeenough": {
       "title": "Presque !",
@@ -7722,7 +7828,10 @@
       "counterLabelBar": "Comptoir",
       "trayNote": "pas encore en sécurité",
       "counterNote": "libre pour tous · 1 carte par tour"
-    }
+    },
+    "connectionPaused": "Partie en pause",
+    "connectionPausedHint": "Reconnectez-vous pour continuer. Le tour en cours est conservé.",
+    "reconnect": "Se reconnecter"
   },
   "native": {
     "home": {
@@ -8411,11 +8520,11 @@
       },
       "chain": {
         "name": "Quiz en chaîne",
-        "desc": "Chaîne d'indices de joueur en joueur"
+        "desc": "Répondez à tour de rôle. Chaque bonne réponse rapporte un point au trio. Les réponses restent cachées jusqu’à la troisième réponse."
       },
       "allornothing": {
         "name": "Tout ou rien",
-        "desc": "Des points seulement si tout le monde a juste"
+        "desc": "Vous devez tous les trois répondre correctement. Le trio gagne trois points, sinon zéro."
       }
     },
     "quickdraw": {
@@ -9613,7 +9722,8 @@
       "startGame": "Lancer la partie !",
       "notReadyCount": "Pas encore prêts : {{players}}",
       "shareText": "Rejoins ma partie ! Code : {{code}}",
-      "defaultPlayerName": "Joueur"
+      "defaultPlayerName": "Joueur",
+      "recoveredAfterReload": "L’hôte a rechargé la page. La partie précédente est terminée. Vous pouvez lancer une nouvelle partie ensemble ici."
     },
     "gamesHub": {
       "quickStart": "Démarrage rapide",

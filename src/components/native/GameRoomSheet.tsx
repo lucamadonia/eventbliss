@@ -23,30 +23,13 @@ import {
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { playableGames } from '@/lib/playable-games';
+import { useTranslation } from 'react-i18next';
 
 // ---------------------------------------------------------------------------
 // Game list (matches the canonical IDs)
 // ---------------------------------------------------------------------------
 
-const ONLINE_GAMES = [
-  { id: "bomb", name: "Tickende Bombe", icon: "\u{1F4A3}" },
-  { id: "headup", name: "Stirnraten", icon: "\u{1F9E0}" },
-  { id: "taboo", name: "Wortverbot", icon: "\u{1F6AB}" },
-  { id: "category", name: "Zeit-Kategorie", icon: "\u23F1\uFE0F" },
-  { id: "this-or-that", name: "This or That", icon: "\u2194\uFE0F" },
-  { id: "hochstapler", name: "Hochstapler", icon: "\u{1F3AD}" },
-  { id: "wahrheit-pflicht", name: "Wahrheit/Pflicht", icon: "\u2764\uFE0F" },
-  { id: "wer-bin-ich", name: "Wer bin ich?", icon: "\u2753" },
-  { id: "flaschendrehen", name: "Flaschendrehen", icon: "\u{1F37E}" },
-  { id: "emoji-raten", name: "Emoji-Raten", icon: "\u{1F600}" },
-  { id: "fake-or-fact", name: "Fake or Fact", icon: "\u{1F3B2}" },
-  { id: "schnellzeichner", name: "Schnellzeichner", icon: "\u{1F3A8}" },
-  { id: "split-quiz", name: "Split Quiz", icon: "\u{1F9E9}" },
-  { id: "geteilt-gequizzt", name: "Geteilt & Gequizzt", icon: "\u{1F517}" },
-  { id: "story-builder", name: "Story Builder", icon: "\u{1F4D6}" },
-  { id: "wo-ist-was", name: "Wo ist was?", icon: "\u{1F5FA}\uFE0F" },
-  { id: "drueck-das-wort", name: "Drück das Wort", icon: "\u{1F524}" },
-] as const;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -222,6 +205,7 @@ function CreateTab({
   onSelectGame: (id: string) => void;
   onCreate: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
@@ -229,7 +213,7 @@ function CreateTab({
       </p>
 
       <div className="grid grid-cols-2 gap-2">
-        {ONLINE_GAMES.map((game) => {
+        {playableGames.map((game) => {
           const active = selectedGame === game.id;
           return (
             <motion.button
@@ -244,14 +228,14 @@ function CreateTab({
                   : "bg-foreground/[0.03] border-border hover:bg-foreground/[0.06]",
               )}
             >
-              <span className="text-lg flex-shrink-0">{game.icon}</span>
+              <img src={game.image} alt="" className="h-9 w-9 rounded-lg object-cover flex-shrink-0" />
               <span
                 className={cn(
                   "text-xs font-medium leading-tight line-clamp-2",
                   active ? "text-foreground" : "text-muted-foreground",
                 )}
               >
-                {game.name}
+                {t(game.nameKey)}
               </span>
             </motion.button>
           );

@@ -10,12 +10,19 @@ import * as pl from './emoji-content-pl';
 import * as pt from './emoji-content-pt';
 import * as tr from './emoji-content-tr';
 import * as ar from './emoji-content-ar';
-export type { EmojiPuzzle } from './emoji-content-de';
+import { curateEmojiPuzzles } from './curated-puzzles';
+export type EmojiPuzzle = de.EmojiPuzzle & { aliases?: string[] };
 
-const BY_LANG: Record<string, typeof de> = { de, en, es, fr, it, nl, pl, pt, tr, ar };
-function pack(): typeof de {
-  const l = i18n.language?.split('-')[0] || 'de';
-  return BY_LANG[l] || de;
-}
-
-export const getEMOJI_PUZZLES = () => pack().EMOJI_PUZZLES;
+const EMOJI_PUZZLES_BY_LANG: Record<string, typeof de.EMOJI_PUZZLES> = {
+  de: de.EMOJI_PUZZLES,
+  en: en.EMOJI_PUZZLES,
+  es: es.EMOJI_PUZZLES,
+  fr: fr.EMOJI_PUZZLES,
+  it: it.EMOJI_PUZZLES_IT,
+  nl: nl.EMOJI_PUZZLES_NL,
+  pl: pl.EMOJI_PUZZLES_PL,
+  pt: pt.EMOJI_PUZZLES_PT,
+  tr: tr.EMOJI_PUZZLES_TR,
+  ar: ar.EMOJI_PUZZLES_AR,
+};
+export const getEMOJI_PUZZLES = (language = i18n.language ?? 'de') => curateEmojiPuzzles(EMOJI_PUZZLES_BY_LANG[language.split('-')[0]] ?? de.EMOJI_PUZZLES, Object.values(EMOJI_PUZZLES_BY_LANG));

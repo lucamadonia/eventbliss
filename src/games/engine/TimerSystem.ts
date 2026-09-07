@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
-export function useGameTimer(initialSeconds: number, onExpire: () => void) {
+export function useGameTimer(initialSeconds: number, onExpire: () => void, enabled = true) {
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const onExpireRef = useRef(onExpire);
@@ -14,21 +14,21 @@ export function useGameTimer(initialSeconds: number, onExpire: () => void) {
   // Die Deps hängen außerdem nicht mehr an timeLeft — sonst wurde das Intervall
   // jede Sekunde abgerissen und neu gesetzt, was die Uhr driften ließ.
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isRunning || !enabled) return;
     const interval = setInterval(() => {
       setTimeLeft((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
     return () => clearInterval(interval);
-  }, [isRunning]);
+  }, [isRunning, enabled]);
 
   // Ablauf als eigener Effekt — garantiert genau einmal pro Nulldurchgang.
   useEffect(() => {
     if (timeLeft > 0) { expiredRef.current = false; return; }
-    if (!isRunning || expiredRef.current) return;
+    if (!enabled || !isRunning || expiredRef.current) return;
     expiredRef.current = true;
     setIsRunning(false);
     onExpireRef.current();
-  }, [timeLeft, isRunning]);
+  }, [timeLeft, isRunning, enabled]);
 
   const start = useCallback(() => setIsRunning(true), []);
   const pause = useCallback(() => setIsRunning(false), []);
@@ -52,3 +52,20 @@ export function useGameTimer(initialSeconds: number, onExpire: () => void) {
 // NOTE: BombGame has its own useBombTimer (different signature/semantics) in
 // src/games/bomb/BombGame.tsx. The unused engine variant was removed so the
 // two can't be confused.
+
+/** A one-shot deadline that excludes time spent disconnected. */
+export function usePausableTimeout(callback: () => void, delayMs: number | null, enabled = true) {
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+  const remainingRef = useRef(delayMs);
+  useEffect(() => { remainingRef.current = delayMs; }, [delayMs]);
+  useEffect(() => {
+    if (!enabled || delayMs === null || remainingRef.current === null) return;
+    const started = performance.now();
+    const timeout = setTimeout(() => { remainingRef.current = 0; callbackRef.current(); }, remainingRef.current);
+    return () => {
+      clearTimeout(timeout);
+      remainingRef.current = Math.max(0, (remainingRef.current ?? 0) - (performance.now() - started));
+    };
+  }, [delayMs, enabled]);
+}

@@ -184,11 +184,11 @@ export function NumberEntry({
   } as const;
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-lg mx-auto">
       {/* 1. Gruppierte Ziffern — Tabellenziffern, damit beim Tippen nichts wackelt. */}
       <div
-        className="rounded-3xl px-4 py-5 text-center"
-        style={{ background: theme.surface }}
+        className="rounded-3xl border px-4 py-4 text-center"
+        style={{ background: theme.surface, borderColor:`${theme.accent}35` }}
         aria-live="polite"
       >
         <div
@@ -211,7 +211,7 @@ export function NumberEntry({
         )}
 
         {/* 2. Wortform — ein Wort lesen statt Nullen zählen. */}
-        <div className="mt-2 h-5 text-sm font-bold" style={{ color: theme.accent }}>
+        <div className="mt-2 min-h-5 text-sm leading-relaxed font-bold" style={{ color: theme.accent }}>
           {words}
         </div>
 
@@ -349,17 +349,19 @@ export function NumberEntry({
       </div>
 
       {/* 4. Die Abgeben-Taste nennt den Betrag noch einmal. */}
+      <div className="pt-3 pb-[max(12px,env(safe-area-inset-bottom))]" style={{background:theme.bg}}>
       <button
         type="button"
         onClick={onSubmit}
         disabled={!canSubmit}
-        className="mt-3 w-full h-14 rounded-2xl font-black text-lg disabled:opacity-40"
+        className="w-full min-h-14 px-4 py-3 rounded-2xl font-black text-base leading-snug disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
         style={{ background: theme.accent, color: theme.bg }}
       >
         {value === null
           ? t('games.closeenough.submit')
           : t('games.closeenough.submitWith', { value: words || display(raw, lang, isYear) })}
       </button>
+      </div>
     </div>
   );
 }

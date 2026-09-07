@@ -6339,7 +6339,8 @@
       "streak": "En İyi Seri",
       "playAgain": "Tekrar Oyna",
       "otherGame": "Başka Oyun",
-      "share": "Sonuçları Paylaş"
+      "share": "Sonuçları Paylaş",
+      "sharedWin": "Ortak zafer"
     },
     "bomb": {
       "name": "Saatli Bomba",
@@ -6396,7 +6397,8 @@
       "tutorialStep5": "Cevaplar tekrar edemez!",
       "tutorialDismiss": "ANLADIM!",
       "taskAllePrompt": "Söyle: {{category}} \"{{letter}}\" ile",
-      "taskKategoriePrompt": "Bir {{category}} söyle \"{{letter}}\" ile!"
+      "taskKategoriePrompt": "Bir {{category}} söyle \"{{letter}}\" ile!",
+      "fewestPenalties": "En az ceza puanı"
     },
     "headup": {
       "name": "Heads Up",
@@ -6440,7 +6442,10 @@
       "best": "En iyi",
       "resultsPerRound": "Tura göre sonuçlar",
       "playAgain": "Tekrar oyna",
-      "back": "Geri"
+      "back": "Geri",
+      "enableMotion": "Eğim kontrollerini aç (veya düğmeleri kullan)",
+      "readyBtn": "Hazır — eğimi etkinleştir",
+      "buttonsOnly": "Düğmelerle oyna"
     },
     "taboo": {
       "name": "Yasak Kelime",
@@ -6500,7 +6505,9 @@
       },
       "result": {
         "cheers": "Şerefe!"
-      }
+      },
+      "refereeRole": "Hakem: yasak kelimeleri dinle.",
+      "voiceHint": "Takımınla sesli tahmin et. Uzaktan oynarken sesli arama kullanın."
     },
     "categoryGame": {
       "name": "Zamanlı Kategori",
@@ -6605,7 +6612,36 @@
       "timerNormal": "Normal",
       "timerRelaxed": "Rahat",
       "timerExplorer": "Kaşif",
-      "wfsStartBtn": "OYUNU BAŞLAT"
+      "wfsStartBtn": "OYUNU BAŞLAT",
+      "panoramaLoading": "Panorama yükleniyor…",
+      "panoramaError": "Bu panorama yüklenemedi. Oyunlara dönüp tekrar dene.",
+      "visual": {
+        "boardTitle": "Nesne koleksiyonu",
+        "whichPresent": "Tahtada hangi nesne vardı?",
+        "whichMissing": "Tahtada hangi nesne YOKTU?",
+        "whichPosition": "{{position}} numaralı kartta hangi nesne vardı?",
+        "card": "Kart {{position}}: {{object}}",
+        "loading": "Nesne görselleri yükleniyor…",
+        "compareHint": "B tahtasında değiştirilen üç nesneyi bul.",
+        "imageError": "Nesne görselleri yüklenemedi. Bağlantını kontrol edip tekrar dene.",
+        "retryImages": "Görselleri yeniden yükle"},
+      "objects": {
+        "apple": "Elma",
+        "banana": "Muz",
+        "pear": "Armut",
+        "orange": "Portakal",
+        "strawberry": "Çilek",
+        "lemon": "Limon",
+        "mug": "Kupa",
+        "book": "Kitap",
+        "key": "Anahtar",
+        "camera": "Fotoğraf makinesi",
+        "teddy": "Oyuncak ayı",
+        "car": "Oyuncak araba",
+        "shoe": "Spor ayakkabı",
+        "ball": "Futbol topu",
+        "plant": "Saksı bitkisi",
+        "umbrella": "Şemsiye"}
     },
     "impostor": {
       "title": "Sahtekar",
@@ -6662,7 +6698,14 @@
       "impostorBadge": "Sahtekar",
       "resetGame": "Yeniden başlat",
       "playAgain": "Tekrar oyna!",
-      "votingPhase": "Oylama · {{current}}/{{total}}"
+      "votingPhase": "Oylama · {{current}}/{{total}}",
+      "privateRole": "Gizli rolün",
+      "viewRole": "Rolü gör",
+      "waitPlayers": "Diğerleri bekleniyor…",
+      "readyRole": "Hazır",
+      "exitGame": "Oyundan çık",
+      "voteTie": "Beraberlik: kimse elenmez. Sahtekârlar hayatta kalır.",
+      "multiScoring": "Siviller yakalanan bir sahtekâr için 10 puan alır. Hayatta kalan her sahtekâr 15 puan alır ve bonusu paylaşır."
     },
     "ohrwurm": {
       "leaveTitle": "Oyundan çıkılsın mı?",
@@ -6837,7 +6880,8 @@
       "off": "Kapalı",
       "otherGame": "Başka oyun",
       "playAgain": "Tekrar oyna",
-      "title": "Split Quiz"
+      "title": "Split Quiz",
+      "wagerRisk": "Doğru: +100/+200/+300. Yanlış: 1/2/3 bahis için 0/−100/−200."
     },
     "truthdare": {
       "yes": "Evet",
@@ -6954,7 +6998,14 @@
           }
         },
         "noContent": "Bu grup için şu anda karakter yok"
-      }
+      },
+      "onlineRoles": "Kendininki dışında herkesin kimliğini görebilirsin.",
+      "exitGame": "Oyundan çık",
+      "questionLabel": "Evet/hayır sorusu sor",
+      "sendQuestion": "Soru sor",
+      "guessNow": "Kimliği tahmin et",
+      "voteSummary": "Evet: {{yes}} · Hayır: {{no}}",
+      "questionLimit": "Kimlik başına soru"
     },
     "bottlespin": {
       "setupTimerLabel": "Görev zamanlayıcısı (sn.)",
@@ -6978,7 +7029,27 @@
       "scorePoints": "{{score}} puan",
       "roundsPlayed": "{{rounds}} tur oynandı. Eğlenceliydi!",
       "playAgain": "Tekrar oyna",
-      "otherGame": "Başka oyun"
+      "otherGame": "Başka oyun",
+      "categories": {
+        "eisbrecher": "Buz kırıcılar",
+        "spass": "Mizah ve tuhaflıklar",
+        "party": "Partiler ve müzik",
+        "freundschaft": "Arkadaşlık",
+        "liebe": "Yakınlık ve ilişkiler",
+        "erinnerungen": "Anılar",
+        "reisen": "Seyahat ve keşif",
+        "traeume": "Hayaller ve gelecek",
+        "entscheidungen": "Seçimler ve değerler",
+        "kreativ": "Hayal gücü ve yaratıcılık"},
+      "categorySelection": "Kategori seç",
+      "contentSelection": "Kartta ne olsun?",
+      "questionsOnly": "Yalnızca sorular",
+      "tasksOnly": "Yalnızca görevler",
+      "mixedCards": "Sorular ve görevler",
+      "availableCards": "{{count}} kart mevcut",
+      "selectionRequired": "En az bir kategori seç.",
+      "prepareRound": "Turu hazırla",
+      "editSelection": "İçeriği değiştir"
     },
     "category": {
       "title": "Hızlı Kategori",
@@ -7014,7 +7085,22 @@
       "pointsAvailable": "puan mümkün",
       "hintPrefix": "Şununla başlar: {{letter}}",
       "showAnswer": "Cevabı göster",
-      "guessed": "Tahmin etti!"
+      "guessed": "Tahmin etti!",
+      "answerLabel": "Yanıtın",
+      "teamLabel": "Takım {{team}}",
+      "readyTitle": "Bulmacan hazır",
+      "readyBody": "Resimleri soldan sağa oku. Gösterilen kategoriden bir başlık veya ifade tahmin et.",
+      "readyStart": "Hazır — bulmacayı göster",
+      "waitingFor": "{{name}} bekleniyor",
+      "submitAnswer": "Yanıtı kontrol et",
+      "tryAgain": "Henüz doğru değil. Başka bir yanıt dene.",
+      "skipPuzzle": "Bulmacayı geç",
+      "solved": "Çözüldü",
+      "solution": "Çözüm",
+      "acceptedAnswers": "Bunlar da kabul edilir",
+      "nextPlayer": "Sıradaki: {{name}}",
+      "clueLabel": "Resimli bulmaca",
+      "poolBudget": "{{puzzleCount}} seçilmiş bulmaca. Büyük gruplar daha az tur oynar: herkese eşit sıra, tekrar yok."
     },
     "fakeorfact": {
       "title": "Yalancı — Fake or Fact",
@@ -7031,7 +7117,8 @@
       "theTruthIs": "Gerçek şu ki ...",
       "correctPct": "Doğru: {{pct}}%",
       "incorrectPct": "Yanlış: {{pct}}%",
-      "continue": "Devam"
+      "continue": "Devam",
+      "noAnswer": "Yanıt yok (süre doldu)"
     },
     "quickdraw": {
       "tagline": "Hızlı çiz — diğerleri tahmin etsin!",
@@ -7054,7 +7141,12 @@
       "playerGuesses": "{{name}} tahmin ediyor",
       "guessPlaceholder": "Bu nedir?",
       "theWordWas": "Kelime şuydu:",
-      "showResults": "Sonuçlar"
+      "showResults": "Sonuçlar",
+      "pass": "Pas geç",
+      "penSize": "Kalem kalınlığı {{size}}",
+      "eraser": "Silgi",
+      "undo": "Geri al",
+      "clear": "Çizimi temizle"
     },
     "sharedquiz": {
       "title": "Paylaşıldı & Sorgulandı",
@@ -7076,7 +7168,10 @@
       "ready": "Hazır",
       "hintLabel": "İpucu",
       "readHintAndAnswer": "İpucunu yüksek sesle oku ve cevabı seç!",
-      "resultBtn": "Sonuç"
+      "resultBtn": "Sonuç",
+      "modeAnswerTurn": "{{name}} · 3 yanıttan {{n}}. yanıt",
+      "chainRules": "Sırayla yanıtlayın. Her doğru yanıt üçlünüze bir puan kazandırır. Üç kişi de yanıtlayana kadar yanıtlar gizli kalır.",
+      "allRules": "Üç kişi de doğru yanıtlamalı. Üçlünüz üç puan kazanır; aksi hâlde sıfır."
     },
     "storybuilder": {
       "setupTimerLabel": "Oyuncu başına cümle",
@@ -7091,7 +7186,8 @@
       "ourStory": "Sizin hikayeniz",
       "showAll": "Hepsini göster",
       "playAgain": "Tekrar oyna",
-      "otherGame": "Başka oyun"
+      "otherGame": "Başka oyun",
+      "skipTurn": "Sırayı atla"
     },
     "thisorthat": {
       "modeTagPopular": "Popüler",
@@ -7127,7 +7223,8 @@
       "socialChallenge": "Sosyal Meydan Okuma",
       "orWord": "ya da",
       "setupSubtitle": "Modunu seç ve tercih savaşını başlat.",
-      "startGame": "Oyunu Başlat"
+      "startGame": "Oyunu başlat",
+      "tie": "Beraberlik"
     },
     "wordpress": {
       "modes": {
@@ -7165,7 +7262,15 @@
       "winnerAnnounce": "{{name}}, {{score}} puanla kazandı!",
       "accuracyPct": "{{accuracy}}% isabet",
       "comboStat": "Kombo: {{maxCombo}}x",
-      "correctStat": "{{count}} doğru"
+      "correctStat": "{{count}} doğru",
+      "tapWord": "Kelimeye dokun",
+      "yourTask": "Görevin",
+      "readyStart": "Anladım — başla",
+      "waitForMatch": "Büyük kelimeye yalnızca kurala uyuyorsa dokun. Diğerlerinin geçmesini bekle.",
+      "waitForPlayer": "{{name}} başlaması bekleniyor.",
+      "exampleCategory": "“{{animal}}”: dokun. “{{object}}”: bekle.",
+      "exampleStroop": "Kırmızı yazılmış “{{red}}”: dokun. Mavi yazılmış “{{red}}”: bekle.",
+      "exampleForbidden": "“{{word}}”: bekle. Diğer tüm kelimelere dokun."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
@@ -7224,7 +7329,8 @@
       "teamModeGroups": "Takım hâlinde",
       "playersLabel": "Oyuncular",
       "groupsLabel": "Takımlar",
-      "teamN": "Takım {{n}}"
+      "teamN": "Takım {{n}}",
+      "retryImage": "Görseli yeniden yükle"
     },
     "closeenough": {
       "title": "Yaklaştın",
@@ -7772,7 +7878,10 @@
       "counterLabelBar": "Tezgâh",
       "trayNote": "henüz güvende değil",
       "counterNote": "herkese açık · sırada 1 kart"
-    }
+    },
+    "connectionPaused": "Oyun duraklatıldı",
+    "connectionPausedHint": "Devam etmek için yeniden bağlan. Mevcut tur korunur.",
+    "reconnect": "Yeniden bağlan"
   },
   "native": {
     "home": {
@@ -8461,11 +8570,11 @@
       },
       "chain": {
         "name": "Zincir quiz",
-        "desc": "Oyuncudan oyuncuya ipucu zinciri"
+        "desc": "Sırayla yanıtlayın. Her doğru yanıt üçlünüze bir puan kazandırır. Üç kişi de yanıtlayana kadar yanıtlar gizli kalır."
       },
       "allornothing": {
         "name": "Ya hep ya hiç",
-        "desc": "Sadece herkes doğru bilirse puan"
+        "desc": "Üç kişi de doğru yanıtlamalı. Üçlünüz üç puan kazanır; aksi hâlde sıfır."
       }
     },
     "quickdraw": {
@@ -9663,7 +9772,8 @@
       "startGame": "Oyunu başlat!",
       "notReadyCount": "Henüz hazır olmayan: {{players}}",
       "shareText": "Oyunuma katıl! Kod: {{code}}",
-      "defaultPlayerName": "Oyuncu"
+      "defaultPlayerName": "Oyuncu",
+      "recoveredAfterReload": "Ev sahibi sayfayı yeniden yükledi. Önceki oyun sona erdi. Buradan birlikte yeni bir oyun başlatabilirsiniz."
     },
     "gamesHub": {
       "quickStart": "Hızlı başlangıç",

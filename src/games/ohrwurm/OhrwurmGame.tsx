@@ -1,3 +1,5 @@
+import { publicRoundItem } from '../multiplayer/public-round-item';
+import { usePausableTasks } from '../bottlespin/pausable-tasks';
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
@@ -13,7 +15,7 @@ import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { Confetti } from '@/components/expenses-v2/Confetti';
 import {
-  buildDeck, resolveRound, insertSorted, hasWon,
+  buildDeck, createFreshMatch, resolveRound, insertSorted, hasWon,
   type Participant, type Phase, type PendingCounter, type RoundResolution, type Song,
 } from './ohrwurm-engine';
 import { OHRWURM_GENRES, spotifyTrackDeepLink, spotifyTrackUrl } from './ohrwurm-content';
@@ -75,7 +77,6 @@ const OW = {
 
 const PLAYER_COLORS = ['#FF2E88', '#26E0C4', '#FFD23F', '#8b5cf6'];
 const MAX_HOOKS = 5;        // Hausregel-Cap (Spec §2.4)
-const START_HOOKS = 3;      // Spec §2.1
 
 const OW_STYLE = `
 .ow-glow-pink { text-shadow: 0 0 18px rgba(255,46,136,.55), 0 0 40px rgba(255,46,136,.3); }
@@ -122,6 +123,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
    */
   const partyRoster = useInitialRoster({ min: 2 });
   const myId = online?.myPlayerId ?? null;
+  const gameTasks = usePausableTasks(online?.isConnected !== false);
   // Whether a TV is connected to the room (host learns this via the 'tv-ready'
   // event and shares it in the snapshot). When a TV is present it is the
   // speaker; otherwise the active player's own phone plays the preview.
@@ -349,22 +351,21 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     setPhase('draw');
   }, [takeCard, stopAudio, loadPreview]);
 
+  // First start and rematch share exactly the same match initialization.
+  const beginMatch = useCallback((roster: Omit<Participant, 'timeline' | 'hooks'>[], selectedGenre: string | null) => {
+    gameTasks.clear();
+    setWinner(null);
+    recordedRef.current = false;
+    const fresh = createFreshMatch(roster, buildDeck(selectedGenre));
+    beginTurn(fresh.participants, fresh.deck, 0);
+  }, [gameTasks, beginTurn]);
+
   // --- Spielstart ---------------------------------------------------------
   const handleStart = useCallback((cfg: OhrwurmConfig, players: SetupPlayer[]) => {
-    let d = buildDeck(cfg.genre);
-    const parts: Participant[] = players.map((p) => {
-      const startCard = d[d.length - 1];
-      d = d.slice(0, -1);
-      return {
-        id: p.id,
-        name: p.name,
-        type: cfg.mode === 'group' ? 'group' : 'player',
-        color: p.color,
-        avatar: p.avatar,
-        timeline: [startCard],
-        hooks: START_HOOKS,
-      };
-    });
+    if (!isHost) return;
+    const roster: Omit<Participant, 'timeline' | 'hooks'>[] = players.map(p => ({
+      ...p, type: cfg.mode === 'group' ? 'group' : 'player',
+    }));
     setWinTarget(cfg.winTarget);
     setGenre(cfg.genre);
     // Spotify-Premium-Modus gewählt? Bridge nur zum AUTORISIEREN holen (Token für
@@ -383,8 +384,8 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       setSpotifyStatus(null);
     }
     void haptics.celebrate();
-    beginTurn(parts, d, 0);
-  }, [beginTurn, haptics, flash]);
+    beginMatch(roster, cfg.genre);
+  }, [isHost, beginMatch, haptics, flash, t]);
 
   // --- 60s-Timer: läuft ab → Karte verfällt, nächste Person ---------------
   const handleTimeout = useCallback(() => {
@@ -398,10 +399,10 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     flash(t('games.ohrwurm.timeoutCardForfeited'));
     const nextIdx = (turn + 1) % participants.length;
     const newDeck = [song, ...deck]; // verfallene Karte zurück nach unten
-    window.setTimeout(() => beginTurn(participants, newDeck, nextIdx), 650);
-  }, [song, stopAudio, haptics, flash, turn, participants, deck, beginTurn]);
+    gameTasks.setTimeout(() => beginTurn(participants, newDeck, nextIdx), 650);
+  }, [song, stopAudio, haptics, flash, turn, participants, deck, beginTurn, gameTasks]);
 
-  const roundTimer = useGameTimer(ROUND_SECONDS, handleTimeout);
+  const roundTimer = useGameTimer(ROUND_SECONDS, handleTimeout, online?.isConnected !== false);
   // Ref nachziehen, damit beginTurn (steht weiter oben) die Uhr zurücksetzen kann.
   roundTimerRef.current = roundTimer;
 
@@ -496,7 +497,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     setPhase('reveal');
     setFlipped(false);
     // Flip nach kurzem Moment
-    window.setTimeout(() => setFlipped(true), 220);
+    gameTasks.setTimeout(() => setFlipped(true), 220);
     if (res.winnerId) void haptics.success(); else void haptics.warning();
   }, [active, song, haptics]);
 
@@ -540,6 +541,17 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
   // --- Phase 5: Bonus -----------------------------------------------------
   // Speed-Bonus: innerhalb 10s platziert UND angesagt → +2 statt +1 🎣.
+  const disconnectedAtRef = useRef<{ at: number; started: number | null } | null>(null);
+  useEffect(() => {
+    if (online?.isConnected === false) {
+      disconnectedAtRef.current ??= { at: Date.now(), started: playStartedAtRef.current };
+    } else if (disconnectedAtRef.current) {
+      const paused = disconnectedAtRef.current;
+      if (playStartedAtRef.current !== null && playStartedAtRef.current === paused.started) playStartedAtRef.current += Date.now() - paused.at;
+      disconnectedAtRef.current = null;
+    }
+  }, [online?.isConnected]);
+
   const speedEligible = placeElapsedMs != null && placeElapsedMs <= SPEED_BONUS_MS && bonusClaimed;
   const handleBonus = useCallback((earned: boolean) => {
     setBonusDecided(true);
@@ -569,12 +581,14 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   useEffect(() => {
     if (phase === 'gameOver' && winner && !recordedRef.current) {
       recordedRef.current = true;
-      recordEnd('ohrwurm', winner.timeline.length, true);
+      const participant = isOnline ? participants.find(p => p.id === myId) : winner;
+      if (participant) recordEnd('ohrwurm', participant.timeline.length, participant.id === winner.id);
     }
     if (phase === 'setup') recordedRef.current = false;
-  }, [phase, winner, recordEnd]);
+  }, [phase, winner, recordEnd, isOnline, participants, myId]);
 
   const resetGame = useCallback(() => {
+    gameTasks.clear();
     stopAudio();
     spotifyBridgeRef.current?.disconnect().catch(() => {});
     spotifyBridgeRef.current = null;
@@ -591,22 +605,13 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   }, [stopAudio, roundTimer]);
 
   // --- Nochmal spielen -----------------------------------------------------
-  // Rematch: SAME participants carry over with their timelines (= score) AND
-  // hooks intact — play continues from the current standings toward winTarget.
-  // We go straight back into gameplay (beginTurn → 'draw'), never to 'setup'.
-  // The winner check lives in handleContinue, not at turn start, so beginning a
-  // fresh turn is safe even if someone is already at/above winTarget.
+  // Keep identities and settings; deal new start cards and reset every match resource.
   const rematch = useCallback(() => {
+    if (!isHost) { online?.broadcast('ohrwurm-action', { type: 'again' }); return; }
     if (participants.length === 0) { resetGame(); return; }
-    stopAudio();
-    setWinner(null);
-    recordedRef.current = false;
-    roundTimer.reset(ROUND_SECONDS);
     void haptics.celebrate();
-    // Fresh deck for the new match (excludes cards already on timelines).
-    const fresh = buildDeck(genre);
-    beginTurn(participants, fresh, 0);
-  }, [participants, genre, beginTurn, stopAudio, roundTimer, haptics, resetGame]);
+    beginMatch(participants, genre);
+  }, [online, isHost, participants, genre, beginMatch, haptics, resetGame]);
 
   // Beim Verlassen des Spiels Audio stoppen + Spotify-Verbindung lösen.
   useEffect(() => () => {
@@ -668,6 +673,14 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
   // Host applies actions coming from remote clients.
   const applyAction = useCallback((data: Record<string, unknown>) => {
+    const sender = data.__senderId;
+    if (typeof sender !== 'string' || !participants.some(p => p.id === sender)) return;
+    if (data.type === 'again' && phase === 'gameOver') { rematch(); return; }
+    const expected: Record<string, string[]> = { toPlace: ['draw'], toggleBonus: ['draw', 'place'], listen: ['draw'], swap: ['draw'], place: ['place'], chooseCounter: ['counter'], commitCounter: ['counterPlace'], noCounter: ['counter'], bonus: ['reveal'], continue: ['reveal'], back: ['place', 'counter', 'counterPlace'] };
+    if (!expected[String(data.type)]?.includes(phase)) return;
+    if (data.type === 'chooseCounter') { if (data.pid !== sender || sender === active?.id) return; }
+    else if (data.type === 'commitCounter') { if (sender !== counteringId) return; }
+    else if (sender !== active?.id) return;
     switch (data.type) {
       case 'toPlace': setPhase('place'); break;
       case 'toggleBonus': setBonusClaimed((v) => !v); break;
@@ -687,7 +700,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
         break;
       default: break;
     }
-  }, [beginListening, handleSwap, handlePlace, handleChooseCounter, handleCommitCounter, handleNoCounter, handleBonus, handleContinue]);
+  }, [rematch, participants, phase, active, counteringId, beginListening, handleSwap, handlePlace, handleChooseCounter, handleCommitCounter, handleNoCounter, handleBonus, handleContinue]);
 
   // Header-Zurück: einen echten Schritt zurück, wo es gefahrlos ist (vor der
   // Wertung), sonst NICHT sofort das ganze Spiel verlassen, sondern nachfragen.
@@ -731,6 +744,20 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     return online.onBroadcast('ohrwurm-action', (data) => applyAction(data));
   }, [online, isHost, applyAction]);
 
+  // The shared clock also restores the correct remaining time after reconnect.
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('ohrwurm-timer-state', { timeLeft: roundTimer.timeLeft, running: roundTimer.isRunning });
+  }, [online, roundTimer.timeLeft, roundTimer.isRunning]);
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('ohrwurm-timer-state', data => {
+      if (typeof data.timeLeft !== 'number') return;
+      roundTimerRef.current?.reset(data.timeLeft);
+      if (data.running) roundTimerRef.current?.start();
+    });
+  }, [online]);
+
   // Host learns a TV joined the room (TV broadcasts 'tv-ready' on connect).
   useEffect(() => {
     if (!online) return;
@@ -753,14 +780,6 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     return () => window.clearInterval(id);
   }, [isOnline, tvConnected]);
 
-  // Non-host: mirror the host's clock locally for display only (host owns timeout).
-  useEffect(() => {
-    if (!isOnline || isHost) return;
-    if (listening) { roundTimer.reset(ROUND_SECONDS); roundTimer.start(); }
-    else roundTimer.pause();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOnline, isHost, listening]);
-
   // Host → FULL authoritative snapshot, ONLY on real game-state changes.
   // (Deliberately NOT depending on roundTimer.timeLeft: re-sending the whole
   // snapshot every second would spam ~60 msgs/round and trigger a re-render
@@ -768,9 +787,11 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   useEffect(() => {
     if (!online || !isHost) return;
     const snapshot = {
-      phase, participants, turn, song, placement, counter, counteringId, resolution,
+      phase, participants, turn,
+      song: publicRoundItem(song, phase === 'reveal' || phase === 'gameOver', ['year', 'title', 'artist', 'qrPayload', 'spotifyUri', 'flag', 'genre']),
+      placement, counter, counteringId, resolution,
       flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre, winner,
-      previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected,
+      previewUrl, spotifyUri: phase === 'reveal' || phase === 'gameOver' ? spotifyUri : null, listening, placeElapsedMs, tvConnected,
     };
     online.broadcast('ohrwurm-state', { snapshot: JSON.parse(JSON.stringify(snapshot)) });
      
@@ -1848,6 +1869,7 @@ function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: 
         <section className="mb-8">
           <PlayerSetup
             players={players}
+            locked={lockRoster}
             onAdd={lockRoster ? () => {} : addPlayer}
             onRemove={lockRoster ? () => {} : removePlayer}
             onRename={lockRoster ? () => {} : renamePlayer}

@@ -250,7 +250,7 @@ describe("playerFitFor", () => {
 describe("findUnfitSetlistEntries", () => {
   it("nennt zu zweit genau die Spiele, die mehr Leute brauchen", () => {
     const list = ["taboo", "hochstapler", "pantomime", "bomb"];
-    expect(findUnfitSetlistEntries(list, 2).sort()).toEqual(["hochstapler", "pantomime"]);
+    expect(findUnfitSetlistEntries(list, 2).sort()).toEqual(["hochstapler", "pantomime", "taboo"]);
   });
 
   /**
@@ -290,8 +290,8 @@ describe("nextFittingIndex", () => {
   });
 
   it("ueberspringt ein Spiel, fuer das die Runde zu klein ist", () => {
-    // Zwei Personen: hochstapler (ab 4) faellt raus, taboo kommt dran.
-    expect(nextFittingIndex(LIST, 1, 2)).toBe(2);
+    // Hochstapler und Taboo brauchen vier Personen; zu zweit folgt Ohrwurm.
+    expect(nextFittingIndex(LIST, 1, 2)).toBe(3);
   });
 
   it("ueberspringt ein zu grosses Spiel NICHT", () => {
