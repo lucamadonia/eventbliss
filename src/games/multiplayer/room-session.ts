@@ -262,7 +262,9 @@ export class RoomSession {
     if (!playableGames.some(g => g.id === gameId) || !name.trim()) throw new Error('Bitte wähle ein Spiel und einen Namen.');
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     const code = Array.from(crypto.getRandomValues(new Uint8Array(6)), n => chars[n % chars.length]).join('');
-    await this.connect(code, name, premium, gameId); return code;
+    await this.connect(code, name, premium, gameId);
+    this.selectGames([gameId]);
+    return code;
   };
   joinRoom = async (code: string, name: string, premium = false): Promise<void> => {
     const normalized = code.toUpperCase().trim();
@@ -287,8 +289,15 @@ export class RoomSession {
   };
   setReady = (ready: boolean): void => { if (this.own) { this.own.isReady = ready; void this.track().catch(error => this.fail(error)); } };
   selectGame = (gameId: string): void => {
-    if (!this.isHost() || this.snapshot.room?.status !== 'lobby' || !playableGames.some(g => g.id === gameId)) return;
-    this.publish({ room: { ...this.snapshot.room, gameId } }); void this.track().catch(error => this.fail(error)); this.send('room-state', this.roomInfo());
+    this.selectGames([gameId]);
+  };
+  selectGames = (gameIds: string[]): void => {
+    if (!this.isHost() || this.snapshot.room?.status !== 'lobby') return;
+    const ids = [...new Set(gameIds)].filter(id => playableGames.some(g => g.id === id));
+    if (!ids.length) return;
+    const gameId = ids[0];
+    this.publish({ room: { ...this.snapshot.room, gameId, settings: { ...this.snapshot.room.settings, selectedGameIds: ids } } });
+    void this.track().catch(error => this.fail(error)); this.send('room-state', this.roomInfo());
   };
   startGame = async (gameId = this.snapshot.room?.gameId): Promise<boolean> => {
     const room = this.snapshot.room, game = playableGames.find(g => g.id === gameId);
@@ -296,7 +305,7 @@ export class RoomSession {
     const players = this.snapshot.players;
     if (players.length < Math.max(2, game.minPlayers) || players.length > game.maxPlayers || players.some(p => !p.isReady)) return false;
     this.cache.clear();
-    const next: GameRoom = { ...room, settings: {}, gameId: game.id, status: 'playing', sessionId: crypto.randomUUID(), participantIds: players.map(p => p.id) };
+    const next: GameRoom = { ...room, settings: { ...room.settings, selectedGameIds: Array.isArray(room.settings.selectedGameIds) ? room.settings.selectedGameIds : [game.id] }, gameId: game.id, status: 'playing', sessionId: crypto.randomUUID(), participantIds: players.map(p => p.id) };
     const { players: _players, ...info } = next;
     // Announce before React mounts the game and enqueues its initial snapshot.
     this.send('room-state', info);

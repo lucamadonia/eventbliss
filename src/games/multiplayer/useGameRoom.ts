@@ -19,6 +19,7 @@ export function useGameRoom() {
     leaveRoom: gameRoomSession.leaveRoom,
     setReady: gameRoomSession.setReady,
     selectGame: gameRoomSession.selectGame,
+    selectGames: gameRoomSession.selectGames,
     startGame: gameRoomSession.startGame,
     broadcast: gameRoomSession.broadcast,
     broadcastTo: gameRoomSession.broadcastTo,

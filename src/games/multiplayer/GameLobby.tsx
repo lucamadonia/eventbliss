@@ -163,11 +163,12 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
   const [hostName, setHostName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGame, setSelectedGame] = useState(gameId);
+  const [selectedGames, setSelectedGames] = useState<string[]>([gameId]);
   const [showGamePicker, setShowGamePicker] = useState(false);
 
   const { isPremium } = usePremium();
   const { user } = useAuth();
-  const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, selectGame, startGame, kickPlayer, error, connection } = useGameRoom();
+  const { room, players, roomHasPremium, isHost, myPlayerId, createRoom, joinRoom, leaveRoom, setReady, selectGames, startGame, kickPlayer, error, connection } = useGameRoom();
   const openRooms = useOpenRooms();
   const roomMatchesTarget = !!room && room.roomCode === targetRoomCode;
   useEffect(() => {
@@ -185,6 +186,11 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
     if (room?.gameId && room.gameId !== selectedGame && !isHost) {
       setSelectedGame(room.gameId);
     }
+    const ids = room?.settings?.selectedGameIds;
+    if (Array.isArray(ids)) {
+      const valid = ids.filter((id): id is string => typeof id === 'string' && playableGames.some(g => g.id === id));
+      if (valid.length) setSelectedGames(valid);
+    } else if (room?.gameId) setSelectedGames([room.gameId]);
   }, [room?.gameId, isHost, selectedGame]);
 
   const savedRoom = getSavedRoom();
@@ -553,14 +559,22 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
                         <div className="px-3 pb-3 grid grid-cols-3 gap-1.5 max-h-48 overflow-y-auto">
                           {gameList.map(g => (
                             <motion.button key={g.id} whileTap={{ scale: 0.95 }}
-                              onClick={() => { setSelectedGame(g.id); selectGame(g.id); setShowGamePicker(false); }}
+                              onClick={() => {
+                                const next = selectedGames.includes(g.id)
+                                  ? selectedGames.filter(id => id !== g.id)
+                                  : [...selectedGames, g.id];
+                                if (!next.length) return;
+                                setSelectedGames(next);
+                                setSelectedGame(g.id);
+                                selectGames(next);
+                              }}
                               className="flex flex-col items-center gap-1 rounded-xl py-2 px-1 text-center transition-colors"
                               style={{
-                                backgroundColor: selectedGame === g.id ? "rgba(223,142,255,0.12)" : EP.surface2,
-                                border: selectedGame === g.id ? `1px solid ${EP.neonPurple}40` : "1px solid transparent",
+                                backgroundColor: selectedGames.includes(g.id) ? "rgba(223,142,255,0.12)" : EP.surface2,
+                                border: selectedGames.includes(g.id) ? `1px solid ${EP.neonPurple}40` : "1px solid transparent",
                               }}>
                               <span className="text-lg">{g.icon}</span>
-                              <span className="text-[9px] font-semibold leading-tight" style={{ color: selectedGame === g.id ? EP.neonPurple : "rgba(255,255,255,0.5)" }}>{g.name}</span>
+                              <span className="text-[9px] font-semibold leading-tight" style={{ color: selectedGames.includes(g.id) ? EP.neonPurple : "rgba(255,255,255,0.5)" }}>{g.name}</span>
                             </motion.button>
                           ))}
                         </div>
