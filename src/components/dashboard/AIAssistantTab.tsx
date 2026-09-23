@@ -36,7 +36,7 @@ type RequestType = "trip_ideas" | "activities" | "day_plan" | "budget_estimate" 
 
 interface AIRequest {
   type: RequestType;
-  icon: React.ElementType;
+  icon: typeof MapPin;
   labelKey: string;
   descriptionKey: string;
   /** Tailwind gradient classes — "from-… via-… to-…" */

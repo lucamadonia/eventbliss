@@ -39,12 +39,14 @@ jobs:
       - name: Run tests (vitest)
         run: pnpm test
 
-      # NON-BLOCKING (report only): the codebase currently still has TypeScript
-      # errors. Once `npx tsc --noEmit -p tsconfig.app.json` reaches 0 errors,
-      # remove `continue-on-error: true` to make this step blocking.
+      - name: PostgreSQL party integration tests
+        run: pnpm test:db
+
       - name: Typecheck (tsc --noEmit)
-        continue-on-error: true
-        run: npx tsc --noEmit -p tsconfig.app.json
+        run: pnpm typecheck
+
+      - name: Production build
+        run: pnpm build
 
       # NON-BLOCKING (report only): lint still reports errors. Once
       # `pnpm lint` reaches 0 errors, remove `continue-on-error: true`

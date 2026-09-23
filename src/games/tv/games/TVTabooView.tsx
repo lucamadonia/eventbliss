@@ -1,3 +1,17 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  phase?: string;
+  activeTeamIdx?: number;
+  currentRound?: number;
+  timeLeft?: number;
+  totalRounds?: number;
+  turnCorrect?: number;
+  turnSkipped?: number;
+  turnTaboo?: number;
+  teams?:TabooTeam[]; explainer?:string | {name?:string;color?:string};
+}
+interface TabooTeam {name?:string;color?:string;score?:number;players?:(string | {name:string})[]}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAmbientMotion } from '@/lib/useAmbientMotion';
@@ -17,23 +31,24 @@ import { tvPanel, tvPanelRaised, tvType, tvActiveRing } from '../tv-tokens';
 const TB = { purpleHex: '#df8eff', cyanHex: '#8ff5ff', text: '#f1f3fc', dim: '#a8abb3', bg: '#060810', correct: '#10b981', taboo: '#ff6e84', skip: '#a8abb3' };
 
 /** Team colors arrive as tailwind classes ("bg-[#df8eff]"); pull the hex out. */
-function teamHex(team: any, fallback: string): string {
+function teamHex(team: TabooTeam, fallback: string): string {
   const raw: string = team?.color || '';
   const m = raw.match(/#([0-9a-fA-F]{6})/);
   return m ? `#${m[1]}` : (raw.startsWith('#') ? raw : fallback);
 }
 
-export default function TVTabooView({ gameState }: { gameState: any }) {
+export default function TVTabooView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 
   const phase: string = (gameState?.phase || 'playing') as string;
   const currentRound: number = (gameState?.currentRound || 1) as number;
   const totalRounds = gameState?.totalRounds;
-  const teams = (gameState?.teams || []) as any[];
+  const teams = (gameState?.teams || []) as TabooTeam[];
   const activeTeamIdx: number = (gameState?.activeTeamIdx ?? 0) as number;
-  const explainer = gameState?.explainer as { name?: string; color?: string } | undefined;
-  const explainerName = explainer?.name || '';
+  const explainer = gameState?.explainer;
+  const explainerName = typeof explainer === 'string' ? explainer : explainer?.name || '';
+  const explainerColor = typeof explainer === 'object' ? explainer.color : teams[activeTeamIdx]?.color;
   const timeLeft = gameState?.timeLeft;
   const turnCorrect: number = gameState?.turnCorrect ?? 0;
   const turnTaboo: number = gameState?.turnTaboo ?? 0;
@@ -123,7 +138,7 @@ export default function TVTabooView({ gameState }: { gameState: any }) {
       {/* Bottom: explainer (name only — never the card) */}
       <div className="relative pt-2 z-10">
         <AnimatePresence>
-          {explainer?.name && phase === 'playing' && (
+          {explainerName && phase === 'playing' && (
             <motion.div
               className={`${tvPanel} px-10 py-3.5`}
               initial={{ y: 50, opacity: 0 }}
@@ -133,7 +148,7 @@ export default function TVTabooView({ gameState }: { gameState: any }) {
             >
               <span className="font-bold" style={{ fontSize: tvType.body, color: TB.text }}>
                 {'🎤 '}
-                <span style={{ color: teamHex({ color: explainer.color }, TB.purpleHex) }}>{explainer.name}</span>
+                <span style={{ color: teamHex({ color: explainerColor }, TB.purpleHex) }}>{explainerName}</span>
                 {' '}{t('tv.taboo.explains', 'erklärt')}
               </span>
             </motion.div>
@@ -144,11 +159,11 @@ export default function TVTabooView({ gameState }: { gameState: any }) {
   );
 }
 
-function TeamCard({ team, isActive, side, ambient, explainerName }: { team: any; isActive: boolean; side: 'left' | 'right'; ambient: boolean; explainerName: string }) {
+function TeamCard({ team, isActive, side, ambient, explainerName }: { team: TabooTeam; isActive: boolean; side: 'left' | 'right'; ambient: boolean; explainerName: string }) {
   const { t } = useTranslation();
   const name = team?.name || 'Team';
   const score = team?.score ?? 0;
-  const players: any[] = team?.players || [];
+  const players: NonNullable<TabooTeam['players']> = team?.players || [];
   const color = teamHex(team, side === 'left' ? '#df8eff' : '#8ff5ff');
 
   return (
@@ -185,7 +200,7 @@ function TeamCard({ team, isActive, side, ambient, explainerName }: { team: any;
       {/* Every team member gets a chip (no truncation) — the current explainer is ringed. */}
       <div className="flex flex-wrap gap-2 justify-center mt-2 max-w-full">
         {players.length > 0 ? (
-          players.map((p: any, i: number) => {
+          players.map((p, i: number) => {
             const pname = (typeof p === 'string' ? p : p?.name) || '';
             const isExplainer = isActive && !!explainerName && pname === explainerName;
             return (

@@ -1,3 +1,5 @@
+import { personalResult } from '../social/result';
+import { validBallot } from './vote-rules';
 import { DuelBallot } from './DuelBallot';
 import { GameStage, StageHeader, StageAction } from '../ui/GameStage';
 import OnlineWaiting from '../multiplayer/OnlineWaiting';
@@ -112,6 +114,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
   const [currentRound, setCurrentRound] = useState(1);
+  const [matchId, setMatchId] = useState<string>(() => crypto.randomUUID());
+  const voteTurn = `${matchId}:${currentRound}`;
 
   const [deck, setDeck] = useState(() => shuffle(getTHISORTHAT_PAIRS()));
   const [deckPos, setDeckPos] = useState(0);
@@ -142,7 +146,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     votersA: tvVotersA.map(mapVoter),
     votersB: tvVotersB.map(mapVoter),
     players,
-  }, [phase, currentRound, roundVotes, players, currentPair]);
+  }, [phase, currentRound, roundVotes, players, currentPair], !online || online.isHost);
 
   const handleDebateExpire = useCallback(() => { if (!online || online.isHost) setPhase('reveal'); }, [online]);
   const debateTimer = useGameTimer(30, handleDebateExpire, online?.isConnected !== false);
@@ -190,6 +194,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     selectedMode: string,
     settings: { timer: number; rounds: number },
   ) => {
+    setMatchId(crypto.randomUUID());
     const p = mapped.map((m, i) => ({ ...m, color: PLAYER_COLORS[i % PLAYER_COLORS.length], score: 0 }));
     setPlayers(p);
     setMode(selectedMode);
@@ -218,6 +223,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   // ---------------------------------------------------------------------------
 
   const castVote = (choice: 'A' | 'B') => {
+    if (phase !== 'voting' || online?.isConnected === false) return;
     // Online mode: everyone votes simultaneously on their own device
     if (online) {
       const myId = online.myPlayerId;
@@ -226,7 +232,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
         applyVoteLocally(myId, choice);
       } else {
         // Non-host broadcasts to host and optimistically shows own vote
-        online.broadcast('player-action', { type: 'vote', playerId: myId, choice });
+        online.broadcast('player-action', { type: 'vote', playerId: myId, choice, turn: voteTurn });
         setRoundVotes(prev => prev[myId] ? prev : { ...prev, [myId]: choice });
       }
       return;
@@ -298,8 +304,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
-      const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      recordEnd('this-or-that', winner?.score ?? 0, true);
+      const result = personalResult(players, online?.myPlayerId);
+      recordEnd('this-or-that', result.score, result.won);
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -311,12 +317,12 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     setCurrentRound(1);
   };
 
-  // Rematch: restart gameplay directly with the SAME players and their
-  // accumulated scores (no reset to 0). Resets only per-match state (round,
-  // deck position, history) then jumps straight to the first voting round.
+  // Keep the roster and settings, start a new match with fresh scores.
   const playAgain = () => {
     if (online && !online.isHost) return;
     gameRecordedRef.current = false;
+    setMatchId(crypto.randomUUID());
+    setPlayers(prev => prev.map(player => ({ ...player, score: 0 })));
     setCurrentRound(1);
     setDeckPos(0);
     setHistory([]);
@@ -332,13 +338,13 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const broadcastGameState = useCallback(() => {
     if (!online?.isHost) return;
     online.broadcast('game-state', {
-      phase, currentRound, totalRounds, mode, speedTimer, history,
+      phase, currentRound, matchId, totalRounds, mode, speedTimer, history,
       speedRemaining: speedTimerHook.timeLeft, debateRemaining: debateTimer.timeLeft,
       currentPair,
       roundVotes,
       players,
     });
-  }, [online, phase, currentRound, totalRounds, mode, speedTimer, history, currentPair, roundVotes, players, speedTimerHook.timeLeft, debateTimer.timeLeft]);
+  }, [online, phase, currentRound, matchId, totalRounds, mode, speedTimer, history, currentPair, roundVotes, players, speedTimerHook.timeLeft, debateTimer.timeLeft]);
 
   /* ---- Online: host broadcasts on state change ---- */
   useEffect(() => {
@@ -376,16 +382,17 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast('player-action', (data) => {
-      if (phase === 'voting' && players.some(p => p.id === data.__senderId) && data.playerId === data.__senderId && data.type === 'vote' && typeof data.playerId === 'string' && (data.choice === 'A' || data.choice === 'B')) {
+      if (phase === 'voting' && online.isConnected !== false && validBallot(data, voteTurn, players.map(p => p.id))) {
         applyVoteLocally(data.playerId, data.choice);
       }
     });
-  }, [online, phase, players, applyVoteLocally]);
+  }, [online, phase, players, voteTurn, applyVoteLocally]);
 
   /* ---- Online: non-host syncs game-state ---- */
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast('game-state', (data) => {
+      if (typeof data.matchId === 'string') setMatchId(data.matchId);
       if (data.phase) setPhase(data.phase as Phase);
       if (data.mode) setMode(data.mode as string);
       if (typeof data.speedRemaining === 'number') speedTimerRef.current?.reset(data.speedRemaining);

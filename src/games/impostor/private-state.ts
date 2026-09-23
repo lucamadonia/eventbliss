@@ -1,4 +1,8 @@
 type SecretPlayer = { id: string; isImpostor: boolean; votedFor: string | null };
+export function impostorTVPlayers<T extends SecretPlayer>(phase: string, players: T[]): T[] {
+  return ['reveal', 'bonusGuess', 'results'].includes(phase) ? players
+    : players.map(player => ({ ...player, isImpostor: false, votedFor: null }));
+}
 type SecretState = { players: SecretPlayer[]; phase: string; hideCategory: boolean; currentWordSet: { category: string; word: string } | null };
 export function impostorSnapshotFor<T extends SecretState>(state: T, recipient: string) {
   const me = state.players.find(p => p.id === recipient);

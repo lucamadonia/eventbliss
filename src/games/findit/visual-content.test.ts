@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
-import { createVisualDifference, createVisualScene, OBJECT_ATLAS, OBJECT_IDS, parseObjectGrid, projectVisualState } from './visual-content';
+import { publicGeoPrompt, publicPanoramaDeck, createVisualDifference, createVisualScene, OBJECT_ATLAS, OBJECT_IDS, parseObjectGrid, projectVisualState } from './visual-content';
 
 function random(seed: number) {
   return () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
@@ -74,4 +74,17 @@ describe('FindIt photographed object content', () => {
     expect(currentScene.questions.every(q => q.correct >= 0)).toBe(true);
     expect(JSON.parse(JSON.stringify(question))).toEqual(question);
   });
+});
+
+it('keeps geographic answers and future panorama scenes out of live room payloads', () => {
+  const target = { name: 'London', lat: 51.5, lng: -0.1, type: 'city' };
+  expect(publicGeoPrompt(target)).toEqual({ ...target, lat: 0, lng: 0 });
+  expect(target.lat).toBe(51.5);
+  const locations = [
+    {lat: 1, lng: 2, city: 'One', country: 'Country', hint: 'Secret'},
+    {lat: 3, lng: 4, city: 'Two', country: 'Other'},
+  ];
+  const live = JSON.parse(JSON.stringify(publicPanoramaDeck(locations, 0)));
+  expect(live).toEqual([{lat: 1, lng: 2, city: '', country: ''}, null]);
+  expect(locations[0].hint).toBe('Secret');
 });

@@ -249,6 +249,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   const playerCorrectMap = useRef<Record<string, number>>({});
 
   useTVGameBridge('splitquiz', {
+    partyScoresById: online ? Object.fromEntries([teamA, teamB].flatMap(team => team.players.map(id => [id, team.score]))) : undefined,
     phase, currentRound, players: playerNames, teamA: { ...teamA, players: teamA.players.map(nameFor) }, teamB: { ...teamB, players: teamB.players.map(nameFor) }, totalRounds,
     question: !online || (phase === 'reveal' && teamAnswered[activeTeamIdx === 0 ? 1 : 0]) ? currentQuestion?.question || '' : '',
     answers: !online || (phase === 'reveal' && teamAnswered[activeTeamIdx === 0 ? 1 : 0]) ? currentQuestion?.answers || [] : [],
@@ -386,12 +387,12 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   }
 
   const route = useOnlineAuthority(online, 'splitquiz', `${phase}:${currentRound}:${activeTeamIdx}`, {
-    startGame: { allow: (sender, args) => phase === "setup" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => startGame() },
+    startGame: { allow: (sender, args) => phase === "setup" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => startGame() },
     beginQuestion: { allow: (sender, args) => phase === "handoff" && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => beginQuestion() },
     confirmBet: { allow: (sender, args) => phase === "betting" && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => confirmBet() },
     handleAnswer: { allow: (sender, args) => phase === "question" && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 4 && answerSplit[activeTeamIdx].includes(args[0]) && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => handleAnswer(args[0]) },
-    nextAfterReveal: { allow: (sender, args) => phase === "reveal" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => nextAfterReveal() },
-    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+    nextAfterReveal: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => nextAfterReveal() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
     chooseBet: { allow: (sender, args) => phase === "betting" && [1,2,3].includes(args[0]) && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => chooseBet(args[0]) },
   });
 
@@ -531,7 +532,8 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
       const winnerScore = Math.max(teamA.score, teamB.score);
-      recordEnd('split-quiz', winnerScore, true);
+      const myTeam = online ? [teamA, teamB].find(team => team.players.includes(online.myPlayerId)) : undefined;
+      recordEnd('split-quiz', online ? myTeam?.score ?? 0 : winnerScore, !online || myTeam?.score === winnerScore);
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -542,14 +544,13 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     timer.reset(20);
   }
 
-  /* ---- Rematch: restart gameplay directly, keeping teams + scores ---- */
-  // Keeps teamA/teamB intact INCLUDING their accumulated score + correctCount
-  // (no reset to 0) and the per-player MVP tallies. Rebuilds a fresh question
-  // deck, resets per-match round/turn state, then jumps straight to handoff
-  // (never back to setup).
+  // Preserve teams and settings; start a new match with fresh scores and MVP tallies.
   function playAgain() {
     if (route("playAgain", [])) return;
     gameRecordedRef.current = false;
+    setTeamA(prev => ({ ...prev, score: 0, correctCount: 0 }));
+    setTeamB(prev => ({ ...prev, score: 0, correctCount: 0 }));
+    playerCorrectMap.current = {};
     buildDeck();
     setCurrentRound(1);
     setActiveTeamIdx(0);

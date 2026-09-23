@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { getBaseUrl } from '@/lib/platform';
 import type { TVPlayer } from './useTVConnection';
 
-const springBouncy = { type: 'spring' as const, stiffness: 400, damping: 15 };
 const spring = { type: 'spring' as const, stiffness: 300, damping: 20 };
 
 /* ─── Floating gradient orbs ─── */
@@ -139,7 +138,7 @@ export default function TVLobby({ roomCode, players, isConnected, error }: { roo
               initial={{ scale: 0, y: 80 }}
               animate={{ scale: [0, 1.2, 1], y: 0 }}
               exit={{ scale: 0, y: -30, opacity: 0 }}
-              transition={{ ...springBouncy, delay: i * 0.1 }}>
+              transition={{ type: 'tween', duration: 0.45, ease: 'easeOut', delay: i * 0.1 }}>
               <div className="relative">
                 <motion.div
                   className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-black text-white"
@@ -150,7 +149,7 @@ export default function TVLobby({ roomCode, players, isConnected, error }: { roo
                   {p.avatar}
                 </motion.div>
                 {p.isReady && (
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={springBouncy}
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={spring}
                     className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#8ff5ff] flex items-center justify-center shadow-[0_0_12px_#8ff5ff]">
                     <span className="text-[#060810] text-sm font-bold">✓</span>
                   </motion.div>

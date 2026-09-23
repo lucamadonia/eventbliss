@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { PausableTasks } from './pausable-tasks';
+import { PausableTasks } from '../engine/pausable-tasks';
 
 afterEach(() => { vi.useRealTimers(); });
 describe('room pause preserves scheduled gameplay', () => {

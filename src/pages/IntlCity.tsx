@@ -205,7 +205,7 @@ export default function IntlCity() {
   }>();
   const prefersReducedMotion = useReducedMotion();
 
-  const lang: IntlLang = detectLang(location.pathname);
+  const lang: IntlPageLang = detectLang(location.pathname);
   const meta = LANG_META[lang];
   const slug =
     params.ciudad ??
@@ -225,7 +225,7 @@ export default function IntlCity() {
       entry
         ? lang === "ar"
           ? getIntlAr(entry.slug)
-          : entry[lang as IntlLang]
+          : entry[lang]
         : undefined,
     [entry, lang]
   );

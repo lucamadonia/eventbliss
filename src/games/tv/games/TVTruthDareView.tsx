@@ -1,3 +1,17 @@
+import type { TFunction } from 'i18next';
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (TVPlayer)[];
+  phase?: string;
+  task?: string;
+  activeIdx?: number;
+  currentRound?: number;
+  maxTime?: number;
+  timeLeft?: number;
+  totalRounds?: number;
+  choiceType?:'truth'|'dare'|null; voteTally?:{yes:number;no:number};
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Heart, Flame } from 'lucide-react';
@@ -46,7 +60,7 @@ interface TVPlayer {
 }
 
 /** Map the broadcast roster to the shared scoreboard, in turn order. */
-function toRoster(players: TVPlayer[], t: (k: string, o?: any) => string): TVScorePlayer[] {
+function toRoster(players: TVPlayer[], t: TFunction): TVScorePlayer[] {
   return players.map((p) => ({
     id: p.id,
     name: p.name,
@@ -61,7 +75,7 @@ function toRoster(players: TVPlayer[], t: (k: string, o?: any) => string): TVSco
   }));
 }
 
-export default function TVTruthDareView({ gameState }: { gameState: any }) {
+export default function TVTruthDareView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 

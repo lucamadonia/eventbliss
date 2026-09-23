@@ -1,3 +1,21 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (BombPlayer)[];
+  currentPlayer?: string;
+  currentTask?: string;
+  mode?: string;
+  phase?: string;
+  task?: string;
+  currentPlayerIndex?: number;
+  explodedPlayerIndex?: number;
+  progress?: number;
+  round?: number;
+  timeLeft?: number;
+  timeTotal?: number;
+  totalRounds?: number;
+  randomTimer?: boolean;
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,13 +50,15 @@ const MODE_LABEL: Record<string, string> = {
   alle: 'Alles',
 };
 
-export default function TVBombView({ gameState }: { gameState: any }) {
+const EMPTY_PLAYERS: NonNullable<ViewState['players']> = [];
+
+export default function TVBombView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 
   const phase: string = gameState?.phase || 'playing';
   const mode: string = gameState?.mode || '';
-  const players: BombPlayer[] = gameState?.players || [];
+  const players: BombPlayer[] = gameState?.players || EMPTY_PLAYERS;
   const currentPlayerIndex: number = gameState?.currentPlayerIndex ?? 0;
   const round: number = gameState?.round || 1;
   const total: number = gameState?.totalRounds || 5;

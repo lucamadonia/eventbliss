@@ -132,6 +132,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [ingredientCount, setIngredientCount] = useState<RecipeLength>(5);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [turnToken, setTurnToken] = useState('');
+  const consumedActions = useRef(new Set<string>());
   const [tray, setTray] = useState<IngredientId[]>([]);
   const [counter, setCounter] = useState<IngredientId[]>([]);
   // Zwei getrennte Stapel statt einem: `drawCard` (deck.ts) mischt den
@@ -270,6 +272,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     setCounter([]);
     setTray([]);
     setActiveIdx(0);
+    setTurnToken(crypto.randomUUID());
+    consumedActions.current.clear();
     setCounterTaken(false);
     setPenalty(null);
     setWinnerId(null);
@@ -309,6 +313,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
 
   // --- Zug -------------------------------------------------------------
   const advanceTurn = useCallback(() => {
+    setTurnToken(crypto.randomUUID());
+    consumedActions.current.clear();
     setActiveIdx((i) => (players.length ? (i + 1) % players.length : 0));
     setCounterTaken(false);
   }, [players.length]);
@@ -482,15 +488,17 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const act = useCallback(
     (type: string, payload: Record<string, unknown>, run: () => void) => {
       if (isOnline && !isHost) {
-        online!.broadcast("brew-action", { type, pid: myId, ...payload });
+        online!.broadcast("brew-action", { type, pid: myId, ...payload, turnToken, actionId: crypto.randomUUID() });
         return;
       }
       run();
     },
-    [isOnline, isHost, online, myId],
+    [isOnline, isHost, online, myId, turnToken],
   );
 
   const applyAction = useCallback((data: Record<string, unknown>) => {
+    if (online?.isConnected === false || data.turnToken !== turnToken || typeof data.actionId !== 'string' || consumedActions.current.has(data.actionId)) return;
+    consumedActions.current.add(data.actionId);
     const pid = typeof data.__senderId === "string" ? data.__senderId : undefined;
     // Besitzpruefung: alle sehen dieselbe Theke, also koennte sonst jemand
     // ziehen, waehrend ein anderer dran ist — die Karte landete auf dem fremden
@@ -510,7 +518,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       case "again": if (phase === "gameOver" && players.some(p => p.id === pid)) playAgainLocal(); break;
       default: break;
     }
-  }, [online, players, activeIdx, phase, penalty, handleStart, doDraw, doTakeFromCounter, doPourIn, confirmPenalty, playAgainLocal]);
+  }, [online, players, activeIdx, phase, penalty, turnToken, handleStart, doDraw, doTakeFromCounter, doPourIn, confirmPenalty, playAgainLocal]);
 
   useEffect(() => {
     if (!online || !isHost) return;
@@ -527,6 +535,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         skin,
         ingredientCount,
         activeIdx,
+        turnToken,
         counter,
         tray,
         counterTaken,
@@ -548,7 +557,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         })),
       })),
     });
-  }, [online, isHost, phase, skin, ingredientCount, activeIdx, counter, tray, counterTaken,
+  }, [online, isHost, phase, skin, ingredientCount, activeIdx, turnToken, counter, tray, counterTaken,
       drawPile, discardPile, penalty, penaltySeq, bustTrayCount, bustSeq, pourPlan, pourSeq,
       drawnCard, audioCue, audioCueSeq, reshuffleSeq, winnerId, players]);
 
@@ -562,6 +571,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       setRoundSkin((s.skin as Skin) ?? null);
       setIngredientCount(s.ingredientCount as RecipeLength);
       setActiveIdx(s.activeIdx as number);
+      setTurnToken(s.turnToken as string);
       setCounter((s.counter as IngredientId[]) ?? []);
       setTray((s.tray as IngredientId[]) ?? []);
       setCounterTaken(Boolean(s.counterTaken));

@@ -4,6 +4,7 @@ import { Capacitor } from "@capacitor/core";
 import i18n from "@/i18n";
 import { supabase } from "@/integrations/supabase/client";
 import { getBaseUrl } from "@/lib/platform";
+import { rememberNativeAuthReturn } from '@/lib/native-auth-callback';
 
 export interface DashboardPermissions {
   can_view_responses: boolean;
@@ -75,6 +76,7 @@ export function useAuth() {
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
+    if (Capacitor.isNativePlatform()) rememberNativeAuthReturn(window.location.search);
     const redirectUrl = Capacitor.isNativePlatform()
       ? 'app.eventbliss:///'
       : `${getBaseUrl()}/`;

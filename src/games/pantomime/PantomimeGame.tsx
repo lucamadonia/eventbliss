@@ -52,6 +52,7 @@ import { useBackGuard } from '@/lib/back-guard';
 import { GameSetupBackLink } from '../ui/GameSetupBackLink';
 import { hasShellBackButton } from '../ui/shell-back';
 import { saveSnapshot, loadSnapshot, clearSnapshot } from '../ui/useGameSnapshot';
+import { recoverPantomimeTurn } from './recovery';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import {
   getPantomimeCategories,
@@ -527,7 +528,9 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     online.broadcast('tv-state', { game: 'pantomime', ...tvPayload });
   }, [online, isHost, tvPayload]);
 
-  useTVGameBridge('pantomime', tvPayload, [
+  useTVGameBridge('pantomime', { ...tvPayload,
+    partyScoresById: Object.fromEntries(teams.flatMap(team => team.players.map(player => [player.id, team.score]))),
+  }, [
     phase,
     round,
     activeTeamIdx,
@@ -537,7 +540,8 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     turnResults.length,
     turnPoints,
     fetchLeft,
-  ]);
+    teams,
+  ], isHost);
 
   // --- Persistenz (offline) ------------------------------------------------
   const restoredRef = useRef(false);
@@ -554,13 +558,17 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       setMode(s.mode as ModeId);
       setCategories(s.categories as PantomimeCategoryId[]);
       setExtrasEnabled(s.extrasEnabled as boolean);
-      setSkipLimit((s.skipLimit as number | null) ?? 3);
+      const restoredTurn = recoverPantomimeTurn(s);
+      setSkipLimit(restoredTurn.skipLimit);
+      setTurnResults(restoredTurn.turnResults);
+      setExtraAccepted(restoredTurn.extraAccepted);
+      setExtra((s.extra as Extra | null) ?? null);
       setDeck(s.deck as string[]);
       setDeckPos(s.deckPos as number);
       deckPosRef.current = (s.deckPos as number) ?? 0;
       // Mitten im Zug wird NICHT fortgesetzt: Der Darsteller hat den Begriff
       // längst gesehen und die Uhr lief weiter. Der Zug beginnt neu.
-      setPhase('turnStart');
+      setPhase(restoredTurn.phase);
     }
   }, [isOnline]);
 
@@ -584,6 +592,9 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       skipLimit,
       deck,
       deckPos,
+      turnResults,
+      extraAccepted,
+      extra,
     });
   }, [
     isOnline,
@@ -599,6 +610,9 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     skipLimit,
     deck,
     deckPos,
+    turnResults,
+    extraAccepted,
+    extra,
   ]);
 
   useBackGuard(() => {
@@ -1241,7 +1255,7 @@ function PantomimeSetup({
             }
             onImportNames={(names) =>
               setList((prev) => {
-                const room = Math.max(0, 16 - prev.length);
+                const room = Math.max(0, 16 - prev.length) + prev.filter(player => !player.readOnly && !player.name.trim()).length;
                 const fresh = names.slice(0, room).map((n, i) => ({
                   id: `ev${Date.now()}-${i}`,
                   name: n,

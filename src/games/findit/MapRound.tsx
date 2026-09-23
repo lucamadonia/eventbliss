@@ -1,6 +1,6 @@
 import './expedition.css';
 import { usePausableTimeout } from '../engine/TimerSystem';
-import { appendOnlineGuess } from './online-guesses';
+import { appendOnlineGuess, publicGuessRound } from './online-guesses';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Check, ChevronRight, Trophy, Timer, Share2, Crosshair } from 'lucide-react';
@@ -25,10 +25,10 @@ interface Player { id: string; name: string; color: string; avatar: string; scor
 export interface MapRoundResult { playerId: string; distanceKm: number; }
 interface MapRoundProps { location: GeoLocation; players: Player[]; roundNumber: number; totalRounds: number; timerSeconds: number; onRoundComplete: (results: MapRoundResult[]) => void; onExit: () => void; online?: OnlineGameProps; }
 
-function formatDistance(km: number): string {
+function formatDistance(km: number, language: string): string {
   if (km < 1) return `${Math.round(km * 1000)} m`;
-  if (km < 100) return `${km.toFixed(1)} km`;
-  return `${Math.round(km).toLocaleString('de-DE')} km`;
+  if (km < 100) return `${km.toLocaleString(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km`;
+  return `${Math.round(km).toLocaleString(language)} km`;
 }
 
 // Click handler component
@@ -53,8 +53,10 @@ function MapStyler() {
 
 const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}`;
 
-export default function MapRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online }: MapRoundProps) {
-  const { t } = useTranslation();
+export default function MapRound({ location: promptLocation, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online }: MapRoundProps) {
+  const { t, i18n } = useTranslation();
+  const [revealedLocation, setRevealedLocation] = useState<GeoLocation | null>(null);
+  const location = revealedLocation ?? promptLocation;
   const [phase, setPhase] = useState<MapPhase>('showing');
   const [guessingPlayerIdx, setGuessingPlayerIdx] = useState(0);
   const [guesses, setGuesses] = useState<PlayerGuess[]>([]);
@@ -86,12 +88,12 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     guessesRef.current = updated;
     setGuesses(updated);
     if (updated.length >= players.length) {
-      online.broadcast('findit-map-results', { results: updated });
+      online.broadcast('findit-map-results', { results: updated, roundNumber, location });
       setAllDoneGuesses(updated);
       setWaitingForResults(false);
       setPhase('result');
     }
-  }, [online, phase, players, location]);
+  }, [online, phase, players, location, roundNumber]);
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast('findit-map-guess', data => {
@@ -101,17 +103,18 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   }, [online, receiveGuess, roundNumber]);
   useEffect(() => {
     if (!online?.isHost) return;
-    online.broadcast('findit-map-state', { roundNumber, phase, countdown, guesses });
-  }, [online, roundNumber, phase, countdown, guesses]);
+    online.broadcast('findit-map-state', publicGuessRound({ roundNumber, phase, countdown, guesses, location }));
+  }, [online, roundNumber, phase, countdown, guesses, location]);
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast('findit-map-state', data => {
       if (data.roundNumber !== roundNumber) return;
+      if (data.location) setRevealedLocation(data.location as GeoLocation);
       setPhase(data.phase as MapPhase);
       setCountdown(data.countdown as number);
       const incoming = data.guesses as typeof guesses;
       setGuesses(incoming);
-      setMyGuessPlaced(incoming.some(g => g.playerId === online.myPlayerId));
+      setMyGuessPlaced((data.submittedIds as string[]).includes(online.myPlayerId));
       if (data.phase === 'result') { setAllDoneGuesses(incoming); setWaitingForResults(false); }
 
     });
@@ -121,6 +124,8 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   useEffect(() => {
     if (!online || online.isHost) return;
     const unsub = online.onBroadcast('findit-map-results', (data) => {
+      if (data.roundNumber !== roundNumber) return;
+      if (data.location) setRevealedLocation(data.location as GeoLocation);
       const { results } = data as { results: PlayerGuess[] };
       setGuesses(results);
       setAllDoneGuesses(results);
@@ -128,24 +133,25 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
       setPhase('result');
     });
     return unsub;
-  }, [online]);
+  }, [online, roundNumber]);
 
   // --- Online: Host broadcasts phase transitions ---
   useEffect(() => {
     if (!online?.isHost) return;
-    online.broadcast('findit-map-phase', { phase, countdown });
-  }, [online, phase]);
+    online.broadcast('findit-map-phase', { phase, countdown, roundNumber });
+  }, [online, phase, roundNumber]);
 
   // --- Online: Non-host listens for phase transitions ---
   useEffect(() => {
     if (!online || online.isHost) return;
     const unsub = online.onBroadcast('findit-map-phase', (data) => {
+      if (data.roundNumber !== roundNumber) return;
       const { phase: p, countdown: c } = data as { phase: MapPhase; countdown: number };
       if (p === 'guessing' && !myGuessPlaced) { setPhase('guessing'); setCountdown(c); }
       if (p === 'showing') { setPhase('showing'); }
     });
     return unsub;
-  }, [online, myGuessPlaced]);
+  }, [online, myGuessPlaced, roundNumber]);
 
   usePausableTimeout(() => { setPhase('guessing'); setCountdown(timerSeconds); },
     phase === 'showing' && (!online || online.isHost) ? 2500 : null, online?.isConnected !== false);
@@ -193,7 +199,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
     const filled = [...previous, ...missing.map(p => ({ playerId: p.id, playerName: p.name, playerColor: p.color, lat: 0, lng: 0, distanceKm: 20000 }))];
     guessesRef.current = filled;
     setGuesses(filled);
-    online?.broadcast('findit-map-results', { results: filled });
+    online?.broadcast('findit-map-results', { results: filled, roundNumber, location });
     setAllDoneGuesses(filled);
     setPhase('result');
   }, online?.isHost && phase === 'guessing' ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
@@ -201,7 +207,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     if (online && myGuessPlaced) return;
     setPinPos({ lat, lng });
-  }, [online, myGuessPlaced]);
+  }, [online, myGuessPlaced, roundNumber]);
   const handleHandoffReady = () => { setPhase('guessing'); setCountdown(timerSeconds); };
   const handleNextRound = () => { onRoundComplete((allDoneGuesses.length ? allDoneGuesses : guesses).map(g => ({ playerId: g.playerId, distanceKm: g.distanceKm }))); };
   const sortedGuesses = [...allDoneGuesses].sort((a, b) => a.distanceKm - b.distanceKm);
@@ -354,7 +360,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                       <Crosshair className="w-4 h-4 text-[#8ff5ff]" />
                       <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.mapDistance')}</span>
                     </div>
-                    <p className="text-4xl font-black text-[#8ff5ff] text-glow-cyan">{formatDistance(winner.distanceKm)}</p>
+                    <p className="text-4xl font-black text-[#8ff5ff] text-glow-cyan">{formatDistance(winner.distanceKm, i18n.language)}</p>
                   </div>
                 )}
                 <div className="bg-[#151a21]/60 rounded-xl p-4 border border-white/5">
@@ -376,7 +382,7 @@ export default function MapRound({ location, players, roundNumber, totalRounds, 
                     <span className={`text-sm font-black w-6 text-center ${i === 0 ? 'text-[#df8eff]' : 'text-[#a8abb3]/60'}`}>{i === 0 ? '🏆' : `${i + 1}`}</span>
                     <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: g.playerColor }}>{g.playerName.charAt(0)}</div>
                     <span className={`text-sm font-semibold flex-1 ${i === 0 ? 'text-[#f1f3fc]' : 'text-[#a8abb3]'}`}>{g.playerName}</span>
-                    <span className={`text-sm font-bold tabular-nums ${i === 0 ? 'text-[#8ff5ff]' : 'text-[#a8abb3]/60'}`}>{formatDistance(g.distanceKm)}</span>
+                    <span className={`text-sm font-bold tabular-nums ${i === 0 ? 'text-[#8ff5ff]' : 'text-[#a8abb3]/60'}`}>{formatDistance(g.distanceKm, i18n.language)}</span>
                   </div>
                 ))}
               </div>

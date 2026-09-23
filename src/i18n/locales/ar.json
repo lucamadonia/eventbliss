@@ -6416,7 +6416,8 @@
         "loading": "جارٍ تحميل صور الأغراض…",
         "compareHint": "اعثر على الأغراض الثلاثة التي تغيرت في اللوحة B.",
         "imageError": "تعذّر تحميل صور الأغراض. تحقق من اتصالك وحاول مجددًا.",
-        "retryImages": "إعادة تحميل الصور"},
+        "retryImages": "إعادة تحميل الصور"
+      },
       "objects": {
         "apple": "تفاحة",
         "banana": "موزة",
@@ -6433,7 +6434,8 @@
         "shoe": "حذاء رياضي",
         "ball": "كرة قدم",
         "plant": "نبتة في أصيص",
-        "umbrella": "مظلة"}
+        "umbrella": "مظلة"
+      }
     },
     "impostor": {
       "title": "المخادع",
@@ -6725,7 +6727,8 @@
         "visibleToOthers": "مرئي للاعبين الآخرين فقط",
         "holdPhone": "ضع الهاتف على جبهتك — الآخرون سيعطونك تلميحات.",
         "skip": "تخطَّ",
-        "solved": "محلول"
+        "solved": "محلول",
+        "controllerHint": "اطرح سؤالًا أو قدّم تخمينًا من هاتفك."
       },
       "answerVote": {
         "asks": "{{name}} يسأل:",
@@ -6749,7 +6752,8 @@
         "nextPlayer": "اللاعب التالي",
         "skipped": "تم التخطي",
         "wasCharacter": "كان {{name}} هو <1>{{character}}</1>",
-        "category": "الفئة · {{category}}"
+        "category": "الفئة · {{category}}",
+        "tryAgain": "ليست الإجابة الصحيحة بعد. حاول مجددًا."
       },
       "gameOver": {
         "title": "انتهت اللعبة!",
@@ -6832,7 +6836,8 @@
         "reisen": "السفر والاكتشاف",
         "traeume": "الأحلام والمستقبل",
         "entscheidungen": "القرارات والقيم",
-        "kreativ": "الخيال والإبداع"},
+        "kreativ": "الخيال والإبداع"
+      },
       "categorySelection": "اختر الفئات",
       "contentSelection": "ماذا يظهر على البطاقة؟",
       "questionsOnly": "أسئلة فقط",
@@ -6892,7 +6897,8 @@
       "acceptedAnswers": "إجابات مقبولة أيضًا",
       "nextPlayer": "التالي: {{name}}",
       "clueLabel": "لغز مصوّر",
-      "poolBudget": "{{puzzleCount}} لغزًا مختارًا. تلعب المجموعات الكبيرة جولات أقل: أدوار متساوية للجميع، دون تكرار."
+      "poolBudget": "{{puzzleCount}} لغزًا مختارًا. تلعب المجموعات الكبيرة جولات أقل: أدوار متساوية للجميع، دون تكرار.",
+      "balancedTeamPoints": "عند اختلاف عدد أعضاء الفريقين، تُوزن النقاط ليتمكن كلاهما من تحقيق المجموع نفسه في كل جولة."
     },
     "fakeorfact": {
       "title": "كاذب — Fake or Fact",
@@ -6979,7 +6985,8 @@
       "showAll": "عرض الكل",
       "playAgain": "العب مجددًا",
       "otherGame": "لعبة أخرى",
-      "skipTurn": "تخطي الدور"
+      "skipTurn": "تخطي الدور",
+      "emptyStory": "لا توجد جمل بعد. ابدؤوا قصة جديدة معًا."
     },
     "thisorthat": {
       "modeTagPopular": "شائع",
@@ -7599,7 +7606,12 @@
       "chain": "سلسلة التخمير ×{{count}}",
       "multiBonus": "سكب متعدد",
       "perfectBonus": "سكب مثالي",
-      "risk": { "calm": "هادئ", "simmering": "يغلي", "unstable": "غير مستقر", "critical": "حرج" },
+      "risk": {
+        "calm": "هادئ",
+        "simmering": "يغلي",
+        "unstable": "غير مستقر",
+        "critical": "حرج"
+      },
       "tv": {
         "done": "جاهز"
       },
@@ -8186,15 +8198,15 @@
     "perPerson": "/شخص",
     "flatRate": "سعر ثابت",
     "perHour": "/ساعة",
-  "bookNow": "احجز الآن",
-  "bookingContact": "بيانات الحجز الخاصة بك",
-  "guestBookingHint": "احجز مباشرة من دون الحاجة إلى حساب.",
-  "customerName": "الاسم الأول واسم العائلة *",
-  "customerEmail": "عنوان البريد الإلكتروني *",
-  "customerPhone": "الهاتف (اختياري)",
-  "customerNotes": "طلبات أو ملاحظات (اختياري)",
-  "contactRequired": "يرجى إدخال اسمك وعنوان بريد إلكتروني صالح.",
-  "providerWebsite": "موقع مقدم الخدمة",
+    "bookNow": "احجز الآن",
+    "bookingContact": "بيانات الحجز الخاصة بك",
+    "guestBookingHint": "احجز مباشرة من دون الحاجة إلى حساب.",
+    "customerName": "الاسم الأول واسم العائلة *",
+    "customerEmail": "عنوان البريد الإلكتروني *",
+    "customerPhone": "الهاتف (اختياري)",
+    "customerNotes": "طلبات أو ملاحظات (اختياري)",
+    "contactRequired": "يرجى إدخال اسمك وعنوان بريد إلكتروني صالح.",
+    "providerWebsite": "موقع مقدم الخدمة",
     "inquireNow": "استفسر الآن",
     "directBook": "حجز مباشر",
     "verifiedAgency": "وكالة موثّقة",
@@ -10152,7 +10164,9 @@
           "title": "سيّئ حظ السهرة",
           "detail": "{{n}}× في المركز الأخير"
         }
-      }
+      },
+      "champions": "فوز مشترك",
+      "championsLine": "يتقاسم {{name}} الفوز برصيد {{points}} نقطة لكل منهم"
     },
     "connectTitle": "توصيل التلفاز",
     "openOnTv": "افتح على تلفازك:",
@@ -10320,5 +10334,49 @@
       "rules": "كيف تلعب",
       "menu": "القائمة"
     }
+  },
+  "partyControllers": {
+    "title": "وضع التحكم",
+    "subtitle": "يلعب كل شخص على هاتفه الخاص.",
+    "appRequired": "تحتاج إلى تطبيق EventBliss وحساب للمشاركة.",
+    "openApp": "فتح التطبيق",
+    "installHint": "ثبّت EventBliss وسجّل الدخول، ثم أدخل الرمز المعروض في وضع التحكم.",
+    "player": "لاعب",
+    "loading": "جارٍ التحميل…",
+    "loginRequired": "سجّل الدخول للانضمام إلى الحفلة.",
+    "login": "تسجيل الدخول",
+    "name": "اسمك",
+    "hostPlays": "أشارك في اللعب بصفتي المضيف",
+    "create": "إنشاء حفلة",
+    "roomCode": "رمز الغرفة",
+    "join": "انضمام",
+    "scan": "امسح رمز QR للمشاركة",
+    "accountHint": "ينضم كل شخص بحسابه الخاص في تطبيق EventBliss.",
+    "tv": "ربط التلفاز",
+    "offline": "غير متصل",
+    "ready": "جاهز",
+    "notReadyYet": "غير جاهز بعد",
+    "readyToggle": "تغيير حالة الاستعداد",
+    "waitNext": "تجري مباراة الآن. انتظر اللعبة التالية.",
+    "abort": "إلغاء المباراة",
+    "playlist": "ترتيب الألعاب",
+    "remove": "إزالة اللعبة",
+    "startNext": "بدء اللعبة التالية",
+    "premiumRequired": "يحتاج المضيف إلى Premium",
+    "capacity": "من {{min}} إلى {{max}} لاعبًا",
+    "hostChoosing": "يختار المضيف اللعبة التالية.",
+    "end": "إنهاء الحفلة",
+    "leave": "مغادرة الحفلة",
+    "notReady": "يجب أن يكون جميع اللاعبين متصلين وجاهزين.",
+    "pendingResults": "جارٍ حفظ النتائج…",
+    "retry": "إعادة المحاولة",
+    "roomEnded": "انتهت هذه الحفلة.",
+    "players_zero": "لا يوجد لاعبون ({{count}})",
+    "players_one": "لاعب واحد ({{count}})",
+    "players_two": "لاعبان ({{count}})",
+    "players_few": "{{count}} لاعبين",
+    "players_many": "{{count}} لاعبًا",
+    "players_other": "{{count}} لاعب",
+    "players": "{{count}} لاعب"
   }
 }

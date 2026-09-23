@@ -6574,7 +6574,8 @@
         "loading": "Cargando imágenes…",
         "compareHint": "Encuentra los tres objetos cambiados en el tablero B.",
         "imageError": "No se pudieron cargar las imágenes. Comprueba tu conexión e inténtalo de nuevo.",
-        "retryImages": "Recargar imágenes"},
+        "retryImages": "Recargar imágenes"
+      },
       "objects": {
         "apple": "Manzana",
         "banana": "Plátano",
@@ -6591,7 +6592,8 @@
         "shoe": "Zapatilla",
         "ball": "Balón de fútbol",
         "plant": "Planta en maceta",
-        "umbrella": "Paraguas"}
+        "umbrella": "Paraguas"
+      }
     },
     "impostor": {
       "title": "Impostor",
@@ -6883,7 +6885,8 @@
         "visibleToOthers": "Solo visible para los otros jugadores",
         "holdPhone": "Sostén el teléfono en tu frente — los demás te darán pistas.",
         "skip": "Saltar",
-        "solved": "Resuelto"
+        "solved": "Resuelto",
+        "controllerHint": "Haz una pregunta o intenta adivinar desde tu móvil."
       },
       "answerVote": {
         "asks": "{{name}} pregunta:",
@@ -6907,7 +6910,8 @@
         "nextPlayer": "Siguiente jugador",
         "skipped": "Saltado",
         "wasCharacter": "{{name}} era <1>{{character}}</1>",
-        "category": "Categoría · {{category}}"
+        "category": "Categoría · {{category}}",
+        "tryAgain": "Todavía no. Inténtalo de nuevo."
       },
       "gameOver": {
         "title": "¡Fin del juego!",
@@ -6990,7 +6994,8 @@
         "reisen": "Viajes y descubrimientos",
         "traeume": "Sueños y futuro",
         "entscheidungen": "Decisiones y valores",
-        "kreativ": "Imaginación y creatividad"},
+        "kreativ": "Imaginación y creatividad"
+      },
       "categorySelection": "Elegir categorías",
       "contentSelection": "¿Qué aparece en la tarjeta?",
       "questionsOnly": "Solo preguntas",
@@ -7050,7 +7055,8 @@
       "acceptedAnswers": "También válido",
       "nextPlayer": "Siguiente: {{name}}",
       "clueLabel": "Acertijo visual",
-      "poolBudget": "{{puzzleCount}} acertijos seleccionados. Los grupos grandes juegan menos rondas: los mismos turnos para todos, sin repeticiones."
+      "poolBudget": "{{puzzleCount}} acertijos seleccionados. Los grupos grandes juegan menos rondas: los mismos turnos para todos, sin repeticiones.",
+      "balancedTeamPoints": "Si los equipos tienen tamaños distintos, los puntos se ponderan para que ambos puedan conseguir el mismo total por ronda."
     },
     "fakeorfact": {
       "title": "Mentiroso — Fake or Fact",
@@ -7137,7 +7143,8 @@
       "showAll": "Mostrar todo",
       "playAgain": "Volver a jugar",
       "otherGame": "Otro juego",
-      "skipTurn": "Saltar turno"
+      "skipTurn": "Saltar turno",
+      "emptyStory": "Aún no hay frases. Empezad una nueva historia juntos."
     },
     "thisorthat": {
       "modeTagPopular": "Popular",
@@ -7709,7 +7716,12 @@
       "chain": "Cadena alquímica ×{{count}}",
       "multiBonus": "Mezcla múltiple",
       "perfectBonus": "Vertido perfecto",
-      "risk": { "calm": "tranquilo", "simmering": "burbujeando", "unstable": "inestable", "critical": "crítico" },
+      "risk": {
+        "calm": "tranquilo",
+        "simmering": "burbujeando",
+        "unstable": "inestable",
+        "critical": "crítico"
+      },
       "tv": {
         "done": "listo"
       },
@@ -8296,15 +8308,15 @@
     "perPerson": "por persona",
     "flatRate": "Tarifa plana",
     "perHour": "por hora",
-  "bookNow": "Reservar ahora",
-  "bookingContact": "Tus datos de reserva",
-  "guestBookingHint": "Reserva directamente, sin necesidad de una cuenta.",
-  "customerName": "Nombre y apellidos *",
-  "customerEmail": "Correo electrónico *",
-  "customerPhone": "Teléfono (opcional)",
-  "customerNotes": "Solicitudes o notas (opcional)",
-  "contactRequired": "Introduce tu nombre y un correo electrónico válido.",
-  "providerWebsite": "Sitio web del proveedor",
+    "bookNow": "Reservar ahora",
+    "bookingContact": "Tus datos de reserva",
+    "guestBookingHint": "Reserva directamente, sin necesidad de una cuenta.",
+    "customerName": "Nombre y apellidos *",
+    "customerEmail": "Correo electrónico *",
+    "customerPhone": "Teléfono (opcional)",
+    "customerNotes": "Solicitudes o notas (opcional)",
+    "contactRequired": "Introduce tu nombre y un correo electrónico válido.",
+    "providerWebsite": "Sitio web del proveedor",
     "inquireNow": "Consultar ahora",
     "directBook": "Reservar directamente",
     "verifiedAgency": "Agencia verificada",
@@ -10232,7 +10244,9 @@
           "title": "Gafe de la noche",
           "detail": "{{n}}× último"
         }
-      }
+      },
+      "champions": "Victoria compartida",
+      "championsLine": "{{name}} comparten la victoria con {{points}} puntos cada uno"
     },
     "connectTitle": "Conectar TV",
     "openOnTv": "Abre en tu TV:",
@@ -10400,5 +10414,46 @@
       "rules": "Cómo se juega",
       "menu": "Menú"
     }
+  },
+  "partyControllers": {
+    "title": "Modo mando",
+    "subtitle": "Cada persona juega desde su propio móvil.",
+    "appRequired": "Para jugar necesitas la aplicación EventBliss y una cuenta.",
+    "openApp": "Abrir la aplicación",
+    "installHint": "Instala EventBliss, inicia sesión e introduce el código que aparece en el modo mando.",
+    "player": "Jugador",
+    "loading": "Cargando…",
+    "loginRequired": "Inicia sesión para unirte a la fiesta.",
+    "login": "Iniciar sesión",
+    "name": "Tu nombre",
+    "hostPlays": "También juego como anfitrión",
+    "create": "Crear fiesta",
+    "roomCode": "Código de sala",
+    "join": "Unirse",
+    "scan": "Escanea el código QR para jugar",
+    "accountHint": "Cada persona se une con su propia cuenta en la aplicación EventBliss.",
+    "tv": "Conectar un televisor",
+    "offline": "Sin conexión",
+    "ready": "Listo",
+    "notReadyYet": "Aún no está listo",
+    "readyToggle": "Cambiar mi estado",
+    "waitNext": "Hay una partida en curso. Espera al siguiente juego.",
+    "abort": "Cancelar partida",
+    "playlist": "Orden de los juegos",
+    "remove": "Quitar juego",
+    "startNext": "Iniciar el siguiente juego",
+    "premiumRequired": "El anfitrión necesita Premium",
+    "capacity": "{{min}}–{{max}} jugadores",
+    "hostChoosing": "El anfitrión está eligiendo el siguiente juego.",
+    "end": "Finalizar fiesta",
+    "leave": "Salir de la fiesta",
+    "notReady": "Todos los jugadores deben estar conectados y listos.",
+    "pendingResults": "Guardando resultados…",
+    "retry": "Reintentar",
+    "roomEnded": "Esta fiesta ha terminado.",
+    "players_one": "{{count}} jugador",
+    "players_many": "{{count}} jugadores",
+    "players_other": "{{count}} jugadores",
+    "players": "{{count}} jugadores"
   }
 }

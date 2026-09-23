@@ -1,3 +1,4 @@
+import { partyChampions } from '@/games/party/standings';
 /**
  * PartyFinaleOverlay — die grosse Siegerehrung auf dem Telefon.
  *
@@ -39,7 +40,7 @@ const AWARD_META: Record<PartyAwardKey, { icon: LucideIcon; color: string }> = {
 };
 
 function AwardTile({ award, player, index, reveal }: { award: PartyAward; player: PartyStanding; index: number; reveal: boolean }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const meta = AWARD_META[award.key];
   const Icon = meta.icon;
   const detail = (() => {
@@ -50,7 +51,7 @@ function AwardTile({ award, player, index, reveal }: { award: PartyAward; player
         return t("tv.partyNight.award.mostWins.detail", { n: award.value });
       case "consistency":
         return t("tv.partyNight.award.consistency.detail", {
-          value: award.value.toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+          value: award.value.toLocaleString(i18n.language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
         });
       case "bestGame":
         return t("tv.partyNight.award.bestGame.detail", { value: award.value, game: award.gameName ?? "" });
@@ -94,15 +95,17 @@ export function PartyFinaleOverlay({
   playerCount,
   onDone,
 }: PartyFinaleOverlayProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const reduce = !!useReducedMotion();
-  const champion = standings[0];
+  const champions = useMemo(() => partyChampions(standings), [standings]);
+  const champion = champions[0];
+  const winnerNames = new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(champions.map(entry => entry.name));
   const byId = useMemo(() => new Map(standings.map((standing) => [standing.id, standing])), [standings]);
   const awards = useMemo(
     () => champion
-      ? computePartyAwards(history, standings.map((standing) => standing.id), { excludeIds: [champion.id], max: 3 })
+      ? computePartyAwards(history, standings.map((standing) => standing.id), { excludeIds: champions.map(entry => entry.id), max: 3 })
       : [],
-    [champion, history, standings],
+    [champions, champion, history, standings],
   );
   const [beat, setBeat] = useState(reduce ? 3 : 0);
   const [confetti, setConfetti] = useState(false);
@@ -169,7 +172,7 @@ export function PartyFinaleOverlay({
                     {t("tv.partyNight.finaleEyebrow")}
                   </p>
                   <h2 id="party-finale-title" className="mt-1 text-[clamp(1.9rem,8vw,2.55rem)] font-display font-black leading-[1.02] tracking-[-0.04em]">
-                    {t("tv.partyNight.champion")}
+                    {t(champions.length > 1 ? "tv.partyNight.champions" : "tv.partyNight.champion")}
                   </h2>
                   <p className="mx-auto mt-2 max-w-xs text-sm font-semibold text-white/45">
                     {t("nativeExtra.partyLobby.finalSummary", { games: gamesPlayed, players: playerCount })}
@@ -186,8 +189,8 @@ export function PartyFinaleOverlay({
                     transition={{ duration: reduce ? 0.1 : 0.4, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <Trophy className="h-4 w-4 shrink-0 text-[#FFD75E]" aria-hidden />
-                    <p className="truncate text-sm font-black">
-                      {t("tv.partyNight.championLine", { name: champion.name, points: champion.points.toLocaleString("de-DE") })}
+                    <p className="min-w-0 break-words text-center text-sm font-black">
+                      {t(champions.length > 1 ? "tv.partyNight.championsLine" : "tv.partyNight.championLine", { name: winnerNames, points: champion.points.toLocaleString(i18n.language) })}
                     </p>
                   </motion.div>
                 )}

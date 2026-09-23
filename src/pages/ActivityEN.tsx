@@ -212,6 +212,7 @@ export default function ActivityEN() {
     };
   }, [activity]);
 
+  const label = activity ? getActivityLabel(activity.value, activity.label, "en") : '';
   useSEO(
     activity
       ? {
@@ -237,7 +238,6 @@ export default function ActivityEN() {
   const spec = getActivitySpec(activity);
   const framework = CATEGORY_FRAMEWORKS_EN[activity.category];
   const cat = ACTIVITY_CATEGORIES[activity.category];
-  const label = getActivityLabel(activity.value, activity.label, "en");
   const la = { ...activity, label };
   const catLabel = getCategoryLabel(activity.category, cat.label, "en");
 

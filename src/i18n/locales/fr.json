@@ -6574,7 +6574,8 @@
         "loading": "Chargement des images…",
         "compareHint": "Trouve les trois objets remplacés sur le tableau B.",
         "imageError": "Les images n’ont pas pu être chargées. Vérifie ta connexion et réessaie.",
-        "retryImages": "Recharger les images"},
+        "retryImages": "Recharger les images"
+      },
       "objects": {
         "apple": "Pomme",
         "banana": "Banane",
@@ -6591,7 +6592,8 @@
         "shoe": "Basket",
         "ball": "Ballon de football",
         "plant": "Plante en pot",
-        "umbrella": "Parapluie"}
+        "umbrella": "Parapluie"
+      }
     },
     "impostor": {
       "title": "Imposteur",
@@ -6883,7 +6885,8 @@
         "visibleToOthers": "Visible uniquement pour les autres joueurs",
         "holdPhone": "Tiens le téléphone sur ton front — les autres te donnent des indices.",
         "skip": "Passer",
-        "solved": "Trouvé"
+        "solved": "Trouvé",
+        "controllerHint": "Pose une question ou propose une réponse sur ton téléphone."
       },
       "answerVote": {
         "asks": "{{name}} demande :",
@@ -6907,7 +6910,8 @@
         "nextPlayer": "Joueur suivant",
         "skipped": "Passé",
         "wasCharacter": "{{name}} était <1>{{character}}</1>",
-        "category": "Catégorie · {{category}}"
+        "category": "Catégorie · {{category}}",
+        "tryAgain": "Pas tout à fait. Réessaie."
       },
       "gameOver": {
         "title": "Fin de partie !",
@@ -6990,7 +6994,8 @@
         "reisen": "Voyages et découvertes",
         "traeume": "Rêves et avenir",
         "entscheidungen": "Choix et valeurs",
-        "kreativ": "Imagination et créativité"},
+        "kreativ": "Imagination et créativité"
+      },
       "categorySelection": "Choisir les catégories",
       "contentSelection": "Que mettre sur les cartes ?",
       "questionsOnly": "Questions uniquement",
@@ -7050,7 +7055,8 @@
       "acceptedAnswers": "Également accepté",
       "nextPlayer": "À suivre : {{name}}",
       "clueLabel": "Rébus",
-      "poolBudget": "{{puzzleCount}} énigmes sélectionnées. Les grands groupes jouent moins de manches : autant de tours pour chacun, sans répétition."
+      "poolBudget": "{{puzzleCount}} énigmes sélectionnées. Les grands groupes jouent moins de manches : autant de tours pour chacun, sans répétition.",
+      "balancedTeamPoints": "Si les équipes sont inégales, les points sont pondérés pour que chacune puisse obtenir le même total par manche."
     },
     "fakeorfact": {
       "title": "Menteur — Fake or Fact",
@@ -7137,7 +7143,8 @@
       "showAll": "Tout afficher",
       "playAgain": "Rejouer",
       "otherGame": "Autre jeu",
-      "skipTurn": "Passer son tour"
+      "skipTurn": "Passer son tour",
+      "emptyStory": "Aucune phrase pour le moment. Commencez une nouvelle histoire ensemble."
     },
     "thisorthat": {
       "modeTagPopular": "Populaire",
@@ -7709,7 +7716,12 @@
       "chain": "Chaîne d’alchimie ×{{count}}",
       "multiBonus": "Versement multiple",
       "perfectBonus": "Versement parfait",
-      "risk": { "calm": "calme", "simmering": "frémissant", "unstable": "instable", "critical": "critique" },
+      "risk": {
+        "calm": "calme",
+        "simmering": "frémissant",
+        "unstable": "instable",
+        "critical": "critique"
+      },
       "tv": {
         "done": "terminé"
       },
@@ -8296,15 +8308,15 @@
     "perPerson": "/personne",
     "flatRate": "Forfait",
     "perHour": "/heure",
-  "bookNow": "Réserver maintenant",
-  "bookingContact": "Vos informations de réservation",
-  "guestBookingHint": "Réservez directement, sans créer de compte.",
-  "customerName": "Prénom et nom *",
-  "customerEmail": "Adresse e-mail *",
-  "customerPhone": "Téléphone (facultatif)",
-  "customerNotes": "Demandes ou remarques (facultatif)",
-  "contactRequired": "Veuillez saisir votre nom et une adresse e-mail valide.",
-  "providerWebsite": "Site web du prestataire",
+    "bookNow": "Réserver maintenant",
+    "bookingContact": "Vos informations de réservation",
+    "guestBookingHint": "Réservez directement, sans créer de compte.",
+    "customerName": "Prénom et nom *",
+    "customerEmail": "Adresse e-mail *",
+    "customerPhone": "Téléphone (facultatif)",
+    "customerNotes": "Demandes ou remarques (facultatif)",
+    "contactRequired": "Veuillez saisir votre nom et une adresse e-mail valide.",
+    "providerWebsite": "Site web du prestataire",
     "inquireNow": "Demander maintenant",
     "directBook": "Réservation directe",
     "verifiedAgency": "Agence vérifiée",
@@ -10054,7 +10066,9 @@
           "title": "Poisse de la soirée",
           "detail": "{{n}}× dernier"
         }
-      }
+      },
+      "champions": "Victoire partagée",
+      "championsLine": "{{name}} partagent la victoire avec {{points}} points chacun"
     },
     "connectTitle": "Connecter la TV",
     "openOnTv": "Ouvre sur ta TV :",
@@ -10222,5 +10236,46 @@
       "rules": "Règles du jeu",
       "menu": "Menu"
     }
+  },
+  "partyControllers": {
+    "title": "Mode manette",
+    "subtitle": "Chacun joue sur son propre téléphone.",
+    "appRequired": "Pour jouer, il te faut l’application EventBliss et un compte.",
+    "openApp": "Ouvrir l’application",
+    "installHint": "Installe EventBliss, connecte-toi et saisis le code affiché dans le mode manette.",
+    "player": "Joueur",
+    "loading": "Chargement…",
+    "loginRequired": "Connecte-toi pour rejoindre la soirée.",
+    "login": "Se connecter",
+    "name": "Ton nom",
+    "hostPlays": "Je participe aussi en tant qu’hôte",
+    "create": "Créer une soirée",
+    "roomCode": "Code de la salle",
+    "join": "Rejoindre",
+    "scan": "Scanne le code QR pour jouer",
+    "accountHint": "Chaque personne rejoint la soirée avec son propre compte dans l’application EventBliss.",
+    "tv": "Connecter un téléviseur",
+    "offline": "Déconnecté",
+    "ready": "Prêt",
+    "notReadyYet": "Pas encore prêt",
+    "readyToggle": "Changer mon statut",
+    "waitNext": "Une partie est en cours. Attends le jeu suivant.",
+    "abort": "Abandonner la partie",
+    "playlist": "Ordre des jeux",
+    "remove": "Retirer le jeu",
+    "startNext": "Lancer le jeu suivant",
+    "premiumRequired": "Premium requis pour l’hôte",
+    "capacity": "{{min}} à {{max}} joueurs",
+    "hostChoosing": "L’hôte choisit le jeu suivant.",
+    "end": "Terminer la soirée",
+    "leave": "Quitter la soirée",
+    "notReady": "Tous les joueurs doivent être connectés et prêts.",
+    "pendingResults": "Enregistrement des résultats…",
+    "retry": "Réessayer",
+    "roomEnded": "Cette soirée est terminée.",
+    "players_one": "{{count}} joueur",
+    "players_many": "{{count}} joueurs",
+    "players_other": "{{count}} joueurs",
+    "players": "{{count}} joueurs"
   }
 }

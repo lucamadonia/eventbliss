@@ -1,6 +1,6 @@
 import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
 import './design.css';
-import { matchesEmojiAnswer, awardEmojiPoints, publicEmojiPuzzle, nextEmojiTurn, emojiRoundBudget } from './game-rules';
+import { emojiPointsForTurn, matchesEmojiAnswer, awardEmojiPoints, publicEmojiPuzzle, nextEmojiTurn, emojiRoundBudget } from './game-rules';
 import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
@@ -181,8 +181,8 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
     toggleAnswer: { allow: sender => phase === 'playing' && sender === players[currentPlayerIdx]?.id, run: () => toggleAnswer() },
     handleCorrectGuess: { allow: (sender, args) => phase === "playing" && typeof args[0] === "string" && args[0].length <= 120 && sender === players[currentPlayerIdx]?.id, run: (...args) => handleCorrectGuess(args[0]) },
     handleSkip: { allow: (sender, args) => phase === "playing" && sender === players[currentPlayerIdx]?.id, run: (...args) => handleSkip() },
-    advanceRound: { allow: (sender, args) => phase === "reveal" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => advanceRound() },
-    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+    advanceRound: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => advanceRound() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
   });
 
   function ready() { if (route('ready')) return; timer.start(); setPhase('playing'); }
@@ -228,7 +228,7 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
       return;
     }
     stopTimers();
-    setRoundPoints(showAnswer ? 0 : pointsAvailable);
+    setRoundPoints(showAnswer ? 0 : emojiPointsForTurn(pointsAvailable, currentPlayerIdx, players.length, mode === 'team'));
     setPlayers(prev => awardEmojiPoints(prev, currentPlayerIdx, showAnswer ? 0 : pointsAvailable, mode === 'team'));
     setPhase('reveal');
   }
@@ -326,6 +326,7 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
       <p className="rebus-budget">{t('games.emojiguess.poolBudget', { puzzleCount: getEMOJI_PUZZLES().length, defaultValue: '{{puzzleCount}} kuratierte Rätsel. Die Rundenzahl wird bei großen Gruppen begrenzt: gleich viele Züge für alle, ohne Wiederholung.' })}</p>
       <GameSetup
         gameId="emojiguess"
+        fixedTimerByMode={{ speed: 10 }}
         modes={getTranslatedModes('emojiguess', GAME_MODES, (key, fallback) => t(key, { defaultValue: fallback }))}
         settings={SETUP_SETTINGS}
         onStart={handleStart}
@@ -346,7 +347,7 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
           <span className="rebus-issue">{String(currentRound).padStart(2, '0')}</span>
           <h2>{t('games.emojiguess.readyTitle', { defaultValue: 'Dein Rätsel wartet' })}</h2>
           <p>{t('games.emojiguess.readyBody', { defaultValue: 'Lies die Bilder von links nach rechts. Gesucht ist ein Begriff aus der angezeigten Kategorie.' })}</p>
-          <p className="rebus-ready-time">{timerDuration} s · {t('games.emojiguess.pointsAvailable')} 100</p>
+          <p className="rebus-ready-time">{timerDuration} s · {t('games.emojiguess.pointsAvailable')} {emojiPointsForTurn(100, currentPlayerIdx, players.length, mode === 'team')}</p>
         </StagePanel>
         {!online || online.myPlayerId === currentPlayer?.id
           ? <StageAction onClick={ready}>{t('games.emojiguess.readyStart', { defaultValue: 'Bereit – Rätsel zeigen' })}<ArrowRight className="h-5 w-5" /></StageAction>
@@ -380,11 +381,12 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
           <div className="rebus-poster" aria-label={t('games.emojiguess.clueLabel', { defaultValue: 'Bilderrätsel' })}>
             <span className="rebus-caption">{t('games.emojiguess.clueLabel', { defaultValue: 'Bilderrätsel' })}</span>
             <div className="rebus-glyphs">{currentPuzzle.emojis}</div>
-            <div className="rebus-clue-meta"><span><strong>{pointsAvailable}</strong> {t('games.emojiguess.pointsAvailable')}</span>
+            <div className="rebus-clue-meta"><span><strong>{emojiPointsForTurn(pointsAvailable, currentPlayerIdx, players.length, mode === 'team')}</strong> {t('games.emojiguess.pointsAvailable')}</span>
               {showHint && <span className="rebus-hint"><Lightbulb className="h-4 w-4" />{t('games.emojiguess.hintPrefix', { letter: currentPuzzle.answer.charAt(0) })}</span>}
             </div>
           </div>
 
+          {mode === 'team' && players.length % 2 === 1 && <p className="px-4 text-center text-sm text-white/70">{t('games.emojiguess.balancedTeamPoints', { defaultValue: 'Bei ungleichen Teams werden die Punkte gewichtet: Beide Teams können pro Runde gleich viele Punkte erreichen.' })}</p>}
           {mode === 'team' && <div className="flex justify-center gap-6 p-3">{[0, 1].map(team => <p key={team}>{t('games.emojiguess.teamLabel', { team: team === 0 ? 'A' : 'B' })}: {players.filter((_, i) => i % 2 === team).map(p => p.name).join(', ')} · {players[team]?.score ?? 0}</p>)}</div>}
           <form className="rebus-controls" onSubmit={e => { e.preventDefault(); if (answerInput.trim()) handleCorrectGuess(); }}>
             {!online || online.myPlayerId === currentPlayer?.id ? <>

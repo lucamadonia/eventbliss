@@ -14,7 +14,8 @@ import { loadFromDB, loadFromCacheSync } from './dynamicLoader';
 
 export type { QuizQuestion };
 
-type LangModule = typeof de;
+type LangModule = Pick<typeof de, 'getRandomQuestion' | 'resetQuestions'>
+  & Partial<Record<`QUIZ_QUESTIONS_${string}`, QuizQuestion[]>>;
 
 const modules: Record<string, LangModule> = { de, en, es, fr, it, nl, pl, pt, tr, ar };
 

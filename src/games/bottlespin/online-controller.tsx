@@ -4,8 +4,11 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 
 type Action = { allowed: boolean | string; run: (...args: never[]) => void };
 export function canAct(online: OnlineGameProps, allowed: boolean | string, sender: unknown): boolean {
-  if (typeof sender !== 'string' || !online.players.some(p => p.id === sender)) return false;
-  return allowed === true || (allowed === 'host' ? online.players.some(p => p.id === sender && p.isHost) : allowed === sender);
+  if (typeof sender !== 'string') return false;
+  const hostId = online.hostPlayerId ?? online.players.find(p => p.isHost)?.id;
+  if (allowed === 'host') return sender === hostId;
+  if (!online.players.some(p => p.id === sender)) return false;
+  return allowed === true || allowed === sender;
 }
 
 /** Host validates the authenticated sender and current turn, never client scores. */

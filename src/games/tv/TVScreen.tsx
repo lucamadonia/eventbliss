@@ -1,6 +1,6 @@
 import { lazy, Suspense, useMemo, useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import TVParticles from './TVParticles';
@@ -16,6 +16,9 @@ import { useTVAudio } from './TVAudioManager';
 import type { BrewCue } from '@/games/brew/brew-audio';
 import type { PartyNightState } from './party-types';
 import { resolveTvView } from './tv-view';
+import { isStroke } from './drawing';
+import { QRCodeSVG } from 'qrcode.react';
+import { getBaseUrl } from '@/lib/platform';
 
 // Lazy load game-specific TV views
 const TVBombView = lazy(() => import('./games/TVBombView'));
@@ -57,7 +60,7 @@ const TVFallback = (
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }) {
   const game = gameState?.game || '';
-  const props = { gameState, drawing };
+  const props = { gameState, drawing: drawing.filter(isStroke) };
 
   return (
     <Suspense fallback={TVFallback}>
@@ -203,7 +206,9 @@ export default function TVScreen() {
   }, [gameState?.game, gameState?.audioCueSeq, gameState?.audioCue, audio]);
 
   // Derive glow frame props from game state
-  const glowColor = gameState?.players?.[gameState?.currentPlayerIndex ?? gameState?.activeIdx ?? gameState?.currentPlayerIdx]?.color as string | undefined;
+  const activeIndex = gameState?.currentPlayerIndex ?? gameState?.activeIdx ?? gameState?.currentPlayerIdx;
+  const activePlayer = Array.isArray(gameState?.players) && typeof activeIndex === 'number' ? gameState.players[activeIndex] : null;
+  const glowColor = activePlayer && typeof activePlayer === 'object' && typeof activePlayer.color === 'string' ? activePlayer.color : undefined;
   const timeLeft = typeof gameState?.timeLeft === 'number' ? gameState.timeLeft as number : null;
   const glowIntensity = showGameOver ? 'high' as const : (timeLeft !== null && timeLeft <= 5) ? 'medium' as const : 'low' as const;
   const glowRainbow = showGameOver;
@@ -264,6 +269,12 @@ export default function TVScreen() {
       <TVParticles mood={particleMood} />
       <TVGlowFrame color={glowColor || '#df8eff'} intensity={glowIntensity} rainbow={glowRainbow} />
       <TVVFXLayer gameState={gameState} />
+      {typeof gameState?.controllerJoinCode === 'string' && /^[A-HJ-NP-Z2-9]{6}$/.test(gameState.controllerJoinCode) && (
+        <aside className="fixed bottom-8 end-8 z-40 max-w-[230px] rounded-3xl border border-white/15 bg-[#151a21]/95 p-5 text-center shadow-xl">
+          <div className="mx-auto w-fit rounded-xl bg-white p-3"><QRCodeSVG size={148} value={`${getBaseUrl()}/party/join/${gameState.controllerJoinCode}`} title={t('partyControllers.scan')} /></div>
+          <p className="mt-3 text-base font-bold">{t('partyControllers.scan')}</p><p className="mt-2 font-mono tracking-widest text-[#8ff5ff]">{gameState.controllerJoinCode}</p>
+        </aside>
+      )}
       {/* Floating live-stats overlay removed: every game view now renders its
           own full TVScoreboard roster, so this only duplicated the standings
           and covered on-screen content (timelines, cards, etc.).
@@ -298,18 +309,11 @@ export default function TVScreen() {
         </div>
       )}
 
-      {/* Genau EIN Kind, ueber den abgeleiteten Ansichtsnamen verschluesselt.
-          Frueher stand hier zusaetzlich `mode="wait"`, mit der Begruendung, ein
-          einzelnes verschluesseltes Kind koenne nicht haengenbleiben. Es kann:
-          Ist das naechste Kind ein `lazy()`-Bauteil, wartet `mode="wait"` auf
-          das Ende der Ausblendung, das Nachladen beginnt aber erst NACH dem
-          Wechsel — nachgemessen blieb der Fernseher beim Sprung auf die
-          Zwischenstands-Szene schwarz: die Lobby auf Deckkraft 0 ausgeblendet,
-          die neue Szene nie gemountet, ihr Chunk nie geladen.
-          Ohne `mode="wait"` ueberblenden beide kurz — die Ansichten liegen
-          ohnehin uebereinander, es sieht als Kreuzblende sogar besser aus. */}
-      <AnimatePresence>
+      {/* Replace the previous scene synchronously. Keeping an exiting lobby
+          mounted can leave the live game below its full-height layout while
+          nested animations finish. The keyed scene still fades in. */}
         <motion.div
+          data-tv-scene
           key={
             showPartyFinale ? 'partyFinale'
             : showPartyStandings ? 'partyStandings'
@@ -329,7 +333,6 @@ export default function TVScreen() {
              wirken, als haenge er. */
           initial={{ opacity: 0, scale: 1.015 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.99 }}
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         >
           {showPartyFinale ? (
@@ -357,7 +360,6 @@ export default function TVScreen() {
             <TVLobby roomCode={code} players={players} isConnected={isConnected} error={error} />
           )}
         </motion.div>
-      </AnimatePresence>
     </div>
   );
 }

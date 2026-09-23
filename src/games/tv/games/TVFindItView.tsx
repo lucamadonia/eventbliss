@@ -1,3 +1,25 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (TVPlayer)[];
+  geoName?: string;
+  grid?: string;
+  gridA?: string;
+  gridB?: string;
+  mode?: string;
+  phase?: string;
+  question?: string;
+  sceneName?: string;
+  correctOption?: number;
+  diffCount?: number;
+  questionCountdown?: number;
+  questionIdx?: number;
+  round?: number;
+  studyCountdown?: number;
+  totalQuestions?: number;
+  totalRounds?: number;
+  answerCorrect?: boolean; diffs?:number[]; foundDiffs?:number[]; imagesAvailable?:boolean; optionObjects?:string[]; options?:string[];
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
@@ -64,7 +86,7 @@ const TILE = [
 
 const OPT_LABELS = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-export default function TVFindItView({ gameState }: { gameState: any }) {
+export default function TVFindItView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 

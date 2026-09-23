@@ -12,6 +12,8 @@ export interface OnlineGameProps {
   isConnected?: boolean;
   /** Whether the current device is the room host */
   isHost: boolean;
+  /** Authoritative host identity, including a moderator outside the playable roster. */
+  hostPlayerId?: string;
   /** The 6-char room code */
   roomCode: string;
   /** All connected players */

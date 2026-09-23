@@ -192,7 +192,7 @@ export default function OnlineGameWrapper({
   const { t } = useTranslation();
   const {
     room,
-    players,
+    players: connectedPlayers,
     roomHasPremium,
     isHost,
     myPlayerId,
@@ -205,6 +205,11 @@ export default function OnlineGameWrapper({
   } = useGameRoom();
 
   const [playerListExpanded, setPlayerListExpanded] = useState(false);
+  const players = useMemo(() => room?.settings.controllerParty && room.status === 'playing'
+    ? room.participantIds.flatMap(id => {
+        const player = room.players.find(candidate => candidate.id === id);
+        return player ? [player] : [];
+      }) : connectedPlayers, [connectedPlayers, room]);
   const joinedRef = useRef('');
   const connectionState: ConnectionState = room?.roomCode === roomCode && connection === 'connected'
     ? 'connected' : connection === 'disconnected' || connection === 'reconnecting' ? 'disconnected' : 'connecting';
@@ -248,11 +253,12 @@ export default function OnlineGameWrapper({
     roomCode,
     players,
     myPlayerId,
+    hostPlayerId: room?.hostId,
     roomHasPremium,
     broadcast,
     broadcastTo,
     onBroadcast,
-  }), [isHost, connectionState, roomCode, players, myPlayerId, roomHasPremium, broadcast, broadcastTo, onBroadcast]);
+  }), [isHost, connectionState, roomCode, players, myPlayerId, room?.hostId, roomHasPremium, broadcast, broadcastTo, onBroadcast]);
 
   return (
     <div className="relative online-game-surface font-sans" style={gameStageStyle(gameId)}>

@@ -297,6 +297,9 @@ export default function PartyLobbyScreen() {
       </div>
 
       <div className="relative z-10 pb-tabbar">
+        <button className="mx-5 mt-5 flex min-h-16 w-[calc(100%-40px)] items-center gap-3 rounded-2xl border border-[#df8eff]/30 bg-[#df8eff]/10 p-4 text-start" onClick={() => navigate('/party/controllers')}>
+          <Gamepad2 className="h-7 w-7 shrink-0 text-[#df8eff]" /><span><strong className="block">{t('partyControllers.title')}</strong><span className="text-sm text-muted-foreground">{t('partyControllers.subtitle')}</span></span><ChevronRight className="ms-auto shrink-0" />
+        </button>
         {/* Kopf */}
         <div className="px-5 pt-5 pb-4">
           <div className="flex items-center justify-between gap-3">

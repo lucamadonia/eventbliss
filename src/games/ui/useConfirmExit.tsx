@@ -10,25 +10,33 @@
  *   // setup / final-results back button:  onClick={() => navigate('/games')}  (direct, nothing to lose)
  *   // render once:  <ConfirmExitDialog {...exit.dialogProps} accent="#df8eff" />
  */
-import { useCallback, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { holdLocalGame } from '@/games/engine/local-pause';
+import * as Dialog from '@radix-ui/react-alert-dialog';
 import { useTranslation } from "react-i18next";
 
 export function useConfirmExit(onExit: () => void) {
   const [open, setOpen] = useState(false);
-  const request = useCallback(() => setOpen(true), []);
+  const previousFocus = useRef<HTMLElement | null>(null);
+  useEffect(() => { if (open) return holdLocalGame(); }, [open]);
+  const request = useCallback(() => {
+    previousFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setOpen(true);
+  }, []);
+  const returnFocus = useCallback(() => { if (previousFocus.current?.isConnected) previousFocus.current.focus(); }, []);
   const cancel = useCallback(() => setOpen(false), []);
   const confirm = useCallback(() => {
     setOpen(false);
     onExit();
   }, [onExit]);
-  return { open, request, cancel, confirm, dialogProps: { open, onStay: cancel, onLeave: confirm } };
+  return { open, request, cancel, confirm, dialogProps: { open, onStay: cancel, onLeave: confirm, onReturnFocus: returnFocus } };
 }
 
 interface ConfirmExitDialogProps {
   open: boolean;
   onStay: () => void;
   onLeave: () => void;
+  onReturnFocus?: () => void;
   /** Accent for the primary "keep playing" button — pass the game's palette. */
   accent?: string;
   title?: string;
@@ -39,57 +47,48 @@ export function ConfirmExitDialog({
   open,
   onStay,
   onLeave,
+  onReturnFocus,
   accent = "#df8eff",
   title,
   subtitle,
 }: ConfirmExitDialogProps) {
   const { t } = useTranslation();
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.18 }}
+    <Dialog.Root open={open} onOpenChange={value => { if (!value) onStay(); }}>
+      <Dialog.Portal>
+        <Dialog.Overlay
           className="fixed inset-0 z-[90] flex items-center justify-center p-6"
           style={{ background: "rgba(0,0,0,0.62)", backdropFilter: "blur(4px)" }}
-          onClick={onStay}
-        >
-          <motion.div
-            initial={{ scale: 0.92, y: 12, opacity: 0 }}
-            animate={{ scale: 1, y: 0, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 320, damping: 26 }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-xs rounded-3xl p-5 text-center"
+        />
+          <Dialog.Content
+            onCloseAutoFocus={event => { if (onReturnFocus) { event.preventDefault(); onReturnFocus(); } }}
+            className="fixed left-1/2 top-1/2 z-[91] w-[calc(100%-48px)] max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-3xl p-5 text-center"
             style={{ background: "#151a21", border: "1px solid rgba(255,255,255,0.1)" }}
           >
-            <p className="text-base font-bold mb-1 text-white">
+            <Dialog.Title className="text-base font-bold mb-1 text-white">
               {title ?? t("games.common.leaveTitle")}
-            </p>
-            <p className="text-xs mb-4 text-white/50">
+            </Dialog.Title>
+            <Dialog.Description className="text-sm mb-4 text-white/70">
               {subtitle ?? t("games.common.leaveSub")}
-            </p>
+            </Dialog.Description>
             <div className="flex flex-col gap-2">
-              <button
+              <Dialog.Cancel
                 onClick={onStay}
                 className="w-full py-3 rounded-2xl text-sm font-bold"
                 style={{ background: accent, color: "#0a0e14" }}
               >
                 {t("games.common.leaveStay")}
-              </button>
-              <button
+              </Dialog.Cancel>
+              <Dialog.Action
                 onClick={onLeave}
                 className="w-full py-3 rounded-2xl text-sm font-semibold text-white/60"
                 style={{ border: "1px solid rgba(255,255,255,0.1)" }}
               >
                 {t("games.common.leaveConfirm")}
-              </button>
+              </Dialog.Action>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

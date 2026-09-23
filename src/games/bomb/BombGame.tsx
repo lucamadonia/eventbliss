@@ -1,4 +1,4 @@
-import { speedFuseMs } from './rules';
+import { speedFuseMs, publicBombState } from './rules';
 import OnlineWaiting from '../multiplayer/OnlineWaiting';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import i18next from 'i18next';
@@ -19,6 +19,7 @@ import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useInitialRoster } from "@/games/ui/useInitialRoster";
 import { useNavigate } from 'react-router-dom';
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
+import { useLocalGamePaused } from '../engine/local-pause';
 import { useBackGuard } from '@/lib/back-guard';
 
 // ---------------------------------------------------------------------------
@@ -29,6 +30,7 @@ export type GamePhase = 'setup' | 'playing' | 'explosion' | 'roundEnd' | 'gameOv
 export type GameMode = 'kategorie' | 'quiz' | 'speed' | 'alle';
 
 export interface PlayerState {
+  id?: string;
   name: string;
   penalties: number;
 }
@@ -48,6 +50,7 @@ export interface GameState {
   speedTimerBase: number;
   randomTimer: boolean;
   sameCategory: boolean;
+  revision?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -61,6 +64,8 @@ function useBombTimer(
   onExplode: () => void,
   enabled = true,
 ) {
+  const locallyPaused = useLocalGamePaused();
+  const clockEnabled = enabled && !locallyPaused;
   const [progress, setProgress] = useState(0);
   const durationRef = useRef(0);
   const startRef = useRef(0);
@@ -81,7 +86,7 @@ function useBombTimer(
   // Starting a round picks one fuse; transport pauses never pick another.
   useEffect(() => { if (active) start(); }, [active, start]);
   useEffect(() => {
-    if (!active || !enabled) return;
+    if (!active || !clockEnabled) return;
     startRef.current = performance.now();
     const tick = () => {
       const elapsed = elapsedRef.current + performance.now() - startRef.current;
@@ -99,7 +104,7 @@ function useBombTimer(
       cancelAnimationFrame(rafRef.current);
       elapsedRef.current += performance.now() - startRef.current;
     };
-  }, [active, start, enabled]);
+  }, [active, start, clockEnabled]);
 
   return { progress, durationMs: durationRef.current };
 }
@@ -198,14 +203,15 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
   // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
   // genau einmal beim Mount und verpassten jede spaetere Aenderung.
-  const partyPlayerNames = (useInitialRoster() ?? []).map((p) => p.name);
+  const partyRoster = useInitialRoster() ?? [];
+  const partyPlayerNames = partyRoster.map((p) => p.name);
   const resolvedPlayerNames = onlinePlayerNames.length >= 2
     ? onlinePlayerNames
     : partyPlayerNames.length >= 2
       ? partyPlayerNames
       : [];
   const onlineInitialPlayers = resolvedPlayerNames.length >= 2
-    ? resolvedPlayerNames.map(name => ({ name, penalties: 0 }))
+    ? resolvedPlayerNames.map((name, index) => ({ id: online?.players[index]?.id ?? partyRoster[index]?.id, name, penalties: 0 }))
     : undefined;
   const [state, setState] = useState<GameState>({
     ...defaultState,
@@ -238,11 +244,12 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
 
 
   // --- Online sync: host broadcasts state, non-host receives ---
+  const consumedRevision = useRef<number>(-1);
   const broadcastState = useCallback((newState: GameState, extra?: Record<string, unknown>) => {
     if (!online || !online.isHost) return;
     online.broadcast('bomb-state', {
       ...extra,
-      state: JSON.parse(JSON.stringify(newState)),
+      state: JSON.parse(JSON.stringify(publicBombState(newState))),
     });
     online.broadcast('tv-state', {
       game: 'bomb',
@@ -277,14 +284,18 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   useEffect(() => {
     if (!online || !online.isHost) return;
     const unsub = online.onBroadcast('bomb-action', (data) => {
-      if (state.phase !== 'playing' || online.players[state.currentPlayerIndex]?.id !== data.__senderId) return;
+      if (online.isConnected === false || state.phase !== 'playing' || data.revision !== (state.revision ?? 0) || online.players[state.currentPlayerIndex]?.id !== data.__senderId) return;
+      if (consumedRevision.current === data.revision) return;
       if (data.action === 'weiter') {
+        if (state.mode === 'quiz' || state.mode === 'alle') return;
+        consumedRevision.current = state.revision ?? 0;
         // Keep local and remote category rules identical.
-        const keepTask = state.sameCategory && (state.mode === 'kategorie' || state.mode === 'alle');
+        const keepTask = state.sameCategory && state.mode === 'kategorie';
         const { task, quiz } = keepTask ? { task: state.currentTask, quiz: state.currentQuiz } : generateTask(state.mode);
         setState((prev) => {
           const next = {
             ...prev,
+            revision: (prev.revision ?? 0) + 1,
             currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
             currentTask: task,
             currentQuiz: quiz,
@@ -294,6 +305,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
         });
       } else if (data.action === 'alle-answer') {
         if (state.mode !== 'alle' || typeof data.knows !== 'boolean') return;
+        consumedRevision.current = state.revision ?? 0;
         const knows = data.knows as boolean;
         setState((prev) => {
           const updated = [...prev.players];
@@ -305,6 +317,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
           }
           const next = {
             ...prev,
+            revision: (prev.revision ?? 0) + 1,
             players: updated,
             currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
           };
@@ -313,11 +326,12 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
         });
       } else if (data.action === 'quiz-answer') {
         if (!state.currentQuiz || !Number.isInteger(data.answerIndex) || Number(data.answerIndex) < 0 || Number(data.answerIndex) > 3) return;
+        consumedRevision.current = state.revision ?? 0;
         const idx = data.answerIndex as number;
         if (state.currentQuiz && idx !== state.currentQuiz.correctIndex) {
           const { task, quiz } = generateTask(state.mode);
           setState((prev) => {
-            const next = { ...prev, currentTask: task, currentQuiz: quiz };
+            const next = { ...prev, revision: (prev.revision ?? 0) + 1, currentTask: task, currentQuiz: quiz };
             broadcastState(next);
             return next;
           });
@@ -326,6 +340,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
           setState((prev) => {
             const next = {
               ...prev,
+              revision: (prev.revision ?? 0) + 1,
               currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
               currentTask: task,
               currentQuiz: quiz,
@@ -337,7 +352,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       }
     });
     return unsub;
-  }, [online, state.phase, state.currentPlayerIndex, state.mode, state.sameCategory, state.currentTask, state.currentQuiz, broadcastState]);
+  }, [online, state.phase, state.revision, state.currentPlayerIndex, state.mode, state.sameCategory, state.currentTask, state.currentQuiz, broadcastState]);
 
   const effectiveTimerMin = state.randomTimer
     ? 15000
@@ -362,6 +377,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       };
       const next = {
         ...prev,
+        revision: (prev.revision ?? 0) + 1,
         phase: 'explosion' as GamePhase,
         players: updated,
         explodedPlayerIndex: prev.currentPlayerIndex,
@@ -409,6 +425,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   const bombTimeLeft = state.randomTimer ? -1 : Math.max(0, Math.round((1 - progress) * bombAvgSec));
   useTVGameBridge('bomb', {
     phase: state.phase, mode: state.mode, players: state.players,
+    partyScoresById: Object.fromEntries(state.players.flatMap((player, index) => { const id = player.id ?? online?.players[index]?.id ?? partyRoster[index]?.id; return id ? [[id, Math.max(...state.players.map(p => p.penalties)) - player.penalties]] : []; })),
     currentPlayerIndex: state.currentPlayerIndex, round: state.round, totalRounds: state.totalRounds,
     currentTask: state.currentTask, explodedPlayerIndex: state.explodedPlayerIndex,
     timeLeft: bombTimeLeft, timeTotal: bombAvgSec, randomTimer: state.randomTimer,
@@ -424,6 +441,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     const { task, quiz } = generateTask(state.mode);
     const newState: GameState = {
       ...state,
+      revision: (state.revision ?? 0) + 1,
       phase: 'playing',
       currentPlayerIndex: 0,
       round: 1,
@@ -451,6 +469,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     setState((prev) => {
       const next = {
         ...prev,
+        revision: (prev.revision ?? 0) + 1,
         currentPlayerIndex: (prev.currentPlayerIndex + 1) % prev.players.length,
         currentTask: task,
         currentQuiz: quiz,
@@ -461,24 +480,26 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   };
 
   const handleWeiter = () => {
+    if (!canPlay) return;
     if (online && !online.isHost) {
       // Non-host sends action to host
-      online.broadcast('bomb-action', { action: 'weiter' });
+      online.broadcast('bomb-action', { action: 'weiter', revision: state.revision ?? 0 });
       return;
     }
     advancePlayer();
   };
 
   const handleQuizAnswer = (idx: number) => {
+    if (!canPlay) return;
     if (online && !online.isHost) {
-      online.broadcast('bomb-action', { action: 'quiz-answer', answerIndex: idx });
+      online.broadcast('bomb-action', { action: 'quiz-answer', answerIndex: idx, revision: state.revision ?? 0 });
       return;
     }
     if (state.currentQuiz && idx !== state.currentQuiz.correctIndex) {
       // Wrong answer: vibrate + generate new question, but KEEP same player
       if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
       const { task, quiz } = generateTask(state.mode);
-      const newState = { ...state, currentTask: task, currentQuiz: quiz };
+      const newState = { ...state, revision: (state.revision ?? 0) + 1, currentTask: task, currentQuiz: quiz };
       setState(newState);
       broadcastState(newState);
       return;
@@ -488,13 +509,14 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
   };
 
   const handleAlleAnswer = (knows: boolean) => {
+    if (!canPlay) return;
     if (online && !online.isHost) {
-      online.broadcast('bomb-action', { action: 'alle-answer', knows });
+      online.broadcast('bomb-action', { action: 'alle-answer', knows, revision: state.revision ?? 0 });
       return;
     }
     setState(prev => {
       const players = prev.players.map((p, i) => i === prev.currentPlayerIndex && !knows ? { ...p, penalties: p.penalties + 1 } : p);
-      const next = { ...prev, players, currentPlayerIndex: (prev.currentPlayerIndex + 1) % players.length };
+      const next = { ...prev, revision: (prev.revision ?? 0) + 1, players, currentPlayerIndex: (prev.currentPlayerIndex + 1) % players.length };
       broadcastState(next);
       return next;
     });
@@ -511,8 +533,9 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     if (state.phase === 'gameOver' && !recordedRef.current) {
       recordedRef.current = true;
       const winner = [...state.players].sort((a, b) => a.penalties - b.penalties)[0];
-      const bestScore = state.totalRounds - (winner?.penalties ?? 0);
-      recordEnd('bomb', Math.max(0, bestScore), true);
+      const me = online ? state.players[online.players.findIndex(player => player.id === online.myPlayerId)] : winner;
+      const bestScore = state.totalRounds - (me?.penalties ?? state.totalRounds);
+      recordEnd('bomb', Math.max(0, bestScore), !!me && me.penalties === winner?.penalties);
     }
     if (state.phase === 'setup') recordedRef.current = false;
   }, [state.phase]);
@@ -538,6 +561,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     const { task, quiz } = generateTask(state.mode);
     const next: GameState = {
       ...state,
+      revision: (state.revision ?? 0) + 1,
       phase: 'playing',
       round: state.round + 1,
       currentPlayerIndex: 0,
@@ -552,21 +576,21 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
 
   const handleRestart = () => {
     if (online && !online.isHost) return;
-    // Rematch: restart gameplay directly (no setup screen), keeping the same
-    // players AND their accumulated penalties (carry over — do not zero).
+    // A rematch keeps the roster and settings, and starts fresh scoring.
     speedReductionRef.current = 0;
     resetQuestions();
     recordedRef.current = false;
     const { task, quiz } = generateTask(state.mode);
     const newState: GameState = {
       ...state,
+      revision: (state.revision ?? 0) + 1,
+      players: state.players.map(p => ({ ...p, penalties: 0 })),
       phase: 'playing',
       currentPlayerIndex: 0,
       round: 1,
       currentTask: task,
       currentQuiz: quiz,
       explodedPlayerIndex: -1,
-      // players (incl. penalties) carried over from `state` via spread.
     };
     setState(newState);
     broadcastState(newState);
@@ -585,6 +609,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     setState({ ...defaultState });
   };
 
+  const canPlay = state.phase === 'playing' && (!online || (online.isConnected !== false && online.players[state.currentPlayerIndex]?.id === online.myPlayerId));
   if (state.phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
   return (
     // Fragment, damit der Verlassen-Dialog NEBEN der AnimatePresence liegt und
@@ -602,6 +627,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       {state.phase === 'playing' && !showTutorial && (
         <motion.div key={`playing-${timerKey}`} exit={{ opacity: 0 }}>
           <BombPlayingScreen
+            canPlay={canPlay}
             state={state}
             progress={progress}
             timeLeft={Math.max(0, Math.ceil((1 - progress) * (online && !online.isHost ? remoteDuration : durationMs) / 1000))}

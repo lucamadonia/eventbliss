@@ -145,6 +145,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   const [categories, setCategories] = useState<CeCategory[]>([]);
   const [totalRounds, setTotalRounds] = useState(7);
   const [round, setRound] = useState(0);
+  const [roundToken, setRoundToken] = useState('');
   const [deck, setDeck] = useState<CeQuestion[]>([]);
   const [question, setQuestion] = useState<CeQuestion | null>(null);
   const [guesses, setGuesses] = useState<Record<string, number | null>>({});
@@ -240,6 +241,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
     (d: CeQuestion[], idx: number, ps: Player[], duration = modeDef.duration) => {
       const next = d[idx];
       setQuestion(next ?? null);
+      setRoundToken(crypto.randomUUID());
       // Damit der Melde-Knopf in der Titelleiste weiss, worauf er sich bezieht.
       // NAH DRAN ist hier der beste Fall im ganzen Projekt: Es liefert die
       // Datenbank-ID, den Antwortwert UND die Quelle mit — eine Meldung ist
@@ -324,7 +326,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   const applyAction = useCallback(
     (data: Record<string, unknown>) => {
       if (data.type === 'again' && phase === 'gameOver' && players.some(p => p.id === data.__senderId)) { rematchRef.current(); return; }
-      if (phase !== 'guessing' || data.type !== 'guess' || data.pid !== data.__senderId || !players.some(p => p.id === data.__senderId)) return;
+      if (online?.isConnected === false || phase !== 'guessing' || data.roundToken !== roundToken || data.type !== 'guess' || data.pid !== data.__senderId || !players.some(p => p.id === data.__senderId)) return;
       switch (data.type) {
         case 'guess':
           doGuess(data.pid as string, Number(data.value));
@@ -333,7 +335,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
           break;
       }
     },
-    [phase, players, doGuess],
+    [phase, players, doGuess, roundToken, online?.isConnected],
   );
 
   useEffect(() => {
@@ -367,6 +369,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
           phase,
           players,
           round,
+          roundToken,
           totalRounds,
           question: publicRoundItem(question, phase === 'reveal' || phase === 'gameOver', ['answer', 'tolerancePct', 'sourceUrl', 'sourceLabel']),
           mode,
@@ -385,6 +388,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
     phase,
     players,
     round,
+    roundToken,
     totalRounds,
     question,
     mode,
@@ -403,6 +407,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
       setPhase(s.phase as Phase);
       setPlayers(s.players as Player[]);
       setRound(s.round as number);
+      setRoundToken(s.roundToken as string);
       setTotalRounds(s.totalRounds as number);
       setQuestion(s.question as CeQuestion | null);
       setMode(s.mode as ModeId);
@@ -707,7 +712,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
     const value = parseRaw(raw);
     if (value === null || !activePlayer) return;
     void haptics.medium();
-    act('guess', { pid: activePlayer.id, value }, () => doGuess(activePlayer.id, value));
+    act('guess', { pid: activePlayer.id, value, roundToken }, () => doGuess(activePlayer.id, value));
     setRaw('');
     setHintShown(false);
     if (!isOnline) {

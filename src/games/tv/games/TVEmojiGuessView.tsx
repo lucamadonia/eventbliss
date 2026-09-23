@@ -1,3 +1,17 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (TVPlayer)[];
+  answer?: string;
+  category?: string;
+  emojis?: string;
+  phase?: string;
+  currentPlayerIdx?: number;
+  currentRound?: number;
+  maxTime?: number;
+  timeLeft?: number;
+  totalRounds?: number;
+}
 import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -25,12 +39,14 @@ const EG = { primary: '#df8eff', cyan: '#8ff5ff', accent: '#fbbf24', text: '#f1f
 
 interface TVPlayer { id: string; name: string; color: string; score: number; streak: number; avatar?: string }
 
-export default function TVEmojiGuessView({ gameState }: { gameState: any }) {
+const EMPTY_PLAYERS: TVPlayer[] = [];
+
+export default function TVEmojiGuessView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 
   const phase: string = gameState?.phase || 'playing';
-  const players: TVPlayer[] = gameState?.players || [];
+  const players: TVPlayer[] = gameState?.players || EMPTY_PLAYERS;
   const currentRound: number = gameState?.currentRound ?? 1;
   const totalRounds: number = gameState?.totalRounds ?? 1;
   const currentPlayerIdx: number = gameState?.currentPlayerIdx ?? 0;

@@ -284,7 +284,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
   const visibleDuration = mode === 'speed-rush' ? Math.max(300, speedMs.current - wordIndex * 25) : speedMs.current;
   const activeId = online?.players[currentPlayerIndex]?.id;
   const isActiveDevice = !online || activeId === online.myPlayerId;
-  const remoteActor = online && activeId !== online.players.find(p => p.isHost)?.id;
+  const remoteActor = online && activeId !== (online.hostPlayerId ?? online.players.find(p => p.isHost)?.id);
   const reactionStarted = useRef(0);
   const reactionPause = useRef<number | null>(null);
   const submitted = useRef(false);
@@ -591,6 +591,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
 
   useTVGameBridge('wordpress', {
     phase, round, currentPlayerIndex, players, totalRounds,
+    partyScoresById: online ? Object.fromEntries(online.players.map((p, i) => [p.id, players[i]?.score ?? 0])) : undefined,
     mode,
     currentWord: live.word,
     displayColor: live.displayColor,
@@ -599,7 +600,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     wordsPerTurn: WORDS_PER_TURN,
     liveCombo: live.combo,
     liveScore: live.score,
-  }, [phase, round, currentPlayerIndex, mode, forbiddenWord, contentLanguage, live]);
+  }, [phase, round, currentPlayerIndex, mode, forbiddenWord, contentLanguage, live], !online || online.isHost);
 
   const handleStart = useCallback((ps: PlayerState[], m: GameMode, s: Speed, r: number) => {
     const roster = online ? online.players.map((member, i) => ({ ...ps[i % ps.length], name: member.name })) : ps;
@@ -653,7 +654,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
       gameRecordedRef.current = true;
       const winner = [...players].sort((a, b) => b.score - a.score)[0];
       const me = online ? players[online.players.findIndex(p => p.id === online.myPlayerId)] : winner;
-      recordEnd('drueck-das-wort', me?.score ?? 0, !online || me === winner);
+      recordEnd('drueck-das-wort', me?.score ?? 0, !!me && me.score === winner?.score);
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -666,13 +667,11 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     setTurnQueue([]);
   }, []);
 
-  // Nochmal spielen: KEEP players AND their accumulated scores. We replicate
-  // handleStart's gameplay-entry (round 1, rebuilt turn queue) and go straight
-  // to 'playing' — never to 'setup'. PlayingScreen seeds its local score from
-  // each player's carried-over score, so the new match continues the totals.
+  // Preserve players and settings; start a new match with fresh reaction statistics.
   const rematch = useCallback(() => {
     if (players.length === 0) { handleRestart(); return; }
     gameRecordedRef.current = false;
+    setPlayers(prev => prev.map(player => ({ ...player, score: 0, combo: 0, maxCombo: 0, correct: 0, wrong: 0, missed: 0 })));
     setRound(1);
     setCurrentPlayerIndex(0);
     setForbiddenWord(randomFrom(forbiddenWords(matchWords)));

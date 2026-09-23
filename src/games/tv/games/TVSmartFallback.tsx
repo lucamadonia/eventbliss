@@ -1,9 +1,34 @@
+interface FallbackPlayer {name:string;score?:number;color?:string}
+interface FallbackState {
+  game?: string;
+  phase?: string;
+  category?: string;
+  currentCategory?: string;
+  task?: string;
+  currentTask?: string;
+  currentWord?: string;
+  statement?: string;
+  question?: string;
+  emojis?: string;
+  answer?: string;
+  choiceType?: string;
+  explainer?: string;
+  currentPlayerIndex?: number;
+  activeIdx?: number;
+  currentPlayerIdx?: number;
+  currentRound?: number;
+  round?: number;
+  totalRounds?: number;
+  total?: number;
+  activeTeamIdx?: number;
+  players?:FallbackPlayer[]; teams?:{name?:string;score?:number}[];
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
-  gameState: { game: string; phase: string; [key: string]: unknown };
+  gameState: FallbackState;
   drawing?: unknown[];
 }
 
@@ -18,7 +43,7 @@ const GAME_NAMES: Record<string, string> = {
   findit: 'WO IST WAS?',
 };
 
-function extractTVState(gs: any) {
+function extractTVState(gs: FallbackState) {
   const players = gs.players || [];
   const currentIdx = gs.currentPlayerIndex ?? gs.activeIdx ?? gs.currentPlayerIdx ?? null;
   return {
@@ -51,9 +76,9 @@ export default function TVSmartFallback({ gameState }: Props) {
   const { t } = useTranslation();
   const tv = useMemo(() => extractTVState(gameState), [gameState]);
   const displayName = GAME_NAMES[tv.gameName] || tv.gameName.toUpperCase();
-  const hasScores = tv.players.some((p: any) => typeof p.score === 'number');
+  const hasScores = tv.players.some((p) => typeof p.score === 'number');
   const sortedPlayers = useMemo(
-    () => hasScores ? [...tv.players].sort((a: any, b: any) => (b.score ?? 0) - (a.score ?? 0)) : tv.players,
+    () => hasScores ? [...tv.players].sort((a, b) => (b.score ?? 0) - (a.score ?? 0)) : tv.players,
     [tv.players, hasScores],
   );
 
@@ -125,7 +150,7 @@ export default function TVSmartFallback({ gameState }: Props) {
           {/* Teams display (taboo-style) */}
           {tv.teams ? (
             <motion.div key="teams" className="flex gap-10 items-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              {(tv.teams as any[]).map((team: any, i: number) => {
+              {tv.teams.map((team, i: number) => {
                 const isActive = i === tv.activeTeamIdx;
                 return (
                   <motion.div
@@ -272,7 +297,7 @@ export default function TVSmartFallback({ gameState }: Props) {
       {hasScores && (
         <div className="px-10 pb-8 relative z-10">
           <div className="flex gap-3 justify-center flex-wrap">
-            {sortedPlayers.map((p: any, i: number) => {
+            {sortedPlayers.map((p, i: number) => {
               const isCurrent = tv.currentPlayer?.name === p.name;
               const clr = p.color || '#df8eff';
               return (

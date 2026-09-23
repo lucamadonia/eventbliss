@@ -292,7 +292,7 @@ export function AgencyRunOfShow() {
                           </div>
                         </div>
                         <div className="flex items-start gap-1.5 shrink-0">
-                          {(cue.status === "pending" || cue.status === "upcoming") && (
+                          {cue.status === "pending" && (
                             <>
                               <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-emerald-400 hover:bg-emerald-500/10" onClick={() => markActive(cue.id)}>
                                 <Play className="w-3 h-3 mr-1" /> Start
@@ -302,7 +302,7 @@ export function AgencyRunOfShow() {
                               </Button>
                             </>
                           )}
-                          {(cue.status === "active" || cue.status === "delayed") && (
+                          {cue.status === "active" && (
                             <>
                               <Button size="sm" variant="ghost" className="h-7 px-2 text-xs text-white/50 hover:bg-white/10" onClick={() => addDelay(cue.id, 5)}>
                                 <Timer className="w-3 h-3 mr-1" /> +5m

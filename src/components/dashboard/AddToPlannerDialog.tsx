@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import { de, enUS } from "date-fns/locale";
@@ -75,7 +75,6 @@ export const AddToPlannerDialog = ({
   const { t, i18n } = useTranslation();
   const locale = i18n.language === 'de' ? de : enUS;
   const navigate = useNavigate();
-  const matches = activity ? getMarketplaceMatches(formData.category) : [];
 
   const [isLoading, setIsLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -88,9 +87,10 @@ export const AddToPlannerDialog = ({
     location: '',
     estimated_cost: '',
   });
+  const matches = activity ? getMarketplaceMatches(formData.category) : [];
 
   // Initialize form when activity changes
-  useState(() => {
+  useEffect(() => {
     if (activity) {
       const scheduleData = activityToScheduleData(activity);
       setFormData({
@@ -103,7 +103,7 @@ export const AddToPlannerDialog = ({
         estimated_cost: scheduleData.estimated_cost?.toString() || '',
       });
     }
-  });
+  }, [activity]);
 
   const handleSubmit = async () => {
     if (!selectedDate) {

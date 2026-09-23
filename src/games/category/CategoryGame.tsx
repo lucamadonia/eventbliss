@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from "framer-motion";
 import { useGameEnd } from '../social/useGameEnd';
+import { personalResult } from '../social/result';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import {
   ArrowLeft,
@@ -654,9 +655,8 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
-      const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      const me = online ? players.find(p => p.id === online.myPlayerId) : winner;
-      recordEnd('category', me?.score ?? 0, !online || me?.id === winner?.id);
+      const result = personalResult(players, online?.myPlayerId);
+      recordEnd('category', result.score, result.won);
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -685,10 +685,10 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
     return true;
   });
 
-  // Rematch: restart gameplay directly (no setup screen), keeping the same
-  // players AND their accumulated score/losses (carry over — do not zero).
+  // A rematch keeps the roster and settings, and starts fresh scoring.
   const handlePlayAgain = useCallback(() => {
     gameRecordedRef.current = false;
+    setPlayers(previous => previous.map(player => ({ ...player, score: 0, losses: 0 })));
     setCurrentRound(1);
     setCurrentPlayerIndex(0);
     setRoundWords([]);

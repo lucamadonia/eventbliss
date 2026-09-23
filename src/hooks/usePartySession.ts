@@ -303,6 +303,11 @@ export function getActivePartySession(): PartySession | null {
   return readSession();
 }
 
+/** Server snapshots are the source of truth for controller parties. */
+export function replaceControllerPartySession(session: PartySession | null): void {
+  if (JSON.stringify(readSession()) !== JSON.stringify(session)) commit(session);
+}
+
 export function isPartySessionActive(): boolean {
   return readSession() !== null;
 }

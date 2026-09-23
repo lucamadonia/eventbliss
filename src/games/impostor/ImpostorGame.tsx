@@ -1,7 +1,7 @@
 import { GameStage, StageHeader, StageAction } from '../ui/GameStage';
 import './design.css';
 import { uniqueVoteLeader, impostorRoundPoints } from './round-rules';
-import { impostorSnapshotFor } from './private-state';
+import { impostorSnapshotFor, impostorTVPlayers } from './private-state';
 import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -211,7 +211,8 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
   // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
   // genau einmal beim Mount und verpassten jede spaetere Aenderung.
-  const partyPlayerNames = (useInitialRoster() ?? []).map((p) => p.name);
+  const partyRoster = useInitialRoster() ?? [];
+  const partyPlayerNames = partyRoster.map((p) => p.name);
   const resolvedNames = onlinePlayerNames.length >= 4
     ? onlinePlayerNames
     : partyPlayerNames.length >= 4
@@ -220,7 +221,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   // --- Setup state ---
   const [players, setPlayers] = useState<Player[]>(() =>
     resolvedNames.length >= 4
-      ? resolvedNames.map((name, i) => { const player = createPlayer(name); return { ...player, id: online?.players[i]?.id ?? player.id }; })
+      ? resolvedNames.map((name, i) => { const player = createPlayer(name); return { ...player, id: online?.players[i]?.id ?? partyRoster[i]?.id ?? player.id }; })
       : [
           createPlayer(`${t('games.impostor.playerLabel')} 1`),
           createPlayer(`${t('games.impostor.playerLabel')} 2`),
@@ -297,7 +298,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   // deps list is what triggers a re-broadcast, so it carries a score signature.
   useTVGameBridge(
     'impostor',
-    { phase, round, players: online && !['reveal', 'bonusGuess', 'results'].includes(phase) ? players.map(p => ({ ...p, isImpostor: false, votedFor: null })) : players, currentSpeaker, timeLeft },
+    { phase, round, players: impostorTVPlayers(phase, players), currentSpeaker, timeLeft },
     [phase, round, currentSpeaker, timeLeft, players.map((p) => p.score).join(',')],
     !online || online.isHost,
   );
@@ -316,22 +317,22 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast("impostor-state", data => {
-      if (data.__senderId !== online.players.find(p => p.isHost)?.id) return;
-      setPlayers(data.players as any);
-      setPhase(data.phase as any);
-      setCurrentWordSet(data.currentWordSet as any);
-      setTimeLeft(data.timeLeft as any);
-      setCurrentSpeaker(data.currentSpeaker as any);
-      setVotingPlayer(data.votingPlayer as any);
-      setCountdownNum(data.countdownNum as any);
-      setRound(data.round as any);
-      setHideCategory(data.hideCategory as any);
-      setOrder(data.order as any);
-      setImpostorCount(data.impostorCount as any);
-      setTimerDuration(data.timerDuration as any);
-      setRandomOrder(data.randomOrder as any);
-      setBonusResult(data.bonusResult as any);
-      setRoleReady(data.roleReady as any);
+      if (data.__senderId !== (online.hostPlayerId ?? online.players.find(p => p.isHost)?.id)) return;
+      setPlayers(data.players as Player[]);
+      setPhase(data.phase as Phase);
+      setCurrentWordSet(data.currentWordSet as WordSet | null);
+      setTimeLeft(data.timeLeft as number);
+      setCurrentSpeaker(data.currentSpeaker as number);
+      setVotingPlayer(data.votingPlayer as number);
+      setCountdownNum(data.countdownNum as number);
+      setRound(data.round as number);
+      setHideCategory(data.hideCategory as boolean);
+      setOrder(data.order as number[]);
+      setImpostorCount(data.impostorCount as number);
+      setTimerDuration(data.timerDuration as number);
+      setRandomOrder(data.randomOrder as boolean);
+      setBonusResult(data.bonusResult as boolean | null);
+      setRoleReady(data.roleReady as string[]);
     });
   }, [online?.isHost, online?.onBroadcast, online?.players]);
 
@@ -389,12 +390,12 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   const route = useOnlineAuthority(online, 'impostor', `${phase}:${round}:${currentSpeaker}:${votingPlayer}`, {
     readyRole: { allow: (sender, args) => phase === "wordReveal" && Number.isInteger(args[0]) && sender === players[args[0]]?.id && !roleReady.includes(sender), run: (...args) => readyRole(args[0]) },
     markSpoken: { allow: (sender, args) => phase === "discussion" && args[0] === currentSpeaker && sender === players[seat(currentSpeaker)]?.id, run: (...args) => markSpoken(args[0]) },
-    skipToVoting: { allow: (sender, args) => phase === "discussion" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => skipToVoting() },
+    skipToVoting: { allow: (sender, args) => phase === "discussion" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => skipToVoting() },
     castVote: { allow: (sender, args) => phase === "voting" && sender === players[seat(votingPlayer)]?.id && players.some(p => p.id === args[0] && p.id !== sender), run: (...args) => castVote(args[0]) },
     submitBonusGuess: { allow: (sender, args) => phase === "bonusGuess" && bonusResult === null && players.some(p => p.id === sender && p.isImpostor && p.id !== mostVotedId) && typeof args[0] === "string" && args[0].length <= 100, run: (...args) => submitBonusGuess(args[0]) },
-    proceedFromReveal: { allow: (sender, args) => phase === "reveal" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => proceedFromReveal() },
-    playAgain: { allow: (sender, args) => phase === "results" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
-    resetGame: { allow: (sender, args) => phase === "results" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => resetGame() },
+    proceedFromReveal: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => proceedFromReveal() },
+    playAgain: { allow: (sender, args) => phase === "results" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
+    resetGame: { allow: (sender, args) => phase === "results" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => resetGame() },
   });
 
   function readyRole(index: number) {
@@ -592,8 +593,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
     }
   };
 
-  // --- Play again (rematch): restart gameplay directly (no setup screen),
-  // keeping the same players AND their accumulated scores (carry over). ---
+  // --- New match: retain players/settings and reset their scores. ---
   const playAgain = () => {
     if (route("playAgain", [])) return;
     gameRecordedRef.current = false;

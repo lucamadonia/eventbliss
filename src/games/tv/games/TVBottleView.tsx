@@ -1,3 +1,21 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (Player)[];
+  mode?: string;
+  phase?: string;
+  selectedName?: string;
+  task?: string;
+  taskId?: string;
+  taskType?: string;
+  currentRound?: number;
+  rotation?: number;
+  round?: number;
+  selectedIdx?: number;
+  totalRounds?: number;
+  voteNo?: number;
+  voteYes?: number;
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAmbientMotion } from '@/lib/useAmbientMotion';
@@ -18,7 +36,7 @@ const BTL = { primary: '#df8eff', secondary: '#8ff5ff', yes: '#10b981', no: '#ef
 
 interface Player { id?: string; name: string; color?: string; score?: number }
 
-export default function TVBottleView({ gameState }: { gameState: any }) {
+export default function TVBottleView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 

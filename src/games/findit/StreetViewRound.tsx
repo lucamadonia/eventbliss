@@ -1,6 +1,6 @@
 import './expedition.css';
 import { usePausableTimeout } from '../engine/TimerSystem';
-import { appendOnlineGuess } from './online-guesses';
+import { appendOnlineGuess, publicGuessRound } from './online-guesses';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Camera, Check, ChevronRight, Trophy, MapPin, Crosshair, Eye, Timer } from 'lucide-react';
@@ -29,10 +29,10 @@ interface Player { id: string; name: string; color: string; avatar: string; scor
 export interface StreetViewResult { playerId: string; distanceKm: number; }
 interface Props { location: StreetViewLocation; players: Player[]; roundNumber: number; totalRounds: number; timerSeconds: number; onRoundComplete: (results: StreetViewResult[]) => void; onExit: () => void; online?: OnlineGameProps; }
 
-function formatDistance(km: number): string {
+function formatDistance(km: number, language: string): string {
   if (km < 1) return `${Math.round(km * 1000)} m`;
-  if (km < 100) return `${km.toFixed(1)} km`;
-  return `${Math.round(km).toLocaleString('de-DE')} km`;
+  if (km < 100) return `${km.toLocaleString(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} km`;
+  return `${Math.round(km).toLocaleString(language)} km`;
 }
 
 const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}`;
@@ -81,8 +81,10 @@ function StreetViewPano({ lat, lng, onStatus }: { lat: number; lng: number; onSt
   return <div ref={containerRef} style={{ width: '100%', height: '100%', background: '#0a0e14' }} />;
 }
 
-export default function StreetViewRound({ location, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online }: Props) {
-  const { t } = useTranslation();
+export default function StreetViewRound({ location: promptLocation, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online }: Props) {
+  const { t, i18n } = useTranslation();
+  const [revealedLocation, setRevealedLocation] = useState<StreetViewLocation | null>(null);
+  const location = revealedLocation ?? promptLocation;
   const [phase, setPhase] = useState<Phase>('explore');
   const [panoReady, setPanoReady] = useState(false);
   const [panoError, setPanoError] = useState(false);
@@ -135,12 +137,12 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
     guessesRef.current = updated;
     setGuesses(updated);
     if (updated.length >= players.length) {
-      online.broadcast('findit-sv-results', { results: updated });
+      online.broadcast('findit-sv-results', { results: updated, roundNumber, location });
 
       setWaitingForResults(false);
       setPhase('result');
     }
-  }, [online, phase, players, location]);
+  }, [online, phase, players, location, roundNumber]);
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast('findit-sv-guess', data => {
@@ -150,17 +152,18 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
   }, [online, receiveGuess, roundNumber]);
   useEffect(() => {
     if (!online?.isHost) return;
-    online.broadcast('findit-sv-state', { roundNumber, phase, countdown, guesses, exploreTime });
-  }, [online, roundNumber, phase, countdown, guesses, exploreTime]);
+    online.broadcast('findit-sv-state', publicGuessRound({ roundNumber, phase, countdown, guesses, location, exploreTime }));
+  }, [online, roundNumber, phase, countdown, guesses, exploreTime, location]);
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast('findit-sv-state', data => {
       if (data.roundNumber !== roundNumber) return;
+      if (data.location) setRevealedLocation(data.location as StreetViewLocation);
       setPhase(data.phase as Phase);
       setCountdown(data.countdown as number);
       const incoming = data.guesses as typeof guesses;
       setGuesses(incoming);
-      setMyGuessPlaced(incoming.some(g => g.playerId === online.myPlayerId));
+      setMyGuessPlaced((data.submittedIds as string[]).includes(online.myPlayerId));
       if (data.phase === 'result') {  setWaitingForResults(false); }
       setExploreTime(data.exploreTime as number);
     });
@@ -170,46 +173,50 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
   useEffect(() => {
     if (!online || online.isHost) return;
     const unsub = online.onBroadcast('findit-sv-results', (data) => {
+      if (data.roundNumber !== roundNumber) return;
+      if (data.location) setRevealedLocation(data.location as StreetViewLocation);
       const { results } = data as { results: { playerId: string; playerName: string; playerColor: string; lat: number; lng: number; distanceKm: number }[] };
       setGuesses(results);
       setWaitingForResults(false);
       setPhase('result');
     });
     return unsub;
-  }, [online]);
+  }, [online, roundNumber]);
 
   // --- Online: Host broadcasts explore timer countdown ---
   useEffect(() => {
     if (!online?.isHost || phase !== 'explore') return;
-    online.broadcast('findit-sv-explore-time', { exploreTime });
-  }, [online, phase, exploreTime]);
+    online.broadcast('findit-sv-explore-time', { exploreTime, roundNumber });
+  }, [online, phase, exploreTime, roundNumber]);
 
   // --- Online: Non-host syncs explore timer ---
   useEffect(() => {
     if (!online || online.isHost) return;
     const unsub = online.onBroadcast('findit-sv-explore-time', (data) => {
+      if (data.roundNumber !== roundNumber) return;
       const { exploreTime: t } = data as { exploreTime: number };
       setExploreTime(t);
     });
     return unsub;
-  }, [online]);
+  }, [online, roundNumber]);
 
   // --- Online: Host broadcasts phase transitions ---
   useEffect(() => {
     if (!online?.isHost) return;
-    online.broadcast('findit-sv-phase', { phase, countdown });
-  }, [online, phase]);
+    online.broadcast('findit-sv-phase', { phase, countdown, roundNumber });
+  }, [online, phase, roundNumber]);
 
   // --- Online: Non-host listens for phase transitions ---
   useEffect(() => {
     if (!online || online.isHost) return;
     const unsub = online.onBroadcast('findit-sv-phase', (data) => {
+      if (data.roundNumber !== roundNumber) return;
       const { phase: p, countdown: c } = data as { phase: Phase; countdown: number };
       if (p === 'guess' && !myGuessPlaced) { setPhase('guess'); setCountdown(c); }
       // result phase handled by findit-sv-results listener
     });
     return unsub;
-  }, [online, myGuessPlaced]);
+  }, [online, myGuessPlaced, roundNumber]);
 
   // Explore countdown
   useEffect(() => {
@@ -271,7 +278,7 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
     const filled = [...previous, ...missing.map(p => ({ playerId: p.id, playerName: p.name, playerColor: p.color, lat: 0, lng: 0, distanceKm: 20000 }))];
     guessesRef.current = filled;
     setGuesses(filled);
-    online?.broadcast('findit-sv-results', { results: filled });
+    online?.broadcast('findit-sv-results', { results: filled, roundNumber, location });
 
     setPhase('result');
   }, online?.isHost && phase === 'guess' ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
@@ -279,7 +286,7 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
   const handleMapClick = useCallback((lat: number, lng: number) => {
     if (online && myGuessPlaced) return; // can't change after confirming
     setPinPos({ lat, lng });
-  }, [online, myGuessPlaced]);
+  }, [online, myGuessPlaced, roundNumber]);
   const sorted = [...guesses].sort((a, b) => a.distanceKm - b.distanceKm);
   const winner = sorted[0];
 
@@ -418,7 +425,7 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
                       <Crosshair className="w-4 h-4 text-[#8ff5ff]" />
                       <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.svNearestHit')}</span>
                     </div>
-                    <p className="text-4xl font-black text-[#8ff5ff] text-glow-cyan">{formatDistance(winner.distanceKm)}</p>
+                    <p className="text-4xl font-black text-[#8ff5ff] text-glow-cyan">{formatDistance(winner.distanceKm, i18n.language)}</p>
                   </div>
                 )}
                 {winner && (
@@ -435,7 +442,7 @@ export default function StreetViewRound({ location, players, roundNumber, totalR
                     <span className={`text-sm font-black w-6 text-center ${i === 0 ? 'text-[#df8eff]' : 'text-[#a8abb3]/60'}`}>{i === 0 ? '🏆' : `${i + 1}`}</span>
                     <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: g.playerColor }}>{g.playerName.charAt(0)}</div>
                     <span className={`text-sm font-semibold flex-1 ${i === 0 ? 'text-[#f1f3fc]' : 'text-[#a8abb3]'}`}>{g.playerName}</span>
-                    <span className={`text-sm font-bold tabular-nums ${i === 0 ? 'text-[#8ff5ff]' : 'text-[#a8abb3]/60'}`}>{formatDistance(g.distanceKm)}</span>
+                    <span className={`text-sm font-bold tabular-nums ${i === 0 ? 'text-[#8ff5ff]' : 'text-[#a8abb3]/60'}`}>{formatDistance(g.distanceKm, i18n.language)}</span>
                   </div>
                 ))}
               </div>

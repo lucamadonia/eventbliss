@@ -40,3 +40,11 @@ export function projectVisualState<T extends {mode:string;phase:string;questionI
     questions:state.currentScene.questions.map((q,i)=>({...q,correct:reveal&&i===state.questionIdx?q.correct:-1})),
   }:null,currentDiff:state.currentDiff?{...state.currentDiff,diffs:reveal?state.currentDiff.diffs:[]}:null};
 }
+
+/** Google needs current panorama coordinates; future locations and labels stay host-only. */
+export function publicGeoPrompt<T extends { lat: number; lng: number }>(location: T | null): T | null {
+  return location ? { ...location, lat: 0, lng: 0 } : null;
+}
+export function publicPanoramaDeck<T extends { lat: number; lng: number; city: string; country: string; hint?: string }>(locations: T[], current: number): (T | null)[] {
+  return locations.map((location, index) => index === current ? { ...location, city: '', country: '', hint: undefined } : null);
+}

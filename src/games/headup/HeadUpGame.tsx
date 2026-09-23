@@ -78,7 +78,8 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
   // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
   // genau einmal beim Mount und verpassten jede spaetere Aenderung.
-  const partyPlayerNames = (useInitialRoster() ?? []).map((p) => p.name);
+  const partyRoster = useInitialRoster() ?? [];
+  const partyPlayerNames = partyRoster.map((p) => p.name);
   const initialPlayers = onlinePlayerNames.length >= 2
     ? onlinePlayerNames
     : partyPlayerNames.length >= 2
@@ -141,7 +142,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     smoothRef.current = null;
     tiltTracker.current.reset();
     setTimeout(() => { orientationActiveRef.current = true; }, 150);
-  }, [screen]);
+  }, [screen, online, currentRound, setTimeout]);
 
   // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt
   // über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
@@ -168,11 +169,13 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const [remoteTime, setRemoteTime] = useState(60);
   const actionRef = useRef<(name: string, ...args: unknown[]) => void>(() => {});
   const { timeLeft: hostTime, start: startTimer, reset: resetTimer } =
-    useGameTimer(timerDuration, handleTimerExpire, online?.isConnected !== false);
+    useGameTimer(timerDuration, handleTimerExpire, online?.isConnected !== false && (!!online || !exitGuard.open));
   const timeLeft = online && !online.isHost ? remoteTime : hostTime;
   const percentLeft = timerDuration > 0 ? timeLeft / timerDuration * 100 : 0;
 
-  useTVGameBridge('headup', { phase: screen, currentRound, totalRounds, currentWord: online ? '' : wordQueue[currentWordIndex], players: playerNames, correctCount: roundWords.filter(w => w.correct).length, skippedCount: roundWords.filter(w => !w.correct).length, timeLeft, category: selectedCategory?.name || '' }, [screen, currentRound, currentWordIndex, timeLeft]);
+  useTVGameBridge('headup', { phase: screen, currentRound, totalRounds, currentWord: online ? '' : wordQueue[currentWordIndex], players: playerNames,
+    partyScoresById: Object.fromEntries((online?.players ?? partyRoster).map((player, index) => [player.id, allRounds[index]?.correct ?? 0])),
+    correctCount: roundWords.filter(w => w.correct).length, skippedCount: roundWords.filter(w => !w.correct).length, timeLeft, category: selectedCategory?.name || '' }, [screen, currentRound, currentWordIndex, timeLeft, allRounds], !online || online.isHost);
 
   const handleStartRound = useCallback(() => {
     if (!selectedCategory) return;

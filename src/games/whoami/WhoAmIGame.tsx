@@ -1,6 +1,6 @@
 import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
 import './design.css';
-import { phaseAfterQuestion, identityMatches } from './question-rules';
+import { phaseAfterQuestion, identityMatches, identityMayBeRevealed } from './question-rules';
 import { whoamiSnapshotFor } from './private-state';
 import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { Trans, useTranslation } from "react-i18next";
@@ -154,12 +154,12 @@ function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
     submitQuestion: { allow: sender => phase === 'asking' && sender === players[activeIdx]?.id, run: (...args) => submitQuestion(args[0]) },
     tryGuess: { allow: (sender, args) => phase === 'guessing' && sender === players[activeIdx]?.id && typeof args[0] === 'string' && args[0].length <= 100, run: (...args) => tryGuess(args[0]) },
     skipToGuess: { allow: sender => phase === 'asking' && sender === players[activeIdx]?.id, run: () => skipToGuess() },
-    nextReveal: { allow: (sender, args) => phase === "assign" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => nextReveal() },
+    nextReveal: { allow: (sender, args) => phase === "assign" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => nextReveal() },
     castAnswer: { allow: (sender, args) => phase === "answerVote" && ["yes","no","maybe"].includes(args[0]) && sender === players.filter((_, i) => i !== activeIdx)[voterIdx]?.id, run: (...args) => castAnswer(args[0]) },
-    afterGuess: { allow: (sender, args) => phase === "guessResult" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => afterGuess() },
+    afterGuess: { allow: (sender, args) => phase === "guessResult" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => afterGuess() },
     handleSolvedDirect: { allow: (sender, args) => false, run: (...args) => handleSolvedDirect() },
     handleSkipDirect: { allow: (sender, args) => phase === "asking" && sender === players[activeIdx]?.id, run: (...args) => handleSkipDirect() },
-    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
   });
 
   const nextReveal = () => {
@@ -219,7 +219,7 @@ function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
   }, [voteResults]);
 
   useTVGameBridge('whoami', {
-    phase, currentRound, totalRounds, activeIdx, players: online && phase !== 'gameOver' ? players.map(p => ({ ...p, character: '' })) : players,
+    phase, currentRound, totalRounds, activeIdx, players: phase !== 'gameOver' ? players.map(p => ({ ...p, character: '' })) : players,
     // What's being asked + the live aggregate answer tally (never per-voter)
     currentQuestion,
     voteTally: voteSummary,
@@ -340,9 +340,7 @@ function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
-  // Rematch: keep players AND their scores, but assign fresh characters
-  // (a new game must reveal new secret roles). Reset per-match counts and
-  // go straight into the assign/reveal phase — never back to setup.
+  // Preserve players and settings; reset scores and assign fresh characters.
   const playAgain = () => {
     if (route("playAgain", [])) return;
     const pool = drawPool(mode);
@@ -377,7 +375,7 @@ function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast("whoami-state", data => {
-      if (data.__senderId !== online.players.find(p => p.isHost)?.id) return;
+      if (data.__senderId !== (online.hostPlayerId ?? online.players.find(p => p.isHost)?.id)) return;
       setPhase(data.phase as Phase);
       setCurrentRound(data.currentRound as number);
       setTotalRounds(data.totalRounds as number);
@@ -578,7 +576,7 @@ function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
                 {t('games.whoami.asking.visibleToOthers')}
               </p>
               <p className="text-[#72757d] text-xs">
-                {t('games.whoami.asking.holdPhone')}
+                {online ? t('games.whoami.asking.controllerHint', { defaultValue: 'Ask a question or make a guess on your phone.' }) : t('games.whoami.asking.holdPhone')}
               </p>
             </div>
 
@@ -828,11 +826,11 @@ function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
                   </div>
                 </motion.div>
                 <h2 className="text-2xl font-extrabold text-[#ff6e84]">
-                  {t('games.whoami.result.skipped')}
+                  {identityMayBeRevealed(phase, activePlayer, maxQ) ? t('games.whoami.result.skipped') : t('games.whoami.result.tryAgain', { defaultValue: 'Not quite — try again.' })}
                 </h2>
-                <div className="text-[#a8abb3] text-sm text-center">
+                {identityMayBeRevealed(phase, activePlayer, maxQ) && <div className="text-[#a8abb3] text-sm text-center">
                   <Trans i18nKey="games.whoami.result.wasCharacter" values={{ name: activePlayer.name, character: activePlayer.character }} components={{ 1: <strong className="font-bold text-white" /> }} />
-                </div>
+                </div>}
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   disabled={!!online && !online.isHost} onClick={afterGuess}

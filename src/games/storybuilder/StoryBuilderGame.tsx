@@ -1,7 +1,7 @@
 import '../headup/classic-stage.css';
 import { GameStage, StageHeader, StagePanel, StageAction, StageFooter } from '../ui/GameStage';
 import { usePausableTasks } from '../bottlespin/pausable-tasks';
-import { advanceReveal } from './reveal-rules';
+import { advanceReveal, storyTurn } from './reveal-rules';
 import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
@@ -135,6 +135,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
     'storybuilder',
     {
       phase, currentRound, currentPlayerIdx, players, mode, totalRounds,
+      partyScoresById: Object.fromEntries(players.map(p => [p.id, 0])),
       // Only finished sentences are broadcast — never the in-progress typed input.
       sentences: sentences.map((s) => ({
         text: s.text,
@@ -145,13 +146,14 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
       prompt: mode === 'classic' ? '' : currentPrompt,
     },
     [phase, currentRound, currentPlayerIdx, sentences.length, currentPrompt],
+    !online || online.isHost,
   );
 
   // Derived
   const currentPlayer = players[currentPlayerIdx] ?? null;
   const lastSentence = sentences.length > 0 ? sentences[sentences.length - 1] : null;
   const totalTurns = players.length * sentencesPerPlayer * totalRounds;
-  const currentTurn = sentences.length + 1;
+  const currentTurn = storyTurn(currentRound, currentPlayerIdx, currentSentenceNum, players.length, sentencesPerPlayer);
 
   // ---------------------------------------------------------------------------
   // Setup handler
@@ -202,10 +204,10 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
   // Game logic
   // ---------------------------------------------------------------------------
 
-  function getNextPrompt(): string {
+  function getNextPrompt(sentenceCount: number): string {
     if (mode === 'vorgabe') {
       // First sentence of the entire story uses a starter
-      if (sentences.length === 0) {
+      if (sentenceCount === 0) {
         return startersDeck.current[startersPos.current % startersDeck.current.length];
       }
       const prompt = promptsDeck.current[promptsPos.current % promptsDeck.current.length];
@@ -258,7 +260,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
       setCurrentSentenceNum(nextSentenceNum);
     }
 
-    setCurrentPrompt(getNextPrompt());
+    setCurrentPrompt(getNextPrompt(updatedSentences.length));
     setPhase(online ? 'writing' : 'passing');
   }
 
@@ -286,12 +288,12 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
   const [writingSeconds, setWritingSeconds] = useState(90);
   useEffect(() => { setWritingSeconds(90); }, [phase, currentRound, currentPlayerIdx, currentSentenceNum]);
   useEffect(() => {
-    if ((phase !== 'writing' && phase !== 'passing') || writingSeconds <= 0 || (online && !online.isHost)) return;
+    if (phase !== 'writing' || writingSeconds <= 0 || (online && !online.isHost)) return;
     const pending = setTimeout(() => setWritingSeconds(s => Math.max(0, s - 1)), 1000);
     return () => clearTimeout(pending);
   }, [phase, writingSeconds, currentRound, currentPlayerIdx, currentSentenceNum]);
   useEffect(() => {
-    if (writingSeconds === 0 && (phase === 'writing' || phase === 'passing') && (!online || online.isHost) && online?.isConnected !== false) submitSentence('', true);
+    if (writingSeconds === 0 && phase === 'writing' && (!online || online.isHost) && online?.isConnected !== false) submitSentence('', true);
   }, [writingSeconds, phase, online?.isConnected]);
 
   useEffect(() => {
@@ -412,6 +414,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
         <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
         <StagePanel tone="paper" className="!rounded-sm !p-6 sm:!p-10">
           <article className="space-y-8">
+            {sentences.length === 0 && <p role="status" className="text-center text-[#52605a]">{t('games.storybuilder.emptyStory', { defaultValue: 'No sentences yet. Start a new story together.' })}</p>}
             {sentences.map((sentence, index) => index <= revealIdx && <section key={`${sentence.playerId}-${index}`} className="border-b border-[#20332d]/10 pb-7 last:border-0">
               <div className="mb-3 flex gap-3 text-xs text-[#52605a]"><span className="tabular-nums">{String(index + 1).padStart(2, '0')}</span><span>{sentence.playerName}</span></div>
               <p className="font-serif text-xl sm:text-2xl leading-relaxed text-[#20332d] break-words">{sentence.text}</p>

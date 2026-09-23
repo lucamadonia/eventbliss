@@ -8,3 +8,10 @@ export function appendOnlineGuess(previous: OnlineGuess[], players: { id: string
   if (!player || previous.some(g => g.playerId === playerId)) return previous;
   return [...previous, { playerId, playerName: player.name, playerColor: player.color, lat, lng, distanceKm: submitted ? haversineKm(lat, lng, target.lat, target.lng) : 20000 }];
 }
+
+/** While guesses are open, publish completion only, never pins or distances. */
+export function publicGuessRound<T extends { phase: string; guesses: OnlineGuess[]; location: unknown }>(state: T) {
+  return { ...state, guesses: state.phase === 'result' ? state.guesses : [],
+    location: state.phase === 'result' ? state.location : null,
+    submittedIds: state.guesses.map(guess => guess.playerId) };
+}

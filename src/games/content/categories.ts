@@ -13,7 +13,9 @@ import * as ar from './categories-ar';
 
 export type { CategoryPrompt, GameCategory };
 
-type LangModule = typeof de;
+type LangModule = Pick<typeof de, 'generateCategoryPrompt'>
+  & Partial<Record<`GAME_CATEGORIES_${string}`, GameCategory[]>>
+  & Partial<Record<`CATEGORIES_${string}`, string[]>>;
 
 const modules: Record<string, LangModule> = { de, en, es, fr, it, nl, pl, pt, tr, ar };
 

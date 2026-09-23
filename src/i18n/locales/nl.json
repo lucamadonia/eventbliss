@@ -6624,7 +6624,8 @@
         "loading": "Afbeeldingen laden…",
         "compareHint": "Vind de drie vervangen voorwerpen op bord B.",
         "imageError": "De afbeeldingen konden niet worden geladen. Controleer je verbinding en probeer opnieuw.",
-        "retryImages": "Afbeeldingen opnieuw laden"},
+        "retryImages": "Afbeeldingen opnieuw laden"
+      },
       "objects": {
         "apple": "Appel",
         "banana": "Banaan",
@@ -6641,7 +6642,8 @@
         "shoe": "Sneaker",
         "ball": "Voetbal",
         "plant": "Potplant",
-        "umbrella": "Paraplu"}
+        "umbrella": "Paraplu"
+      }
     },
     "impostor": {
       "title": "Bedrieger",
@@ -6933,7 +6935,8 @@
         "visibleToOthers": "Alleen zichtbaar voor de andere spelers",
         "holdPhone": "Houd de telefoon voor je voorhoofd — de anderen geven je tips.",
         "skip": "Sla over",
-        "solved": "Opgelost"
+        "solved": "Opgelost",
+        "controllerHint": "Stel een vraag of doe een gok op je telefoon."
       },
       "answerVote": {
         "asks": "{{name}} vraagt:",
@@ -6957,7 +6960,8 @@
         "nextPlayer": "Volgende speler",
         "skipped": "Overgeslagen",
         "wasCharacter": "{{name}} was <1>{{character}}</1>",
-        "category": "Categorie · {{category}}"
+        "category": "Categorie · {{category}}",
+        "tryAgain": "Nog niet goed. Probeer het opnieuw."
       },
       "gameOver": {
         "title": "Spel voorbij!",
@@ -7040,7 +7044,8 @@
         "reisen": "Reizen en ontdekken",
         "traeume": "Dromen en toekomst",
         "entscheidungen": "Keuzes en waarden",
-        "kreativ": "Fantasie en creativiteit"},
+        "kreativ": "Fantasie en creativiteit"
+      },
       "categorySelection": "Categorieën kiezen",
       "contentSelection": "Wat komt er op de kaart?",
       "questionsOnly": "Alleen vragen",
@@ -7100,7 +7105,8 @@
       "acceptedAnswers": "Ook geldig",
       "nextPlayer": "Hierna: {{name}}",
       "clueLabel": "Beeldraadsel",
-      "poolBudget": "{{puzzleCount}} geselecteerde raadsels. Grotere groepen spelen minder rondes: evenveel beurten voor iedereen, zonder herhaling."
+      "poolBudget": "{{puzzleCount}} geselecteerde raadsels. Grotere groepen spelen minder rondes: evenveel beurten voor iedereen, zonder herhaling.",
+      "balancedTeamPoints": "Bij ongelijke teams worden de punten gewogen, zodat beide teams per ronde evenveel punten kunnen verdienen."
     },
     "fakeorfact": {
       "title": "Leugenaar — Fake or Fact",
@@ -7187,7 +7193,8 @@
       "showAll": "Alles tonen",
       "playAgain": "Opnieuw spelen",
       "otherGame": "Ander spel",
-      "skipTurn": "Beurt overslaan"
+      "skipTurn": "Beurt overslaan",
+      "emptyStory": "Nog geen zinnen. Begin samen een nieuw verhaal."
     },
     "thisorthat": {
       "modeTagPopular": "Populair",
@@ -7759,7 +7766,12 @@
       "chain": "Brouwketen ×{{count}}",
       "multiBonus": "Meervoudige schenking",
       "perfectBonus": "Perfecte schenking",
-      "risk": { "calm": "rustig", "simmering": "pruttelt", "unstable": "instabiel", "critical": "kritiek" },
+      "risk": {
+        "calm": "rustig",
+        "simmering": "pruttelt",
+        "unstable": "instabiel",
+        "critical": "kritiek"
+      },
       "tv": {
         "done": "klaar"
       },
@@ -8346,15 +8358,15 @@
     "perPerson": "/Persoon",
     "flatRate": "Vast tarief",
     "perHour": "/Uur",
-  "bookNow": "Nu boeken",
-  "bookingContact": "Je boekingsgegevens",
-  "guestBookingHint": "Boek direct, zonder account.",
-  "customerName": "Voor- en achternaam *",
-  "customerEmail": "E-mailadres *",
-  "customerPhone": "Telefoon (optioneel)",
-  "customerNotes": "Wensen of opmerkingen (optioneel)",
-  "contactRequired": "Vul je naam en een geldig e-mailadres in.",
-  "providerWebsite": "Website van de aanbieder",
+    "bookNow": "Nu boeken",
+    "bookingContact": "Je boekingsgegevens",
+    "guestBookingHint": "Boek direct, zonder account.",
+    "customerName": "Voor- en achternaam *",
+    "customerEmail": "E-mailadres *",
+    "customerPhone": "Telefoon (optioneel)",
+    "customerNotes": "Wensen of opmerkingen (optioneel)",
+    "contactRequired": "Vul je naam en een geldig e-mailadres in.",
+    "providerWebsite": "Website van de aanbieder",
     "inquireNow": "Nu aanvragen",
     "directBook": "Direct boeken",
     "verifiedAgency": "Geverifieerd bureau",
@@ -10104,7 +10116,9 @@
           "title": "Ongeluksvogel",
           "detail": "{{n}}× laatste"
         }
-      }
+      },
+      "champions": "Gedeelde overwinning",
+      "championsLine": "{{name}} delen de overwinning met elk {{points}} punten"
     },
     "connectTitle": "TV verbinden",
     "openOnTv": "Open op je tv:",
@@ -10272,5 +10286,45 @@
       "rules": "Spelregels",
       "menu": "Menu"
     }
+  },
+  "partyControllers": {
+    "title": "Controllermodus",
+    "subtitle": "Iedereen speelt op zijn eigen telefoon.",
+    "appRequired": "Om mee te spelen heb je de EventBliss-app en een account nodig.",
+    "openApp": "App openen",
+    "installHint": "Installeer EventBliss, log in en voer de getoonde code in de controllermodus in.",
+    "player": "Speler",
+    "loading": "Laden…",
+    "loginRequired": "Log in om aan het feest deel te nemen.",
+    "login": "Inloggen",
+    "name": "Je naam",
+    "hostPlays": "Ik speel als organisator mee",
+    "create": "Feest starten",
+    "roomCode": "Kamercode",
+    "join": "Deelnemen",
+    "scan": "Scan de QR-code om mee te doen",
+    "accountHint": "Iedereen neemt met een eigen account in de EventBliss-app deel.",
+    "tv": "Televisie verbinden",
+    "offline": "Niet verbonden",
+    "ready": "Klaar",
+    "notReadyYet": "Nog niet klaar",
+    "readyToggle": "Mijn status wijzigen",
+    "waitNext": "Er wordt al gespeeld. Wacht op het volgende spel.",
+    "abort": "Spel afbreken",
+    "playlist": "Spelvolgorde",
+    "remove": "Spel verwijderen",
+    "startNext": "Volgend spel starten",
+    "premiumRequired": "De organisator heeft Premium nodig",
+    "capacity": "{{min}}–{{max}} spelers",
+    "hostChoosing": "De organisator kiest het volgende spel.",
+    "end": "Feest beëindigen",
+    "leave": "Feest verlaten",
+    "notReady": "Alle spelers moeten verbonden en klaar zijn.",
+    "pendingResults": "Resultaten opslaan…",
+    "retry": "Opnieuw proberen",
+    "roomEnded": "Dit feest is afgelopen.",
+    "players_one": "{{count}} speler",
+    "players_other": "{{count}} spelers",
+    "players": "{{count}} spelers"
   }
 }

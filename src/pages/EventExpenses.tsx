@@ -26,6 +26,7 @@ import { GradientButton } from "@/components/ui/GradientButton";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { TablesInsert } from '@/integrations/supabase/types';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -125,7 +126,7 @@ const EventExpenses = () => {
         const result = await response.json();
 
         const expensesData = result.expenses || [];
-        const sharesData = (result.shares || []).map((s: any) => ({
+        const sharesData = (result.shares || []).map((s: Omit<ExpenseShare, 'amount'> & { amount: number | string }) => ({
           id: s.id,
           expense_id: s.expense_id,
           participant_id: s.participant_id,
@@ -348,7 +349,7 @@ const EventExpenses = () => {
             defaultValue: CATEGORY_LABELS[expense.category] || expense.category,
           });
           break;
-        case "date":
+        case "date": {
           const date = expense.expense_date || expense.created_at?.split("T")[0];
           key = date || "unknown";
           label = date
@@ -359,6 +360,7 @@ const EventExpenses = () => {
               })
             : t("expenses.unknown");
           break;
+        }
         default:
           key = "all";
           label = "All";
@@ -403,7 +405,7 @@ const EventExpenses = () => {
             description: data.description,
             amount: data.amount,
             currency: event!.currency || "EUR",
-            category: data.category as any,
+            category: data.category as TablesInsert<'expenses'>['category'],
             paid_by_participant_id: data.paid_by_participant_id,
             split_type: data.split_type,
           },

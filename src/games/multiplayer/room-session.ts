@@ -2,6 +2,7 @@ import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js';
 import { playableGames } from '@/lib/playable-games';
 import { claimTabIdentity, identityId, verifyRoomSignature, type RoomIdentity, type PublicRoomIdentity } from './room-identity';
 import { rememberRoom, getSavedRoom, type GameRoom, type RoomSnapshot, type RoomData, type RoomListener } from './room-types';
+import type { PartyRoomAccess } from './party-access';
 
 interface Presence extends PublicRoomIdentity {
   id: string; name: string; color: string; avatar: string; isReady: boolean;
@@ -30,6 +31,7 @@ export class RoomSession {
   private identity: RoomIdentity | null = null;
   private identityPromise: Promise<RoomIdentity> | null = null;
   private channel: RealtimeChannel | null = null;
+  private channelCleanup: Promise<void> = Promise.resolve();
   private own: Presence | null = null;
   private pending: Promise<void> | null = null;
   private finishJoin: (() => void) | null = null;
@@ -42,6 +44,40 @@ export class RoomSession {
   private sendQueue: Promise<unknown> = Promise.resolve();
   private receiveQueue: Promise<unknown> = Promise.resolve();
   private trackSignature = '';
+  private sentTrackSignature = '';
+  private trackQueue: Promise<void> = Promise.resolve();
+  private lastTrackAt = 0;
+  private presenceCalls: number[] = [];
+  private discoveryInfo: Omit<GameRoom, 'players'> | null = null;
+  private presenceRevision = 0;
+  private partyAccess: PartyRoomAccess | null = null;
+  private accountId: string | null = null;
+
+  configureParty = (access: PartyRoomAccess | null): void => { this.partyAccess = access; };
+  prepareAccountIdentity = async (accountId: string): Promise<string> => {
+    if (this.accountId !== accountId) {
+      if (this.snapshot.room) this.leaveRoom();
+      this.accountId = accountId;
+      this.identity = null; this.identityPromise = null;
+    }
+    return (await this.getIdentity()).id;
+  };
+  createPartyRoom = async (code: string, name: string): Promise<void> => {
+    if (!this.partyAccess || this.partyAccess.code !== code) throw new Error('Party membership required');
+    await this.connect(code, name, this.partyAccess.premium, 'bomb');
+    this.updatePartySettings({ controllerParty: true, hostPremium: this.partyAccess.premium });
+  };
+  updatePartySettings = (settings: RoomData): void => {
+    if (!this.isHost() || !this.snapshot.room) return;
+    this.publish({ room: { ...this.snapshot.room, settings: { ...this.snapshot.room.settings, ...settings } } });
+    void this.track().catch(error => this.fail(error)); this.send('room-state', this.roomInfo());
+  };
+  finishPartyGame = (): void => {
+    if (!this.partyAccess || !this.isHost() || !this.snapshot.room) return;
+    this.cache.clear();
+    this.publish({ room: { ...this.snapshot.room, status: 'lobby', players: this.snapshot.players, participantIds: [], sessionId: crypto.randomUUID() } });
+    void this.track().catch(error => this.fail(error)); this.send('room-state', this.roomInfo());
+  };
 
   constructor(private client: Pick<SupabaseClient, 'channel' | 'removeChannel'>) {
     if (typeof window !== 'undefined') {
@@ -65,7 +101,12 @@ export class RoomSession {
   private async getIdentity() {
     if (!this.identityPromise) {
       let storage: Storage | undefined;
-      try { storage = sessionStorage; } catch { /* SSR/private browsing */ }
+      try {
+        if (this.accountId) {
+          const prefix = `eventbliss_account_${this.accountId}:`;
+          storage = { getItem: key => localStorage.getItem(prefix + key), setItem: (key, value) => localStorage.setItem(prefix + key, value), removeItem: key => localStorage.removeItem(prefix + key) } as Storage;
+        } else storage = sessionStorage;
+      } catch { /* SSR/private browsing */ }
       this.identityPromise = claimTabIdentity(storage);
     }
     this.identity = await this.identityPromise;
@@ -80,37 +121,77 @@ export class RoomSession {
   private async track() {
     if (!this.own || !this.channel || this.channel.state !== 'joined') return;
     const channel = this.channel, generation = this.generation;
-    const presence = { ...this.own, ...(this.isHost() ? { roomInfo: this.roomInfo() } : {}) };
+    // Presence only advertises identity and initial host discovery. Current game
+    // metadata travels in signed room-state packets (also requested on join).
+    if (this.isHost() && this.discoveryInfo?.hostId !== this.identity?.id) this.discoveryInfo = this.roomInfo();
+    const presence = { ...this.own, ...(this.isHost() ? { roomInfo: this.discoveryInfo! } : {}) };
     const signature = JSON.stringify(presence);
     if (signature === this.trackSignature) return;
     this.trackSignature = signature;
-    const proofSignature = await this.identity!.sign(signature);
-    if (generation !== this.generation) return;
-    const result = await channel.track({ ...presence, proof: signature, signature: proofSignature });
-    if (generation === this.generation && result !== 'ok') throw new Error('Verbindung zum Raum fehlgeschlagen.');
+    const identity = this.identity!;
+    const task = this.trackQueue.catch(() => {}).then(async () => {
+      const current = () => generation === this.generation && signature === this.trackSignature;
+      if (!current() || signature === this.sentTrackSignature) return;
+      // Presence has a separate server rate limit. Collapse intermediate changes
+      // and serialize updates; gameplay broadcasts remain immediate.
+      const now = Date.now();
+      this.presenceCalls = this.presenceCalls.filter(at => now - at < 30_100);
+      // Realtime defaults to five presence calls per socket per 30 seconds.
+      // Keep one slot spare and preserve the budget across channel reconnects.
+      const wait = Math.max(0, this.lastTrackAt + 250 - now,
+        this.presenceCalls.length >= 4 ? this.presenceCalls[0] + 30_100 - now : 0);
+      if (wait) await new Promise(resolve => setTimeout(resolve, wait));
+      if (!current()) return;
+      const proofSignature = await identity.sign(signature);
+      if (!current()) return;
+      this.lastTrackAt = Date.now();
+      this.presenceCalls.push(this.lastTrackAt);
+      const result = await channel.track({ ...presence, proof: signature, signature: proofSignature });
+      if (current() && result === 'ok') this.sentTrackSignature = signature;
+      if (current() && result !== 'ok') throw new Error('Verbindung zum Raum fehlgeschlagen.');
+    });
+    this.trackQueue = task;
+    try { await task; }
+    catch (error) {
+      if (generation !== this.generation || signature !== this.trackSignature) return;
+      this.trackSignature = '';
+      throw error;
+    }
   }
   private async syncPresence(channel: RealtimeChannel, generation: number) {
+    const revision = ++this.presenceRevision;
     const raw = Object.values(channel.presenceState<Presence>()).flat();
+    const access = this.partyAccess ? await this.partyAccess.refresh() : null;
+    if (generation !== this.generation || revision !== this.presenceRevision) return;
+    this.partyAccess = access;
     const valid = await Promise.all(raw.map(async p => {
       try {
         // Presence adds server fields and may reorder keys. Authenticate the
         // original serialized claim and use only its verified fields.
         if (typeof p.proof !== 'string' || p.proof.length > 20000 || typeof p.signature !== 'string') return null;
         const body = JSON.parse(p.proof) as Presence;
-        return body.id && typeof body.name === 'string' && body.signingKey && body.encryptionKey
+        return body.id && (!access || access.memberIds.includes(body.id)) && typeof body.name === 'string' && body.signingKey && body.encryptionKey
           && await identityId(body.signingKey) === body.id && await verifyRoomSignature(p.proof, p.signature, body.signingKey) ? body : null;
       } catch { return null; }
     }));
-    if (generation !== this.generation || !this.snapshot.room) return;
+    if (generation !== this.generation || revision !== this.presenceRevision || !this.snapshot.room) return;
     this.peers = new Map(valid.filter((p): p is Presence => !!p).map(p => [p.id, p]));
     const sorted = [...this.peers.values()].sort((a, b) => a.id.localeCompare(b.id));
     let room = this.snapshot.room;
+    if (this.partyAccess && room.hostId !== this.partyAccess.hostId) room = { ...room, hostId: this.partyAccess.hostId };
     if (!room.hostId) {
       const host = sorted.find(p => p.isCreator && p.roomInfo?.hostId === p.id) ?? sorted.find(p => p.roomInfo?.hostId === p.id);
       if (host?.roomInfo) room = { ...host.roomInfo, roomCode: room.roomCode, players: [] };
     }
     const players = sorted.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar, isHost: p.id === room.hostId, isReady: !!p.isReady, isPremium: !!p.isPremium }));
-    this.publish({ room: { ...room, players }, players,
+    // Presence describes connectivity, not the participants of a running match.
+    // Keep verified player metadata while a peer reconnects so turn/team indices
+    // cannot shift. Late members remain visible only in the connected lobby list.
+    const matchPlayers = room.settings.controllerParty && room.status === 'playing'
+      ? [...new Map([...room.players, ...players.filter(p => !room.players.some(known => known.id === p.id))]
+          .filter(p => p.id === room.hostId || room.participantIds.includes(p.id)).map(p => [p.id, p])).values()]
+      : players;
+    this.publish({ room: { ...room, players: matchPlayers }, players,
       ...(!this.pending && room.hostId ? { connection: this.available(room) ? 'connected' : 'reconnecting', error: this.available(room) ? null : 'Das Spiel wartet, bis alle Teilnehmer wieder verbunden sind.' } as const : {}) });
     if (this.peers.has(room.hostId)) {
       if (this.hostGrace) clearTimeout(this.hostGrace);
@@ -122,7 +203,7 @@ export class RoomSession {
       this.hostGrace = setTimeout(() => {
         this.hostGrace = null;
         if (generation !== this.generation || !this.snapshot.room || this.peers.has(room.hostId)) return;
-        if (this.snapshot.room.status === 'lobby' && sorted.length) {
+        if (!this.partyAccess && this.snapshot.room.status === 'lobby' && sorted.length) {
           // No hidden game state exists in the lobby; deterministic election is safe.
           const hostId = [...this.peers.keys()].sort()[0];
           const players = this.snapshot.players.map(p => ({ ...p, isHost: p.id === hostId }));
@@ -174,9 +255,10 @@ export class RoomSession {
     const fromHost = packet.sender === this.snapshot.room.hostId;
     if (packet.event === 'room-request' && this.isHost()) {
       const room = this.snapshot.room;
-      if (room.status !== 'lobby' && !room.participantIds.includes(packet.sender)) { this.send('room-rejected', { message: 'Diese Partie läuft bereits. Bitte warte auf eine neue Runde.' }, packet.sender); return; }
-      if (this.snapshot.players.length > (playableGames.find(g => g.id === room.gameId)?.maxPlayers ?? 30)) { this.send('room-rejected', { message: 'Der Raum ist voll.' }, packet.sender); return; }
+      if (!this.partyAccess && room.status !== 'lobby' && !room.participantIds.includes(packet.sender)) { this.send('room-rejected', { message: 'Diese Partie läuft bereits. Bitte warte auf eine neue Runde.' }, packet.sender); return; }
+      if (!this.partyAccess && this.snapshot.players.length > (playableGames.find(g => g.id === room.gameId)?.maxPlayers ?? 30)) { this.send('room-rejected', { message: 'Der Raum ist voll.' }, packet.sender); return; }
       this.send('room-state', this.roomInfo(), packet.sender);
+      if (this.partyAccess && room.status !== 'lobby' && !room.participantIds.includes(packet.sender)) return;
       this.cache.forEach(cached => { if (!cached.recipient || cached.recipient === packet.sender) this.send(cached.event, cached.data, packet.sender); });
       return;
     }
@@ -187,11 +269,11 @@ export class RoomSession {
     if (packet.event === 'room-state' && fromHost) {
       if (typeof data.gameId !== 'string' || !playableGames.some(g => g.id === data.gameId) || !['lobby', 'playing', 'finished'].includes(String(data.status)) || typeof data.sessionId !== 'string') return;
       if (this.snapshot.room.sessionId !== data.sessionId) this.cache.clear();
-      const room = { ...this.snapshot.room, gameId: data.gameId, sessionId: data.sessionId, status: data.status as GameRoom['status'], settings: object(data.settings) ? data.settings : {}, participantIds: Array.isArray(data.participantIds) ? data.participantIds.filter((p): p is string => typeof p === 'string') : [] };
+      const room = { ...this.snapshot.room, players: this.snapshot.room.sessionId === data.sessionId && data.status === 'playing' ? this.snapshot.room.players : this.snapshot.players, gameId: data.gameId, sessionId: data.sessionId, status: data.status as GameRoom['status'], settings: object(data.settings) ? data.settings : {}, participantIds: Array.isArray(data.participantIds) ? data.participantIds.filter((p): p is string => typeof p === 'string') : [] };
       this.publish({ room, connection: this.available(room) ? 'connected' : 'reconnecting', error: this.available(room) ? null : 'Das Spiel wartet, bis alle Teilnehmer wieder verbunden sind.' }); this.finishJoin?.(); return;
     }
     if (packet.sessionId !== this.snapshot.room.sessionId) return;
-    if (this.snapshot.room.status !== 'lobby' && !this.snapshot.room.participantIds.includes(packet.sender)) return;
+    if (this.snapshot.room.status !== 'lobby' && !this.snapshot.room.participantIds.includes(packet.sender) && !fromHost) return;
     if (packet.event === 'kick-player' && fromHost && data.playerId === this.identity?.id) {
       this.leaveRoom(); this.publish({ connection: 'disconnected', error: 'Du wurdest aus dem Raum entfernt.' }); return;
     }
@@ -222,20 +304,28 @@ export class RoomSession {
     const own = previous ? this.own : null;
     this.disconnect();
     const generation = this.generation;
-    const hostId = gameId ? identity.id : previous?.hostId || '';
+    const hostId = this.partyAccess?.hostId || (gameId ? identity.id : previous?.hostId || '');
     this.own = { id: identity.id, name: name.trim().slice(0, 40), avatar: name.trim().slice(0, 1).toUpperCase(), color: own?.color || COLORS[crypto.getRandomValues(new Uint8Array(1))[0] % COLORS.length], isReady: own?.isReady ?? !!gameId, isPremium: premium, isCreator: own?.isCreator ?? !!gameId, joinedAt: own?.joinedAt || Date.now(), signingKey: identity.signingKey, encryptionKey: identity.encryptionKey };
     const room: GameRoom = previous || { roomCode: code, hostId, players: [], gameId: gameId || '', status: 'lobby', settings: recovered ? { recoveredAfterReload: true } : {}, sessionId: gameId ? crypto.randomUUID() : '', participantIds: [] };
     this.publish({ room, players: [], myPlayerId: identity.id, connection: 'connecting', error: null });
-    const channel = this.client.channel(`game-room:${code}`, { config: { broadcast: { ack: true }, presence: { key: identity.id } } });
-    this.channel = channel;
     this.pending = new Promise<void>((resolve, reject) => {
       const clear = () => { if (this.timeout) clearTimeout(this.timeout); this.timeout = null; this.finishJoin = null; this.failJoin = null; this.pending = null; };
       this.finishJoin = () => { clear(); this.publish({ connection: this.available() ? 'connected' : 'reconnecting', error: this.available() ? null : 'Das Spiel wartet, bis alle Teilnehmer wieder verbunden sind.' }); resolve(); };
       this.failJoin = error => { clear(); reject(error); };
-      this.timeout = setTimeout(() => { this.fail(new Error('Raum nicht erreichbar. Prüfe den Code und die Verbindung.')); }, 15000);
+      const calls = this.presenceCalls.filter(at => Date.now() - at < 30_100);
+      const budgetWait = calls.length >= 4 ? Math.max(0, calls[0] + 30_100 - Date.now()) : 0;
+      this.timeout = setTimeout(() => { this.fail(new Error('Raum nicht erreichbar. Prüfe den Code und die Verbindung.')); }, 15000 + budgetWait);
     });
     const pending = this.pending;
-    channel.on('presence', { event: 'sync' }, () => { void this.syncPresence(channel, generation).catch(error => this.fail(error)); });
+    // The SDK reuses a registered same-topic channel until unsubscribe completes.
+    // Reserve the join above so concurrent callers share it while cleanup runs.
+    void pending.catch(() => {});
+    try { await this.channelCleanup; }
+    catch (error) { if (generation === this.generation) this.fail(error); return pending; }
+    if (generation !== this.generation || this.pending !== pending) return pending;
+    const channel = this.client.channel(`game-room:${code}`, { config: { broadcast: { ack: true }, presence: { key: identity.id } } });
+    this.channel = channel;
+    channel.on('presence', { event: 'sync' }, () => { void this.syncPresence(channel, generation).catch(error => { if (generation === this.generation) this.fail(error); }); });
     channel.on('broadcast', { event: 'room-wire' }, ({ payload }) => {
       this.receiveQueue = this.receiveQueue.then(() => this.receive(payload, channel, generation)).catch(() => { /* Ignore malformed/unverifiable packets. */ });
     });
@@ -245,9 +335,9 @@ export class RoomSession {
       if (generation !== this.generation) return;
       if (status === 'SUBSCRIBED') {
         try {
-          this.trackSignature = ''; await this.track(); await this.syncPresence(channel, generation);
+          this.trackSignature = ''; this.sentTrackSignature = ''; await this.track(); await this.syncPresence(channel, generation);
           if (!this.isHost()) this.send('room-request', {});
-        } catch (error) { this.fail(error); }
+        } catch (error) { if (generation === this.generation) this.fail(error); }
       } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
         this.publish({ connection: 'reconnecting', error: 'Verbindung unterbrochen. Das Spiel wird erneut verbunden.' });
       }
@@ -279,8 +369,14 @@ export class RoomSession {
     this.timeout = null; this.heartbeat = null; this.hostGrace = null;
     this.failJoin?.(new Error('Verbindung abgebrochen.'));
     const channel = this.channel; this.channel = null;
-    if (channel) void this.client.removeChannel(channel);
-    this.trackSignature = ''; this.peers.clear(); this.sequences.clear();
+    if (channel) {
+      // Unsubscribe unregisters this topic without closing the shared socket.
+      // removeChannel also starts a socket close when this is the last topic;
+      // a new subscription during that close cannot connect in the current SDK.
+      this.channelCleanup = Promise.all([this.channelCleanup, channel.unsubscribe()]).then(() => {});
+      void this.channelCleanup.catch(() => {});
+    }
+    this.trackSignature = ''; this.sentTrackSignature = ''; this.discoveryInfo = null; this.peers.clear(); this.sequences.clear();
   }
   leaveRoom = (): void => {
     this.disconnect(); this.cache.clear(); this.own = null;
@@ -300,12 +396,18 @@ export class RoomSession {
     void this.track().catch(error => this.fail(error)); this.send('room-state', this.roomInfo());
   };
   startGame = async (gameId = this.snapshot.room?.gameId): Promise<boolean> => {
+    const generation = this.generation;
     const room = this.snapshot.room, game = playableGames.find(g => g.id === gameId);
-    if (!room || !game || !this.isHost() || this.snapshot.connection !== 'connected') return false;
-    const players = this.snapshot.players;
+    if (!room || room.status !== 'lobby' || !game || !this.isHost() || this.snapshot.connection !== 'connected') return false;
+    if (this.partyAccess) this.partyAccess = await this.partyAccess.refresh();
+    if (generation !== this.generation || this.snapshot.room?.sessionId !== room.sessionId) return false;
+    const players = this.snapshot.players.filter(p => !this.partyAccess || this.partyAccess.hostPlays || p.id !== room.hostId);
     if (players.length < Math.max(2, game.minPlayers) || players.length > game.maxPlayers || players.some(p => !p.isReady)) return false;
+    if (this.partyAccess && players.length !== this.partyAccess.memberIds.filter(id => this.partyAccess!.hostPlays || id !== room.hostId).length) return false;
+    const sessionId = this.partyAccess ? await this.partyAccess.start(game.id, players.map(p => p.id)) : crypto.randomUUID();
+    if (generation !== this.generation || this.snapshot.room?.sessionId !== room.sessionId) return false;
     this.cache.clear();
-    const next: GameRoom = { ...room, settings: { ...room.settings, selectedGameIds: Array.isArray(room.settings.selectedGameIds) ? room.settings.selectedGameIds : [game.id] }, gameId: game.id, status: 'playing', sessionId: crypto.randomUUID(), participantIds: players.map(p => p.id) };
+    const next: GameRoom = { ...room, players: this.snapshot.players, settings: { ...room.settings, controllerParty: !!this.partyAccess, hostPremium: this.partyAccess?.premium ?? false, selectedGameIds: Array.isArray(room.settings.selectedGameIds) ? room.settings.selectedGameIds : [game.id] }, gameId: game.id, status: 'playing', sessionId, participantIds: players.map(p => p.id) };
     const { players: _players, ...info } = next;
     // Announce before React mounts the game and enqueues its initial snapshot.
     this.send('room-state', info);

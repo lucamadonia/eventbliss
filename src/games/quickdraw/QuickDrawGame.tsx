@@ -12,6 +12,7 @@ import {
   Pencil, Eraser, Trash2, Undo2, Check, X,
 } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
+import { personalResult } from '../social/result';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -79,14 +80,15 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
   // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
   // genau einmal beim Mount und verpassten jede spaetere Aenderung.
-  const partyPlayerNames = (useInitialRoster() ?? []).map((p) => p.name);
+  const partyRoster = useInitialRoster() ?? [];
+  const partyPlayerNames = partyRoster.map((p) => p.name);
   const resolvedNames = onlinePlayerNames.length >= 2
     ? onlinePlayerNames
     : partyPlayerNames.length >= 2
       ? partyPlayerNames
       : [];
   const initialPlayers: Player[] = resolvedNames.length >= 2
-    ? resolvedNames.map((name, i) => ({ id: `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
+    ? resolvedNames.map((name, i) => ({ id: online?.players[i]?.id ?? partyRoster[i]?.id ?? `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
     : [
         { id: 'p1', name: t('games.quickdraw.defaultPlayer', { n: 1 }), color: getPlayerColor(0), score: 0 },
         { id: 'p2', name: t('games.quickdraw.defaultPlayer', { n: 2 }), color: getPlayerColor(1), score: 0 },
@@ -160,7 +162,19 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const drawer = players[drawerIdx % players.length];
   const guessers = players.filter((_, i) => i !== drawerIdx % players.length);
 
-  const tv = useTVGameBridge('quickdraw', { phase, round, drawerIdx, currentWord: phase === 'roundResult' ? currentWord?.word : undefined, players }, [phase, round, drawerIdx]);
+  const tv = useTVGameBridge('quickdraw', {
+    phase, round, totalRounds, drawerIdx, drawer: drawer?.name, drawerColor: drawer?.color,
+    timeLeft, maxTime: MODE_TIMERS[mode], drawingDataURL,
+    currentWord: phase === 'roundResult' ? currentWord?.word : undefined, players,
+  }, [phase, round, drawerIdx, timeLeft, drawingDataURL, players], !online || online.isHost);
+  useEffect(() => {
+    if (!online?.isHost) return;
+    online.broadcast('tv-state', {
+      game: 'quickdraw', phase, round, totalRounds, drawer: drawer?.name, drawerColor: drawer?.color,
+      timeLeft, maxTime: MODE_TIMERS[mode], drawingDataURL,
+      currentWord: phase === 'roundResult' ? currentWord?.word : undefined, players,
+    });
+  }, [online?.isHost, online?.broadcast, phase, round, totalRounds, drawer, timeLeft, mode, drawingDataURL, currentWord, players]);
 
   /* ---- Draw word ---- */
   function drawWord(): DrawWord {
@@ -208,7 +222,12 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   };
   const imageSentAt = useRef(0);
   const actionRef = useRef<(name: string, ...args: unknown[]) => void>(() => {});
-  const publishCanvas = () => { if (online && canvasRef.current) actionRef.current('image', canvasRef.current.toDataURL()); };
+  const publishCanvas = () => {
+    if (!canvasRef.current) return;
+    const image = canvasRef.current.toDataURL();
+    if (online) actionRef.current('image', image);
+    else setDrawingDataURL(image);
+  };
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (online && drawer?.id !== online.myPlayerId) return;
     const c = canvasRef.current; if (!c) return;
@@ -260,17 +279,12 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
 
   /* ---- Game flow ---- */
   function startGame() { setTotalRounds(completeDrawingRounds(totalRounds, online?.players.length ?? players.length)); setPlayers(online ? online.players.map((p, i) => ({ id: p.id, name: p.name, color: getPlayerColor(i), score: 0 })) : players.map(p => ({ ...p, score: 0 }))); deck.current = shuffle(getDRAW_WORDS()); deckPos.current = 0; setRound(1); setGuesses([]); beginRound(0); }
-  // Rematch: same players, scores carried over (NOT zeroed). Reshuffle deck,
-  // restart from round 1, and go straight into the first drawer reveal.
-  function playAgain() { deck.current = shuffle(getDRAW_WORDS()); deckPos.current = 0; setRound(1); setGuesses([]); gameRecordedRef.current = false; beginRound(0); }
+  // A new match keeps the roster and settings, with a fresh score table.
+  function playAgain() { setPlayers(previous => previous.map(player => ({ ...player, score: 0 }))); deck.current = shuffle(getDRAW_WORDS()); deckPos.current = 0; setRound(1); setGuesses([]); gameRecordedRef.current = false; beginRound(0); }
   function beginRound(dIdx: number) { setDrawerIdx(dIdx); setCurrentWord(drawWord()); setGuesses([]); setGuessInput(''); setCurrentGuesser(0); setDrawingDataURL(null); setTool('pen'); setPenSize(6); setPhase('drawerReveal'); }
   function startDrawing() {
     setPhase('drawing'); startTimer(MODE_TIMERS[mode]);
     if (online?.isHost) {
-      online.broadcast('tv-state', {
-        game: 'draw', phase: 'drawing', drawer: drawer.name,
-        drawerColor: drawer.color, round, totalRounds, timeLeft: MODE_TIMERS[mode],
-      });
       online.broadcast('tv-drawing', { type: 'clear' });
     }
     // Party-cast TV: clear its canvas for the new round (the tv-state for the
@@ -279,9 +293,6 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   }
   function finishDrawing() {
     stopTimer(); saveDrawing(); setPhase('guessing'); setCurrentGuesser(0);
-    if (online?.isHost) {
-      online.broadcast('tv-state', { game: 'draw', phase: 'guessing', drawer: drawer.name, drawerColor: drawer.color, round, totalRounds });
-    }
   }
 
   /* ---- Guessing ---- */
@@ -321,9 +332,8 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
-      const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      const me = online ? players.find(p => p.id === online.myPlayerId) : winner;
-      recordEnd('schnellzeichner', me?.score ?? 0, !online || me?.id === winner?.id);
+      const result = personalResult(players, online?.myPlayerId);
+      recordEnd('schnellzeichner', result.score, result.won);
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -415,7 +425,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
             <h2 className="text-xs font-bold uppercase tracking-widest text-white/65">{t('games.quickdraw.modeLabel')}</h2>
             <div className="space-y-2">
               {MODE_IDS.map(id => (
-                <button key={id} onClick={() => setMode(id)}
+                <button key={id} onClick={() => setMode(id)} aria-pressed={mode === id}
                   className={cn('w-full flex items-center gap-3 p-4 rounded-[1rem] border-2 transition-colors text-left',
                     mode === id ? 'border-[#77cbbb] bg-[#77cbbb]/10 text-white' : 'border-gray-700 bg-[#1b2028] text-gray-300 hover:border-gray-600')}>
                   <Pencil className={cn('w-5 h-5', mode === id ? 'text-[#77cbbb]' : 'text-white/60')} />
@@ -434,7 +444,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-white/65">{t('games.setup.rounds')}</span><span className="text-white font-bold">{totalRounds}</span>
               </div>
-              <input type="range" min={3} max={20} step={1} value={totalRounds}
+              <input aria-label={t('games.setup.rounds')} type="range" min={3} max={20} step={1} value={totalRounds}
                 onChange={e => setTotalRounds(Number(e.target.value))}
                 className="w-full h-2 rounded-full appearance-none bg-gray-700 accent-[#77cbbb] cursor-pointer" />
             </div>
@@ -471,7 +481,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
         <StageHeader title={drawer.name} eyebrow={t('games.quickdraw.draws')} trailing={<span className="text-3xl font-semibold tabular-nums">{timeLeft}s</span>} progress={{ value: timeLeft, total: MODE_TIMERS[mode] }} />
         <div className="relative mx-auto w-full max-w-2xl bg-[#f7f2e6] p-3 sm:p-5 shadow-xl border-l-8 border-[#cec4ae]">
           <div className="relative aspect-square w-full overflow-hidden bg-white">
-            {canvasHidden && <div className="absolute inset-0 z-10 grid place-items-center bg-[#ebe5d8] p-8 text-center text-[#283b36]"><p className="text-2xl font-bold">{t('games.quickdraw.blindActive')}</p></div>}
+            {canvasHidden && <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center bg-[#ebe5d8] p-8 text-center text-[#283b36]"><p className="text-2xl font-bold">{t('games.quickdraw.blindActive')}</p></div>}
             <canvas ref={canvasRef} width={400} height={400} className={cn('h-full w-full', canvasHidden && 'opacity-0')} style={{ touchAction: 'none' }} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerLeave={onPointerUp} />
           </div>
         </div>

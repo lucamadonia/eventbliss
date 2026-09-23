@@ -22,6 +22,8 @@
     "cap:dev:ios": "cross-env CAPACITOR_BUILD=true vite --host & npx cap run ios --livereload --external",
     "cap:dev:android": "cross-env CAPACITOR_BUILD=true vite --host & npx cap run android --livereload --external",
     "test": "vitest run",
+    "test:db": "node --test tests/database/controller-party-rpc.test.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "test:watch": "vitest"
   },
   "dependencies": {
@@ -117,9 +119,11 @@
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
+    "@electric-sql/pglite": "0.5.8",
     "@eslint/js": "^9.32.0",
     "@sparticuz/chromium": "^149.0.0",
     "@tailwindcss/typography": "^0.5.16",
+    "@types/google.maps": "^3.66.3",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",

@@ -8,7 +8,7 @@ import { usePausableTasks } from '../bottlespin/pausable-tasks';
 import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import {
   ArrowLeft, RotateCcw, Trophy, ThumbsUp, ThumbsDown,
   Timer, Sparkles, Zap, MessageCircle, Wine, Heart,
@@ -68,6 +68,7 @@ const neonStyles = `
 `;
 
 function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
+  const reduceMotion = useReducedMotion();
   const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -174,7 +175,7 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
       haptics.success();
       try { navigator.vibrate?.([80, 40, 80]); } catch { /* */ }
       if (mode !== 'nur-flasche') setTimeout(() => showCard(), 600);
-    }, 3200);
+    }, reduceMotion ? 150 : 3200);
   };
 
   const showCard = () => {
@@ -365,7 +366,7 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
                 className="absolute left-1/2 top-1/2 origin-center"
                 style={{ marginLeft: -60, marginTop: -60, width: 120, height: 120 }}
                 animate={{ rotate: rotation }}
-                transition={{ type: 'tween', duration: 3, ease: [0.15, 0.85, 0.25, 1] }}>
+                transition={{ type: 'tween', duration: reduceMotion ? 0 : 3, ease: [0.15, 0.85, 0.25, 1] }}>
                 {/* The bottle stays perfectly centered.
                     Neck points UP (0° = top = toward first player). */}
                 <div className="w-full h-full flex items-center justify-center relative">

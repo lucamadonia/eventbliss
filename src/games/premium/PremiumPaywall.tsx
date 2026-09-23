@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { Crown, Check, X, Lock, Sparkles, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { PREMIUM_FEATURES } from './gameConfig';
@@ -15,7 +15,7 @@ const backdropVariants = {
   visible: { opacity: 1 },
 };
 
-const cardVariants = {
+const cardVariants: Variants = {
   hidden: { opacity: 0, scale: 0.9, y: 40 },
   visible: {
     opacity: 1,

@@ -12,7 +12,8 @@ export function useGameRoom() {
   const state = useSyncExternalStore(gameRoomSession.subscribe, gameRoomSession.getSnapshot, gameRoomSession.getServerSnapshot);
   return {
     ...state,
-    roomHasPremium: state.players.some(player => player.isPremium),
+    roomHasPremium: state.room?.settings.controllerParty
+      ? state.room.settings.hostPremium === true : state.players.some(player => player.isPremium),
     isHost: !!state.myPlayerId && state.room?.hostId === state.myPlayerId,
     createRoom: gameRoomSession.createRoom,
     joinRoom: gameRoomSession.joinRoom,

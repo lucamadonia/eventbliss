@@ -499,7 +499,7 @@ export default function Marketplace() {
                   <div className="flex flex-wrap gap-1.5">
                     {PRICE_FILTERS.map((pf, idx) => (
                       <button
-                        key={pf.label}
+                        key={pf.key}
                         onClick={() => setActivePriceIdx(idx)}
                         className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
                           activePriceIdx === idx

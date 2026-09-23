@@ -53,28 +53,6 @@ function getSplashBg(): string {
 // dupliziert statt importiert, siehe Begruendung in LogoParticles.tsx.
 const ACCENT = ["#df8eff", "#ff6b98", "#f9ca24"];
 
-// Parallax-Landschaft der Nacht-Route — optional. Fehlt eine Ebene (Bilder
-// werden separat erzeugt), traegt der Verlauf darunter die Szene allein.
-const LAYERS = [
-  { src: "/images/splash/splash-far.webp", opacity: 0.7, fromScale: 1.12 },
-  { src: "/images/splash/splash-mid.webp", opacity: 0.85, fromScale: 1.22 },
-  { src: "/images/splash/splash-near.webp", opacity: 1, fromScale: 1.34 },
-];
-
-/** Laedt ein Bild leise vor; meldet nie einen Fehler nach aussen. */
-function useOptionalImage(src: string): boolean {
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => {
-    let cancelled = false;
-    const img = new Image();
-    img.onload = () => { if (!cancelled) setLoaded(true); };
-    img.onerror = () => { if (!cancelled) setLoaded(false); };
-    img.src = src;
-    return () => { cancelled = true; };
-  }, [src]);
-  return loaded;
-}
-
 /**
  * Drei Stationen statt vieler `times`-Arrays: `entrance.approach/impact/
  * bloom/dissolve` sind Federn bzw. Tweens fuer je EINEN Uebergang zwischen
@@ -119,12 +97,6 @@ export function SplashExperience({ onComplete }: Props) {
   const [wordmarkIn, setWordmarkIn] = useState(() => reducedMotion);
   const [sparksOn, setSparksOn] = useState(false);
 
-  // Hooks sind unbedingt (kein Array.map mit useState!), darum drei feste
-  // Aufrufe statt einer Schleife ueber LAYERS.
-  const farLoaded = useOptionalImage(LAYERS[0].src);
-  const midLoaded = useOptionalImage(LAYERS[1].src);
-  const nearLoaded = useOptionalImage(LAYERS[2].src);
-  const layerLoaded = [farLoaded, midLoaded, nearLoaded];
 
   useEffect(() => {
     // Hide native splash immediately so JS owns the screen
@@ -181,25 +153,6 @@ export function SplashExperience({ onComplete }: Props) {
             transition={reducedMotion ? { duration: 0.2 } : entrance.approach}
           />
 
-          {/* Parallax-Ebenen — jede optional, jede fuer sich stumm bei Fehler.
-              Zieht direkt beim Mount in ihre Endgroesse, damit die Landschaft
-              im selben Atemzug heranzieht wie die Lichtspur davor. */}
-          {LAYERS.map((layer, i) => (
-            layerLoaded[i] && (
-              <motion.div
-                key={layer.src}
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                style={{ backgroundImage: `url(${layer.src})`, opacity: layer.opacity }}
-                initial={reducedMotion ? { scale: 1, opacity: 0 } : { scale: layer.fromScale, opacity: 0 }}
-                animate={{ scale: 1, opacity: layer.opacity }}
-                transition={
-                  reducedMotion
-                    ? { duration: 0.2 }
-                    : { ...entrance.approach, delay: i * 0.03 }
-                }
-              />
-            )
-          ))}
         </div>
 
         {/* ── Lichtspur, die aus der Tiefe heranzieht ────────────────── */}

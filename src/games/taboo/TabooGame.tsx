@@ -126,11 +126,12 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
 
   useTVGameBridge('taboo', {
     phase, currentRound, totalRounds, teams, activeTeamIdx, explainer,
+    partyScoresById: online ? Object.fromEntries(online.players.map((p, i) => [p.id, teams[i < Math.ceil(online.players.length / 2) ? 0 : 1].score])) : undefined,
     timeLeft: timer.timeLeft,
     turnCorrect: turnResults.filter(r => r.result === 'correct').length,
     turnTaboo: turnResults.filter(r => r.result === 'taboo').length,
     turnSkipped: turnResults.filter(r => r.result === 'skipped').length,
-  }, [phase, currentRound, activeTeamIdx, timer.timeLeft, turnResults.length]);
+  }, [phase, currentRound, activeTeamIdx, timer.timeLeft, turnResults.length], !online || online.isHost);
 
   function buildTeams(pls: string[]): [Team, Team] {
     const s = online ? pls : shuffle(pls); const mid = Math.ceil(s.length / 2);
@@ -274,10 +275,10 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     setTurnResults([]); setCurrentCard(null); deck.current = shuffle(getTabooCards()); deckPos.current = 0; timer.reset(timerOption); setPhase('setup');
   }
 
-  // Rematch: restart gameplay directly (no setup screen), keeping the same
-  // teams AND their accumulated scores (carry over — do not zero).
+  // A rematch keeps the teams and settings, with fresh match scores.
   function playAgain() {
     recordedRef.current = false;
+    setTeams(prev => [{ ...prev[0], score: 0 }, { ...prev[1], score: 0 }]);
     setActiveTeamIdx(0); setExplainerIdx([0, 0]); setCurrentRound(1);
     setTurnResults([]); setCurrentCard(null);
     deck.current = shuffle(getTabooCards()); deckPos.current = 0;

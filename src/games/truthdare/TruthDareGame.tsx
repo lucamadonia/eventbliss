@@ -156,13 +156,13 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
 
   // ---------------------------------------------------------------------------
   const route = useOnlineAuthority(online, 'truthdare', `${phase}:${currentRound}:${activeIdx}:${voterIdx}`, {
-    doSpin: { allow: (sender, args) => phase === "spin" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => doSpin() },
+    doSpin: { allow: (sender, args) => phase === "spin" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => doSpin() },
     handleChoice: { allow: (sender, args) => phase === "choice" && ["truth", "dare"].includes(args[0]) && sender === players[activeIdx]?.id, run: (...args) => handleChoice(args[0]) },
     rerollCurrent: { allow: (sender, args) => phase === "reveal" && sender === players[activeIdx]?.id, run: (...args) => rerollCurrent() },
     startVote: { allow: (sender, args) => phase === "reveal" && sender === players[activeIdx]?.id, run: (...args) => startVote() },
     castVote: { allow: (sender, args) => phase === "vote" && typeof args[0] === "boolean" && sender === players.filter((_, i) => i !== activeIdx)[voterIdx]?.id, run: (...args) => castVote(args[0]) },
     nextRound: { allow: (sender, args) => ["choice", "reveal"].includes(phase) && sender === players[activeIdx]?.id, run: (...args) => nextRound() },
-    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
   });
 
   // Setup handler
@@ -332,8 +332,7 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
-  // Rematch: jump straight back into gameplay, keeping players AND their
-  // scores/truthCount/dareCount. Only round + transient card/vote state resets.
+  // Preserve players and settings; reset scores and per-match counts.
   const playAgain = () => {
     if (route("playAgain", [])) return;
     setCurrentRound(1);
@@ -416,7 +415,7 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
           {t('games.truthdare.roundHeader', { current: currentRound, total: totalRounds })}
         </div>
         <div className="px-3 py-1 rounded-full glass-card border border-[#44484f]/30 text-sm font-bold text-[#f09a8a]">
-          {mode === 'eskalation' ? <Flame className="w-4 h-4 inline" /> : null} {mode}
+          {mode === 'eskalation' ? <Flame className="w-4 h-4 inline" /> : null} {t(`gameModes.truthdare.${mode}.name`)}
         </div>
       </div>
 

@@ -55,7 +55,7 @@ function PodiumColumn({
   reduce: boolean;
 }) {
   const animatedPoints = useCountUp(entry.points, reduce ? 0.01 : 1.15, reveal);
-  const isChampion = place === 0;
+  const isChampion = entry.rank === 1;
   const delay = reduce ? 0 : REVEAL_DELAY[place];
   const avatarSize = compact
     ? isChampion ? 'clamp(4rem,18vw,5.5rem)' : 'clamp(3rem,14vw,4.25rem)'
@@ -63,7 +63,7 @@ function PodiumColumn({
   const plinthHeight = compact
     ? isChampion ? '6.7rem' : place === 1 ? '4.7rem' : '3.8rem'
     : isChampion ? 'clamp(8rem,14vh,13rem)' : place === 1 ? 'clamp(5.8rem,10vh,9.5rem)' : 'clamp(4.5rem,7.5vh,7rem)';
-  const podiumColor = PLACE_COLOR[place];
+  const podiumColor = PLACE_COLOR[Math.min(2, Math.max(0, entry.rank - 1))];
 
   return (
     <motion.div

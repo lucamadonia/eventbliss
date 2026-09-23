@@ -30,6 +30,20 @@
                 <data android:pathPrefix="/e/" />
                 <data android:path="/join" />
                 <data android:pathPrefix="/join/" />
+                <data android:pathPrefix="/party/join/" />
+                <data android:pathPrefix="/games" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="eventbliss" android:host="party" android:pathPrefix="/join/" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="app.eventbliss" />
             </intent-filter>
         </activity>
 

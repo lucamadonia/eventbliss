@@ -4,7 +4,7 @@ import i18n from "@/i18n";
 import { useEffect, useState } from "react";
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
-import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings, Star, Infinity, Gift, Calendar, XCircle, AlertTriangle, RotateCcw, ExternalLink } from "lucide-react";
+import { ChevronLeft, Crown, Check, Sparkles, Zap, Shield, Calculator, MessageSquare, FileQuestion, Loader2, Settings, Star, Infinity as InfinityIcon, Gift, Calendar, XCircle, AlertTriangle, RotateCcw, ExternalLink } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -316,9 +316,9 @@ export default function Premium() {
       } else {
         throw new Error(data?.error || "Unknown error");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Cancel error:", err);
-      toast.error(err.message || t("premium.cancelError"));
+      toast.error(err instanceof Error ? err.message : t("premium.cancelError"));
     } finally {
       setCancelLoading(false);
     }
@@ -359,9 +359,9 @@ export default function Premium() {
       toast.success(data.message || t("premium.voucher.success"));
       setVoucherCode("");
       checkSubscription();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Voucher error:", err);
-      const errorMessage = err.message || "";
+      const errorMessage = err instanceof Error ? err.message : '';
       
       // Check if it's a discount voucher that should be used in checkout
       if (errorMessage.includes("DISCOUNT_VOUCHER:")) {
@@ -653,7 +653,7 @@ export default function Premium() {
 
                 {isLifetimeActive && (
                   <div className="text-center text-sm text-green-600 font-medium flex items-center justify-center gap-1">
-                    <Infinity className="h-4 w-4" />
+                    <InfinityIcon className="h-4 w-4" />
                     {t("premium.foreverAccess")}
                   </div>
                 )}
@@ -677,7 +677,7 @@ export default function Premium() {
                   {/* Extra lifetime benefit */}
                   <div className="flex items-center gap-3">
                     <div className="rounded-full bg-primary/10 p-2">
-                      <Infinity className="h-4 w-4 text-primary" />
+                      <InfinityIcon className="h-4 w-4 text-primary" />
                     </div>
                     <span className="text-sm font-medium">{t("premium.foreverAccess")}</span>
                   </div>

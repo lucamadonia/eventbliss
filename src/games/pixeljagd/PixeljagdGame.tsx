@@ -30,6 +30,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { PixelCanvas } from './PixelCanvas';
 import { stepsFor, pointsAt, FINAL_STEP } from './pixelate';
 import { isCorrectAnswer } from './answer-match';
+import { recoverPixelRound, importPixelPlayers, validPixelAnswerAction } from './recovery';
 import {
   getPixelPuzzles,
   PIXEL_CATEGORIES,
@@ -153,6 +154,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setFrozenPoints(null);
     setWinnerId(null);
     setGuess('');
+    setSolutionShown(false);
     setPlayers(ps.map((p) => ({ ...p, locked: false })));
     roundTimerRef.current?.reset(duration);
     setImageReady(false);
@@ -163,12 +165,13 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
 
   // --- Eingaben ------------------------------------------------------------
   const act = useCallback((type: string, payload: Record<string, unknown>, run: () => void) => {
-    if (isOnline && !isHost) { online!.broadcast('pixeljagd-action', { type, ...payload }); return; }
+    if (online?.isConnected === false) return;
+    if (isOnline && !isHost) { online!.broadcast('pixeljagd-action', { type, ...payload, round, puzzleId: puzzle?.id }); return; }
     run();
-  }, [isOnline, isHost, online]);
+  }, [isOnline, isHost, online, round, puzzle?.id]);
 
   const doBuzz = useCallback((pid: string) => {
-    if (buzzedBy || phase !== 'playing') return;
+    if (buzzedBy || phase !== 'playing' || !imageReady) return;
     const p = players.find((x) => x.id === pid);
     if (!p || p.locked) return;
     void haptics.medium();
@@ -177,7 +180,8 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setFrozenPoints(pointsAt(elapsed, modeDef.duration));
     roundTimerRef.current?.pause();
     setBuzzedBy(pid);
-  }, [buzzedBy, phase, players, haptics, elapsed, modeDef.duration]);
+    setSolutionShown(false);
+  }, [buzzedBy, phase, players, haptics, elapsed, modeDef.duration, imageReady]);
 
   const award = useCallback((pid: string, pts: number) => {
     setPlayers((prev) => prev.map((p) => (p.id === pid ? { ...p, score: p.score + pts } : p)));
@@ -199,7 +203,6 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     roundTimerRef.current?.start();
   }, [modeDef.penalty, haptics, flash, t, players]);
 
-  useEffect(() => { setSolutionShown(false); }, [buzzedBy, round]);
   useEffect(() => { setImageFailed(false); setImageReady(false); }, [puzzle?.id]);
 
   const doJudge = useCallback((correct: boolean) => {
@@ -214,7 +217,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   }, [buzzedBy, frozenPoints, award, penalize]);
 
   const doTextGuess = useCallback((pid: string, text: string) => {
-    if (phase !== 'playing' || !puzzle) return;
+    if (phase !== 'playing' || !puzzle || !imageReady || typeof text !== 'string' || !text.trim() || text.length > 200) return;
     const p = players.find((x) => x.id === pid);
     if (!p || p.locked) return;
     if (isCorrectAnswer(text, puzzle.answer, puzzle.aliases)) {
@@ -222,7 +225,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     } else {
       penalize(pid);
     }
-  }, [phase, puzzle, players, award, penalize, elapsed, modeDef.duration]);
+  }, [phase, puzzle, players, award, penalize, elapsed, modeDef.duration, imageReady]);
 
   const nextRound = useCallback(() => {
     const nextIdx = round + 1;
@@ -237,9 +240,11 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   const rematchRef = useRef<() => void>(() => {});
   // Host wendet Client-Aktionen an.
   const applyAction = useCallback((data: Record<string, unknown>) => {
+    if (online?.isConnected === false || data.round !== round || data.puzzleId !== puzzle?.id) return;
     if (data.type === 'again' && phase === 'gameOver' && players.some(p => p.id === data.__senderId)) { rematchRef.current(); return; }
     const sender = data.__senderId;
     if (typeof sender !== 'string' || !players.some(p => p.id === sender)) return;
+    if (!validPixelAnswerAction(data, answerMode)) return;
     if (data.type === 'buzz' || data.type === 'text') { if (data.pid !== sender) return; }
     else return; // Judging and advancing are host controls.
     switch (data.type) {
@@ -247,7 +252,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
       case 'text': doTextGuess(data.pid as string, data.text as string); break;
       default: break;
     }
-  }, [phase, players, doBuzz, doTextGuess]);
+  }, [phase, players, doBuzz, doTextGuess, online?.isConnected, round, puzzle?.id, answerMode]);
 
   useEffect(() => {
     if (!online || !isHost) return;
@@ -360,7 +365,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     online.broadcast('tv-state', { game: 'pixeljagd', ...tvPayload });
   }, [online, isHost, tvPayload]);
 
-  useTVGameBridge('pixeljagd', tvPayload, [phase, round, step, roundTimer.timeLeft, buzzedBy, winnerId]);
+  useTVGameBridge('pixeljagd', tvPayload, [phase, round, step, roundTimer.timeLeft, buzzedBy, winnerId, players], isHost);
 
   // --- Persistenz (offline) ------------------------------------------------
   const restoredRef = useRef(false);
@@ -378,6 +383,12 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
       setAnswerMode(s.answerMode as AnswerMode);
       setCategories(s.categories as PixelCategory[]);
       setDeck(s.deck as PixelPuzzle[]);
+      const checkpoint = recoverPixelRound(s, (MODES.find(option => option.id === s.mode) ?? MODES[0]).duration);
+      roundTimerRef.current?.reset(checkpoint.timeLeft);
+      setBuzzedBy(checkpoint.buzzedBy);
+      setFrozenPoints(checkpoint.frozenPoints);
+      setWinnerId(checkpoint.winnerId);
+      setSolutionShown(checkpoint.solutionShown);
     }
   }, [isOnline]);
 
@@ -385,8 +396,10 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     if (isOnline) return;
     if (phase === 'setup' || phase === 'gameOver') { clearSnapshot('pixeljagd'); return; }
     if (!restoredRef.current) return;
-    saveSnapshot('pixeljagd', { phase, players, round, totalRounds, puzzle, mode, answerMode, categories, deck });
-  }, [isOnline, phase, players, round, totalRounds, puzzle, mode, answerMode, categories, deck]);
+    saveSnapshot('pixeljagd', { phase, players, round, totalRounds, puzzle, mode, answerMode, categories, deck,
+      timeLeft: roundTimer.timeLeft, buzzedBy, frozenPoints, winnerId, solutionShown });
+  }, [isOnline, phase, players, round, totalRounds, puzzle, mode, answerMode, categories, deck,
+    roundTimer.timeLeft, buzzedBy, frozenPoints, winnerId, solutionShown]);
 
   // Zurück abfangen (der native Button liegt über allem).
   useBackGuard(() => {
@@ -618,12 +631,14 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
               <input
                 value={guess}
                 onChange={(e) => setGuess(e.target.value)}
-                disabled={meLocked}
+                disabled={meLocked || !imageReady}
+                aria-label={t('games.pixeljagd.typeGuess')}
+                maxLength={200}
                 placeholder={meLocked ? t('games.pixeljagd.lockedOut') : t('games.pixeljagd.typeGuess')}
                 className="flex-1 h-12 px-4 rounded-2xl text-sm outline-none"
                 style={{ background: PJ.surface, color: PJ.text }}
               />
-              <button type="submit" disabled={meLocked || !guess.trim()}
+              <button type="submit" disabled={meLocked || !imageReady || !guess.trim()}
                 className="px-5 h-12 rounded-2xl font-black disabled:opacity-40"
                 style={{ background: PJ.primary, color: PJ.bg }}>
                 {t('games.pixeljagd.send')}
@@ -639,7 +654,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
                   <button
                     key={p.id}
                     onClick={() => act('buzz', { pid: p.id }, () => doBuzz(p.id))}
-                    disabled={p.locked || (isOnline && myId !== p.id)}
+                    disabled={!imageReady || p.locked || (isOnline && myId !== p.id)}
                     className="h-16 rounded-2xl font-black text-sm disabled:opacity-35"
                     style={{ background: p.locked ? PJ.surface : p.color, color: p.locked ? PJ.dim : PJ.bg }}
                   >
@@ -801,24 +816,7 @@ function PixeljagdSetup({ onStart, onlinePlayers, contentReady, allowText, toast
             /* Aus dem Event uebernehmen: Wer schon eine Gaesteliste gepflegt
                hat, soll sie nicht zum zweiten Mal abtippen. */
             onImportNames={(names) =>
-              setList((prev) => {
-                const room = Math.max(0, 8 - prev.length);
-                const fresh = names.slice(0, room).map((n, i) => ({
-                  id: `ev${Date.now()}-${i}`,
-                  name: n,
-                }));
-                // Leere Platzhalterzeilen zuerst auffuellen, damit nicht
-                // "Spieler 1" und "Spieler 2" leer daneben stehen bleiben.
-                const filled = prev.map((p) => p);
-                let take = 0;
-                for (let i = 0; i < filled.length && take < fresh.length; i++) {
-                  if (!filled[i].name.trim() && !filled[i].readOnly) {
-                    filled[i] = { ...filled[i], name: fresh[take].name };
-                    take++;
-                  }
-                }
-                return [...filled, ...fresh.slice(take)].slice(0, 8);
-              })
+              setList((prev) => importPixelPlayers(prev, names, index => `ev${Date.now()}-${index}`))
             }
           />
         </div>

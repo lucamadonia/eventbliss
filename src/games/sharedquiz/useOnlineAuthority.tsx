@@ -36,7 +36,7 @@ export function useOnlineAuthority(online: OnlineGameProps | undefined, game: st
       const args = Array.isArray(data.args) ? data.args : [];
       if (current.current.online?.isConnected === false) return;
       if (!action || busy.current || !acceptOnlineAction(data, current.current.token,
-          online.players.map(p => p.id), seen.current, (id) => action.allow(id, args))) return;
+          [...online.players.map(p => p.id), ...(online.hostPlayerId ? [online.hostPlayerId] : [])], seen.current, (id) => action.allow(id, args))) return;
       if (!claim(sender as string, data.action as string)) return;
       busy.current = true;
       executing.current = true;
@@ -70,7 +70,7 @@ export function useOnlineSnapshot(online: OnlineGameProps | undefined, event: st
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast(event, data => {
-      if (data.__senderId !== online.players.find(p => p.isHost)?.id) return;
+      if (data.__senderId !== (online.hostPlayerId ?? online.players.find(p => p.isHost)?.id)) return;
       receiveRef.current(data);
     });
   }, [online?.isHost, online?.onBroadcast, online?.players, event]);
@@ -93,7 +93,7 @@ export function usePrivateSnapshot(online: OnlineGameProps | undefined, event: s
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast(event, data => {
-      if (data.__senderId === online.players.find(p => p.isHost)?.id) callbacks.current.receive(data);
+      if (data.__senderId === (online.hostPlayerId ?? online.players.find(p => p.isHost)?.id)) callbacks.current.receive(data);
     });
   }, [online?.isHost, online?.onBroadcast, online?.players, event]);
 }

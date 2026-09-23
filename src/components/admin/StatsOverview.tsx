@@ -77,7 +77,7 @@ export function StatsOverview() {
           supabase.from("marketplace_bookings").select("*", { count: "exact", head: true }).gte("created_at", d30),
           supabase.from("events").select("*", { count: "exact", head: true }),
           supabase.from("vouchers").select("*", { count: "exact", head: true }),
-          supabase.from("vouchers").select("*", { count: "exact", head: true }).eq("status", "redeemed"),
+          supabase.from("vouchers").select("id", { count: "exact", head: true }).gt("used_count", 0),
         ]);
 
         const tiers = agencyTiersRes.data ?? [];

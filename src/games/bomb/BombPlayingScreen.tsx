@@ -7,6 +7,7 @@ import { Bomb, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 import type { GameState } from './BombGame';
 
 interface PlayingScreenProps {
+  canPlay?: boolean;
   state: GameState;
   progress: number;
   timeLeft?: number;
@@ -23,7 +24,7 @@ function triggerVibration(intensity: number) {
   navigator.vibrate([on, off, on]);
 }
 
-export default function BombPlayingScreen({ state, progress, timeLeft, onWeiter, onQuizAnswer, onAlleAnswer }: PlayingScreenProps) {
+export default function BombPlayingScreen({ state, progress, timeLeft, onWeiter, onQuizAnswer, onAlleAnswer, canPlay = true }: PlayingScreenProps) {
   const { t } = useTranslation();
   const player = state.players[state.currentPlayerIndex];
   const isRandom = state.randomTimer;
@@ -45,11 +46,11 @@ export default function BombPlayingScreen({ state, progress, timeLeft, onWeiter,
         <div className="bomb-meter" aria-hidden="true">{Array.from({length:20},(_,i)=><span key={i} data-on={!isRandom && progress >= i/20}/>)}</div>
         <div className="bomb-roster">{state.players.map((p,i)=><span key={i} data-active={i === state.currentPlayerIndex}>{p.name}<small>{p.penalties}</small></span>)}</div>
       </section>
-      <section className="bomb-controls">
+      <fieldset className="bomb-controls min-w-0 border-0 p-0 m-0 disabled:opacity-60" disabled={!canPlay}>
         <StagePanel tone="paper" className="bomb-task"><span className="bomb-task-label">{t('games.bomb.theChallenge')}</span><h2>{state.currentTask}</h2></StagePanel>
         {state.mode === 'quiz' && state.currentQuiz ? <><div className="bomb-answers">{state.currentQuiz.answers.map((ans,idx)=><button key={idx} onClick={()=>onQuizAnswer(idx)}><span>{String.fromCharCode(65+idx)}</span><strong>{ans}</strong></button>)}</div><p className="bomb-note">{t('games.bomb.wrongAnswerHint')}</p></> :
         state.mode === 'alle' && onAlleAnswer ? <><p className="bomb-note">{t('games.bomb.noRepeat')}</p><div className="bomb-action-pair"><StageAction onClick={()=>onAlleAnswer(true)}><CheckCircle2 size={20}/>{t('games.bomb.btnDone')}</StageAction><StageAction variant="danger" onClick={()=>onAlleAnswer(false)}><XCircle size={20}/>{t('games.bomb.btnDontKnow')}</StageAction></div></> : <StageAction className="bomb-pass" onClick={onWeiter}>{t('games.bomb.btnSolved')}<ArrowRight size={24}/></StageAction>}
-      </section>
+      </fieldset>
     </div>
   </GameStage>;
 }

@@ -11,7 +11,13 @@ import * as pt from './story-prompts-pt';
 import * as tr from './story-prompts-tr';
 import * as ar from './story-prompts-ar';
 
-const BY_LANG: Record<string, typeof de> = { de, en, es, fr, it, nl, pl, pt, tr, ar };
+const BY_LANG: Record<string, typeof de> = {
+  de, en, es, fr, pl, ar,
+  it: { STORY_STARTERS: it.STORY_STARTERS_IT, STORY_PROMPTS: it.STORY_PROMPTS_IT },
+  nl: { STORY_STARTERS: nl.STORY_STARTERS_NL, STORY_PROMPTS: nl.STORY_PROMPTS_NL },
+  pt: { STORY_STARTERS: pt.STORY_STARTERS_PT, STORY_PROMPTS: pt.STORY_PROMPTS_PT },
+  tr: { STORY_STARTERS: tr.STORY_STARTERS_TR, STORY_PROMPTS: tr.STORY_PROMPTS_TR },
+};
 function pack(): typeof de {
   const l = i18n.language?.split('-')[0] || 'de';
   return BY_LANG[l] || de;

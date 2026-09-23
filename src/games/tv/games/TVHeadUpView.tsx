@@ -1,3 +1,25 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (string | {name:string;color?:string})[];
+  category?: string;
+  currentPlayer?: string;
+  currentWord?: string;
+  lastAction?: string;
+  phase?: string;
+  playerColor?: string;
+  playerName?: string;
+  word?: string;
+  correct?: number;
+  correctCount?: number;
+  currentRound?: number;
+  round?: number;
+  skipped?: number;
+  skippedCount?: number;
+  timeLeft?: number;
+  total?: number;
+  totalRounds?: number;
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smartphone } from 'lucide-react';
 import { useMemo } from 'react';
@@ -21,7 +43,9 @@ const HU = { purple: '#df8eff', cyan: '#8ff5ff', pink: '#ff6b98', green: '#10b98
 
 const PALETTE = ['#df8eff', '#8ff5ff', '#ffd23f', '#ff6e84', '#7af5a8', '#ffa552', '#a78bfa', '#4dd4ff'];
 
-export default function TVHeadUpView({ gameState }: { gameState: any }) {
+const EMPTY_PLAYERS: NonNullable<ViewState['players']> = [];
+
+export default function TVHeadUpView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 
@@ -36,7 +60,7 @@ export default function TVHeadUpView({ gameState }: { gameState: any }) {
   const total = gameState?.total || gameState?.totalRounds || '?';
   const category: string = gameState?.category || '';
   const lastAction: string = gameState?.lastAction || ''; // 'correct' | 'skip' | ''
-  const playerList: any[] = gameState?.players || [];
+  const playerList: NonNullable<ViewState['players']> = gameState?.players || EMPTY_PLAYERS;
 
   // Whole-party roster (turn order). The guesser for this round is the active
   // chip; the bridge gives no per-player history, so we surface the running

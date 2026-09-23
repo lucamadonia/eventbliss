@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Building2, ChevronDown, ChevronRight, Phone, Mail, Globe, Search, List, Map, X,
+  Building2, ChevronDown, ChevronRight, Phone, Mail, Globe, Search, List, Map as MapIcon, X,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AGENCIES as STATIC_AGENCIES, COUNTRIES as STATIC_COUNTRIES } from "@/lib/agencies-data";
@@ -83,10 +83,10 @@ function usePartnerDbAgencies() {
     queryFn: async (): Promise<PartnerAgency[]> => {
       try {
         const [agenciesRes, servicesRes] = await Promise.all([
-          (supabase.from as any)("agencies")
+          supabase.from("agencies")
             .select("id, name, slug, logo_url, email, phone, website, city, country")
             .eq("is_active", true),
-          (supabase.from as any)("marketplace_services")
+          supabase.from("marketplace_services")
             .select("agency_id")
             .eq("status", "approved"),
         ]);
@@ -97,7 +97,7 @@ function usePartnerDbAgencies() {
           approvedCount.set(s.agency_id, (approvedCount.get(s.agency_id) ?? 0) + 1);
         }
 
-        return (agenciesRes.data as any[]).map((a): PartnerAgency => {
+        return agenciesRes.data.map((a): PartnerAgency => {
           const code = toCountryCode(a.country || "");
           return {
             key: `db-${a.id}`,
@@ -111,7 +111,7 @@ function usePartnerDbAgencies() {
             logoUrl: a.logo_url || null,
             slug: a.slug || null,
             bookable: !!a.slug && (approvedCount.get(a.id) ?? 0) > 0,
-            description: a.description || "",
+            description: "",
           };
         });
       } catch {
@@ -437,7 +437,7 @@ export function PartnerAgenciesSection({ cityFilter }: { cityFilter?: string }) 
                   aria-pressed={view === "map"}
                   className={cn("p-1.5 rounded-full transition-colors", view === "map" ? "bg-primary/20 text-primary" : "text-muted-foreground")}
                 >
-                  <Map size={15} />
+                  <MapIcon size={15} />
                 </button>
               </div>
             </div>

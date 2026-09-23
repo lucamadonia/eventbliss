@@ -455,7 +455,7 @@ function GameItemCard({
               className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1 mt-0.5 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-[11px] font-semibold shadow-[0_0_12px_rgba(217,70,239,0.4)] active:scale-95 transition-transform"
             >
               <Play className="w-3 h-3 fill-white" />
-              {t('native.ideas.playableCta', 'Spielen')}
+              {t('native.ideas.playableCta')}
             </span>
           )}
           <ChevronRight

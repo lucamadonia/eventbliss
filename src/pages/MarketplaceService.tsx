@@ -454,7 +454,7 @@ export default function MarketplaceServicePage() {
   if (isError || !s) return <ServiceNotFound />;
 
   const cancellation = CANCELLATION[s.cancellation_policy] ?? CANCELLATION.moderate;
-  const agencyCity = (s as any).agency_city || s.location_city || "";
+  const agencyCity = ('agency_city' in s && typeof s.agency_city === 'string' ? s.agency_city : '') || s.location_city || "";
 
   return (
     <div className={`min-h-screen ${C.surface} text-foreground`}>
@@ -863,8 +863,8 @@ export default function MarketplaceServicePage() {
               <button
                 onClick={async () => {
                   const url = typeof window !== "undefined" ? window.location.href : "";
-                  const title = service?.title ?? "EventBliss Service";
-                  const text = service?.short_description ?? service?.description ?? title;
+                  const title = s.title ?? "EventBliss Service";
+                  const text = s.short_description ?? s.description ?? title;
                   if (typeof navigator !== "undefined" && (navigator as Navigator & { share?: (data: ShareData) => Promise<void> }).share) {
                     try {
                       await (navigator as Navigator & { share: (data: ShareData) => Promise<void> }).share({ title, text, url });

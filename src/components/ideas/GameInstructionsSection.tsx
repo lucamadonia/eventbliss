@@ -226,7 +226,7 @@ export const GameInstructionsSection = ({ instructions, className }: GameInstruc
       const content = match[2].trim();
       
       // Find matching config
-      const titleLower = title.toLowerCase().replace(/[📋🎮📏🔄💡]/g, "").trim();
+      const titleLower = title.toLowerCase().replace(/[📋🎮📏🔄💡]/gu, "").trim();
       const config = Object.entries(sectionConfig).find(
         ([key]) => titleLower.includes(key)
       )?.[1] || defaultConfig;

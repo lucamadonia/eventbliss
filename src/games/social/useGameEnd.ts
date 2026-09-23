@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { useGameStats } from './useGameStats';
 import { useAchievements } from './useAchievements';
 import type { Achievement } from './types';
+import { getActivePartySession } from '@/hooks/usePartySession';
 
 export function useGameEnd() {
   const { recordGamePlayed, getMyStats } = useGameStats();
@@ -10,6 +11,8 @@ export function useGameEnd() {
 
   const recordEnd = useCallback(
     async (gameId: string, score: number, won: boolean) => {
+      // Controller match completion records every account once in the database transaction.
+      if (getActivePartySession()?.playMode === 'controllers') return;
       try {
         await recordGamePlayed(gameId, score, won);
         const stats = await getMyStats(gameId);

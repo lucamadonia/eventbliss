@@ -11,6 +11,7 @@
  * entstanden — und zwei Kopien laufen frueher oder spaeter auseinander.
  */
 const RULES_ID: Record<string, string> = {
+  flaschendrehen: 'bottlespin',
   "wer-bin-ich": "whoami",
   "emoji-raten": "emojiguess",
   "fake-or-fact": "fakeorfact",

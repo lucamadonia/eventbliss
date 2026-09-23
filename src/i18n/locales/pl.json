@@ -6624,7 +6624,8 @@
         "loading": "Wczytywanie obrazów…",
         "compareHint": "Znajdź trzy zamienione przedmioty na planszy B.",
         "imageError": "Nie udało się wczytać obrazów. Sprawdź połączenie i spróbuj ponownie.",
-        "retryImages": "Wczytaj obrazy ponownie"},
+        "retryImages": "Wczytaj obrazy ponownie"
+      },
       "objects": {
         "apple": "Jabłko",
         "banana": "Banan",
@@ -6641,7 +6642,8 @@
         "shoe": "Trampek",
         "ball": "Piłka nożna",
         "plant": "Roślina doniczkowa",
-        "umbrella": "Parasol"}
+        "umbrella": "Parasol"
+      }
     },
     "impostor": {
       "title": "Oszust",
@@ -6933,7 +6935,8 @@
         "visibleToOthers": "Widoczne tylko dla innych graczy",
         "holdPhone": "Trzymaj telefon przy czole — inni będą ci podpowiadać.",
         "skip": "Pomiń",
-        "solved": "Rozwiązano"
+        "solved": "Rozwiązano",
+        "controllerHint": "Zadaj pytanie lub spróbuj odgadnąć na swoim telefonie."
       },
       "answerVote": {
         "asks": "{{name}} pyta:",
@@ -6957,7 +6960,8 @@
         "nextPlayer": "Następny gracz",
         "skipped": "Pominięto",
         "wasCharacter": "{{name}} był(a) <1>{{character}}</1>",
-        "category": "Kategoria · {{category}}"
+        "category": "Kategoria · {{category}}",
+        "tryAgain": "Jeszcze nie. Spróbuj ponownie."
       },
       "gameOver": {
         "title": "Koniec gry!",
@@ -7040,7 +7044,8 @@
         "reisen": "Podróże i odkrycia",
         "traeume": "Marzenia i przyszłość",
         "entscheidungen": "Wybory i wartości",
-        "kreativ": "Wyobraźnia i kreatywność"},
+        "kreativ": "Wyobraźnia i kreatywność"
+      },
       "categorySelection": "Wybierz kategorie",
       "contentSelection": "Co ma być na karcie?",
       "questionsOnly": "Tylko pytania",
@@ -7100,7 +7105,8 @@
       "acceptedAnswers": "Także poprawne",
       "nextPlayer": "Następnie: {{name}}",
       "clueLabel": "Zagadka obrazkowa",
-      "poolBudget": "{{puzzleCount}} wybranych zagadek. Większe grupy grają mniej rund: tyle samo tur dla każdego, bez powtórek."
+      "poolBudget": "{{puzzleCount}} wybranych zagadek. Większe grupy grają mniej rund: tyle samo tur dla każdego, bez powtórek.",
+      "balancedTeamPoints": "Przy nierównych drużynach punkty są ważone, aby obie mogły zdobyć taką samą liczbę punktów w rundzie."
     },
     "fakeorfact": {
       "title": "Kłamca — Fake or Fact",
@@ -7187,7 +7193,8 @@
       "showAll": "Pokaż wszystko",
       "playAgain": "Zagraj ponownie",
       "otherGame": "Inna gra",
-      "skipTurn": "Pomiń turę"
+      "skipTurn": "Pomiń turę",
+      "emptyStory": "Nie ma jeszcze zdań. Zacznijcie razem nową historię."
     },
     "thisorthat": {
       "modeTagPopular": "Popularne",
@@ -7783,7 +7790,12 @@
       "chain": "Łańcuch warzenia ×{{count}}",
       "multiBonus": "Wielokrotne nalanie",
       "perfectBonus": "Idealne nalanie",
-      "risk": { "calm": "spokojnie", "simmering": "bulgocze", "unstable": "niestabilnie", "critical": "krytycznie" },
+      "risk": {
+        "calm": "spokojnie",
+        "simmering": "bulgocze",
+        "unstable": "niestabilnie",
+        "critical": "krytycznie"
+      },
       "tv": {
         "done": "gotowe"
       },
@@ -8370,15 +8382,15 @@
     "perPerson": "/Osoba",
     "flatRate": "Ryczałt",
     "perHour": "/Godzina",
-  "bookNow": "Zarezerwuj teraz",
-  "bookingContact": "Twoje dane rezerwacji",
-  "guestBookingHint": "Rezerwuj bezpośrednio, bez zakładania konta.",
-  "customerName": "Imię i nazwisko *",
-  "customerEmail": "Adres e-mail *",
-  "customerPhone": "Telefon (opcjonalnie)",
-  "customerNotes": "Prośby lub uwagi (opcjonalnie)",
-  "contactRequired": "Podaj imię i nazwisko oraz prawidłowy adres e-mail.",
-  "providerWebsite": "Strona usługodawcy",
+    "bookNow": "Zarezerwuj teraz",
+    "bookingContact": "Twoje dane rezerwacji",
+    "guestBookingHint": "Rezerwuj bezpośrednio, bez zakładania konta.",
+    "customerName": "Imię i nazwisko *",
+    "customerEmail": "Adres e-mail *",
+    "customerPhone": "Telefon (opcjonalnie)",
+    "customerNotes": "Prośby lub uwagi (opcjonalnie)",
+    "contactRequired": "Podaj imię i nazwisko oraz prawidłowy adres e-mail.",
+    "providerWebsite": "Strona usługodawcy",
     "inquireNow": "Zapytaj teraz",
     "directBook": "Rezerwacja bezpośrednia",
     "verifiedAgency": "Zweryfikowana agencja",
@@ -10128,7 +10140,9 @@
           "title": "Pechowiec wieczoru",
           "detail": "Ostatnie miejsce: {{n}}×"
         }
-      }
+      },
+      "champions": "Wspólne zwycięstwo",
+      "championsLine": "{{name}} dzielą zwycięstwo z wynikiem po {{points}} punktów"
     },
     "connectTitle": "Połącz TV",
     "openOnTv": "Otwórz na swoim TV:",
@@ -10296,5 +10310,47 @@
       "rules": "Zasady gry",
       "menu": "Menu"
     }
+  },
+  "partyControllers": {
+    "title": "Tryb kontrolera",
+    "subtitle": "Każdy gra na własnym telefonie.",
+    "appRequired": "Do gry potrzebujesz aplikacji EventBliss i konta.",
+    "openApp": "Otwórz aplikację",
+    "installHint": "Zainstaluj EventBliss, zaloguj się i wpisz wyświetlony kod w trybie kontrolera.",
+    "player": "Gracz",
+    "loading": "Wczytywanie…",
+    "loginRequired": "Zaloguj się, aby dołączyć do imprezy.",
+    "login": "Zaloguj się",
+    "name": "Twoje imię",
+    "hostPlays": "Gram również jako gospodarz",
+    "create": "Utwórz imprezę",
+    "roomCode": "Kod pokoju",
+    "join": "Dołącz",
+    "scan": "Zeskanuj kod QR, aby zagrać",
+    "accountHint": "Każda osoba dołącza na własnym koncie w aplikacji EventBliss.",
+    "tv": "Połącz telewizor",
+    "offline": "Brak połączenia",
+    "ready": "Gotowy",
+    "notReadyYet": "Jeszcze niegotowy",
+    "readyToggle": "Zmień moją gotowość",
+    "waitNext": "Trwa rozgrywka. Poczekaj na następną grę.",
+    "abort": "Przerwij rozgrywkę",
+    "playlist": "Kolejność gier",
+    "remove": "Usuń grę",
+    "startNext": "Rozpocznij następną grę",
+    "premiumRequired": "Gospodarz musi mieć Premium",
+    "capacity": "{{min}}–{{max}} graczy",
+    "hostChoosing": "Gospodarz wybiera następną grę.",
+    "end": "Zakończ imprezę",
+    "leave": "Opuść imprezę",
+    "notReady": "Wszyscy gracze muszą być połączeni i gotowi.",
+    "pendingResults": "Zapisywanie wyników…",
+    "retry": "Spróbuj ponownie",
+    "roomEnded": "Ta impreza się zakończyła.",
+    "players_one": "{{count}} gracz",
+    "players_few": "{{count}} graczy",
+    "players_many": "{{count}} graczy",
+    "players_other": "{{count}} gracza",
+    "players": "{{count}} gracza"
   }
 }

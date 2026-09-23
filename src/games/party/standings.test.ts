@@ -43,6 +43,12 @@ function finished(
 }
 
 describe("derivePartyStandings — Platz", () => {
+  it('counts shared winners consistently in win streaks', () => {
+    const history = [{ ...finished('bomb', 'a', { a: 10, b: 10 }), scores: { a: 3, b: 3 } }];
+    expect(winStreakFor('a', history)).toBe(1);
+    expect(winStreakFor('b', history)).toBe(1);
+    expect(winStreakFor('c', history)).toBe(0);
+  });
   it("sortiert nach Punkten und vergibt 1-basierte Plaetze", () => {
     const standings = derivePartyStandings(
       [player("a", "Anna", 17), player("b", "Ben", 30), player("c", "Cem", 5)],

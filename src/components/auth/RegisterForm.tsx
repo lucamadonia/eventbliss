@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useTranslation } from "react-i18next";
@@ -13,6 +13,7 @@ import { Loader2, Mail, Lock, CheckCircle } from "lucide-react";
 import { PasswordStrengthIndicator } from "@/components/auth/PasswordStrengthIndicator";
 import { SocialLoginButtons } from "@/components/auth/SocialLoginButtons";
 import { createPasswordSchema } from "@/lib/password-validation";
+import { getSafeAuthRedirect } from '@/lib/auth-redirect';
 
 interface RegisterFormProps {
   onSwitchToLogin: () => void;
@@ -21,6 +22,8 @@ interface RegisterFormProps {
 export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectTo = getSafeAuthRedirect(searchParams.get('redirect'));
   const { signUp } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -73,10 +76,10 @@ export function RegisterForm({ onSwitchToLogin }: RegisterFormProps) {
   useEffect(() => {
     if (!isSuccess) return;
     const timer = setTimeout(() => {
-      navigate("/", { replace: true });
+      navigate(redirectTo, { replace: true });
     }, 2000);
     return () => clearTimeout(timer);
-  }, [isSuccess]);
+  }, [isSuccess, navigate, redirectTo]);
 
   if (isSuccess) {
     return (

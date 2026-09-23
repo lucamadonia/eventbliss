@@ -373,7 +373,7 @@ function DayDetailPanel({
                         >
                           <div className="flex items-start justify-between mb-1.5">
                             <div className="flex items-center gap-2">
-                              <div className={cn("w-1.5 h-6 rounded-full shrink-0", categoryColors[(b as any).category] || categoryColors.other)} />
+                              <div className={cn("w-1.5 h-6 rounded-full shrink-0", categoryColors['category' in b && typeof b.category === 'string' ? b.category : 'other'] || categoryColors.other)} />
                               <div>
                                 <p className="text-xs font-medium text-slate-100 group-hover:text-violet-300 transition-colors">
                                   {b.service_title || "Service"}
@@ -382,7 +382,7 @@ function DayDetailPanel({
                               </div>
                             </div>
                             <Badge variant="outline" className={cn("text-[8px] shrink-0", status.color)}>
-                              {status.label}
+                              {t(`bookingCalendar.status.${status.key}`, status.key)}
                             </Badge>
                           </div>
                           <div className="flex items-center gap-3 ml-3.5 text-[10px] text-slate-600">
@@ -424,7 +424,7 @@ function DayDetailPanel({
                           <div className="flex items-start justify-between">
                             <p className="text-xs font-medium text-slate-100">{b.service_title || "Service"}</p>
                             <Badge variant="outline" className={cn("text-[8px]", status.color)}>
-                              {status.label}
+                              {t(`bookingCalendar.status.${status.key}`, status.key)}
                             </Badge>
                           </div>
                           <p className="text-[10px] text-slate-500 mt-1">{b.customer_name}</p>

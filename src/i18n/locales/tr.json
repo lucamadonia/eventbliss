@@ -6624,7 +6624,8 @@
         "loading": "Nesne görselleri yükleniyor…",
         "compareHint": "B tahtasında değiştirilen üç nesneyi bul.",
         "imageError": "Nesne görselleri yüklenemedi. Bağlantını kontrol edip tekrar dene.",
-        "retryImages": "Görselleri yeniden yükle"},
+        "retryImages": "Görselleri yeniden yükle"
+      },
       "objects": {
         "apple": "Elma",
         "banana": "Muz",
@@ -6641,7 +6642,8 @@
         "shoe": "Spor ayakkabı",
         "ball": "Futbol topu",
         "plant": "Saksı bitkisi",
-        "umbrella": "Şemsiye"}
+        "umbrella": "Şemsiye"
+      }
     },
     "impostor": {
       "title": "Sahtekar",
@@ -6933,7 +6935,8 @@
         "visibleToOthers": "Yalnızca diğer oyuncular için görünür",
         "holdPhone": "Telefonu alnına tut — diğerleri sana ipuçları verecek.",
         "skip": "Atla",
-        "solved": "Çözüldü"
+        "solved": "Çözüldü",
+        "controllerHint": "Telefonundan bir soru sor veya tahminde bulun."
       },
       "answerVote": {
         "asks": "{{name}} soruyor:",
@@ -6957,7 +6960,8 @@
         "nextPlayer": "Sonraki oyuncu",
         "skipped": "Atlandı",
         "wasCharacter": "{{name}} <1>{{character}}</1> idi",
-        "category": "Kategori · {{category}}"
+        "category": "Kategori · {{category}}",
+        "tryAgain": "Tam olmadı. Tekrar dene."
       },
       "gameOver": {
         "title": "Oyun bitti!",
@@ -7040,7 +7044,8 @@
         "reisen": "Seyahat ve keşif",
         "traeume": "Hayaller ve gelecek",
         "entscheidungen": "Seçimler ve değerler",
-        "kreativ": "Hayal gücü ve yaratıcılık"},
+        "kreativ": "Hayal gücü ve yaratıcılık"
+      },
       "categorySelection": "Kategori seç",
       "contentSelection": "Kartta ne olsun?",
       "questionsOnly": "Yalnızca sorular",
@@ -7100,7 +7105,8 @@
       "acceptedAnswers": "Bunlar da kabul edilir",
       "nextPlayer": "Sıradaki: {{name}}",
       "clueLabel": "Resimli bulmaca",
-      "poolBudget": "{{puzzleCount}} seçilmiş bulmaca. Büyük gruplar daha az tur oynar: herkese eşit sıra, tekrar yok."
+      "poolBudget": "{{puzzleCount}} seçilmiş bulmaca. Büyük gruplar daha az tur oynar: herkese eşit sıra, tekrar yok.",
+      "balancedTeamPoints": "Takımların büyüklükleri farklıysa, her turda aynı toplam puana ulaşabilmeleri için puanlar ağırlıklandırılır."
     },
     "fakeorfact": {
       "title": "Yalancı — Fake or Fact",
@@ -7187,7 +7193,8 @@
       "showAll": "Hepsini göster",
       "playAgain": "Tekrar oyna",
       "otherGame": "Başka oyun",
-      "skipTurn": "Sırayı atla"
+      "skipTurn": "Sırayı atla",
+      "emptyStory": "Henüz cümle yok. Birlikte yeni bir hikâyeye başlayın."
     },
     "thisorthat": {
       "modeTagPopular": "Popüler",
@@ -7759,7 +7766,12 @@
       "chain": "Demleme zinciri ×{{count}}",
       "multiBonus": "Çoklu döküş",
       "perfectBonus": "Kusursuz döküş",
-      "risk": { "calm": "sakin", "simmering": "kaynıyor", "unstable": "dengesiz", "critical": "kritik" },
+      "risk": {
+        "calm": "sakin",
+        "simmering": "kaynıyor",
+        "unstable": "dengesiz",
+        "critical": "kritik"
+      },
       "tv": {
         "done": "bitti"
       },
@@ -8346,15 +8358,15 @@
     "perPerson": "/Kişi",
     "flatRate": "Sabit fiyat",
     "perHour": "/Saat",
-  "bookNow": "Şimdi rezerve et",
-  "bookingContact": "Rezervasyon bilgileriniz",
-  "guestBookingHint": "Hesap oluşturmadan doğrudan rezervasyon yapın.",
-  "customerName": "Ad ve soyad *",
-  "customerEmail": "E-posta adresi *",
-  "customerPhone": "Telefon (isteğe bağlı)",
-  "customerNotes": "İstekler veya notlar (isteğe bağlı)",
-  "contactRequired": "Adınızı ve geçerli bir e-posta adresi girin.",
-  "providerWebsite": "Hizmet sağlayıcının web sitesi",
+    "bookNow": "Şimdi rezerve et",
+    "bookingContact": "Rezervasyon bilgileriniz",
+    "guestBookingHint": "Hesap oluşturmadan doğrudan rezervasyon yapın.",
+    "customerName": "Ad ve soyad *",
+    "customerEmail": "E-posta adresi *",
+    "customerPhone": "Telefon (isteğe bağlı)",
+    "customerNotes": "İstekler veya notlar (isteğe bağlı)",
+    "contactRequired": "Adınızı ve geçerli bir e-posta adresi girin.",
+    "providerWebsite": "Hizmet sağlayıcının web sitesi",
     "inquireNow": "Şimdi sorgula",
     "directBook": "Doğrudan rezerve et",
     "verifiedAgency": "Doğrulanmış ajans",
@@ -10104,7 +10116,9 @@
           "title": "Gecenin şanssızı",
           "detail": "{{n}}× sonuncu"
         }
-      }
+      },
+      "champions": "Ortak şampiyonlar",
+      "championsLine": "{{name}}, kişi başı {{points}} puanla birinciliği paylaşıyor"
     },
     "connectTitle": "TV'yi bağla",
     "openOnTv": "TV'nde aç:",
@@ -10272,5 +10286,45 @@
       "rules": "Nasıl oynanır",
       "menu": "Menü"
     }
+  },
+  "partyControllers": {
+    "title": "Kontrolcü modu",
+    "subtitle": "Herkes kendi telefonundan oynar.",
+    "appRequired": "Oynamak için EventBliss uygulaması ve bir hesap gerekir.",
+    "openApp": "Uygulamayı aç",
+    "installHint": "EventBliss’i yükle, giriş yap ve gösterilen kodu kontrolcü modunda gir.",
+    "player": "Oyuncu",
+    "loading": "Yükleniyor…",
+    "loginRequired": "Partiye katılmak için giriş yap.",
+    "login": "Giriş yap",
+    "name": "Adın",
+    "hostPlays": "Oda sahibi olarak ben de oynuyorum",
+    "create": "Parti oluştur",
+    "roomCode": "Oda kodu",
+    "join": "Katıl",
+    "scan": "Katılmak için QR kodunu tara",
+    "accountHint": "Herkes EventBliss uygulamasında kendi hesabıyla katılır.",
+    "tv": "Televizyon bağla",
+    "offline": "Bağlantı yok",
+    "ready": "Hazır",
+    "notReadyYet": "Henüz hazır değil",
+    "readyToggle": "Hazırlık durumunu değiştir",
+    "waitNext": "Oyun devam ediyor. Sonraki oyunu bekle.",
+    "abort": "Oyunu iptal et",
+    "playlist": "Oyun sırası",
+    "remove": "Oyunu kaldır",
+    "startNext": "Sonraki oyunu başlat",
+    "premiumRequired": "Oda sahibinde Premium gerekli",
+    "capacity": "{{min}}–{{max}} oyuncu",
+    "hostChoosing": "Oda sahibi sonraki oyunu seçiyor.",
+    "end": "Partiyi bitir",
+    "leave": "Partiden ayrıl",
+    "notReady": "Tüm oyuncular bağlı ve hazır olmalı.",
+    "pendingResults": "Sonuçlar kaydediliyor…",
+    "retry": "Tekrar dene",
+    "roomEnded": "Bu parti sona erdi.",
+    "players_one": "{{count}} oyuncu",
+    "players_other": "{{count}} oyuncu",
+    "players": "{{count}} oyuncu"
   }
 }

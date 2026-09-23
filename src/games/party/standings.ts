@@ -21,6 +21,13 @@ import type {
 import { rankScores } from "./scoring";
 import type { GameHistoryEntry, PartyPlayer, PartySession } from "./session-schema";
 
+/** Every shared leader is a champion, including an all-zero or full-roster tie. */
+export function partyChampions(standings: readonly PartyStanding[]): PartyStanding[] {
+  const eligible = standings.filter(entry => Number.isFinite(entry.points));
+  const best = Math.max(...eligible.map(entry => entry.points));
+  return eligible.filter(entry => entry.points === best);
+}
+
 /** Platz je Schluessel — Gleichstand teilt sich den Platz (1, 1, 3, …). */
 function ranksFor(points: Record<string, number>): Map<string, number> {
   const ranks = new Map<string, number>();
@@ -40,7 +47,12 @@ export function winStreakFor(playerId: string, gameHistory: GameHistoryEntry[]):
   for (let i = gameHistory.length - 1; i >= 0; i--) {
     const entry = gameHistory[i];
     if (!entry.scored) continue;
-    if (entry.winnerId !== playerId) break;
+    const scores = Object.values(entry.scores);
+    // A shared first place is a win for every tied participant, like gamesWon.
+    const won = scores.length > 0
+      ? Number.isFinite(entry.scores[playerId]) && entry.scores[playerId] === Math.max(...scores)
+      : entry.winnerId === playerId;
+    if (!won) break;
     streak++;
   }
   return streak;
@@ -167,11 +179,11 @@ export function buildPartyNightState(
     playlist: derivePartyPlaylist(session.playlist, finishedThrough, nameFor),
     index: session.playlistIndex,
     finishedThrough,
-    standings: derivePartyStandings(session.players, session.gameHistory),
+    standings: derivePartyStandings([...session.players, ...(session.archivedPlayers ?? [])], session.gameHistory),
     // `GameHistoryEntry` enthaelt alle Felder von `PartyGameResult` — die
     // Historie geht ohne Umformung auf die Leitung.
-    history: session.gameHistory as PartyGameResult[],
+    history: session.gameHistory.map(entry => ({ ...entry, gameName: nameFor(entry.gameId) })) as PartyGameResult[],
     phase,
-    ...(lastEntry ? { lastGameName: lastEntry.gameName } : {}),
+    ...(lastEntry ? { lastGameName: nameFor(lastEntry.gameId) } : {}),
   };
 }

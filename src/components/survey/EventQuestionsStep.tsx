@@ -190,7 +190,8 @@ export function EventQuestionsStep({
     haptics.light();
     setExpanded((s) => {
       const n = new Set(s);
-      n.has(key) ? n.delete(key) : n.add(key);
+      if (n.has(key)) n.delete(key);
+      else n.add(key);
       return n;
     });
   };

@@ -212,7 +212,7 @@ export default function EventExpensesV2({ event: eventProp, participants: partic
           </motion.button>
           <div className="flex-1 min-w-0">
             <h1 className="text-base font-bold text-foreground truncate">Ausgaben</h1>
-            <p className="text-[11px] text-muted-foreground truncate">{event.title}</p>
+            <p className="text-[11px] text-muted-foreground truncate">{event.name}</p>
           </div>
           <div className="text-right">
             <div className="text-[9px] uppercase tracking-widest text-muted-foreground font-bold">Gesamt</div>
@@ -262,7 +262,7 @@ export default function EventExpensesV2({ event: eventProp, participants: partic
                   />
                 )}
                 <span className="relative">{t.label}</span>
-                {t.count !== undefined && t.count > 0 && (
+                {'count' in t && t.count > 0 && (
                   <span
                     className={cn(
                       "relative min-w-[18px] h-[18px] rounded-full px-1.5 text-[10px] font-black flex items-center justify-center",

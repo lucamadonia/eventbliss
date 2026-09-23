@@ -1,3 +1,17 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (Player)[];
+  category?: string;
+  currentCategory?: string;
+  currentLetter?: string;
+  loserId?: string;
+  phase?: string;
+  currentPlayerIndex?: number;
+  currentRound?: number;
+  round?: number;
+  roundWords?: {word:string;playerId:string}[];
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAmbientMotion } from '@/lib/useAmbientMotion';
@@ -23,7 +37,9 @@ interface Player {
   losses?: number;
 }
 
-export default function TVCategoryView({ gameState }: { gameState: any }) {
+const EMPTY_PLAYERS: NonNullable<ViewState['players']> = [];
+
+export default function TVCategoryView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 
@@ -32,7 +48,7 @@ export default function TVCategoryView({ gameState }: { gameState: any }) {
   const currentPlayerIndex = gameState?.currentPlayerIndex ?? 0;
   const currentCategory = gameState?.currentCategory || gameState?.category || '';
   const currentLetter: string | undefined = gameState?.currentLetter || undefined;
-  const players: Player[] = gameState?.players || [];
+  const players: Player[] = gameState?.players || EMPTY_PLAYERS;
   const roundWords: { word: string; playerId: string }[] = gameState?.roundWords || [];
   const loserId: string | null = gameState?.loserId ?? null;
   const isRoundEnd = phase === 'roundEnd';
@@ -152,7 +168,7 @@ export default function TVCategoryView({ gameState }: { gameState: any }) {
                 initial={{ scale: 0.6, opacity: 0 }}
                 animate={{ scale: [0.6, 1.06, 1], opacity: 1 }}
                 exit={{ scale: 0.85, opacity: 0 }}
-                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                transition={{ type: 'tween', duration: 0.45, ease: 'easeOut' }}
               >
                 <span className="uppercase tracking-[0.25em] font-bold block mb-4" style={{ fontSize: tvType.micro, color: CAT.dim }}>
                   {t('tv.category.category', 'Kategorie')}

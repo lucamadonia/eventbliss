@@ -1,3 +1,4 @@
+import { partyChampions } from '@/games/party/standings';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -57,7 +58,7 @@ function AwardCard({
   index: number;
   reveal: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const meta = AWARD_META[award.key];
   const Icon = meta.icon;
 
@@ -72,7 +73,7 @@ function AwardCard({
         return t('tv.partyNight.award.mostWins.detail', '{{n}} Siege', { n: award.value });
       case 'consistency':
         return t('tv.partyNight.award.consistency.detail', 'Ø Platz {{value}}', {
-          value: award.value.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+          value: award.value.toLocaleString(i18n.language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
         });
       case 'bestGame':
         return t('tv.partyNight.award.bestGame.detail', 'Rekord: {{value}} Punkte in {{game}}', {
@@ -126,7 +127,7 @@ function AwardCard({
 }
 
 export default function TVPartyFinale({ party }: { party: PartyNightState }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const ambient = useAmbientMotion();
   const audio = useTVAudio();
   const audioRef = useRef(audio);
@@ -136,16 +137,18 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
     () => [...party.standings].sort((a, b) => a.rank - b.rank || b.points - a.points),
     [party.standings],
   );
-  const champion = standings[0];
+  const champions = useMemo(() => partyChampions(standings), [standings]);
+  const champion = champions[0];
+  const winnerNames = new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(champions.map(entry => entry.name));
 
   const awards = useMemo(() => {
     if (!champion) return [];
     return computePartyAwards(
       party.history ?? [],
       standings.map((s) => s.id),
-      { excludeIds: [champion.id], max: 4 },
+      { excludeIds: champions.map(entry => entry.id), max: 4 },
     );
-  }, [party.history, standings, champion]);
+  }, [party.history, standings, champion, champions]);
 
   const byId = useMemo(() => new Map(standings.map((s) => [s.id, s])), [standings]);
 
@@ -221,7 +224,7 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
                 {stat.label}
               </span>
               <span className="font-black text-white tabular-nums" style={{ fontSize: tvType.title }}>
-                {stat.value.toLocaleString('de-DE')}
+                {stat.value.toLocaleString(i18n.language)}
               </span>
             </div>
           ))}
@@ -258,7 +261,7 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
                   className="shrink-0 font-black tabular-nums"
                   style={{ fontSize: tvType.label, color: entry.color }}
                 >
-                  {entry.points.toLocaleString('de-DE')}
+                  {entry.points.toLocaleString(i18n.language)}
                 </span>
               </motion.div>
             ))}
@@ -282,7 +285,7 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
             {t('tv.partyNight.finaleEyebrow', 'Die Party Night ist vorbei')}
           </span>
           <span className="font-black text-white" style={{ fontSize: tvType.title, lineHeight: 1.1 }}>
-            {t('tv.partyNight.champion', 'Champion des Abends')}
+            {t(champions.length > 1 ? 'tv.partyNight.champions' : 'tv.partyNight.champion', 'Champion des Abends')}
           </span>
         </motion.div>
 
@@ -301,9 +304,9 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
         >
           <span className="absolute inset-y-[22%] left-0 w-[3px] rounded-full bg-[#FFD75E] shadow-[0_0_14px_#FFD75E]" aria-hidden />
           <span className="font-black text-white" style={{ fontSize: tvType.body }}>
-            {t('tv.partyNight.championLine', '{{name}} gewinnt mit {{points}} Punkten', {
-              name: champion.name,
-              points: champion.points.toLocaleString('de-DE'),
+            {t(champions.length > 1 ? 'tv.partyNight.championsLine' : 'tv.partyNight.championLine', '{{name}} gewinnt mit {{points}} Punkten', {
+              name: winnerNames,
+              points: champion.points.toLocaleString(i18n.language),
             })}
           </span>
         </motion.div>

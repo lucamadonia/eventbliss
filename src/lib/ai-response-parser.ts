@@ -503,9 +503,9 @@ function matchTimeBlockHeader(line: string): { time: string; title: string; emoj
     // ### 17:00 ✈️ Ankunft am Flughafen
     /^###\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}]?)\s*(.+)/u,
     // **17:00 Uhr:** **Ankunft am Flughafen**
-    /^\*\*\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?[:\s]*\*\*\s*\*?\*?([^\*]+)\*?\*?/u,
+    /^\*\*\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?[:\s]*\*\*\s*\*?\*?([^*]+)\*?\*?/u,
     // * **17:00 Uhr:** **Ankunft**
-    /^\*\s*\*\*\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?[:\s]*\*\*\s*\*?\*?([^\*]+)\*?\*?/u,
+    /^\*\s*\*\*\s*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?[:\s]*\*\*\s*\*?\*?([^*]+)\*?\*?/u,
     // **17:00** Ankunft
     /^\*\*(\d{1,2}:\d{2})\s*(Uhr|AM|PM|h)?\*\*[:\s]*(.+)/u,
     // 17:00 - Ankunft (with dash separator)
@@ -642,8 +642,8 @@ function parseContentLine(line: string, block: ParsedTimeBlock): void {
   }
 
   // Transport: 🚗 **Transport:** Details
-  if (/^[🚗🚕🚌🚇🚃]|^Transport/i.test(trimmed)) {
-    const value = trimmed.replace(/^[🚗🚕🚌🚇🚃\s]*\*?\*?(?:Transport)?\*?\*?[:\s]*/i, '').trim();
+  if (/^[🚗🚕🚌🚇🚃]|^Transport/iu.test(trimmed)) {
+    const value = trimmed.replace(/^[🚗🚕🚌🚇🚃\s]*\*?\*?(?:Transport)?\*?\*?[:\s]*/iu, '').trim();
     if (value) {
       block.transport = cleanMarkdown(value);
       return;
@@ -651,8 +651,8 @@ function parseContentLine(line: string, block: ParsedTimeBlock): void {
   }
 
   // Warnings: ⚠️ **Wichtig:** ... OR ☔ **Alternativ:**
-  if (/^[⚠️☔]|^Wichtig:|^Warning:|^Achtung:|^Important:|^Alternativ/i.test(trimmed)) {
-    const value = trimmed.replace(/^[\s⚠️☔]*\*?\*?(?:Wichtig|Warning|Achtung|Important|Alternativ|Alternative)?\*?\*?[:\s]*/i, '').trim();
+  if (/^(?:⚠\uFE0F?|☔)|^Wichtig:|^Warning:|^Achtung:|^Important:|^Alternativ/iu.test(trimmed)) {
+    const value = trimmed.replace(/^(?:\s|⚠\uFE0F?|☔)*\*?\*?(?:Wichtig|Warning|Achtung|Important|Alternativ|Alternative)?\*?\*?[:\s]*/iu, '').trim();
     if (value) {
       block.warnings.push(cleanMarkdown(value));
       return;
@@ -698,7 +698,7 @@ function parseContentLine(line: string, block: ParsedTimeBlock): void {
   }
 
   // Everything else is description (if not starting with emoji labels we already handled)
-  if (trimmed && !trimmed.match(/^[-*]+$/) && !trimmed.match(/^[📍💰⏱️📝💡⚠️☔🚗🚕🚌🚇]/)) {
+  if (trimmed && !trimmed.match(/^[-*]+$/) && !trimmed.match(/^(?:[📍💰📝💡☔🚗🚕🚌🚇]|[⏱⚠]\uFE0F?)/u)) {
     block.description += (block.description ? '\n' : '') + cleanMarkdown(trimmed);
   }
 }
@@ -1023,7 +1023,7 @@ function parseActivitySection(section: string): ParsedActivity | null {
   if (lines.length === 0) return null;
 
   // Parse header: ### [Emoji] Title
-  const headerMatch = lines[0].match(/###\s*(\p{Emoji}|\p{Emoji_Presentation}|[\u{1F300}-\u{1F9FF}]|[🎉🎯🏎️🚁💆🍹🎭📸🎲⚽🏊🧘🍕🎤🎸🏖️⛰️🌊🏞️🍷🍻🎰🪂🚣🧗🥾🚵])\s*(.+)/u);
+  const headerMatch = lines[0].match(/###\s*((?:\p{Emoji}|\p{Emoji_Presentation}|[\u{1F300}-\u{1F9FF}])\uFE0F?)\s*(.+)/u);
   
   if (!headerMatch) {
     // Fallback: try simpler pattern
@@ -1245,7 +1245,7 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
     // Pattern 4: ### 🎯 1. Activity Name (emoji before number)
     const actMatch4 = trimmed.match(/^###?\s*([\p{Emoji}\u{1F300}-\u{1F9FF}])\s*(\d+)\.\s*(.+)/u);
     // Pattern 5: **Aktivität 1: Name** or numbered label
-    const actMatch5 = trimmed.match(/^\*\*\s*(?:Aktivität|Activity|Activité|Actividad|Attività|Activiteit|Aktywność|Atividade|Aktivite|نشاط)?\s*(\d+)[:\.\s]+([^*]+)\*\*/i);
+    const actMatch5 = trimmed.match(/^\*\*\s*(?:Aktivität|Activity|Activité|Actividad|Attività|Activiteit|Aktywność|Atividade|Aktivite|نشاط)?\s*(\d+)[:.\s]+([^*]+)\*\*/i);
 
     const actMatch = actMatch1 || actMatch2 || actMatch3 || actMatch4 || actMatch5;
 
@@ -1370,7 +1370,7 @@ export function parseActivitiesExtended(response: string): ParsedActivitiesRespo
       
       // Description text - improved: capture text that looks like description
       // Skip metadata prefixes and short lines
-      if (trimmed.length > 20 && !trimmed.match(/^[\d]+\./) && !trimmed.match(/^[📍💰⏱️💪🎯✅📝]/) && !trimmed.startsWith('**')) {
+      if (trimmed.length > 20 && !trimmed.match(/^[\d]+\./) && !trimmed.match(/^(?:[📍💰💪🎯✅📝]|⏱\uFE0F?)/u) && !trimmed.startsWith('**')) {
         const cleanText = cleanMarkdown(trimmed);
         descriptionBuffer.push(cleanText);
       }
@@ -1549,7 +1549,7 @@ export function parseTripIdeas(response: string): ParsedTripIdeasResponse {
       
       // Parse travel time
       if (/^✈️|^🗓️|^Reisezeit:|^Travel|^Durée|^Duración|^Durata|^Duur|^Czas|^Süre:|^مدة:/i.test(trimmed)) {
-        currentIdea.travelTime = trimmed.replace(/^[✈️🗓️]?\s*(?:Reisezeit|Travel\s*(?:Time)?|Durée|Duración|Durata|Duur|Czas|Süre|مدة)[:\s]*/i, '').trim();
+        currentIdea.travelTime = trimmed.replace(/^(?:[✈🗓]\uFE0F?)?\s*(?:Reisezeit|Travel\s*(?:Time)?|Durée|Duración|Durata|Duur|Czas|Süre|مدة)[:\s]*/iu, '').trim();
         inWhyPerfect = false;
         inHighlights = false;
         inDescription = false;
@@ -1596,7 +1596,7 @@ export function parseTripIdeas(response: string): ParsedTripIdeasResponse {
       // General description text (not in special sections, decent length)
       if (!inWhyPerfect && !inHighlights && trimmed.length > 15 && !trimmed.match(/^[\d]+\./)) {
         // Skip lines that are clearly metadata
-        if (!trimmed.match(/^[📍💰✈️🗓️💡🎯✅]/)) {
+        if (!trimmed.match(/^(?:[📍💰💡🎯✅]|[✈🗓]\uFE0F?)/u)) {
           const cleanText = trimmed.replace(/^\*\*|\*\*$/g, '').trim();
           currentIdea.description += (currentIdea.description ? ' ' : '') + cleanText;
         }

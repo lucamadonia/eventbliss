@@ -1,3 +1,10 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (Player)[];
+  phase?: string;
+  round?: number;
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +28,7 @@ interface Player {
   isImpostor?: boolean;
   hasSpoken?: boolean;
   votedFor?: string;
+  voteCount?: number;
   score?: number;
   color?: string;
 }
@@ -30,7 +38,7 @@ function PlayerCard({ player, index, showVotes, revealImpostor, isTopVoted, ambi
   revealImpostor?: boolean; isTopVoted?: boolean; ambient: boolean;
 }) {
   const color = player.color || IMP.accent;
-  const voteCount = showVotes ? (player as any).voteCount || 0 : 0;
+  const voteCount = showVotes ? player.voteCount || 0 : 0;
   const dimmed = !!player.hasSpoken && !showVotes;
   const highlight = isTopVoted || (revealImpostor && player.isImpostor);
 
@@ -76,12 +84,14 @@ function PlayerCard({ player, index, showVotes, revealImpostor, isTopVoted, ambi
   );
 }
 
-export default function TVImpostorView({ gameState }: { gameState: any }) {
+const EMPTY_PLAYERS: NonNullable<ViewState['players']> = [];
+
+export default function TVImpostorView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
   const phase: string = gameState?.phase || 'setup';
   const round: number = gameState?.round || 1;
-  const players: Player[] = gameState?.players || [];
+  const players: Player[] = gameState?.players || EMPTY_PLAYERS;
 
   const [revealStep, setRevealStep] = useState(0);
 
@@ -239,13 +249,13 @@ export default function TVImpostorView({ gameState }: { gameState: any }) {
                     backgroundColor: impostor.color || IMP.red, ...tvActiveRing(IMP.red),
                   }}
                   initial={{ scale: 0 }} animate={{ scale: [0, 1.25, 1] }}
-                  transition={{ type: 'spring', damping: 9, stiffness: 120 }}>
+                  transition={{ type: 'tween', duration: 0.45, ease: 'easeOut' }}>
                   {impostor.name.charAt(0).toUpperCase()}
                 </motion.div>
               </div>
               <motion.h1 className="font-black" style={{ fontSize: tvType.hero, color: IMP.red, textShadow: `0 0 60px ${IMP.red}66` }}
                 initial={{ scale: 0, opacity: 0 }} animate={{ scale: [0, 1.2, 1], opacity: 1 }}
-                transition={{ type: 'spring', damping: 9, stiffness: 120, delay: 0.15 }}>
+                transition={{ type: 'tween', duration: 0.45, ease: 'easeOut', delay: 0.15 }}>
                 {impostor.name}
               </motion.h1>
               <motion.span className="font-black uppercase tracking-[0.25em] px-5 py-2 rounded-full"

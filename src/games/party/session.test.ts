@@ -63,6 +63,14 @@ beforeEach(() => {
 });
 
 describe("migratePartySession", () => {
+  it('preserves controller membership and match identity across reloads', () => {
+    const old = legacyBlob();
+    const session = migratePartySession({ ...old, playMode: 'controllers', roomCode: 'ABCDEF',
+      gameHistory: [{ ...old.gameHistory[0], matchId: 'match-1' }] });
+    expect(session?.playMode).toBe('controllers');
+    expect(session?.roomCode).toBe('ABCDEF');
+    expect(session?.gameHistory[0].matchId).toBe('match-1');
+  });
   it("ergaenzt fehlende Felder eines alten Blobs statt ihn wegzuwerfen", () => {
     const session = migratePartySession(legacyBlob());
     expect(session).not.toBeNull();

@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Search, Trash2, Edit3, Music2, Sparkles, Check, X, Power } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { OHRWURM_GENRES } from '@/games/ohrwurm/ohrwurm-content';
 import { resolveSpotifyUri } from '@/games/ohrwurm/playback';
@@ -19,7 +21,7 @@ const LANGS = [
   { code: 'ar', flag: '🇸🇦', name: 'العربية' },
 ];
 
-interface SongRow {
+type SongRow = {
   id: string;
   /** Gesetzt bei den 1281 importierten Grundsongs ("ow-0001"). */
   base_id: string | null;
@@ -33,13 +35,14 @@ interface SongRow {
   languages: string[];
   spotify_uri: string | null;
   is_active: boolean;
-}
+};
 
 /** Wie viele Zeilen auf einmal gerendert werden — 1281 Karten gleichzeitig
  *  machen die Seite spürbar zäh. */
 const PAGE = 120;
 
 const EMPTY: Omit<SongRow, 'id'> = {
+  base_id: null,
   year: 2020,
   artist: '', title: '', country: '🌍', genre: 'Pop', language: 'de',
   // Vorgabe: überall sichtbar. Einschränken ist der bewusste Schritt.
@@ -47,7 +50,16 @@ const EMPTY: Omit<SongRow, 'id'> = {
   spotify_uri: '', is_active: true,
 };
 
-const db = () => (supabase.from as never as (t: string) => any)('ohrwurm_songs');
+// This migrated table is not yet present in the generated database type file.
+type SongsDatabase = Database & { public: { Tables: {
+  ohrwurm_songs: {
+    Row: SongRow;
+    Insert: Omit<SongRow, 'id'> & { id?: string };
+    Update: Partial<SongRow>;
+    Relationships: [];
+  };
+} } };
+const db = () => (supabase as SupabaseClient<SongsDatabase>).from('ohrwurm_songs');
 
 export default function OhrwurmSongs() {
   const navigate = useNavigate();
@@ -172,6 +184,7 @@ export default function OhrwurmSongs() {
   const openEdit = (r: SongRow) => {
     setEditId(r.id);
     setForm({
+      base_id: r.base_id,
       year: r.year, artist: r.artist, title: r.title, country: r.country, genre: r.genre,
       language: r.language,
       // Altbestand ohne Array: den früheren Einzelwert übernehmen.

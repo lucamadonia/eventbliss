@@ -1,7 +1,7 @@
 import { KnowledgeStage } from './KnowledgeStage';
 import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
 import { sharedRoundPoints } from './rules';
-import { sharedQuizSnapshotFor } from './private-state';
+import { sharedQuizSnapshotFor, sharedQuizTVQuestion } from './private-state';
 import { useOnlineAuthority, usePrivateSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useTranslation } from "react-i18next";
 import { useState, useMemo, useRef, useEffect } from 'react';
@@ -13,6 +13,7 @@ import {
   ChevronRight, Link, Crown,
 } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
+import { personalResult } from '../social/result';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -80,14 +81,15 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
   // haengt live an der Party-Sitzung — die frueheren Einzelfassungen lasen
   // genau einmal beim Mount und verpassten jede spaetere Aenderung.
-  const partyPlayerNames = (useInitialRoster() ?? []).map((p) => p.name);
+  const partyRoster = useInitialRoster() ?? [];
+  const partyPlayerNames = partyRoster.map((p) => p.name);
   const resolvedNames = onlinePlayerNames.length >= 3
     ? onlinePlayerNames
     : partyPlayerNames.length >= 3
       ? partyPlayerNames
       : [];
   const initialPlayers: Player[] = resolvedNames.length >= 3
-    ? resolvedNames.map((name, i) => ({ id: online?.players[i]?.id ?? `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
+    ? resolvedNames.map((name, i) => ({ id: online?.players[i]?.id ?? partyRoster[i]?.id ?? `p${i + 1}`, name, color: getPlayerColor(i), score: 0 }))
     : [
         { id: 'p1', name: t('games.sharedquiz.defaultPlayer', { n: 1 }), color: getPlayerColor(0), score: 0 },
         { id: 'p2', name: t('games.sharedquiz.defaultPlayer', { n: 2 }), color: getPlayerColor(1), score: 0 },
@@ -122,9 +124,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
 
   useTVGameBridge('sharedquiz', {
     phase, round, players, totalRounds, roleIndices,
-    question: !online || phase === 'reveal' ? currentQ?.question || '' : '',
-    answers: !online || phase === 'reveal' ? currentQ?.answers || [] : [],
-    correctAnswer: phase === 'reveal' ? currentQ?.correctIndex ?? -1 : -1,
+    ...sharedQuizTVQuestion(phase, currentQ),
   }, [phase, round, selectedAnswer, roleIndices], !online || online.isHost);
 
   /* ---- Player management ---- */
@@ -172,10 +172,10 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   const playerC = players[roleIndices[2] % players.length];
 
   const route = useOnlineAuthority(online, 'sharedquiz', `${phase}:${round}:${teamAnswers.length}`, {
-    startGame: { allow: (sender, args) => phase === "setup" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => startGame() },
+    startGame: { allow: (sender, args) => phase === "setup" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => startGame() },
     handleAnswer: { allow: (sender, args) => phase === "playerC" && sender === players[roleIndices[mode === 'trio' ? 2 : teamAnswers.length]]?.id && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 4, run: (...args) => handleAnswer(args[0]) },
-    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
-    nextRound: { allow: (sender, args) => phase === "reveal" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => nextRound() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
+    nextRound: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => nextRound() },
     advancePhase: { allow: (sender, args) => sender === players[roleIndices[phase === "playerB" || phase === "handoffAB" ? 1 : phase === "handoffBC" ? 2 : 0]]?.id && ["roundIntro", "playerA", "handoffAB", "playerB", "handoffBC"].includes(phase), run: (...args) => advancePhase() },
   });
 
@@ -229,13 +229,11 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
     }
   }
 
-  /* ---- Rematch: restart gameplay directly, keeping players + scores ---- */
-  // Carries over the existing roster AND their accumulated scores (no reset to
-  // 0). Reshuffles a fresh question deck, resets round + role rotation, then
-  // jumps straight to the first roundIntro (never back to setup).
+  /* ---- Rematch: same roster and settings, fresh scores and questions ---- */
   function playAgain() {
     if (route("playAgain", [])) return;
     gameRecordedRef.current = false;
+    setPlayers(previous => previous.map(player => ({ ...player, score: 0 })));
     deck.current = shuffle(getSHARED_QUIZ_QUESTIONS());
     deckPos.current = 0;
     setRound(1);
@@ -258,8 +256,8 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
-      const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      recordEnd('geteilt-gequizzt', winner?.score ?? 0, true);
+      const result = personalResult(players, online?.myPlayerId);
+      recordEnd('geteilt-gequizzt', result.score, result.won);
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);

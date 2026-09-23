@@ -10,6 +10,8 @@
  * Desktop / mobile web continue using the original <AppContent /> tree.
  */
 import { lazy, Suspense, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { ControllerPartyCoordinator } from './party/ControllerPartyCoordinator';
+const ControllerPartyLobby = lazy(() => import('./party/ControllerPartyLobby'));
 import { Routes, Route, Navigate, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { isNative } from "@/lib/platform";
@@ -215,6 +217,7 @@ export function NativeApp() {
       {stage === "ready" && (
         <TVBroadcastProvider sessionCode={partyTvCode} showConnectButton={showTvPill}>
         <NativeShell>
+          <ControllerPartyCoordinator />
           {/* Keep-alive tab roots — always mounted, visibility-toggled.
               Tab paths are NOT routed through PageTransition (it skips
               them), so switching tabs never unmounts a screen. */}
@@ -256,6 +259,8 @@ export function NativeApp() {
               <Route path="/party" element={
                 <Suspense fallback={<PageLoader />}><PartyLobbyScreen /></Suspense>
               } />
+              <Route path="/party/controllers" element={<Suspense fallback={<PageLoader />}><ControllerPartyLobby /></Suspense>} />
+              <Route path="/party/join/:code" element={<Suspense fallback={<PageLoader />}><ControllerPartyLobby /></Suspense>} />
 
               <Route path="/join-room" element={
                 <Suspense fallback={<PageLoader />}><JoinRoomScreen /></Suspense>

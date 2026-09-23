@@ -2152,7 +2152,7 @@ export const CATEGORY_FRAMEWORKS_INTL: Record<ActivityIntlLang, Record<ActivityC
 // page language instead of leaking German "Personen"/"Minuten".
 // ──────────────────────────────────────────────────────────────────
 
-const SPEC_UNIT_I18N: Record<ActivityIntlLang, Record<string, string>> = {
+const SPEC_UNIT_I18N: Record<ActivityIntlLang | 'en', Record<string, string>> = {
   en: { "pro Raum": "per room", "pro Person": "per person", Personen: "people", Minuten: "minutes", Stunden: "hours", Stunde: "hour", Aktivität: "activity", all: "Everyone" },
   es: { "pro Raum": "por sala", "pro Person": "por persona", Personen: "personas", Minuten: "minutos", Stunden: "horas", Stunde: "hora", Aktivität: "actividad", all: "Todos" },
   fr: { "pro Raum": "par salle", "pro Person": "par personne", Personen: "personnes", Minuten: "minutes", Stunden: "heures", Stunde: "heure", Aktivität: "activité", all: "Tous" },
@@ -2168,7 +2168,7 @@ const SPEC_UNIT_I18N: Record<ActivityIntlLang, Record<string, string>> = {
 const SPEC_TOKENS = ["pro Raum", "pro Person", "Personen", "Minuten", "Stunden", "Stunde", "Aktivität"];
 
 /** Translate the German unit words inside a spec value to the page language. */
-export function localizeSpecValue(value: string, lang: ActivityIntlLang): string {
+export function localizeSpecValue(value: string, lang: ActivityIntlLang | 'en'): string {
   if (!value) return value;
   const map = SPEC_UNIT_I18N[lang];
   if (!map) return value;

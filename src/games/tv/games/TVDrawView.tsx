@@ -3,13 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Pencil } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-interface Stroke {
-  from: { x: number; y: number };
-  to: { x: number; y: number };
-  color?: string;
-  size?: number;
-  tool?: 'pen' | 'eraser';
-}
+import type { Stroke } from '../drawing';
 
 export default function TVDrawView({ gameState, drawing }: { gameState: any; drawing?: Stroke[] }) {
   const { t } = useTranslation();
@@ -47,6 +41,7 @@ export default function TVDrawView({ gameState, drawing }: { gameState: any; dra
 
   // Render strokes onto canvas
   useEffect(() => {
+    if (typeof gameState?.drawingDataURL === 'string') return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -79,7 +74,26 @@ export default function TVDrawView({ gameState, drawing }: { gameState: any; dra
       ctx.globalCompositeOperation = 'source-over';
     }
     drawnCount.current = strokes.length;
-  }, [drawing]);
+  }, [drawing, gameState?.drawingDataURL]);
+
+  useEffect(() => {
+    const source = gameState?.drawingDataURL;
+    const canvas = canvasRef.current;
+    if (typeof source !== 'string' || !canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    let cancelled = false;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    drawnCount.current = 0;
+    if (!source.startsWith('data:image/png;base64,')) return;
+    const picture = new Image();
+    picture.onload = () => {
+      if (!cancelled) ctx.drawImage(picture, 0, 0, canvas.width, canvas.height);
+    };
+    picture.src = source;
+    return () => { cancelled = true; picture.onload = null; };
+  }, [gameState?.drawingDataURL]);
 
   // Initialize canvas white
   useEffect(() => {

@@ -282,7 +282,7 @@ export function isSetlistLengthLocked(gameIds: string[], ctx: PremiumContext): b
 
 /**
  * Die Spiele einer BEREITS geplanten Liste, die ueber das Gratis-Limit
- * hinausgehen — leer, wenn die Liste passt oder Premium/​unbekannter Status
+ * hinausgehen — leer, wenn die Liste passt oder Premium/unbekannter Status
  * ohnehin keine Grenze kennt.
  *
  * WARUM ES DAS GIBT: `isSetlistLengthLocked` verhindert nur das Hinzufuegen

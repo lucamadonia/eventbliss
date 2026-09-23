@@ -1,4 +1,4 @@
-import { GameStage, StageHeader } from '../ui/GameStage';
+import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
 import './design.css';
 import { publicQuizRound, settleQuizRound } from './round-state';
 import { useGameTimer } from '../engine/TimerSystem';
@@ -26,7 +26,7 @@ import { hasShellBackButton } from '@/games/ui/shell-back';
 // Types
 // ---------------------------------------------------------------------------
 
-type Phase = 'setup' | 'statement' | 'voted' | 'reveal' | 'gameOver';
+type Phase = 'handoff' | 'setup' | 'statement' | 'voted' | 'reveal' | 'gameOver';
 type Mode = 'classic' | 'three';
 
 interface Player {
@@ -158,7 +158,7 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
         setCurrentFact(shuffled[0]);
         setPlayerVote(null);
       }
-      setPhase('statement');
+      setPhase(online ? 'statement' : 'handoff');
     },
     [online],
   );
@@ -175,8 +175,8 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
 
   useTVGameBridge('fakeorfact', {
     phase, currentRound, currentPlayerIdx, players, mode, totalRounds,
-    statement: currentFact?.statement || '',
-    statements: currentThree?.statements || [],
+    statement: phase === 'handoff' ? '' : currentFact?.statement || '',
+    statements: phase === 'handoff' ? [] : currentThree?.statements || [],
     category: currentFact?.category || currentThree?.category || '',
     // The truth is hidden until reveal: classic → 0=True / 1=False, three → trueIndex.
     correctAnswer: phase === 'reveal'
@@ -194,8 +194,8 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const route = useOnlineAuthority(online, 'fakeorfact', `${phase}:${currentRound}:${currentPlayerIdx}`, {
     handleClassicVote: { allow: (sender, args) => phase === "statement" && mode !== "three" && typeof args[0] === "boolean" && sender === players[currentPlayerIdx]?.id, run: (...args) => handleClassicVote(args[0]) },
     handleThreeVote: { allow: (sender, args) => phase === "statement" && mode === "three" && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 3 && sender === players[currentPlayerIdx]?.id, run: (...args) => handleThreeVote(args[0]) },
-    advanceRound: { allow: (sender, args) => phase === "reveal" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => advanceRound() },
-    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === online?.players.find(p => p.isHost)?.id, run: (...args) => playAgain() },
+    advanceRound: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => advanceRound() },
+    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
   });
 
   function scoreAndAdvance(correct: boolean, answer: boolean | number | null = null) {
@@ -207,6 +207,7 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
       setPhase('reveal');
     } else {
       setCurrentPlayerIdx(i => i + 1);
+      if (!online) setPhase('handoff');
       setPlayerVote(null); setPlayerThreeVote(null);
     }
   }
@@ -253,7 +254,7 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
       setFactIdx(next);
       setCurrentFact(factDeck[next % factDeck.length]);
     }
-    setPhase('statement');
+    setPhase(online ? 'statement' : 'handoff');
   }
 
   useEffect(() => {
@@ -274,7 +275,7 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
   }
 
   // Rematch: restart gameplay directly, keeping the SAME players and their
-  // accumulated scores/streaks. Reshuffles a fresh deck for the current mode,
+  // settings. Reshuffles a fresh deck and resets scoring for the current mode,
   // resets per-match counters/votes, then jumps straight to the first statement.
   function playAgain() {
     if (route("playAgain", [])) return;
@@ -297,7 +298,7 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
       setFactIdx(0);
       setCurrentFact(shuffled[0]);
     }
-    setPhase('statement');
+    setPhase(online ? 'statement' : 'handoff');
   }
 
   // Percentage correct
@@ -358,6 +359,11 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
       <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#78d9db]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#ede9dc]/8 rounded-full blur-[120px] pointer-events-none" />
 
+      {phase === 'handoff' && <div className="m-auto w-full max-w-lg space-y-6 p-6">
+        <StageHeader title={currentPlayer?.name} eyebrow={t('games.findit.mapHandoffTo')} />
+        <StagePanel><p>{t('games.fakeorfact.title')}</p></StagePanel>
+        <StageAction className="w-full" onClick={() => setPhase('statement')}>{t('games.findit.mapReadyBtn')}</StageAction>
+      </div>}
       {/* ---- STATEMENT (Classic) ---- */}
       {phase === 'statement' && <StageHeader eyebrow={t('games.fakeorfact.title')} title={currentPlayer?.name}
         subtitle={t('games.fakeorfact.round', { current: currentRound, total: totalRounds })}

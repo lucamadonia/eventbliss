@@ -30,6 +30,9 @@ import {
 } from "@/hooks/usePartySession";
 import { playableGames } from "@/lib/playable-games";
 import type { PartyNightState } from "@/games/tv/party-types";
+import { recordControllerResult } from '@/games/party/controller-session';
+import { controllerScores } from '@/games/party/controller-result';
+import { gameRoomSession } from '@/games/multiplayer/useGameRoom';
 
 /**
  * Endphasen aus Sicht der Party.
@@ -69,6 +72,8 @@ export function useTVGameBridge(
   /** Online games mount on every phone; only the authoritative host may cast. */
   broadcastEnabled = true,
 ) {
+  // Internal score identity never belongs in the public TV projection.
+  const { partyScoresById, ...publicState } = state;
   const tv = useTVContext();
   const prevStateRef = useRef<string>("");
   const prevPartyRef = useRef<string>("");
@@ -120,7 +125,7 @@ export function useTVGameBridge(
       // wuerde sonst seine eigene Browsersprache nehmen — bei einem deutschen
       // Fernseher also Deutsch, egal was der Gastgeber eingestellt hat.
       lang: i18n.language,
-      ...state,
+      ...publicState,
       // Fehlt die Party, fehlt auch der Schluessel — der Vertrag sieht ein
       // `tv-state` ohne `partyNight` ausdruecklich als unveraendert vor.
       ...(partyNight ? { partyNight } : {}),
@@ -153,7 +158,7 @@ export function useTVGameBridge(
        * sich mitten im Spiel kein Zwischenstand mehr einblenden.
        */
       resetTvView();
-      tv.broadcastTV("game-start", { game: gameId, ...state });
+      tv.broadcastTV("game-start", { game: gameId, ...publicState });
     }
   }, [tv, gameId, state.phase, broadcastEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -163,7 +168,7 @@ export function useTVGameBridge(
     const phase = state.phase as string | undefined;
     if (phase && ["gameOver", "result", "finished", "ended"].includes(phase) && !endedRef.current) {
       endedRef.current = true;
-      tv.broadcastTV("game-end", { game: gameId, ...state });
+      tv.broadcastTV("game-end", { game: gameId, ...publicState });
 
       // Also broadcast leaderboard data if players with scores are available
       const players = state.players as { name: string; score: number; color: string }[] | undefined;
@@ -186,22 +191,34 @@ export function useTVGameBridge(
 
   useEffect(() => {
     const phase = state.phase as string | undefined;
+    if (!broadcastEnabled) return;
     if (!phase) return;
 
     // Zuruecksetzen, sobald das Spiel die Endphase verlaesst. Das deckt auch
     // Rematches ab, die gar nicht ueber `setup` laufen (HOCHSTAPLER springt
     // von `results` direkt nach `wordReveal`).
-    if (!PARTY_END_PHASES.has(phase)) {
+    if (!PARTY_END_PHASES.has(phase) && !(resolvePartyGameId(routeGameId, gameId) === 'story-builder' && phase === 'storyReveal')) {
       partyEndedRef.current = false;
       return;
     }
     if (partyEndedRef.current) return;
     partyEndedRef.current = true;
 
-    if (!getActivePartySession()) return;
+    if (!getActivePartySession()) { partyEndedRef.current = false; return; }
 
     const partyGameId = resolvePartyGameId(routeGameId, gameId);
     const result = extractGameResult(partyGameId, state);
+    if (getActivePartySession()?.playMode === 'controllers') {
+      const room = gameRoomSession.getSnapshot().room;
+      const ids = room?.participantIds ?? [];
+      const scores = controllerScores(partyGameId, { ...state, partyScoresById }, ids);
+      if (!result.scored) for (const id of ids) scores[id] = 0;
+      // Incomplete scores must not silently turn a competitive game into a pause game.
+      if (Object.keys(scores).length !== ids.length || !ids.length) { partyEndedRef.current = false; return; }
+      if (recordControllerResult(partyGameId, scores, result.scored)) setTvView('between');
+      else partyEndedRef.current = false;
+      return;
+    }
     const recorded = reportGameResult({
       gameId: partyGameId,
       gameName: partyGameName(partyGameId),
@@ -212,7 +229,7 @@ export function useTVGameBridge(
     // Gesamtwertung. Das Telefon behaelt seinen Game-Winner-Screen; der TV
     // zeigt sofort, was der Sieg am ganzen Abend veraendert hat.
     if (recorded) setTvView("between");
-  }, [gameId, routeGameId, state.phase]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [gameId, routeGameId, state.phase, broadcastEnabled, state.players, partyScoresById, partySession]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return tv;
 }

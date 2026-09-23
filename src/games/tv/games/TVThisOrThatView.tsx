@@ -1,8 +1,26 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  category?: string;
+  optionA?: string;
+  optionB?: string;
+  phase?: string;
+  percentA?: number;
+  percentB?: number;
+  round?: number;
+  totalRounds?: number;
+  votesA?: number;
+  votesB?: number;
+  options?:string[]; votersA?:Voter[]; votersB?:Voter[];
+}
+interface Voter {name:string;color?:string;avatar?:string}
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
-export default function TVThisOrThatView({ gameState }: { gameState: any }) {
-  const optionA = gameState?.optionA || gameState?.options?.[0] || 'Option A';
-  const optionB = gameState?.optionB || gameState?.options?.[1] || 'Option B';
+export default function TVThisOrThatView({ gameState }: { gameState: ViewState }) {
+  const { t } = useTranslation();
+  const optionA = gameState?.optionA || gameState?.options?.[0] || 'A';
+  const optionB = gameState?.optionB || gameState?.options?.[1] || 'B';
   const phase = gameState?.phase || 'voting';
   const percentA = gameState?.percentA ?? 50;
   const percentB = gameState?.percentB ?? 50;
@@ -29,7 +47,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: any }) {
           )}
         </div>
         <div className="px-5 py-2 rounded-full bg-[#151a21]/80 border border-white/5">
-          <span className="text-xl font-bold text-[#a8abb3]">RUNDE {round}/{total}</span>
+          <span className="text-xl font-bold text-[#a8abb3]">{t('tv.round')} {round}/{total}</span>
         </div>
       </div>
 
@@ -71,7 +89,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: any }) {
               opacity: 1,
               scale: showResults && winnerSide === 'A' ? [1, 1.05, 1] : 1,
             }}
-            transition={{ type: 'spring', damping: 15 }}
+            transition={{ type: 'tween', duration: 0.45, ease: 'easeOut' }}
           >
             {optionA}
           </motion.h2>
@@ -79,7 +97,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: any }) {
           {/* Voter avatars flowing to this side */}
           {showResults && votersA.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-8 justify-center max-w-xs">
-              {votersA.map((v: any, i: number) => (
+              {votersA.map((v: Voter, i: number) => (
                 <motion.div
                   key={i}
                   className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
@@ -129,7 +147,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: any }) {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1 }}
                 >
-                  {votesA} Stimmen
+                  {t('games.thisorthat.voteCount', { count: votesA })}
                 </motion.span>
               </motion.div>
             )}
@@ -219,7 +237,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: any }) {
               opacity: 1,
               scale: showResults && winnerSide === 'B' ? [1, 1.05, 1] : 1,
             }}
-            transition={{ type: 'spring', damping: 15 }}
+            transition={{ type: 'tween', duration: 0.45, ease: 'easeOut' }}
           >
             {optionB}
           </motion.h2>
@@ -227,7 +245,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: any }) {
           {/* Voter avatars */}
           {showResults && votersB.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-8 justify-center max-w-xs">
-              {votersB.map((v: any, i: number) => (
+              {votersB.map((v: Voter, i: number) => (
                 <motion.div
                   key={i}
                   className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
@@ -277,7 +295,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: any }) {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1 }}
                 >
-                  {votesB} Stimmen
+                  {t('games.thisorthat.voteCount', { count: votesB })}
                 </motion.span>
               </motion.div>
             )}

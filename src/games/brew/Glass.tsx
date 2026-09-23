@@ -474,19 +474,6 @@ function GlassImpl({
             fill={`url(#aura-${uid})`} />
         )}
 
-        {/* Kessel-Henkel und Standfuesse liegen hinter dem Koerper. Erst diese
-            Silhouette macht aus einer runden Schale einen echten Kessel. */}
-        {form.id === "kessel" && (
-          <>
-            <path d={`M 9 ${H * 0.24} C -8 ${H * 0.26}, -7 ${H * 0.58}, 14 ${H * 0.62}`}
-              fill="none" stroke="rgba(18,13,25,.96)" strokeWidth="7" strokeLinecap="round" />
-            <path d={`M 91 ${H * 0.24} C 108 ${H * 0.26}, 107 ${H * 0.58}, 86 ${H * 0.62}`}
-              fill="none" stroke="rgba(18,13,25,.96)" strokeWidth="7" strokeLinecap="round" />
-            <path d={`M 30 ${H * 0.82} L 23 ${H * 1.01}`} stroke="rgba(13,9,19,.98)" strokeWidth="8" strokeLinecap="round" />
-            <path d={`M 70 ${H * 0.82} L 77 ${H * 1.01}`} stroke="rgba(13,9,19,.98)" strokeWidth="8" strokeLinecap="round" />
-          </>
-        )}
-
         {/* 4. Der technische Glaskoerper ist nur noch der Rueckfall fuer
             Gewaender ohne GPT-Gefaess. Zwei Koerper zugleich erzeugen das in
             der iPhone-QA sichtbare "Glas im Glas". */}

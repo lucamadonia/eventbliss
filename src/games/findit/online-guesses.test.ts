@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { appendOnlineGuess } from './online-guesses';
+import { appendOnlineGuess, publicGuessRound } from './online-guesses';
 const players = [{ id: 'host', name: 'Host', color: 'red' }, { id: 'guest', name: 'Guest', color: 'blue' }];
 const target = { lat: 47, lng: 8 };
 describe('online map guesses without broadcast self echo', () => {
@@ -25,4 +25,14 @@ it('does not turn a missed pin into a real zero-zero answer', () => {
   expect(missed[0].distanceKm).toBe(20000);
   const submitted = appendOnlineGuess([], players, 'host', 0, 0, {lat:0,lng:0}, true);
   expect(submitted[0].distanceKm).toBe(0);
+});
+
+it('keeps submitted pins, distances and target private until every guess is locked', () => {
+  const location = {lat: 52, lng: 13};
+  const guesses = [{playerId:'a',playerName:'A',playerColor:'red',lat:51,lng:12,distanceKm:150}];
+  const live = publicGuessRound({phase:'guessing',guesses,location,countdown:5});
+  expect(live).toEqual({phase:'guessing',guesses:[],location:null,countdown:5,submittedIds:['a']});
+  const result = publicGuessRound({phase:'result',guesses,location});
+  expect(result.guesses).toEqual(guesses);
+  expect(result.location).toEqual(location);
 });

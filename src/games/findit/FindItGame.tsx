@@ -1,13 +1,16 @@
 import { GameStage, StageHeader, StageAction, StageFooter } from '../ui/GameStage';
 import './expedition.css';
 import { ObjectBoard, ObjectPicture } from './VisualObjects';
-import { OBJECT_ATLAS, createVisualScene, createVisualDifference, parseObjectGrid, projectVisualState, type VisualScene as Scene, type VisualDiffScene as DiffScene } from './visual-content';
+import { OBJECT_ATLAS, createVisualScene, createVisualDifference, parseObjectGrid, projectVisualState, publicGeoPrompt, publicPanoramaDeck, type VisualScene as Scene, type VisualDiffScene as DiffScene } from './visual-content';
 import OnlineWaiting from '../multiplayer/OnlineWaiting';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Eye, Zap, GitCompare, RotateCcw, ArrowLeft, Trophy, Medal, Play, Clock, Check, X, Target, MapPin, Camera } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
+import { personalResult } from '../social/result';
+import { useLocalGamePaused } from '../engine/local-pause';
+import { usePausableTasks } from '../bottlespin/pausable-tasks';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -91,6 +94,9 @@ function getSetupSettings(t: TFunction): SettingsConfig {
 // ---------------------------------------------------------------------------
 
 export default function FindItGame({ online }: { online?: OnlineGameProps }) {
+  const locallyPaused = useLocalGamePaused();
+  const tasks = usePausableTasks(online?.isConnected !== false);
+  const { setTimeout } = tasks;
   const { t } = useTranslation();
   const navigate = useNavigate();
   const exitGuard = useConfirmExit(() => navigate('/games'));
@@ -201,8 +207,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     optionObjects: tvQuestion?.options ?? [],
     correctOption: tvRevealed ? (tvQuestion?.correct ?? null) : null,
     geoName: currentGeo?.name ?? '',
-    geoLat: currentGeo?.lat ?? null,
-    geoLng: currentGeo?.lng ?? null,
+    geoLat: null,
+    geoLng: null,
     selectedAnswer,
     answerCorrect,
   }, [phase, round, currentPlayerIdx, mode, studyCountdown, questionCountdown, questionIdx, tvQuestion?.q, currentScene?.grid, currentDiff, foundDiffs, currentGeo?.name, selectedAnswer, answerCorrect]);
@@ -218,14 +224,14 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
   const disconnectedAtRef = useRef<{ at: number; started: number | null } | null>(null);
   useEffect(() => {
-    if (online?.isConnected === false) {
+    if (online?.isConnected === false || locallyPaused) {
       disconnectedAtRef.current ??= { at: performance.now(), started: questionStartRef.current };
     } else if (disconnectedAtRef.current) {
       const paused = disconnectedAtRef.current;
       if (questionStartRef.current !== null && questionStartRef.current === paused.started) questionStartRef.current += performance.now() - paused.at;
       disconnectedAtRef.current = null;
     }
-  }, [online?.isConnected]);
+  }, [online?.isConnected, locallyPaused]);
 
   // Latest-ref pattern: avoids stale closures across timer callbacks and forward references
   const handleTimeoutRef = useRef<() => void>(() => {});
@@ -277,8 +283,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       phase, round, currentPlayerIdx, players: JSON.parse(JSON.stringify(players)),
       selectedAnswer, answerCorrect,
       // Include geo data so non-hosts can render the same map/streetview
-      currentGeo: currentGeo ? { lat: currentGeo.lat, lng: currentGeo.lng, name: currentGeo.name } : null,
-      svLocations,
+      currentGeo: publicGeoPrompt(currentGeo),
+      svLocations: publicPanoramaDeck(svLocations, svRound),
       svRound,
       ...overrides,
     }));
@@ -358,7 +364,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
 
   // ------- Study countdown timer -------
   useEffect(() => {
-    if ((online && (!online.isHost || online.isConnected === false)) || !imagesAvailable || phase !== 'study') return;
+    if ((online && (!online.isHost || online.isConnected === false)) || locallyPaused || !imagesAvailable || phase !== 'study') return;
     studyTimerRef.current = setInterval(() => {
       setStudyCountdown(prev => {
         if (prev <= 1) {
@@ -381,11 +387,11 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       });
     }, 1000);
     return () => { if (studyTimerRef.current) clearInterval(studyTimerRef.current); };
-  }, [online, imagesAvailable, phase, mode]);
+  }, [online, imagesAvailable, phase, mode, locallyPaused]);
 
   // ------- Question countdown timer (NOT for karte/streetview — they have their own) -------
   useEffect(() => {
-    if ((online && (!online.isHost || online.isConnected === false)) || !imagesAvailable || phase !== 'question') return;
+    if ((online && (!online.isHost || online.isConnected === false)) || locallyPaused || !imagesAvailable || phase !== 'question') return;
     if (mode === 'karte' || mode === 'streetview') return; // MapRound/StreetViewRound handle their own timers
     questionTimerRef.current = setInterval(() => {
       setQuestionCountdown(prev => {
@@ -398,7 +404,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
       });
     }, 1000);
     return () => { if (questionTimerRef.current) clearInterval(questionTimerRef.current); };
-  }, [online, imagesAvailable, phase, mode, questionIdx, round, currentPlayerIdx]);
+  }, [online, imagesAvailable, phase, mode, questionIdx, round, currentPlayerIdx, locallyPaused]);
 
   // ------- Handle timeout -------
   const handleTimeout = useCallback(() => {
@@ -418,7 +424,7 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   const handleAnswer = useCallback((optionIdx: number) => {
     if (online && !online.isHost) { online.broadcast('findit-action', { type: 'answer', optionIdx, round, questionIdx }); return; }
     if (!imagesAvailable || online?.isConnected === false) return;
-    if (selectedAnswer !== null || !imagesAvailable || phase !== 'question') return;
+    if (selectedAnswer !== null || locallyPaused || !imagesAvailable || phase !== 'question') return;
     if (questionTimerRef.current) clearInterval(questionTimerRef.current);
 
     const elapsed = performance.now() - questionStartRef.current;
@@ -529,8 +535,8 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
-      const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      recordEnd('wo-ist-was', winner?.score ?? 0, true);
+      const result = personalResult(players, online?.myPlayerId);
+      recordEnd('wo-ist-was', result.score, result.won);
     }
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
@@ -547,20 +553,19 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
   }, []);
 
   const handleRestart = useCallback(() => {
+    tasks.clear();
     setPhase('setup');
     setPlayers([]);
     setRound(0);
   }, []);
 
-  // Nochmal spielen: KEEP players AND their accumulated score/correct/wrong/
-  // bestStreak/fastestMs. Only the per-match streak is reset (a streak shouldn't
-  // bleed across matches). We replicate handleSetupStart's gameplay-entry —
-  // reshuffle pools, restart the first round per mode — and never go to 'setup'.
+  // A rematch keeps settings and roster, but no previous match statistics.
   const rematch = useCallback(() => {
     if (online && !online.isHost) { online.broadcast('findit-rematch', {}); return; }
     if (players.length === 0) { handleRestart(); return; }
     gameRecordedRef.current = false;
-    setPlayers(prev => prev.map(p => ({ ...p, streak: 0 })));
+    tasks.clear();
+    setPlayers(prev => prev.map(p => ({ ...p, score: 0, correct: 0, wrong: 0, streak: 0, bestStreak: 0, fastestMs: Infinity })));
     setRound(0);
     setCurrentPlayerIdx(0);
     setSelectedAnswer(null);

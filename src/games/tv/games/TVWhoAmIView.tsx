@@ -1,3 +1,16 @@
+import type { TFunction } from 'i18next';
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (TVPlayer)[];
+  currentQuestion?: string;
+  phase?: string;
+  activeIdx?: number;
+  currentRound?: number;
+  maxQuestions?: number;
+  totalRounds?: number;
+  guessCorrect?:boolean; voteTally?:{yes:number;no:number;maybe:number};
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Check, X, Minus, HelpCircle } from 'lucide-react';
@@ -46,7 +59,7 @@ interface TVPlayer {
  * included — only score, a question count, and a done/out status. Solved and
  * eliminated players are marked 'out' so the strip greys them.
  */
-function toRoster(players: TVPlayer[], t: (k: string, o?: any) => string): TVScorePlayer[] {
+function toRoster(players: TVPlayer[], t: TFunction): TVScorePlayer[] {
   return players.map((p) => ({
     id: p.id,
     name: p.name,
@@ -58,7 +71,7 @@ function toRoster(players: TVPlayer[], t: (k: string, o?: any) => string): TVSco
   }));
 }
 
-export default function TVWhoAmIView({ gameState }: { gameState: any }) {
+export default function TVWhoAmIView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 

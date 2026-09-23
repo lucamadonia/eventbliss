@@ -49,6 +49,7 @@ interface GameSetupProps {
   onlinePlayers?: OnlinePlayer[];
   /** Optional generated artwork turns the compact mode grid into cinematic cards. */
   modeAssets?: Record<string, string>;
+  fixedTimerByMode?: Record<string, number>;
   accent?: string;
 }
 
@@ -68,6 +69,7 @@ export function GameSetup({
   maxPlayers = 20,
   onlinePlayers,
   modeAssets,
+  fixedTimerByMode,
   accent: accentOverride,
 }: GameSetupProps) {
   const { t } = useTranslation();
@@ -156,7 +158,8 @@ export function GameSetup({
     return { id: p.id, name: p.name, color: online?.color, avatar: online?.avatar, readOnly: !!online };
   });
 
-  const canStart = players.every((p) => p.name.trim().length > 0) && selectedMode;
+  const fixedTimer = fixedTimerByMode?.[selectedMode];
+  const canStart = players.length >= minPlayers && players.length <= maxPlayers && players.every((p) => p.name.trim().length > 0) && selectedMode;
 
   const handleStart = () => {
     if (!canStart) return;
@@ -170,7 +173,7 @@ export function GameSetup({
         avatar: onlineMatch?.avatar || getPlayerInitial(p.name),
       };
     });
-    onStart(mapped, selectedMode, { timer, rounds });
+    onStart(mapped, selectedMode, { timer: fixedTimer ?? timer, rounds });
   };
 
   return (
@@ -263,7 +266,7 @@ export function GameSetup({
           <h2 className="text-sm font-semibold uppercase tracking-wider text-gray-400">
             {t('games.setup.settings')}
           </h2>
-          <SliderSetting
+          {fixedTimer !== undefined ? <div className="flex items-center justify-between text-sm text-white"><span>{settings.timer.label}</span><strong>{fixedTimer} s</strong></div> : <SliderSetting
             label={settings.timer.label}
             value={timer}
             min={settings.timer.min}
@@ -271,7 +274,7 @@ export function GameSetup({
             step={settings.timer.step}
             onChange={setTimer}
             suffix="s"
-          />
+          />}
           <SliderSetting
             label={settings.rounds.label}
             value={rounds}

@@ -111,3 +111,21 @@ describe('snapshots', () => {
     expect(r.deliveries).toHaveLength(0);
   });
 });
+
+
+describe('non-playing moderator authority', () => {
+  it('allows host controls without granting the moderator a player action', () => {
+    const r = room();
+    const moderator = { ...r.host, hostPlayerId: 'host', players: r.host.players.filter(p => !p.isHost) };
+    expect(canAct(moderator, 'host', 'host')).toBe(true);
+    expect(canAct(moderator, 'alice', 'host')).toBe(false);
+    expect(canAct(moderator, true, 'host')).toBe(false);
+    expect(canAct(moderator, 'host', 'alice')).toBe(false);
+    const setup = vi.fn(), move = vi.fn();
+    const act = render('moderator', () => useOnlineActions(moderator, 'test', 'setup', {
+      start: { allowed: 'host', run: setup }, move: { allowed: 'alice', run: move },
+    }));
+    act('start'); act('move');
+    expect(setup).toHaveBeenCalledOnce(); expect(move).not.toHaveBeenCalled();
+  });
+});

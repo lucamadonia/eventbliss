@@ -45,6 +45,7 @@ export function PremiumImageChoiceCard({
         layout === 'wide' ? 'min-h-[168px] rounded-[28px]' : 'aspect-[4/5] rounded-[24px]'
       } ${className}`}
       style={{
+        minHeight: layout === 'wide' ? 168 : undefined,
         border: `1.5px solid ${selected ? accent : 'rgba(255,255,255,0.13)'}`,
         boxShadow: selected
           ? `0 0 0 1px ${accent}38, 0 20px 48px ${accent}24`

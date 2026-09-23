@@ -57,3 +57,10 @@ it('reveals only the permitted clue before the result', () => {
   expect(publicEmojiPuzzle(puzzle,true,true)?.answer).toBe('Titanic');
 });
 
+
+it.each([3, 5, 7, 19])('gives both teams equal potential per full roster round for %i players', roster => {
+  let players = Array.from({length: roster}, () => ({score: 0, streak: 0}));
+  for (let actor = 0; actor < roster; actor++) players = awardEmojiPoints(players, actor, 100, true);
+  expect(players[0].score).toBe(players[1].score);
+  expect(players.every(p => Number.isInteger(p.score))).toBe(true);
+});

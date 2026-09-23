@@ -102,7 +102,6 @@ export function ReceiptAttach({
     <div className="rounded-2xl bg-muted border border-border overflow-hidden">
       <div className="relative">
         {preview && (
-          /* eslint-disable-next-line jsx-a11y/alt-text */
           <img
             src={preview}
             alt={t("nativeExtra.receipt.receiptAlt", "Beleg")}

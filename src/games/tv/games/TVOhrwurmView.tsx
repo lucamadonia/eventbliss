@@ -1,3 +1,17 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (TVPlayer)[];
+  activeName?: string;
+  activeId?: string;
+  phase?: string;
+  previewUrl?: string;
+  winnerName?: string;
+  timeLeft?: number;
+  totalTime?: number;
+  winTarget?: number;
+  timeline?:{id:string;year:number}[]; listening?:boolean; bonusPending?:boolean; reveal?:{year:number;title:string;artist:string;flag?:string;genre?:string};
+}
 import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +39,7 @@ const OW = { primary: '#FF2E88', secondary: '#26E0C4', accent: '#FFD23F', text: 
 
 interface TVPlayer { id: string; name: string; color: string; score: number; hooks: number }
 
-export default function TVOhrwurmView({ gameState }: { gameState: any }) {
+export default function TVOhrwurmView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
   const phase: string = gameState?.phase || 'draw';

@@ -11,7 +11,7 @@
  */
 
 /** Aktuelle Schema-Fassung. Erhoehen, sobald Felder ihre Bedeutung aendern. */
-export const PARTY_SCHEMA_VERSION = 2;
+export const PARTY_SCHEMA_VERSION = 3;
 
 /** Obergrenze der Mitspieler — deckt sich mit der Laenge der Farbpalette. */
 export const MAX_PARTY_PLAYERS = 12;
@@ -41,6 +41,7 @@ export interface PartyPlayer {
 }
 
 export interface GameHistoryEntry {
+  matchId?: string;
   gameId: string;
   gameName: string;
   /** Leer bei einem Pausenspiel (`scored: false`). */
@@ -56,8 +57,12 @@ export interface GameHistoryEntry {
 }
 
 export interface PartySession {
+  playMode?: 'local' | 'controllers';
+  roomCode?: string;
   id: string;
   players: PartyPlayer[];
+  /** Departed controller members keep standings without occupying a game slot. */
+  archivedPlayers?: PartyPlayer[];
   tvCode: string;
   currentGameId: string | null;
   gameHistory: GameHistoryEntry[];
@@ -100,6 +105,7 @@ export function generateTvCode(): string {
 export function createPartySession(id: string): PartySession {
   return {
     id,
+    playMode: 'local',
     players: [],
     tvCode: generateTvCode(),
     currentGameId: null,
@@ -178,6 +184,7 @@ function migrateHistoryEntry(value: unknown): GameHistoryEntry | null {
   return {
     gameId,
     gameName: asString(raw.gameName, gameId),
+    ...(typeof raw.matchId === 'string' ? { matchId: raw.matchId } : {}),
     winnerId: asString(raw.winnerId, ""),
     winnerName: asString(raw.winnerName, ""),
     scores: asScoreMap(raw.scores),
@@ -223,7 +230,10 @@ export function migratePartySession(value: unknown): PartySession | null {
 
   return {
     id,
+    playMode: raw.playMode === 'controllers' ? 'controllers' : 'local',
+    ...(typeof raw.roomCode === 'string' ? { roomCode: raw.roomCode } : {}),
     players,
+    ...(Array.isArray(raw.archivedPlayers) ? { archivedPlayers: raw.archivedPlayers.map(migratePlayer).filter((player): player is PartyPlayer => !!player && !players.some(active => active.id === player.id)) } : {}),
     tvCode: asString(raw.tvCode, generateTvCode()),
     currentGameId: typeof raw.currentGameId === "string" ? raw.currentGameId : null,
     gameHistory,

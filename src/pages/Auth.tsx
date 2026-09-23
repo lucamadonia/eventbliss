@@ -10,14 +10,7 @@ import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { GlassCard } from "@/components/ui/GlassCard";
-
-const getSafeRedirect = (value: string | null) => {
-  if (!value) return "/";
-  if (!value.startsWith("/")) return "/";
-  if (value.startsWith("//")) return "/";
-  if (value.startsWith("/auth")) return "/";
-  return value;
-};
+import { getSafeAuthRedirect } from '@/lib/auth-redirect';
 
 type AuthMode = "login" | "register" | "forgot" | "reset";
 
@@ -26,8 +19,9 @@ const Auth = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectTo = getSafeRedirect(searchParams.get("redirect"));
+  const redirectTo = getSafeAuthRedirect(searchParams.get("redirect"));
   const typeParam = searchParams.get("type");
+  const callbackFailed = searchParams.get('callback_error') === '1';
 
   const [mode, setMode] = useState<AuthMode>(() => {
     // Check for password recovery flow
@@ -39,11 +33,13 @@ const Auth = () => {
 
   useEffect(() => {
     // Don't redirect during password reset
-    if (mode === "reset") return;
+    if (mode === "reset" || typeParam === 'recovery' || callbackFailed) return;
     if (isAuthenticated) {
       navigate(redirectTo, { replace: true });
     }
-  }, [isAuthenticated, navigate, redirectTo, mode]);
+  }, [isAuthenticated, navigate, redirectTo, mode, typeParam, callbackFailed]);
+
+  useEffect(() => { if (typeParam === 'recovery') setMode('reset'); }, [typeParam]);
 
   if (isLoading) {
     return (
@@ -79,7 +75,7 @@ const Auth = () => {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
           >
-            <ResetPasswordForm onBackToLogin={() => setMode("login")} />
+            <ResetPasswordForm onBackToLogin={() => navigate(redirectTo, { replace: true })} />
           </motion.div>
         );
 
@@ -138,7 +134,10 @@ const Auth = () => {
       */}
       <div className="min-h-[100dvh] flex items-start justify-center overflow-y-auto px-4 py-12 pb-[max(3rem,env(safe-area-inset-bottom))]">
         <AnimatePresence mode="wait">
-          <div className="my-auto w-full flex justify-center">{renderForm()}</div>
+          <div className="my-auto w-full flex flex-col items-center gap-4">
+            {callbackFailed && <p role="alert" className="w-full max-w-md rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm">{t('auth.errorOccurred')} {t('notifications.tryAgain')}</p>}
+            {renderForm()}
+          </div>
         </AnimatePresence>
       </div>
     </AnimatedBackground>

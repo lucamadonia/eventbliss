@@ -1,4 +1,5 @@
 import { publicRoundItem } from '../multiplayer/public-round-item';
+import { canNavigateBack, validTimelineSlot } from './navigation';
 import { usePausableTasks } from '../bottlespin/pausable-tasks';
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
@@ -503,7 +504,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
   // --- Phase 2: Einordnen -------------------------------------------------
   const handlePlace = useCallback((slotIndex: number) => {
-    if (!active) return;
+    if (!active || !validTimelineSlot(slotIndex, active.timeline.length)) return;
     void haptics.light();
     // Speed messen + Timer/Audio stoppen
     const elapsed = playStartedAtRef.current != null ? Date.now() - playStartedAtRef.current : null;
@@ -521,18 +522,20 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
   // --- Phase 3: Konter ----------------------------------------------------
   const handleChooseCounter = useCallback((pid: string) => {
+    if (!participants.some(participant => participant.id === pid && participant.id !== active?.id && participant.hooks >= 1)) return;
     void haptics.medium();
     setCounteringId(pid);
     setPhase('counterPlace');
-  }, [haptics]);
+  }, [haptics, participants, active?.id]);
 
   const handleCommitCounter = useCallback((slotIndex: number) => {
-    if (!counteringId || placement === null) return;
+    if (!counteringId || placement === null || !active || !validTimelineSlot(slotIndex, active.timeline.length)
+      || !participants.some(participant => participant.id === counteringId && participant.hooks >= 1)) return;
     void haptics.medium();
     setParticipants((prev) => prev.map((p) => (p.id === counteringId ? { ...p, hooks: p.hooks - 1 } : p)));
     const ct: PendingCounter = { participantId: counteringId, slotIndex };
     goReveal(placement, ct);
-  }, [counteringId, placement, haptics, goReveal]);
+  }, [counteringId, placement, haptics, goReveal, active, participants]);
 
   const handleNoCounter = useCallback(() => {
     if (placement === null) return;
@@ -639,9 +642,11 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
   // Route a player input: offline / host → run locally; remote client → send to host.
   const act = useCallback((type: string, payload: Record<string, unknown>, run: () => void) => {
+    if (online?.isConnected === false) return;
+    if (isOnline && type === 'back' && !canNavigateBack(phase, payload.to, myId, active?.id, counteringId)) return;
     if (isOnline && !isHost) { online!.broadcast('ohrwurm-action', { type, ...payload }); return; }
     run();
-  }, [isOnline, isHost, online]);
+  }, [isOnline, isHost, online, phase, myId, active?.id, counteringId]);
 
   // Press "play": start the shared clock + (only on the audio device) play sound.
   const pressPlay = useCallback(() => {
@@ -671,11 +676,26 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     a.play().then(() => setIsAudioPlaying(true)).catch(() => setIsAudioPlaying(false));
   }, [phase, listening, audioDevice, previewUrl]);
 
+  const navigateBack = useCallback((to: 'draw' | 'place' | 'counter') => {
+    if (to === 'draw') setPhase('draw');
+    if (to === 'place') {
+      setPlacement(null);
+      setPhase('place');
+      if (listening) roundTimer.start();
+    }
+    if (to === 'counter') { setCounteringId(null); setPhase('counter'); }
+  }, [listening, roundTimer.start]);
+
   // Host applies actions coming from remote clients.
   const applyAction = useCallback((data: Record<string, unknown>) => {
     const sender = data.__senderId;
     if (typeof sender !== 'string' || !participants.some(p => p.id === sender)) return;
+    if (online?.isConnected === false) return;
     if (data.type === 'again' && phase === 'gameOver') { rematch(); return; }
+    if (data.type === 'back') {
+      if (canNavigateBack(phase, data.to, sender, active?.id, counteringId)) navigateBack(data.to as 'draw' | 'place' | 'counter');
+      return;
+    }
     const expected: Record<string, string[]> = { toPlace: ['draw'], toggleBonus: ['draw', 'place'], listen: ['draw'], swap: ['draw'], place: ['place'], chooseCounter: ['counter'], commitCounter: ['counterPlace'], noCounter: ['counter'], bonus: ['reveal'], continue: ['reveal'], back: ['place', 'counter', 'counterPlace'] };
     if (!expected[String(data.type)]?.includes(phase)) return;
     if (data.type === 'chooseCounter') { if (data.pid !== sender || sender === active?.id) return; }
@@ -690,17 +710,12 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       case 'chooseCounter': handleChooseCounter(data.pid as string); break;
       case 'commitCounter': handleCommitCounter(data.slot as number); break;
       case 'noCounter': handleNoCounter(); break;
-      case 'bonus': handleBonus(data.earned as boolean); break;
+      case 'bonus': if (typeof data.earned === 'boolean') handleBonus(data.earned); break;
       case 'continue': handleContinue(); break;
       // Ein Schritt zurück innerhalb der Runde (noch nichts gewertet).
-      case 'back':
-        if (data.to === 'draw') setPhase('draw');
-        else if (data.to === 'place') { setPlacement(null); setPhase('place'); }
-        else if (data.to === 'counter') { setCounteringId(null); setPhase('counter'); }
-        break;
       default: break;
     }
-  }, [rematch, participants, phase, active, counteringId, beginListening, handleSwap, handlePlace, handleChooseCounter, handleCommitCounter, handleNoCounter, handleBonus, handleContinue]);
+  }, [rematch, participants, phase, active, counteringId, beginListening, handleSwap, handlePlace, handleChooseCounter, handleCommitCounter, handleNoCounter, handleBonus, handleContinue, online?.isConnected, navigateBack]);
 
   // Header-Zurück: einen echten Schritt zurück, wo es gefahrlos ist (vor der
   // Wertung), sonst NICHT sofort das ganze Spiel verlassen, sondern nachfragen.
@@ -710,22 +725,18 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     // draw ← place: der häufigste Fall — man ist schon am Einordnen und merkt,
     // dass man vorher noch einen 🎣 einsetzen wollte (Tausch gibt es nur in
     // 'draw'). Die Uhr läuft hier noch, also nichts wiederherzustellen.
-    if (phase === 'place') { act('back', { to: 'draw' }, () => setPhase('draw')); return; }
+    if (phase === 'place') { act('back', { to: 'draw' }, () => navigateBack('draw')); return; }
     // place ← counter: Platzierung zurücknehmen und neu einordnen. Gefahrlos,
     // weil goReveal noch nicht gelaufen ist. handlePlace hatte die Uhr
     // pausiert — die muss wieder laufen, sonst hat die Runde keinen Zeitdruck.
     if (phase === 'counter') {
-      act('back', { to: 'place' }, () => {
-        setPlacement(null);
-        setPhase('place');
-        if (listening) roundTimer.start();
-      });
+      act('back', { to: 'place' }, () => navigateBack('place'));
       return;
     }
-    if (phase === 'counterPlace') { act('back', { to: 'counter' }, () => { setCounteringId(null); setPhase('counter'); }); return; }
+    if (phase === 'counterPlace') { act('back', { to: 'counter' }, () => navigateBack('counter')); return; }
     // Ab 'reveal' bewusst gesperrt: ein Rückschritt würde die Auflösung verraten.
     setConfirmExit(true);
-  }, [phase, act, haptics, listening, roundTimer]);
+  }, [phase, act, haptics, navigateBack]);
 
   // Die native Zurück-Taste und der Floating-Button liegen ÜBER unserem eigenen
   // Pfeil — ohne diesen Guard verwarfen sie die komplette Partie, statt einen
@@ -850,6 +861,10 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       // nicht) — beim Fortsetzen offline ist er dagegen zwingend, sonst kann
       // die nächste Runde keine Karte mehr ziehen.
       if (Array.isArray(s.deck)) setDeck(s.deck as Song[]);
+      if (typeof s.timeLeft === 'number' && Number.isFinite(s.timeLeft)) {
+        roundTimerRef.current?.reset(Math.max(0, Math.min(ROUND_SECONDS, s.timeLeft)));
+        if (s.timerRunning === true) roundTimerRef.current?.start();
+      }
   }, []);
 
   // Non-host → apply incoming snapshots.
@@ -887,10 +902,12 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre, winner,
       previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected,
       deck, // offline zwingend — siehe applySnapshot
+      timeLeft: roundTimer.timeLeft,
+      timerRunning: roundTimer.isRunning,
     });
   }, [isOnline, phase, participants, turn, song, placement, counter, counteringId,
       resolution, flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre,
-      winner, previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected, deck]);
+      winner, previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected, deck, roundTimer.timeLeft, roundTimer.isRunning]);
 
   // Offline TV bridge (party mode / TV-room channel). Online TV uses the
   // 'tv-state' broadcast above on the game-room channel.
@@ -908,7 +925,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     reveal: phase === 'reveal' && song ? { year: song.year, title: song.title, artist: song.artist, flag: song.flag, genre: song.genre } : null,
     bonusPending: phase === 'reveal' && !!resolution?.bonusEligible && bonusClaimed && !bonusDecided,
     winnerName: winner?.name ?? null,
-  }, [phase, turn, listening, roundTimer.timeLeft, participants, resolution, bonusClaimed, bonusDecided]);
+  }, [phase, turn, listening, roundTimer.timeLeft, participants, resolution, bonusClaimed, bonusDecided], isHost);
 
   // =========================================================================
   // Render

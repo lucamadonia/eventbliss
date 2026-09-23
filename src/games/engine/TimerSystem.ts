@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useLocalGamePaused } from './local-pause';
 
 export function useGameTimer(initialSeconds: number, onExpire: () => void, enabled = true) {
+  const locallyPaused = useLocalGamePaused();
+  enabled = enabled && !locallyPaused;
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
   const [isRunning, setIsRunning] = useState(false);
   const onExpireRef = useRef(onExpire);
@@ -55,6 +58,8 @@ export function useGameTimer(initialSeconds: number, onExpire: () => void, enabl
 
 /** A one-shot deadline that excludes time spent disconnected. */
 export function usePausableTimeout(callback: () => void, delayMs: number | null, enabled = true) {
+  const locallyPaused = useLocalGamePaused();
+  enabled = enabled && !locallyPaused;
   const callbackRef = useRef(callback);
   callbackRef.current = callback;
   const remainingRef = useRef(delayMs);

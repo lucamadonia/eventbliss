@@ -53,7 +53,7 @@ const headupModules: Record<SupportedLang, () => Promise<{ [key: string]: HeadUp
 };
 
 // Lazy imports for code splitting — questions
-const questionModules: Record<SupportedLang, () => Promise<{ [key: string]: QuizQuestion[] }>> = {
+const questionModules: Record<SupportedLang, () => Promise<Partial<Record<`QUIZ_QUESTIONS_${string}`, QuizQuestion[]>>>> = {
   de: () => import('./questions-de'),
   en: () => import('./questions-en'),
   es: () => import('./questions-es'),

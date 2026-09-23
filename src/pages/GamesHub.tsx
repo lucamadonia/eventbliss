@@ -14,6 +14,7 @@ import PremiumPaywall from "@/games/premium/PremiumPaywall";
 import { playableGames, GAME_BADGE_KEY } from "@/lib/playable-games";
 import { useGameRoom, gameRoomSession, type RoomPlayer } from '@/games/multiplayer/useGameRoom';
 import { PartyNightFlow } from "@/components/native/party/PartyNightFlow";
+import { ControllerGameControls } from '@/components/native/party/ControllerGameControls';
 import { getActivePartySession } from "@/hooks/usePartySession";
 import { partyGameName } from "@/hooks/useTVGameBridge";
 import { buildPartyNightState } from "@/games/party/standings";
@@ -285,6 +286,7 @@ const GamesHubInner = () => {
   const { room: activeRoom, leaveRoom } = useGameRoom();
   const previousOnlineRoute = useRef({ roomCode, lobbyParam });
   useEffect(() => {
+    if (getActivePartySession()?.playMode === 'controllers') return;
     if (!roomCode && !lobbyParam && (previousOnlineRoute.current.roomCode || previousOnlineRoute.current.lobbyParam)) {
       setOnlineGameId(null); leaveRoom();
     }
@@ -292,15 +294,16 @@ const GamesHubInner = () => {
   }, [roomCode, lobbyParam, leaveRoom]);
   useEffect(() => {
     if (roomCode && activeRoom?.roomCode === roomCode && activeRoom.status !== 'lobby' && activeRoom.gameId !== gameId) {
-      navigate(`/games/${activeRoom.gameId}?room=${roomCode}`, { replace: true });
+      navigate(`/games/${activeRoom.gameId}?room=${roomCode}${activeRoom.settings.controllerParty ? '&party=true' : ''}`, { replace: true });
     }
   }, [roomCode, activeRoom?.roomCode, activeRoom?.gameId, activeRoom?.status, gameId, navigate]);
   useEffect(() => {
-    if (!roomCode && !onlineGameId && !lobbyParam) leaveRoom();
+    if (!roomCode && !onlineGameId && !lobbyParam && getActivePartySession()?.playMode !== 'controllers') leaveRoom();
   }, [roomCode, onlineGameId, lobbyParam, leaveRoom]);
   useEffect(() => () => {
     // Allow the lobby -> game handoff, but release presence on actual exit.
     setTimeout(() => {
+      if (getActivePartySession()?.playMode === 'controllers') return;
       const code = new URLSearchParams(window.location.search).get('room');
       if (!window.location.pathname.startsWith('/games') || code !== gameRoomSession.getSnapshot().room?.roomCode) gameRoomSession.leaveRoom();
     }, 0);
@@ -549,8 +552,9 @@ const GamesHubInner = () => {
 
     return (
       <>{rulesOverlay}
+        {activeRoom?.settings.controllerParty === true && <ControllerGameControls />}
         <Suspense fallback={GameFallback}>
-          <OnlineGameWrapper gameId={gameId} roomCode={roomCode} playerName={onlinePlayerName}>
+          <OnlineGameWrapper key={`${gameId}:${activeRoom?.sessionId}`} gameId={gameId} roomCode={roomCode} playerName={onlinePlayerName}>
             {(onlineProps) => renderOnlineGame(onlineProps)}
           </OnlineGameWrapper>
         </Suspense>

@@ -1,3 +1,29 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (QuizPlayer)[];
+  category?: string;
+  currentPlayer?: string;
+  currentTask?: string;
+  explanation?: string;
+  game?: string;
+  phase?: string;
+  playerColor?: string;
+  question?: string;
+  statement?: string;
+  correctAnswer?: number;
+  correctPct?: number;
+  currentPlayerIdx?: number;
+  currentRound?: number;
+  maxTime?: number;
+  points?: number;
+  round?: number;
+  timeLeft?: number;
+  totalRounds?: number;
+  votesCount?: number;
+  answers?:string[]; statements?:string[]; correctPlayers?:QuizPlayer[]; roleIndices?:number[]; teamA?:TeamState; teamB?:TeamState;
+}
+interface QuizPlayer {id:string;name:string;color:string;avatar?:string;score?:number;streak?:number}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +51,9 @@ const TILE_LABELS = ['A', 'B', 'C', 'D'];
 
 interface TeamState { name: string; color: string; players: string[]; score: number; correctCount: number }
 
-export default function TVQuizView({ gameState }: { gameState: any }) {
+const EMPTY_PLAYERS: NonNullable<ViewState['players']> = [];
+
+export default function TVQuizView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const game: string = gameState?.game || 'quiz';
 
@@ -50,20 +78,20 @@ export default function TVQuizView({ gameState }: { gameState: any }) {
   // Whole-party roster for PLAYER-based variants (fakeorfact / sharedquiz /
   // generic quiz). splitquiz is TEAM-based, so it renders teams instead.
   const isTeamGame = game === 'splitquiz';
-  const rawPlayers: any[] = gameState?.players || [];
+  const rawPlayers: QuizPlayer[] = gameState?.players || EMPTY_PLAYERS;
   const hasRoster = !isTeamGame && rawPlayers.length > 0 && typeof rawPlayers[0] === 'object';
   const currentPlayerIdx: number = gameState?.currentPlayerIdx ?? -1;
   const activePlayerId: string | null = hasRoster && currentPlayerIdx >= 0
     ? (rawPlayers[currentPlayerIdx]?.id ?? null)
     : null;
   const roster: TVScorePlayer[] = useMemo(
-    () => (hasRoster ? rawPlayers.map((p: any) => ({
+    () => (hasRoster ? rawPlayers.map((p) => ({
       id: String(p.id),
       name: p.name,
       color: p.color || '#df8eff',
       score: typeof p.score === 'number' ? p.score : undefined,
       avatar: p.avatar,
-      subtitle: p.streak > 1 ? `🔥${p.streak}` : undefined,
+      subtitle: (p.streak ?? 0) > 1 ? `🔥${p.streak}` : undefined,
     })) : []),
     [hasRoster, rawPlayers],
   );
@@ -270,7 +298,7 @@ export default function TVQuizView({ gameState }: { gameState: any }) {
               transition={{ delay: 0.5 }}
             >
               <span className="text-lg text-[#a8abb3] mr-2">{t('tv.correct', 'Richtig')}:</span>
-              {correctPlayers.map((p: any, i: number) => (
+              {correctPlayers.map((p, i: number) => (
                 <motion.div
                   key={i}
                   className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm border-2 border-[#10b981]"
@@ -335,8 +363,8 @@ function AnswerGrid({ answers, phase, correctAnswer }: { answers: string[]; phas
             transition={{
               delay: phase === 'reveal' ? 0 : i * 0.12,
               duration: phase === 'reveal' ? 0.5 : 0.4,
-              type: 'spring',
-              damping: 15,
+              type: 'tween',
+              ease: 'easeOut',
             }}
           >
             <div className="flex items-center gap-5 p-6 min-h-[100px]">
@@ -370,7 +398,7 @@ function AnswerGrid({ answers, phase, correctAnswer }: { answers: string[]; phas
 /* ------------------------------------------------------------------ */
 /* Fake-or-Fact: explanation + correct/incorrect vote distribution bar */
 /* ------------------------------------------------------------------ */
-function FakeOrFactReveal({ gameState }: { gameState: any }) {
+function FakeOrFactReveal({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const explanation: string = gameState?.explanation || '';
   const correctPct: number = typeof gameState?.correctPct === 'number' ? gameState.correctPct : -1;
@@ -419,7 +447,7 @@ function FakeOrFactReveal({ gameState }: { gameState: any }) {
 /* ------------------------------------------------------------------ */
 /* SplitQuiz: tug-of-war score bar + both team cards                   */
 /* ------------------------------------------------------------------ */
-function SplitQuizTeams({ gameState }: { gameState: any }) {
+function SplitQuizTeams({ gameState }: { gameState: ViewState }) {
   const ambient = useAmbientMotion();
   const teamA: TeamState | null = gameState?.teamA || null;
   const teamB: TeamState | null = gameState?.teamB || null;
@@ -506,7 +534,7 @@ function SplitQuizTeams({ gameState }: { gameState: any }) {
 /* ------------------------------------------------------------------ */
 /* SharedQuiz: role rail (reads Q · reads options · guesses)           */
 /* ------------------------------------------------------------------ */
-function SharedQuizRoleRail({ gameState }: { gameState: any }) {
+function SharedQuizRoleRail({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const players: { id: string; name: string; color: string }[] = gameState?.players || [];
   const roleIndices: number[] | undefined = gameState?.roleIndices;

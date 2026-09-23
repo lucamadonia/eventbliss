@@ -1,3 +1,21 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (TVPlayer)[];
+  contentLanguage?: string;
+  currentWord?: string;
+  displayColor?: string;
+  forbiddenWord?: string;
+  mode?: string;
+  phase?: string;
+  currentPlayerIndex?: number;
+  liveCombo?: number;
+  liveScore?: number;
+  round?: number;
+  totalRounds?: number;
+  wordIndex?: number;
+  wordsPerTurn?: number;
+}
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { translateReactionWord } from '../../wordpress/word-content';
@@ -42,7 +60,7 @@ function accuracyOf(p: TVPlayer | undefined): number | null {
   return total > 0 ? Math.round((p.correct / total) * 100) : null;
 }
 
-export default function TVWordPressView({ gameState }: { gameState: any }) {
+export default function TVWordPressView({ gameState }: { gameState: ViewState }) {
   const { t, i18n } = useTranslation();
   const ambient = useAmbientMotion();
 

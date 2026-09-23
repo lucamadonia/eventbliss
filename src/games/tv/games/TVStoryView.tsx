@@ -1,3 +1,18 @@
+import type { PartyNightState } from '../party-types';
+interface ViewState {
+  partyNight?: PartyNightState;
+  players?: (Player)[];
+  mode?: string;
+  phase?: string;
+  prompt?: string;
+  title?: string;
+  currentPlayerIdx?: number;
+  currentRound?: number;
+  round?: number;
+  total?: number;
+  totalRounds?: number;
+  sentences?:Sentence[];
+}
 import { useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen } from 'lucide-react';
@@ -20,7 +35,7 @@ const STY = { gold: '#fbbf24', accent: '#df8eff', text: '#f1f3fc', dim: '#a8abb3
 interface Player { id?: string; name: string; color?: string; avatar?: string }
 interface Sentence { text: string; player?: string; playerColor?: string }
 
-export default function TVStoryView({ gameState }: { gameState: any }) {
+export default function TVStoryView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
 

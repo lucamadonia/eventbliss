@@ -6610,7 +6610,8 @@
         "loading": "Loading object images…",
         "compareHint": "Find the three replaced objects in board B.",
         "imageError": "Object images could not be loaded. Check your connection and try again.",
-        "retryImages": "Reload images"},
+        "retryImages": "Reload images"
+      },
       "objects": {
         "apple": "Apple",
         "banana": "Banana",
@@ -6627,7 +6628,8 @@
         "shoe": "Sneaker",
         "ball": "Football",
         "plant": "Potted plant",
-        "umbrella": "Umbrella"}
+        "umbrella": "Umbrella"
+      }
     },
     "impostor": {
       "title": "Impostor",
@@ -6919,7 +6921,8 @@
         "visibleToOthers": "Visible to other players only",
         "holdPhone": "Hold the phone to your forehead — others will give you hints.",
         "skip": "Skip",
-        "solved": "Solved"
+        "solved": "Solved",
+        "controllerHint": "Ask a question or make a guess on your phone."
       },
       "answerVote": {
         "asks": "{{name}} asks:",
@@ -6943,7 +6946,8 @@
         "nextPlayer": "Next player",
         "skipped": "Skipped",
         "wasCharacter": "{{name}} was <1>{{character}}</1>",
-        "category": "Category · {{category}}"
+        "category": "Category · {{category}}",
+        "tryAgain": "Not quite. Try again."
       },
       "gameOver": {
         "title": "Game Over!",
@@ -7026,7 +7030,8 @@
         "reisen": "Travel & discovery",
         "traeume": "Dreams & future",
         "entscheidungen": "Choices & values",
-        "kreativ": "Imagination & creativity"},
+        "kreativ": "Imagination & creativity"
+      },
       "categorySelection": "Choose categories",
       "contentSelection": "What goes on the card?",
       "questionsOnly": "Questions only",
@@ -7086,7 +7091,8 @@
       "acceptedAnswers": "Also accepted",
       "nextPlayer": "Up next: {{name}}",
       "clueLabel": "Picture puzzle",
-      "poolBudget": "{{puzzleCount}} curated puzzles. Larger groups get fewer rounds: equal turns for everyone, without repeats."
+      "poolBudget": "{{puzzleCount}} curated puzzles. Larger groups get fewer rounds: equal turns for everyone, without repeats.",
+      "balancedTeamPoints": "With unequal teams, points are weighted so both teams can earn the same total each round."
     },
     "fakeorfact": {
       "title": "Liar — Fake or Fact",
@@ -7173,7 +7179,8 @@
       "showAll": "Show all",
       "playAgain": "Play again",
       "otherGame": "Other game",
-      "skipTurn": "Skip turn"
+      "skipTurn": "Skip turn",
+      "emptyStory": "No sentences yet. Start a new story together."
     },
     "thisorthat": {
       "modeTagPopular": "Popular",
@@ -7556,7 +7563,12 @@
       "chain": "Brew chain ×{{count}}",
       "multiBonus": "Multi-pour",
       "perfectBonus": "Perfect pour",
-      "risk": { "calm": "calm", "simmering": "simmering", "unstable": "unstable", "critical": "critical" },
+      "risk": {
+        "calm": "calm",
+        "simmering": "simmering",
+        "unstable": "unstable",
+        "critical": "critical"
+      },
       "tv": {
         "done": "done"
       },
@@ -8272,15 +8284,15 @@
     "perPerson": "/person",
     "flatRate": "Flat rate",
     "perHour": "/hour",
-  "bookNow": "Book now",
-  "bookingContact": "Your booking details",
-  "guestBookingHint": "Book directly — no account required.",
-  "customerName": "First and last name *",
-  "customerEmail": "Email address *",
-  "customerPhone": "Phone (optional)",
-  "customerNotes": "Requests or notes (optional)",
-  "contactRequired": "Please enter your name and a valid email address.",
-  "providerWebsite": "Provider website",
+    "bookNow": "Book now",
+    "bookingContact": "Your booking details",
+    "guestBookingHint": "Book directly — no account required.",
+    "customerName": "First and last name *",
+    "customerEmail": "Email address *",
+    "customerPhone": "Phone (optional)",
+    "customerNotes": "Requests or notes (optional)",
+    "contactRequired": "Please enter your name and a valid email address.",
+    "providerWebsite": "Provider website",
     "inquireNow": "Inquire now",
     "directBook": "Book directly",
     "verifiedAgency": "Verified agency",
@@ -10030,7 +10042,9 @@
           "title": "Hard luck",
           "detail": "{{n}}× last"
         }
-      }
+      },
+      "champions": "Joint champions",
+      "championsLine": "{{name}} share the win with {{points}} points each"
     },
     "connectTitle": "Connect TV",
     "openOnTv": "Open on your TV:",
@@ -10198,5 +10212,45 @@
       "rules": "How to play",
       "menu": "Menu"
     }
+  },
+  "partyControllers": {
+    "title": "Joystick mode",
+    "subtitle": "Everyone plays on their own phone.",
+    "appRequired": "You need the EventBliss app and an account to play.",
+    "openApp": "Open app",
+    "installHint": "Install EventBliss, sign in and enter the displayed code in Joystick mode.",
+    "player": "Player",
+    "loading": "Loading …",
+    "loginRequired": "Sign in to join the party.",
+    "login": "Sign in",
+    "name": "Your name",
+    "hostPlays": "I am playing as the host",
+    "create": "Create party",
+    "roomCode": "Room code",
+    "join": "Join",
+    "scan": "Scan the QR code to join",
+    "accountHint": "Each person joins with their own account in the EventBliss app.",
+    "tv": "Connect a TV",
+    "offline": "Disconnected",
+    "ready": "Ready",
+    "notReadyYet": "Not ready yet",
+    "readyToggle": "Toggle ready status",
+    "waitNext": "A game is in progress. Wait for the next game.",
+    "abort": "Abort game",
+    "playlist": "Game order",
+    "remove": "Remove game",
+    "startNext": "Start next game",
+    "premiumRequired": "Host Premium required",
+    "capacity": "{{min}}–{{max}} players",
+    "hostChoosing": "The host is choosing the next game.",
+    "end": "End party",
+    "leave": "Leave party",
+    "notReady": "All players must be connected and ready.",
+    "pendingResults": "Saving results …",
+    "retry": "Try again",
+    "roomEnded": "This party has ended.",
+    "players_one": "{{count}} player",
+    "players_other": "{{count}} players",
+    "players": "{{count}} players"
   }
 }

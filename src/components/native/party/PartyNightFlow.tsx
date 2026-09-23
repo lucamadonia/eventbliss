@@ -123,7 +123,7 @@ export function PartyNightFlow() {
       const game = playableGames.find((g) => g.id === gameId);
       // Nur zu wenige Leute sind ein Grund zu ueberspringen — eine zu grosse
       // Runde spielt einfach mit, das Spiel kuerzt notfalls selbst.
-      return !game || playerFitFor(game, count) !== "tooFew";
+      return !!game && playerFitFor(game, count) === "ok";
     },
     [session?.players.length]
   );
@@ -223,7 +223,7 @@ export function PartyNightFlow() {
     else navigate("/party?finale=1");
   }, [markSeen, party, goToGame, navigate]);
 
-  if (!session || !open) return null;
+  if (!session || session.playMode === 'controllers' || !open) return null;
 
   return (
     <PartyInterstitial
