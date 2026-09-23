@@ -1,6 +1,14 @@
 # EventBliss: Joystick-Party und Spielequalität
 
-Stand: 23. September 2026. Lokale Implementierung; keine Produktionsmigration, Veröffentlichung oder Geräteabnahme.
+Stand: 23. September 2026. Release-Quellstand `8dd19af32d13ef5dae9537d91f698c24b8c013d7`: TestFlight-Upload und Web-Veröffentlichung abgeschlossen; Geräteabnahme weiterhin offen.
+
+## Veröffentlichung für die iPhone-Abnahme
+
+- **Version 1.5.12, Build 294**: [iOS-Workflow 35873749032](https://github.com/lucamadonia/eventbliss/actions/runs/35873749032) erfolgreich. Archivierung, IPA-Export und Upload-Schritt erfolgreich; Upload beendet am 23. September um 14:39:07 UTC. Apples anschließende Verarbeitung und Testerzuweisung sind nicht separat bestätigt.
+- Die einzelne Migration `20260922235000_controller_parties.sql` wurde erfolgreich auf dem Produktionsprojekt `kiyokpawmabodmrmhvev` angewendet. RPC und Tabellen existieren; öffentliche Zugriffe werden live mit `42501` verweigert. Keine Testkonten oder Partys in Produktion angelegt.
+- Web-Deployment erfolgreich: Die öffentliche App-Link-Zuordnung enthält `/party/join/*`. Die tatsächliche Beitrittsseite auf `event-bliss.com` besteht die Browserprüfung bei 320 und 390 Pixeln ohne Laufzeitfehler oder Überlauf; App-Link und Store-Links vorhanden. Der Start der installierten iPhone-App bleibt eine Geräteprüfung.
+- GitHub bestätigt Unit-Tests, Datenbanktests und TypeScript-Prüfung. Der zusätzliche Quality-Gate-Lauf wurde während des Produktionsbuilds abgebrochen und ist deshalb kein vollständig grüner CI-Nachweis. Der lokale Produktionsbuild und der separate iOS-Release-Workflow sind erfolgreich.
+- Für die Abnahme auf allen beteiligten iPhones Build 294 installieren und getrennte Konten verwenden. Danach den untenstehenden Geräteprüfplan durchlaufen.
 
 ## Aktueller Abnahmestand
 
@@ -59,7 +67,7 @@ Der echte Webpfad `/party/join/ABCDEF` wurde anschließend am gebauten Produktio
 
 ## Verbleibende Freigabeprüfungen
 
-1. Lokale Migration und echte Supabase-Authentifizierung/Realtime sind bestanden. Für die Gerätefreigabe muss das von der TestFlight-App verwendete Backend dieselbe Migration erhalten; produktiv wurde sie nicht angewendet.
+1. Lokale Migration und echte Supabase-Authentifizierung/Realtime sind bestanden. Die Produktionsmigration ist inzwischen angewendet; der komplette Mehrgeräteablauf auf diesem Backend bleibt Teil der Geräteabnahme.
 2. iOS und Android: QR-Start kalt/warm, Anmeldung mit Rückleitung, App-Links, Touchbedienung, Hintergrundwechsel, Netzwechsel und Geräte-Zurück prüfen.
 3. Mehrere echte Geräte mit Moderator und optionalem TV gemeinsam spielen lassen; mindestens ein komplettes Set, ein Rematch, einen Disconnect und einen Host-Neustart prüfen.
 4. Live-Inhalte von Nah dran und Pixeljagd sowie Spotify-/Maps-Abhängigkeiten mit freigeschalteten Testkonten prüfen. Lokale synthetische Inhalte belegen keine Live-Verfügbarkeit.
