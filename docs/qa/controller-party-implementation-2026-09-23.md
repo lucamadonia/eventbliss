@@ -2,6 +2,12 @@
 
 ## Korrekturen nach Gerätefeedback vom 26. September
 
+### Veröffentlichung am 27. September
+
+- Quellstand `959487533964c1e60023dc1a084175d5eddee2ef` auf `main` und Release-Branch veröffentlicht.
+- **Version 1.5.12, Build 295** erfolgreich archiviert, exportiert und zu TestFlight hochgeladen: [Workflow 36302394561](https://github.com/lucamadonia/eventbliss/actions/runs/36302394561), vollständig erfolgreich nach 11 Minuten 22 Sekunden. Apples Verarbeitung und die Verfügbarkeit im Testkonto sind nicht separat bestätigt.
+- Vercel-Produktionsdeployment `FF16ew6GDFi58hz6GMamLrTPKx53` erfolgreich. Frischer Chromium-Aufruf von `/games/headup` um 09:22 MESZ bestätigt HTTP 200 und Sensorfreigaben für Beschleunigungssensor und Gyroskop; das Magnetometer bleibt gesperrt. Physische iPhone-Abnahme weiterhin offen.
+
 Die positive Designreferenz des Nutzers sind Pixeljagd, Nah dran und Ohrwurm; diese Spiele bleiben unverändert. Tickende Bombe, Wortverbot, Stirnraten und Ohne Worte erhalten wieder eigene kräftige Farben, großzügige Wort-/Spielflächen und eine klare Hauptaktion. Die Party-Lobbies zeigen sekundäre Inhalte erst auf Anforderung.
 
 - TV: Der vorhandene Provider öffnet nun auch ohne schwebenden Trigger sichtbar die Verbindungsinformationen. Kein zusätzlicher Realtime-Kanal.
