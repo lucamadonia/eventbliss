@@ -288,7 +288,7 @@ export default function PartyLobbyScreen() {
   }, [party.tvCode, haptics, i18n.language]);
 
   return (
-    <div className="relative h-full overflow-y-auto native-scroll bg-background safe-top">
+    <div className="relative h-full min-h-0 overflow-y-auto overscroll-y-contain native-scroll bg-background safe-top">
       {/* Ambiente */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden>
         <div className="absolute -top-32 -start-32 w-64 h-64 bg-[#df8eff]/10 rounded-full blur-[100px]" />
@@ -297,22 +297,20 @@ export default function PartyLobbyScreen() {
       </div>
 
       <div className="relative z-10 pb-tabbar">
-        <button className="mx-5 mt-5 flex min-h-16 w-[calc(100%-40px)] items-center gap-3 rounded-2xl border border-[#df8eff]/30 bg-[#df8eff]/10 p-4 text-start" onClick={() => navigate('/party/controllers')}>
-          <Gamepad2 className="h-7 w-7 shrink-0 text-[#df8eff]" /><span><strong className="block">{t('partyControllers.title')}</strong><span className="text-sm text-muted-foreground">{t('partyControllers.subtitle')}</span></span><ChevronRight className="ms-auto shrink-0" />
-        </button>
         {/* Kopf */}
-        <div className="px-5 pt-5 pb-4">
-          <div className="flex items-center justify-between gap-3">
+        <div className={cn("relative px-5 pt-5 pb-4", players.length === 0 && history.length === 0 && "mx-5 mt-5 mb-4 min-h-44 overflow-hidden rounded-3xl border border-[#df8eff]/25")}>
+          {players.length === 0 && history.length === 0 && <><img src="/images/games/party-hero-gpt-v2.webp" alt="" className="absolute inset-0 h-full w-full object-cover object-top" /><div className="absolute inset-0 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14]/35 to-[#0a0e14]/30" /></>}
+          <div className="relative flex items-center justify-between gap-3">
             <div className="min-w-0">
               <motion.h1
-                className="text-3xl font-display font-bold text-foreground"
+                className={cn("text-3xl font-display font-bold", players.length === 0 && history.length === 0 ? "text-white" : "text-foreground")}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
               >
                 {t('nativeExtra.partyLobby.title')}
               </motion.h1>
               <motion.p
-                className="text-sm text-muted-foreground mt-0.5"
+                className={cn("text-sm mt-0.5", players.length === 0 && history.length === 0 ? "text-white/85" : "text-muted-foreground")}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
@@ -332,16 +330,9 @@ export default function PartyLobbyScreen() {
           </div>
         </div>
 
-        {/* Set-Liste — sichtbar, bevor das erste Spiel laeuft */}
-        <PartySetlistStrip
-          playlist={playlist}
-          playlistIndex={playlistIndex}
-          playlistActive={playlistActive}
-          playerCount={players.length}
-          onEdit={() => openPicker("setlist")}
-          onPlayCurrent={launchPlaylistEntry}
-        />
-
+        <button className="mx-5 mb-5 flex min-h-16 w-[calc(100%-40px)] items-center gap-3 rounded-2xl border border-[#df8eff]/30 bg-[#df8eff]/10 p-4 text-start" onClick={() => navigate('/party/controllers')}>
+          <Gamepad2 className="h-7 w-7 shrink-0 text-[#df8eff]" /><span><strong className="block">{t('partyControllers.title')}</strong><span className="text-sm text-muted-foreground">{t('partyControllers.subtitle')}</span></span><ChevronRight className="ms-auto shrink-0" />
+        </button>
         {/* Spieler */}
         <section className="px-5 mb-5">
           <div className="flex items-center justify-between mb-3">
@@ -405,7 +396,7 @@ export default function PartyLobbyScreen() {
                   onKeyDown={(e) => e.key === "Enter" && handleAddPlayer()}
                   placeholder={t('nativeExtra.partyLobby.namePlaceholder')}
                   maxLength={20}
-                  className="flex-1 h-11 px-4 rounded-xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="min-w-0 flex-1 h-11 px-4 rounded-xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
                 <motion.button
                   type="button"
@@ -442,9 +433,83 @@ export default function PartyLobbyScreen() {
           onSelect={handleImportNames}
         />
 
+        {/* Aktionen */}
+        <div className="px-5 space-y-3">
+          {currentPlaylistGame && currentPlaylistName ? (
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.97 }}
+              transition={spring.snappy}
+              onClick={() => { haptics.medium(); launchPlaylistEntry(currentPlaylistGame); }}
+              disabled={!canStartGame}
+              className={cn(
+                "cursor-pointer w-full min-h-[56px] rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all",
+                canStartGame
+                  ? "bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#f9ca24] text-white shadow-[0_0_30px_rgba(223,142,255,0.3)]"
+                  : "bg-foreground/5 text-muted-foreground border border-border cursor-not-allowed"
+              )}
+            >
+              <Play className="w-5 h-5" aria-hidden />
+              <span className="truncate">
+                {t('nativeExtra.partyNight.continueSetlist', { game: currentPlaylistName })}
+              </span>
+            </motion.button>
+          ) : (
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.97 }}
+              transition={spring.snappy}
+              onClick={() => openPicker("setlist")}
+              disabled={!canStartGame}
+              className={cn(
+                "cursor-pointer w-full min-h-[56px] rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all",
+                canStartGame
+                  ? "bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#f9ca24] text-white shadow-[0_0_30px_rgba(223,142,255,0.3)]"
+                  : "bg-foreground/5 text-muted-foreground border border-border cursor-not-allowed"
+              )}
+            >
+              <ListPlus className="w-5 h-5" aria-hidden />
+              {t('nativeExtra.partyNight.planEvening')}
+              <ChevronRight className="w-5 h-5 rtl:rotate-180" aria-hidden />
+            </motion.button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => openPicker("single")}
+            disabled={!canStartGame}
+            className={cn(
+              "cursor-pointer w-full min-h-[48px] rounded-2xl border border-border font-semibold text-sm flex items-center justify-center gap-2 transition-colors",
+              canStartGame
+                ? "text-foreground active:bg-foreground/5"
+                : "text-muted-foreground cursor-not-allowed opacity-60"
+            )}
+          >
+            <Gamepad2 className="w-4 h-4" aria-hidden />
+            {t('nativeExtra.partyNight.singleGame')}
+          </button>
+
+          {!canStartGame && (
+            <p className="text-xs text-center text-muted-foreground">
+              {t('nativeExtra.partyLobby.needTwoPlayers')}
+            </p>
+          )}
+
+        </div>
+
+        {/* Set-Liste — sichtbar, bevor das erste Spiel laeuft */}
+        <PartySetlistStrip
+          playlist={playlist}
+          playlistIndex={playlistIndex}
+          playlistActive={playlistActive}
+          playerCount={players.length}
+          onEdit={() => openPicker("setlist")}
+          onPlayCurrent={launchPlaylistEntry}
+        />
+
         {/* TV-Verbindung */}
         {party.tvCode && (
-          <section className="px-5 mb-5">
+          <details className="mx-5 my-5 rounded-2xl border border-border p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.connectTV')}</summary>
             <motion.div
               className="p-4 rounded-2xl bg-[#df8eff]/5 border border-[#df8eff]/15"
               variants={blissBloom}
@@ -516,25 +581,25 @@ export default function PartyLobbyScreen() {
                 </div>
               )}
             </motion.div>
-          </section>
+          </details>
         )}
 
         {/* Gesamtwertung */}
         {history.length > 0 && (
-          <section className="px-5 mb-5">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2 mb-3">
+          <details className="mx-5 mb-5 rounded-2xl border border-border p-4">
+            <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2 mb-3">
               <Trophy className="w-4 h-4" aria-hidden /> {t('nativeExtra.partyLobby.overallScore')}
-            </h2>
+            </summary>
             <PartyStandingsList standings={standings} compact />
-          </section>
+          </details>
         )}
 
         {/* Historie */}
         {history.length > 0 && (
-          <section className="px-5 mb-5">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2 mb-3">
+          <details className="mx-5 mb-5 rounded-2xl border border-border p-4">
+            <summary className="min-h-11 cursor-pointer py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2 mb-3">
               <Gamepad2 className="w-4 h-4" aria-hidden /> {t('nativeExtra.partyLobby.gamesPlayedHeading')}
-            </h2>
+            </summary>
             <div className="space-y-2">
               {[...history].reverse().map((entry, i) => (
                 <motion.div
@@ -556,71 +621,10 @@ export default function PartyLobbyScreen() {
                 </motion.div>
               ))}
             </div>
-          </section>
+          </details>
         )}
 
-        {/* Aktionen */}
         <div className="px-5 space-y-3">
-          {currentPlaylistGame && currentPlaylistName ? (
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.97 }}
-              transition={spring.snappy}
-              onClick={() => { haptics.medium(); launchPlaylistEntry(currentPlaylistGame); }}
-              disabled={!canStartGame}
-              className={cn(
-                "cursor-pointer w-full min-h-[56px] rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all",
-                canStartGame
-                  ? "bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#f9ca24] text-white shadow-[0_0_30px_rgba(223,142,255,0.3)]"
-                  : "bg-foreground/5 text-muted-foreground border border-border cursor-not-allowed"
-              )}
-            >
-              <Play className="w-5 h-5" aria-hidden />
-              <span className="truncate">
-                {t('nativeExtra.partyNight.continueSetlist', { game: currentPlaylistName })}
-              </span>
-            </motion.button>
-          ) : (
-            <motion.button
-              type="button"
-              whileTap={{ scale: 0.97 }}
-              transition={spring.snappy}
-              onClick={() => openPicker("setlist")}
-              disabled={!canStartGame}
-              className={cn(
-                "cursor-pointer w-full min-h-[56px] rounded-2xl font-bold text-base flex items-center justify-center gap-2.5 transition-all",
-                canStartGame
-                  ? "bg-gradient-to-r from-[#df8eff] via-[#ff6b98] to-[#f9ca24] text-white shadow-[0_0_30px_rgba(223,142,255,0.3)]"
-                  : "bg-foreground/5 text-muted-foreground border border-border cursor-not-allowed"
-              )}
-            >
-              <ListPlus className="w-5 h-5" aria-hidden />
-              {t('nativeExtra.partyNight.planEvening')}
-              <ChevronRight className="w-5 h-5 rtl:rotate-180" aria-hidden />
-            </motion.button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => openPicker("single")}
-            disabled={!canStartGame}
-            className={cn(
-              "cursor-pointer w-full min-h-[48px] rounded-2xl border border-border font-semibold text-sm flex items-center justify-center gap-2 transition-colors",
-              canStartGame
-                ? "text-foreground active:bg-foreground/5"
-                : "text-muted-foreground cursor-not-allowed opacity-60"
-            )}
-          >
-            <Gamepad2 className="w-4 h-4" aria-hidden />
-            {t('nativeExtra.partyNight.singleGame')}
-          </button>
-
-          {!canStartGame && (
-            <p className="text-xs text-center text-muted-foreground">
-              {t('nativeExtra.partyLobby.needTwoPlayers')}
-            </p>
-          )}
-
           {/*
             Bewusst NICHT hinter history.length > 0: Eine Party mit Spielern,
             aber noch ohne Spiel, war sonst gar nicht mehr zu beenden — die

@@ -1,5 +1,38 @@
 # EventBliss: Joystick-Party und Spielequalität
 
+## Korrekturen nach Gerätefeedback vom 26. September
+
+Die positive Designreferenz des Nutzers sind Pixeljagd, Nah dran und Ohrwurm; diese Spiele bleiben unverändert. Tickende Bombe, Wortverbot, Stirnraten und Ohne Worte erhalten wieder eigene kräftige Farben, großzügige Wort-/Spielflächen und eine klare Hauptaktion. Die Party-Lobbies zeigen sekundäre Inhalte erst auf Anforderung.
+
+- TV: Der vorhandene Provider öffnet nun auch ohne schwebenden Trigger sichtbar die Verbindungsinformationen. Kein zusätzlicher Realtime-Kanal.
+- Native Party-Lobbies: begrenzter Scrollbereich, Abstand zur Tabbar, keine überlagernde globale Plus-Aktion. Sechs Scrollfälle bei 320/390 px und der Endparty-Dialog bestanden; Trefferprüfung links/Mitte/rechts des unteren Buttons.
+- Neue Einladung bei bestehender Party: Ziel wird nicht mehr übersteuert; Wechsel verlangt Bestätigung und wartet auf erfolgreiches Verlassen/Beenden.
+- Stirnraten: Kippen nach unten anhand negativer z-Gravitation als richtig, nach oben als weiter; erneute Freigabe erst nach Neutralstellung. Zehn Sensortests sowie Browserprüfung für Hoch-/Querformat, erteilte/verweigerte Sensorfreigabe, manuelle Tasten und abgebrochenes Verlassen während Countdown/Spiel bestanden. Physische iPhone-Sensorabnahme bleibt offen.
+- Tickende Bombe und Wortverbot: sechs tatsächliche Browserabläufe bei 320/390/844 px inklusive nächstem Spieler/Wort bestanden; keine horizontalen Überläufe. Wortverbot-Fußzeile verdeckt keine Wörter mehr.
+- Ohne Worte: drei Browserabläufe bei 320/390/844 px, große Wortkarte und erfolgreiches Weiterschalten durch „Erraten“ bestanden.
+- Die genaue URL `/party/join/JL2D6Z` zeigt am 26. September im frischen mobilen Browser auf apex und www die korrekte App-Beitrittsseite. Die gemeldete 404 ist dort nicht reproduziert. Neue Party-Einladungen werden vom Service-Worker-Navigationsfallback ausgenommen; eine veraltete gecachte App-Seite ist eine mögliche, noch nicht am Nutzergerät bestätigte Ursache.
+
+### Aktuelle Verifikation
+
+Zusätzliche Prüfung am 27. September: Die produktive Permissions-Policy sperrte Beschleunigungssensor und Gyroskop vollständig; Chromium bestätigte beide als nicht erlaubt. Die Konfiguration erlaubt nun beide Sensoren ausschließlich für die eigene Origin (`self`). Ein isolierter HTTP-/Chromium-Test bestätigt beide Freigaben, während das Magnetometer gesperrt bleibt. Die Prüfung mit echten iPhone-Bewegungen bleibt offen.
+
+Aktueller automatisierter Nachweis: **1.100 Tests in 86 Suiten bestanden**, vollständige TypeScript-Prüfung erfolgreich. Ein vorheriger paralleler Lauf hatte einen Import-Timeout; der vollständige Wiederholungslauf mit vier Workern bestand ohne Änderung der Testzeitlimits. Die Regression mit dem tatsächlich erzeugten Produktions-Service-Worker besteht: Eine Kontrollroute zeigt die absichtlich gecachte 404, die Party-Einladung lädt dagegen die echte Beitrittsseite vom Server. Keine Browser-Laufzeitfehler. Bereits installierte alte Worker müssen die Aktualisierung erst übernehmen.
+
+Produktionspaket: Vite und PWA erfolgreich gebaut. Der abschließende Prerender-Schritt scheiterte zunächst an vollem Datenträger; nach Freigabe von Speicher wurde er mit neutraler App-Shell wiederholt und endete erfolgreich mit **41 vollständig gerenderten Seiten, 0 Meta-Fallbacks, Exitcode 0**. Der externe Security-Scanner wurde erneut versucht, scheiterte aber weiterhin vor dem Scan am npm-Fehler `Cannot read properties of null (reading 'package')`.
+
+### Neue Bildmotive
+
+Erzeugung mit dem integrierten GPT-Image-Werkzeug, anschließend als WebP für die App gespeichert. Bilder enthalten keine gerenderten Bedienelemente; Titel und Aktionen bleiben echte UI. Originaldateien bleiben im Imagegen-Ausgabeordner erhalten.
+
+- `public/images/games/party-hero-gpt-v2.webp` (1200 × 675, ca. 99 KB), nur im leeren Party-Einstieg.
+- `public/images/games/pantomime-hero-gpt-v2.webp` (1200 × 675, ca. 86 KB), im Ohne-Worte-Einstieg.
+
+Verwendete Prompts:
+
+> Create one production illustration for the EventBliss party-games app, wide 16:9 hero crop. Style: polished lively hand-drawn comic illustration with crisp dark outlines, dimensional cel shading, expressive adult faces and beautifully controlled cyan, violet and warm pink light, matching cheerful premium party-game cover illustrations. Scene: four adult friends enjoying a living-room party, each holding their own smartphone as a controller, exchanging excited smiles, with a distant television showing ONLY abstract colorful playful shapes (no interface, text or numbers). Strong readable central composition, generous dark midnight-violet negative space near bottom for real UI to overlay later; subjects in upper two thirds, keep edges uncluttered for mobile cropping. Fun, warm and stylish, rich material details, not childish, not flat generic vector art. No words, no lettering, no logos, no watermark, no UI controls. Output is a finished standalone raster hero image, not an app mockup.
+
+> Use case: stylized-concept. Create a finished wide 16:9 hero illustration for the mobile charades party game 'Ohne Worte'. No writing at all. A charismatic adult friend centre-stage enthusiastically miming an imaginary bow and arrow, while three adult friends at the sides laugh and try to guess. Expressive comic faces, clean bold dark contours, rich cel-shaded illustration, playful premium board-game artwork rather than photo realism. Deep violet room, warm golden stage spotlight, contrasting pink and cyan accents echoing two teams. Dramatic yet warm, dynamic silhouettes, attractive polished detail, not childish. Center action clearly legible when viewed 350 pixels wide. Keep the lower quarter a smooth dark-violet gradient for real app title overlay and keep composition clean around edges. No weapon prop: unmistakably pretend gesture with empty hands. No labels, no lettering, no numbers, no UI, no cards with symbols, no speech bubbles, no watermarks. Standalone raster artwork, not screenshot or mockup.
+
 Stand: 23. September 2026. Release-Quellstand `8dd19af32d13ef5dae9537d91f698c24b8c013d7`: TestFlight-Upload und Web-Veröffentlichung abgeschlossen; Geräteabnahme weiterhin offen.
 
 ## Veröffentlichung für die iPhone-Abnahme

@@ -57,6 +57,9 @@ export default defineConfig(({ mode }) => {
         ],
       },
       workbox: {
+        // Invitations must reach the current server route. A precached app shell
+        // from before that route existed can otherwise display a false 404.
+        navigateFallbackDenylist: [/^\/party\/join(?:\/|$)/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,woff,ttf}"],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB limit
         runtimeCaching: [

@@ -6,6 +6,9 @@ import '@/index.css';
 import i18n,{i18nInitPromise,loadLocale} from '@/i18n';
 import {ControllerPartyCoordinator} from '@/components/native/party/ControllerPartyCoordinator';
 import {ControllerGameControls} from '@/components/native/party/ControllerGameControls';
+import {NativeShell} from '@/components/native/NativeShell';
+import {PageTransition} from '@/components/native/PageTransition';
+import PartyLobbyScreen from '@/pages/native/PartyLobbyScreen';
 import ControllerPartyLobby from '@/components/native/party/ControllerPartyLobby';
 import {gameRoomSession,useGameRoom} from '@/games/multiplayer/useGameRoom';
 import OnlineGameWrapper from '@/games/multiplayer/OnlineGameWrapper';
@@ -21,7 +24,7 @@ const games={
 };
 function GameRoute(){const {gameId:id}=useParams();const room=useGameRoom();const tv=useTVContext();useEffect(()=>{tv?.setOnlineRoom(room.room?.roomCode??null);},[room.room?.roomCode,tv]);const Game=games[id as keyof typeof games];return Game&&room.room?<OnlineGameWrapper key={`${id}:${room.room.sessionId}`} gameId={id!} roomCode={room.room.roomCode} playerName={window.controllerIdentity.user_metadata.display_name}>{online=><><ControllerGameControls/><Game online={online}/></>}</OnlineGameWrapper>:<p>Missing game</p>;}
 function RoutesUnderTest(){const room=useGameRoom();const navigate=useNavigate();const location=useLocation(); window.controllerQA={snapshot:gameRoomSession.getSnapshot,state:controller.getControllerState,navigate,ready:gameRoomSession.setReady,playlist:controller.setControllerPlaylist,start:controller.startControllerGame,retry:controller.retryControllerConnection,connection:()=>({online:navigator.onLine,socket:supabase.realtime?.connectionState(),disconnecting:supabase.realtime?.isDisconnecting(),channels:supabase.getChannels?.().map(channel=>({topic:channel.topic,state:channel.state,present:Object.keys(channel.presenceState())}))})};
- return <><ControllerPartyCoordinator/><output id="qa-route" className="sr-only">{location.pathname}</output><Suspense fallback={<p>Loading game</p>}><Routes><Route path="/tv/:roomCode" element={<TVScreen/>}/><Route path="/party/controllers" element={<ControllerPartyLobby/>}/><Route path="/party/join/:code" element={<ControllerPartyLobby/>}/><Route path="/games/:gameId" element={<GameRoute/>}/><Route path="*" element={<ControllerPartyLobby/>}/></Routes></Suspense></>;}
+ const content=<><ControllerPartyCoordinator/><output id="qa-route" className="sr-only">{location.pathname}</output><Suspense fallback={<p>Loading game</p>}><Routes><Route path="/party" element={<PartyLobbyScreen/>}/><Route path="/tv/:roomCode" element={<TVScreen/>}/><Route path="/party/controllers" element={<ControllerPartyLobby/>}/><Route path="/party/join/:code" element={<ControllerPartyLobby/>}/><Route path="/games/:gameId" element={<GameRoute/>}/><Route path="*" element={<ControllerPartyLobby/>}/></Routes></Suspense></>;return window.controllerNativeShell?<NativeShell><PageTransition>{content}</PageTransition></NativeShell>:content;}
 window.controllerTVMessages=[];
 if(window.controllerCredentials){
   const original=supabase.channel.bind(supabase);const observed=new WeakSet();

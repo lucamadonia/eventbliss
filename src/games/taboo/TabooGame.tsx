@@ -1,4 +1,4 @@
-import '../headup/classic-stage.css';
+import './taboo-presentation.css';
 import { GameStage, StageHeader, StagePanel, StageAction, StageFooter } from '../ui/GameStage';
 import { usePausableTasks } from '../bottlespin/pausable-tasks';
 import { useOnlineActions, useOnlineSnapshot, useOnlinePrivateSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
@@ -320,7 +320,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   /* ================================================================ */
   if (online && !online.isHost && phase === 'setup') return <OnlineWaiting />;
   return (
-    <GameStage gameId="taboo" className="taboo-stage">
+    <GameStage gameId="taboo" className="taboo-stage" data-phase={phase}>
       {showFlash && <p role="status" className="mb-4 rounded-xl bg-[#ff8572] px-5 py-3 font-bold text-[#211311]">{isDrinkingMode ? t('games.taboo.flash.drink') : t('games.taboo.buzzer')}</p>}
       {disclaimer && <p role="status" className="mb-4 rounded-xl border border-[#e6ce81]/40 p-4 text-sm text-[#e6ce81]">{disclaimer.message}</p>}
       {phase === 'setup' && <div className="mx-auto w-full max-w-3xl space-y-7">
@@ -340,10 +340,10 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
         <StagePanel tone="accent" className="grid min-h-56 place-items-center text-center"><p className="text-5xl sm:text-7xl font-black tracking-tight">{countdown ?? explainer}</p></StagePanel>
         <StageAction disabled={!act.can('begin')} onClick={() => act('begin')}><Play className="h-5 w-5" />{t('games.taboo.turn.startBtn')}</StageAction>
       </div>}
-      {phase === 'playing' && <div className="mx-auto flex w-full max-w-4xl min-h-[80dvh] flex-col gap-5">
+      {phase === 'playing' && <div className="taboo-playing mx-auto flex w-full max-w-4xl min-h-[80dvh] flex-col gap-5">
         <StageHeader title={explainer} eyebrow={t('games.taboo.name')} trailing={<span className="tabular-nums text-3xl font-semibold">{timer.timeLeft}s</span>}
           subtitle={<span>{teams[0].name} {teams[0].score} · {teams[1].name} {teams[1].score}</span>} progress={{ value: timer.timeLeft, total: timerOption }} />
-        {currentCard && (isMyTurn || online?.myPlayerId === refereeId) ? <StagePanel className="flex-1 !bg-[#0d1010] !rounded-2xl !p-6 sm:!p-10">
+        {currentCard && (isMyTurn || online?.myPlayerId === refereeId) ? <StagePanel className="taboo-word-card flex-1">
           <p className="mb-5 text-xs font-semibold tracking-wide text-[#c5bbb3]">{isMyTurn ? t('games.taboo.playing.currentWord') : t('games.taboo.refereeRole')}</p>
           <h2 className="mb-8 text-[clamp(2.5rem,8vw,5.8rem)] font-black tracking-tight leading-none text-[#fff9ed] break-words">{currentCard.term}</h2>
           <ul className="divide-y divide-[#ff8572]/20">{currentCard.forbidden.map((word, index) => <li key={index} className="flex items-center gap-4 py-3 text-xl sm:text-2xl text-[#ff9b88]"><Ban className="h-5 w-5 shrink-0" /><span className="break-words min-w-0">{word}</span></li>)}</ul>

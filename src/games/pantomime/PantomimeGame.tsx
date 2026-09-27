@@ -1208,6 +1208,7 @@ function PantomimeSetup({
         </GameSetupBackLink>
 
         <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.045] px-5 py-7 shadow-[0_24px_70px_rgba(0,0,0,0.32)] backdrop-blur-xl sm:px-7">
+          <img src="/images/games/pantomime-hero-gpt-v2.webp" alt="" className="pantomime-hero" width={1200} height={675} />
           <div
             aria-hidden="true"
             className="absolute -right-12 -top-14 h-48 w-48 rounded-full blur-3xl"

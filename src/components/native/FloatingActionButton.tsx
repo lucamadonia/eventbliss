@@ -29,7 +29,10 @@ export function FloatingActionButton() {
   const haptics = useHaptics();
   const visible = useTabBarVisible();
 
-  if (!visible) return null;
+  // Party screens already provide their own primary actions. The global plus
+  // otherwise sits over the leave/start controls just above the tab bar.
+  const isPartyScreen = location.pathname === '/party' || location.pathname.startsWith('/party/');
+  if (!visible || isPartyScreen) return null;
 
   const handleToggle = () => {
     haptics.medium();

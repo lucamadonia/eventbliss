@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/components/auth/AuthProvider';
 import { useGameRoom } from '@/games/multiplayer/useGameRoom';
 import { openControllerParty, stopControllerParty, useControllerParty } from '@/games/party/controller-session';
+import { controllerInvitationCode } from './controller-invitation';
 
 /** One mounted coordinator owns routing across lobby, games and intermission. */
 export function ControllerPartyCoordinator() {
@@ -25,6 +26,8 @@ export function ControllerPartyCoordinator() {
   useEffect(() => {
     const data = controller.data;
     if (!data || room.room?.roomCode !== data.party.code) return;
+    const invitation = controllerInvitationCode(location.pathname);
+    if (invitation && invitation !== data.party.code.toUpperCase()) return;
     const isHost = data.party.host_user_id === auth.user?.id;
     const active = room.room.participantIds.includes(room.myPlayerId);
     const playing = data.party.status === 'playing' && room.room.status === 'playing';

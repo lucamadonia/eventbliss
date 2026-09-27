@@ -1,8 +1,8 @@
 import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
 import './bomb-console.css';
+import './bomb-presentation.css';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
 import { Bomb, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
 import type { GameState } from './BombGame';
 
@@ -29,13 +29,12 @@ export default function BombPlayingScreen({ state, progress, timeLeft, onWeiter,
   const player = state.players[state.currentPlayerIndex];
   const isRandom = state.randomTimer;
   const timerSeconds = timeLeft ?? Math.max(0, Math.round((1 - progress) * ((state.timerMin + state.timerMax) / 2)));
-  const pulseSpeed = isRandom ? Math.max(0.5, 1.2 - progress * 0.6) : Math.max(0.3, 1.2 - progress * 0.9);
 
   useEffect(() => {
     triggerVibration(progress);
   }, [Math.round(progress * 20)]);
 
-  return <GameStage gameId="bomb" className="bomb-console" data-critical={progress > .75}>
+  return <GameStage gameId="bomb" className="bomb-console bomb-playing" data-critical={progress > .75}>
     <StageHeader title={player.name} eyebrow={t('games.bomb.name')} subtitle={t('games.bomb.roundLabel', { round: state.round, total: state.totalRounds })}
       trailing={<span className="bomb-mode">{t(`gameModes.bomb.${state.mode}.name`)}</span>} progress={{value:state.round,total:state.totalRounds}} />
     <div className="bomb-workspace">

@@ -14,3 +14,15 @@
 .story-manuscript .stage-footer{border-color:#20332d20}
 @media(max-width:430px){.taboo-stage .stage-action{font-size:13px}.story-manuscript .stage-footer{flex-direction:column;align-items:stretch}.story-manuscript .stage-footer .stage-action{flex:none;width:100%;overflow-wrap:normal;word-break:normal}.story-manuscript .stage-action svg{flex-shrink:0}}
 @media(prefers-reduced-motion:reduce){.headup-stage *,.taboo-stage *,.category-stage *,.wordpress-controller *,.sketchbook-stage *,.story-manuscript *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* HeadUp keeps its original violet/cyan identity and a compact forehead stage. */
+.game-stage.headup-stage{--stage-bg:#0a0e14!important;--stage-surface:#151a21!important;--stage-accent:#df8eff!important;--stage-secondary:#8ff5ff!important}
+.headup-ready{min-height:calc(100dvh - 100px)}
+.headup-play{height:calc(100dvh - 100px);min-height:280px}
+@media(orientation:landscape) and (max-height:600px){
+  .game-stage.headup-stage:has(.headup-play){padding:8px max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left))}
+  .headup-play{height:calc(100dvh - 16px);min-height:0}
+  .headup-play .headup-clock{height:44px;width:44px}
+  .headup-ready{gap:12px;min-height:calc(100dvh - 64px)}
+  .headup-ready>svg{height:44px;width:44px}
+}

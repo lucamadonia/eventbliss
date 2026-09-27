@@ -55,14 +55,14 @@ function triggerHaptic(style: 'light' | 'medium' | 'heavy') {
 function TimerCircle({ timeLeft, percent, warn }: { timeLeft: number; percent: number; warn: boolean }) {
   const r = 28, c = 2 * Math.PI * r;
   return (
-    <div className="relative w-16 h-16">
+    <div className="headup-clock relative w-16 h-16">
       <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
         <circle cx="32" cy="32" r={r} fill="none" stroke="#1b2028" strokeWidth="4" />
-        <circle cx="32" cy="32" r={r} fill="none" stroke={warn ? '#ff6e84' : '#d5f46a'} strokeWidth="4"
+        <circle cx="32" cy="32" r={r} fill="none" stroke={warn ? '#ff6e84' : '#df8eff'} strokeWidth="4"
           strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - percent / 100)}
           style={{ transition: 'stroke-dashoffset 0.5s ease, stroke 0.3s' }} />
       </svg>
-      <span className={`absolute inset-0 flex items-center justify-center font-mono text-sm font-bold ${warn ? 'text-[#ff6e84]' : 'text-[#d5f46a]'}`}>
+      <span className={`absolute inset-0 flex items-center justify-center font-mono text-sm font-bold ${warn ? 'text-[#ff6e84]' : 'text-[#df8eff]'}`}>
         {timeLeft}
       </span>
     </div>
@@ -72,7 +72,6 @@ function TimerCircle({ timeLeft, percent, warn }: { timeLeft: number; percent: n
 // ── Component ──────────────────────────────────────────────────────────────────
 
 export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
-  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
   const { t } = useTranslation();
   const onlinePlayerNames = online?.players?.map(p => p.name) ?? [];
   // Gemeinsamer Helfer statt neunter Kopie: Er kennt dieselbe Rangfolge und
@@ -121,6 +120,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
 
   const navigate = useNavigate();
   const exitGuard = useConfirmExit(() => navigate('/games'));
+  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false && (!!online || !exitGuard.open));
 
   // Der Kipp-Sensor hört auf `devicemotion` und weiß nichts vom Dialog. Bliebe
   // er scharf, würde eine Neigung HINTER der offenen Abfrage weiter Wörter
@@ -134,8 +134,8 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     setIsArmed(false);
   }, []);
   const resumeTilt = useCallback(() => {
-    if (screen !== 'playing' || (online && online.players[currentRound - 1]?.id !== online.myPlayerId)) return;
-    orientationActiveRef.current = true;
+    if ((screen !== 'playing' && screen !== 'ready') || (online && online.players[currentRound - 1]?.id !== online.myPlayerId)) return;
+    orientationActiveRef.current = false;
     armedRef.current = false;
     setIsArmed(false);
     baselineRef.current = null;
@@ -179,6 +179,8 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
 
   const handleStartRound = useCallback(() => {
     if (!selectedCategory) return;
+    cooldownRef.current = false;
+    setFlash(null);
     setWordQueue(shuffleArray(selectedCategory.words));
     setCurrentWordIndex(0);
     setRoundWords([]);
@@ -249,8 +251,8 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const [motionAllowed, setMotionAllowed] = useState(() => typeof DeviceMotionEvent !== 'undefined' && !('requestPermission' in DeviceMotionEvent));
   const [motionPending, setMotionPending] = useState(false);
   const motionPhase = screen === 'ready' || screen === 'playing';
-  const motionContext = useRef({ screen, connected: online?.isConnected !== false });
-  motionContext.current = { screen, connected: online?.isConnected !== false };
+  const motionContext = useRef({ screen, connected: online?.isConnected !== false, paused: exitGuard.open });
+  motionContext.current = { screen, connected: online?.isConnected !== false, paused: exitGuard.open };
   const requestMotion = async () => {
     setMotionPending(true);
     try {
@@ -261,10 +263,11 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   };
   useEffect(() => {
     if (!motionAllowed || !motionPhase || (online && online.players[currentRound - 1]?.id !== online.myPlayerId)) return;
-    tiltTracker.current.reset();
+    const tracker = tiltTracker.current;
+    tracker.reset();
     orientationActiveRef.current = true;
     const handle = (event: DeviceMotionEvent) => {
-      if (!orientationActiveRef.current || !motionContext.current.connected || !event.accelerationIncludingGravity) return;
+      if (!orientationActiveRef.current || !motionContext.current.connected || motionContext.current.paused || !event.accelerationIncludingGravity) return;
       const pitch = gravityPitch(event.accelerationIncludingGravity);
       if (pitch === null) return;
       const action = tiltTracker.current.sample(pitch, motionContext.current.screen === 'playing');
@@ -273,7 +276,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
       if (action) actionRef.current('word', action === 'correct');
     };
     window.addEventListener('devicemotion', handle);
-    return () => { window.removeEventListener('devicemotion', handle); };
+    return () => { orientationActiveRef.current = false; tracker.reset(); window.removeEventListener('devicemotion', handle); };
     // Keep the listener and ready-phase calibration across ready -> playing.
   }, [motionPhase, currentRound, motionAllowed, online?.myPlayerId]);
 
@@ -358,7 +361,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 onImportNames={isOnlineOrParty ? undefined : handleImportNames}
                 min={2}
                 max={12}
-                accent="#d5f46a"
+                accent="#df8eff"
                 label={t('games.headup.playerLabel')}
               />
             </div>
@@ -372,7 +375,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                 selected={selectedCategory?.id === featured.id}
                 onClick={() => setSelectedCategory(featured)}
                 badge={`${t('games.headup.featuredBadge')} · ${t('games.headup.topPickBadge')}`}
-                accent="#d5f46a"
+                accent="#df8eff"
                 layout="wide"
                 priority
                 className="mb-6"
@@ -391,7 +394,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                   selected={selectedCategory?.id === cat.id}
                   onClick={() => setSelectedCategory(cat)}
 
-                  accent="#d5f46a"
+                  accent="#df8eff"
                 />
               ))}
             </div>
@@ -402,7 +405,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
               <div>
                 <label className="text-xs text-[#a8abb3] mb-2 block"><Trans i18nKey="games.headup.timerLabel" values={{ duration: timerDuration }} components={{ 1: <strong className="font-semibold text-white" /> }} /></label>
                 <input type="range" min={15} max={120} step={5} value={timerDuration} onChange={(e) => setTimerDuration(+e.target.value)}
-                  className="w-full h-1 rounded-full appearance-none bg-[#1b2028] accent-[#d5f46a]" />
+                  className="w-full h-1 rounded-full appearance-none bg-[#1b2028] accent-[#df8eff]" />
               </div>
             </div>
 
@@ -411,7 +414,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
               <div className="mx-auto text-center">
                 <motion.button whileTap={{ scale: 0.97 }} onClick={() => act('start')} disabled={!selectedCategory}
                   className={`w-full py-4 rounded-full text-base font-extrabold uppercase tracking-wide transition-all flex items-center justify-center gap-2 ${
-                    selectedCategory ? 'bg-[#d5f46a] text-[#101513]' : 'bg-[#1b2028] text-[#b5bdbe] cursor-not-allowed'
+                    selectedCategory ? 'bg-[#df8eff] text-[#101513]' : 'bg-[#1b2028] text-[#b5bdbe] cursor-not-allowed'
                   }`}>
                   <Play className="w-5 h-5" /> {t('games.headup.startGame')}
                 </motion.button>
@@ -422,47 +425,50 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         )}
 
         {/* ── READY ─────────────────────────────────────────────────── */}
-        {screen === 'ready' && <div className="mx-auto flex min-h-[75dvh] w-full max-w-3xl flex-col justify-center gap-7">
-          <StageHeader title={playerNames[currentRound - 1]} eyebrow={selectedCategory?.name} subtitle={t('games.headup.holdToForehead')} progress={{ value: currentRound, total: totalRounds }} />
-          <StagePanel tone="accent" className="grid min-h-60 place-items-center"><span className="text-[clamp(2.5rem,8vw,6rem)] font-black tabular-nums break-words">{countdown === null ? playerNames[currentRound - 1] : countdown === 0 ? t('games.headup.go') : countdown}</span></StagePanel>
-          <div className="grid gap-3 sm:grid-cols-2 text-sm text-[var(--stage-muted)]"><p className="flex items-center gap-3"><ChevronDown className="h-6 w-6" />{t('games.headup.tiltDownCorrect')}</p><p className="flex items-center gap-3"><ChevronUp className="h-6 w-6" />{t('games.headup.tiltUpSkip')}</p></div>
-          <p className="text-sm text-[var(--stage-muted)]">{t('games.headup.tiltNeutralHint')}</p>
-          {countdown === null && <StageFooter className="flex-col sm:flex-row">
-            <StageAction className="w-full" disabled={!act.can('ready') || motionPending} onClick={async () => { await requestMotion(); act('ready'); }}>{t('games.headup.readyBtn', { defaultValue: 'Ready — enable tilt' })}</StageAction>
-            <StageAction className="w-full" variant="secondary" disabled={!act.can('ready') || motionPending} onClick={() => { setMotionAllowed(false); act('ready'); }}>{t('games.headup.buttonsOnly', { defaultValue: 'Play with buttons' })}</StageAction>
-          </StageFooter>}
-        </div>}
+        {screen === 'ready' && <motion.div key="ready" initial={{opacity: 0}} animate={{opacity: 1}} className="headup-ready mx-auto flex w-full max-w-lg flex-col items-center justify-center gap-5 text-center">
+          <p className="text-sm font-bold text-[#df8eff]">{playerNames[currentRound - 1]}</p>
+          <Smartphone className="h-20 w-20 text-[#df8eff]" strokeWidth={1} aria-hidden="true" />
+          <h1 className="text-xl font-bold">{t('games.headup.holdToForehead')}</h1>
+          <div className="flex gap-6 text-sm"><span className="flex items-center gap-2 text-[#8ff5ff]"><ChevronDown className="h-5 w-5" />{t('games.headup.tiltDownCorrect')}</span><span className="flex items-center gap-2 text-[#ff6e84]"><ChevronUp className="h-5 w-5" />{t('games.headup.tiltUpSkip')}</span></div>
+          {countdown !== null ? <strong className="text-7xl font-black text-[#df8eff] tabular-nums">{countdown === 0 ? t('games.headup.go') : countdown}</strong> : <div className="flex w-full max-w-xs flex-col gap-2">
+            <StageAction disabled={!act.can('ready') || motionPending} onClick={async () => { await requestMotion(); act('ready'); }}>{t('games.headup.readyBtn')}</StageAction>
+            <button className="text-sm text-[#a8abb3] underline underline-offset-4" disabled={!act.can('ready') || motionPending} onClick={() => { setMotionAllowed(false); act('ready'); }}>{t('games.headup.buttonsOnly')}</button>
+          </div>}
+          <p className="text-xs text-[#a8abb3]">{t('games.headup.roundLabel', {current: currentRound, total: totalRounds})} · {selectedCategory?.name}</p>
+        </motion.div>}
 
-        {screen === 'playing' && <div className="mx-auto flex w-full max-w-5xl min-h-[80dvh] flex-col gap-5">
-          <StageHeader title={playerNames[currentRound - 1]} eyebrow={t('games.headup.gameTitle')}
-            subtitle={selectedCategory?.name} trailing={<span className="text-3xl font-semibold tabular-nums">{timeLeft}s</span>}
-            progress={{ value: currentRound, total: totalRounds }} />
-          <StagePanel tone="accent" className="flex flex-1 min-h-72 sm:min-h-96 items-center justify-center !rounded-2xl !p-6 sm:!p-12">
-            <div className="w-full text-center" style={!online ? { transform: 'rotate(180deg)' } : undefined}>
-              <p className="mb-5 text-xs font-bold tracking-[0.18em] uppercase">{t('games.headup.currentWord')}</p>
-              <p className="break-words text-[clamp(2.7rem,10vw,7rem)] font-black tracking-tight leading-[1.05]">{online && actorId === online.myPlayerId ? playerNames[currentRound - 1] : currentWord}</p>
-            </div>
-          </StagePanel>
-          <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--stage-muted)]">
-            <p>{correctCount} {t('games.headup.correct')} · {skippedCount} {t('games.headup.skip')}</p>
-            {(!online || actorId === online.myPlayerId) && <p>{isArmed ? t('games.headup.armed') : t('games.headup.holdFlat')}</p>}
+        {screen === 'playing' && <motion.div key="playing" initial={{opacity: 0}} animate={{opacity: 1}} className="headup-play relative mx-auto flex w-full max-w-5xl flex-col overflow-hidden">
+          {flash && <div key={currentWordIndex} aria-hidden="true" className={`pointer-events-none absolute inset-0 z-20 ${flash === 'green' ? 'bg-[#8ff5ff]/20' : 'bg-[#ff6e84]/20'}`} />}
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-full border border-[#df8eff]/20 px-3 py-1 text-xs text-[#df8eff]">{playerNames[currentRound - 1]} · {currentRound}/{totalRounds}</span>
+            <TimerCircle timeLeft={timeLeft} percent={percentLeft} warn={timeLeft <= 10} />
           </div>
-          <StageFooter className="!grid grid-cols-2 gap-3">
-            <StageAction variant="secondary" disabled={!act.can('word')} onClick={() => act('word', false)}><X className="h-5 w-5" />{t('games.headup.skip')}</StageAction>
-            <StageAction disabled={!act.can('word')} onClick={() => act('word', true)}><Check className="h-5 w-5" />{t('games.headup.correct')}</StageAction>
-          </StageFooter>
-        </div>}
+          <div className="relative flex min-h-0 flex-1 items-center justify-center px-6 py-4">
+            <div className="w-full text-center">
+              <p className="break-words text-[clamp(2.7rem,10vw,7rem)] font-black italic tracking-tight leading-[1.05] text-[#df8eff]">{online && actorId === online.myPlayerId ? playerNames[currentRound - 1] : currentWord}</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-center gap-5 py-2 text-sm">
+            <span className="flex items-center gap-2 text-[#8ff5ff]"><Check className="h-4 w-4" />{correctCount}</span>
+            <span className="flex items-center gap-2 text-[#ff6e84]"><X className="h-4 w-4" />{skippedCount}</span>
+          </div>
+          {motionAllowed && (!online || actorId === online.myPlayerId) && <p className="mb-2 text-center text-xs text-[#a8abb3]">{isArmed ? t('games.headup.armed') : t('games.headup.holdToForehead')}</p>}
+          <div className="grid grid-cols-2 gap-3">
+            <button className="flex items-center justify-center gap-2 rounded-full border border-[#ff6e84]/25 bg-[#1b2028] px-4 py-3 text-sm font-semibold text-[#ff6e84]" disabled={!act.can('word')} onClick={() => act('word', false)}><X className="h-4 w-4" />{t('games.headup.skip')}</button>
+            <button className="flex items-center justify-center gap-2 rounded-full bg-[#8ff5ff] px-4 py-3 text-sm font-semibold text-[#0a0e14]" disabled={!act.can('word')} onClick={() => act('word', true)}><Check className="h-4 w-4" />{t('games.headup.correct')}</button>
+          </div>
+        </motion.div>}
 
         {screen === 'roundResult' && <div className="mx-auto w-full max-w-3xl space-y-7 py-4">
-          <StageHeader title={playerNames[currentRound - 1]} eyebrow={t('games.headup.results')} trailing={<span className="text-5xl font-bold tabular-nums text-[#d5f46a]">{correctCount}</span>} subtitle={`${correctCount} ${t('games.headup.correct')} · ${skippedCount} ${t('games.headup.skipped')}`} />
-          <ul className="divide-y divide-white/15">{roundWords.map((word, index) => <li key={index} className="flex items-center gap-4 py-4 text-lg">{word.correct ? <Check className="h-5 w-5 shrink-0 text-[#d5f46a]" /> : <X className="h-5 w-5 shrink-0 text-[#e5a79a]" />}<span className="break-words">{word.word}</span></li>)}</ul>
+          <StageHeader title={playerNames[currentRound - 1]} eyebrow={t('games.headup.results')} trailing={<span className="text-5xl font-bold tabular-nums text-[#df8eff]">{correctCount}</span>} subtitle={`${correctCount} ${t('games.headup.correct')} · ${skippedCount} ${t('games.headup.skipped')}`} />
+          <ul className="divide-y divide-white/15">{roundWords.map((word, index) => <li key={index} className="flex items-center gap-4 py-4 text-lg">{word.correct ? <Check className="h-5 w-5 shrink-0 text-[#df8eff]" /> : <X className="h-5 w-5 shrink-0 text-[#e5a79a]" />}<span className="break-words">{word.word}</span></li>)}</ul>
           <StageFooter><StageAction disabled={!act.can('next')} onClick={() => act('next')}>{currentRound >= totalRounds ? t('games.headup.results') : t('games.headup.nextPlayer')}<ChevronRight className="h-5 w-5" /></StageAction></StageFooter>
         </div>}
         {screen === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-7 py-4">
           <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-          <StageHeader title={t('games.headup.gameOver')} subtitle={t('games.headup.wordsGuessedLabel')} trailing={<span className="text-6xl font-black tabular-nums text-[#d5f46a]">{totalCorrect}</span>} />
+          <StageHeader title={t('games.headup.gameOver')} subtitle={t('games.headup.wordsGuessedLabel')} trailing={<span className="text-6xl font-black tabular-nums text-[#df8eff]">{totalCorrect}</span>} />
           <div className="grid grid-cols-2 gap-4"><StagePanel tone="quiet"><p className="text-xs text-[var(--stage-muted)]">{t('games.headup.rounds')}</p><p className="mt-3 text-3xl font-bold">{finalRounds.length}</p></StagePanel><StagePanel tone="quiet"><p className="text-xs text-[var(--stage-muted)]">{t('games.headup.best')}</p><p className="mt-3 text-3xl font-bold">{bestRound.correct}</p></StagePanel></div>
-          <section><h2 className="mb-3 text-sm text-[var(--stage-muted)]">{t('games.headup.resultsPerRound')}</h2><ol className="divide-y divide-white/15">{finalRounds.map((result, index) => <li key={index} className="flex items-center gap-4 py-5"><span className="text-sm tabular-nums text-[var(--stage-muted)]">{index + 1}</span><div className="flex-1 min-w-0"><p className="text-xl font-semibold break-words">{result.playerName}</p><p className="mt-1 text-sm text-[var(--stage-muted)]">{result.skipped} {t('games.headup.skipped')}</p></div><strong className="text-3xl text-[#d5f46a]">{result.correct}</strong></li>)}</ol></section>
+          <section><h2 className="mb-3 text-sm text-[var(--stage-muted)]">{t('games.headup.resultsPerRound')}</h2><ol className="divide-y divide-white/15">{finalRounds.map((result, index) => <li key={index} className="flex items-center gap-4 py-5"><span className="text-sm tabular-nums text-[var(--stage-muted)]">{index + 1}</span><div className="flex-1 min-w-0"><p className="text-xl font-semibold break-words">{result.playerName}</p><p className="mt-1 text-sm text-[var(--stage-muted)]">{result.skipped} {t('games.headup.skipped')}</p></div><strong className="text-3xl text-[#df8eff]">{result.correct}</strong></li>)}</ol></section>
           <StageFooter className="flex-wrap"><StageAction disabled={!act.can('again')} onClick={() => act('again')}><RotateCcw className="h-5 w-5" />{t('games.headup.playAgain')}</StageAction><StageAction variant="secondary" disabled={!act.can('restart')} onClick={() => act('restart')}>{t('games.headup.back')}</StageAction></StageFooter>
         </div>}
 
@@ -471,7 +477,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         open={exitGuard.open}
         onStay={() => { exitGuard.cancel(); resumeTilt(); }}
         onLeave={exitGuard.confirm}
-        accent="#d5f46a"
+        accent="#df8eff"
       />
     </GameStage>
   );

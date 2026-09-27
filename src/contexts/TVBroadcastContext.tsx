@@ -4,11 +4,15 @@
  *
  * Place this ONCE above the game router so it persists across game switches.
  */
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, ReactNode } from "react";
 import { useTVBroadcast, type TVBroadcastAPI } from "@/hooks/useTVBroadcast";
 import { TVConnectButton } from "@/games/ui/TVConnectButton";
 
-const TVCtx = createContext<TVBroadcastAPI | null>(null);
+export interface TVBroadcastContextAPI extends TVBroadcastAPI {
+  /** Show connection instructions even on routes without the floating button. */
+  openConnection: () => void;
+}
+const TVCtx = createContext<TVBroadcastContextAPI | null>(null);
 
 interface Props {
   children: ReactNode;
@@ -36,15 +40,20 @@ export function TVBroadcastProvider({ children, sessionCode, showConnectButton =
 
 function TVBroadcastRoot({ children, sessionCode, showConnectButton }: Props) {
   const tv = useTVBroadcast(sessionCode);
+  const { activate } = tv;
+  const [connectionOpen, setConnectionOpen] = useState(false);
+  const openConnection = useCallback(() => {
+    activate();
+    setConnectionOpen(true);
+  }, [activate]);
 
   return (
-    <TVCtx.Provider value={tv}>
+    <TVCtx.Provider value={{ ...tv, openConnection }}>
       {children}
       {/* Die schwebende Pille gehoert nicht auf jeden Bildschirm. Seit der
           Provider ueber der gesamten App haengt, entscheidet der Aufrufer. */}
-      {showConnectButton && (
-        <TVConnectButton tvCode={tv.displayCode} isActive={tv.isActive} onActivate={tv.activate} />
-      )}
+      <TVConnectButton tvCode={tv.displayCode} isActive={tv.isActive} onActivate={tv.activate}
+        showTrigger={showConnectButton} expanded={connectionOpen} onExpandedChange={setConnectionOpen} />
     </TVCtx.Provider>
   );
 }
@@ -53,6 +62,6 @@ function TVBroadcastRoot({ children, sessionCode, showConnectButton }: Props) {
  * Access the TV broadcast function from inside a game.
  * Returns null if not wrapped in TVBroadcastProvider.
  */
-export function useTVContext(): TVBroadcastAPI | null {
+export function useTVContext(): TVBroadcastContextAPI | null {
   return useContext(TVCtx);
 }

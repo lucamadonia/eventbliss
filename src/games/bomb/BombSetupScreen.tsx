@@ -1,5 +1,6 @@
 import { GameStage } from '../ui/GameStage';
 import './bomb-console.css';
+import './bomb-presentation.css';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -52,7 +53,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart, locked }: Se
   };
 
   return (
-    <GameStage gameId="bomb" className="bomb-console">
+    <GameStage gameId="bomb" className="bomb-console bomb-setup">
       {/* Background auras */}
       <div className="hidden pointer-events-none absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-[#ff7350]/[0.06] blur-[120px]" />
       <div className="hidden pointer-events-none absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] rounded-full bg-[#cf96ff]/[0.05] blur-[120px]" />

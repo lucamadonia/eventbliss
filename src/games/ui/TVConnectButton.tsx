@@ -17,11 +17,16 @@ interface Props {
   tvCode: string;
   isActive: boolean;
   onActivate: () => void;
+  showTrigger?: boolean;
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
 }
 
-export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
+export function TVConnectButton({ tvCode, isActive, onActivate, showTrigger = true, expanded: controlledExpanded, onExpandedChange }: Props) {
   const { t, i18n } = useTranslation();
-  const [expanded, setExpanded] = useState(false);
+  const [localExpanded, setLocalExpanded] = useState(false);
+  const expanded = controlledExpanded ?? localExpanded;
+  const setExpanded = onExpandedChange ?? setLocalExpanded;
   const [copied, setCopied] = useState(false);
   // Nur waehrend einer Party gibt es Erlebnis-Ansichten zu schalten.
   const party = useSyncExternalStore(subscribePartySession, getActivePartySession, () => null);
@@ -42,12 +47,17 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  if (!showTrigger && !expanded) return null;
+
   return (
     <div className="fixed bottom-24 left-4 z-30" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <AnimatePresence mode="wait">
         {expanded ? (
           <motion.div
             key="expanded"
+            role="dialog"
+            aria-label={t("tv.connectTitle")}
+            onKeyDown={event => { if (event.key === 'Escape') setExpanded(false); }}
             initial={{ opacity: 0, scale: 0.8, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
@@ -59,7 +69,7 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
                 <Tv className="w-4 h-4 text-[#df8eff]" />
                 <span className="text-sm font-semibold text-white">{t("tv.connectTitle")}</span>
               </div>
-              <button onClick={() => { haptics.light(); setExpanded(false); }}>
+              <button aria-label={t('common.close')} className="grid min-h-11 min-w-11 place-items-center" onClick={() => { haptics.light(); setExpanded(false); }}>
                 <X className="w-4 h-4 text-white/40" />
               </button>
             </div>
@@ -133,6 +143,7 @@ export function TVConnectButton({ tvCode, isActive, onActivate }: Props) {
           /* Inactive: simple icon button */
           <motion.button
             key="collapsed"
+            aria-label={t('tv.connectTitle')}
             onClick={handleTap}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
