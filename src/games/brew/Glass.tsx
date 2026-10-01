@@ -183,6 +183,15 @@ function GlassImpl({
   const prevCountRef = useRef(filled.length);
   const [newFrom, setNewFrom] = useState(filled.length);
   useEffect(() => {
+    if (filled.length < prevCountRef.current) {
+      // A hero glass can be reused for the next player. Cancel the previous
+      // pour immediately; otherwise its timer cleanup leaves a white stream
+      // hanging over the new player's empty glass.
+      prevCountRef.current = filled.length;
+      setPouring(false);
+      setNewFrom(filled.length);
+      return;
+    }
     if (filled.length > prevCountRef.current) {
       setNewFrom(prevCountRef.current);
       setSplashTrigger((n) => n + 1);

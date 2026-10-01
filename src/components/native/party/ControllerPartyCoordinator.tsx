@@ -13,6 +13,7 @@ export function ControllerPartyCoordinator() {
   const navigate = useNavigate();
   const location = useLocation();
   const resumed = useRef('');
+  const routedPhase = useRef<string | null>(null);
   useEffect(() => {
     if (auth.isLoading) return;
     if (!auth.user) { if (controller.data) stopControllerParty(); return; }
@@ -25,7 +26,8 @@ export function ControllerPartyCoordinator() {
   }, [auth.isLoading, auth.user, controller.data, location.pathname]);
   useEffect(() => {
     const data = controller.data;
-    if (!data || room.room?.roomCode !== data.party.code) return;
+    if (!data) { routedPhase.current = null; return; }
+    if (auth.isLoading || !auth.user || room.room?.roomCode !== data.party.code) return;
     const invitation = controllerInvitationCode(location.pathname);
     if (invitation && invitation !== data.party.code.toUpperCase()) return;
     const isHost = data.party.host_user_id === auth.user?.id;
@@ -34,7 +36,12 @@ export function ControllerPartyCoordinator() {
     const path = playing && (active || isHost)
       ? `/games/${room.room.gameId}?room=${data.party.code}&party=true`
       : '/party/controllers';
+    // Route once per party phase. A location-only change (Back, tab, auth or
+    // another redirect) must not start a replaceState tug-of-war on iOS.
+    const phase = `${data.party.id}:${data.party.current_match_id ?? ''}:${path}`;
+    if (routedPhase.current === phase) return;
+    routedPhase.current = phase;
     if (location.pathname + location.search !== path) navigate(path, { replace: true });
-  }, [controller.data, room.room, room.myPlayerId, auth.user?.id, navigate, location.pathname, location.search]);
+  }, [controller.data, room.room, room.myPlayerId, auth.isLoading, auth.user, navigate, location.pathname, location.search]);
   return null;
 }

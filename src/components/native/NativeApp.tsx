@@ -142,7 +142,9 @@ function GameBackTarget({ children }: { children: ReactNode }) {
   const [params] = useSearchParams();
   // Ausnahme Party-Lobby: Dort ist das Spiel Teil eines laufenden Abends, und
   // die Spieleübersicht wäre ein Bruch im Ablauf.
-  const to = params.get("party") === "true" ? "/party" : "/games";
+  const to = params.get("party") === "true"
+    ? getActivePartySession()?.playMode === "controllers" ? "/party/controllers" : "/party"
+    : "/games";
 
   useBackGuard(
     () => {

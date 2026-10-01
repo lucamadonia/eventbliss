@@ -83,9 +83,11 @@ export function TabsLayer() {
 
   if (activeTab) visitedRef.current.add(activeTab.path);
 
+  // A departing stack page may still be sliding left over this tab. Keep the
+  // active tab above that exit layer so it cannot dim or block it.
   return (
     <div
-      className="absolute inset-0"
+      className="absolute inset-0 z-20"
       style={{ display: isTabPath ? undefined : "none" }}
       aria-hidden={!isTabPath}
     >

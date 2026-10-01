@@ -933,6 +933,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
               animate={reduceMotion ? undefined : { opacity: [0.42, 0.95, 0.42], scale: [0.9, 1.1, 0.9] }}
               transition={{ duration: Math.max(0.8, 2 - chainLevel * 0.28), repeat: Infinity, ease: "easeInOut" }} />
             <Glass
+              key={me.id}
               recipeNeeds={me.recipe.needs}
               filled={me.glass}
               skin={skin}
