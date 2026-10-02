@@ -1,6 +1,6 @@
 import './expedition.css';
 import { usePausableTimeout } from '../engine/TimerSystem';
-import { appendOnlineGuess, publicGuessRound } from './online-guesses';
+import { appendOnlineGuess, publicGuessRound, settleGuessesAfterRemoval } from './online-guesses';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Check, ChevronRight, Trophy, Timer, Share2, Crosshair } from 'lucide-react';
@@ -94,6 +94,19 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
       setPhase('result');
     }
   }, [online, phase, players, location, roundNumber]);
+  // Host: a kicked/left player no longer holds the round open (G7).
+  useEffect(() => {
+    if (!online?.isHost || phase !== 'guessing') return;
+    const settled = settleGuessesAfterRemoval(guessesRef.current, players);
+    if (!settled) return;
+    guessesRef.current = settled.guesses;
+    setGuesses(settled.guesses);
+    if (!settled.complete) return;
+    online.broadcast('findit-map-results', { results: settled.guesses, roundNumber, location });
+    setAllDoneGuesses(settled.guesses);
+    setWaitingForResults(false);
+    setPhase('result');
+  }, [players]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast('findit-map-guess', data => {

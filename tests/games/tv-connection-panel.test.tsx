@@ -11,6 +11,10 @@ vi.mock('react', async original => ({
     return [harness.slots[index], (next: unknown) => { harness.slots[index] = next; }];
   },
   useCallback: (callback: unknown) => callback,
+  // Refs/Effekte der Fokus-Fuehrung: Der Harness ruft die Komponente als
+  // Funktion auf, ohne DOM — Refs sind einfache Boxen, Effekte laufen nicht.
+  useRef: (initial: unknown) => ({ current: initial }),
+  useEffect: () => undefined,
   useSyncExternalStore: () => null,
 }));
 vi.mock('@/hooks/useTVBroadcast', () => ({ useTVBroadcast: (...args: unknown[]) => {
@@ -62,6 +66,7 @@ describe('TV instructions from the party lobby', () => {
     expect(nodes.some(node => node.props.role === 'dialog')).toBe(true);
     expect(nodes.some(node => node.props.children === 'JL2D6Z')).toBe(true);
     const close = nodes.find(node => node.props['aria-label'] === 'common.close')!;
+    expect(close.props['data-testid']).toBe('tv-connect-close');
     (close.props.onClick as () => void)();
     expect(onExpandedChange).toHaveBeenCalledWith(false);
   });

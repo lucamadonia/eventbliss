@@ -1,11 +1,12 @@
-import { useSyncExternalStore } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
-import { Trophy, Map as MapIcon, PartyPopper, Gamepad2, Tv, BookOpen } from "lucide-react";
+import { Trophy, Map as MapIcon, PartyPopper, Gamepad2, Tv, BookOpen, Users } from "lucide-react";
 
 import { useHaptics } from "@/hooks/useHaptics";
 import { cn } from "@/lib/utils";
 import { getTvView, setTvView, subscribeTvView, tvViewServerSnapshot, type TvView } from "@/games/tv/tv-view";
 import { getActivePartySession, subscribePartySession } from "@/hooks/usePartySession";
+import { PartyPlayerPicker, usePartyKickTargets } from "./PartyPlayerPicker";
 
 /**
  * TVRemote — die Erlebnis-Ansichten des Fernsehers vom Telefon aus schalten.
@@ -47,13 +48,18 @@ export function TVRemote({ isActive, variant = "compact", className }: TVRemoteP
   // nicht angeboten. Ein Knopf, der ins Leere fuehrt, ist schlimmer als keiner.
   const nothingPlayed = (session?.gameHistory.length ?? 0) === 0;
   const noNextGame = !session?.playlist?.[session.playlistIndex];
+  // "Zurück zum Spiel" only makes sense while a game runs (not in the lobby).
+  const gameRunning = !!session?.currentGameId;
+
+  const [picking, setPicking] = useState(false);
+  const kickable = usePartyKickTargets();
 
   if (!isActive) return null;
 
   return (
     <div className={cn("grid grid-cols-2 gap-2", className)}>
       {VIEWS.filter(({ view: v }) =>
-        !((v === 'finale' && nothingPlayed) || (v === 'rules' && noNextGame))
+        !((v === 'finale' && nothingPlayed) || (v === 'rules' && noNextGame) || (v === 'ingame' && !gameRunning))
       ).map(({ view: v, key, Icon }) => {
         const active = view === v;
         return (
@@ -78,6 +84,23 @@ export function TVRemote({ isActive, variant = "compact", className }: TVRemoteP
           </button>
         );
       })}
+      {/* Spieler entfernen — jederzeit, auch mitten im Spiel (Masterplan 6.6). */}
+      {kickable.available && (
+        <button
+          type="button"
+          aria-haspopup="dialog"
+          data-testid="tv-remote-players"
+          onClick={() => { haptics.light(); setPicking(true); }}
+          className={cn(
+            "cursor-pointer min-h-[44px] col-span-2 rounded-xl border px-3 flex items-center justify-center gap-2 text-xs font-semibold bg-foreground/5 border-border text-muted-foreground active:bg-foreground/10",
+            variant === "card" && "min-h-[48px] text-sm"
+          )}
+        >
+          <Users className="w-4 h-4 shrink-0" aria-hidden />
+          <span className="truncate">{t("partyPlay.remote.players", "Spieler")}</span>
+        </button>
+      )}
+      {kickable.available && <PartyPlayerPicker open={picking} onClose={() => setPicking(false)} />}
     </div>
   );
 }

@@ -14,7 +14,6 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
-import { getWhoAmIPool, type WhoAmICategoryKey } from './whoami-content';
 import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -23,58 +22,15 @@ import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
 import { hasShellBackButton } from '@/games/ui/shell-back';
 import { useInitialRoster } from '@/games/ui/useInitialRoster';
+import { PLAYER_COLORS, MAX_QUESTIONS, DEFAULT_PLAYER_SENTINEL, drawPool, EP_STYLE } from './whoami-config';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { applyWhoAmIRemoval } from './removal';
 
 type Phase = 'setup' | 'assign' | 'asking' | 'answerVote' | 'guessing' | 'guessResult' | 'gameOver';
 interface Player {
   id: string; name: string; color: string; avatar: string; score: number;
   character: string; questionsAsked: number; guessedCorrectly: boolean; eliminated: boolean;
 }
-const PLAYER_COLORS = ['#06b6d4','#0ea5e9','#8b5cf6','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
-const MAX_QUESTIONS = 20;
-
-// Internal sentinel key for the first default player; NOT shown to users directly
-const DEFAULT_PLAYER_SENTINEL = 'Du';
-
-/**
- * Die im Setup waehlbare Kennung. Frueher stand hier eine Tabelle auf die
- * DEUTSCHEN Kategorie-Beschriftungen — und weil die Inhaltspakete diese
- * Beschriftung mituebersetzen ("Celebrities", "Ünlüler"), traf der Filter in
- * neun von zehn Sprachen nichts. Der Pool war leer, `pool[i % 0]` wurde zu
- * `pool[NaN]`, und der Zugriff auf `.name` liess das Spiel beim Start
- * abstuerzen. Die Kennungen sind jetzt sprachunabhaengig; die Uebersetzung
- * findet nur noch in der Anzeige statt.
- */
-const SETUP_ID_TO_KEY: Record<string, WhoAmICategoryKey> = {
-  prominente: 'prominente',
-  tiere: 'tiere',
-  berufe: 'berufe',
-  filme: 'filme',
-};
-
-/**
- * Figuren fuer eine Runde ziehen. Gibt `null`, wenn keine da sind — dann darf
- * NICHT gestartet werden. Ein leerer Pool hat frueher einen Absturz erzeugt,
- * der wie ein toter Knopf aussah; lieber eine ehrliche Meldung.
- */
-function drawPool(setupId: string) {
-  const pool = shuffle(getWhoAmIPool(SETUP_ID_TO_KEY[setupId] ?? 'prominente'));
-  return pool.length > 0 ? pool : null;
-}
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-const EP_STYLE = `
-.neon-glow { text-shadow: 0 0 20px rgba(150,160,165,0.6), 0 0 40px rgba(150,160,165,0.4); }
-.glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-`;
-
 function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -271,24 +227,7 @@ function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
 
   const advancePlayer = () => {
     const remaining = players.filter((p, i) => i !== activeIdx && !p.guessedCorrectly && !p.eliminated);
-    if (remaining.length === 0) {
-      if (currentRound >= totalRounds) {
-        setPhase('gameOver');
-      } else {
-        // next round: reassign
-        setCurrentRound((r) => r + 1);
-        const pool = drawPool(mode);
-        if (!pool) { setContentError(true); return; }
-        setPlayers((prev) => prev.map((p, i) => ({
-          ...p, character: pool[i % pool.length].name,
-          questionsAsked: 0, guessedCorrectly: false, eliminated: false,
-        })));
-        setRevealIdx(0);
-        setActiveIdx(0);
-        setPhase('assign');
-      }
-      return;
-    }
+    if (remaining.length === 0) { endRound(); return; }
     let next = (activeIdx + 1) % players.length;
     while (players[next].guessedCorrectly || players[next].eliminated) {
       next = (next + 1) % players.length;
@@ -296,6 +235,30 @@ function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
     setActiveIdx(next);
     setPhase('asking');
   };
+
+  const endRound = () => {
+    if (currentRound >= totalRounds) { setPhase('gameOver'); return; }
+    // next round: reassign
+    setCurrentRound((r) => r + 1);
+    const pool = drawPool(mode);
+    if (!pool) { setContentError(true); return; }
+    setPlayers((prev) => prev.map((p, i) => ({
+      ...p, character: pool[i % pool.length].name,
+      questionsAsked: 0, guessedCorrectly: false, eliminated: false,
+    })));
+    setRevealIdx(0);
+    setActiveIdx(0);
+    setPhase('assign');
+  };
+
+  // Host: a removed player drops out; nobody waits for his question, answer or guess (G7).
+  useRemovedPlayers(online, ids => {
+    const r = applyWhoAmIRemoval({ phase, players, activeIdx, voterIdx, voteResults, currentQuestion, guessCorrect }, ids, maxQ);
+    if (!r) return;
+    setPlayers(r.players); setActiveIdx(r.activeIdx); setVoterIdx(r.voterIdx); setVoteResults(r.voteResults);
+    setCurrentQuestion(r.currentQuestion); setGuessCorrect(r.guessCorrect); setPhase(r.phase as Phase);
+    if (r.roundOver) endRound();
+  });
 
   const skipToGuess = () => {
     if (route('skipToGuess')) return;

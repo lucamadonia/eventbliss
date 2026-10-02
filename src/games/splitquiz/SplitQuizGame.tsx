@@ -3,6 +3,8 @@ import { TeamRail } from './TeamRail';
 import { partitionRoster, wagerPoints } from './rules';
 import { splitQuizSnapshotFor } from './private-state';
 import { useOnlineAuthority, useOnlineSnapshot, usePrivateSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { removeFromSplitQuiz } from './roster-change';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
@@ -491,6 +493,36 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   }
 
   commitAnswerRef.current = commitAnswer;
+
+  // Host entfernt jemanden mitten im Spiel (Masterplan 6.6): Teams aufraeumen,
+  // leeres Team auffuellen und dann mit frischer Frage weiter, nie haengen.
+  useRemovedPlayers(online, ids => {
+    const change = removeFromSplitQuiz({ phase, rosterIds, playerNames, teamA, teamB, activeTeamIdx, teamAnswered }, ids);
+    if (!change.changed) return;
+    ids.forEach(id => { delete playerCorrectMap.current[id]; });
+    setRosterIds(change.state.rosterIds);
+    setPlayerNames(change.state.playerNames);
+    setTeamA(change.state.teamA);
+    setTeamB(change.state.teamB);
+    if (change.restartQuestion) {
+      timer.pause();
+      timer.reset(20);
+      sealedAnswers.current = [null, null];
+      sealedBets.current = [1, 1];
+      setRoundOutcomes([]);
+      setTeamAnswered([false, false]);
+      setActiveTeamIdx(0);
+      setSelectedAnswer(null);
+      setCurrentBet(1);
+      setShowBetting(false);
+      const q = drawQuestion();
+      setCurrentQuestion(q);
+      setAnswerSplit(computeSplit(q));
+      setPhase('handoff');
+    } else if (change.skipActive) {
+      commitAnswer(-1);
+    }
+  });
 
   /* ---- Next after reveal ---- */
   function nextAfterReveal() {

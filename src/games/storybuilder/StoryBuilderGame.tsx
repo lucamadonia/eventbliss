@@ -3,6 +3,8 @@ import { GameStage, StageHeader, StagePanel, StageAction, StageFooter } from '..
 import { usePausableTasks } from '../bottlespin/pausable-tasks';
 import { advanceReveal, storyTurn } from './reveal-rules';
 import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { removeFromStory } from './roster-change';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -342,6 +344,17 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
     setPhase('writing');
   }
 
+  // Host: Entfernte fallen aus der Reihe; schrieb gerade jemand von ihnen,
+  // beginnt die naechste Person mit frischer Uhr (roster-change.ts).
+  useRemovedPlayers(online, ids => {
+    const change = removeFromStory({ players, phase, currentRound, totalRounds, currentPlayerIdx, currentSentenceNum }, ids);
+    if (!change.changed) return;
+    const next = change.state;
+    setPlayers(next.players); setCurrentRound(next.currentRound); setCurrentPlayerIdx(next.currentPlayerIdx); setCurrentSentenceNum(next.currentSentenceNum);
+    if (next.phase === 'storyReveal' && phase !== 'storyReveal') { setRevealIdx(0); setIsRevealing(false); }
+    setPhase(next.phase as Phase);
+    if (change.turnRestarted) { setWritingSeconds(90); setInputText(''); }
+  });
   const act = useOnlineActions(online, 'storybuilder', `${phase}:${currentRound}:${currentPlayerIdx}:${currentSentenceNum}:${sentences.length}`, {
     start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },
     sentence: { allowed: phase === 'writing' ? currentPlayer?.id ?? false : false, run: (text: unknown) => { if (typeof text === 'string') submitSentence(text); } },

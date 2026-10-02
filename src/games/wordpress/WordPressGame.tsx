@@ -3,6 +3,8 @@ import '../headup/classic-stage.css';
 import { GameStage, StageHeader, StagePanel, StageAction, StageFooter } from '../ui/GameStage';
 import { usePausableTasks } from '../bottlespin/pausable-tasks';
 import { REACTION_TRANSPORT_GRACE_MS, validReaction } from './reaction-window';
+import { removeFromWordPress } from './removal';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useTranslation } from "react-i18next";
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
@@ -33,6 +35,8 @@ type GameMode = 'kategorie' | 'stroop' | 'verboten' | 'speed-rush';
 type Speed = 'slow' | 'medium' | 'fast';
 
 interface PlayerState {
+  /** Room player id (online only) — roster indices shift when someone is removed. */
+  id?: string;
   name: string;
   score: number;
   combo: number;
@@ -282,7 +286,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
   const speedMs = useRef(SPEED_MS[speed]);
   const [presentedIndex, setPresentedIndex] = useState(0);
   const visibleDuration = mode === 'speed-rush' ? Math.max(300, speedMs.current - wordIndex * 25) : speedMs.current;
-  const activeId = online?.players[currentPlayerIndex]?.id;
+  const activeId = player?.id ?? online?.players[currentPlayerIndex]?.id;
   const isActiveDevice = !online || activeId === online.myPlayerId;
   const remoteActor = online && activeId !== (online.hostPlayerId ?? online.players.find(p => p.isHost)?.id);
   const reactionStarted = useRef(0);
@@ -421,7 +425,7 @@ function PlayingScreen({ players, mode, speed, round, totalRounds, currentPlayer
     feedbackTimeoutRef.current = setTimeout(() => showNextWord(), 350);
   }, [currentWord, combo, wordIndex, showNextWord]);
 
-  const tap = useOnlineActions(online, 'wordpress-word', `${round}:${currentPlayerIndex}:${wordIndex}`, {
+  const tap = useOnlineActions(online, 'wordpress-word', `${round}:${activeId ?? currentPlayerIndex}:${wordIndex}`, {
     ready: { allowed: !turnStarted && wordIndex === 0 ? activeId ?? false : false, run: () => setTurnStarted(true) },
     tap: { allowed: wordIndex > 0 && wordIndex <= WORDS_PER_TURN ? activeId ?? false : false, run: (elapsed: unknown) => { if (!online || validReaction(elapsed, visibleDuration)) handleTap(); } },
     expire: { allowed: wordIndex > 0 && wordIndex <= WORDS_PER_TURN ? activeId ?? false : false, run: () => {
@@ -588,10 +592,11 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
   const [live, setLive] = useState<{ word: string; displayColor?: string; wordIndex: number; combo: number; score: number }>({ word: '', wordIndex: 0, combo: 0, score: 0 });
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
+  const handoffRef = useRef<ReturnType<typeof setTimeout>>();
 
   useTVGameBridge('wordpress', {
     phase, round, currentPlayerIndex, players, totalRounds,
-    partyScoresById: online ? Object.fromEntries(online.players.map((p, i) => [p.id, players[i]?.score ?? 0])) : undefined,
+    partyScoresById: online ? Object.fromEntries(online.players.map((p, i) => [p.id, (players.find(x => x.id === p.id) ?? players[i])?.score ?? 0])) : undefined,
     mode,
     currentWord: live.word,
     displayColor: live.displayColor,
@@ -603,7 +608,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
   }, [phase, round, currentPlayerIndex, mode, forbiddenWord, contentLanguage, live], !online || online.isHost);
 
   const handleStart = useCallback((ps: PlayerState[], m: GameMode, s: Speed, r: number) => {
-    const roster = online ? online.players.map((member, i) => ({ ...ps[i % ps.length], name: member.name })) : ps;
+    const roster = online ? online.players.map((member, i) => ({ ...ps[i % ps.length], id: member.id, name: member.name })) : ps;
     const language = wordLanguage(i18n.language);
     setContentLanguage(language);
     setPlayers(roster);
@@ -629,7 +634,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
       setTurnQueue(rest);
       // Re-enter playing phase to reset PlayingScreen
       setPhase('roundEnd');
-      setTimeout(() => setPhase('playing'), 50);
+      handoffRef.current = setTimeout(() => setPhase('playing'), 50);
     } else {
       // Round complete
       setPhase('roundEnd');
@@ -653,7 +658,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     if (phase === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
       const winner = [...players].sort((a, b) => b.score - a.score)[0];
-      const me = online ? players[online.players.findIndex(p => p.id === online.myPlayerId)] : winner;
+      const me = online ? (players.find(p => p.id === online.myPlayerId) ?? players[online.players.findIndex(p => p.id === online.myPlayerId)]) : winner;
       recordEnd('drueck-das-wort', me?.score ?? 0, !!me && me.score === winner?.score);
     }
     if (phase === 'setup') gameRecordedRef.current = false;
@@ -679,6 +684,16 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
     setPhase('playing');
   }, [players, handleRestart, matchWords]);
 
+  // Host: removed players leave roster/scores/queue; if it was their turn the next
+  // queued player starts fresh (or the round closes) — see removal.ts.
+  useRemovedPlayers(online, ids => {
+    const change = removeFromWordPress({ phase, players, currentPlayerIndex, turnQueue }, ids);
+    if (!change.changed) return;
+    const next = change.state;
+    if (change.turnEnded) { if (handoffRef.current) clearTimeout(handoffRef.current); setForbiddenWord(randomFrom(forbiddenWords(matchWords))); }
+    setPlayers(next.players); setCurrentPlayerIndex(next.currentPlayerIndex); setTurnQueue(next.turnQueue); setPhase(next.phase);
+  });
+
   const act = useOnlineActions(online, 'wordpress', `${phase}:${round}:${currentPlayerIndex}`, {
     start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },
     next: { allowed: phase === 'roundEnd' && turnQueue.length === 0 ? 'host' : false, run: handleNextRound },
@@ -703,7 +718,7 @@ export default function WordPressGame({ online }: { online?: OnlineGameProps } =
         </motion.div>
       )}
       {phase === 'playing' && (
-        <motion.div key={`playing-${round}-${currentPlayerIndex}`} exit={{ opacity: 0 }}>
+        <motion.div key={`playing-${round}-${players[currentPlayerIndex]?.id ?? currentPlayerIndex}`} exit={{ opacity: 0 }}>
           <PlayingScreen
             online={online}
             players={players}

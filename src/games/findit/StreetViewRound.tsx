@@ -1,6 +1,6 @@
 import './expedition.css';
 import { usePausableTimeout } from '../engine/TimerSystem';
-import { appendOnlineGuess, publicGuessRound } from './online-guesses';
+import { appendOnlineGuess, publicGuessRound, settleGuessesAfterRemoval } from './online-guesses';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Camera, Check, ChevronRight, Trophy, MapPin, Crosshair, Eye, Timer } from 'lucide-react';
@@ -143,6 +143,18 @@ export default function StreetViewRound({ location: promptLocation, players, rou
       setPhase('result');
     }
   }, [online, phase, players, location, roundNumber]);
+  // Host: a kicked/left player no longer holds the round open (G7).
+  useEffect(() => {
+    if (!online?.isHost || phase !== 'guess') return;
+    const settled = settleGuessesAfterRemoval(guessesRef.current, players);
+    if (!settled) return;
+    guessesRef.current = settled.guesses;
+    setGuesses(settled.guesses);
+    if (!settled.complete) return;
+    online.broadcast('findit-sv-results', { results: settled.guesses, roundNumber, location });
+    setWaitingForResults(false);
+    setPhase('result');
+  }, [players]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast('findit-sv-guess', data => {

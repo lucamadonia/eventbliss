@@ -7,8 +7,11 @@ export function canAct(online: OnlineGameProps, allowed: boolean | string, sende
   if (typeof sender !== 'string') return false;
   const hostId = online.hostPlayerId ?? online.players.find(p => p.isHost)?.id;
   if (allowed === 'host') return sender === hostId;
-  if (!online.players.some(p => p.id === sender)) return false;
-  return allowed === true || allowed === sender;
+  if (allowed !== true && allowed !== sender) {
+    // A 🔁 guest's turn is played on the device that controls the seat (host phone).
+    return typeof allowed === 'string' && online.players.some(p => p.id === allowed && p.controlledBy === sender);
+  }
+  return online.players.some(p => p.id === sender);
 }
 
 /** Host validates the authenticated sender and current turn, never client scores. */

@@ -8,11 +8,19 @@ vi.mock('react', async importOriginal => ({
   ...await importOriginal<typeof import('react')>(),
   useEffect: (effect: () => void) => { state.effects.push(effect); },
   useRef: <T,>(initial: T) => ({ current: initial }),
+  // The coordinator renders outside React here: plain stand-ins for its local state.
+  useState: <T,>(initial: T) => [initial, () => {}],
+  useCallback: <T,>(fn: T) => fn,
 }));
+// The scene layer and undo toast pull in the TV/Supabase stack; routing is under test, not they.
+vi.mock('@/components/native/party/PartySceneLayer', () => ({ PartySceneLayer: () => null }));
+vi.mock('@/components/native/party/KickUndoSnackbar', () => ({ KickUndoSnackbar: () => null }));
+vi.mock('@/games/party/party-scene', () => ({ usePartyScene: () => null, clearPartyScene: () => {} }));
 vi.mock('react-router-dom', () => ({ useNavigate: () => state.navigate, useLocation: () => ({ pathname: state.pathname, search: '' }) }));
 vi.mock('@/components/auth/AuthProvider', () => ({ useAuthContext: () => ({ isLoading: false, user: { id: 'guest', user_metadata: {} } }) }));
 vi.mock('@/games/party/controller-session', () => ({
-  openControllerParty: state.open, stopControllerParty: state.stop,
+  openControllerParty: state.open, stopControllerParty: state.stop, refreshControllerParty: async () => {},
+  ownMember: (data: { members: { user_id: string }[] } | null, userId: string) => data?.members.find(m => m.user_id === userId) ?? null,
   useControllerParty: () => ({ data: state.restored ? { party: { code: state.code, host_user_id: 'host', status: state.playing ? 'playing' : 'lobby' }, members: [{ user_id: 'guest' }] } : null }),
 }));
 vi.mock('@/games/multiplayer/useGameRoom', () => ({ useGameRoom: () => ({ myPlayerId: 'guest-player', room: state.restored ? { roomCode: state.code, gameId: 'bomb', participantIds: ['guest-player'], status: state.playing ? 'playing' : 'lobby' } : null }) }));

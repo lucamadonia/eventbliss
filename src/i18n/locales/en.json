@@ -10252,5 +10252,277 @@
     "players_one": "{{count}} player",
     "players_other": "{{count}} players",
     "players": "{{count}} players"
+  },
+  "tvLobby": {
+    "allReady": "Everyone's ready ✓",
+    "atHostDevice": "on the host's phone",
+    "fullscreen": "Full screen",
+    "gamesPlanned": "Party night · {{count}} games",
+    "gamesPlanned_one": "Party night · 1 game",
+    "gamesPlanned_other": "Party night · {{count}} games",
+    "guestHint": "{{names}}: got a phone? Scan in and join!",
+    "guestHintOne": "{{names}}: got a phone? Scan in and join!",
+    "host": "Host",
+    "hostPlays": "playing",
+    "hostSitsOut": "not playing",
+    "lateJoin": "{{name}} joins from the next round",
+    "latecomerHint": "Scan in – you're in from the next round",
+    "latecomerTitle": "Want to join?",
+    "localHint": "Tonight the phone gets passed around – the TV shows whose turn it is.",
+    "localTitle": "One phone for everyone",
+    "nextUp": "Up next",
+    "notReady": "not ready yet",
+    "offline": "disconnected",
+    "orCode": "or enter the code in the app",
+    "ownPhone": "own phone",
+    "playerJoined": "{{name}} is in",
+    "playerLeft": "{{name}} left the party",
+    "playerRange": "{{min}}–{{max}} players",
+    "playersHeading": "Joined",
+    "ready": "ready",
+    "readyMissing": "{{count}} not ready yet",
+    "scanTitle": "Scan & play",
+    "step1": "Point your phone camera at the code",
+    "step2": "The app opens – you're in",
+    "yourSeat": "Your spot",
+    "waitingForPlayers": "Waiting for players …",
+    "waitingForHost": "Waiting for the host …",
+    "waitingForHostHint": "On the host's phone: open the party and tap “{{button}}”.",
+    "partyEnded": "This party is over",
+    "partyEndedHint": "Thanks for playing! For another round, just start a new party."
+  },
+  "handover": {
+    "announce": "Pass the phone to {{name}}.",
+    "clockPaused": "Clock paused",
+    "confirm": "I'm {{name}} – let's go",
+    "confirmHost": "I'm {{name}} – continue",
+    "confirmHostGeneric": "I'm the host – continue",
+    "countdownGo": "Go!",
+    "coverAnnounce": "{{name}} is done. Cover the screen.",
+    "coverButton": "Cover & pass on",
+    "coverHint": "Put the phone face down before you hand it over.",
+    "coverTitle": "Done, {{name}}?",
+    "holdHint": "Press and hold",
+    "lookAway": "(everyone else, look away)",
+    "passOn": "On to {{name}}",
+    "passTo": "Hand the phone to {{name}}",
+    "returnTo": "Back to {{name}}",
+    "returnToHost": "Back to the host"
+  },
+  "partyPlay": {
+    "abortMatch": "Cancel game – doesn't count",
+    "backToLobby": "Back to the lobby",
+    "continueWithout": "Keep playing without {{name}}",
+    "removedFromMatchTitle": "You're sitting this round out",
+    "removedFromMatchHint": "You're back in from the next game.",
+    "seatToHost": "{{name}} keeps playing on the host's phone",
+    "seatToHostLater": "Only possible after this round – keep playing without them until then.",
+    "sittingOut": "{{names}} sit this round out",
+    "stuckTitle": "Can't reach {{name}}",
+    "tooFewLeft": "– no longer here. {{game}} needs {{min}}.",
+    "tooFewTitle": "Not enough players for {{game}}",
+    "tooFewWaiting": "The host is deciding what happens next.",
+    "waitingFor": "Waiting for {{name}} …",
+    "availability": {
+      "ready_one": "Ready to go · 1 player",
+      "ready_other": "Ready to go · {{count}} players",
+      "waiting_one": "Waiting for 1 more player",
+      "waiting_other": "Waiting for {{count}} more players",
+      "guestsSitOut_one": "Guests sit out – 1 more player with a phone needed",
+      "guestsSitOut_other": "Guests sit out – {{count}} more players with a phone needed",
+      "guestsSitOutNames_one": "{{names}} sit out – 1 more player with a phone needed",
+      "guestsSitOutNames_other": "{{names}} sit out – {{count}} more players with a phone needed",
+      "sitout": "{{names}} sit this one out",
+      "sitout_one": "{{names}} sits this one out",
+      "sitout_other": "{{names}} sit this one out",
+      "sitoutCount_one": "1 guest sits out",
+      "sitoutCount_other": "{{count}} guests sit out",
+      "sitoutCount": "{{count}} guests sit out",
+      "tooMany": "{{max}} players max",
+      "premium": "Premium only",
+      "unknown": "Not available"
+    },
+    "cancel": "Cancel",
+    "close": "Close",
+    "end": {
+      "body": "The party ends for everyone. The scores stay visible."
+    },
+    "error": {
+      "already_seated": "You already have a spot in this party.",
+      "banned": "You can't join this party anymore.",
+      "cannot_kick_host": "The host can't be removed.",
+      "cannot_release_host": "The host's spot stays on the host's phone.",
+      "controller_taken": "This phone is already in use in this party.",
+      "host_required": "Only the host can do that.",
+      "invalid_avatar": "This symbol isn't available. Please pick another one.",
+      "invalid_color": "This colour isn't available. Please pick another one.",
+      "invalid_controller": "We couldn't link this phone. Please reopen the app.",
+      "invalid_mode": "That didn't work. Please try again.",
+      "invalid_name": "Please use a name with 1–24 characters.",
+      "locked_in_game": "A game is running – possible after the round.",
+      "not_allowed": "Only the host can do that.",
+      "not_claimed": "Nothing is reserved for this spot.",
+      "not_guest": "This spot already belongs to a phone.",
+      "not_member": "This person is no longer in the party.",
+      "not_playing": "No game is running right now.",
+      "party_full": "The party is full (12 players). Take over a spot or ask the host.",
+      "recalled": "You're now playing on the host's phone.",
+      "removed": "You're no longer in this party.",
+      "seat_taken": "Someone else just took this spot. The list has been updated.",
+      "ended": "This party is over.",
+      "not_found": "This party doesn't exist. Check the code."
+    },
+    "kick": {
+      "ban": "Remove and block",
+      "banHint": "Can't rejoin with this code.",
+      "confirm": "Remove",
+      "how": "How should they be removed?",
+      "matchOnly": "Only take out of this game",
+      "matchOnlyHint": "Stays in the party and is back for the next game.",
+      "party": "Remove from the party",
+      "partyHint": "Points stay on the scoreboard.",
+      "pending": "Removing {{name}}",
+      "playingHint": "The current game keeps going without a pause.",
+      "title": "Remove {{name}}?"
+    },
+    "leave": {
+      "body": "Your points stay on the scoreboard."
+    },
+    "lobby": {
+      "connecting": "Connecting …",
+      "nextRound": "You're in from the next round.",
+      "noGame": "Plan a game first.",
+      "notReadyNames": "Not ready yet: {{names}}",
+      "nothingFits": "None of the planned games fits your group.",
+      "skipped": "{{game}} doesn't fit right now – moving on to {{next}}."
+    },
+    "onboarding": {
+      "back": "Back to the list",
+      "claimed": "Welcome back",
+      "go": "Let's go",
+      "joined": "You're in ✓",
+      "profileTitle": "How should everyone see you?",
+      "afterRound": "A game is running – your profile shows up from the next round."
+    },
+    "pending": {
+      "body": "A game is running. From the next round you'll play as {{name}} on your own phone.",
+      "cancel": "Cancel reservation",
+      "ok": "Got it",
+      "title": "Reserved"
+    },
+    "profile": {
+      "color": "Colour",
+      "colorOption": "Colour {{n}}",
+      "locked": "A game is running – you can change this after the round.",
+      "lockedShort": "change after the round",
+      "name": "Name",
+      "nameInvalid": "Please use 1–24 characters.",
+      "namePlaceholder": "Your name",
+      "preview": "This is how the TV shows you",
+      "save": "Save",
+      "symbol": "Symbol",
+      "title": "Profile"
+    },
+    "recalled": {
+      "body": "Your points stay. You can move your spot back to this phone at any time.",
+      "rejoin": "Back on my own phone",
+      "title": "You're now playing on the host's phone"
+    },
+    "remote": {
+      "nobody": "Nobody to remove.",
+      "players": "Players",
+      "playersTitle": "Remove players"
+    },
+    "removed": {
+      "banned": "You can't rejoin with the code {{code}}.",
+      "body": "Your points so far stay on the scoreboard.",
+      "done": "To the games",
+      "startOwn": "Start your own party",
+      "title": "You're no longer in this party"
+    },
+    "roster": {
+      "addGuest": "Player without a phone",
+      "addGuestHint": "Plays on your phone. Can switch to their own phone later via QR.",
+      "addGuestSubmit": "Add",
+      "addGuestTitle": "Player without a phone",
+      "afterRound": "possible after the round",
+      "banned_one": "Blocked ({{count}})",
+      "banned_other": "Blocked ({{count}})",
+      "cancelClaim": "Cancel reservation",
+      "editProfile": "Name, symbol & colour",
+      "notMe": "That's not me",
+      "notMeHint": "Spot goes back to the host's phone, then choose again",
+      "release": "Move back to the host's phone",
+      "releaseHint": "e.g. battery dead – points stay",
+      "remove": "Remove …",
+      "unban": "Unblock",
+      "you": "You",
+      "banned": "Blocked ({{count}})"
+    },
+    "scene": {
+      "getReady": "Get ready"
+    },
+    "seat": {
+      "host": "Host",
+      "hostDevice": "on the host's phone",
+      "pendingClaim": "switches to own phone after the round",
+      "phone": "own phone"
+    },
+    "similar": {
+      "no": "No, I'm someone else",
+      "noPoints": "Then you take over this spot on the host's phone.",
+      "points_one": "Take over the {{count}} point?",
+      "points_other": "Take over the {{count}} points?",
+      "title": "Are you {{name}}?",
+      "yes": "Yes, that's me",
+      "points": "Take over the {{count}} points?"
+    },
+    "stay": "Stay",
+    "switch": {
+      "body": "You'll leave {{from}} and join {{to}}.",
+      "confirm": "Switch",
+      "title": "Switch party?"
+    },
+    "undo": "Undo",
+    "update": {
+      "body": "This party uses new features. Update to the latest version and you're in right away.",
+      "cta": "Update now",
+      "title": "Please update the app"
+    },
+    "who": {
+      "alreadyIn": "Already in on their own phone",
+      "createNew": "I can't find myself – add me",
+      "noMatch": "Nobody with that name on the host's phone.",
+      "partyOf_one": "{{name}}'s party · {{count}} player",
+      "partyOf_other": "{{name}}'s party · {{count}} players",
+      "points_one": "{{count}} point",
+      "points_other": "{{count}} points",
+      "search": "Search",
+      "subtitle": "Tap your name – your points come with you.",
+      "title": "Who are you?",
+      "partyOf": "{{name}}'s party · {{count}} players",
+      "points": "{{count}} points"
+    },
+    "switchDevice": {
+      "title": "Switch to this phone?",
+      "body": "You're already playing in this party on another phone. Your points come with you, and the other phone gives up its spot.",
+      "confirm": "Switch here",
+      "movedTitle": "You're now playing on another phone",
+      "movedBody": "Your points came with you. Want to play here again? Just rejoin.",
+      "back": "Keep playing here"
+    },
+    "ended": {
+      "title": "This party is over",
+      "body": "Thanks for playing! Why not start your own party?"
+    },
+    "tv": {
+      "handover": "{{name}} is playing on the host's phone …"
+    },
+    "closing": {
+      "title": "The party is over",
+      "placement": "You finished #{{rank}} – {{points}} points",
+      "tv": "The awards are showing on the TV.",
+      "done": "Done"
+    }
   }
 }

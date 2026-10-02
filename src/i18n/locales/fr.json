@@ -10277,5 +10277,279 @@
     "players_many": "{{count}} joueurs",
     "players_other": "{{count}} joueurs",
     "players": "{{count}} joueurs"
+  },
+  "tvLobby": {
+    "allReady": "Tout le monde est prêt ✓",
+    "atHostDevice": "sur le téléphone de l'hôte",
+    "fullscreen": "Plein écran",
+    "gamesPlanned": "Soirée jeux · {{count}} jeux",
+    "gamesPlanned_one": "Soirée jeux · 1 jeu",
+    "gamesPlanned_other": "Soirée jeux · {{count}} jeux",
+    "guestHint": "{{names}} : vous avez un téléphone ? Scannez et rejoignez-nous !",
+    "guestHintOne": "{{names}} : tu as un téléphone ? Scanne et rejoins-nous !",
+    "host": "Hôte",
+    "hostPlays": "joue",
+    "hostSitsOut": "ne joue pas",
+    "lateJoin": "{{name}} rejoint la partie dès la prochaine manche",
+    "latecomerHint": "Scanne – tu joues dès la prochaine manche",
+    "latecomerTitle": "Envie de jouer ?",
+    "localHint": "Ce soir, le téléphone passe de main en main – la télé montre à qui c'est le tour.",
+    "localTitle": "Un téléphone pour tous",
+    "nextUp": "À suivre",
+    "notReady": "pas encore prêt",
+    "offline": "déconnecté",
+    "orCode": "ou saisis le code dans l'appli",
+    "ownPhone": "son propre téléphone",
+    "playerJoined": "{{name}} est de la partie",
+    "playerLeft": "{{name}} a quitté la soirée",
+    "playerRange": "{{min}}–{{max}} joueurs",
+    "playersHeading": "Présents",
+    "ready": "prêt",
+    "readyMissing": "Encore {{count}} pas prêts",
+    "readyMissing_one": "Encore 1 pas prêt",
+    "readyMissing_other": "Encore {{count}} pas prêts",
+    "scanTitle": "Scanne et joue",
+    "step1": "Vise le code avec l'appareil photo",
+    "step2": "L'appli s'ouvre – tu es dans la partie",
+    "yourSeat": "Ta place",
+    "waitingForPlayers": "En attente de joueurs …",
+    "waitingForHost": "En attente de l'hôte …",
+    "waitingForHostHint": "Sur le téléphone de l'hôte : ouvre la soirée et touche « {{button}} ».",
+    "partyEnded": "Cette soirée est terminée",
+    "partyEndedHint": "Merci d'avoir joué ! Pour une nouvelle partie, lance simplement une nouvelle soirée."
+  },
+  "handover": {
+    "announce": "Passe le téléphone à {{name}}.",
+    "clockPaused": "Chrono en pause",
+    "confirm": "Je suis {{name}} – c'est parti",
+    "confirmHost": "Je suis {{name}} – continuer",
+    "confirmHostGeneric": "Je suis l'hôte – continuer",
+    "countdownGo": "Partez !",
+    "coverAnnounce": "{{name}} a terminé. Cache l'écran.",
+    "coverButton": "Cacher et passer",
+    "coverHint": "Pose le téléphone écran contre la table avant de le passer.",
+    "coverTitle": "Terminé, {{name}} ?",
+    "holdHint": "Maintiens appuyé",
+    "lookAway": "(les autres, ne regardez pas)",
+    "passOn": "Au tour de {{name}}",
+    "passTo": "Donne le téléphone à {{name}}",
+    "returnTo": "Retour à {{name}}",
+    "returnToHost": "Retour à l'hôte"
+  },
+  "partyPlay": {
+    "abortMatch": "Annuler la partie – elle ne compte pas",
+    "backToLobby": "Retour au salon",
+    "continueWithout": "Continuer sans {{name}}",
+    "removedFromMatchTitle": "Tu passes ton tour pour cette manche",
+    "removedFromMatchHint": "Tu rejoues dès la prochaine partie.",
+    "seatToHost": "{{name}} continue sur le téléphone de l'hôte",
+    "seatToHostLater": "Possible seulement après cette manche – continuez sans en attendant.",
+    "sittingOut": "{{names}} passent leur tour cette manche",
+    "stuckTitle": "Impossible de joindre {{name}}",
+    "tooFewLeft": "– n'est plus là. Pour {{game}}, il vous faut {{min}} joueurs.",
+    "tooFewTitle": "Pas assez de joueurs pour {{game}}",
+    "tooFewWaiting": "L'hôte décide de la suite.",
+    "waitingFor": "On attend {{name}} …",
+    "availability": {
+      "ready_one": "Prêt à jouer · 1 joueur",
+      "ready_other": "Prêt à jouer · {{count}} joueurs",
+      "waiting_one": "Il manque 1 joueur",
+      "waiting_other": "Il manque {{count}} joueurs",
+      "guestsSitOut_one": "Les invités passent – il faut encore 1 joueur avec téléphone",
+      "guestsSitOut_other": "Les invités passent – il faut encore {{count}} joueurs avec téléphone",
+      "guestsSitOutNames_one": "{{names}} passent leur tour – il faut encore 1 joueur avec téléphone",
+      "guestsSitOutNames_other": "{{names}} passent leur tour – il faut encore {{count}} joueurs avec téléphone",
+      "sitout": "{{names}} passent leur tour",
+      "sitout_one": "{{names}} passe son tour",
+      "sitout_other": "{{names}} passent leur tour",
+      "sitoutCount_one": "1 invité passe son tour",
+      "sitoutCount_other": "{{count}} invités passent leur tour",
+      "sitoutCount": "{{count}} invités passent leur tour",
+      "tooMany": "{{max}} joueurs maximum",
+      "premium": "Réservé à Premium",
+      "unknown": "Indisponible"
+    },
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "end": {
+      "body": "La soirée se termine pour tout le monde. Le classement reste visible."
+    },
+    "error": {
+      "already_seated": "Tu as déjà une place dans cette soirée.",
+      "banned": "Tu ne peux plus rejoindre cette soirée.",
+      "cannot_kick_host": "L'hôte ne peut pas être retiré.",
+      "cannot_release_host": "La place de l'hôte reste sur son téléphone.",
+      "controller_taken": "Ce téléphone est déjà utilisé dans la soirée.",
+      "host_required": "Seul l'hôte peut faire ça.",
+      "invalid_avatar": "Ce symbole n'est pas disponible. Choisis-en un autre.",
+      "invalid_color": "Cette couleur n'est pas disponible. Choisis-en une autre.",
+      "invalid_controller": "Impossible d'associer ce téléphone. Rouvre l'appli.",
+      "invalid_mode": "Ça n'a pas marché. Réessaie.",
+      "invalid_name": "Choisis un nom de 1 à 24 caractères.",
+      "locked_in_game": "Une partie est en cours – possible après la manche.",
+      "not_allowed": "Seul l'hôte peut faire ça.",
+      "not_claimed": "Rien n'est réservé pour cette place.",
+      "not_guest": "Cette place appartient déjà à un téléphone.",
+      "not_member": "Cette personne n'est plus dans la soirée.",
+      "not_playing": "Aucune partie n'est en cours.",
+      "party_full": "La soirée est complète (12 joueurs). Reprends une place ou demande à l'hôte.",
+      "recalled": "Tu joues maintenant sur le téléphone de l'hôte.",
+      "removed": "Tu ne fais plus partie de cette soirée.",
+      "seat_taken": "Quelqu'un vient de prendre cette place. La liste a été mise à jour.",
+      "ended": "Cette soirée est terminée.",
+      "not_found": "Cette soirée n'existe pas. Vérifie le code."
+    },
+    "kick": {
+      "ban": "Retirer et bloquer",
+      "banHint": "Ne pourra plus rejoindre avec ce code.",
+      "confirm": "Retirer",
+      "how": "Comment retirer ?",
+      "matchOnly": "Retirer seulement de cette partie",
+      "matchOnlyHint": "Reste dans la soirée et revient à la prochaine partie.",
+      "party": "Retirer de la soirée",
+      "partyHint": "Les points restent au classement.",
+      "pending": "{{name}} est en train d'être retiré",
+      "playingHint": "La partie en cours continue sans pause.",
+      "title": "Retirer {{name}} ?"
+    },
+    "leave": {
+      "body": "Tes points restent au classement."
+    },
+    "lobby": {
+      "connecting": "Connexion …",
+      "nextRound": "Tu joues dès la prochaine manche.",
+      "noGame": "Planifie d'abord un jeu.",
+      "notReadyNames": "Pas encore prêts : {{names}}",
+      "nothingFits": "Aucun jeu prévu ne convient à votre groupe.",
+      "skipped": "{{game}} ne convient pas pour l'instant – on passe à {{next}}."
+    },
+    "onboarding": {
+      "back": "Retour à la liste",
+      "claimed": "Re-bonjour !",
+      "go": "C'est parti",
+      "joined": "Tu es de la partie ✓",
+      "profileTitle": "Comment veux-tu apparaître ?",
+      "afterRound": "Une partie est en cours – ton profil apparaîtra dès la prochaine manche."
+    },
+    "pending": {
+      "body": "Une partie est en cours. Dès la prochaine manche, tu joues en tant que {{name}} sur ton téléphone.",
+      "cancel": "Annuler la réservation",
+      "ok": "C'est noté",
+      "title": "Réservé"
+    },
+    "profile": {
+      "color": "Couleur",
+      "colorOption": "Couleur {{n}}",
+      "locked": "Une partie est en cours – modifiable après la manche.",
+      "lockedShort": "modifiable après la manche",
+      "name": "Nom",
+      "nameInvalid": "Entre 1 et 24 caractères.",
+      "namePlaceholder": "Ton nom",
+      "preview": "Voici comment la télé te montre",
+      "save": "Enregistrer",
+      "symbol": "Symbole",
+      "title": "Profil"
+    },
+    "recalled": {
+      "body": "Tes points restent. Tu peux reprendre ta place sur ce téléphone à tout moment.",
+      "rejoin": "Revenir avec mon téléphone",
+      "title": "Tu joues maintenant sur le téléphone de l'hôte"
+    },
+    "remote": {
+      "nobody": "Personne à retirer.",
+      "players": "Joueurs",
+      "playersTitle": "Retirer des joueurs"
+    },
+    "removed": {
+      "banned": "Tu ne peux plus rejoindre avec le code {{code}}.",
+      "body": "Tes points restent au classement.",
+      "done": "Vers les jeux",
+      "startOwn": "Lancer ma propre soirée",
+      "title": "Tu ne fais plus partie de cette soirée"
+    },
+    "roster": {
+      "addGuest": "Joueur sans téléphone",
+      "addGuestHint": "Joue sur ton téléphone. Peut passer plus tard sur son propre téléphone via le QR.",
+      "addGuestSubmit": "Ajouter",
+      "addGuestTitle": "Joueur sans téléphone",
+      "afterRound": "possible après la manche",
+      "banned_one": "Bloqué ({{count}})",
+      "banned_other": "Bloqués ({{count}})",
+      "cancelClaim": "Annuler la réservation",
+      "editProfile": "Nom, symbole et couleur",
+      "notMe": "Ce n'est pas moi",
+      "notMeHint": "La place revient au téléphone de l'hôte, puis choisis à nouveau",
+      "release": "Ramener sur le téléphone de l'hôte",
+      "releaseHint": "p. ex. batterie vide – les points restent",
+      "remove": "Retirer …",
+      "unban": "Débloquer",
+      "you": "Toi",
+      "banned": "Bloqués ({{count}})"
+    },
+    "scene": {
+      "getReady": "Ça commence !"
+    },
+    "seat": {
+      "host": "Hôte",
+      "hostDevice": "sur le téléphone de l'hôte",
+      "pendingClaim": "passe sur son téléphone après la manche",
+      "phone": "son propre téléphone"
+    },
+    "similar": {
+      "no": "Non, je suis quelqu'un d'autre",
+      "noPoints": "Tu reprends donc cette place sur le téléphone de l'hôte.",
+      "points_one": "Récupérer le {{count}} point ?",
+      "points_other": "Récupérer les {{count}} points ?",
+      "title": "Tu es {{name}} ?",
+      "yes": "Oui, c'est moi",
+      "points": "Récupérer les {{count}} points ?"
+    },
+    "stay": "Rester",
+    "switch": {
+      "body": "Tu quittes {{from}} et tu rejoins {{to}}.",
+      "confirm": "Changer",
+      "title": "Changer de soirée ?"
+    },
+    "undo": "Annuler",
+    "update": {
+      "body": "Cette soirée utilise de nouvelles fonctions. Avec la dernière version, tu la rejoins tout de suite.",
+      "cta": "Mettre à jour",
+      "title": "Mets l'appli à jour"
+    },
+    "who": {
+      "alreadyIn": "Déjà là avec son téléphone",
+      "createNew": "Je ne me trouve pas – créer",
+      "noMatch": "Personne de ce nom sur le téléphone de l'hôte.",
+      "partyOf_one": "Soirée de {{name}} · {{count}} joueur",
+      "partyOf_other": "Soirée de {{name}} · {{count}} joueurs",
+      "points_one": "{{count}} point",
+      "points_other": "{{count}} points",
+      "search": "Rechercher",
+      "subtitle": "Touche ton nom – tes points te suivent.",
+      "title": "Qui es-tu ?",
+      "partyOf": "Soirée de {{name}} · {{count}} joueurs",
+      "points": "{{count}} points"
+    },
+    "switchDevice": {
+      "title": "Passer sur ce téléphone ?",
+      "body": "Tu joues déjà dans cette soirée sur un autre téléphone. Tes points te suivent et l'autre téléphone libère sa place.",
+      "confirm": "Passer ici",
+      "movedTitle": "Tu joues maintenant sur un autre téléphone",
+      "movedBody": "Tes points t'ont suivi. Pour rejouer ici, il suffit de rejoindre à nouveau.",
+      "back": "Continuer ici"
+    },
+    "ended": {
+      "title": "Cette soirée est terminée",
+      "body": "Merci d'avoir joué ! Lance donc ta propre soirée."
+    },
+    "tv": {
+      "handover": "{{name}} joue sur le téléphone de l'hôte …"
+    },
+    "closing": {
+      "title": "La soirée est terminée",
+      "placement": "Tu termines {{rank}}e – {{points}} points",
+      "tv": "La remise des prix passe à la télé.",
+      "done": "Terminé"
+    }
   }
 }

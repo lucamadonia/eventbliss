@@ -29,6 +29,7 @@ import { TVRemote } from "@/components/native/party/TVRemote";
 import { setTvView, resetTvView, getRulesIntro, getTvView, setRulesIntro,
          subscribeTvView, rulesIntroServerSnapshot, tvViewServerSnapshot } from "@/games/tv/tv-view";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
+import { localLobbyState } from "@/games/tv/tv-lobby-state";
 import { PartyStandingsList } from "@/components/native/party/PartyStandingsList";
 import { EventParticipantPicker } from "@/games/ui/EventParticipantPicker";
 import { buildPartyNightState, derivePartyStandings } from "@/games/party/standings";
@@ -91,8 +92,9 @@ export default function PartyLobbyScreen() {
   const players = useMemo(() => session?.players ?? [], [session]);
   const history = useMemo(() => session?.gameHistory ?? [], [session]);
   const standings = useMemo(
-    () => derivePartyStandings(players, history),
-    [players, history]
+    // Entfernte Spieler behalten ihre Punkte in der Wertung (Masterplan 3.6).
+    () => derivePartyStandings([...players, ...(session?.archivedPlayers ?? [])], history),
+    [players, history, session?.archivedPlayers]
   );
   const canStartGame = players.length >= 2;
 
@@ -130,6 +132,13 @@ export default function PartyLobbyScreen() {
       return t(game?.nameKey ?? id);
     };
     const partyNight = buildPartyNightState(session, nameFor, tvView);
+    // Wartebereich fuer den Fernseher: Spieler am Host-Handy + naechstes Spiel.
+    const next = currentPlaylistGame ? playableGames.find((g) => g.id === currentPlaylistGame) : undefined;
+    const lobby = localLobbyState({
+      session,
+      code: session.tvCode,
+      nextGame: next ? { id: next.id, name: nameFor(next.id), minPlayers: next.minPlayers, maxPlayers: next.maxPlayers } : null,
+    });
     tv.broadcastTV("tv-state", {
       game: "lobby",
       phase: "idle",
@@ -142,8 +151,9 @@ export default function PartyLobbyScreen() {
       })),
       gameHistory: session.gameHistory,
       partyNight,
+      lobby,
     });
-  }, [tv, session, tvView, i18n.language, t]);
+  }, [tv, session, tvView, i18n.language, t, currentPlaylistGame]);
 
   const handleAddPlayer = useCallback(() => {
     const trimmed = newName.trim();
@@ -206,7 +216,10 @@ export default function PartyLobbyScreen() {
     haptics.celebrate();
     party.setPlaylist(gameIds);
     setShowPicker(false);
-    setReadyGameId(gameIds[0]);
+    // Geplant werden darf, was noch auf Leute wartet — gestartet wird nur, was jetzt laeuft.
+    const first = nextFittingIndex(gameIds, 0, party.session?.players.length ?? 0);
+    if (first < 0) return;
+    setReadyGameId(gameIds[first]);
     setTvView("ready");
   }, [party, haptics]);
 

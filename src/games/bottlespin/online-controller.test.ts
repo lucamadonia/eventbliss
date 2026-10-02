@@ -75,6 +75,15 @@ describe('authoritative online actions', () => {
     const act = render('host', () => useOnlineActions(r.host, 'category', 'setup', { start: { allowed: 'host', run } }));
     act('start'); expect(run).toHaveBeenCalledOnce(); expect(r.deliveries).toHaveLength(0);
   });
+  it('lets only the controlling device act for a 🔁 guest seat', () => {
+    const r = room();
+    const guest = { id: 'max', name: 'Max', color: '#fff', avatar: 'M', isHost: false, isReady: true, isPremium: false, controlledBy: 'host' };
+    const online = { ...r.host, players: [...r.host.players, guest] };
+    expect(canAct(online, 'max', 'host')).toBe(true);
+    expect(canAct(online, 'max', 'alice')).toBe(false);
+    expect(canAct(online, 'max', 'max')).toBe(true);
+    expect(canAct(online, 'alice', 'host')).toBe(false);
+  });
   it('blocks outgoing and incoming actions while the room is paused', () => {
     const r = room(); const run = vi.fn();
     r.host.isConnected = false; r.alice.isConnected = false;

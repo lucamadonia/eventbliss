@@ -23,6 +23,8 @@ import MapRound, { type MapRoundResult } from './MapRound';
 import StreetViewRound, { type StreetViewResult } from './StreetViewRound';
 import { getRandomStreetViewLocations, type StreetViewLocation } from './streetview-locations';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { dropFromTurnOrder } from './turn-order';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
@@ -530,6 +532,20 @@ export default function FindItGame({ online }: { online?: OnlineGameProps }) {
     }, 1500);
   }, [currentPlayerIdx, players.length, round, totalRounds, mode, studyTime, startRound]);
   advanceRoundRef.current = advanceRound;
+
+  // ------- Host: kicked/left players leave the roster and the turn order (G7) -------
+  useRemovedPlayers(online, ids => {
+    const turnBased = mode !== 'karte' && mode !== 'streetview' && ['study', 'question', 'answer', 'roundEnd'].includes(phase);
+    const next = dropFromTurnOrder(players, currentPlayerIdx, ids, turnBased && phase === 'roundEnd');
+    if (!next) return;
+    setPlayers(next.players);
+    setCurrentPlayerIdx(next.currentIdx);
+    if (!turnBased || !next.advance) return;
+    tasks.clear();
+    if (next.wrapped && round + 1 >= totalRounds) { setPhase('gameOver'); return; }
+    if (next.wrapped) setRound(round + 1);
+    startRound(mode, studyTime);
+  });
 
   // ------- Restart -------
   useEffect(() => {

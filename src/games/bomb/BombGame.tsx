@@ -1,4 +1,6 @@
 import { speedFuseMs, publicBombState } from './rules';
+import { removeBombPlayers } from './removal';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import OnlineWaiting from '../multiplayer/OnlineWaiting';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import i18next from 'i18next';
@@ -262,6 +264,13 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       explodedPlayerIndex: newState.explodedPlayerIndex,
     });
   }, [online]);
+
+  // Host: kicked/left players leave the roster; the bomb moves on if they held it.
+  useRemovedPlayers(online, ids => setState(prev => {
+    const next = removeBombPlayers(prev, ids);
+    if (next !== prev) setTimeout(() => broadcastState(next), 0);
+    return next;
+  }));
 
   useEffect(() => {
     if (!online || online.isHost) return;

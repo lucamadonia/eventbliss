@@ -15,9 +15,14 @@ export function useGameRoom() {
     roomHasPremium: state.room?.settings.controllerParty
       ? state.room.settings.hostPremium === true : state.players.some(player => player.isPremium),
     isHost: !!state.myPlayerId && state.room?.hostId === state.myPlayerId,
+    /** Own id + 🔁 guests this device plays (lobby roster; games get the active subset). */
+    localPlayerIds: state.localPlayerIds ?? [],
+    /** True once this device was removed from the party; never auto-rejoin. */
+    removed: !!state.removed,
     createRoom: gameRoomSession.createRoom,
     joinRoom: gameRoomSession.joinRoom,
     leaveRoom: gameRoomSession.leaveRoom,
+    reconnect: gameRoomSession.reconnect,
     setReady: gameRoomSession.setReady,
     selectGame: gameRoomSession.selectGame,
     selectGames: gameRoomSession.selectGames,
@@ -26,6 +31,7 @@ export function useGameRoom() {
     broadcastTo: gameRoomSession.broadcastTo,
     onBroadcast: gameRoomSession.onBroadcast,
     kickPlayer: gameRoomSession.kickPlayer,
+    dropParticipant: gameRoomSession.dropParticipant,
   };
 }
 export type UseGameRoomReturn = ReturnType<typeof useGameRoom>;

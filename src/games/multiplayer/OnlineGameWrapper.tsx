@@ -1,11 +1,19 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Crown, Loader2, WifiOff, RefreshCw } from "lucide-react";
 import { useGameRoom, type RoomPlayer } from "./useGameRoom";
 import ConnectionStatus from "./ConnectionStatus";
 import { gameStageStyle } from '../ui/GameStage';
 import type { OnlineGameProps } from "./OnlineGameTypes";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import MatchGuardOverlay from "./MatchGuardOverlay";
+import WaitingForPlayer from "./WaitingForPlayer";
+import { matchGuard, readIds } from "./party-roster";
+import { localPlayerIdsFor } from "./participants";
+import { abortControllerGame, kickControllerPlayer, releaseControllerSeat } from "@/games/party/controller-session";
+import { playableGames } from "@/lib/playable-games";
+import { partyMotion } from "@/lib/party-motion";
 
 const EP = {
   bg: "#0a0e14",
@@ -26,6 +34,10 @@ interface OnlineGameWrapperProps {
   roomCode: string;
   playerName: string;
   children: (props: OnlineGameProps) => React.ReactNode;
+  /** Host chose „Spiel abbrechen (zählt nicht)“ after too many removals. Default: abort the party match. */
+  onAbortMatch?: () => Promise<void> | void;
+  /** Host chose „Zurück in die Lobby“. Default: abort the match and open the party lobby. */
+  onReturnToLobby?: () => Promise<void> | void;
 }
 
 type ConnectionState = "connecting" | "connected" | "disconnected";
@@ -188,8 +200,11 @@ export default function OnlineGameWrapper({
   roomCode,
   playerName,
   children,
+  onAbortMatch,
+  onReturnToLobby,
 }: OnlineGameWrapperProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const {
     room,
     players: connectedPlayers,
@@ -197,6 +212,8 @@ export default function OnlineGameWrapper({
     isHost,
     myPlayerId,
     joinRoom,
+    reconnect,
+    dropParticipant,
     connection,
     broadcast,
     broadcastTo,
@@ -210,6 +227,34 @@ export default function OnlineGameWrapper({
         const player = room.players.find(candidate => candidate.id === id);
         return player ? [player] : [];
       }) : connectedPlayers, [connectedPlayers, room]);
+  const settings = room?.settings;
+  const removedPlayerIds = useMemo(() => readIds(settings, 'removedPlayerIds'), [settings]);
+  const sittingOut = useMemo(() => readIds(settings, 'sittingOut')
+    .filter(id => !room?.participantIds.includes(id) && !removedPlayerIds.includes(id)), [settings, room?.participantIds, removedPlayerIds]);
+  const localPlayerIds = useMemo(() => localPlayerIdsFor(players, myPlayerId), [players, myPlayerId]);
+  const guard = room ? matchGuard({ status: room.status, controllerParty: !!room.settings.controllerParty,
+    gameId: room.gameId, activeCount: room.participantIds.length, isHost }) : 'ok';
+  const removedFromMatch = !isHost && !!myPlayerId && removedPlayerIds.includes(myPlayerId);
+  const reduced = !!useReducedMotion();
+  const game = playableGames.find(candidate => candidate.id === room?.gameId);
+  const gameTitle = game ? t(game.nameKey) : gameId;
+  const seat = useCallback((id: string) => {
+    const player = room?.players.find(candidate => candidate.id === id) ?? connectedPlayers.find(candidate => candidate.id === id);
+    return { id, name: player?.name ?? '…', color: player?.color ?? '#df8eff' };
+  }, [room?.players, connectedPlayers]);
+  // T13: an active seat dropped while the host is connected (guests follow the host).
+  const hostConnected = !!room && connectedPlayers.some(p => p.id === room.hostId);
+  const missing = room?.settings.controllerParty && room.status === 'playing' && connection === 'reconnecting' && hostConnected
+    && (typeof navigator === 'undefined' || navigator.onLine !== false)
+    ? room.participantIds.find(id => !connectedPlayers.some(p => p.id === id)) : undefined;
+  const abortMatch = useCallback(async () => {
+    if (onAbortMatch) await onAbortMatch(); else await abortControllerGame();
+  }, [onAbortMatch]);
+  const returnToLobby = useCallback(async () => {
+    if (onReturnToLobby) { await onReturnToLobby(); return; }
+    await abortControllerGame();
+    navigate('/party/controllers', { replace: true });
+  }, [onReturnToLobby, navigate]);
   const joinedRef = useRef('');
   const connectionState: ConnectionState = room?.roomCode === roomCode && connection === 'connected'
     ? 'connected' : connection === 'disconnected' || connection === 'reconnecting' ? 'disconnected' : 'connecting';
@@ -239,11 +284,13 @@ export default function OnlineGameWrapper({
   const handleRetry = useCallback(() => {
     const doJoin = async () => {
       try {
-        await joinRoom(roomCode, playerName || "Spieler");
+        // Same room: rebuild the transport even if the old channel still looks joined.
+        if (room?.roomCode === roomCode) await reconnect();
+        else await joinRoom(roomCode, playerName || "Spieler");
       } catch { /* The shared session exposes the connection error. */ }
     };
     doJoin();
-  }, [joinRoom, roomCode, playerName]);
+  }, [joinRoom, reconnect, room?.roomCode, roomCode, playerName]);
 
   // Build the OnlineGameProps to pass to children
   const onlineProps = useMemo<OnlineGameProps>(() => ({
@@ -253,12 +300,15 @@ export default function OnlineGameWrapper({
     roomCode,
     players,
     myPlayerId,
+    localPlayerIds,
+    sittingOut,
+    removedPlayerIds,
     hostPlayerId: room?.hostId,
     roomHasPremium,
     broadcast,
     broadcastTo,
     onBroadcast,
-  }), [isHost, connectionState, roomCode, players, myPlayerId, room?.hostId, roomHasPremium, broadcast, broadcastTo, onBroadcast]);
+  }), [isHost, connectionState, roomCode, players, myPlayerId, localPlayerIds, sittingOut, removedPlayerIds, room?.hostId, roomHasPremium, broadcast, broadcastTo, onBroadcast]);
 
   return (
     <div className="relative online-game-surface font-sans" style={gameStageStyle(gameId)}>
@@ -274,6 +324,14 @@ export default function OnlineGameWrapper({
       />
 
       {/* Floating player list during gameplay */}
+      {isHost && room?.status === 'playing' && sittingOut.length > 0 && (
+        <p data-testid="sitout-banner" data-player-ids={sittingOut.join(',')}
+          className="flex items-center justify-center gap-2 px-4 py-1.5 text-center text-xs font-semibold text-white/80"
+          style={{ backgroundColor: "rgba(12,11,23,0.9)" }}>
+          {sittingOut.map(id => <span key={id} aria-hidden className="h-2 w-2 rounded-full" style={{ backgroundColor: seat(id).color }} />)}
+          {t('partyPlay.sittingOut', '{{names}} setzen diese Runde aus', { names: sittingOut.map(id => seat(id).name).join(', ') })}
+        </p>
+      )}
       {connectionState === "connected" && players.length > 0 && playerListExpanded && (
         <FloatingPlayerList
           players={players}
@@ -287,15 +345,33 @@ export default function OnlineGameWrapper({
         {connectionState === "connecting" && (
           <ConnectingOverlay roomCode={roomCode} />
         )}
-        {connectionState === "disconnected" && (
-          <DisconnectedOverlay onRetry={handleRetry} />
+        {connectionState === "disconnected" && (missing
+          ? <WaitingForPlayer key="waiting" player={seat(missing)} isHost={isHost}
+              onContinueWithout={async () => { await kickControllerPlayer(missing, 'match_only'); dropParticipant(missing); }}
+              onBackToHost={async () => { await releaseControllerSeat(missing); }} />
+          : <DisconnectedOverlay onRetry={handleRetry} />
+        )}
+        {connectionState === "connected" && guard !== 'ok' && !removedFromMatch && (
+          <MatchGuardOverlay guard={guard} gameName={gameTitle} left={removedPlayerIds.map(seat)}
+            min={Math.max(2, game?.minPlayers ?? 2)} onAbort={abortMatch} onLobby={returnToLobby} />
         )}
       </AnimatePresence>
 
       {/* Game content via render props */}
       <div className="contents" data-online-game-content
         ref={node => { node?.toggleAttribute('inert', connectionState !== 'connected'); }}>
-        {room?.roomCode === roomCode && myPlayerId && children(onlineProps)}
+        {room?.roomCode === roomCode && myPlayerId && (removedFromMatch
+          ? <div className="flex min-h-[70dvh] items-center justify-center px-6">
+              <motion.div role="status" data-testid="removed-from-match" variants={partyMotion('cardEnter', reduced)} initial="initial" animate="animate"
+                className="w-full max-w-sm rounded-[28px] p-8 text-center text-white"
+                style={{ backgroundColor: "var(--stage-surface, #151a21)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <div aria-hidden className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full text-3xl"
+                  style={{ backgroundColor: seat(myPlayerId).color + '33' }}>🙌</div>
+                <h2 className="text-xl font-extrabold font-game">{t('partyPlay.removedFromMatchTitle', 'Du setzt diese Runde aus')}</h2>
+                <p className="mt-2 text-sm text-white/70">{t('partyPlay.removedFromMatchHint', 'Ab dem nächsten Spiel bist du wieder dabei.')}</p>
+              </motion.div>
+            </div>
+          : children(onlineProps))}
       </div>
     </div>
   );

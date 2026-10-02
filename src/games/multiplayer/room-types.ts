@@ -6,6 +6,8 @@ export interface RoomPlayer {
   isHost: boolean;
   isReady: boolean;
   isPremium: boolean;
+  /** Set for 🔁 guests: player id of the device (the host) that plays this seat. */
+  controlledBy?: string;
 }
 
 export interface GameRoom {
@@ -28,6 +30,10 @@ export interface RoomSnapshot {
   connection: RoomConnection;
   error: string | null;
   myPlayerId: string;
+  /** True after this device was removed from the party/room; never auto-rejoin. */
+  removed?: boolean;
+  /** Own id + the 🔁 guests this device plays (derived on every publish; QA reads it). */
+  localPlayerIds?: string[];
 }
 
 export interface SavedRoom {

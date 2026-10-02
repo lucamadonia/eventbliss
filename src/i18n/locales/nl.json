@@ -10326,5 +10326,277 @@
     "players_one": "{{count}} speler",
     "players_other": "{{count}} spelers",
     "players": "{{count}} spelers"
+  },
+  "tvLobby": {
+    "allReady": "Iedereen is klaar ✓",
+    "atHostDevice": "op de telefoon van de host",
+    "fullscreen": "Volledig scherm",
+    "gamesPlanned": "Feestavond · {{count}} spellen",
+    "gamesPlanned_one": "Feestavond · 1 spel",
+    "gamesPlanned_other": "Feestavond · {{count}} spellen",
+    "guestHint": "{{names}}: hebben jullie een telefoon? Scan en doe mee!",
+    "guestHintOne": "{{names}}: heb je een telefoon? Scan en doe mee!",
+    "host": "Host",
+    "hostPlays": "speelt mee",
+    "hostSitsOut": "speelt niet mee",
+    "lateJoin": "{{name}} doet mee vanaf de volgende ronde",
+    "latecomerHint": "Scan – je doet mee vanaf de volgende ronde",
+    "latecomerTitle": "Nog meedoen?",
+    "localHint": "Vanavond gaat de telefoon rond – de tv laat zien wie er aan de beurt is.",
+    "localTitle": "Eén telefoon voor iedereen",
+    "nextUp": "Hierna",
+    "notReady": "nog niet klaar",
+    "offline": "verbinding weg",
+    "orCode": "of voer de code in de app in",
+    "ownPhone": "eigen telefoon",
+    "playerJoined": "{{name}} doet mee",
+    "playerLeft": "{{name}} heeft het feest verlaten",
+    "playerRange": "{{min}}–{{max}} spelers",
+    "playersHeading": "Doen mee",
+    "ready": "klaar",
+    "readyMissing": "Nog {{count}} niet klaar",
+    "scanTitle": "Scan en speel mee",
+    "step1": "Richt je camera op de code",
+    "step2": "De app opent – je doet mee",
+    "yourSeat": "Jouw plek",
+    "waitingForPlayers": "Wachten op spelers …",
+    "waitingForHost": "Wachten op de host …",
+    "waitingForHostHint": "Op de telefoon van de host: open het feest en tik op ‘{{button}}’.",
+    "partyEnded": "Dit feest is voorbij",
+    "partyEndedHint": "Bedankt voor het meespelen! Start voor een nieuwe ronde gewoon een nieuw feest."
+  },
+  "handover": {
+    "announce": "Geef de telefoon aan {{name}}.",
+    "clockPaused": "Klok gepauzeerd",
+    "confirm": "Ik ben {{name}} – daar gaan we",
+    "confirmHost": "Ik ben {{name}} – verder",
+    "confirmHostGeneric": "Ik ben de host – verder",
+    "countdownGo": "Start!",
+    "coverAnnounce": "{{name}} is klaar. Scherm afdekken.",
+    "coverButton": "Afdekken & doorgeven",
+    "coverHint": "Leg de telefoon met het scherm naar beneden voordat je hem doorgeeft.",
+    "coverTitle": "Klaar, {{name}}?",
+    "holdHint": "Ingedrukt houden",
+    "lookAway": "(de rest even niet kijken)",
+    "passOn": "Door naar {{name}}",
+    "passTo": "Geef de telefoon aan {{name}}",
+    "returnTo": "Terug naar {{name}}",
+    "returnToHost": "Terug naar de host"
+  },
+  "partyPlay": {
+    "abortMatch": "Spel afbreken – telt niet",
+    "backToLobby": "Terug naar de lobby",
+    "continueWithout": "Verder zonder {{name}}",
+    "removedFromMatchTitle": "Je slaat deze ronde over",
+    "removedFromMatchHint": "Vanaf het volgende spel doe je weer mee.",
+    "seatToHost": "{{name}} speelt verder op de telefoon van de host",
+    "seatToHostLater": "Kan pas na deze ronde – speel tot dan zonder verder.",
+    "sittingOut": "{{names}} slaan deze ronde over",
+    "stuckTitle": "{{name}} is niet bereikbaar",
+    "tooFewLeft": "– niet meer aanwezig. Voor {{game}} hebben jullie er {{min}} nodig.",
+    "tooFewTitle": "Te weinig spelers voor {{game}}",
+    "tooFewWaiting": "De host beslist hoe het verdergaat.",
+    "waitingFor": "Wachten op {{name}} …",
+    "availability": {
+      "ready_one": "Klaar om te starten · 1 speler",
+      "ready_other": "Klaar om te starten · {{count}} spelers",
+      "waiting_one": "Wacht op nog 1 speler",
+      "waiting_other": "Wacht op nog {{count}} spelers",
+      "guestsSitOut_one": "Gasten slaan over – nog 1 speler met telefoon nodig",
+      "guestsSitOut_other": "Gasten slaan over – nog {{count}} spelers met telefoon nodig",
+      "guestsSitOutNames_one": "{{names}} slaan over – nog 1 speler met telefoon nodig",
+      "guestsSitOutNames_other": "{{names}} slaan over – nog {{count}} spelers met telefoon nodig",
+      "sitout": "{{names}} slaan deze over",
+      "sitout_one": "{{names}} slaat deze over",
+      "sitout_other": "{{names}} slaan deze over",
+      "sitoutCount_one": "1 gast slaat over",
+      "sitoutCount_other": "{{count}} gasten slaan over",
+      "sitoutCount": "{{count}} gasten slaan over",
+      "tooMany": "Maximaal {{max}} spelers",
+      "premium": "Alleen met Premium",
+      "unknown": "Niet beschikbaar"
+    },
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "end": {
+      "body": "Het feest stopt voor iedereen. De stand blijft zichtbaar."
+    },
+    "error": {
+      "already_seated": "Je hebt al een plek in dit feest.",
+      "banned": "Je kunt niet meer aan dit feest deelnemen.",
+      "cannot_kick_host": "De host kan niet worden verwijderd.",
+      "cannot_release_host": "De plek van de host blijft op de telefoon van de host.",
+      "controller_taken": "Deze telefoon is al in gebruik in dit feest.",
+      "host_required": "Dat mag alleen de host.",
+      "invalid_avatar": "Dit symbool is niet beschikbaar. Kies een ander.",
+      "invalid_color": "Deze kleur is niet beschikbaar. Kies een andere.",
+      "invalid_controller": "Deze telefoon kon niet worden gekoppeld. Open de app opnieuw.",
+      "invalid_mode": "Dat lukte niet. Probeer het nog eens.",
+      "invalid_name": "Kies een naam van 1–24 tekens.",
+      "locked_in_game": "Er loopt een spel – kan na de ronde.",
+      "not_allowed": "Dat mag alleen de host.",
+      "not_claimed": "Voor deze plek is niets gereserveerd.",
+      "not_guest": "Deze plek hoort al bij een telefoon.",
+      "not_member": "Deze persoon is niet meer in het feest.",
+      "not_playing": "Er loopt nu geen spel.",
+      "party_full": "Het feest is vol (12 spelers). Neem een plek over of vraag het de host.",
+      "recalled": "Je speelt nu op de telefoon van de host.",
+      "removed": "Je zit niet meer in dit feest.",
+      "seat_taken": "Iemand anders heeft deze plek net overgenomen. De lijst is bijgewerkt.",
+      "ended": "Dit feest is voorbij.",
+      "not_found": "Dit feest bestaat niet. Controleer de code."
+    },
+    "kick": {
+      "ban": "Verwijderen en blokkeren",
+      "banHint": "Kan met deze code niet opnieuw meedoen.",
+      "confirm": "Verwijderen",
+      "how": "Hoe verwijderen?",
+      "matchOnly": "Alleen uit dit spel halen",
+      "matchOnlyHint": "Blijft in het feest en doet bij het volgende spel weer mee.",
+      "party": "Uit het feest verwijderen",
+      "partyHint": "Punten blijven in de stand.",
+      "pending": "{{name}} wordt verwijderd",
+      "playingHint": "Het lopende spel gaat zonder pauze door.",
+      "title": "{{name}} verwijderen?"
+    },
+    "leave": {
+      "body": "Je punten blijven in de stand."
+    },
+    "lobby": {
+      "connecting": "Verbinden …",
+      "nextRound": "Vanaf de volgende ronde doe je mee.",
+      "noGame": "Plan eerst een spel.",
+      "notReadyNames": "Nog niet klaar: {{names}}",
+      "nothingFits": "Geen enkel gepland spel past bij jullie groep.",
+      "skipped": "{{game}} past nu niet – door naar {{next}}."
+    },
+    "onboarding": {
+      "back": "Terug naar de lijst",
+      "claimed": "Welkom terug",
+      "go": "Daar gaan we",
+      "joined": "Je doet mee ✓",
+      "profileTitle": "Hoe wil je dat iedereen je ziet?",
+      "afterRound": "Er loopt een spel – je profiel verschijnt vanaf de volgende ronde."
+    },
+    "pending": {
+      "body": "Er loopt een spel. Vanaf de volgende ronde speel je als {{name}} op je eigen telefoon.",
+      "cancel": "Reservering intrekken",
+      "ok": "Prima",
+      "title": "Gereserveerd"
+    },
+    "profile": {
+      "color": "Kleur",
+      "colorOption": "Kleur {{n}}",
+      "locked": "Er loopt een spel – na de ronde te wijzigen.",
+      "lockedShort": "na de ronde te wijzigen",
+      "name": "Naam",
+      "nameInvalid": "Gebruik 1–24 tekens.",
+      "namePlaceholder": "Jouw naam",
+      "preview": "Zo ziet de tv je",
+      "save": "Opslaan",
+      "symbol": "Symbool",
+      "title": "Profiel"
+    },
+    "recalled": {
+      "body": "Je punten blijven. Je kunt je plek altijd weer naar deze telefoon halen.",
+      "rejoin": "Weer met eigen telefoon",
+      "title": "Je speelt nu op de telefoon van de host"
+    },
+    "remote": {
+      "nobody": "Niemand om te verwijderen.",
+      "players": "Spelers",
+      "playersTitle": "Spelers verwijderen"
+    },
+    "removed": {
+      "banned": "Met de code {{code}} kun je niet opnieuw meedoen.",
+      "body": "Je punten tot nu toe blijven in de stand.",
+      "done": "Naar de spellen",
+      "startOwn": "Zelf een feest starten",
+      "title": "Je zit niet meer in dit feest"
+    },
+    "roster": {
+      "addGuest": "Speler zonder telefoon",
+      "addGuestHint": "Speelt mee op jouw telefoon. Kan later via QR naar een eigen telefoon overstappen.",
+      "addGuestSubmit": "Toevoegen",
+      "addGuestTitle": "Speler zonder telefoon",
+      "afterRound": "kan na de ronde",
+      "banned_one": "Geblokkeerd ({{count}})",
+      "banned_other": "Geblokkeerd ({{count}})",
+      "cancelClaim": "Reservering opheffen",
+      "editProfile": "Naam, symbool & kleur",
+      "notMe": "Dat ben ik niet",
+      "notMeHint": "Plek terug naar de host-telefoon, dan opnieuw kiezen",
+      "release": "Terug naar de host-telefoon halen",
+      "releaseHint": "bijv. batterij leeg – punten blijven",
+      "remove": "Verwijderen …",
+      "unban": "Blokkering opheffen",
+      "you": "Jij",
+      "banned": "Geblokkeerd ({{count}})"
+    },
+    "scene": {
+      "getReady": "Zo meteen begint het"
+    },
+    "seat": {
+      "host": "Host",
+      "hostDevice": "op de telefoon van de host",
+      "pendingClaim": "stapt na de ronde over naar eigen telefoon",
+      "phone": "eigen telefoon"
+    },
+    "similar": {
+      "no": "Nee, ik ben iemand anders",
+      "noPoints": "Dan neem je deze plek op de telefoon van de host over.",
+      "points_one": "Het {{count}} punt overnemen?",
+      "points_other": "De {{count}} punten overnemen?",
+      "title": "Ben jij {{name}}?",
+      "yes": "Ja, dat ben ik",
+      "points": "De {{count}} punten overnemen?"
+    },
+    "stay": "Blijven",
+    "switch": {
+      "body": "Je verlaat {{from}} en doet mee met {{to}}.",
+      "confirm": "Wisselen",
+      "title": "Van feest wisselen?"
+    },
+    "undo": "Ongedaan maken",
+    "update": {
+      "body": "Dit feest gebruikt nieuwe functies. Met de nieuwste versie doe je meteen mee.",
+      "cta": "Nu bijwerken",
+      "title": "Werk de app bij"
+    },
+    "who": {
+      "alreadyIn": "Doet al mee met eigen telefoon",
+      "createNew": "Ik sta er niet bij – nieuw aanmaken",
+      "noMatch": "Niemand met deze naam op de telefoon van de host.",
+      "partyOf_one": "Feest van {{name}} · {{count}} speler",
+      "partyOf_other": "Feest van {{name}} · {{count}} spelers",
+      "points_one": "{{count}} punt",
+      "points_other": "{{count}} punten",
+      "search": "Zoeken",
+      "subtitle": "Tik op je naam – je punten gaan mee.",
+      "title": "Wie ben jij?",
+      "partyOf": "Feest van {{name}} · {{count}} spelers",
+      "points": "{{count}} punten"
+    },
+    "switchDevice": {
+      "title": "Naar deze telefoon wisselen?",
+      "body": "Je speelt in dit feest al op een andere telefoon. Je punten gaan mee en de andere telefoon geeft zijn plek op.",
+      "confirm": "Hierheen wisselen",
+      "movedTitle": "Je speelt nu op een andere telefoon",
+      "movedBody": "Je punten zijn meegekomen. Wil je hier weer spelen? Doe dan gewoon opnieuw mee.",
+      "back": "Hier verder spelen"
+    },
+    "ended": {
+      "title": "Dit feest is voorbij",
+      "body": "Bedankt voor het meespelen! Start gewoon je eigen feest."
+    },
+    "tv": {
+      "handover": "{{name}} speelt op de telefoon van de host …"
+    },
+    "closing": {
+      "title": "Het feest is voorbij",
+      "placement": "Je bent {{rank}}e geworden – {{points}} punten",
+      "tv": "De prijsuitreiking is op de tv.",
+      "done": "Klaar"
+    }
   }
 }

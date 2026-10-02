@@ -72,6 +72,8 @@ import { dealRecipes, buildDeck, insertBusts, drawCard, missingFor, isComplete, 
 import { scoreFor } from "./scoring";
 import { bonusForPour, cappedBrewBonus, chainLevelFor, riskTierFor, type BrewRiskTier } from "./brew-gameplay";
 import { useBrewAudio, type BrewCue } from "./brew-audio";
+import { removeBrewPlayers } from "./removal";
+import { useRemovedPlayers } from "../multiplayer/useRemovedPlayers";
 
 type Phase = "setup" | "playing" | "gameOver";
 
@@ -307,17 +309,23 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   }, [localSkin, gameTasks]);
 
   const playAgainLocal = useCallback(() => {
-    if (players.length === 0) return;
-    handleStart({ players: players.map((p) => ({ id: p.id, name: p.name })), length: ingredientCount });
-  }, [players, ingredientCount, handleStart]);
+    // Online nur, wer noch im Raum ist — Gekickte bekommen kein neues Rezept.
+    const stay = online ? players.filter((p) => online.players.some((o) => o.id === p.id)) : players;
+    if (stay.length === 0) return;
+    handleStart({ players: stay.map((p) => ({ id: p.id, name: p.name })), length: ingredientCount });
+  }, [online, players, ingredientCount, handleStart]);
 
   // --- Zug -------------------------------------------------------------
+  // Ueber eine Ref: ein verzoegerter Zugwechsel (nach dem Guss) darf nicht mit
+  // der Spielerzahl von damals rechnen, falls inzwischen jemand entfernt wurde.
+  const playerCountRef = useRef(0);
+  playerCountRef.current = players.length;
   const advanceTurn = useCallback(() => {
     setTurnToken(crypto.randomUUID());
     consumedActions.current.clear();
-    setActiveIdx((i) => (players.length ? (i + 1) % players.length : 0));
+    setActiveIdx((i) => (playerCountRef.current ? (i + 1) % playerCountRef.current : 0));
     setCounterTaken(false);
-  }, [players.length]);
+  }, []);
 
   // Laeuft nur beim Gastgeber. `recordDrink()` steht hier bewusst NICHT — das
   // macht jedes Geraet fuer sich, siehe den Effekt weiter unten.
@@ -524,6 +532,32 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     if (!online || !isHost) return;
     return online.onBroadcast("brew-action", (d) => applyAction(d));
   }, [online, isHost, applyAction]);
+
+  // Gastgeber: Gekickte/Gegangene verlassen die Runde (Logik in removal.ts).
+  // War die Person dran, enden ihre offenen Eingaben und Timer, und der Zug
+  // geht sofort weiter. Der Schnappschuss unten verteilt das an alle.
+  useRemovedPlayers(online, (ids) => {
+    if (phase !== "playing") return;
+    const r = removeBrewPlayers({ players, activeIdx, tray, discardPile, winnerId }, ids, online?.players.map((p) => p.id));
+    if (!r) return;
+    if (r.activeRemoved) {
+      gameTasks.clear();
+      pourTimersRef.current = [];
+      setPenalty(null);
+      setSipDisclaimer(null);
+      setDrawnCard(null);
+      setPourPlan(null);
+      setPourFreeze(null);
+      setToast(null);
+      setCounterTaken(false);
+      setTurnToken(crypto.randomUUID());
+      consumedActions.current.clear();
+    }
+    setPlayers(r.players);
+    setActiveIdx(r.activeIdx);
+    setTray(r.tray);
+    setDiscardPile(r.discardPile);
+  });
 
   // Gastgeber spiegelt den Zustand. `drawPile`/`discardPile` sind bewusst NICHT
   // dabei — nur `deckCount`.

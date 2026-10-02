@@ -190,4 +190,244 @@ await test('direct table access and private snapshot function are denied to auth
   const tables=await db.query("SELECT relrowsecurity FROM pg_class WHERE relname IN ('controller_parties','controller_party_members','controller_party_results','controller_game_limits')");
   assert.equal(tables.rows.length,4); assert.ok(tables.rows.every(r=>r.relrowsecurity));
 });
+
+// ── Party-Play: guests on the host's phone, claims, profiles, kicks ──
+for (let n = 21; n <= 40; n++) await db.query('INSERT INTO auth.users VALUES ($1)', [id(n)]);
+const seat = (snapshot, playerId) => snapshot.members.find(m => m.player_id === playerId);
+const past = (snapshot, playerId) => snapshot.past_members.find(m => m.player_id === playerId);
+await test('guests are added by the host with validated profiles up to the 12-seat cap',async () => {
+  await asUser(21);
+  let g=await rpc('create',null,{player_id:player(21),name:'Gastgeber',avatar:'👑',color:'#55EFC4'});
+  assert.ok(!Number.isNaN(Date.parse(g.server_now))); assert.equal(g.party.min_client,0);
+  assert.deepEqual(seat(g,player(21)),{user_id:id(21),player_id:player(21),name:'Gastgeber',is_host:true,avatar:'👑',color:'#55efc4',
+    controlled_by:null,pending_claim:false,pending_claim_mine:false,banned:false});
+  await reject(()=>rpc('add_guest',g.party.code,{name:'X',avatar:'🙂'}),/invalid_avatar/);
+  await reject(()=>rpc('add_guest',g.party.code,{name:'X',color:'#123456'}),/invalid_color/);
+  await reject(()=>rpc('add_guest',g.party.code,{name:'   '}),/invalid_name/);
+  await reject(()=>rpc('add_guest',g.party.code,{name:'x'.repeat(25)}),/invalid_name/);
+  await reject(()=>rpc('create',null,{player_id:player(22),name:'Bad',avatar:'nope'}),/invalid_avatar/);
+  const revision=g.party.revision;
+  g=await rpc('add_guest',g.party.code,{name:'  Oma Gerda  '});
+  const gerda=g.members.find(m=>m.name==='Oma Gerda');
+  assert.match(gerda.player_id,/^player-[0-9a-f]{64}$/);
+  assert.deepEqual([gerda.user_id,gerda.controlled_by,gerda.is_host,gerda.avatar,gerda.color],[null,player(21),false,'🎉','#df8eff']);
+  assert.equal(g.party.min_client,2); assert.ok(g.party.revision>revision);
+  await asUser(22); g=await rpc('join',g.party.code,{player_id:player(22),name:'Lena'});
+  assert.deepEqual([seat(g,player(22)).avatar,seat(g,player(22)).color],['🔥','#ff6b98']);
+  await reject(()=>rpc('add_guest',g.party.code,{name:'Sneaky'}),/Host action/);
+  await asUser(21);
+  for (let n=4;n<=12;n++) g=await rpc('add_guest',g.party.code,{name:`Gast ${n}`,avatar:'🍕',color:'#0984e3'});
+  assert.equal(g.members.length,12);
+  await reject(()=>rpc('add_guest',g.party.code,{name:'Dreizehn'}),/party_full/);
+  // Full, but free guest seats remain: the phone gets the list without a seat and claims one.
+  await asUser(23); const full=await rpc('join',g.party.code,{player_id:player(23),name:'Too late'});
+  assert.equal(full.seated,false); assert.equal(full.members.length,12); assert.equal(seat(full,player(23)),undefined);
+  const guest4=full.members.find(m=>m.name==='Gast 4').player_id;
+  g=await rpc('claim',g.party.code,{player_id:guest4,controller_id:player(23)});
+  assert.equal(seat(g,player(23)).user_id,id(23)); assert.equal(g.members.length,12);
+  await asUser(21); g=await rpc('remove_guest',g.party.code,{player_id:gerda.player_id});
+  assert.equal(seat(g,gerda.player_id),undefined); assert.equal(past(g,gerda.player_id),undefined);
+  await reject(()=>rpc('remove_guest',g.party.code,{player_id:player(22)}),/not_guest/);
+  await rpc('end',g.party.code);
+});
+
+let night, max, gerda;
+await test('claiming a guest seat keeps its player id and results; seats are exclusive',async () => {
+  await asUser(24);
+  night=await rpc('create',null,{player_id:player(24),name:'Luca'});
+  night=await rpc('add_guest',night.party.code,{name:'Max',avatar:'🎸'});
+  night=await rpc('add_guest',night.party.code,{name:'Gerda',avatar:'🦄'});
+  max=night.members.find(m=>m.name==='Max').player_id; gerda=night.members.find(m=>m.name==='Gerda').player_id;
+  // Guests may sit a game out; account seats may not.
+  night=await rpc('start',night.party.code,{game_id:'bomb',participant_ids:[player(24),max]});
+  night=await rpc('finish',night.party.code,{match_id:night.party.current_match_id,game_id:'bomb',scored:true,scores:{[player(24)]:3,[max]:5}});
+  assert.equal(night.results[0].scores[max],5);
+  assert.equal((await db.query('SELECT count(*)::integer AS c FROM public.game_stats WHERE user_id=$1',[id(24)])).rows[0].c,1);
+  await asUser(25); await reject(()=>rpc('read',night.party.code),/membership/);
+  await reject(()=>rpc('claim',night.party.code,{player_id:max,name:'x'.repeat(30)}),/invalid_name/);
+  night=await rpc('claim',night.party.code,{player_id:max,name:'Max K.',color:'#f9ca24'});
+  assert.deepEqual(seat(night,max),{user_id:id(25),player_id:max,name:'Max K.',is_host:false,avatar:'🎸',color:'#f9ca24',
+    controlled_by:null,pending_claim:false,pending_claim_mine:false,banned:false});
+  assert.equal(night.results[0].scores[max],5);
+  assert.equal((await rpc('claim',night.party.code,{player_id:max})).party.revision,night.party.revision);
+  await reject(()=>rpc('claim',night.party.code,{player_id:gerda}),/already_seated/);
+  await asUser(26);
+  await reject(()=>rpc('claim',night.party.code,{player_id:max}),/seat_taken/);
+  await reject(()=>rpc('claim',night.party.code,{player_id:player(24)}),/not_guest/);
+  await reject(()=>rpc('claim',night.party.code,{player_id:player(99)}),/not_guest/);
+  await asUser(24);
+  await reject(()=>rpc('start',night.party.code,{game_id:'bomb',participant_ids:[player(24),gerda]}),/compatible/);
+});
+await test('concurrent claims of one guest seat admit exactly one account',async () => {
+  const isolated=await createDB();
+  for (const n of [31,32,33]) await isolated.seedUser(id(n));
+  let p=await isolated.request(id(31),'create',null,{player_id:player(31),name:'Host'});
+  p=await isolated.request(id(31),'add_guest',p.party.code,{name:'Tom'});
+  const tom=p.members.find(m=>m.name==='Tom').player_id;
+  const outcomes=await Promise.allSettled([32,33].map(n=>isolated.request(id(n),'claim',p.party.code,{player_id:tom})));
+  assert.equal(outcomes.filter(o=>o.status==='fulfilled').length,1);
+  const lost=outcomes.find(o=>o.status==='rejected');
+  assert.equal(lost.reason.message,'seat_taken');
+  const final=await isolated.request(id(31),'read',p.party.code);
+  assert.ok([id(32),id(33)].includes(seat(final,tom).user_id));
+  // With re-keying (interim seats from join), the loser's stale id still yields seat_taken.
+  for (const n of [34,35,36]) await isolated.seedUser(id(n));
+  p=await isolated.request(id(34),'create',null,{player_id:player(34),name:'Host'});
+  p=await isolated.request(id(34),'add_guest',p.party.code,{name:'Max'});
+  const maxSeat=p.members.find(m=>m.name==='Max').player_id;
+  for (const n of [35,36]) await isolated.request(id(n),'join',p.party.code,{player_id:player(n),name:`Phone ${n}`});
+  const raced=await Promise.allSettled([35,36].map(n=>isolated.request(id(n),'claim',p.party.code,{player_id:maxSeat})));
+  assert.equal(raced.filter(o=>o.status==='fulfilled').length,1);
+  assert.equal(raced.find(o=>o.status==='rejected').reason.message,'seat_taken');
+  await isolated.close();
+});
+await test('a claim during a running match is deferred and applied when the match ends',async () => {
+  await asUser(24);
+  night=await rpc('start',night.party.code,{game_id:'bomb',participant_ids:[player(24),max,gerda]});
+  await asUser(26); night=await rpc('claim',night.party.code,{player_id:gerda});
+  assert.deepEqual([seat(night,gerda).user_id,seat(night,gerda).pending_claim,seat(night,gerda).pending_claim_mine],[null,true,true]);
+  assert.equal((await rpc('read',night.party.code)).party.status,'playing');
+  await asUser(27); await reject(()=>rpc('claim',night.party.code,{player_id:gerda}),/seat_taken/);
+  await asUser(24);
+  night=await rpc('finish',night.party.code,{match_id:night.party.current_match_id,game_id:'bomb',scored:true,scores:{[player(24)]:1,[max]:2,[gerda]:3}});
+  assert.deepEqual([seat(night,gerda).user_id,seat(night,gerda).controlled_by,seat(night,gerda).pending_claim],[id(26),null,false]);
+  assert.equal(night.results[1].scores[gerda],3);
+});
+await test('release returns a seat to the host phone; never the host seat',async () => {
+  await asUser(27); await reject(()=>rpc('release',night.party.code,{player_id:gerda}),/membership/);
+  await asUser(25); await reject(()=>rpc('release',night.party.code,{player_id:gerda}),/not_allowed/);
+  night=await rpc('release',night.party.code,{player_id:max});
+  // The released seat gets a fresh guest id so the account can rejoin with its own identity.
+  assert.equal(seat(night,max),undefined);
+  const releasedMax=night.members.find(m=>m.name==='Max K.');
+  assert.deepEqual([releasedMax.user_id,releasedMax.controlled_by],[null,player(24)]);
+  assert.deepEqual([night.results[0].scores[releasedMax.player_id],night.results[0].scores[max]],[5,undefined]);
+  await reject(()=>rpc('read',night.party.code),/membership/);
+  await asUser(24);
+  await reject(()=>rpc('release',night.party.code,{player_id:player(24)}),/cannot_release_host/);
+  night=await rpc('release',night.party.code,{player_id:gerda});
+  gerda=night.members.find(m=>m.name==='Gerda').player_id;
+  assert.equal(seat(night,gerda).user_id,null); assert.equal(night.results[1].scores[gerda],3);
+  // A host recall is distinguishable from a kick until the account joins or claims again.
+  await asUser(26); await reject(()=>rpc('read',night.party.code),/recalled/);
+  await rpc('join',night.party.code,{player_id:player(26),name:'Wieder da'});
+  await rpc('leave',night.party.code);
+  await reject(()=>rpc('read',night.party.code),/membership/);
+  await asUser(25);
+  await reject(()=>rpc('claim',night.party.code,{player_id:releasedMax.player_id,controller_id:'bad'}),/invalid_controller/);
+  await reject(()=>rpc('claim',night.party.code,{player_id:releasedMax.player_id,controller_id:player(24)}),/controller_taken/);
+  // Claiming without an interim seat re-keys the guest to the caller's controller identity.
+  night=await rpc('claim',night.party.code,{player_id:releasedMax.player_id,controller_id:max});
+  assert.equal(seat(night,max).user_id,id(25)); assert.equal(night.results[0].scores[max],5);
+});
+await test('profiles: owners edit their seat, the host edits guests, nobody edits during a match',async () => {
+  await asUser(25);
+  night=await rpc('profile',night.party.code,{player_id:max,name:' Maximilian ',avatar:'🦊',color:'#a29bfe'});
+  assert.deepEqual([seat(night,max).name,seat(night,max).avatar,seat(night,max).color],['Maximilian','🦊','#a29bfe']);
+  await reject(()=>rpc('profile',night.party.code,{player_id:gerda,name:'Hack'}),/not_allowed/);
+  await reject(()=>rpc('profile',night.party.code,{player_id:player(24),name:'Hack'}),/not_allowed/);
+  await reject(()=>rpc('profile',night.party.code,{player_id:max,avatar:'💩'}),/invalid_avatar/);
+  await reject(()=>rpc('profile',night.party.code,{player_id:max,color:'red'}),/invalid_color/);
+  await reject(()=>rpc('profile',night.party.code,{player_id:max,name:''}),/invalid_name/);
+  await asUser(24);
+  await reject(()=>rpc('profile',night.party.code,{player_id:max,name:'Hack'}),/not_allowed/);
+  night=await rpc('profile',night.party.code,{player_id:gerda,name:'Oma Gerda',avatar:'🐙'});
+  assert.deepEqual([seat(night,gerda).name,seat(night,gerda).avatar],['Oma Gerda','🐙']);
+  night=await rpc('start',night.party.code,{game_id:'bomb',participant_ids:[player(24),max,gerda]});
+  await reject(()=>rpc('profile',night.party.code,{player_id:gerda,name:'Later'}),/locked_in_game/);
+  await asUser(25); await reject(()=>rpc('profile',night.party.code,{player_id:max,name:'Later'}),/locked_in_game/);
+  await reject(()=>rpc('release',night.party.code,{player_id:max}),/locked_in_game/);
+});
+await test('kicks remove players from the match or party and their match scores are ignored',async () => {
+  await asUser(25); await reject(()=>rpc('kick',night.party.code,{player_id:gerda,mode:'party'}),/Host action/);
+  await asUser(24);
+  await reject(()=>rpc('kick',night.party.code,{player_id:player(24),mode:'party'}),/cannot_kick_host/);
+  await reject(()=>rpc('kick',night.party.code,{player_id:gerda,mode:'later'}),/invalid_mode/);
+  const statsBefore=(await db.query("SELECT games_played FROM public.game_stats WHERE user_id=$1 AND game_id='bomb'",[id(25)])).rows[0].games_played;
+  assert.ok(night.party.participant_ids.includes(gerda));
+  night=await rpc('kick',night.party.code,{player_id:gerda,mode:'match_only'});
+  assert.ok(seat(night,gerda)); assert.equal(night.party.status,'playing');
+  assert.deepEqual(night.party.participant_ids,[player(24),max].sort());
+  night=await rpc('kick',night.party.code,{player_id:max,mode:'party'});
+  assert.equal(seat(night,max),undefined); assert.equal(past(night,max).banned,false);
+  night=await rpc('finish',night.party.code,{match_id:night.party.current_match_id,game_id:'bomb',scored:true,
+    scores:{[player(24)]:1,[max]:99,[gerda]:50}});
+  assert.deepEqual(night.results.at(-1).scores,{[player(24)]:1});
+  const statsAfter=(await db.query("SELECT games_played FROM public.game_stats WHERE user_id=$1 AND game_id='bomb'",[id(25)])).rows[0].games_played;
+  assert.equal(statsAfter,statsBefore);
+  assert.equal(night.results[0].scores[max],5);
+  await reject(()=>rpc('kick',night.party.code,{player_id:gerda,mode:'match_only'}),/not_playing/);
+  await asUser(25); await reject(()=>rpc('read',night.party.code),/membership/);
+});
+await test('banned accounts cannot rejoin or claim until the host lifts the ban',async () => {
+  await asUser(25); night=await rpc('join',night.party.code,{player_id:max,name:'Max zurück'});
+  assert.equal(seat(night,max).user_id,id(25)); assert.equal(seat(night,max).avatar,'🦊');
+  await asUser(24); night=await rpc('kick',night.party.code,{player_id:max,mode:'ban'});
+  assert.equal(seat(night,max),undefined); assert.equal(past(night,max).banned,true);
+  await asUser(25);
+  await reject(()=>rpc('join',night.party.code,{player_id:max,name:'Max'}),/banned/);
+  await reject(()=>rpc('claim',night.party.code,{player_id:gerda}),/banned/);
+  await asUser(24); night=await rpc('unban',night.party.code,{player_id:max});
+  assert.equal(past(night,max).banned,false);
+  await asUser(25); night=await rpc('join',night.party.code,{player_id:max,name:'Max'});
+  assert.equal(seat(night,max).user_id,id(25));
+});
+await test('removing a guest with results archives the seat instead of deleting it',async () => {
+  await asUser(24); night=await rpc('remove_guest',night.party.code,{player_id:gerda});
+  assert.equal(seat(night,gerda),undefined); assert.equal(past(night,gerda).name,'Oma Gerda');
+  assert.equal(night.results[1].scores[gerda],3);
+  await asUser(26); await reject(()=>rpc('claim',night.party.code,{player_id:gerda}),/not_guest/);
+});
+await test('a fresh seat from joining is swapped for the claimed guest seat, also when deferred',async () => {
+  await asUser(28); let swap=await rpc('create',null,{player_id:player(28),name:'Host'});
+  swap=await rpc('add_guest',swap.party.code,{name:'Paula'});
+  const paula=swap.members.find(m=>m.name==='Paula').player_id;
+  await asUser(29); swap=await rpc('join',swap.party.code,{player_id:player(29),name:'Konto'});
+  swap=await rpc('claim',swap.party.code,{player_id:paula});
+  // The guest seat takes over the interim seat's controller id; the interim seat disappears.
+  assert.equal(seat(swap,paula),undefined); assert.equal(past(swap,player(29)),undefined);
+  assert.deepEqual([seat(swap,player(29)).user_id,seat(swap,player(29)).name],[id(29),'Paula']);
+  assert.equal(swap.members.length,2);
+  await asUser(28); swap=await rpc('add_guest',swap.party.code,{name:'Rita'});
+  const rita=swap.members.find(m=>m.name==='Rita').player_id;
+  swap=await rpc('start',swap.party.code,{game_id:'bomb',participant_ids:[player(28),player(29),rita]});
+  await asUser(29); await reject(()=>rpc('claim',swap.party.code,{player_id:rita}),/already_seated/);
+  await asUser(30); swap=await rpc('join',swap.party.code,{player_id:player(30),name:'Spät'});
+  swap=await rpc('claim',swap.party.code,{player_id:rita});
+  assert.equal(seat(swap,player(30)).user_id,id(30)); assert.equal(seat(swap,rita).pending_claim_mine,true);
+  await asUser(28);
+  swap=await rpc('finish',swap.party.code,{match_id:swap.party.current_match_id,game_id:'bomb',scored:true,scores:{[player(28)]:1,[player(29)]:2,[rita]:3}});
+  assert.equal(seat(swap,rita),undefined);
+  assert.deepEqual([seat(swap,player(30)).user_id,seat(swap,player(30)).name],[id(30),'Rita']);
+  assert.deepEqual(swap.results[0].scores,{[player(28)]:1,[player(29)]:2,[player(30)]:3});
+});
+await test('anonymous devices can read the server clock and nothing else',async () => {
+  await db.exec('SET ROLE anon');
+  const before=Date.now();
+  const now=(await db.query('SELECT public.party_server_now() AS now')).rows[0].now;
+  assert.ok(Math.abs(new Date(now).getTime()-before)<60000);
+  await reject(()=>rpc('read',night.party.code),/permission denied/);
+  await db.exec('RESET ROLE');
+});
+await test('existing members are backfilled with deterministic profiles in join order',async () => {
+  const { PGlite } = await import('@electric-sql/pglite');
+  const legacy=new PGlite();
+  await legacy.exec(`CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role; CREATE SCHEMA auth;
+    CREATE TABLE auth.users(id uuid PRIMARY KEY);
+    CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql AS $$ SELECT NULL::uuid $$;
+    CREATE FUNCTION auth.jwt() RETURNS jsonb LANGUAGE sql AS $$ SELECT '{}'::jsonb $$;
+    CREATE FUNCTION public.is_premium(uid uuid) RETURNS boolean LANGUAGE sql AS $$ SELECT false $$;
+    CREATE TABLE public.game_stats(user_id uuid, game_id text, games_played int, games_won int, total_score int,
+      best_score int, streak int, best_streak int, last_played_at timestamptz, updated_at timestamptz, PRIMARY KEY(user_id,game_id));`);
+  await legacy.exec(await readFile(new URL('../../supabase/migrations/20260922235000_controller_parties.sql',import.meta.url),'utf8'));
+  for (let n=1;n<=14;n++) await legacy.query('INSERT INTO auth.users VALUES ($1)',[id(n)]);
+  const legacyParty=(await legacy.query("INSERT INTO public.controller_parties(code,host_user_id,host_player_id) VALUES ('ABCDEF',$1,$2) RETURNING id",[id(1),player(1)])).rows[0].id;
+  for (let n=1;n<=14;n++) await legacy.query("INSERT INTO public.controller_party_members(party_id,user_id,player_id,name,joined_at) VALUES ($1,$2,$3,$4,now()+make_interval(secs=>$5))",[legacyParty,id(n),player(n),`P${n}`,n]);
+  await legacy.exec(await readFile(new URL('../../supabase/migrations/20261001120000_party_play_guests.sql',import.meta.url),'utf8'));
+  const rows=(await legacy.query('SELECT avatar,color,controlled_by,banned FROM public.controller_party_members ORDER BY joined_at')).rows;
+  assert.deepEqual(rows.slice(0,3).map(r=>[r.avatar,r.color]),[['🎉','#df8eff'],['🔥','#ff6b98'],['⭐','#8ff5ff']]);
+  assert.deepEqual([rows[12].color,rows[13].avatar],['#df8eff','🐼']);
+  assert.ok(rows.every(r=>r.controlled_by===null && r.banned===false));
+  await legacy.close();
+});
 await db.close();

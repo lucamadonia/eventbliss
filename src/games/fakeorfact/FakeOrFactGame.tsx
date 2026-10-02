@@ -21,40 +21,9 @@ import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
 import { hasShellBackButton } from '@/games/ui/shell-back';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-type Phase = 'handoff' | 'setup' | 'statement' | 'voted' | 'reveal' | 'gameOver';
-type Mode = 'classic' | 'three';
-
-interface Player {
-  id: string;
-  name: string;
-  color: string;
-  avatar: string;
-  score: number;
-  streak: number;
-}
-
-const PLAYER_COLORS = [
-  '#06b6d4', '#0ea5e9', '#8b5cf6', '#f59e0b', '#ef4444',
-  '#10b981', '#ec4899', '#f97316', '#6366f1', '#14b8a6',
-];
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { dropQuizPlayers } from './removal';
+import { PLAYER_COLORS, shuffle, type Phase, type Mode, type Player } from './game-model';
 
 // ---------------------------------------------------------------------------
 // Setup config
@@ -213,13 +182,21 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
   }
   const expire = useCallback(() => {
     if (phase === 'statement' && (!online || online.isHost)) scoreAndAdvance(false);
-  }, [phase, currentPlayerIdx, votes, online?.isHost]);
+  }, [phase, currentPlayerIdx, votes, players, online?.isHost]);
   const timer = useGameTimer(timerSec, expire, online?.isConnected !== false);
   useEffect(() => {
     if (online && !online.isHost) return;
     if (phase === 'statement') { timer.reset(timerSec); timer.start(); }
     else timer.pause();
   }, [phase, currentRound, currentPlayerIdx, timerSec, online?.isHost]);
+  // Host: a kicked/left player leaves the queue; if it was their turn it passes on (or the round settles).
+  useRemovedPlayers(online, ids => {
+    const drop = dropQuizPlayers({ phase, players, currentPlayerIdx, votes }, ids);
+    if (!drop) return;
+    setPlayers(drop.players); setVotes(drop.votes); setCurrentPlayerIdx(drop.currentPlayerIdx);
+    if (drop.reveal) { timer.pause(); setPhase('reveal'); }
+    if (drop.restartTurn) { timer.reset(timerSec); timer.start(); setPlayerVote(null); setPlayerThreeVote(null); }
+  });
 
   function handleClassicVote(isTrue: boolean) {
     if (route("handleClassicVote", [isTrue])) return;

@@ -5,6 +5,8 @@ import { normalizeGuess, sealedGuesses, completeDrawingRounds } from './guess-ru
 import { useOnlineActions, useOnlinePrivateSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { removeFromQuickDraw } from './roster-change';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -344,6 +346,20 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
     setRound(r => r + 1);
     beginRound((drawerIdx + 1) % players.length);
   }
+
+  // Host entfernt jemanden mitten im Spiel (Masterplan 6.6): Zeichner geht →
+  // der Naechste zeichnet neu; Ratender geht → der Naechste ist dran.
+  useRemovedPlayers(online, ids => {
+    const change = removeFromQuickDraw({ players, drawerIdx, currentGuesser, phase, guesses }, ids);
+    if (!change.changed) return;
+    setPlayers(change.state.players);
+    if (change.restartTurn) { stopTimer(); beginRound(change.state.drawerIdx); return; }
+    setGuesses(change.state.guesses);
+    setDrawerIdx(change.state.drawerIdx);
+    setCurrentGuesser(change.state.currentGuesser);
+    setGuessSeconds(30);
+    if (change.state.phase !== phase) setPhase(change.state.phase as Phase);
+  });
 
   const isDrawer = !online || drawer?.id === online.myPlayerId;
   const act = useOnlineActions(online, 'quickdraw', `${phase}:${round}:${drawerIdx}:${currentGuesser}`, {

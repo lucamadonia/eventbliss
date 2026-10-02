@@ -3,6 +3,8 @@ import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage
 import { sharedRoundPoints } from './rules';
 import { sharedQuizSnapshotFor, sharedQuizTVQuestion } from './private-state';
 import { useOnlineAuthority, usePrivateSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { removeFromSharedQuiz } from './roster-change';
 import { useTranslation } from "react-i18next";
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
@@ -284,6 +286,15 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
     setMode(data.mode);
     setSelectedAnswer(data.selectedAnswer);
     setTeamAnswers(data.teamAnswers ?? []);
+  });
+
+  // Host entfernt jemanden mitten im Spiel: Rolle weitergeben statt haengen (Masterplan 6.6).
+  useRemovedPlayers(online, ids => {
+    const change = removeFromSharedQuiz({ players, roleIndices, phase, mode, teamAnswers }, ids);
+    if (!change.changed) return;
+    setPlayers(change.state.players);
+    setRoleIndices(change.state.roleIndices);
+    setTeamAnswers(change.state.teamAnswers);
   });
 
   /* ================================================================ */

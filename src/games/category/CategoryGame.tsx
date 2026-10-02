@@ -35,6 +35,9 @@ import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useInitialRoster } from "@/games/ui/useInitialRoster";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { dropCategoryPlayers } from './removal';
+import { GameOverScreen } from './GameOverScreen';
 import { hasShellBackButton } from '@/games/ui/shell-back';
 
 // ---------------------------------------------------------------------------
@@ -482,23 +485,6 @@ function RoundEndScreen({
 }
 
 // ---------------------------------------------------------------------------
-// Game Over Screen
-// ---------------------------------------------------------------------------
-
-function GameOverScreen({ players, onPlayAgain, onRestart }: { players: CategoryPlayer[]; onPlayAgain: () => void; onRestart: () => void }) {
-  const { t } = useTranslation();
-  const sorted = [...players].sort((a, b) => b.score - a.score);
-
-  return <div className="space-y-7">
-    <StageHeader title={t('games.category.finalResults')} eyebrow={t('games.category.scoreboard')} />
-    <ol className="divide-y divide-white/15 border-y border-white/15">{sorted.map((player, index) => <li key={player.id} className="flex items-center gap-4 py-6">
-      <span className="text-sm text-[var(--stage-muted)]">{index + 1}</span><div className="min-w-0 flex-1"><p className="text-xl font-semibold break-words">{player.name}</p><p className="mt-1 text-sm text-[var(--stage-muted)]">{t('games.category.roundsLost', { count: player.losses })}</p></div><strong className="text-4xl tabular-nums text-[#f2bc66]">{player.score}</strong>
-    </li>)}</ol>
-    <StageFooter className="flex-wrap"><StageAction onClick={onPlayAgain}><RotateCcw className="h-5 w-5" />{t('games.category.playAgain')}</StageAction><StageAction variant="secondary" onClick={onRestart}>{t('games.category.otherGame')}</StageAction></StageFooter>
-  </div>;
-}
-
-// ---------------------------------------------------------------------------
 // Main Game Component
 // ---------------------------------------------------------------------------
 
@@ -707,6 +693,13 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
     setPhase("categoryReveal");
   }, [mode]);
 
+  // Host: a removed player leaves the circle; if they were answering, the next one gets a fresh turn (G7).
+  useRemovedPlayers(online, ids => {
+    const drop = dropCategoryPlayers(players, currentPlayerIndex, phase, ids);
+    if (!drop) return;
+    setPlayers(drop.players); setCurrentPlayerIndex(drop.currentPlayerIndex);
+    if (drop.restartTurn) setTurnDeadline(Date.now() + timerSeconds * 1000);
+  });
   const [validation, setValidation] = useState<{ playerId: string; result: 'ok' | 'duplicate' | 'wrong_letter'; sequence: number }>();
   const act = useOnlineActions(online, 'category', `${phase}:${currentRound}:${currentPlayerIndex}:${roundWords.length}`, {
     start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },

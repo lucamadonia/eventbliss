@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { acceptOnlineAction } from './online-action';
+import { localGuestIds } from '../ui/guest-handover';
+import { hostActor } from './host-actor';
 
 type Action = { allow: (sender: string, args: any[]) => boolean; run: (...args: any[]) => void };
 
@@ -17,17 +19,21 @@ export function useOnlineAuthority(online: OnlineGameProps | undefined, game: st
   const busy = useRef(false);
   const consumed = useRef(new Set<string>());
   const consumedToken = useRef(token);
-  const claim = (sender: string, action: string) => {
+  const repeatable = (action: string) => ['chooseBet', 'rerollCurrent', 'toggleAnswer'].includes(action);
+  const used = (sender: string, action: string) => {
     if (consumedToken.current !== current.current.token) {
       consumed.current.clear();
       consumedToken.current = current.current.token;
     }
-    if (['chooseBet', 'rerollCurrent', 'toggleAnswer'].includes(action)) return true;
-    const key = `${sender}:${action}`;
-    if (consumed.current.has(key)) return false;
-    consumed.current.add(key);
+    return !repeatable(action) && consumed.current.has(`${sender}:${action}`);
+  };
+  const claim = (sender: string, action: string) => {
+    if (used(sender, action)) return false;
+    if (!repeatable(action)) consumed.current.add(`${sender}:${action}`);
     return true;
   };
+  /** Seat the host device acts for right now (own seat or a 🔁 guest): read it in `run` instead of myPlayerId. */
+  const seat = useRef<string | null>(null);
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast(`${game}-action`, (data) => {
@@ -46,15 +52,24 @@ export function useOnlineAuthority(online: OnlineGameProps | undefined, game: st
       }
     });
   }, [online?.isHost, online?.onBroadcast, game, online?.players]);
-  return (action: string, args: any[] = []) => {
+  return Object.assign((action: string, args: any[] = []) => {
     const state = current.current;
     if (!state.online || executing.current) return false;
     if (state.online.isConnected === false) return true;
-    if (!state.actions[action]?.allow(state.online.myPlayerId, args)) return true;
-    if (state.online.isHost) return !claim(state.online.myPlayerId, action);
+    const rule = state.actions[action];
+    if (!rule) return true;
+    // The host device acts for its own seat AND its 🔁 guests (same rule as canAct): the first of them
+    // the rule allows that has not used this action this turn — after the host voted, the next tap
+    // on the shared phone counts for the guest holding it. Phone seats are validated as before.
+    const actor = state.online.isHost
+      ? hostActor([state.online.myPlayerId, ...localGuestIds(state.online)], id => rule.allow(id, args), id => used(id, action))
+      : rule.allow(state.online.myPlayerId, args) ? state.online.myPlayerId : undefined;
+    seat.current = actor ?? null;
+    if (!actor) return true;
+    if (state.online.isHost) return !claim(actor, action);
     state.online.broadcast(`${game}-action`, { action, args, token: state.token, seq: ++sequence.current, instance: instance.current });
     return true;
-  };
+  }, { actingSeat: () => seat.current });
 }
 
 export { default as OnlineWaiting } from '../multiplayer/OnlineWaiting';

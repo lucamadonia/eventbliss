@@ -25,19 +25,13 @@ import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
 import { hasShellBackButton } from '@/games/ui/shell-back';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { dropTruthDarePlayers, scoreVote } from './removal';
+import { PLAYER_COLORS, shuffle, getIntensityForRound, type Phase, type Player } from './game-model';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
-
-type Phase = 'setup' | 'spin' | 'choice' | 'reveal' | 'vote' | 'gameOver';
-
-interface Player {
-  id: string; name: string; color: string; avatar: string;
-  score: number; truthCount: number; dareCount: number;
-}
-
-const PLAYER_COLORS = ['#06b6d4','#0ea5e9','#8b5cf6','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
 
 const GAME_MODES: GameMode[] = [
   { id: 'classic', name: 'Classic', desc: 'All categories mixed', icon: <Sparkles className="w-6 h-6" /> },
@@ -53,27 +47,6 @@ function getSetupSettings(t: TFn): SettingsConfig {
     timer: { min: 10, max: 120, default: 60, step: 5, label: t('games.truthdare.timerLabel', 'Dare Timer (Sec.)') },
     rounds: { min: 5, max: 30, default: 15, step: 1, label: t('games.setup.rounds', 'Rounds') },
   };
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function getIntensityForRound(mode: string, round: number, total: number): (1|2|3)[] {
-  if (mode !== 'eskalation') return [1, 2, 3];
-  const pct = round / total;
-  if (pct < 0.33) return [1];
-  if (pct < 0.66) return [1, 2];
-  return [2, 3];
 }
 
 // ---------------------------------------------------------------------------
@@ -283,16 +256,7 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     if (voterIdx + 1 >= otherPlayers.length) {
       // tally
       const allVotes = { ...votes, [voter.id]: yes };
-      const yesCount = Object.values(allVotes).filter(Boolean).length;
-      const passed = yesCount > otherPlayers.length / 2;
-      setPlayers((prev) => prev.map((p, i) =>
-        i === activeIdx ? {
-          ...p,
-          score: p.score + (passed ? (choiceType === 'dare' ? 2 : 1) : 0),
-          truthCount: p.truthCount + (choiceType === 'truth' ? 1 : 0),
-          dareCount: p.dareCount + (choiceType === 'dare' ? 1 : 0),
-        } : p,
-      ));
+      setPlayers((prev) => scoreVote(prev, activeIdx, allVotes, choiceType));
       advanceAfterVote();
     } else {
       setVoterIdx((v) => v + 1);
@@ -317,6 +281,14 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     setCurrentItem(null);
     setPhase('spin');
   };
+  // Host: a kicked/left player leaves the wheel; their turn ends unscored, a vote waiting on them closes.
+  useRemovedPlayers(online, ids => {
+    const drop = dropTruthDarePlayers({ phase, players, activeIdx, spinTarget, turnQueue: turnQueue.current, votes, voterIdx, choiceType }, ids);
+    if (!drop) return;
+    turnQueue.current = drop.turnQueue;
+    setPlayers(drop.players); setActiveIdx(drop.activeIdx); setSpinTarget(drop.spinTarget); setVotes(drop.votes); setVoterIdx(drop.voterIdx);
+    if (drop.endTurn) { timer.pause(); advanceAfterVote(); }
+  });
 
   // ---------------------------------------------------------------------------
   // Reset

@@ -10326,5 +10326,277 @@
     "players_one": "{{count}} oyuncu",
     "players_other": "{{count}} oyuncu",
     "players": "{{count}} oyuncu"
+  },
+  "tvLobby": {
+    "allReady": "Herkes hazır ✓",
+    "atHostDevice": "ev sahibinin telefonunda",
+    "fullscreen": "Tam ekran",
+    "gamesPlanned": "Parti gecesi · {{count}} oyun",
+    "guestHint": "{{names}}: Telefonunuz var mı? Kodu tarayın, katılın!",
+    "guestHintOne": "{{names}}: Telefonun var mı? Kodu tara, katıl!",
+    "host": "Ev sahibi",
+    "hostPlays": "oynuyor",
+    "hostSitsOut": "oynamıyor",
+    "lateJoin": "{{name}} sonraki turdan itibaren oyunda",
+    "latecomerHint": "Kodu tara – sonraki turdan itibaren oyundasın",
+    "latecomerTitle": "Sen de katılmak ister misin?",
+    "localHint": "Bu akşam telefon elden ele dolaşıyor – sıranın kimde olduğunu TV gösteriyor.",
+    "localTitle": "Herkese tek telefon",
+    "nextUp": "Sıradaki",
+    "notReady": "henüz hazır değil",
+    "offline": "bağlantı koptu",
+    "orCode": "ya da kodu uygulamaya gir",
+    "ownPhone": "kendi telefonu",
+    "playerJoined": "{{name}} katıldı",
+    "playerLeft": "{{name}} partiden ayrıldı",
+    "playerRange": "{{min}}–{{max}} oyuncu",
+    "playersHeading": "Katılanlar",
+    "ready": "hazır",
+    "readyMissing": "{{count}} kişi henüz hazır değil",
+    "scanTitle": "Tara ve oyna",
+    "step1": "Telefon kamerasını koda tut",
+    "step2": "Uygulama açılır – artık oyundasın",
+    "yourSeat": "Senin yerin",
+    "gamesPlanned_one": "Parti gecesi · 1 oyun",
+    "gamesPlanned_other": "Parti gecesi · {{count}} oyun",
+    "waitingForPlayers": "Oyuncular bekleniyor …",
+    "waitingForHost": "Ev sahibi bekleniyor …",
+    "waitingForHostHint": "Ev sahibinin telefonunda: partiyi aç ve “{{button}}” düğmesine dokun.",
+    "partyEnded": "Bu parti sona erdi",
+    "partyEndedHint": "Oynadığın için teşekkürler! Yeni bir tur için yeni bir parti başlat."
+  },
+  "handover": {
+    "announce": "Telefonu {{name}} adlı oyuncuya ver.",
+    "clockPaused": "Süre durdu",
+    "confirm": "Ben {{name}} – başlayalım",
+    "confirmHost": "Ben {{name}} – devam",
+    "confirmHostGeneric": "Ev sahibi benim – devam",
+    "countdownGo": "Başla!",
+    "coverAnnounce": "{{name}} bitirdi. Ekranı kapat.",
+    "coverButton": "Kapat ve ver",
+    "coverHint": "Telefonu vermeden önce ekranı aşağı gelecek şekilde bırak.",
+    "coverTitle": "Bitti mi, {{name}}?",
+    "holdHint": "Basılı tut",
+    "lookAway": "(diğerleri lütfen bakmasın)",
+    "passOn": "Sıra {{name}} adlı oyuncuda",
+    "passTo": "Telefonu {{name}} adlı oyuncuya ver",
+    "returnTo": "Tekrar {{name}} adlı oyuncuya",
+    "returnToHost": "Ev sahibine geri"
+  },
+  "partyPlay": {
+    "abortMatch": "Oyunu iptal et – sayılmaz",
+    "backToLobby": "Lobiye dön",
+    "continueWithout": "{{name}} olmadan devam et",
+    "removedFromMatchTitle": "Bu turda bekliyorsun",
+    "removedFromMatchHint": "Bir sonraki oyunda yeniden oyundasın.",
+    "seatToHost": "{{name}} ev sahibinin telefonunda oynamaya devam ediyor",
+    "seatToHostLater": "Ancak bu turdan sonra mümkün – o zamana kadar onsuz devam edin.",
+    "sittingOut": "{{names}} bu turda bekliyor",
+    "stuckTitle": "{{name}} adlı oyuncuya ulaşılamıyor",
+    "tooFewLeft": "– artık oyunda değil. {{game}} için {{min}} kişi gerekiyor.",
+    "tooFewTitle": "{{game}} için yeterli oyuncu yok",
+    "tooFewWaiting": "Ev sahibi nasıl devam edileceğine karar veriyor.",
+    "waitingFor": "{{name}} bekleniyor …",
+    "availability": {
+      "ready_one": "Başlamaya hazır · 1 oyuncu",
+      "ready_other": "Başlamaya hazır · {{count}} oyuncu",
+      "waiting_one": "1 oyuncu daha bekleniyor",
+      "waiting_other": "{{count}} oyuncu daha bekleniyor",
+      "guestsSitOut_one": "Misafirler bekliyor – telefonu olan 1 oyuncu daha gerekli",
+      "guestsSitOut_other": "Misafirler bekliyor – telefonu olan {{count}} oyuncu daha gerekli",
+      "guestsSitOutNames_one": "{{names}} bekliyor – telefonu olan 1 oyuncu daha gerekli",
+      "guestsSitOutNames_other": "{{names}} bekliyor – telefonu olan {{count}} oyuncu daha gerekli",
+      "sitout": "{{names}} bu oyunda bekliyor",
+      "sitout_one": "{{names}} bu oyunda bekliyor",
+      "sitout_other": "{{names}} bu oyunda bekliyor",
+      "sitoutCount_one": "1 misafir bekliyor",
+      "sitoutCount_other": "{{count}} misafir bekliyor",
+      "sitoutCount": "{{count}} misafir bekliyor",
+      "tooMany": "En fazla {{max}} oyuncu",
+      "premium": "Yalnızca Premium",
+      "unknown": "Kullanılamıyor"
+    },
+    "cancel": "İptal",
+    "close": "Kapat",
+    "end": {
+      "body": "Parti herkes için sona eriyor. Puan tablosu görünür kalır."
+    },
+    "error": {
+      "already_seated": "Bu partide zaten bir yerin var.",
+      "banned": "Bu partiye artık katılamazsın.",
+      "cannot_kick_host": "Ev sahibi çıkarılamaz.",
+      "cannot_release_host": "Ev sahibinin yeri kendi telefonunda kalır.",
+      "controller_taken": "Bu telefon partide zaten kullanılıyor.",
+      "host_required": "Bunu yalnızca ev sahibi yapabilir.",
+      "invalid_avatar": "Bu simge kullanılamıyor. Lütfen başka bir tane seç.",
+      "invalid_color": "Bu renk kullanılamıyor. Lütfen başka bir renk seç.",
+      "invalid_controller": "Bu telefon eşleştirilemedi. Lütfen uygulamayı yeniden aç.",
+      "invalid_mode": "Olmadı. Lütfen tekrar dene.",
+      "invalid_name": "Lütfen 1–24 karakterlik bir ad gir.",
+      "locked_in_game": "Şu an bir oyun sürüyor – tur bitince mümkün.",
+      "not_allowed": "Bunu yalnızca ev sahibi yapabilir.",
+      "not_claimed": "Bu yer için ayrılmış bir şey yok.",
+      "not_guest": "Bu yer zaten bir telefona ait.",
+      "not_member": "Bu kişi artık partide değil.",
+      "not_playing": "Şu an oynanan bir oyun yok.",
+      "party_full": "Parti dolu (12 oyuncu). Bir yeri devral ya da ev sahibine sor.",
+      "recalled": "Artık ev sahibinin telefonunda oynuyorsun.",
+      "removed": "Artık bu partide değilsin.",
+      "seat_taken": "Bu yeri az önce başkası aldı. Liste güncellendi.",
+      "ended": "Bu parti sona erdi.",
+      "not_found": "Böyle bir parti yok. Kodu kontrol et."
+    },
+    "kick": {
+      "ban": "Çıkar ve engelle",
+      "banHint": "Bu kodla tekrar katılamaz.",
+      "confirm": "Çıkar",
+      "how": "Nasıl çıkarılsın?",
+      "matchOnly": "Sadece bu oyundan çıkar",
+      "matchOnlyHint": "Partide kalır ve bir sonraki oyunda yine oynar.",
+      "party": "Partiden çıkar",
+      "partyHint": "Puanlar tabloda kalır.",
+      "pending": "{{name}} çıkarılıyor",
+      "playingHint": "Süren oyun ara vermeden devam eder.",
+      "title": "{{name}} çıkarılsın mı?"
+    },
+    "leave": {
+      "body": "Puanların tabloda kalır."
+    },
+    "lobby": {
+      "connecting": "Bağlanıyor …",
+      "nextRound": "Bir sonraki turdan itibaren oyundasın.",
+      "noGame": "Önce bir oyun planla.",
+      "notReadyNames": "Henüz hazır değil: {{names}}",
+      "nothingFits": "Planlanan oyunların hiçbiri grubunuza uymuyor.",
+      "skipped": "{{game}} şu an uymuyor – {{next}} ile devam."
+    },
+    "onboarding": {
+      "back": "Listeye dön",
+      "claimed": "Tekrar hoş geldin",
+      "go": "Hadi başlayalım",
+      "joined": "Oyundasın ✓",
+      "profileTitle": "Herkes seni nasıl görsün?",
+      "afterRound": "Şu an bir oyun sürüyor – profilin bir sonraki turdan itibaren görünecek."
+    },
+    "pending": {
+      "body": "Şu an bir oyun sürüyor. Bir sonraki turdan itibaren kendi telefonunda {{name}} olarak oynuyorsun.",
+      "cancel": "Ayırmayı geri al",
+      "ok": "Tamam",
+      "title": "Ayrıldı"
+    },
+    "profile": {
+      "color": "Renk",
+      "colorOption": "Renk {{n}}",
+      "locked": "Şu an bir oyun sürüyor – tur bitince değiştirebilirsin.",
+      "lockedShort": "tur bitince değiştirilebilir",
+      "name": "Ad",
+      "nameInvalid": "Lütfen 1–24 karakter.",
+      "namePlaceholder": "Adın",
+      "preview": "TV seni böyle gösteriyor",
+      "save": "Kaydet",
+      "symbol": "Simge",
+      "title": "Profil"
+    },
+    "recalled": {
+      "body": "Puanların kalıyor. Yerini istediğin zaman bu telefona geri alabilirsin.",
+      "rejoin": "Yine kendi telefonumla",
+      "title": "Artık ev sahibinin telefonunda oynuyorsun"
+    },
+    "remote": {
+      "nobody": "Çıkarılacak kimse yok.",
+      "players": "Oyuncular",
+      "playersTitle": "Oyuncu çıkar"
+    },
+    "removed": {
+      "banned": "{{code}} koduyla tekrar katılamazsın.",
+      "body": "Şimdiye kadarki puanların tabloda kalıyor.",
+      "done": "Oyunlara git",
+      "startOwn": "Kendi partini başlat",
+      "title": "Artık bu partide değilsin"
+    },
+    "roster": {
+      "addGuest": "Telefonu olmayan oyuncu",
+      "addGuestHint": "Senin telefonunda oynar. Daha sonra QR ile kendi telefonuna geçebilir.",
+      "addGuestSubmit": "Ekle",
+      "addGuestTitle": "Telefonu olmayan oyuncu",
+      "afterRound": "tur bitince mümkün",
+      "banned_one": "Engellenen ({{count}})",
+      "banned_other": "Engellenenler ({{count}})",
+      "cancelClaim": "Ayırmayı kaldır",
+      "editProfile": "Ad, simge ve renk",
+      "notMe": "Bu ben değilim",
+      "notMeHint": "Yer ev sahibinin telefonuna döner, sonra yeniden seç",
+      "release": "Ev sahibinin telefonuna geri al",
+      "releaseHint": "ör. şarj bitti – puanlar kalır",
+      "remove": "Çıkar …",
+      "unban": "Engeli kaldır",
+      "you": "Sen",
+      "banned": "Engellenenler ({{count}})"
+    },
+    "scene": {
+      "getReady": "Birazdan başlıyoruz"
+    },
+    "seat": {
+      "host": "Ev sahibi",
+      "hostDevice": "ev sahibinin telefonunda",
+      "pendingClaim": "tur bitince kendi telefonuna geçiyor",
+      "phone": "kendi telefonu"
+    },
+    "similar": {
+      "no": "Hayır, ben başka biriyim",
+      "noPoints": "O zaman ev sahibinin telefonundaki bu yeri sen alıyorsun.",
+      "points_one": "{{count}} puanı devralmak ister misin?",
+      "points_other": "{{count}} puanı devralmak ister misin?",
+      "title": "{{name}} sen misin?",
+      "yes": "Evet, benim",
+      "points": "{{count}} puanı devralmak ister misin?"
+    },
+    "stay": "Kal",
+    "switch": {
+      "body": "{{from}} partisinden ayrılıp {{to}} partisine katılıyorsun.",
+      "confirm": "Değiştir",
+      "title": "Parti değiştirilsin mi?"
+    },
+    "undo": "Geri al",
+    "update": {
+      "body": "Bu parti yeni özellikler kullanıyor. En yeni sürümle hemen katılabilirsin.",
+      "cta": "Şimdi güncelle",
+      "title": "Lütfen uygulamayı güncelle"
+    },
+    "who": {
+      "alreadyIn": "Zaten kendi telefonuyla oyunda",
+      "createNew": "Kendimi bulamıyorum – yeni oluştur",
+      "noMatch": "Ev sahibinin telefonunda bu adla kimse yok.",
+      "partyOf_one": "{{name}} partisi · {{count}} oyuncu",
+      "partyOf_other": "{{name}} partisi · {{count}} oyuncu",
+      "points_one": "{{count}} puan",
+      "points_other": "{{count}} puan",
+      "search": "Ara",
+      "subtitle": "Adına dokun – puanların da seninle gelir.",
+      "title": "Sen kimsin?",
+      "partyOf": "{{name}} partisi · {{count}} oyuncu",
+      "points": "{{count}} puan"
+    },
+    "switchDevice": {
+      "title": "Bu telefona geçilsin mi?",
+      "body": "Bu partide zaten başka bir telefonda oynuyorsun. Puanların seninle gelir, diğer telefon yerini bırakır.",
+      "confirm": "Buraya geç",
+      "movedTitle": "Artık başka bir telefonda oynuyorsun",
+      "movedBody": "Puanların seninle geldi. Yeniden burada oynamak istersen tekrar katılman yeterli.",
+      "back": "Burada oynamaya devam et"
+    },
+    "ended": {
+      "title": "Bu parti sona erdi",
+      "body": "Oynadığın için teşekkürler! Hemen kendi partini başlat."
+    },
+    "tv": {
+      "handover": "{{name}} ev sahibinin telefonunda oynuyor …"
+    },
+    "closing": {
+      "title": "Parti sona erdi",
+      "placement": "{{rank}}. oldun – {{points}} puan",
+      "tv": "Ödül töreni televizyonda.",
+      "done": "Tamam"
+    }
   }
 }

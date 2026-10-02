@@ -24,6 +24,8 @@ import { useInitialRoster } from "@/games/ui/useInitialRoster";
 import { useNavigate } from 'react-router-dom';
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { removeFromHeadUp } from './roster-change';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -96,6 +98,10 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   };
   const totalRounds = playerNames.length;
   const [currentRound, setCurrentRound] = useState(1);
+  // Online: Runde N gehoert order[N - 1] (beim Start eingefroren), nicht dem
+  // N-ten Eintrag der live schrumpfenden Raumliste (siehe roster-change.ts).
+  const [order, setOrder] = useState<string[]>([]);
+  const actorId = online ? order[currentRound - 1] ?? online.players[currentRound - 1]?.id ?? false : false;
   const [wordQueue, setWordQueue] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
@@ -134,7 +140,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     setIsArmed(false);
   }, []);
   const resumeTilt = useCallback(() => {
-    if ((screen !== 'playing' && screen !== 'ready') || (online && online.players[currentRound - 1]?.id !== online.myPlayerId)) return;
+    if ((screen !== 'playing' && screen !== 'ready') || (online && actorId !== online.myPlayerId)) return;
     orientationActiveRef.current = false;
     armedRef.current = false;
     setIsArmed(false);
@@ -142,7 +148,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     smoothRef.current = null;
     tiltTracker.current.reset();
     setTimeout(() => { orientationActiveRef.current = true; }, 150);
-  }, [screen, online, currentRound, setTimeout]);
+  }, [screen, online, actorId, setTimeout]);
 
   // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt
   // über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
@@ -174,7 +180,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const percentLeft = timerDuration > 0 ? timeLeft / timerDuration * 100 : 0;
 
   useTVGameBridge('headup', { phase: screen, currentRound, totalRounds, currentWord: online ? '' : wordQueue[currentWordIndex], players: playerNames,
-    partyScoresById: Object.fromEntries((online?.players ?? partyRoster).map((player, index) => [player.id, allRounds[index]?.correct ?? 0])),
+    partyScoresById: Object.fromEntries((online ? order : partyRoster.map(p => p.id)).map((id, index) => [id, allRounds[index]?.correct ?? 0])),
     correctCount: roundWords.filter(w => w.correct).length, skippedCount: roundWords.filter(w => !w.correct).length, timeLeft, category: selectedCategory?.name || '' }, [screen, currentRound, currentWordIndex, timeLeft, allRounds], !online || online.isHost);
 
   const handleStartRound = useCallback(() => {
@@ -262,7 +268,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     finally { setMotionPending(false); }
   };
   useEffect(() => {
-    if (!motionAllowed || !motionPhase || (online && online.players[currentRound - 1]?.id !== online.myPlayerId)) return;
+    if (!motionAllowed || !motionPhase || (online && actorId !== online.myPlayerId)) return;
     const tracker = tiltTracker.current;
     tracker.reset();
     orientationActiveRef.current = true;
@@ -278,7 +284,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     window.addEventListener('devicemotion', handle);
     return () => { orientationActiveRef.current = false; tracker.reset(); window.removeEventListener('devicemotion', handle); };
     // Keep the listener and ready-phase calibration across ready -> playing.
-  }, [motionPhase, currentRound, motionAllowed, online?.myPlayerId]);
+  }, [motionPhase, currentRound, actorId, motionAllowed, online?.myPlayerId]);
 
   const handleNextRound = useCallback(() => {
     const name = playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound });
@@ -290,7 +296,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   useEffect(() => {
     if (screen === 'gameOver' && !gameRecordedRef.current) {
       gameRecordedRef.current = true;
-      const ownIndex = online?.players.findIndex(p => p.id === online.myPlayerId) ?? -1;
+      const ownIndex = online ? order.indexOf(online.myPlayerId) : -1;
       const ownScore = ownIndex >= 0 ? allRounds[ownIndex]?.correct ?? 0 : totalCorrect;
       recordEnd('headup', ownScore, !online || ownScore === Math.max(...allRounds.map(r => r.correct)));
     }
@@ -316,9 +322,19 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     handleStartRound();
   }, [handleStartRound]);
 
-  const actorId = online?.players[currentRound - 1]?.id ?? false;
+  // Host: Entfernte fallen aus der Reihenfolge; war es die aktive Person, startet
+  // die naechste frisch (Uhr gestoppt, neue Woerter).
+  useRemovedPlayers(online, ids => {
+    const change = removeFromHeadUp({ order, names: playerNames, currentRound, screen, allRounds }, ids);
+    if (!change.changed) return;
+    const next = change.state;
+    setOrder(next.order); setPlayerNames(next.names); setCurrentRound(next.currentRound); setAllRounds(next.allRounds);
+    if (change.roundRestarted || next.screen === 'gameOver') { resetTimer(timerDuration); suspendTilt(); }
+    if (change.roundRestarted) handleStartRound();
+    else setScreen(next.screen);
+  });
   const act = useOnlineActions(online, 'headup', `${screen}:${currentRound}:${currentWordIndex}:${countdown}`, {
-    start: { allowed: screen === 'setup' ? 'host' : false, run: () => { if (online) setPlayerNames(online.players.map(p => p.name)); handleStartRound(); } },
+    start: { allowed: screen === 'setup' ? 'host' : false, run: () => { if (online) { setPlayerNames(online.players.map(p => p.name)); setOrder(online.players.map(p => p.id)); } handleStartRound(); } },
     ready: { allowed: screen === 'ready' && countdown === null ? actorId : false, run: () => { if (screen === 'ready' && countdown === null) setCountdown(3); } },
     word: { allowed: screen === 'playing' ? actorId : false, run: (correct: unknown) => { if (typeof correct === 'boolean') advanceWord(correct); } },
     next: { allowed: screen === 'roundResult' ? 'host' : false, run: handleNextRound },
@@ -326,8 +342,8 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     restart: { allowed: 'host', run: handleRestart },
   });
   actionRef.current = act;
-  useOnlinePrivateSnapshot(online, 'headup', { screen, playerNames, selectedCategory, timerDuration, currentRound, currentWordIndex, wordQueue, roundWords, allRounds, countdown, timeLeft }, (state, recipient) => ({ ...state, selectedCategory: state.selectedCategory ? { ...state.selectedCategory, words: [] } : null, wordQueue: state.wordQueue.map((word, index) => recipient === actorId || index !== state.currentWordIndex ? '' : word) }), state => {
-    setScreen(state.screen); setPlayerNames(state.playerNames); setSelectedCategory(state.selectedCategory); setTimerDuration(state.timerDuration); setCurrentRound(state.currentRound); setCurrentWordIndex(state.currentWordIndex); setWordQueue(state.wordQueue); setRoundWords(state.roundWords); setAllRounds(state.allRounds); setCountdown(state.countdown); setRemoteTime(state.timeLeft);
+  useOnlinePrivateSnapshot(online, 'headup', { screen, playerNames, order, selectedCategory, timerDuration, currentRound, currentWordIndex, wordQueue, roundWords, allRounds, countdown, timeLeft }, (state, recipient) => ({ ...state, selectedCategory: state.selectedCategory ? { ...state.selectedCategory, words: [] } : null, wordQueue: state.wordQueue.map((word, index) => recipient === actorId || index !== state.currentWordIndex ? '' : word) }), state => {
+    setScreen(state.screen); setPlayerNames(state.playerNames); setOrder(state.order ?? []); setSelectedCategory(state.selectedCategory); setTimerDuration(state.timerDuration); setCurrentRound(state.currentRound); setCurrentWordIndex(state.currentWordIndex); setWordQueue(state.wordQueue); setRoundWords(state.roundWords); setAllRounds(state.allRounds); setCountdown(state.countdown); setRemoteTime(state.timeLeft);
   });
   if (online && !online.isHost && screen === 'setup') return <OnlineWaiting />;
 

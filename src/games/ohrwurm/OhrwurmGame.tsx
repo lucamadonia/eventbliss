@@ -19,6 +19,8 @@ import {
   buildDeck, createFreshMatch, resolveRound, insertSorted, hasWon,
   type Participant, type Phase, type PendingCounter, type RoundResolution, type Song,
 } from './ohrwurm-engine';
+import { dropOhrwurmPlayers } from './removal';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { OHRWURM_GENRES, spotifyTrackDeepLink, spotifyTrackUrl } from './ohrwurm-content';
 import { useGameTimer } from '../engine/TimerSystem';
 import { MysteryPlayer } from './MysteryPlayer';
@@ -579,6 +581,22 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     const nextIdx = (turn + 1) % participants.length;
     beginTurn(participants, deck, nextIdx);
   }, [participants, winTarget, turn, deck, beginTurn, haptics]);
+
+  // --- Host: Kick/Leave mitten in der Partie (F13/F14/F19) ----------------
+  useRemovedPlayers(online, (ids) => {
+    const r = dropOhrwurmPlayers({ participants, turn, phase, counteringId, winTarget }, ids);
+    if (!r) return;
+    if (r.kind === 'restartTurn') {
+      gameTasks.clear();
+      beginTurn(r.participants, r.returnSong && song ? [song, ...deck.filter((s) => s.id !== song.id)] : deck, r.turn);
+      return;
+    }
+    setParticipants(r.participants);
+    setTurn(r.turn);
+    if (r.kind === 'gameOver') { gameTasks.clear(); roundTimer.reset(ROUND_SECONDS); setWinner(r.participants.find((p) => p.id === r.winnerId) ?? null); setPhase('gameOver'); }
+    if (r.kind === 'reopenCounter') { setCounteringId(null); setPhase('counter'); }
+    if (r.kind === 'resolveNoCounter') { setCounteringId(null); if (placement !== null) goReveal(placement, null); }
+  });
 
   // --- Stats beim Spielende -----------------------------------------------
   useEffect(() => {

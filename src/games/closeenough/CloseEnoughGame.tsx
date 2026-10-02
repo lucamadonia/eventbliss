@@ -44,6 +44,8 @@ import { formatNumber, parseRaw, compactWords } from './number-format';
 import { scoreRound, type CeGuess, type CeResult } from './closeenough-scoring';
 import { anchorKeyFor } from './closeenough-anchors';
 import { NumberEntry } from './NumberEntry';
+import { dropRemovedPlayers } from './removal';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { RevealChart, type RevealMark } from './RevealChart';
 import { CloseEnoughAtmosphere, BullseyeBurst, CountUp } from './CloseEnoughAtmosphere';
 import { setReportContext, clearReportContext } from '@/games/ui/useReportContext';
@@ -342,6 +344,14 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
     if (!online || !isHost) return;
     return online.onBroadcast('closeenough-action', (d) => applyAction(d));
   }, [online, isHost, applyAction]);
+
+  // Host: Kick/Verlassen mitten im Match. Kader, Tipps und Ergebnis bereinigen;
+  // der Alle-abgegeben-Effekt oben löst die Runde dann ggf. sofort auf.
+  useRemovedPlayers(online, (ids) => {
+    const next = dropRemovedPlayers({ players, guesses, results }, ids);
+    if (!next) return;
+    setPlayers(next.players); setGuesses(next.guesses); setResults(next.results);
+  });
 
   // The shared clock also restores the correct remaining time after reconnect.
   useEffect(() => {

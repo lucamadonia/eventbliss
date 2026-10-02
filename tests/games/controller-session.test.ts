@@ -10,12 +10,17 @@ vi.mock('@/games/multiplayer/useGameRoom', () => ({ gameRoomSession: {
   prepareAccountIdentity: async () => 'p1', createPartyRoom: async () => {}, joinRoom: async () => {}, leaveRoom: () => {},
   getSnapshot: () => fixture.snapshot, finishPartyGame: fixture.finish,
   startGame: async (game: string) => { await fixture.access!.start(game, ['p1', 'p2']); return true; },
+  // Party-play realtime API (party-changed / party-scene, kicks, reconnect) — not under test here.
+  onBroadcast: () => () => {}, broadcast: () => {}, kickPlayer: () => {}, dropParticipant: () => {}, reconnect: async () => {},
 } }));
 vi.mock('@/hooks/usePartySession', () => ({ replaceControllerPartySession: vi.fn() }));
 import { abortControllerGame, controllerPartySession, getControllerState, openControllerParty, recordControllerResult, startControllerGame, stopControllerParty } from '@/games/party/controller-session';
 import { readControllerResults, writeControllerResults } from '@/games/party/controller-outbox';
 import { controllerScores } from '@/games/party/controller-result';
 import { personalResult } from '@/games/social/result';
+import { SCENE_LEAD_MS } from '@/lib/party-motion';
+/** Match end is a shared 'round-end' scene: the room closes at its start, SCENE_LEAD_MS later. */
+const roundEndScene = () => vi.advanceTimersByTimeAsync(SCENE_LEAD_MS);
 
 const data = (revision = 1): ControllerPartyData => ({ party: { id: 'party', code: 'ABCDEF', revision, host_user_id: 'u1', host_player_id: 'p1', host_plays: true,
   premium: false, status: 'lobby', playlist: ['bomb'], current_match_id: null, current_game_id: null },
@@ -105,6 +110,7 @@ describe('controller party consistency', () => {
     expect(fixture.request).toHaveBeenLastCalledWith('finish', 'ABCDEF', resultPayload);
     expect(readControllerResults('u1', 'party')).toEqual([]);
     expect(getControllerState().pendingResults).toBe(0);
+    await roundEndScene();
     expect(fixture.finish).toHaveBeenCalledTimes(1);
   });
   it('does not replay an acknowledged or aborted match from persistent storage', async () => {
@@ -123,6 +129,7 @@ describe('controller party consistency', () => {
     await vi.advanceTimersByTimeAsync(4000);
     expect(getControllerState().data?.party.status).toBe('lobby');
     expect(getControllerState().pendingResults).toBe(0);
+    await roundEndScene();
     expect(fixture.finish).toHaveBeenCalledOnce();
     expect(fixture.request.mock.calls.filter(([action]) => action === 'finish')).toHaveLength(1);
   });
@@ -151,9 +158,11 @@ describe('controller party consistency', () => {
     await openControllerParty('u1', 'Alex');
     recordControllerResult('bomb', { p1: 1, p2: 0 }, true);
     await abortControllerGame();
+    await roundEndScene();
     expect(fixture.finish).toHaveBeenCalledTimes(1);
     fixture.snapshot.room.sessionId = 'm2';
     finish.resolve(data(2)); await vi.advanceTimersByTimeAsync(0);
+    await roundEndScene();
     expect(fixture.finish).toHaveBeenCalledTimes(1);
     expect(getControllerState().data?.party.revision).toBe(3);
   });

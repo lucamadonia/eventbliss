@@ -183,6 +183,24 @@ function applyGameEnd(session: PartySession, result: GameEndResult): PartySessio
   };
 }
 
+/**
+ * Spieler verlaesst die Party — jederzeit, auch mitten im Spiel (Masterplan
+ * 3.6/6.6). Wer schon Punkte oder Runden hat, wandert ins Archiv und bleibt
+ * in der Gesamtwertung; wer noch nichts gespielt hat, verschwindet einfach.
+ * Das laufende Spiel zaehlt fuer ihn nicht (`applyGameEnd` wertet nur aktive
+ * Spieler). Die Mindestzahl von zwei Spielern gilt nur fuer den Spielstart.
+ */
+export function archivePartyPlayer(session: PartySession, id: string): PartySession {
+  const player = session.players.find((p) => p.id === id);
+  if (!player) return session;
+  const players = session.players.filter((p) => p.id !== id);
+  const keep = player.gamesPlayed > 0 || player.totalScore !== 0;
+  const archivedPlayers = keep
+    ? [...(session.archivedPlayers ?? []).filter((p) => p.id !== id), player]
+    : session.archivedPlayers;
+  return { ...session, players, ...(archivedPlayers ? { archivedPlayers } : {}) };
+}
+
 // ── Playlist ───────────────────────────────────────────────────────
 
 function currentPlaylistGame(session: PartySession | null): string | null {
@@ -220,10 +238,7 @@ export function usePartySession(): PartySessionAPI {
   }, []);
 
   const removePlayer = useCallback((id: string) => {
-    mutate((prev) => {
-      if (prev.players.length <= 2) return prev;
-      return { ...prev, players: prev.players.filter((p) => p.id !== id) };
-    });
+    mutate((prev) => archivePartyPlayer(prev, id));
   }, []);
 
   const updatePlayer = useCallback(

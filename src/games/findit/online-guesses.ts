@@ -15,3 +15,14 @@ export function publicGuessRound<T extends { phase: string; guesses: OnlineGuess
     location: state.phase === 'result' ? state.location : null,
     submittedIds: state.guesses.map(guess => guess.playerId) };
 }
+
+/**
+ * Host, after players left/were kicked mid-round (masterplan G7): drop their pins and
+ * report whether everyone still in the round has already guessed, so the round closes
+ * immediately instead of waiting for the deadline. Null when nothing changes.
+ */
+export function settleGuessesAfterRemoval<G extends { playerId: string }>(guesses: G[], players: { id: string }[]): { guesses: G[]; complete: boolean } | null {
+  const kept = guesses.filter(g => players.some(p => p.id === g.playerId));
+  const complete = players.length > 0 && players.every(p => kept.some(g => g.playerId === p.id));
+  return kept.length === guesses.length && !complete ? null : { guesses: kept, complete };
+}

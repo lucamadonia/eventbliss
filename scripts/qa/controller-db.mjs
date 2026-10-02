@@ -16,7 +16,9 @@ export async function createDB() {
   `);
   const social = await readFile(new URL('../../supabase/migrations/20260401000000_game_social.sql', import.meta.url), 'utf8');
   await db.exec(social.slice(social.indexOf('CREATE TABLE IF NOT EXISTS public.game_stats'), social.indexOf('-- Achievements definitions')));
-  await db.exec(await readFile(new URL('../../supabase/migrations/20260922235000_controller_parties.sql', import.meta.url), 'utf8'));
+  for (const migration of ['20260922235000_controller_parties.sql', '20261001120000_party_play_guests.sql']) {
+    await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), 'utf8'));
+  }
   return {
     db,
     async seedUser(userId, { premium = false } = {}) {

@@ -17,7 +17,7 @@ import {
   FREE_SETLIST_LIMIT,
   isSetlistEntryLocked,
   isSetlistLengthLocked,
-  playerFitFor,
+  localGameAvailability,
   nextFittingIndex,
   moveSetlistEntry,
   toggleSetlistEntry,
@@ -220,54 +220,28 @@ describe("Laengen-Grenze der Set-Liste", () => {
  * ein Spiel einplanen, das vier Leute braucht — auffallen wuerde es erst
  * mitten im Abend, wenn es nicht startet.
  */
-describe("playerFitFor", () => {
-  const game = (minPlayers: number, maxPlayers: number) =>
-    ({ minPlayers, maxPlayers } as Parameters<typeof playerFitFor>[0]);
-
-  it("laesst passende Gruppengroessen durch", () => {
-    expect(playerFitFor(game(2, 8), 2)).toBe("ok");
-    expect(playerFitFor(game(2, 8), 5)).toBe("ok");
-    expect(playerFitFor(game(2, 8), 8)).toBe("ok");
+describe("localGameAvailability", () => {
+  it("bleibt planbar, wenn nur Leute fehlen, startet aber erst vollstaendig", () => {
+    expect(localGameAvailability("taboo", 2)).toMatchObject({ plannable: true, startable: false, reason: "too_few", missingPlayers: 2 });
+    expect(localGameAvailability("taboo", 4)).toMatchObject({ plannable: true, startable: true });
   });
 
-  it("erkennt zu kleine Runden", () => {
-    expect(playerFitFor(game(4, 15), 2)).toBe("tooFew");
-    expect(playerFitFor(game(3, 10), 2)).toBe("tooFew");
+  it("sperrt eine zu grosse Runde auch fuers Planen", () => {
+    expect(localGameAvailability("ohrwurm", 8)).toMatchObject({ plannable: false, reason: "too_many" });
   });
 
-  it("erkennt zu grosse Runden — OHRWURM ist auf vier Personen ausgelegt", () => {
-    expect(playerFitFor(game(2, 4), 8)).toBe("tooMany");
-    expect(playerFitFor(game(2, 4), 5)).toBe("tooMany");
-    expect(playerFitFor(game(2, 4), 4)).toBe("ok");
-  });
-
-  it("sperrt nichts, solange niemand eingetragen ist", () => {
-    // Beim Planen ist die Liste zuerst leer — dann waere sonst alles grau.
-    expect(playerFitFor(game(4, 15), 0)).toBe("ok");
+  it("kennt im lokalen Abend kein Premium-Hindernis (das regelt das Gratis-Kontingent)", () => {
+    expect(localGameAvailability("hochstapler", 4).startable).toBe(true);
   });
 });
 
 describe("findUnfitSetlistEntries", () => {
-  it("nennt zu zweit genau die Spiele, die mehr Leute brauchen", () => {
-    const list = ["taboo", "hochstapler", "pantomime", "bomb"];
-    expect(findUnfitSetlistEntries(list, 2).sort()).toEqual(["hochstapler", "pantomime", "taboo"]);
+  it("laesst zu kleine Runden planen — es kommen ja noch Leute", () => {
+    expect(findUnfitSetlistEntries(["taboo", "hochstapler", "pantomime", "bomb"], 2)).toEqual([]);
   });
 
-  /**
-   * Die erste Fassung sperrte auch nach oben. Im Geraetetest konnte eine
-   * Runde mit neun Gaesten daraufhin vier Spiele nicht mehr waehlen, die alle
-   * laufen wuerden. Das Maximum ist eine Bedien-Obergrenze: `PlayerSetup`
-   * deaktiviert damit nur den Hinzufuegen-Knopf, OHRWURM kuerzt eine zu
-   * grosse Party. Kein Spiel bricht darueber ab.
-   */
-  it("sperrt NICHT, wenn die Runde zu gross ist", () => {
-    // ohrwurm ist auf hoechstens vier ausgelegt — mit acht spielt man
-    // trotzdem, dann schauen eben vier zu.
-    expect(findUnfitSetlistEntries(["taboo", "ohrwurm"], 8)).toEqual([]);
-  });
-
-  it("gibt nichts zurueck, solange niemand eingetragen ist", () => {
-    expect(findUnfitSetlistEntries(["hochstapler"], 0)).toEqual([]);
+  it("sperrt, wenn die Runde zu gross ist", () => {
+    expect(findUnfitSetlistEntries(["taboo", "ohrwurm"], 8)).toEqual(["ohrwurm"]);
   });
 
   it("ignoriert unbekannte Kennungen statt zu werfen", () => {
@@ -294,11 +268,10 @@ describe("nextFittingIndex", () => {
     expect(nextFittingIndex(LIST, 1, 2)).toBe(3);
   });
 
-  it("ueberspringt ein zu grosses Spiel NICHT", () => {
-    // Acht Personen, ohrwurm (bis 4) an Position 3: Der Abend laeuft trotzdem
-    // hinein. Nur zu wenige Leute sind ein Hindernis — siehe
-    // `findUnfitSetlistEntries`.
-    expect(nextFittingIndex(LIST, 3, 8)).toBe(3);
+  it("ueberspringt auch ein zu grosses Spiel", () => {
+    // Acht Personen, ohrwurm (bis 4) an Position 3: passt nicht mehr.
+    expect(nextFittingIndex(LIST, 3, 8)).toBe(-1);
+    expect(nextFittingIndex(LIST, 0, 8)).toBe(0);
   });
 
   it("liefert -1, wenn ab hier gar nichts mehr passt", () => {
@@ -309,8 +282,8 @@ describe("nextFittingIndex", () => {
     expect(nextFittingIndex(["hochstapler", "bomb"], 0, 2)).toBe(1);
   });
 
-  it("sperrt nichts, solange noch niemand eingetragen ist", () => {
-    expect(nextFittingIndex(LIST, 0, 0)).toBe(0);
+  it("startet nichts, solange noch niemand eingetragen ist", () => {
+    expect(nextFittingIndex(LIST, 0, 0)).toBe(-1);
   });
 
   it("verschluckt eine unbekannte Kennung nicht", () => {

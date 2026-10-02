@@ -10327,5 +10327,279 @@
     "players_many": "{{count}} jogadores",
     "players_other": "{{count}} jogadores",
     "players": "{{count}} jogadores"
+  },
+  "tvLobby": {
+    "allReady": "Estão todos prontos ✓",
+    "atHostDevice": "no telemóvel do anfitrião",
+    "fullscreen": "Ecrã inteiro",
+    "gamesPlanned": "Noite de festa · {{count}} jogos",
+    "gamesPlanned_one": "Noite de festa · 1 jogo",
+    "gamesPlanned_other": "Noite de festa · {{count}} jogos",
+    "guestHint": "{{names}}: têm telemóvel? Leiam o código e juntem-se!",
+    "guestHintOne": "{{names}}: tens telemóvel? Lê o código e junta-te!",
+    "host": "Anfitrião",
+    "hostPlays": "joga",
+    "hostSitsOut": "não joga",
+    "lateJoin": "{{name}} entra a partir da próxima ronda",
+    "latecomerHint": "Lê o código – entras na próxima ronda",
+    "latecomerTitle": "Queres juntar-te?",
+    "localHint": "Hoje o telemóvel anda de mão em mão – a TV mostra de quem é a vez.",
+    "localTitle": "Um telemóvel para todos",
+    "nextUp": "A seguir",
+    "notReady": "ainda não está pronto",
+    "offline": "desligado",
+    "orCode": "ou introduz o código na app",
+    "ownPhone": "telemóvel próprio",
+    "playerJoined": "{{name}} entrou",
+    "playerLeft": "{{name}} saiu da festa",
+    "playerRange": "{{min}}–{{max}} jogadores",
+    "playersHeading": "Na festa",
+    "ready": "pronto",
+    "readyMissing": "Ainda {{count}} por preparar",
+    "readyMissing_one": "Ainda 1 por preparar",
+    "readyMissing_other": "Ainda {{count}} por preparar",
+    "scanTitle": "Lê o código e joga",
+    "step1": "Aponta a câmara do telemóvel ao código",
+    "step2": "A app abre – já estás dentro",
+    "yourSeat": "O teu lugar",
+    "waitingForPlayers": "À espera de jogadores …",
+    "waitingForHost": "À espera do anfitrião …",
+    "waitingForHostHint": "No telemóvel do anfitrião: abre a festa e toca em «{{button}}».",
+    "partyEnded": "Esta festa acabou",
+    "partyEndedHint": "Obrigado por jogares! Para outra ronda, cria uma festa nova."
+  },
+  "handover": {
+    "announce": "Passa o telemóvel a {{name}}.",
+    "clockPaused": "Relógio em pausa",
+    "confirm": "Sou {{name}} – vamos lá",
+    "confirmHost": "Sou {{name}} – continuar",
+    "confirmHostGeneric": "Sou o anfitrião – continuar",
+    "countdownGo": "Já!",
+    "coverAnnounce": "{{name}} terminou. Tapa o ecrã.",
+    "coverButton": "Tapar e passar",
+    "coverHint": "Pousa o telemóvel com o ecrã para baixo antes de o passares.",
+    "coverTitle": "Terminaste, {{name}}?",
+    "holdHint": "Mantém premido",
+    "lookAway": "(os outros, não espreitem)",
+    "passOn": "Agora é a vez de {{name}}",
+    "passTo": "Dá o telemóvel a {{name}}",
+    "returnTo": "De volta para {{name}}",
+    "returnToHost": "De volta para o anfitrião"
+  },
+  "partyPlay": {
+    "abortMatch": "Cancelar o jogo – não conta",
+    "backToLobby": "Voltar à sala",
+    "continueWithout": "Continuar sem {{name}}",
+    "removedFromMatchTitle": "Ficas de fora nesta ronda",
+    "removedFromMatchHint": "No próximo jogo voltas a entrar.",
+    "seatToHost": "{{name}} continua a jogar no telemóvel do anfitrião",
+    "seatToHostLater": "Só depois desta ronda – até lá, continuem sem essa pessoa.",
+    "sittingOut": "{{names}} ficam de fora nesta ronda",
+    "stuckTitle": "Não é possível contactar {{name}}",
+    "tooFewLeft": "– já não está. Para {{game}} precisam de {{min}}.",
+    "tooFewTitle": "Jogadores insuficientes para {{game}}",
+    "tooFewWaiting": "O anfitrião está a decidir como continuar.",
+    "waitingFor": "À espera de {{name}} …",
+    "availability": {
+      "ready_one": "Pronto a começar · 1 jogador",
+      "ready_other": "Pronto a começar · {{count}} jogadores",
+      "waiting_one": "Falta 1 jogador",
+      "waiting_other": "Faltam {{count}} jogadores",
+      "guestsSitOut_one": "Os convidados ficam de fora – falta 1 jogador com telemóvel",
+      "guestsSitOut_other": "Os convidados ficam de fora – faltam {{count}} jogadores com telemóvel",
+      "guestsSitOutNames_one": "{{names}} ficam de fora – falta 1 jogador com telemóvel",
+      "guestsSitOutNames_other": "{{names}} ficam de fora – faltam {{count}} jogadores com telemóvel",
+      "sitout": "{{names}} ficam de fora desta vez",
+      "sitout_one": "{{names}} fica de fora desta vez",
+      "sitout_other": "{{names}} ficam de fora desta vez",
+      "sitoutCount_one": "1 convidado fica de fora",
+      "sitoutCount_other": "{{count}} convidados ficam de fora",
+      "sitoutCount": "{{count}} convidados ficam de fora",
+      "tooMany": "No máximo {{max}} jogadores",
+      "premium": "Só com Premium",
+      "unknown": "Indisponível"
+    },
+    "cancel": "Cancelar",
+    "close": "Fechar",
+    "end": {
+      "body": "A festa termina para todos. A classificação continua visível."
+    },
+    "error": {
+      "already_seated": "Já tens um lugar nesta festa.",
+      "banned": "Já não podes entrar nesta festa.",
+      "cannot_kick_host": "O anfitrião não pode ser removido.",
+      "cannot_release_host": "O lugar do anfitrião fica no telemóvel dele.",
+      "controller_taken": "Este telemóvel já está a ser usado nesta festa.",
+      "host_required": "Só o anfitrião pode fazer isto.",
+      "invalid_avatar": "Este símbolo não está disponível. Escolhe outro.",
+      "invalid_color": "Esta cor não está disponível. Escolhe outra.",
+      "invalid_controller": "Não foi possível associar este telemóvel. Volta a abrir a app.",
+      "invalid_mode": "Não resultou. Tenta outra vez.",
+      "invalid_name": "Usa um nome com 1 a 24 caracteres.",
+      "locked_in_game": "Está a decorrer um jogo – possível depois da ronda.",
+      "not_allowed": "Só o anfitrião pode fazer isto.",
+      "not_claimed": "Não há nada reservado para este lugar.",
+      "not_guest": "Este lugar já pertence a um telemóvel.",
+      "not_member": "Esta pessoa já não está na festa.",
+      "not_playing": "Neste momento não está a decorrer nenhum jogo.",
+      "party_full": "A festa está cheia (12 jogadores). Ocupa um lugar ou fala com o anfitrião.",
+      "recalled": "Agora jogas no telemóvel do anfitrião.",
+      "removed": "Já não estás nesta festa.",
+      "seat_taken": "Outra pessoa acabou de ocupar este lugar. A lista foi atualizada.",
+      "ended": "Esta festa acabou.",
+      "not_found": "Esta festa não existe. Confirma o código."
+    },
+    "kick": {
+      "ban": "Remover e bloquear",
+      "banHint": "Não poderá voltar a entrar com este código.",
+      "confirm": "Remover",
+      "how": "Como remover?",
+      "matchOnly": "Tirar só deste jogo",
+      "matchOnlyHint": "Continua na festa e volta no próximo jogo.",
+      "party": "Remover da festa",
+      "partyHint": "Os pontos ficam na classificação.",
+      "pending": "A remover {{name}}",
+      "playingHint": "O jogo em curso continua sem pausa.",
+      "title": "Remover {{name}}?"
+    },
+    "leave": {
+      "body": "Os teus pontos ficam na classificação."
+    },
+    "lobby": {
+      "connecting": "A ligar …",
+      "nextRound": "Entras a partir da próxima ronda.",
+      "noGame": "Planeia primeiro um jogo.",
+      "notReadyNames": "Ainda não estão prontos: {{names}}",
+      "nothingFits": "Nenhum jogo planeado serve para o vosso grupo.",
+      "skipped": "{{game}} não serve agora – seguimos para {{next}}."
+    },
+    "onboarding": {
+      "back": "Voltar à lista",
+      "claimed": "Bem-vindo de volta",
+      "go": "Vamos lá",
+      "joined": "Já estás dentro ✓",
+      "profileTitle": "Como queres que todos te vejam?",
+      "afterRound": "Está a decorrer um jogo – o teu perfil aparece a partir da próxima ronda."
+    },
+    "pending": {
+      "body": "Está a decorrer um jogo. A partir da próxima ronda jogas como {{name}} no teu telemóvel.",
+      "cancel": "Anular a reserva",
+      "ok": "Está bem",
+      "title": "Reservado"
+    },
+    "profile": {
+      "color": "Cor",
+      "colorOption": "Cor {{n}}",
+      "locked": "Está a decorrer um jogo – podes alterar depois da ronda.",
+      "lockedShort": "alterável depois da ronda",
+      "name": "Nome",
+      "nameInvalid": "Usa 1 a 24 caracteres.",
+      "namePlaceholder": "O teu nome",
+      "preview": "É assim que a TV te mostra",
+      "save": "Guardar",
+      "symbol": "Símbolo",
+      "title": "Perfil"
+    },
+    "recalled": {
+      "body": "Os teus pontos ficam. Podes trazer o teu lugar de volta para este telemóvel quando quiseres.",
+      "rejoin": "Voltar com o meu telemóvel",
+      "title": "Agora jogas no telemóvel do anfitrião"
+    },
+    "remote": {
+      "nobody": "Ninguém para remover.",
+      "players": "Jogadores",
+      "playersTitle": "Remover jogadores"
+    },
+    "removed": {
+      "banned": "Não podes voltar a entrar com o código {{code}}.",
+      "body": "Os pontos que já tens ficam na classificação.",
+      "done": "Ir para os jogos",
+      "startOwn": "Criar a minha festa",
+      "title": "Já não estás nesta festa"
+    },
+    "roster": {
+      "addGuest": "Jogador sem telemóvel",
+      "addGuestHint": "Joga no teu telemóvel. Mais tarde pode passar para o próprio telemóvel com o QR.",
+      "addGuestSubmit": "Adicionar",
+      "addGuestTitle": "Jogador sem telemóvel",
+      "afterRound": "possível depois da ronda",
+      "banned_one": "Bloqueados ({{count}})",
+      "banned_other": "Bloqueados ({{count}})",
+      "cancelClaim": "Anular a reserva",
+      "editProfile": "Nome, símbolo e cor",
+      "notMe": "Não sou eu",
+      "notMeHint": "O lugar volta para o telemóvel do anfitrião e escolhes de novo",
+      "release": "Trazer de volta para o telemóvel do anfitrião",
+      "releaseHint": "p. ex. bateria descarregada – os pontos ficam",
+      "remove": "Remover …",
+      "unban": "Desbloquear",
+      "you": "Tu",
+      "banned": "Bloqueados ({{count}})"
+    },
+    "scene": {
+      "getReady": "Está quase a começar"
+    },
+    "seat": {
+      "host": "Anfitrião",
+      "hostDevice": "no telemóvel do anfitrião",
+      "pendingClaim": "passa para o próprio telemóvel depois da ronda",
+      "phone": "telemóvel próprio"
+    },
+    "similar": {
+      "no": "Não, sou outra pessoa",
+      "noPoints": "Então ficas com este lugar no telemóvel do anfitrião.",
+      "points_one": "Ficar com o {{count}} ponto?",
+      "points_other": "Ficar com os {{count}} pontos?",
+      "title": "És {{name}}?",
+      "yes": "Sim, sou eu",
+      "points": "Ficar com os {{count}} pontos?"
+    },
+    "stay": "Ficar",
+    "switch": {
+      "body": "Sais de {{from}} e entras em {{to}}.",
+      "confirm": "Mudar",
+      "title": "Mudar de festa?"
+    },
+    "undo": "Desfazer",
+    "update": {
+      "body": "Esta festa usa funções novas. Com a versão mais recente entras logo.",
+      "cta": "Atualizar agora",
+      "title": "Atualiza a app"
+    },
+    "who": {
+      "alreadyIn": "Já está com o próprio telemóvel",
+      "createNew": "Não me encontro – criar novo",
+      "noMatch": "Ninguém com este nome no telemóvel do anfitrião.",
+      "partyOf_one": "Festa de {{name}} · {{count}} jogador",
+      "partyOf_other": "Festa de {{name}} · {{count}} jogadores",
+      "points_one": "{{count}} ponto",
+      "points_other": "{{count}} pontos",
+      "search": "Procurar",
+      "subtitle": "Toca no teu nome – os teus pontos vêm contigo.",
+      "title": "Quem és tu?",
+      "partyOf": "Festa de {{name}} · {{count}} jogadores",
+      "points": "{{count}} pontos"
+    },
+    "switchDevice": {
+      "title": "Mudar para este telemóvel?",
+      "body": "Já estás a jogar nesta festa noutro telemóvel. Os teus pontos vêm contigo e o outro telemóvel deixa o lugar.",
+      "confirm": "Mudar para aqui",
+      "movedTitle": "Agora jogas noutro telemóvel",
+      "movedBody": "Os teus pontos vieram contigo. Queres voltar a jogar aqui? Basta entrares de novo.",
+      "back": "Continuar aqui"
+    },
+    "ended": {
+      "title": "Esta festa acabou",
+      "body": "Obrigado por jogares! Cria a tua própria festa."
+    },
+    "tv": {
+      "handover": "{{name}} está a jogar no telemóvel do anfitrião …"
+    },
+    "closing": {
+      "title": "A festa acabou",
+      "placement": "Ficaste em {{rank}}.º lugar – {{points}} pontos",
+      "tv": "A entrega de prémios está a passar na TV.",
+      "done": "Concluído"
+    }
   }
 }

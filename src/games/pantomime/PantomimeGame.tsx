@@ -73,6 +73,8 @@ import {
   type TeamMap,
 } from './pantomime-teams';
 import { PANTOMIME_MIX_ASSET, PANTOMIME_THEME_ASSETS } from './pantomime-theme-assets';
+import { removeFromPantomime } from './roster-change';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
 
 /**
@@ -332,6 +334,26 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     setActiveTeamIdx(nextIdx);
     setPhase('turnStart');
   }, [activeTeamIdx, turnPoints, teams, round, totalRounds]);
+
+  // Host entfernt jemanden mitten im Spiel (Masterplan 6.6): Darsteller geht →
+  // Zug beginnt fuer den Naechsten neu; zu kleines Team wird aufgefuellt.
+  useRemovedPlayers(online, (ids) => {
+    const change = removeFromPantomime({ teams, activeTeamIdx, actorIdx, phase }, ids);
+    if (!change.changed) return;
+    setTeams(change.state.teams);
+    setActorIdx(change.state.actorIdx);
+    setActiveTeamIdx(change.state.activeTeamIdx);
+    if (change.restartTurn) {
+      timerRef.current?.pause();
+      setTurnResults([]);
+      setSkipsUsed(0);
+      setExtra(null);
+      setExtraAccepted(false);
+      setWord(null);
+      setFetchLeft(FETCH_SECONDS);
+    }
+    if (change.state.phase !== phase) setPhase(change.state.phase as Phase);
+  });
 
   // --- Online --------------------------------------------------------------
   const act = useCallback(

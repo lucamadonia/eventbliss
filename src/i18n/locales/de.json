@@ -10252,5 +10252,277 @@
     "players_one": "{{count}} Spieler",
     "players_other": "{{count}} Spieler",
     "players": "{{count}} Spieler"
+  },
+  "tvLobby": {
+    "allReady": "Alle bereit ✓",
+    "atHostDevice": "am Host-Handy",
+    "fullscreen": "Vollbild",
+    "gamesPlanned": "Party-Abend · {{count}} Spiele",
+    "gamesPlanned_one": "Party-Abend · 1 Spiel",
+    "gamesPlanned_other": "Party-Abend · {{count}} Spiele",
+    "guestHint": "{{names}}: Habt ihr ein Handy? Scannt euch rein.",
+    "guestHintOne": "{{names}}: Hast du ein Handy? Scann dich rein.",
+    "host": "Host",
+    "hostPlays": "spielt mit",
+    "hostSitsOut": "spielt nicht mit",
+    "lateJoin": "{{name}} ist ab der nächsten Runde dabei",
+    "latecomerHint": "Scannen – ab der nächsten Runde dabei",
+    "latecomerTitle": "Noch dazukommen?",
+    "localHint": "Heute wird das Handy herumgereicht – der Fernseher zeigt, wer dran ist.",
+    "localTitle": "Ein Handy für alle",
+    "nextUp": "Als Nächstes",
+    "notReady": "noch nicht bereit",
+    "offline": "getrennt",
+    "orCode": "oder Code in der App",
+    "ownPhone": "eigenes Handy",
+    "playerJoined": "{{name}} ist dabei",
+    "playerLeft": "{{name}} hat die Party verlassen",
+    "playerRange": "{{min}}–{{max}} Spieler",
+    "playersHeading": "Dabei",
+    "ready": "bereit",
+    "readyMissing": "Noch {{count}} nicht bereit",
+    "scanTitle": "Scannen & mitspielen",
+    "step1": "Handykamera auf den Code richten",
+    "step2": "App öffnet sich – du bist dabei",
+    "yourSeat": "Dein Platz",
+    "waitingForPlayers": "Warte auf Mitspieler …",
+    "waitingForHost": "Warte auf den Host …",
+    "waitingForHostHint": "Auf dem Handy des Hosts: Party öffnen und „{{button}}“ antippen.",
+    "partyEnded": "Diese Party ist vorbei",
+    "partyEndedHint": "Danke fürs Mitspielen! Für eine neue Runde einfach eine neue Party starten."
+  },
+  "handover": {
+    "announce": "Handy an {{name}} weitergeben.",
+    "clockPaused": "Uhr angehalten",
+    "confirm": "Ich bin {{name}} – los geht's",
+    "confirmHost": "Ich bin {{name}} – weiter",
+    "confirmHostGeneric": "Ich bin der Host – weiter",
+    "countdownGo": "Los!",
+    "coverAnnounce": "{{name}} ist fertig. Bildschirm zudecken.",
+    "coverButton": "Zudecken & weitergeben",
+    "coverHint": "Leg das Handy mit dem Bildschirm nach unten, bevor du es weitergibst.",
+    "coverTitle": "Fertig, {{name}}?",
+    "holdHint": "Gedrückt halten",
+    "lookAway": "(die anderen bitte wegschauen)",
+    "passOn": "Weiter an {{name}}",
+    "passTo": "Gib das Handy an {{name}}",
+    "returnTo": "Zurück an {{name}}",
+    "returnToHost": "Zurück an den Host"
+  },
+  "partyPlay": {
+    "abortMatch": "Spiel abbrechen – zählt nicht",
+    "backToLobby": "Zurück in die Lobby",
+    "continueWithout": "Ohne {{name}} weiterspielen",
+    "removedFromMatchTitle": "Du setzt diese Runde aus",
+    "removedFromMatchHint": "Ab dem nächsten Spiel bist du wieder dabei.",
+    "seatToHost": "{{name}} spielt am Host-Handy weiter",
+    "seatToHostLater": "Geht erst nach dieser Runde – spielt solange ohne weiter.",
+    "sittingOut": "{{names}} setzen diese Runde aus",
+    "stuckTitle": "{{name}} ist nicht erreichbar",
+    "tooFewLeft": "– nicht mehr dabei. Für {{game}} braucht ihr {{min}}.",
+    "tooFewTitle": "Zu wenige Spieler für {{game}}",
+    "tooFewWaiting": "Der Host entscheidet gerade, wie es weitergeht.",
+    "waitingFor": "Warte auf {{name}} …",
+    "availability": {
+      "ready_one": "Startklar · 1 Spieler",
+      "ready_other": "Startklar · {{count}} Spieler",
+      "waiting_one": "Wartet auf 1 Spieler",
+      "waiting_other": "Wartet auf {{count}} Spieler",
+      "guestsSitOut_one": "Gäste setzen aus – noch 1 Spieler mit Handy nötig",
+      "guestsSitOut_other": "Gäste setzen aus – noch {{count}} Spieler mit Handy nötig",
+      "guestsSitOutNames_one": "{{names}} setzen aus – noch 1 Spieler mit Handy nötig",
+      "guestsSitOutNames_other": "{{names}} setzen aus – noch {{count}} Spieler mit Handy nötig",
+      "sitout": "{{names}} setzen aus",
+      "sitout_one": "{{names}} setzt aus",
+      "sitout_other": "{{names}} setzen aus",
+      "sitoutCount_one": "1 Gast setzt aus",
+      "sitoutCount_other": "{{count}} Gäste setzen aus",
+      "sitoutCount": "{{count}} Gäste setzen aus",
+      "tooMany": "Höchstens {{max}} Spieler",
+      "premium": "Nur mit Premium",
+      "unknown": "Nicht verfügbar"
+    },
+    "cancel": "Abbrechen",
+    "close": "Schließen",
+    "end": {
+      "body": "Für alle endet die Party. Die Wertung bleibt sichtbar."
+    },
+    "error": {
+      "already_seated": "Du hast in dieser Party schon einen Platz.",
+      "banned": "Du kannst dieser Party nicht mehr beitreten.",
+      "cannot_kick_host": "Der Host kann nicht entfernt werden.",
+      "cannot_release_host": "Der Platz des Hosts bleibt am Host-Handy.",
+      "controller_taken": "Dieses Handy ist in der Party schon vergeben.",
+      "host_required": "Das darf nur der Host.",
+      "invalid_avatar": "Dieses Symbol ist nicht verfügbar. Bitte ein anderes wählen.",
+      "invalid_color": "Diese Farbe ist nicht verfügbar. Bitte eine andere wählen.",
+      "invalid_controller": "Dieses Handy konnte nicht zugeordnet werden. Bitte die App neu öffnen.",
+      "invalid_mode": "Das hat nicht geklappt. Bitte noch einmal versuchen.",
+      "invalid_name": "Bitte einen Namen mit 1–24 Zeichen.",
+      "locked_in_game": "Gerade läuft ein Spiel – nach der Runde möglich.",
+      "not_allowed": "Das darf nur der Host.",
+      "not_claimed": "Für diesen Platz ist nichts vorgemerkt.",
+      "not_guest": "Dieser Platz gehört schon zu einem Handy.",
+      "not_member": "Diese Person ist nicht mehr in der Party.",
+      "not_playing": "Gerade läuft kein Spiel.",
+      "party_full": "Die Party ist voll (12 Spieler). Übernimm einen Platz oder frag den Host.",
+      "recalled": "Du spielst jetzt am Host-Handy.",
+      "removed": "Du bist nicht mehr in dieser Party.",
+      "seat_taken": "Diesen Platz hat gerade jemand anderes übernommen. Die Liste ist aktualisiert.",
+      "ended": "Diese Party ist vorbei.",
+      "not_found": "Diese Party gibt es nicht. Prüfe den Code."
+    },
+    "kick": {
+      "ban": "Entfernen und sperren",
+      "banHint": "Kann mit diesem Code nicht wieder beitreten.",
+      "confirm": "Entfernen",
+      "how": "Wie entfernen?",
+      "matchOnly": "Nur aus diesem Spiel nehmen",
+      "matchOnlyHint": "Bleibt in der Party und ist beim nächsten Spiel wieder dabei.",
+      "party": "Aus der Party entfernen",
+      "partyHint": "Punkte bleiben in der Wertung.",
+      "pending": "{{name}} wird entfernt",
+      "playingHint": "Das laufende Spiel geht ohne Pause weiter.",
+      "title": "{{name}} entfernen?"
+    },
+    "leave": {
+      "body": "Deine Punkte bleiben in der Wertung."
+    },
+    "lobby": {
+      "connecting": "Verbinde …",
+      "nextRound": "Ab der nächsten Runde bist du dabei.",
+      "noGame": "Plane zuerst ein Spiel.",
+      "notReadyNames": "Noch nicht bereit: {{names}}",
+      "nothingFits": "Kein geplantes Spiel passt zu eurer Runde.",
+      "skipped": "{{game}} passt gerade nicht – weiter mit {{next}}."
+    },
+    "onboarding": {
+      "back": "Zurück zur Auswahl",
+      "claimed": "Willkommen zurück",
+      "go": "Los geht's",
+      "joined": "Du bist dabei ✓",
+      "profileTitle": "Wie sollen dich alle sehen?",
+      "afterRound": "Gerade läuft ein Spiel – dein Profil erscheint ab der nächsten Runde."
+    },
+    "pending": {
+      "body": "Gerade läuft ein Spiel. Ab der nächsten Runde spielst du als {{name}} auf deinem Handy.",
+      "cancel": "Vormerkung zurücknehmen",
+      "ok": "Alles klar",
+      "title": "Vorgemerkt"
+    },
+    "profile": {
+      "color": "Farbe",
+      "colorOption": "Farbe {{n}}",
+      "locked": "Gerade läuft ein Spiel – nach der Runde änderbar.",
+      "lockedShort": "nach der Runde änderbar",
+      "name": "Name",
+      "nameInvalid": "Bitte 1–24 Zeichen.",
+      "namePlaceholder": "Dein Name",
+      "preview": "So sieht dich der Fernseher",
+      "save": "Speichern",
+      "symbol": "Symbol",
+      "title": "Profil"
+    },
+    "recalled": {
+      "body": "Deine Punkte bleiben. Du kannst deinen Platz jederzeit wieder auf dieses Handy holen.",
+      "rejoin": "Wieder mit eigenem Handy",
+      "title": "Du spielst jetzt am Host-Handy"
+    },
+    "remote": {
+      "nobody": "Niemand zum Entfernen.",
+      "players": "Spieler",
+      "playersTitle": "Spieler entfernen"
+    },
+    "removed": {
+      "banned": "Mit dem Code {{code}} kannst du nicht wieder beitreten.",
+      "body": "Deine bisherigen Punkte bleiben in der Wertung.",
+      "done": "Zur Spielübersicht",
+      "startOwn": "Eigene Party starten",
+      "title": "Du bist nicht mehr in dieser Party"
+    },
+    "roster": {
+      "addGuest": "Spieler ohne Handy",
+      "addGuestHint": "Spielt an deinem Handy mit. Kann später per QR aufs eigene Handy wechseln.",
+      "addGuestSubmit": "Hinzufügen",
+      "addGuestTitle": "Spieler ohne Handy",
+      "afterRound": "nach der Runde möglich",
+      "banned_one": "Gesperrt ({{count}})",
+      "banned_other": "Gesperrt ({{count}})",
+      "cancelClaim": "Vormerkung aufheben",
+      "editProfile": "Name, Symbol & Farbe",
+      "notMe": "Das bin ich nicht",
+      "notMeHint": "Platz zurück ans Host-Handy, dann neu wählen",
+      "release": "Zurück ans Host-Handy holen",
+      "releaseHint": "z. B. Akku leer – Punkte bleiben",
+      "remove": "Entfernen …",
+      "unban": "Sperre aufheben",
+      "you": "Du",
+      "banned": "Gesperrt ({{count}})"
+    },
+    "scene": {
+      "getReady": "Gleich geht’s los"
+    },
+    "seat": {
+      "host": "Host",
+      "hostDevice": "am Host-Handy",
+      "pendingClaim": "wechselt nach der Runde aufs eigene Handy",
+      "phone": "eigenes Handy"
+    },
+    "similar": {
+      "no": "Nein, ich bin jemand anderes",
+      "noPoints": "Dann übernimmst du diesen Platz am Host-Handy.",
+      "points_one": "Den {{count}} Punkt übernehmen?",
+      "points_other": "Die {{count}} Punkte übernehmen?",
+      "title": "Bist du {{name}}?",
+      "yes": "Ja, das bin ich",
+      "points": "Die {{count}} Punkte übernehmen?"
+    },
+    "stay": "Bleiben",
+    "switch": {
+      "body": "Du verlässt {{from}} und trittst {{to}} bei.",
+      "confirm": "Wechseln",
+      "title": "Party wechseln?"
+    },
+    "undo": "Rückgängig",
+    "update": {
+      "body": "Diese Party nutzt neue Funktionen. Mit der neuesten Version bist du sofort dabei.",
+      "cta": "Jetzt aktualisieren",
+      "title": "Bitte aktualisiere die App"
+    },
+    "who": {
+      "alreadyIn": "Schon mit eigenem Handy dabei",
+      "createNew": "Ich finde mich nicht – neu anlegen",
+      "noMatch": "Niemand mit diesem Namen am Host-Handy.",
+      "partyOf_one": "{{name}}s Party · {{count}} Spieler",
+      "partyOf_other": "{{name}}s Party · {{count}} Spieler",
+      "points_one": "{{count}} Punkt",
+      "points_other": "{{count}} Punkte",
+      "search": "Suchen",
+      "subtitle": "Tippe auf deinen Namen – deine Punkte kommen mit.",
+      "title": "Wer bist du?",
+      "partyOf": "{{name}}s Party · {{count}} Spieler",
+      "points": "{{count}} Punkte"
+    },
+    "switchDevice": {
+      "title": "Auf dieses Handy wechseln?",
+      "body": "Du spielst in dieser Party schon auf einem anderen Handy. Deine Punkte kommen mit, das andere Handy gibt den Platz ab.",
+      "confirm": "Hierher wechseln",
+      "movedTitle": "Du spielst jetzt auf einem anderen Handy",
+      "movedBody": "Deine Punkte sind mitgekommen. Willst du wieder hier spielen, tritt einfach erneut bei.",
+      "back": "Hier weiterspielen"
+    },
+    "ended": {
+      "title": "Diese Party ist vorbei",
+      "body": "Danke fürs Mitspielen! Starte einfach deine eigene Party."
+    },
+    "tv": {
+      "handover": "{{name}} spielt am Host-Handy …"
+    },
+    "closing": {
+      "title": "Die Party ist vorbei",
+      "placement": "Du bist auf Platz {{rank}} – {{points}} Punkte",
+      "tv": "Die Siegerehrung läuft auf dem Fernseher.",
+      "done": "Fertig"
+    }
   }
 }

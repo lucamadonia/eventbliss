@@ -21,12 +21,14 @@ import { useInitialRoster } from "@/games/ui/useInitialRoster";
 import { useNavigate } from 'react-router-dom';
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { dropTabooPlayers, teamIndexOf } from './removal';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-interface Team { name: string; color: string; textColor: string; borderColor: string; players: string[]; score: number }
+interface Team { name: string; color: string; textColor: string; borderColor: string; players: string[]; score: number; ids?: string[] }
 type CardResult = { card: TabooCard; result: 'correct' | 'taboo' | 'skipped' };
 type Phase = 'setup' | 'turnStart' | 'playing' | 'turnSummary' | 'gameOver';
 
@@ -126,18 +128,19 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
 
   useTVGameBridge('taboo', {
     phase, currentRound, totalRounds, teams, activeTeamIdx, explainer,
-    partyScoresById: online ? Object.fromEntries(online.players.map((p, i) => [p.id, teams[i < Math.ceil(online.players.length / 2) ? 0 : 1].score])) : undefined,
+    partyScoresById: online ? Object.fromEntries(online.players.map((p, i) => [p.id, teams[teamIndexOf(teams, p.id, i, online.players.length)].score])) : undefined,
     timeLeft: timer.timeLeft,
     turnCorrect: turnResults.filter(r => r.result === 'correct').length,
     turnTaboo: turnResults.filter(r => r.result === 'taboo').length,
     turnSkipped: turnResults.filter(r => r.result === 'skipped').length,
   }, [phase, currentRound, activeTeamIdx, timer.timeLeft, turnResults.length], !online || online.isHost);
 
-  function buildTeams(pls: string[]): [Team, Team] {
+  // `ids` (online only, never shuffled) keep each seat tied to its room player when players are removed mid-match.
+  function buildTeams(pls: string[], ids?: string[]): [Team, Team] {
     const s = online ? pls : shuffle(pls); const mid = Math.ceil(s.length / 2);
     return [
-      { name: 'Team A', color: 'bg-[#ff8572]', textColor: 'text-[#ff8572]', borderColor: 'border-[#ff8572]', players: s.slice(0, mid), score: 0 },
-      { name: 'Team B', color: 'bg-[#e6ce81]', textColor: 'text-[#e6ce81]', borderColor: 'border-[#e6ce81]', players: s.slice(mid), score: 0 },
+      { name: 'Team A', color: 'bg-[#ff8572]', textColor: 'text-[#ff8572]', borderColor: 'border-[#ff8572]', players: s.slice(0, mid), score: 0, ...(ids && { ids: ids.slice(0, mid) }) },
+      { name: 'Team B', color: 'bg-[#e6ce81]', textColor: 'text-[#e6ce81]', borderColor: 'border-[#e6ce81]', players: s.slice(mid), score: 0, ...(ids && { ids: ids.slice(mid) }) },
     ];
   }
 
@@ -262,7 +265,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
       recordedRef.current = true;
       const winnerScore = Math.max(teams[0].score, teams[1].score);
       const myIndex = online?.players.findIndex(p => p.id === online.myPlayerId) ?? -1;
-      const myTeam = online && myIndex >= 0 ? teams[myIndex < Math.ceil(online.players.length / 2) ? 0 : 1] : null;
+      const myTeam = online && myIndex >= 0 ? teams[teamIndexOf(teams, online.myPlayerId, myIndex, online.players.length)] : null;
       recordEnd('taboo', myTeam?.score ?? winnerScore, !online || myTeam?.score === winnerScore);
     }
     if (phase === 'setup') recordedRef.current = false;
@@ -278,7 +281,8 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   // A rematch keeps the teams and settings, with fresh match scores.
   function playAgain() {
     recordedRef.current = false;
-    setTeams(prev => [{ ...prev[0], score: 0 }, { ...prev[1], score: 0 }]);
+    // A team emptied by removals is refilled from the remaining players for the rematch.
+    setTeams(prev => prev.some(team => !team.players.length) ? buildTeams([...prev[0].players, ...prev[1].players], online ? [...prev[0].ids ?? [], ...prev[1].ids ?? []] : undefined) : [{ ...prev[0], score: 0 }, { ...prev[1], score: 0 }]);
     setActiveTeamIdx(0); setExplainerIdx([0, 0]); setCurrentRound(1);
     setTurnResults([]); setCurrentCard(null);
     deck.current = shuffle(getTabooCards()); deckPos.current = 0;
@@ -286,18 +290,27 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     setPhase('turnStart');
   }
 
-  const actorId = (activeTeamIdx === 0 ? online?.players.slice(0, Math.ceil(online.players.length / 2)) : online?.players.slice(Math.ceil(online.players.length / 2)))?.[explainerIdx[activeTeamIdx]]?.id ?? false;
+  // Host: a removed player leaves their team; explainer gone mid-turn → turn ends, empty team → match ends (G7).
+  useRemovedPlayers(online, ids => {
+    const drop = dropTabooPlayers(teams, activeTeamIdx, explainerIdx, phase, ids);
+    if (!drop) return;
+    setTeams(drop.teams); setExplainerIdx(drop.explainerIdx);
+    if (drop.phase !== phase) { timer.pause(); setCountdown(null); setPhase(drop.phase as Phase); }
+  });
+  const legacyActorId = (activeTeamIdx === 0 ? online?.players.slice(0, Math.ceil(online.players.length / 2)) : online?.players.slice(Math.ceil(online.players.length / 2)))?.[explainerIdx[activeTeamIdx]]?.id ?? false;
+  const actorId = activeTeam.ids ? activeTeam.ids[explainerIdx[activeTeamIdx]] ?? false : legacyActorId;
+  const otherTeam = teams[1 - activeTeamIdx];
   const refereeTeam = activeTeamIdx === 0 ? online?.players.slice(Math.ceil(online.players.length / 2)) : online?.players.slice(0, Math.ceil(online.players.length / 2));
-  const refereeId = refereeTeam?.[explainerIdx[1 - activeTeamIdx] % (refereeTeam.length || 1)]?.id ?? false;
+  const refereeId = otherTeam.ids ? otherTeam.ids[explainerIdx[1 - activeTeamIdx] % (otherTeam.ids.length || 1)] ?? false : refereeTeam?.[explainerIdx[1 - activeTeamIdx] % (refereeTeam.length || 1)]?.id ?? false;
   const act = useOnlineActions(online, 'taboo', `${phase}:${currentRound}:${activeTeamIdx}:${explainerIdx.join(',')}:${cardKey}:${countdown}`, {
-    start: { allowed: phase === 'setup' ? 'host' : false, run: () => { const names = online ? online.players.map(p => p.name) : playerNames; if (names.length < 4 || names.some(name => !name.trim())) return; setPlayerNames(names); setTeams(buildTeams(names)); const cycle = Math.ceil(names.length / 2); setTotalRounds(Math.ceil(totalRounds / cycle) * cycle); setPhase('turnStart'); } },
+    start: { allowed: phase === 'setup' ? 'host' : false, run: () => { const names = online ? online.players.map(p => p.name) : playerNames; if (names.length < 4 || names.some(name => !name.trim())) return; setPlayerNames(names); setTeams(buildTeams(names, online?.players.map(p => p.id))); const cycle = Math.ceil(names.length / 2); setTotalRounds(Math.ceil(totalRounds / cycle) * cycle); setPhase('turnStart'); } },
     begin: { allowed: phase === 'turnStart' && countdown === null ? actorId : false, run: startTurn },
     correct: { allowed: phase === 'playing' ? actorId : false, run: handleCorrect },
     skip: { allowed: phase === 'playing' ? actorId : false, run: handleSkip },
     taboo: { allowed: phase === 'playing' ? actorId : false, run: handleTaboo },
     referee: { allowed: phase === 'playing' ? refereeId : false, run: handleTaboo },
     next: { allowed: phase === 'turnSummary' ? 'host' : false, run: endTurn },
-    again: { allowed: phase === 'gameOver' ? 'host' : false, run: playAgain },
+    again: { allowed: phase === 'gameOver' && teams[0].players.length + teams[1].players.length >= 2 ? 'host' : false, run: playAgain },
   });
   useOnlinePrivateSnapshot(online, 'taboo', { phase, teams, playerNames, activeTeamIdx, explainerIdx, currentRound, totalRounds, timerOption, currentCard, turnResults, cardKey, countdown, timeLeft: timer.timeLeft }, (state, recipient) => ({ ...state, currentCard: recipient === actorId || recipient === refereeId ? state.currentCard : null }), state => {
     setPhase(state.phase); setTeams(state.teams); setPlayerNames(state.playerNames); setActiveTeamIdx(state.activeTeamIdx); setExplainerIdx(state.explainerIdx); setCurrentRound(state.currentRound); setTotalRounds(state.totalRounds); setTimerOption(state.timerOption); setCurrentCard(state.currentCard); setTurnResults(state.turnResults); setCardKey(state.cardKey); setCountdown(state.countdown); timer.reset(state.timeLeft);

@@ -11,7 +11,7 @@
  * eigene, bereits veraltete Kopie.)
  */
 import { getFreePlaysLeft, isGamePremium } from "@/games/premium/gameConfig";
-import { playableGames, type PlayableGame } from "@/lib/playable-games";
+import { gameAvailability, playableGames, type GameAvailability, type PlayableGame } from "@/lib/playable-games";
 
 // ── Dauerschaetzung ────────────────────────────────────────────────
 
@@ -114,43 +114,29 @@ export interface SetlistGame extends PlayableGame {
   /** Geschaetzte Dauer bei der aktuellen Spielerzahl. */
   minutes: number;
   /**
-   * Passt die Gruppengroesse? `'tooFew'`/`'tooMany'` heisst: waehlbar ist es
-   * jetzt nicht, aber es bleibt sichtbar — wer ein bekanntes Spiel vermisst,
-   * soll den Grund sehen statt zu raten.
+   * Die EINE Party-Regel (`gameAvailability`) fuer diese Runde: `plannable`
+   * = darf auf die Liste (fehlen nur Leute, bleibt es planbar), `startable`
+   * = kann jetzt starten.
    */
-  playerFit: PlayerFit;
+  availability: GameAvailability;
 }
 
-export type PlayerFit = "ok" | "tooFew" | "tooMany";
-
 /**
- * Passt ein Spiel zur aktuellen Runde?
- *
- * Bewusst KEINE reine Mindestpruefung: OHRWURM ist auf hoechstens vier
- * Personen ausgelegt, bei acht Gaesten passt es nach oben nicht.
- * `playerCount === 0` (noch niemand eingetragen) sperrt nichts — sonst waere
- * beim Planen zuerst alles grau.
+ * Lokale Party: alle zaehlen, niemand setzt aus. Premium regelt hier das
+ * Gratis-Runden-Kontingent (`locked`), darum `hostPremium: true`.
  */
-export function playerFitFor(game: PlayableGame, playerCount: number): PlayerFit {
-  if (playerCount <= 0) return "ok";
-  if (playerCount < game.minPlayers) return "tooFew";
-  if (playerCount > game.maxPlayers) return "tooMany";
-  return "ok";
+export function localGameAvailability(gameId: string, playerCount: number): GameAvailability {
+  return gameAvailability(gameId, { mode: "local-party", phonePlayers: playerCount, guestPlayers: 0, hostPlays: false, hostPremium: true });
 }
 
 /**
- * Der naechste Eintrag ab `fromIndex`, der zur aktuellen Runde passt.
- * `-1` heisst: ab hier passt gar nichts mehr, der Abend ist durch.
+ * Der naechste Eintrag ab `fromIndex`, der JETZT starten kann.
+ * `-1` heisst: ab hier kann gerade nichts starten.
  *
  * WARUM ES DAS GIBT: Die Set-Liste wird am Anfang geplant, aber Leute gehen.
  * Die Lobby bot bis hierher den faelligen Eintrag ungeprueft an — bei zwei
  * verbliebenen Gaesten startete ihr grosser Knopf IMPOSTOR, das mit vier
  * Personen beginnt und deshalb gar nicht erst laeuft.
- *
- * Bewusst als reine Vorausschau: `PartyNightFlow` schaltet stattdessen mit
- * `advancePlaylist()` Schritt fuer Schritt weiter, weil es den frisch
- * geschriebenen Zustand braucht. Beide Wege benutzen dieselbe Regel
- * (`playerFitFor`), nur die Bewegung unterscheidet sich.
  */
 export function nextFittingIndex(
   playlist: string[],
@@ -161,32 +147,20 @@ export function nextFittingIndex(
     const game = playableGames.find((g) => g.id === playlist[i]);
     // Unbekannte Kennung nicht verschlucken — sonst verschwindet ein Eintrag
     // stillschweigend, statt dass jemand den Fehler bemerkt.
-    // Nur `tooFew` ist ein Hindernis; zur Begruendung siehe
-    // `findUnfitSetlistEntries`.
-    if (!game || playerFitFor(game, playerCount) !== "tooFew") return i;
+    if (!game || localGameAvailability(game.id, playerCount).startable) return i;
   }
   return -1;
 }
 
 /**
- * Blockiert die Gruppengroesse den Start?
- *
- * NUR das Minimum sperrt. Das Maximum tut es ausdruecklich NICHT — es ist eine
- * Bedien-Obergrenze, keine Spielregel: `PlayerSetup.tsx:70` deaktiviert damit
- * bloss den Hinzufuegen-Knopf, und OHRWURM kuerzt eine zu grosse Party
- * (`OhrwurmGame.tsx:1787`), statt sie abzulehnen. Kein Spiel bricht oberhalb
- * seines Maximums.
- *
- * Die erste Fassung sperrte auch nach oben. Ergebnis im Geraetetest: eine
- * Runde mit neun Gaesten konnte PIXELJAGD, NAH DRAN, DRUECK DAS WORT und
- * OHRWURM nicht mehr waehlen — vier Spiele, die alle laufen wuerden. Das
- * Minimum dagegen ist echt: IMPOSTOR startet mit zwei Leuten wirklich nicht.
+ * Eintraege, die in dieser Runde NIE laufen koennen (zu viele Leute,
+ * unbekannt) — sie duerfen nicht auf die Liste. Fehlen nur Leute, bleibt ein
+ * Spiel planbar; ob es starten kann, entscheidet `nextFittingIndex`.
  */
 export function findUnfitSetlistEntries(gameIds: string[], playerCount: number): string[] {
-  if (playerCount <= 0) return [];
   return gameIds.filter((id) => {
     const game = playableGames.find((g) => g.id === id);
-    return !!game && playerFitFor(game, playerCount) === "tooFew";
+    return !!game && !localGameAvailability(id, playerCount).plannable;
   });
 }
 
@@ -217,7 +191,7 @@ export function buildSetlistCatalog(options: SetlistCatalogOptions): SetlistGame
       freePlaysLeft,
       locked: isPremiumGame && !premiumUnknown && !isPremium && freePlaysLeft <= 0,
       minutes: estimateGameMinutes(game.id, playerCount),
-      playerFit: playerFitFor(game, playerCount),
+      availability: localGameAvailability(game.id, playerCount),
     };
   });
 }

@@ -31,6 +31,8 @@ import { PixelCanvas } from './PixelCanvas';
 import { stepsFor, pointsAt, FINAL_STEP } from './pixelate';
 import { isCorrectAnswer } from './answer-match';
 import { recoverPixelRound, importPixelPlayers, validPixelAnswerAction } from './recovery';
+import { dropPixelPlayers } from './removal';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import {
   getPixelPuzzles,
   PIXEL_CATEGORIES,
@@ -258,6 +260,15 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     if (!online || !isHost) return;
     return online.onBroadcast('pixeljagd-action', (d) => applyAction(d));
   }, [online, isHost, applyAction]);
+
+  // Host: kicked/left players leave the round; a released buzz lets the reveal run on (G7).
+  useRemovedPlayers(online, (ids) => {
+    const drop = dropPixelPlayers({ phase, players, buzzedBy }, ids);
+    if (!drop) return;
+    setPlayers(drop.players);
+    if (drop.clearBuzz || drop.endRound) { setBuzzedBy(null); setFrozenPoints(null); setSolutionShown(false); }
+    if (drop.endRound) { roundTimerRef.current?.pause(); setPhase('roundEnd'); }
+  });
 
   // The shared clock also restores the correct remaining time after reconnect.
   useEffect(() => {

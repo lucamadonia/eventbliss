@@ -1,6 +1,6 @@
 import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
 import './design.css';
-import { emojiPointsForTurn, matchesEmojiAnswer, awardEmojiPoints, publicEmojiPuzzle, nextEmojiTurn, emojiRoundBudget } from './game-rules';
+import { emojiPointsForTurn, emojiTeamOf, emojiTeamSizes, matchesEmojiAnswer, awardEmojiPoints, publicEmojiPuzzle, nextEmojiTurn, emojiRoundBudget } from './game-rules';
 import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
@@ -8,19 +8,22 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
   Play, Trophy, RotateCcw, Timer, ArrowLeft, ArrowRight,
-  Zap, Clock, Crown, Lightbulb, Eye, Smile,
+  Lightbulb, Eye, Smile,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useGameTimer } from '@/games/engine/TimerSystem';
 import { getEMOJI_PUZZLES, type EmojiPuzzle } from './emoji-content';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
-import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
+import { GameSetup, type SettingsConfig } from '../ui/GameSetup';
 import { getTranslatedModes } from '../ui/getTranslatedModes';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
+import { PLAYER_COLORS, GAME_MODES, shuffle } from './emoji-setup';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { applyEmojiRemoval } from './removal';
 import { hasShellBackButton } from '@/games/ui/shell-back';
 
 // ---------------------------------------------------------------------------
@@ -30,6 +33,7 @@ import { hasShellBackButton } from '@/games/ui/shell-back';
 type Phase = 'ready' | 'setup' | 'playing' | 'reveal' | 'roundEnd' | 'gameOver';
 
 interface Player {
+  team?: number;
   id: string;
   name: string;
   color: string;
@@ -37,34 +41,6 @@ interface Player {
   score: number;
   streak: number;
 }
-
-const PLAYER_COLORS = [
-  '#06b6d4', '#0ea5e9', '#8b5cf6', '#f59e0b', '#ef4444',
-  '#10b981', '#ec4899', '#f97316', '#6366f1', '#14b8a6',
-];
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// ---------------------------------------------------------------------------
-// Setup config
-// ---------------------------------------------------------------------------
-
-const GAME_MODES: GameMode[] = [
-  { id: 'classic', name: 'Klassisch', desc: '30 Sek. pro Runde', icon: <Clock className="w-6 h-6" /> },
-  { id: 'speed', name: 'Speed', desc: '10 Sek. pro Runde', icon: <Zap className="w-6 h-6" /> },
-  { id: 'team', name: 'Team', desc: 'Teams wechseln sich ab', icon: <Crown className="w-6 h-6" /> },
-];
 
 // ---------------------------------------------------------------------------
 // Component
@@ -157,6 +133,7 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
         color: PLAYER_COLORS[i % PLAYER_COLORS.length],
         score: 0,
         streak: 0,
+        team: i % 2, // fixed at start: a removal mid-match never moves anyone to the other team
       }));
       setPlayers(mapped);
       setMode(selectedMode);
@@ -228,7 +205,7 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
       return;
     }
     stopTimers();
-    setRoundPoints(showAnswer ? 0 : emojiPointsForTurn(pointsAvailable, currentPlayerIdx, players.length, mode === 'team'));
+    setRoundPoints(showAnswer ? 0 : emojiPointsForTurn(pointsAvailable, currentPlayerIdx, players, mode === 'team'));
     setPlayers(prev => awardEmojiPoints(prev, currentPlayerIdx, showAnswer ? 0 : pointsAvailable, mode === 'team'));
     setPhase('reveal');
   }
@@ -248,6 +225,14 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
     setCurrentRound(next.round);
     startRound();
   }
+
+  // Host: a removed player leaves the rotation; if it was his puzzle, the next player takes over (G7).
+  useRemovedPlayers(online, ids => {
+    const r = applyEmojiRemoval({ phase, players, currentPlayerIdx, currentRound, totalRounds }, ids);
+    if (!r) return;
+    setPlayers(r.players); setCurrentPlayerIdx(r.currentPlayerIdx); setCurrentRound(r.currentRound);
+    if (r.finished) { stopTimers(); setPhase('gameOver'); } else if (r.restartTurn) startRound();
+  });
 
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
@@ -347,7 +332,7 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
           <span className="rebus-issue">{String(currentRound).padStart(2, '0')}</span>
           <h2>{t('games.emojiguess.readyTitle', { defaultValue: 'Dein Rätsel wartet' })}</h2>
           <p>{t('games.emojiguess.readyBody', { defaultValue: 'Lies die Bilder von links nach rechts. Gesucht ist ein Begriff aus der angezeigten Kategorie.' })}</p>
-          <p className="rebus-ready-time">{timerDuration} s · {t('games.emojiguess.pointsAvailable')} {emojiPointsForTurn(100, currentPlayerIdx, players.length, mode === 'team')}</p>
+          <p className="rebus-ready-time">{timerDuration} s · {t('games.emojiguess.pointsAvailable')} {emojiPointsForTurn(100, currentPlayerIdx, players, mode === 'team')}</p>
         </StagePanel>
         {!online || online.myPlayerId === currentPlayer?.id
           ? <StageAction onClick={ready}>{t('games.emojiguess.readyStart', { defaultValue: 'Bereit – Rätsel zeigen' })}<ArrowRight className="h-5 w-5" /></StageAction>
@@ -381,13 +366,13 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
           <div className="rebus-poster" aria-label={t('games.emojiguess.clueLabel', { defaultValue: 'Bilderrätsel' })}>
             <span className="rebus-caption">{t('games.emojiguess.clueLabel', { defaultValue: 'Bilderrätsel' })}</span>
             <div className="rebus-glyphs">{currentPuzzle.emojis}</div>
-            <div className="rebus-clue-meta"><span><strong>{emojiPointsForTurn(pointsAvailable, currentPlayerIdx, players.length, mode === 'team')}</strong> {t('games.emojiguess.pointsAvailable')}</span>
+            <div className="rebus-clue-meta"><span><strong>{emojiPointsForTurn(pointsAvailable, currentPlayerIdx, players, mode === 'team')}</strong> {t('games.emojiguess.pointsAvailable')}</span>
               {showHint && <span className="rebus-hint"><Lightbulb className="h-4 w-4" />{t('games.emojiguess.hintPrefix', { letter: currentPuzzle.answer.charAt(0) })}</span>}
             </div>
           </div>
 
-          {mode === 'team' && players.length % 2 === 1 && <p className="px-4 text-center text-sm text-white/70">{t('games.emojiguess.balancedTeamPoints', { defaultValue: 'Bei ungleichen Teams werden die Punkte gewichtet: Beide Teams können pro Runde gleich viele Punkte erreichen.' })}</p>}
-          {mode === 'team' && <div className="flex justify-center gap-6 p-3">{[0, 1].map(team => <p key={team}>{t('games.emojiguess.teamLabel', { team: team === 0 ? 'A' : 'B' })}: {players.filter((_, i) => i % 2 === team).map(p => p.name).join(', ')} · {players[team]?.score ?? 0}</p>)}</div>}
+          {mode === 'team' && new Set(emojiTeamSizes(players)).size > 1 && <p className="px-4 text-center text-sm text-white/70">{t('games.emojiguess.balancedTeamPoints', { defaultValue: 'Bei ungleichen Teams werden die Punkte gewichtet: Beide Teams können pro Runde gleich viele Punkte erreichen.' })}</p>}
+          {mode === 'team' && <div className="flex justify-center gap-6 p-3">{[0, 1].map(team => <p key={team}>{t('games.emojiguess.teamLabel', { team: team === 0 ? 'A' : 'B' })}: {players.filter((p, i) => emojiTeamOf(p, i) === team).map(p => p.name).join(', ')} · {players.find((p, i) => emojiTeamOf(p, i) === team)?.score ?? 0}</p>)}</div>}
           <form className="rebus-controls" onSubmit={e => { e.preventDefault(); if (answerInput.trim()) handleCorrectGuess(); }}>
             {!online || online.myPlayerId === currentPlayer?.id ? <>
               <label htmlFor="rebus-answer">{t('games.emojiguess.answerLabel')}</label>

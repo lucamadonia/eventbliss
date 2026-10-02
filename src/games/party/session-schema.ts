@@ -22,10 +22,33 @@ export const PLAYER_COLORS = [
   "#ff7675", "#55efc4",
 ] as const;
 
+/** Order matters: the first 12 are the historic index-based defaults. Mirrors the server CHECK list. */
 export const PLAYER_AVATARS = [
   "🎉", "🔥", "⭐", "🎯", "🚀", "💎", "🌟", "🎪",
   "🎲", "🎸", "🎨", "🦄",
+  "🦊", "🐼", "🐯", "🐸", "🐙", "🦁", "🐨", "🐵",
+  "🦉", "🐳", "🍕", "👑",
 ];
+
+export const PLAYER_NAME_MAX = 24;
+
+export const isPlayerAvatar = (value: unknown): value is string =>
+  typeof value === "string" && PLAYER_AVATARS.includes(value);
+
+/** Lowercase palette colour or null — the server stores colours lowercase. */
+export function playerColor(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const color = value.toLowerCase();
+  return (PLAYER_COLORS as readonly string[]).includes(color) ? color : null;
+}
+
+/** Trimmed name within 1–24 characters (code points, so emoji count once), else null. */
+export function playerName(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const name = value.trim().replace(/\s+/g, " ");
+  const length = [...name].length;
+  return length >= 1 && length <= PLAYER_NAME_MAX ? name : null;
+}
 
 // ── Typen ──────────────────────────────────────────────────────────
 
@@ -119,12 +142,13 @@ export function createPartySession(id: string): PartySession {
   };
 }
 
-export function createPartyPlayer(id: string, name: string, index: number): PartyPlayer {
+/** `look` comes from the server; invalid or missing values fall back to the index. */
+export function createPartyPlayer(id: string, name: string, index: number, look: { avatar?: unknown; color?: unknown } = {}): PartyPlayer {
   return {
     id,
     name,
-    color: PLAYER_COLORS[index % PLAYER_COLORS.length],
-    avatar: PLAYER_AVATARS[index % PLAYER_AVATARS.length],
+    color: playerColor(look.color) ?? PLAYER_COLORS[index % PLAYER_COLORS.length],
+    avatar: isPlayerAvatar(look.avatar) ? look.avatar : PLAYER_AVATARS[index % PLAYER_AVATARS.length],
     totalScore: 0,
     gamesPlayed: 0,
     gamesWon: 0,
@@ -243,5 +267,15 @@ export function migratePartySession(value: unknown): PartySession | null {
     playlistIndex,
     playlistActive: raw.playlistActive === true && playlistIndex < playlist.length,
     schemaVersion: PARTY_SCHEMA_VERSION,
+  };
+}
+
+/** First symbol and colour nobody uses yet; duplicates are allowed once all are taken. */
+export function suggestPlayerLook(taken: readonly { avatar?: string; color?: string }[]): { avatar: string; color: string } {
+  const avatars = new Set(taken.map(p => p.avatar));
+  const colors = new Set(taken.map(p => p.color?.toLowerCase()));
+  return {
+    avatar: PLAYER_AVATARS.find(a => !avatars.has(a)) ?? PLAYER_AVATARS[taken.length % PLAYER_AVATARS.length],
+    color: PLAYER_COLORS.find(c => !colors.has(c)) ?? PLAYER_COLORS[taken.length % PLAYER_COLORS.length],
   };
 }
