@@ -6190,7 +6190,9 @@
       "tutorialDismiss": "فهمت!",
       "taskAllePrompt": "اذكر: {{category}} بـ \"{{letter}}\"",
       "taskKategoriePrompt": "اذكر {{category}} بـ \"{{letter}}\"!",
-      "fewestPenalties": "أقل نقاط جزاء"
+      "fewestPenalties": "أقل نقاط جزاء",
+      "partyHolderWait": "قد تصل إليك بعد لحظات.",
+      "partyHolderPass": "الفتيل ما زال يشتعل!"
     },
     "headup": {
       "name": "خمّن الكلمة",
@@ -6263,7 +6265,13 @@
         "roundLabel": "الجولة {{current}} / {{total}}",
         "explainsSuffix": "يشرح",
         "isUp": "دور {{team}} الآن!",
-        "startBtn": "هيا نبدأ!"
+        "startBtn": "هيا نبدأ!",
+        "explainerHint": "اضغط «ابدأ» عندما يجهز فريقك. ممنوع على فريقك النظر إلى الهاتف.",
+        "refereeHint": "تقرأ البطاقة وتضغط «تابو!» فور سماع كلمة ممنوعة.",
+        "guesserHint": "{{name}} سيشرح الآن – استمع جيدًا وخمّن بصوت عالٍ.",
+        "watcherHint": "{{name}} سيشرح بعد قليل لـ {{team}}.",
+        "cardBack": "بطاقتك جاهزة ومقلوبة",
+        "waitingFor": "بانتظار {{name}} …"
       },
       "playing": {
         "currentWord": "الكلمة الحالية",
@@ -6271,7 +6279,12 @@
         "skipCount": "{{count}} تخطي",
         "tabooBtn": "محظور!",
         "skipBtn": "تخطي",
-        "correctBtn": "صحيح"
+        "correctBtn": "صحيح",
+        "guessTitle": "خمّن بصوت عالٍ!",
+        "guessBody": "لن ترى البطاقة – استمع جيدًا إلى {{name}}.",
+        "watchTitle": "{{name}} يشرح",
+        "watchBody": "انظر إلى التلفاز واضحك معنا.",
+        "refereeHint": "سمعت كلمة ممنوعة؟ اضغط فورًا."
       },
       "summary": {
         "roundWord": "جولة",
@@ -6299,7 +6312,13 @@
         "cheers": "في صحتك!"
       },
       "refereeRole": "الحكم: انتبه للكلمات الممنوعة.",
-      "voiceHint": "خمّنوا بصوت عالٍ مع فريقكم. عند اللعب عن بُعد، استخدموا مكالمة صوتية."
+      "voiceHint": "خمّنوا بصوت عالٍ مع فريقكم. عند اللعب عن بُعد، استخدموا مكالمة صوتية.",
+      "role": {
+        "explainer": "أنت تشرح",
+        "referee": "أنت الحكم",
+        "guesser": "خمّن معنا",
+        "watcher": "دور {{team}}"
+      }
     },
     "categoryGame": {
       "name": "فئة بالوقت",
@@ -6435,7 +6454,9 @@
         "ball": "كرة قدم",
         "plant": "نبتة في أصيص",
         "umbrella": "مظلة"
-      }
+      },
+      "watchTurn": "تابع – دورك بعد قليل.",
+      "guessSeat": "{{name}} يضع الدبوس"
     },
     "impostor": {
       "title": "المخادع",
@@ -6632,7 +6653,9 @@
       "timeToPlace": "وقت الوضع",
       "songLoading": "جارٍ تحميل الأغنية…",
       "tapToPlayHidden": "اضغط للتشغيل — العنوان يبقى سراً",
-      "tapAndGo": "اضغط وابدأ"
+      "tapAndGo": "اضغط وابدأ",
+      "partyCounterLine": "ضع تحدّيك على الخط الزمني.",
+      "partyYourTurnLine": "استمع وضع الأغنية في مكانها."
     },
     "splitquiz": {
       "subtitle": "كل فريق يرى نصف الإجابات فقط!",
@@ -6708,7 +6731,23 @@
       "wins": "{{name}} فاز!",
       "points": "{{count}} نقطة",
       "playAgain": "العب مجددًا",
-      "otherGame": "لعبة أخرى"
+      "otherGame": "لعبة أخرى",
+      "taskOf": "مهمة لـ {{name}}",
+      "level": "المستوى",
+      "doneDare": "تم — صوّتوا",
+      "hostSpins": "المضيف يدير العجلة …",
+      "onlyTruth": "الليلة صراحة فقط",
+      "onlyDare": "الليلة جرأة فقط",
+      "votePassed": "نجح",
+      "voteFailed": "لم ينجح",
+      "voteProgress": "صوّت {{done}} من {{total}}",
+      "turnChoose": "يختار صراحة أم جرأة",
+      "turnAnswer": "يجيب عن السؤال",
+      "turnDare": "ينفّذ التحدي",
+      "turnVote": "يحكم على {{name}}",
+      "turnYou": "دورك الآن",
+      "turnOther": "الدور الآن",
+      "watchOther": "دور {{name}} — تابع أو انظر إلى التلفاز."
     },
     "whoami": {
       "round": "الجولة {{round}}/{{total}}",
@@ -6801,7 +6840,25 @@
       "sendQuestion": "اطرح السؤال",
       "guessNow": "خمّن الهوية",
       "voteSummary": "نعم: {{yes}} · لا: {{no}}",
-      "questionLimit": "أسئلة لكل هوية"
+      "questionLimit": "أسئلة لكل هوية",
+      "party": {
+        "isAsking": "يسأل الآن",
+        "theirIdentity": "{{name}} هو …",
+        "askAloud": "اسأل سؤال نعم/لا عن نفسك.",
+        "waitingQuestion": "{{name}} يفكر في سؤال …",
+        "theOthersAre": "هؤلاء هم الآخرون",
+        "notYours": "شخصيتك تبقى سرًا — عليك اكتشافها بالأسئلة.",
+        "seenCover": "رأيتها – غطِّها",
+        "seenPass": "رأيتها – مرّر الهاتف",
+        "allSeen": "كل من على الهاتف رأى البطاقات",
+        "startWhenReady": "ابدأ عندما يرى الجميع بطاقاتهم.",
+        "holdToSee": "اضغط مطوّلًا للعرض",
+        "lookAtTv": "انظر إلى التلفاز أو إلى المجموعة",
+        "askerIs": "{{name}} هو",
+        "waitingAnswer": "{{name}} يجيب …",
+        "waitingGuess": "{{name}} يخمّن الآن …",
+        "notSeenYet": "لم يطّلع بعد: {{names}}"
+      }
     },
     "bottlespin": {
       "setupTimerLabel": "مؤقت المهمة (ث.)",
@@ -6875,7 +6932,15 @@
       "finalResults": "النتيجة النهائية",
       "playAgain": "العب مجدداً",
       "otherGame": "لعبة أخرى",
-      "quit": "خروج"
+      "quit": "خروج",
+      "starts": "{{name}} يبدأ",
+      "passingPhone": "{{name}} يستلم الهاتف الآن …",
+      "yourTurn": "دورك – قل كلمة!",
+      "othersTurn": "استمع جيدًا – قد يأتي دورك بعد لحظات.",
+      "clockStopped": "الساعة متوقفة حتى يجهز {{name}}.",
+      "waitingAnswer": "{{name}} يبحث عن كلمة …",
+      "hostContinues": "المضيف سيبدأ الجولة التالية بعد قليل.",
+      "hostDecides": "المضيف يقرر ما سيحدث بعد ذلك."
     },
     "emojiguess": {
       "title": "خمّن الإيموجي",
@@ -6898,7 +6963,13 @@
       "nextPlayer": "التالي: {{name}}",
       "clueLabel": "لغز مصوّر",
       "poolBudget": "{{puzzleCount}} لغزًا مختارًا. تلعب المجموعات الكبيرة جولات أقل: أدوار متساوية للجميع، دون تكرار.",
-      "balancedTeamPoints": "عند اختلاف عدد أعضاء الفريقين، تُوزن النقاط ليتمكن كلاهما من تحقيق المجموع نفسه في كل جولة."
+      "balancedTeamPoints": "عند اختلاف عدد أعضاء الفريقين، تُوزن النقاط ليتمكن كلاهما من تحقيق المجموع نفسه في كل جولة.",
+      "watchTitle": "{{name}} يخمّن الآن",
+      "watchBody": "انظر إلى التلفاز وخمّن بصمت.",
+      "yourTurn": "دورك الآن",
+      "nextUp": "التالي في الدور",
+      "solvedBy": "حزرها",
+      "notSolved": "لم تُحزر هذه المرة"
     },
     "fakeorfact": {
       "title": "كاذب — Fake or Fact",
@@ -6916,7 +6987,19 @@
       "correctPct": "صحيح: {{pct}}%",
       "incorrectPct": "خاطئ: {{pct}}%",
       "continue": "متابعة",
-      "noAnswer": "لا إجابة (انتهى الوقت)"
+      "noAnswer": "لا إجابة (انتهى الوقت)",
+      "seatResults": "النتائج على هذا الهاتف",
+      "yourTurn": "دورك الآن",
+      "playerTurn": "دور {{name}}",
+      "onHostPhone": "على هاتف المضيف",
+      "timeLeft": "باقي {{seconds}} ثانية",
+      "progressLabel": "من قرّر بالفعل",
+      "markDone": "قرّر",
+      "markNow": "دوره الآن",
+      "markOpen": "لم يقرّر بعد",
+      "waitingFor": "{{name}} يقرّر الآن …",
+      "answerLocked": "تم حفظ إجابتك – الكشف بعد لحظات",
+      "turnSoon": "دورك قادم"
     },
     "quickdraw": {
       "tagline": "ارسم بسرعة — الآخرون يخمّنون!",
@@ -6944,7 +7027,8 @@
       "penSize": "عرض القلم {{size}}",
       "eraser": "ممحاة",
       "undo": "تراجع",
-      "clear": "مسح الرسم"
+      "clear": "مسح الرسم",
+      "lookAtTv": "👀 انظر إلى التلفاز"
     },
     "sharedquiz": {
       "title": "مقسّم ومُختبَر",
@@ -6969,7 +7053,13 @@
       "resultBtn": "النتائج",
       "modeAnswerTurn": "{{name}} · الإجابة {{n}} من 3",
       "chainRules": "أجيبوا بالتتابع. كل إجابة صحيحة تمنح فريقكم الثلاثي نقطة. تبقى الإجابات مخفية حتى يجيب الثلاثة.",
-      "allRules": "يجب أن يجيب الثلاثة بشكل صحيح. يحصل فريقكم على ثلاث نقاط، وإلا فصفر."
+      "allRules": "يجب أن يجيب الثلاثة بشكل صحيح. يحصل فريقكم على ثلاث نقاط، وإلا فصفر.",
+      "sharedPhoneTitle": "الأدوار على هذا الهاتف",
+      "sharedPhoneHint": "كل شخص يرى دوره فقط – والبقية لا ينظرون.",
+      "viewMyRole": "عرض دوري",
+      "viewGuestRole": "{{name}}: عرض الدور",
+      "seenBadge": "تمت المشاهدة",
+      "coverRole": "شاهدته – غطِّ الشاشة"
     },
     "storybuilder": {
       "setupTimerLabel": "الجمل لكل لاعب",
@@ -6986,7 +7076,9 @@
       "playAgain": "العب مجددًا",
       "otherGame": "لعبة أخرى",
       "skipTurn": "تخطي الدور",
-      "emptyStory": "لا توجد جمل بعد. ابدؤوا قصة جديدة معًا."
+      "emptyStory": "لا توجد جمل بعد. ابدؤوا قصة جديدة معًا.",
+      "writingNow": "{{name}} يكتب الآن …",
+      "secondsLeft": "باقي {{count}} ث"
     },
     "thisorthat": {
       "modeTagPopular": "شائع",
@@ -7069,7 +7161,9 @@
       "waitForPlayer": "بانتظار أن يبدأ {{name}}.",
       "exampleCategory": "«{{animal}}»: اضغط. «{{object}}»: انتظر.",
       "exampleStroop": "«{{red}}» باللون الأحمر: اضغط. باللون الأزرق: انتظر.",
-      "exampleForbidden": "«{{word}}»: انتظر. اضغط على كل كلمة أخرى."
+      "exampleForbidden": "«{{word}}»: انتظر. اضغط على كل كلمة أخرى.",
+      "partyReadyLine": "اضغط «جاهز» وسيبدأ الوقت.",
+      "partyWatchLine": "تابع – دورك بعد قليل."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
@@ -7129,7 +7223,10 @@
       "playersLabel": "اللاعبون",
       "groupsLabel": "الفرق",
       "teamN": "الفريق {{n}}",
-      "retryImage": "إعادة تحميل الصورة"
+      "retryImage": "إعادة تحميل الصورة",
+      "sayItLoud": "قل الإجابة بصوت عالٍ!",
+      "teamHint": "تخمّنون كفريق – إجابة خاطئة تقفل الهاتف كله.",
+      "whoTypes": "من سيكتب؟"
     },
     "closeenough": {
       "title": "قريب جدًا",
@@ -7418,7 +7515,8 @@
         "wingspan_aircraft": "يبلغ باع جناحي إيرباص A320 نحو 36 مترًا.",
         "employees": "يعمل في فولكسفاغن نحو 680000 شخص.",
         "revenue": "تحقق أبل نحو 390 مليار دولار من الإيرادات سنويًا."
-      }
+      },
+      "partyYourEstimate": "تخمينك يبقى سرًا حتى الكشف."
     },
     "pantomime": {
       "title": "بلا كلمات",
@@ -7729,7 +7827,8 @@
       "counterLabelBrew": "رفّ المؤن",
       "counterLabelBar": "الطاولة",
       "trayNote": "ليست آمنة بعد",
-      "counterNote": "متاحة للجميع · بطاقة واحدة في الدور"
+      "counterNote": "متاحة للجميع · بطاقة واحدة في الدور",
+      "partyWatch": "تابع معنا – ما لا يتسع له الكأس ينسكب على البار."
     },
     "connectionPaused": "اللعبة متوقفة مؤقتًا",
     "connectionPausedHint": "أعِد الاتصال لمتابعة اللعب. يتم الاحتفاظ بالدور الحالي.",
@@ -10135,7 +10234,7 @@
       "leaderLine": "{{name}} يتصدر بـ {{points}} نقطة",
       "tapForMap": "اضغط لعرض المسار",
       "gameXofY": "اللعبة {{current}} من {{total}}",
-      "finaleEyebrow": "انتهت Party Night",
+      "finaleEyebrow": "انتهت سهرة الحفلة",
       "champion": "بطل السهرة",
       "championLine": "{{name}} يفوز بـ {{points}} نقطة",
       "finalTable": "الترتيب النهائي",
@@ -10166,7 +10265,8 @@
         }
       },
       "champions": "فوز مشترك",
-      "championsLine": "يتقاسم {{name}} الفوز برصيد {{points}} نقطة لكل منهم"
+      "championsLine": "يتقاسم {{name}} الفوز برصيد {{points}} نقطة لكل منهم",
+      "drumroll": "وبطل السهرة هو"
     },
     "connectTitle": "توصيل التلفاز",
     "openOnTv": "افتح على تلفازك:",
@@ -10548,7 +10648,28 @@
       "noGame": "خطّط للعبة أولًا.",
       "notReadyNames": "غير جاهزين بعد: {{names}}",
       "nothingFits": "لا توجد لعبة مخططة تناسب مجموعتكم.",
-      "skipped": "{{game}} لا تناسب الآن – ننتقل إلى {{next}}."
+      "skipped": "{{game}} لا تناسب الآن – ننتقل إلى {{next}}.",
+      "kicker_zero": "سهرة الحفلة · لا ألعاب مخطط لها",
+      "kicker_two": "سهرة الحفلة · لعبتان مخطط لهما",
+      "kicker_few": "سهرة الحفلة · {{count}} ألعاب مخطط لها",
+      "kicker_many": "سهرة الحفلة · {{count}} لعبة مخطط لها",
+      "kickerEmpty": "سهرة الحفلة",
+      "tvOn": "التلفاز متصل",
+      "soon": "سيأتي دورك بعد قليل",
+      "running": "هناك لعبة جارية",
+      "title": "نبدأ بعد قليل",
+      "nonePlanned": "لا توجد لعبة مخطط لها بعد",
+      "notReadyOne": "{{name}} غير جاهز بعد",
+      "planned": "الألعاب المخطط لها: {{count}}",
+      "planned_zero": "لا ألعاب مخطط لها",
+      "planned_one": "لعبة واحدة مخطط لها ({{count}})",
+      "planned_two": "لعبتان مخطط لهما ({{count}})",
+      "planned_few": "{{count}} ألعاب مخطط لها",
+      "planned_many": "{{count}} لعبة مخطط لها",
+      "planned_other": "{{count}} لعبة مخطط لها",
+      "waitingFor": "بانتظار {{names}}",
+      "waitingMany": "بانتظار {{names}} و{{count}} آخرين",
+      "runningNow": "قيد اللعب الآن: {{game}}"
     },
     "onboarding": {
       "back": "العودة إلى القائمة",
@@ -10615,7 +10736,9 @@
       "remove": "إخراج …",
       "unban": "رفع الحظر",
       "you": "أنت",
-      "banned": "المحظورون ({{count}})"
+      "banned": "المحظورون ({{count}})",
+      "addGuestShort": "يلعب على هاتفك",
+      "full": "الحفلة ممتلئة"
     },
     "scene": {
       "getReady": "نبدأ بعد قليل"
@@ -10624,7 +10747,9 @@
       "host": "المضيف",
       "hostDevice": "على هاتف المضيف",
       "pendingClaim": "ينتقل إلى هاتفه بعد الجولة",
-      "phone": "هاتفه الخاص"
+      "phone": "هاتفه الخاص",
+      "inGame": "يلعب الآن",
+      "nextRound": "من الجولة القادمة"
     },
     "similar": {
       "no": "لا، أنا شخص آخر",
@@ -10686,13 +10811,390 @@
       "body": "شكرًا على اللعب! ابدأ حفلتك الخاصة الآن."
     },
     "tv": {
-      "handover": "{{name}} يلعب على هاتف المضيف …"
+      "handover": "{{name}} يلعب على هاتف المضيف …",
+      "handoverEyebrow": "مرّر الهاتف",
+      "pair": "اضغط للربط",
+      "title": "التلفاز",
+      "stagePassing": "{{name}} يستلم الهاتف",
+      "stageViewing": "{{name}} ينظر …",
+      "short": "التلفاز",
+      "nextUp": "التالي: {{name}}"
     },
     "closing": {
       "title": "انتهت الحفلة",
       "placement": "حللت في المركز {{rank}} – النقاط: {{points}}",
       "tv": "حفل التتويج يُعرض الآن على التلفاز.",
-      "done": "تم"
+      "done": "تم",
+      "winner": "لقد فزت بالسهرة!",
+      "rankLine": "المركز {{rank}} – {{points}} نقطة"
+    },
+    "invite": {
+      "copied": "تم نسخ الرابط",
+      "hint": "امسح الرمز أو أدخله",
+      "share": "مشاركة الدعوة",
+      "shareText": "تعال إلى حفلتي! الرمز {{code}}",
+      "sheetHint": "وجّه كاميرا الهاتف نحو الرمز – يفتح التطبيق وتنضم فورًا.",
+      "showQr": "عرض رمز QR بحجم كبير",
+      "title": "دعوة الأصدقاء",
+      "chip": "دعوة"
+    },
+    "ready": {
+      "count": "جاهز {{ready}} من {{total}}",
+      "cta": "أنا جاهز",
+      "done": "جاهز",
+      "undo": "ليس بعد"
+    },
+    "next": {
+      "host": "التالي",
+      "player": "ستلعبون بعد قليل"
+    },
+    "start": {
+      "with": "ابدأ: {{game}}"
+    },
+    "recap": {
+      "title": "حصاد السهرة",
+      "games": "لعبتم {{count}} لعبة",
+      "games_zero": "لعبتم {{count}} لعبة",
+      "games_one": "لعبتم {{count}} لعبة",
+      "games_two": "لعبتم {{count}} لعبتين",
+      "games_few": "لعبتم {{count}} ألعاب",
+      "games_many": "لعبتم {{count}} لعبة",
+      "games_other": "لعبتم {{count}} لعبة",
+      "closest": "أقرب فوز: {{name}} في {{game}} (+{{margin}})",
+      "mostWins": "أكثر انتصارات: {{name}} ({{count}})",
+      "footer": "احتفلنا مع EventBliss · event-bliss.com",
+      "winners": "الفائزون في كل لعبة",
+      "share": "شارك الحصاد كصورة"
+    },
+    "turn": {
+      "you": "دورك الآن",
+      "passTo": "أعطِ الهاتف إلى {{name}}",
+      "other": "دور {{name}}"
+    }
+  },
+  "tvCinema": {
+    "round": "الجولة {{round}}",
+    "roundOf": "الجولة {{round}} من {{total}}",
+    "impostor": {
+      "roles": "توزيع الأدوار",
+      "rolesSub": "انظروا إلى هواتفكم خِلسة",
+      "discussion": "النقاش",
+      "discussionSub": "كلمة واحدة لكل شخص – لا تكشفوا الكثير",
+      "voting": "التصويت",
+      "votingSub": "من هو المحتال؟",
+      "caught": "انكشف!",
+      "escaped": "نجا!",
+      "spokenProgress": "تحدّث {{count}} من {{total}}"
+    },
+    "bottle": {
+      "vote": "التصويت",
+      "voteSub": "هل نجح {{name}}؟",
+      "voteSubAnon": "نجح أم لا؟",
+      "yourTurn": "الزجاجة تشير إلى",
+      "spinning": "تدور",
+      "card": "البطاقة"
+    },
+    "thisOrThat": {
+      "voting": "اختاروا!",
+      "votingSub": "{{a}} أم {{b}}؟",
+      "votingNow": "التصويت جارٍ",
+      "debate": "النقاش",
+      "debateSub": "أقنعوا الطرف الآخر",
+      "majority": "الأغلبية",
+      "tie": "تعادل",
+      "votedCount": "صوّت {{count}} من {{total}}"
+    },
+    "bomb": {
+      "armed": "القنبلة تدق!",
+      "armedSub": "أجب ومرّرها بسرعة",
+      "holds": "معه القنبلة",
+      "plusOne": "+1 عقوبة",
+      "winners": "{{names}} يفوزون!",
+      "winner": "{{name}} يفوز!",
+      "final": "النتيجة النهائية",
+      "modeMix": "خليط ملوّن",
+      "live": "القنبلة نشطة",
+      "roundDone": "نجونا من الجولة {{round}}",
+      "gameOver": "انتهت اللعبة",
+      "preparing": "يتم تجهيز القنبلة …"
+    },
+    "category": {
+      "newCategory": "فئة جديدة",
+      "newCategorySub": "بالدور – من يتردد يخسر",
+      "category": "الفئة",
+      "yourTurn": "دوره الآن",
+      "named": "ذُكر {{count}}",
+      "noWords": "لم يُذكر شيء بعد – من يبدأ؟",
+      "timeUp": "انتهى الوقت!",
+      "wordsThisRound": "{{count}} كلمة في هذه الجولة",
+      "wordsThisRound_zero": "{{count}} كلمة في هذه الجولة",
+      "wordsThisRound_one": "{{count}} كلمة في هذه الجولة",
+      "wordsThisRound_two": "{{count}} كلمتان في هذه الجولة",
+      "wordsThisRound_few": "{{count}} كلمات في هذه الجولة",
+      "wordsThisRound_many": "{{count}} كلمة في هذه الجولة",
+      "wordsThisRound_other": "{{count}} كلمة في هذه الجولة",
+      "chain": "سلسلة الكلمات",
+      "roundOver": "انتهت الجولة",
+      "starts": "{{name}} يبدأ",
+      "preparing": "يتم سحب الفئة …"
+    },
+    "closeenough": {
+      "guessing": "خمّنوا!",
+      "guessingSub": "اكتبوا رقمكم في الهاتف – من الأقرب؟",
+      "submitted": "كتب {{count}} من {{total}}",
+      "closest": "الأقرب: {{name}}",
+      "bullseye": "إصابة كاملة",
+      "revealPill": "الكشف",
+      "guessingPill": "جولة التخمين",
+      "unit": "الإجابة بـ: {{unit}}"
+    },
+    "draw": {
+      "cueDrawer": "رسمة جديدة",
+      "cueDrawerSub": "{{name}} يرسم",
+      "cueDrawerSubAnon": "من يرسم ينظر إلى الهاتف",
+      "cueGuess": "ما هذا؟",
+      "cueGuessSub": "خمّنوا بالدور على الهاتف",
+      "drawerReveal": "اعرض الكلمة",
+      "drawing": "الرسم",
+      "guessing": "التخمين",
+      "result": "النتيجة",
+      "statusReveal": "يطّلع على الكلمة",
+      "statusDrawing": "يرسم",
+      "statusDone": "انتهى من الرسم",
+      "timeLeft": "ثانية",
+      "guessHeadline": "ما هذا؟",
+      "guessHint": "خمّنوا بالدور على الهاتف",
+      "wordWas": "الكلمة كانت",
+      "getReady": "سنبدأ بعد قليل …",
+      "coverTitle": "الرسم يبدأ بعد قليل",
+      "guessedBy": "حزرها {{name}}"
+    },
+    "emojiGuess": {
+      "title": "لغز الإيموجي",
+      "upNext": "دور {{name}}",
+      "getReady": "الإيموجي ستظهر بعد قليل – الكل يخمّن!",
+      "solution": "الحل",
+      "guessing": "{{name}} يخمّن",
+      "whatIsIt": "ما المقصود؟",
+      "getSet": "سنبدأ بعد قليل",
+      "guessingNow": "التخمين جارٍ",
+      "reveal": "الكشف"
+    },
+    "findIt": {
+      "memorize": "احفظوا",
+      "memorizeSub": "تذكّروا مكان كل شيء",
+      "whichCity": "ما هذه المدينة؟",
+      "whereIsIt": "أين يقع هذا؟",
+      "spotDiffs": "اعثروا على الفروق",
+      "guessAlong": "خمّن معنا",
+      "itWas": "المطلوب كان",
+      "tapOnPhone": "اكتبوا إجابتكم على الهاتف",
+      "reveal": "الكشف",
+      "roundOver": "انتهت الجولة",
+      "setup": "التحضير",
+      "memorizeBoard": "احفظوا اللوحة!",
+      "questionOf": "سؤال {{n}} من {{total}}",
+      "lookAtPhone": "انظروا إلى هواتفكم",
+      "playerRight": "{{name}} أصاب!",
+      "playerWrong": "{{name}} أخطأ"
+    },
+    "headup": {
+      "yourTurn": "دور {{name}}",
+      "nextTurn": "الدور التالي",
+      "readySub": "الهاتف على الجبهة، والباقون يشرحون",
+      "guessing": "يخمّن الآن",
+      "explainNow": "اشرحوا الكلمة!",
+      "lookAtPhone": "الكلمة على الهاتف – فقط {{name}} لا يراها",
+      "turnOf": "دور:",
+      "allDone": "لعب الجميع!",
+      "winner": "{{name}} يفوز!",
+      "correctCount": "{{count}} صحيحة",
+      "category": "الفئة: {{name}}",
+      "title": "HeadUp",
+      "holdUp": "الهاتف على الجبهة – سنبدأ بعد قليل",
+      "roundOver": "انتهى الدور",
+      "gameOver": "انتهت اللعبة"
+    },
+    "ohrwurm": {
+      "turnOf": "دور {{name}}",
+      "listen": "أغنية غامضة",
+      "listenSub": "استمعوا جيدًا – متى صدرت؟",
+      "counter": "فرصة التحدي",
+      "counterSub": "هل أخطأ {{name}}؟ تحدَّ الآن!",
+      "counterSubAnon": "الترتيب خاطئ؟ تحدَّ الآن!",
+      "counterHint": "هل أخطأ {{name}}؟ من يشك يتحدّى الآن من الهاتف.",
+      "ready": "سنبدأ بعد قليل",
+      "timelineOf": "الخط الزمني لـ {{name}}",
+      "winner": "{{name}} يفوز!",
+      "revealPill": "الكشف",
+      "placing": "الترتيب",
+      "listenPill": "الاستماع",
+      "target": "الهدف: {{count}} بطاقة",
+      "target_zero": "الهدف: {{count}} بطاقة",
+      "target_one": "الهدف: {{count}} بطاقة",
+      "target_two": "الهدف: {{count}} بطاقتان",
+      "target_few": "الهدف: {{count}} بطاقات",
+      "target_many": "الهدف: {{count}} بطاقة",
+      "target_other": "الهدف: {{count}} بطاقة"
+    },
+    "pantomime": {
+      "cueTurn": "الدور التالي",
+      "cueTurnSub": "{{name}} يمثّل",
+      "cueTurnSubAnon": "من يمثّل ينظر إلى الهاتف",
+      "turnStart": "الدور التالي",
+      "fetch": "أحضر أداة",
+      "playing": "التمثيل",
+      "summary": "التقييم",
+      "final": "النتيجة النهائية",
+      "forTeam": "لـ {{team}}",
+      "extraHeadline": "نقاط مضاعفة؟",
+      "extraDecides": "{{name}} يقرر"
+    },
+    "pixeljagd": {
+      "playing": "ما هذا؟",
+      "playingSub": "اضغطوا الجرس فور التعرّف عليه",
+      "buzzed": "{{name}} ضغط الجرس!",
+      "solvedBy": "{{name}} حزرها",
+      "unsolved": "لم يحزرها أحد",
+      "credit": "الصورة: {{credit}}",
+      "revealPill": "الكشف",
+      "pointsNow": "القيمة الآن"
+    },
+    "quiz": {
+      "newQuestion": "سؤال جديد",
+      "teamsSub": "فريق ضد فريق",
+      "betting": "الرهانات",
+      "bettingSub": "ما مدى ثقتكم؟",
+      "factOrFake": "حقيقة أم كذبة؟",
+      "whichIsTrue": "أي عبارة صحيحة؟",
+      "trueOrFalseSub": "صحيح أم مختلَق؟",
+      "teamwork": "عمل جماعي",
+      "teamworkSub": "ثلاثة أدوار، إجابة واحدة",
+      "guessing": "وقت التخمين",
+      "reveal": "الكشف",
+      "roundIntro": "جولة جديدة",
+      "passPhone": "مرّر الهاتف",
+      "allVoted": "الجميع اختار",
+      "readingQuestion": "قراءة السؤال",
+      "readingOptions": "قراءة الخيارات",
+      "answering": "الإجابة جارية",
+      "gotItRight": "{{pct}}% أصابوا",
+      "gotItWrong": "{{pct}}% أخطأوا",
+      "teamCorrect": "{{count}} صحيحة",
+      "roleQuestion": "يقرأ السؤال",
+      "roleOptions": "يقرأ الخيارات",
+      "roleGuess": "يخمّن الإجابة",
+      "preparing": "يتم تجهيز المسابقة …",
+      "rolesTitle": "أدوار هذه الجولة",
+      "votedCount": "اختار {{count}} من {{total}}",
+      "correctPlayers": "أصابوا",
+      "passPhoneSub": "سنكمل بعد قليل",
+      "teamAnswering": "الفريق يجيب عن السؤال",
+      "onPhones": "السؤال على الهواتف",
+      "revealOnTv": "الكشف هنا على التلفاز",
+      "teamWins": "{{team}} يفوز!",
+      "teamTie": "تعادل!"
+    },
+    "story": {
+      "cueStart": "كان يا ما كان …",
+      "cueStartSub": "جملة بعد جملة",
+      "cueReveal": "القصة كاملة",
+      "cueRevealSub": "اقرأوا معنا!",
+      "writing": "الكتابة",
+      "passing": "التمرير",
+      "reveal": "القصة",
+      "isWriting": "{{name}} يكتب",
+      "nextUp": "الهاتف إلى {{name}}"
+    },
+    "taboo": {
+      "teamTurn": "دور {{team}}",
+      "nextTurn": "الدور التالي",
+      "explains": "{{name}} يشرح",
+      "turnSub": "اشرح بدون الكلمات الممنوعة",
+      "turnStartSub": "البطاقة على الهاتف فقط – الكلمات الممنوعة تابو!",
+      "skipped": "تم التخطي",
+      "turnPoints": "{{points}} نقطة لـ {{team}}",
+      "tie": "تعادل!",
+      "teamWins": "{{team}} يفوز!",
+      "against": "ضد {{team}}",
+      "summary": "حصيلة الدور",
+      "gameOver": "انتهت اللعبة",
+      "preparing": "يتم تشكيل الفرق …"
+    },
+    "truthdare": {
+      "cueChoice": "صراحة أم جرأة؟",
+      "cueChoiceSub": "دور {{name}}",
+      "cueVote": "التصويت",
+      "cueVoteSub": "هل نجح {{name}}؟",
+      "cueVoteSubAnon": "نجح أم لا؟",
+      "chooses": "{{name}} يختار …",
+      "or": "أم",
+      "voteHeadline": "نجح؟",
+      "spin": "دور من؟",
+      "choice": "الاختيار",
+      "vote": "التصويت",
+      "final": "النتيجة النهائية",
+      "winner": "{{name}} يفوز!"
+    },
+    "whoami": {
+      "cueAssign": "توزيع الشخصيات",
+      "cueAssignSub": "كل واحد يحصل على شخصية سرية",
+      "cueTurn": "من أنا؟",
+      "cueTurnSub": "{{name}} يطرح أسئلة نعم/لا",
+      "cueTurnSubAnon": "اطرح أسئلة نعم/لا",
+      "cueGuess": "وقت التخمين",
+      "cueGuessSub": "{{name}} يسمّي الشخصية",
+      "assign": "التوزيع",
+      "asking": "الأسئلة",
+      "answering": "الإجابات",
+      "guessing": "التخمين",
+      "verdict": "الحكم",
+      "final": "النتيجة النهائية",
+      "assignHeadline": "كل واحد يحصل على شخصية سرية",
+      "correct": "صحيح!",
+      "wrong": "خطأ!",
+      "winner": "{{name}} يفوز!",
+      "preparing": "سنبدأ بعد قليل …",
+      "guessingSub": "يسمّي الشخصية الآن",
+      "askingSub": "يطرح أسئلة نعم/لا",
+      "guessHeadline": "من أنا؟",
+      "guessHint": "الإجابة بعد قليل …"
+    },
+    "wordpress": {
+      "yourTurn": "دور {{name}}",
+      "nextTurn": "الدور التالي",
+      "turnSub": "اكتب الكلمات الصحيحة – بسرعة!",
+      "roundDone": "أُنجزت الجولة {{round}}",
+      "gameOver": "انتهت اللعبة",
+      "preparing": "سنبدأ بعد قليل …",
+      "combo": "كومبو {{count}}×",
+      "accuracy": "دقة {{pct}}%",
+      "progress": "كلمة {{n}} من {{total}}",
+      "bestCombo": "أفضل كومبو {{count}}×",
+      "winner": "{{name}} يفوز!",
+      "points": "{{count}} نقطة",
+      "points_zero": "{{count}} نقطة",
+      "points_one": "{{count}} نقطة",
+      "points_two": "{{count}} نقطتان",
+      "points_few": "{{count}} نقاط",
+      "points_many": "{{count}} نقطة",
+      "points_other": "{{count}} نقطة",
+      "final": "النتيجة النهائية"
+    },
+    "finalStandings": "النتيجة النهائية",
+    "fallback": {
+      "phase": {
+        "playing": "جارية",
+        "roundEnd": "انتهت الجولة",
+        "reveal": "الكشف",
+        "voting": "التصويت",
+        "results": "النتيجة"
+      },
+      "roundOver": "انتهت الجولة!",
+      "team": "الفريق {{n}}",
+      "isUp": "دوره الآن",
+      "truth": "💬 صراحة",
+      "dare": "🎯 جرأة"
     }
   }
 }

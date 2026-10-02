@@ -1,19 +1,17 @@
 import './taboo-presentation.css';
 import { GameStage, StageHeader, StagePanel, StageAction, StageFooter } from '../ui/GameStage';
 import { usePausableTasks } from '../bottlespin/pausable-tasks';
-import { useOnlineActions, useOnlineSnapshot, useOnlinePrivateSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
+import { useOnlineActions, OnlineWaiting } from '../bottlespin/online-controller';
 import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useGameTimer } from '../engine/TimerSystem';
 import { getTabooCards, type TabooCard } from '../content/taboo-words';
-import { Play, SkipForward, Trophy, RotateCcw, Users, Timer, Check, X, ArrowRight, MessageCircle, Ban } from 'lucide-react';
+import { Play, RotateCcw, ArrowRight } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { haptics } from '@/hooks/useHaptics';
-import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import { PlayerSetup } from '../ui/PlayerSetup';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -23,6 +21,12 @@ import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
 import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { dropTabooPlayers, teamIndexOf } from './removal';
+import { useSeatHandover } from '../multiplayer/useGuestHandover';
+import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
+import { localActiveSeats, localGuestIds } from '../ui/guest-handover';
+import { mayHolderSeeCard, phoneHolder, tabooHandoverSeat, tabooRoles, tabooSeat, tabooSeatRole, tabooSnapshotFor, tabooTvPlayers, tabooTvState } from './taboo-seats';
+import { useTabooSync } from './useTabooSync';
+import { PlayingScreen, TurnStartScreen } from './TabooScreens';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -68,7 +72,6 @@ function shuffle<T>(arr: T[]): T[] {
 interface TabooGameProps { players?: string[]; onClose?: () => void; online?: OnlineGameProps }
 
 export default function TabooGame({ players = [], onClose, online }: TabooGameProps) {
-  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
   const { t } = useTranslation();
   const drinkingMode = useDrinkingMode();
   const isDrinkingMode = drinkingMode.isDrinkingMode;
@@ -123,17 +126,31 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const activeTeam = teams[activeTeamIdx];
   const explainer = activeTeam.players[explainerIdx[activeTeamIdx]];
 
-  const handleTimerExpire = useCallback(() => { if (!online || online.isHost) setPhase('turnSummary'); }, [online?.isHost]);
-  const timer = useGameTimer(timerOption, handleTimerExpire, online?.isConnected !== false);
+  // Party-Play (sharedDevice 'turns' + verdeckte Weitergabe): Erklaerer und Schiri
+  // je Zug; ein 🔁-Gast in einer dieser Rollen bekommt das Host-Handy. Die Karte
+  // haengt am HALTER des Handys, nie am Besitzer (taboo-seats.ts).
+  const roles = useMemo(() => tabooRoles(teams, activeTeamIdx, explainerIdx, online?.players), [teams, activeTeamIdx, explainerIdx, online?.players]);
+  const localIds = useMemo(() => localActiveSeats(online), [online]);
+  const guestIds = useMemo(() => localGuestIds(online), [online]);
+  const handover = useSeatHandover(online, online ? tabooHandoverSeat(phase, roles, id => guestIds.includes(id), id => id === online.myPlayerId || localIds.includes(id)) : null, { secret: true });
+  const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, currentRound, activeTeamIdx]);
+  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false && !handover.isPaused);
 
+  const handleTimerExpire = useCallback(() => { if (!online || online.isHost) setPhase('turnSummary'); }, [online?.isHost]);
+  // Die Zuguhr steht, solange das Handy wandert, und laeuft erst mit dem gemeinsamen Phasenstart.
+  const timer = useGameTimer(timerOption, handleTimerExpire, online?.isConnected !== false && !handover.isPaused && (!online || !blocker));
+
+  const explainerSeat = online && roles.explainerId ? tabooSeat(roles.explainerId, explainer ?? '', activeTeamIdx as 0 | 1, online.players) : tabooSeat(explainer ?? '', explainer ?? '', activeTeamIdx as 0 | 1);
+  const tvPayload = useMemo(() => tabooTvState({ phase, phaseStartsAt, currentRound, totalRounds, teams, activeTeamIdx, explainer: online ? explainerSeat : explainer ?? '',
+    timeLeft: timer.timeLeft, turnResults, players: tabooTvPlayers(teams, online?.players), handover: handover.tv }),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [phase, phaseStartsAt, currentRound, totalRounds, teams, activeTeamIdx, JSON.stringify(explainerSeat), timer.timeLeft, turnResults, online?.players, JSON.stringify(handover.tv ?? null)]);
+  useEffect(() => { if (online?.isHost) online.broadcast('tv-state', { game: 'taboo', ...tvPayload }); }, [online?.isHost, tvPayload]); // eslint-disable-line react-hooks/exhaustive-deps
   useTVGameBridge('taboo', {
-    phase, currentRound, totalRounds, teams, activeTeamIdx, explainer,
+    ...tvPayload,
     partyScoresById: online ? Object.fromEntries(online.players.map((p, i) => [p.id, teams[teamIndexOf(teams, p.id, i, online.players.length)].score])) : undefined,
-    timeLeft: timer.timeLeft,
-    turnCorrect: turnResults.filter(r => r.result === 'correct').length,
-    turnTaboo: turnResults.filter(r => r.result === 'taboo').length,
-    turnSkipped: turnResults.filter(r => r.result === 'skipped').length,
-  }, [phase, currentRound, activeTeamIdx, timer.timeLeft, turnResults.length], !online || online.isHost);
+  }, [phase, currentRound, activeTeamIdx, timer.timeLeft, turnResults.length, teams[0].score, teams[1].score, phaseStartsAt, handover.tv?.playerId ?? '', handover.tv?.progress?.phase ?? ''], !online || online.isHost);
+  useEffect(() => { if (online && view !== 'setup') haptics.light(); }, [view]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // `ids` (online only, never shuffled) keep each seat tied to its room player when players are removed mid-match.
   function buildTeams(pls: string[], ids?: string[]): [Team, Team] {
@@ -191,13 +208,6 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     if (countdown === null || (online && !online.isHost)) return;
     if (countdown === 0) {
       setCountdown(null); setCurrentCard(drawCard()); setCardKey(k => k + 1); timer.reset(timerOption); timer.start(); setPhase('playing');
-      if (online?.isHost) {
-        online.broadcast('tv-state', {
-          game: 'taboo', phase: 'playing', teamA: teams[0].score, teamB: teams[1].score,
-          activeTeam: activeTeam.name, explainer, timeLeft: timerOption,
-          round: currentRound, totalRounds,
-        });
-      }
       return;
     }
     const t = setTimeout(() => setCountdown(c => (c !== null ? c - 1 : null)), 1000);
@@ -209,13 +219,6 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     if (!currentCard) return;
     setTurnResults(r => [...r, { card: currentCard, result: 'correct' }]);
     const next = drawCard(); setCurrentCard(next); setCardKey(k => k + 1);
-    if (online?.isHost) {
-      online.broadcast('tv-state', {
-        game: 'taboo', phase: 'playing', teamA: teams[0].score, teamB: teams[1].score,
-        activeTeam: activeTeam.name, explainer, timeLeft: timer.timeLeft,
-        round: currentRound, totalRounds,
-      });
-    }
   }
 
   function handleTaboo() {
@@ -239,13 +242,6 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     if (!currentCard) return;
     setTurnResults(r => [...r, { card: currentCard, result: 'skipped' }]);
     const next = drawCard(); setCurrentCard(next); setCardKey(k => k + 1);
-    if (online?.isHost) {
-      online.broadcast('tv-state', {
-        game: 'taboo', phase: 'playing', teamA: teams[0].score, teamB: teams[1].score,
-        activeTeam: activeTeam.name, explainer, timeLeft: timer.timeLeft,
-        round: currentRound, totalRounds,
-      });
-    }
   }
 
   function endTurn() {
@@ -297,11 +293,8 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     setTeams(drop.teams); setExplainerIdx(drop.explainerIdx);
     if (drop.phase !== phase) { timer.pause(); setCountdown(null); setPhase(drop.phase as Phase); }
   });
-  const legacyActorId = (activeTeamIdx === 0 ? online?.players.slice(0, Math.ceil(online.players.length / 2)) : online?.players.slice(Math.ceil(online.players.length / 2)))?.[explainerIdx[activeTeamIdx]]?.id ?? false;
-  const actorId = activeTeam.ids ? activeTeam.ids[explainerIdx[activeTeamIdx]] ?? false : legacyActorId;
-  const otherTeam = teams[1 - activeTeamIdx];
-  const refereeTeam = activeTeamIdx === 0 ? online?.players.slice(Math.ceil(online.players.length / 2)) : online?.players.slice(0, Math.ceil(online.players.length / 2));
-  const refereeId = otherTeam.ids ? otherTeam.ids[explainerIdx[1 - activeTeamIdx] % (otherTeam.ids.length || 1)] ?? false : refereeTeam?.[explainerIdx[1 - activeTeamIdx] % (refereeTeam.length || 1)]?.id ?? false;
+  const actorId = roles.explainerId ?? false;
+  const refereeId = roles.refereeId ?? false;
   const act = useOnlineActions(online, 'taboo', `${phase}:${currentRound}:${activeTeamIdx}:${explainerIdx.join(',')}:${cardKey}:${countdown}`, {
     start: { allowed: phase === 'setup' ? 'host' : false, run: () => { const names = online ? online.players.map(p => p.name) : playerNames; if (names.length < 4 || names.some(name => !name.trim())) return; setPlayerNames(names); setTeams(buildTeams(names, online?.players.map(p => p.id))); const cycle = Math.ceil(names.length / 2); setTotalRounds(Math.ceil(totalRounds / cycle) * cycle); setPhase('turnStart'); } },
     begin: { allowed: phase === 'turnStart' && countdown === null ? actorId : false, run: startTurn },
@@ -312,31 +305,34 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
     next: { allowed: phase === 'turnSummary' ? 'host' : false, run: endTurn },
     again: { allowed: phase === 'gameOver' && teams[0].players.length + teams[1].players.length >= 2 ? 'host' : false, run: playAgain },
   });
-  useOnlinePrivateSnapshot(online, 'taboo', { phase, teams, playerNames, activeTeamIdx, explainerIdx, currentRound, totalRounds, timerOption, currentCard, turnResults, cardKey, countdown, timeLeft: timer.timeLeft }, (state, recipient) => ({ ...state, currentCard: recipient === actorId || recipient === refereeId ? state.currentCard : null }), state => {
-    setPhase(state.phase); setTeams(state.teams); setPlayerNames(state.playerNames); setActiveTeamIdx(state.activeTeamIdx); setExplainerIdx(state.explainerIdx); setCurrentRound(state.currentRound); setTotalRounds(state.totalRounds); setTimerOption(state.timerOption); setCurrentCard(state.currentCard); setTurnResults(state.turnResults); setCardKey(state.cardKey); setCountdown(state.countdown); timer.reset(state.timeLeft);
+  // Je Geraet (nie an 🔁-Gaeste): Karte nur fuer Erklaerer/Schiri im laufenden Zug.
+  useTabooSync(online, localIds, { phase, teams, playerNames, activeTeamIdx, explainerIdx, currentRound, totalRounds, timerOption, currentCard, turnResults, cardKey, countdown, timeLeft: timer.timeLeft, phaseStartsAt }, (state, recipient) => tabooSnapshotFor(state, recipient, roles), state => {
+    setPhase(state.phase); setTeams(state.teams); setPlayerNames(state.playerNames); setActiveTeamIdx(state.activeTeamIdx); setExplainerIdx(state.explainerIdx); setCurrentRound(state.currentRound); setTotalRounds(state.totalRounds); setTimerOption(state.timerOption); setCurrentCard(state.currentCard); setTurnResults(state.turnResults); setCardKey(state.cardKey); setCountdown(state.countdown); timer.reset(state.timeLeft); receivePhaseStart(state.phaseStartsAt);
   });
 
-
-  /* ---- Online: determine if it's my turn ---- */
-  const isMyTurn = !online || actorId === online.myPlayerId;
+  // Wer haelt dieses Handy, welche Rolle hat er, darf er die Karte sehen?
+  const holder = phoneHolder({ isOnline: !!online, myId: online?.myPlayerId ?? null, activeGuest: handover.activeGuest, handoverPaused: handover.isPaused });
+  const activeTeamIds = activeTeam.ids ?? (online ? online.players.map(p => p.id).filter((_, i) => teamIndexOf(teams, '', i, online.players.length) === activeTeamIdx) : []);
+  const seatRole = tabooSeatRole({ isOnline: !!online, holder, roles, activeTeamIds });
+  const visibleCard = view === 'playing' && mayHolderSeeCard({ isOnline: !!online, phase, holder, roles }) ? currentCard : null;
 
   const mvp = useMemo(() => { const w = teams[0].score >= teams[1].score ? teams[0] : teams[1]; return w.players[0] ?? t('games.taboo.gameover.unknown'); }, [teams]);
   const turnCorrect = turnResults.filter(r => r.result === 'correct').length;
   const turnTaboo = turnResults.filter(r => r.result === 'taboo').length;
   const turnSkipped = turnResults.filter(r => r.result === 'skipped').length;
 
-  const circumference = 2 * Math.PI * 40;
-  const timerDash = circumference - (circumference * timer.percentLeft) / 100;
-
   /* ================================================================ */
   /*  RENDER                                                          */
   /* ================================================================ */
   if (online && !online.isHost && phase === 'setup') return <OnlineWaiting />;
+  // Handy unterwegs: nur der deckende Weitergabe-Schirm, darunter nichts Geheimes.
+  if (handover.overlay) return <>{handover.overlay}<ConfirmExitDialog {...exitGuard.dialogProps} accent="#ff8572" /></>;
   return (
-    <GameStage gameId="taboo" className="taboo-stage" data-phase={phase}>
+    <GameStage gameId="taboo" className="taboo-stage" data-phase={view}>
+      {blocker}
       {showFlash && <p role="status" className="mb-4 rounded-xl bg-[#ff8572] px-5 py-3 font-bold text-[#211311]">{isDrinkingMode ? t('games.taboo.flash.drink') : t('games.taboo.buzzer')}</p>}
       {disclaimer && <p role="status" className="mb-4 rounded-xl border border-[#e6ce81]/40 p-4 text-sm text-[#e6ce81]">{disclaimer.message}</p>}
-      {phase === 'setup' && <div className="mx-auto w-full max-w-3xl space-y-7">
+      {view === 'setup' && <div className="mx-auto w-full max-w-3xl space-y-7">
         <StageHeader title={t('games.taboo.name')} subtitle={t('games.taboo.voiceHint')} />
         <PlayerSetup locked={!!online} players={playerNames.map((name, index) => ({ id: String(index), name }))}
           onAdd={addPlayer} onRemove={id => removePlayer(Number(id))} onRename={(id, name) => renamePlayer(Number(id), name)}
@@ -348,33 +344,18 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
         </section>
         <StageFooter><StageAction className="w-full" disabled={!canStart} onClick={() => act('start')}><Play className="h-5 w-5" />{t('games.taboo.setup.startBtn')}</StageAction></StageFooter>
       </div>}
-      {phase === 'turnStart' && <div className="mx-auto flex min-h-[75dvh] w-full max-w-3xl flex-col justify-center gap-8">
-        <StageHeader title={explainer} eyebrow={t('games.taboo.turn.isUp', { team: activeTeam.name })} subtitle={t('games.taboo.turn.roundLabel', { current: currentRound, total: totalRounds })} />
-        <StagePanel tone="accent" className="grid min-h-56 place-items-center text-center"><p className="text-5xl sm:text-7xl font-black tracking-tight">{countdown ?? explainer}</p></StagePanel>
-        <StageAction disabled={!act.can('begin')} onClick={() => act('begin')}><Play className="h-5 w-5" />{t('games.taboo.turn.startBtn')}</StageAction>
-      </div>}
-      {phase === 'playing' && <div className="taboo-playing mx-auto flex w-full max-w-4xl min-h-[80dvh] flex-col gap-5">
-        <StageHeader title={explainer} eyebrow={t('games.taboo.name')} trailing={<span className="tabular-nums text-3xl font-semibold">{timer.timeLeft}s</span>}
-          subtitle={<span>{teams[0].name} {teams[0].score} · {teams[1].name} {teams[1].score}</span>} progress={{ value: timer.timeLeft, total: timerOption }} />
-        {currentCard && (isMyTurn || online?.myPlayerId === refereeId) ? <StagePanel className="taboo-word-card flex-1">
-          <p className="mb-5 text-xs font-semibold tracking-wide text-[#c5bbb3]">{isMyTurn ? t('games.taboo.playing.currentWord') : t('games.taboo.refereeRole')}</p>
-          <h2 className="mb-8 text-[clamp(2.5rem,8vw,5.8rem)] font-black tracking-tight leading-none text-[#fff9ed] break-words">{currentCard.term}</h2>
-          <ul className="divide-y divide-[#ff8572]/20">{currentCard.forbidden.map((word, index) => <li key={index} className="flex items-center gap-4 py-3 text-xl sm:text-2xl text-[#ff9b88]"><Ban className="h-5 w-5 shrink-0" /><span className="break-words min-w-0">{word}</span></li>)}</ul>
-        </StagePanel> : <StagePanel tone="quiet" className="flex-1 flex items-center justify-center min-h-64"><p className="max-w-lg text-2xl leading-relaxed">{t('games.taboo.voiceHint')}</p></StagePanel>}
-        <p className="text-sm text-[var(--stage-muted)]">{t('games.taboo.playing.correctCount', { count: turnCorrect })} · {t('games.taboo.playing.skipCount', { count: turnTaboo + turnSkipped })}</p>
-        {isMyTurn ? <StageFooter className="!grid grid-cols-3 gap-2 sm:gap-3">
-          <StageAction variant="danger" className="!px-2 flex-col sm:flex-row" disabled={!act.can('taboo')} onClick={() => act('taboo')}><X className="h-5 w-5" />{t('games.taboo.playing.tabooBtn')}</StageAction>
-          <StageAction variant="secondary" className="!px-2 flex-col sm:flex-row" disabled={!act.can('skip')} onClick={() => act('skip')}><SkipForward className="h-5 w-5" />{t('games.taboo.playing.skipBtn')}</StageAction>
-          <StageAction className="!px-2 flex-col sm:flex-row" disabled={!act.can('correct')} onClick={() => act('correct')}><Check className="h-5 w-5" />{t('games.taboo.playing.correctBtn')}</StageAction>
-        </StageFooter> : online?.myPlayerId === refereeId && <StageFooter><StageAction variant="danger" disabled={!act.can('referee')} onClick={() => act('referee')}>{t('games.taboo.playing.tabooBtn')}</StageAction></StageFooter>}
-      </div>}
-      {phase === 'turnSummary' && <div className="mx-auto w-full max-w-3xl space-y-7">
+      {view === 'turnStart' && <TurnStartScreen explainer={explainerSeat} teamName={activeTeam.name} round={currentRound} total={totalRounds} countdown={countdown}
+        role={seatRole} canBegin={seatRole === 'explainer' && act.can('begin')} onBegin={() => act('begin')} />}
+      {view === 'playing' && <PlayingScreen explainer={explainerSeat} teamName={activeTeam.name} role={seatRole} card={visibleCard} cardKey={cardKey}
+        timeLeft={timer.timeLeft} total={timerOption} scoreLine={`${teams[0].name} ${teams[0].score} · ${teams[1].name} ${teams[1].score}`}
+        correct={turnCorrect} misses={turnTaboo + turnSkipped} can={action => act.can(action)} onAction={action => act(action)} />}
+      {view === 'turnSummary' && <div className="mx-auto w-full max-w-3xl space-y-7">
         <StageHeader title={t('games.taboo.summary.pointsLabel')} eyebrow={activeTeam.name} trailing={<span className="text-5xl font-bold tabular-nums">{turnCorrect - turnTaboo > 0 ? '+' : ''}{turnCorrect - turnTaboo}</span>} />
         <div className="grid grid-cols-3 divide-x divide-white/15 text-center">{[[turnCorrect, t('games.taboo.summary.correct')], [turnTaboo, t('games.taboo.summary.taboo')], [turnSkipped, t('games.taboo.summary.skipped')]].map(([value, label]) => <div key={String(label)} className="px-2"><p className="text-3xl font-bold">{value}</p><p className="mt-2 text-xs text-[var(--stage-muted)]">{label}</p></div>)}</div>
         <ul className="divide-y divide-white/10">{turnResults.map((result, index) => <li key={index} className="flex items-center justify-between gap-4 py-4"><span className="text-lg break-words">{result.card.term}</span><span className="font-semibold tabular-nums text-[#ff9b88]">{result.result === 'correct' ? '+1' : result.result === 'taboo' ? '-1' : '0'}</span></li>)}</ul>
         <StageFooter><StageAction disabled={!act.can('next')} onClick={() => act('next')}>{t('games.taboo.summary.nextRoundBtn')}<ArrowRight className="h-5 w-5" /></StageAction></StageFooter>
       </div>}
-      {phase === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-8">
+      {view === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-8">
         <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
         <StageHeader title={t('games.taboo.gameover.title')} subtitle={teams[0].score === teams[1].score ? t('games.taboo.gameover.draw') : t('games.taboo.gameover.wins', { team: teams[0].score > teams[1].score ? teams[0].name : teams[1].name })} />
         <div className="grid grid-cols-2 gap-4">{teams.map(team => <StagePanel key={team.name} tone={team.score === Math.max(...teams.map(item => item.score)) ? 'accent' : 'quiet'}><p className="text-sm font-semibold">{team.name}</p><p className="my-5 text-6xl font-black tabular-nums">{team.score}</p><p className="text-sm leading-relaxed break-words">{team.players.join(', ')}</p></StagePanel>)}</div>
@@ -382,21 +363,5 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
       </div>}
       <ConfirmExitDialog {...exitGuard.dialogProps} accent="#ff8572" />
     </GameStage>
-  );
-}
-
-function NeonScoreBar({ teams, compact }: { teams: [Team, Team]; compact?: boolean }) {
-  return (
-    <div className={`flex items-center gap-3 px-4 py-2 rounded-xl bg-[#181d1b] border border-[#44484f]/20 ${compact ? '' : 'mt-2'}`}>
-      <div className="flex items-center gap-1.5">
-        <div className="w-2.5 h-2.5 rounded-full bg-[#ff8572] " />
-        <span className={`${compact ? 'text-sm' : 'text-base'} font-bold text-[#ff8572]`}>{teams[0].score}</span>
-      </div>
-      <span className="text-[#44484f] text-xs">vs</span>
-      <div className="flex items-center gap-1.5">
-        <div className="w-2.5 h-2.5 rounded-full bg-[#ff8572] " />
-        <span className={`${compact ? 'text-sm' : 'text-base'} font-bold text-[#ff8572]`}>{teams[1].score}</span>
-      </div>
-    </div>
   );
 }

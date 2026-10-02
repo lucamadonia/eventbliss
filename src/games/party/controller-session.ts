@@ -156,7 +156,7 @@ function accessFor(data: ControllerPartyData): PartyRoomAccess {
       const current = generation;
       const next = await controllerRequest('start', data.party.code, { game_id: gameId, participant_ids: participantIds });
       if (current !== generation) throw new Error('Party changed');
-      accept(next);
+      accept(next); announcePartyChange(next);
       if (!next.party.current_match_id) throw new Error('Match not created');
       return next.party.current_match_id;
     },
@@ -341,7 +341,8 @@ export async function refreshControllerParty() { if (state.data) await refresh()
 export async function setControllerPlaylist(playlist: string[]) {
   if (!state.data) return;
   const current = generation, code = state.data.party.code;
-  await run(async () => { const data = await controllerRequest('playlist', code, { playlist }); if (current === generation) accept(data); });
+  // Players see the planned games at once (teaser, "1 Spiel geplant"), not on their next poll.
+  await run(async () => { const data = await controllerRequest('playlist', code, { playlist }); if (current === generation) { accept(data); announcePartyChange(data); } });
 }
 /** Host: show a scene here and send it to every phone (and, via the coordinator, the TV) right away. */
 function announceScene(scene: PartyScene) {
@@ -407,7 +408,7 @@ async function flushResults() {
     for (const [id, payload] of pendingResults) {
       const data = await controllerRequest('finish', code, { ...payload });
       if (current !== generation) return;
-      pendingResults.delete(id); accept(data); persistResults();
+      pendingResults.delete(id); accept(data); persistResults(); announcePartyChange(data);
       // A delayed acknowledgement must never close a later match after an abort.
       const activeRoom = gameRoomSession.getSnapshot().room;
       if (activeRoom?.status === 'playing' && activeRoom.sessionId === id) endMatchTogether(id);
@@ -421,7 +422,7 @@ export async function abortControllerGame() {
   await run(async () => {
     const data = await controllerRequest('abort', code);
     if (current !== generation) return;
-    accept(data); reconcileResults(data);
+    accept(data); reconcileResults(data); announcePartyChange(data);
     const room = gameRoomSession.getSnapshot().room;
     if (room?.status === 'playing') endMatchTogether(room.sessionId);
   });
@@ -440,8 +441,10 @@ export async function endControllerParty() {
     accept(data);
     announcePartyChange(data);
     // Ended mid-game: everyone leaves the match together, then lands on the closing screen.
+    // Otherwise the finale scene lets every phone celebrate in sync with the TV podium (T16).
     const room = gameRoomSession.getSnapshot().room;
     if (room?.status === 'playing') endMatchTogether(room.sessionId);
+    else announceScene(planPartyScene('finale'));
   });
 }
 /** Leave a finished party on this device only (nothing left to tell the server). */

@@ -104,7 +104,7 @@ async function onlineMode() {
         const code = (await host.snapshot()).room.roomCode;
         for (const [i, p] of phones.entries()) {
           await p.clickText('join|beitreten', 20000); await p.page.waitForSelector('input[maxlength="6"]', { visible: true, timeout: 10000 });
-          for (const input of await p.page.$$('input[type=text], input:not([type])')) { const max = await input.evaluate(x => x.maxLength); await input.type(max === 6 ? code : `P${i + 1}`); }
+          for (const input of await p.page.$$('input[type=text], input:not([type])')) { const max = await input.evaluate(x => { const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(x, ''); x.dispatchEvent(new Event('input', { bubbles: true })); return x.maxLength; }); await input.type(max === 6 ? code : `P${i + 1}`); }
           await p.clickText('^(join|beitreten|los)', 8000); await p.until(async c => (await c.snapshot()).connection === 'connected', 'join failed', 20000);
           await p.clickText('ready|bereit', 4000);
         }
@@ -133,7 +133,7 @@ async function onlineMode() {
           row.outcome = over ? 'game-over-screen' : outcomeOf(res); row.status = over ? 'PASS' : 'WARN'; row.detail = `driver: ${JSON.stringify(res)}`;
           if (h.consoleErrors().length) { row.status = 'FAIL'; row.detail = `${row.detail}; page error: ${h.consoleErrors().at(-1).slice(0, 160)}`; h.clients.forEach(c => { c.errors.length = 0; }); }
           if (!over) await h.shotAll(`${g.id}-${n}-end`);
-        } catch (e) { row.status = 'FAIL'; row.detail = String(e.message ?? e).slice(0, 300); await h.shotAll(`${g.id}-${n}-failure`).catch(() => {}); }
+        } catch (e) { if (process.env.PP_DEBUG) console.log(e.stack); row.status = 'FAIL'; row.detail = String(e.message ?? e).slice(0, 300); await h.shotAll(`${g.id}-${n}-failure`).catch(() => {}); }
         finally { log(row); }
       }
     } catch (e) { await h.shotAll('setup-failure').catch(() => {}); log({ game: '(setup)', config: 'online', players: n, expected: '-', status: 'FAIL', detail: String(e.message ?? e).slice(0, 300) }); }

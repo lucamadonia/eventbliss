@@ -43,6 +43,15 @@ describe('host-announced guests in a controller party room', () => {
     rooms.forEach(room => expect(room.getSnapshot().connection).toBe('connected'));
   });
 
+  it('never sends a private snapshot to a 🔁 guest seat (no device; secrets must stay on the host phone)', async () => {
+    const { network, rooms: [host] } = await partyWithGuests();
+    const before = network.packets.length;
+    host.broadcastTo('guest-max', 'quickdraw-state', { word: 'Giraffe' });
+    await new Promise(resolve => setTimeout(resolve, 50));
+    const sent = network.packets.slice(before).map(packet => JSON.parse(packet.payload.body) as { recipient?: string });
+    expect(sent.some(packet => packet.recipient === 'guest-max')).toBe(false);
+  });
+
   it('seats guests per game policy and keeps sit-out guests out of the match', async () => {
     const { rooms, ids, start } = await partyWithGuests();
     const [host, , other] = rooms;

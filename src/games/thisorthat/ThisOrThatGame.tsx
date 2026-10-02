@@ -15,6 +15,7 @@ import { useSeatHandover } from '../multiplayer/useGuestHandover';
 import { ballotComplete, dropVoters, hideSidesWhileVoting, nextLocalVoter, speedExpiry } from './guest-ballot';
 import { acceptInput, deadline } from '../party/scene-schedule';
 import { serverClock } from '../party/scene-clock';
+import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
@@ -22,10 +23,6 @@ import { useBackGuard } from '@/lib/back-guard';
 import { hasShellBackButton } from '@/games/ui/shell-back';
 import { PLAYER_COLORS, ThisOrThatSetup } from './ThisOrThatSetup';
 import { TotDebate, TotGameOver, TotReveal, TotVoting } from './ThisOrThatPanels';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 
 type Phase = 'setup' | 'voting' | 'reveal' | 'debate' | 'gameOver';
 
@@ -110,6 +107,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const tvVotersB = hideSides ? [] : players.filter((p) => roundVotes[p.id] === 'B');
   const tvTotalVotes = tvVotersA.length + tvVotersB.length;
   const mapVoter = (p: typeof players[number]) => ({ id: p.id, name: p.name, color: p.color, avatar: (p as { avatar?: string }).avatar ?? '' });
+  const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, currentRound]); // all devices + TV switch together
   useTVGameBridge('thisorthat', {
     phase,
     round: currentRound,
@@ -124,8 +122,8 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
     votersA: tvVotersA.map(mapVoter),
     votersB: tvVotersB.map(mapVoter),
     players,
-    handover: handover.tv,
-  }, [phase, currentRound, roundVotes, players, currentPair, handover.tv?.playerId], !online || online.isHost);
+    handover: handover.tv, phaseStartsAt, votedIds: players.filter(p => roundVotes[p.id]).map(p => p.id), // who voted, never which side
+  }, [phase, currentRound, roundVotes, players, currentPair, JSON.stringify(handover.tv), phaseStartsAt], !online || online.isHost);
 
   const clocksRun = online?.isConnected !== false && !handover.isPaused;
   const handleDebateExpire = useCallback(() => { if (!online || online.isHost) setPhase('reveal'); }, [online]);
@@ -316,13 +314,13 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
   const broadcastGameState = useCallback(() => {
     if (!online?.isHost) return;
     online.broadcast('game-state', {
-      phase, currentRound, matchId, totalRounds, mode, speedTimer, history,
+      phase, phaseStartsAt, currentRound, matchId, totalRounds, mode, speedTimer, history,
       speedRemaining: speedTimerHook.timeLeft, debateRemaining: debateTimer.timeLeft,
       currentPair,
       roundVotes,
       players,
     });
-  }, [online, phase, currentRound, matchId, totalRounds, mode, speedTimer, history, currentPair, roundVotes, players, speedTimerHook.timeLeft, debateTimer.timeLeft]);
+  }, [online, phase, phaseStartsAt, currentRound, matchId, totalRounds, mode, speedTimer, history, currentPair, roundVotes, players, speedTimerHook.timeLeft, debateTimer.timeLeft]);
 
   /* ---- Online: host broadcasts on state change ---- */
   useEffect(() => {
@@ -405,6 +403,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
       if (data.currentRound) setCurrentRound(data.currentRound as number);
       if (data.currentPair) setCurrentPair(data.currentPair as ThisOrThatPair);
       if (data.roundVotes) setRoundVotes(data.roundVotes as Record<string, 'A' | 'B'>);
+      receivePhaseStart(data.phaseStartsAt);
       if (data.players) {
         setPlayers(data.players as Player[]);
       }
@@ -442,7 +441,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
 
   return (
     <GameStage gameId="this-or-that" className="duel-shell duel-shell relative min-h-[100dvh]  text-white flex flex-col font-game">
-      <style>{EP_STYLE}</style>
+      <style>{EP_STYLE}</style>{blocker}
       {/* Ambient glow orbs */}
       <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
@@ -453,7 +452,7 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
             nicht entfernen: der Platzhalter hält die Kopfzeile im Gleichgewicht
             und den Platz unter dem schwebenden Pfeil frei. */}
         <button
-          onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())}
+          onClick={() => (view === 'gameOver' ? navigate('/games') : exitGuard.request())}
           className={`p-2 text-[#a8abb3] hover:text-white${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
           aria-hidden={hasShellBackButton()}
           tabIndex={hasShellBackButton() ? -1 : undefined}
@@ -471,23 +470,23 @@ export default function ThisOrThatGame({ online }: { online?: OnlineGameProps } 
 
       <AnimatePresence mode="wait">
         {/* VOTING — full-bleed A/B panels with floating VS medallion */}
-        {phase === 'voting' && currentPair && (
+        {view === 'voting' && currentPair && (
           <TotVoting key="voting" online={online} localVoter={localVoter} players={players} roundVotes={roundVotes} voterIdx={voterIdx}
             totalRounds={totalRounds} currentRound={currentRound} mode={mode} speedTimeLeft={speedTimerHook.timeLeft}
             currentPair={currentPair} haptics={haptics} castVote={castVote} />
         )}
 
         {/* DEBATE */}
-        {phase === 'debate' && currentPair && (
+        {view === 'debate' && currentPair && (
           <TotDebate key="debate" online={online} currentPair={currentPair} debateTimeLeft={debateTimer.timeLeft} endDebate={endDebate} />
         )}
 
-        {phase === 'reveal' && currentPair && (
+        {view === 'reveal' && currentPair && (
           <TotReveal key="reveal" online={online} currentPair={currentPair} currentRound={currentRound} totalRounds={totalRounds}
             players={players} roundVotes={roundVotes} voteStats={voteStats} haptics={haptics} nextRound={nextRound} />
         )}
 
-        {phase === 'gameOver' && winner && (
+        {view === 'gameOver' && winner && (
           <TotGameOver key="over" online={online} players={players} winner={winner} newAchievements={newAchievements}
             clearAchievements={clearAchievements} playAgain={playAgain} onOtherGame={() => navigate('/games')} />
         )}

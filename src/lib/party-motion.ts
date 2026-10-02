@@ -184,6 +184,48 @@ export const pressable = {
   transition: { duration: partyMs.press / 1000, ease: partyEase.out } as Transition,
 } as const;
 
+/**
+ * TV-Phasenwechsel im Spiel (Next-Level-Brief §9): die alte Phase weicht nach
+ * hinten weg, die neue kommt mit leichtem Zoom aus der Tiefe. Mit
+ * `AnimatePresence mode="wait"` und `key={phase}` am Spiel-Wrapper.
+ */
+export const phaseStage: Variants = {
+  initial: { opacity: 0, scale: 1.04, filter: "blur(14px)" },
+  animate: { opacity: 1, scale: 1, filter: "blur(0px)", transition: { duration: 0.55, ease: partyEase.out } },
+  exit: { opacity: 0, scale: 0.97, filter: "blur(8px)", transition: { duration: 0.28, ease: partyEase.exit } },
+};
+
+/** Phasen-Titel („ABSTIMMUNG“): fährt als Band durchs Bild, bevor der Inhalt kommt. */
+export const phaseTitleSweep: Variants = {
+  initial: { opacity: 0, x: "-6%", clipPath: "inset(0 100% 0 0)" },
+  animate: {
+    opacity: 1,
+    x: 0,
+    clipPath: "inset(0 0% 0 0)",
+    transition: { duration: 0.6, ease: partyEase.inOut },
+  },
+  exit: { opacity: 0, x: "4%", transition: exitFast(partyMs.ui) },
+};
+
+/** Spotlight auf den Spieler mit dem Handy (TV während der Weitergabe). */
+export const spotlight: Variants = {
+  initial: { opacity: 0, scale: 0.85 },
+  animate: { opacity: 1, scale: 1, transition: partySpring.pop },
+  exit: { opacity: 0, scale: 1.1, filter: "blur(8px)", transition: exitFast(partyMs.ui) },
+};
+
+/** Zeitplan einer TV-Phase in ms — Titel, Inhalt, Eingabe frei. */
+export const TV_PHASE_BEATS = {
+  /** Alte Phase raus. */
+  exit: 280,
+  /** Phasen-Titel als Band. */
+  title: 600,
+  /** Inhalt staffelt sich ein (nach dem Titel). */
+  content: 900,
+  /** Spätestens dann dürfen Handys Eingaben annehmen. */
+  inputOpen: 1200,
+} as const;
+
 export const partyVariants = {
   cardEnter,
   avatarArrive,
@@ -196,6 +238,9 @@ export const partyVariants = {
   scrimFade,
   checkPop,
   reactionFloat,
+  phaseStage,
+  phaseTitleSweep,
+  spotlight,
 } as const;
 export type PartyVariantName = keyof typeof partyVariants;
 

@@ -1,5 +1,5 @@
 // Party-Play scenario runner (masterplan section 8 / 12.1-3).
-//   node scripts/qa/party-play-browser.mjs --scenario <ID|ID,ID|prefix*|all> [--real] [--chaos N] [--keep-going]
+//   node scripts/qa/party-play-browser.mjs --scenario <ID|ID,ID|prefix*|all> [--real] [--chaos N] [--lang de|en] [--viewport 390x844]
 // Starts the QA vite server on demand (PGlite: 5186, --real: 5185 via controller-real-vite.config.ts).
 // Output: scripts/tmp/party-play/<run>/ (screenshots per step and device, report.json, summary.md).
 import fs from 'node:fs';
@@ -17,12 +17,18 @@ const args = process.argv.slice(2);
 const opt = (name, fallback = null) => { const i = args.indexOf(`--${name}`); return i >= 0 ? (args[i + 1] ?? true) : fallback; };
 const real = args.includes('--real');
 const chaosRuns = Number(opt('chaos', 0));
+// --lang de|en|… (UI language on every device) · --viewport 390x844 (phone size; default 390x900).
+const lang = String(opt('lang', 'en'));
+const [vw, vh] = String(opt('viewport', '390x900')).split('x').map(Number);
+if (!/^[a-z]{2}$/.test(lang) || !vw || !vh) { console.error('usage: --lang <2-letter code> --viewport <W>x<H>'); process.exit(2); }
 const selection = String(opt('scenario', chaosRuns ? 'none' : 'all'));
 const base = process.env.QA_PARTY_URL ?? (real ? 'http://127.0.0.1:5185' : 'http://127.0.0.1:5186');
-const runId = `${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}${real ? '-real' : ''}`;
+const runId = `${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}${real ? '-real' : ''}${args.includes('--lang') ? `-${opt('lang')}` : ''}`;
 const root = `scripts/tmp/party-play/${runId}`;
 fs.mkdirSync(root, { recursive: true });
 
+// F14 (kick the active player) uses the kick matrix's state-based check for fake-or-fact.
+{ const f14 = gameScenarios.find(s => s.id === 'F14'), k14 = kickScenarios.find(s => s.id === 'K14-fake-or-fact'); if (f14 && k14) f14.run = k14.run; }
 const all = [...joinScenarios, ...lobbyScenarios, ...gameScenarios, ...tvScenarios, ...kickScenarios];
 const wanted = selection === 'all' ? all : selection === 'none' ? [] : all.filter(s => selection.split(',').some(sel => sel.endsWith('*') ? s.id.startsWith(sel.slice(0, -1)) : s.id === sel));
 if (!wanted.length && !chaosRuns) { console.error(`No scenario matches "${selection}". Known: ${all.map(s => s.id).join(' ')}`); process.exit(2); }
@@ -51,7 +57,7 @@ async function runOne(s, { chaos = null, label = s.id } = {}) {
   const ctx = { notes: [], evidence: {}, real, out };
   let h = null, status = 'PASS', error = null;
   try {
-    h = await createHarness({ real, out, base, chaos, browser }); ctx.h = h;
+    h = await createHarness({ real, out, base, chaos, lang, phoneViewport: { width: vw, height: vh }, browser }); ctx.h = h;
     await Promise.race([s.run(ctx), new Promise((_, rej) => setTimeout(() => rej(new Error(`scenario timeout ${s.timeoutMs ?? 240000} ms`)), s.timeoutMs ?? 240000))]);
     const pageErrors = h.consoleErrors().filter(e => !(s.allowErrors ?? []).some(re => re.test(e)));
     if (pageErrors.length) { status = 'FAIL'; error = `page errors: ${pageErrors.slice(0, 3).join(' | ')}`; }

@@ -58,17 +58,77 @@ export function handoverScreenProps(
   return null;
 }
 
+/** TV-Grenzen: so viele Kennungen je Liste, so lang je Kennung. */
+export const TV_HANDOVER_MAX_IDS = 12;
+export const TV_HANDOVER_MAX_ID_LENGTH = 128;
+
+/**
+ * Fortschritt der Weitergabe-Kette fuer die TV-Buehne (Design §9.3):
+ * ✓ gesehen (`doneIds`) · jetzt (`currentId`) · offen (`queueIds`).
+ * passing = Handy unterwegs · viewing = „Ich bin Max“ bestaetigt ·
+ * covered = fertig, Handy geht zurueck an den Host. Nur Daten — keine Rolle,
+ * kein Wort, keine Zeit pro Person.
+ */
+export interface TvHandoverProgress {
+  doneIds: string[];
+  currentId: string;
+  queueIds: string[];
+  phase: "passing" | "viewing" | "covered";
+}
+
 /** Oeffentlicher TV-Hinweis „🎸 Max spielt am Host-Handy“ — nie geheime Infos. */
 export interface TvHandover {
   playerId: string;
   name: string;
   avatar: string;
   color: string;
+  progress?: TvHandoverProgress;
+  /** Wer das Handy danach bekommt — fuer „Als Naechstes: …“ (oeffentlich). */
+  next?: { name: string; avatar: string; color: string };
 }
 
-export function tvHandover(state: HandoverState, seatOf: SeatLookup): TvHandover | null {
-  const id = state.status === "handover" || state.status === "revealed" ? state.playerId
-    : state.status === "return" ? state.to : null;
+const tvIds = (ids: readonly string[]) =>
+  ids.filter((id) => typeof id === "string" && id.length > 0 && id.length <= TV_HANDOVER_MAX_ID_LENGTH).slice(0, TV_HANDOVER_MAX_IDS);
+
+/**
+ * Wer in der laufenden Kette schon fertig ist. Rein: aus altem und neuem
+ * Zustand. Ein Gast ist fertig, sobald er nach seinem Zug weitergibt
+ * (`revealed` → `return`); zurueck auf `idle` beginnt eine neue Kette.
+ */
+export function nextDoneIds(prev: HandoverState, next: HandoverState, done: readonly string[]): string[] {
+  if (next.status === "idle") return [];
+  if (prev.status === "revealed" && next.status === "return" && !done.includes(prev.playerId)) return [...done, prev.playerId];
+  return [...done];
+}
+
+/**
+ * Wer das Handy gerade hat oder gleich bekommt. Bei der Rueckgabe an den Host
+ * bleibt der letzte Gast sichtbar (`covered`), bis der Host bestaetigt.
+ */
+export function tvHandover(state: HandoverState, seatOf: SeatLookup, doneIds: readonly string[] = []): TvHandover | null {
+  let id: string | null = null;
+  let phase: TvHandoverProgress["phase"] = "passing";
+  if (state.status === "handover") id = state.playerId;
+  else if (state.status === "revealed") { id = state.playerId; phase = "viewing"; }
+  else if (state.status === "return") {
+    if (state.to) id = state.to;
+    else { id = state.from; phase = "covered"; }
+  }
   const seat = id ? seatOf(id) : undefined;
-  return seat ? { playerId: seat.id, name: seat.name, avatar: seat.avatar, color: seat.color } : null;
+  if (!seat) return null;
+  const queue = state.status === "idle" ? [] : state.queue;
+  const following = phase === "covered" ? undefined : seatOf(queue.find((q) => q !== seat.id) ?? "");
+  return {
+    playerId: seat.id,
+    name: seat.name,
+    avatar: seat.avatar,
+    color: seat.color,
+    progress: {
+      doneIds: tvIds(doneIds.filter((d) => !!seatOf(d) && (d !== seat.id || phase === "covered"))),
+      currentId: seat.id,
+      queueIds: tvIds(queue.filter((q) => q !== seat.id)),
+      phase,
+    },
+    ...(following ? { next: { name: following.name, avatar: following.avatar, color: following.color } } : {}),
+  };
 }

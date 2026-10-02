@@ -136,3 +136,44 @@ Texte aus `availabilityChip()` (`src/lib/playable-games.ts`) unter `partyPlay.av
 1. **Deine Farbe folgt dir.** Jeder Spieler hat einen persönlichen Schein (`playerGlow`). Er umrahmt deine TV-Karte, deine Zeile beim Host und, wenn du dran bist, leuchtet dein eigenes Handy kurz in derselben Farbe auf. So weiß man ohne Lesen: „Das bin ich.“
 2. **Ein Konfetti, drei Bildschirme.** Bei der Siegerehrung startet das Konfetti auf TV und allen Handys zur selben `startsAt`. Die Partikel des Handys fallen in der Spielerfarbe des Siegers, der Sieger selbst spürt `celebrate`.
 3. **Reaktionen steigen auf.** Wartende tippen ein Emoji, das am TV aus der Kante des eigenen Chips aufsteigt (`reactionFloat`, 2,2 s, max. 1/s pro Spieler, höchstens 12 gleichzeitig). Bei Bewegungsarmut erscheint es nur als kurzer Badge am Chip.
+
+---
+
+## 9. Next-Level-Brief (Stand 2026-10-02)
+
+> Maßstab: Würden wir es neben den Top-10-Party-Apps im App Store zeigen? Der Fernseher ist heute unsere beste Fläche. Das Handy muss sich anfühlen wie ein Stück davon in deiner Hand, nicht wie ein Formular.
+
+### 9.1 Ein Look auf Handy und TV
+- **Bühne statt Liste.** Jeder Party-Bildschirm am Handy hat eine Bühne oben (Avatar/Ereignis groß, 40 % der Höhe) und Handlung unten (Daumenzone). Listen sind Karten mit Tiefe, keine Tabellenzeilen.
+- **Deine Farbe ist dein Licht.** Spielerfarbe = Glow (`playerGlow`) + radialer Verlauf (18 %) im Hintergrund, wenn du dran bist. Auf TV und Handy derselbe Verlauf, derselbe Ring. Nie als Textfarbe.
+- **Tiefe in drei Ebenen:** Grund `#060810` → Panel `#0d0915` (Haarlinie + 1 px Lichtkante oben) → aktives Element `#16101f` mit Glow. Keine flachen grauen Kästen, keine weißen Flächen außer QR und Primärknopf.
+- **Typo-Skala (Handy):** Ansage `font-game` clamp(2.25rem, 10vw, 3.5rem) · Titel 1.75rem/800 · Text 1rem/500 · Label 0.8125rem/600 (Satzschreibung, kein Sperrsatz). TV nutzt `tvType`. Zahlen immer `tabular-nums`.
+- **Feiern ist Pflicht:** Beitritt, Bereit, Sieg und Platzierung bekommen je einen eigenen Moment (Glow-Puls, `checkPop`, Konfetti synchron). Ein Abend ohne Höhepunkte wirkt wie eine Einstellungsseite.
+- **Sprache:** Handlungen statt Systemwörter. „Bereit“ / „Doch noch nicht“, nie „Toggle ready status“. Jeder Knopf sagt, was passiert.
+
+### 9.2 Ziele je Bildschirm (Handy)
+| Bildschirm | Muss erreichen |
+|---|---|
+| Host-Lobby | Bühne: Partyname + Spielerzahl als große Zahl, darunter Avatar-Reihe mit Glow (wie TV-Karten, kleiner), Bereit-Ring füllt sich. Spieler-Verwaltung erst auf Tipp. Startknopf als großer Glow-Knopf mit Grund darunter. |
+| Spieler-Lobby | Eigener Avatar groß mit Glow, „Du bist dabei“, Bereit als großer runder Schalter (Morph „Bereit ✓“), darunter wer noch fehlt (Avatare, nicht Text). |
+| Wer bist du? | Durchgehend `#060810` bis zur Safe Area (kein weißer Rand unten), Platzkarten mit Glow, „neu anlegen“ ruhig gestrichelt. |
+| Weitergabe | Endzustand sichtbar und eindeutig: Empfänger-Farbe füllt den Schirm, riesiger Avatar, Halten/Tippen; nach Bestätigung `handoverReveal`. |
+| Rolle/Geheimnis | Karte, die man aufdeckt (Halten), mit Rückseite in Spielerfarbe; nach dem Loslassen wieder zu. Nie geheimer Inhalt ohne Geste. |
+| Warten | „Schau auf den Fernseher“ als ruhige Bühne mit eigener Farbe + Reaktionsleiste, kein leerer Bildschirm mit Spinner. |
+
+### 9.3 TV-Choreografie im Spiel
+**Phasenwechsel** (jede Phase jedes Spiels): `AnimatePresence mode="wait"` um die Phasen-Ansicht, `key={phase}`, Varianten `phaseStage`. Takt `TV_PHASE_BEATS`: alte Phase raus 280 ms → Phasen-Titel als Band (`phaseTitleSweep`, 600 ms) → Inhalt gestaffelt (bis 900 ms) → Eingabe frei (≤ 1200 ms). Ton: `playReveal` beim Band. Handys: Haptik `light` beim Band, Eingabe erst bei `inputOpen`. Kein harter Schnitt zwischen Phasen.
+
+**Weitergabe am Host-Handy** (T07/T08, z. B. Hochstapler-Rollen):
+1. TV: Spotlight (`spotlight`) auf den Empfänger, Avatar groß in seiner Farbe, darunter „Max hat das Handy“. Die anderen Karten treten zurück (opacity .35, scale .96).
+2. Fortschritt als Reihe von Avatar-Punkten: gesehen ✓ / jetzt / offen. So sieht der Raum, wie weit die Runde ist.
+3. Während das Handy wandert: ruhiger Atem-Glow in der Empfängerfarbe (nur Deckkraft, 2,4 s). Ton nur `chime` beim Wechsel, kein Dauerton.
+4. Nach „Ich bin Max“ wechselt das Spotlight zu „Max schaut …“ (Augen-Icon), nach dem Zudecken zu ✓ und der nächste Punkt leuchtet auf.
+5. **Nie verraten:** Der TV zeigt keine Rolle, kein Wort, keine Farbe, die von der Rolle abhängt, und keine Dauer pro Person, die Rückschlüsse erlaubt (gleiche Mindestanzeige für alle).
+
+**Szenenwechsel zwischen Spielen** (T11/T12): Zwischenstand zählt hoch (6–8 s), dann Reise zur nächsten Station. Konfetti nur bei Platzwechsel an die Spitze.
+
+### 9.4 Abnahme
+- Bildschirmfotos DE/EN von Handy (Host, Spieler, Gast) und TV je Szene. Kein weißer Rand, keine Systemwörter, keine Emoji als Platzsymbol.
+- Für jeden Phasenwechsel eine Bildfolge (0 / 280 / 600 / 900 / 1200 ms): kein Bild mit zwei halben Phasen ohne Blur, kein leerer Frame > 300 ms.
+- Geheimnis-Test: keine Rolle/kein Wort auf TV-Bildern und Handy-Bildern vor der Geste.

@@ -1,3 +1,4 @@
+import { lookupRoster, useTVRoster } from './cinema/tv-roster';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Gamepad2, Sparkles, Users, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -123,6 +124,7 @@ function GenericReadyArt({ art, accent, reduced }: { art: string | null; accent:
 }
 
 export default function TVPartyReady({ party }: { party: PartyNightState }) {
+  const roster = useTVRoster();
   const { t } = useTranslation();
   const reduced = !!useReducedMotion();
   const game = party.playlist[party.index] ?? party.playlist[0];
@@ -202,7 +204,7 @@ export default function TVPartyReady({ party }: { party: PartyNightState }) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ ...spring, delay: reduced ? 0 : 0.42 + index * 0.055 }}
               >
-                {player.avatar || player.name.slice(0, 1).toUpperCase()}
+                {player.avatar || lookupRoster(roster, player.id, player.name)?.avatar || player.name.slice(0, 1).toUpperCase()}
               </motion.span>
             ))}
           </div>

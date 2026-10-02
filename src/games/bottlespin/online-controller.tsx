@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { privateRecipients } from '../multiplayer/private-recipients';
 
 type Action = { allowed: boolean | string; run: (...args: never[]) => void };
 export function canAct(online: OnlineGameProps, allowed: boolean | string, sender: unknown): boolean {
@@ -72,9 +73,8 @@ export function useOnlinePrivateSnapshot<T extends Record<string, unknown>>(onli
   useEffect(() => {
     if (!online?.isHost || online.isConnected === false || !online.broadcastTo) return;
     const snapshot = JSON.parse(serialized) as T;
-    for (const player of online.players) {
-      if (player.id !== online.myPlayerId) online.broadcastTo(player.id, `${game}-state`, projector.current(snapshot, player.id));
-    }
+    // Own-device seats only: guests' private views stay on this device (handover reveal), never on the wire.
+    for (const player of privateRecipients(online.players, online.myPlayerId)) online.broadcastTo(player.id, `${game}-state`, projector.current(snapshot, player.id));
   }, [online?.isHost, online?.isConnected, online?.broadcastTo, game, serialized, roster]);
   useEffect(() => {
     if (!online || online.isHost) return;

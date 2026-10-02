@@ -13,6 +13,8 @@ import {
   readableOn,
   reduceVariants,
   animationProgress,
+  TV_PHASE_BEATS,
+  SCENE_LEAD_MS,
   type PartyDevice,
 } from "./party-motion";
 
@@ -129,5 +131,15 @@ describe("helpers", () => {
     for (const c of ["#df8eff", "#ff6b98", "#8ff5ff", "#f9ca24", "#00b894", "#0984e3", "#55efc4"]) {
       expect(contrastRatio(c, readableOn(c))).toBeGreaterThanOrEqual(3);
     }
+  });
+});
+
+describe("TV phase beats", () => {
+  it("exit, title, content and input open in order within the scene lead + 1 s", () => {
+    const { exit, title, content, inputOpen } = TV_PHASE_BEATS;
+    expect(exit).toBeLessThan(title);
+    expect(title).toBeLessThan(content);
+    expect(content).toBeLessThanOrEqual(inputOpen);
+    expect(inputOpen).toBeLessThanOrEqual(SCENE_LEAD_MS + 1000);
   });
 });

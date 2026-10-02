@@ -7,7 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { gravityPitch, HeadUpTiltTracker } from './tilt-tracker';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Smartphone, RotateCcw, ChevronRight, Trophy, Check, X, Play, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
+import { RotateCcw, ChevronRight, Trophy, Check, X, Play, ArrowLeft, ChevronUp, ChevronDown } from 'lucide-react';
 import { Haptics } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
 import { useGameEnd } from '../social/useGameEnd';
@@ -26,15 +26,14 @@ import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
 import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { removeFromHeadUp } from './roster-change';
+import { useHeadUpParty, PhaseInputGate, HeadUpReadyStage } from './useHeadUpParty';
+import { useHeadUpCountdown, countdownStartNow } from './useHeadUpCountdown';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
 type GameScreen = 'setup' | 'ready' | 'playing' | 'roundResult' | 'gameOver';
 interface WordResult { word: string; correct: boolean }
 interface RoundScore { playerName: string; correct: number; skipped: number; words: WordResult[] }
-
-// ── Neon Pulse Styles ──────────────────────────────────────────────────────────
-
 
 // Nur für die einmalige Geräte-Feinjustage der Kipp-Schwellen. Danach auf false.
 const TILT_DEBUG = false;
@@ -102,6 +101,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   // N-ten Eintrag der live schrumpfenden Raumliste (siehe roster-change.ts).
   const [order, setOrder] = useState<string[]>([]);
   const actorId = online ? order[currentRound - 1] ?? online.players[currentRound - 1]?.id ?? false : false;
+  const party = useHeadUpParty(online, screen, currentRound, actorId, order); // Weitergabe an 🔁-Gaeste + gemeinsamer Phasenwechsel
   const [wordQueue, setWordQueue] = useState<string[]>([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
@@ -109,7 +109,9 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const [roundWords, setRoundWords] = useState<WordResult[]>([]);
   const [allRounds, setAllRounds] = useState<RoundScore[]>([]);
   const [flash, setFlash] = useState<'green' | 'red' | null>(null);
-  const [countdown, setCountdown] = useState<number | null>(null);
+  // 3-2-1 aus der gemeinsamen Uhr (T-4): alle Geraete rechnen dieselbe Ziffer aus der Startzeit.
+  const [countdownStartsAt, setCountdownStartsAt] = useState<number | null>(null);
+  const countdown = useHeadUpCountdown(countdownStartsAt);
   const cooldownRef = useRef(false);
   const orientationActiveRef = useRef(false);
   const armedRef = useRef(false); // Neutral-Zone-Re-Arm: eine Neigung = eine Antwort
@@ -140,7 +142,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     setIsArmed(false);
   }, []);
   const resumeTilt = useCallback(() => {
-    if ((screen !== 'playing' && screen !== 'ready') || (online && actorId !== online.myPlayerId)) return;
+    if ((screen !== 'playing' && screen !== 'ready') || !party.controls) return;
     orientationActiveRef.current = false;
     armedRef.current = false;
     setIsArmed(false);
@@ -148,7 +150,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     smoothRef.current = null;
     tiltTracker.current.reset();
     setTimeout(() => { orientationActiveRef.current = true; }, 150);
-  }, [screen, online, actorId, setTimeout]);
+  }, [screen, party.controls, setTimeout]);
 
   // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt
   // über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
@@ -175,13 +177,14 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const [remoteTime, setRemoteTime] = useState(60);
   const actionRef = useRef<(name: string, ...args: unknown[]) => void>(() => {});
   const { timeLeft: hostTime, start: startTimer, reset: resetTimer } =
-    useGameTimer(timerDuration, handleTimerExpire, online?.isConnected !== false && (!!online || !exitGuard.open));
+    useGameTimer(timerDuration, handleTimerExpire, online?.isConnected !== false && !party.handover.isPaused && (!!online || !exitGuard.open));
   const timeLeft = online && !online.isHost ? remoteTime : hostTime;
   const percentLeft = timerDuration > 0 ? timeLeft / timerDuration * 100 : 0;
 
   useTVGameBridge('headup', { phase: screen, currentRound, totalRounds, currentWord: online ? '' : wordQueue[currentWordIndex], players: playerNames,
     partyScoresById: Object.fromEntries((online ? order : partyRoster.map(p => p.id)).map((id, index) => [id, allRounds[index]?.correct ?? 0])),
-    correctCount: roundWords.filter(w => w.correct).length, skippedCount: roundWords.filter(w => !w.correct).length, timeLeft, category: selectedCategory?.name || '' }, [screen, currentRound, currentWordIndex, timeLeft, allRounds], !online || online.isHost);
+    correctCount: roundWords.filter(w => w.correct).length, skippedCount: roundWords.filter(w => !w.correct).length, timeLeft, category: selectedCategory?.name || '', phaseStartsAt: party.phaseStartsAt, handover: party.handover.tv, playerSeats: party.tvSeats },
+    [screen, currentRound, currentWordIndex, timeLeft, allRounds, party.phaseStartsAt, party.handover.tv?.playerId, party.handover.tv?.progress?.phase, party.tvSeats.length], !online || online.isHost);
 
   const handleStartRound = useCallback(() => {
     if (!selectedCategory) return;
@@ -191,13 +194,13 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     setCurrentWordIndex(0);
     setRoundWords([]);
     setScreen('ready');
-    setCountdown(null);
+    setCountdownStartsAt(null);
   }, [selectedCategory]);
 
   useEffect(() => {
     if (countdown === null || (online && !online.isHost)) return;
     if (countdown === 0) {
-      setCountdown(null); setScreen('playing'); resetTimer(timerDuration); startTimer();
+      setCountdownStartsAt(null); setScreen('playing'); resetTimer(timerDuration); startTimer();
       // The ready listener already calibrated the forehead pose. Do not reset
       // or briefly disable it when the first word becomes visible.
       armedRef.current = tiltTracker.current.armed;
@@ -214,8 +217,6 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
       }
       return;
     }
-    const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-    return () => clearTimeout(timer);
   }, [countdown, timerDuration, resetTimer, startTimer]);
 
   const currentWord = wordQueue[currentWordIndex] ?? '';
@@ -268,7 +269,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     finally { setMotionPending(false); }
   };
   useEffect(() => {
-    if (!motionAllowed || !motionPhase || (online && actorId !== online.myPlayerId)) return;
+    if (!motionAllowed || !motionPhase || !party.controls) return;
     const tracker = tiltTracker.current;
     tracker.reset();
     orientationActiveRef.current = true;
@@ -284,7 +285,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     window.addEventListener('devicemotion', handle);
     return () => { orientationActiveRef.current = false; tracker.reset(); window.removeEventListener('devicemotion', handle); };
     // Keep the listener and ready-phase calibration across ready -> playing.
-  }, [motionPhase, currentRound, actorId, motionAllowed, online?.myPlayerId]);
+  }, [motionPhase, currentRound, actorId, motionAllowed, online?.myPlayerId, party.controls]);
 
   const handleNextRound = useCallback(() => {
     const name = playerNames[currentRound - 1] || t('games.headup.playerFallback', { n: currentRound });
@@ -302,9 +303,6 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
     }
     if (screen === 'setup') gameRecordedRef.current = false;
   }, [screen]);
-
-
-
   const handleRestart = useCallback(() => {
     setScreen('setup'); setSelectedCategory(null); setCurrentRound(1); setAllRounds([]); setRoundWords([]);
     orientationActiveRef.current = false;
@@ -335,23 +333,24 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   });
   const act = useOnlineActions(online, 'headup', `${screen}:${currentRound}:${currentWordIndex}:${countdown}`, {
     start: { allowed: screen === 'setup' ? 'host' : false, run: () => { if (online) { setPlayerNames(online.players.map(p => p.name)); setOrder(online.players.map(p => p.id)); } handleStartRound(); } },
-    ready: { allowed: screen === 'ready' && countdown === null ? actorId : false, run: () => { if (screen === 'ready' && countdown === null) setCountdown(3); } },
+    ready: { allowed: screen === 'ready' && countdown === null ? actorId : false, run: () => { if (screen === 'ready' && countdown === null) setCountdownStartsAt(countdownStartNow()); } },
     word: { allowed: screen === 'playing' ? actorId : false, run: (correct: unknown) => { if (typeof correct === 'boolean') advanceWord(correct); } },
     next: { allowed: screen === 'roundResult' ? 'host' : false, run: handleNextRound },
     again: { allowed: screen === 'gameOver' ? 'host' : false, run: playAgain },
     restart: { allowed: 'host', run: handleRestart },
   });
   actionRef.current = act;
-  useOnlinePrivateSnapshot(online, 'headup', { screen, playerNames, order, selectedCategory, timerDuration, currentRound, currentWordIndex, wordQueue, roundWords, allRounds, countdown, timeLeft }, (state, recipient) => ({ ...state, selectedCategory: state.selectedCategory ? { ...state.selectedCategory, words: [] } : null, wordQueue: state.wordQueue.map((word, index) => recipient === actorId || index !== state.currentWordIndex ? '' : word) }), state => {
-    setScreen(state.screen); setPlayerNames(state.playerNames); setOrder(state.order ?? []); setSelectedCategory(state.selectedCategory); setTimerDuration(state.timerDuration); setCurrentRound(state.currentRound); setCurrentWordIndex(state.currentWordIndex); setWordQueue(state.wordQueue); setRoundWords(state.roundWords); setAllRounds(state.allRounds); setCountdown(state.countdown); setRemoteTime(state.timeLeft);
+  useOnlinePrivateSnapshot(online, 'headup', { screen, phaseStartsAt: party.phaseStartsAt, playerNames, order, selectedCategory, timerDuration, currentRound, currentWordIndex, wordQueue, roundWords, allRounds, countdownStartsAt, timeLeft }, (state, recipient) => ({ ...state, selectedCategory: state.selectedCategory ? { ...state.selectedCategory, words: [] } : null, wordQueue: state.wordQueue.map((word, index) => recipient === actorId || index !== state.currentWordIndex ? '' : word) }), state => {
+    setScreen(state.screen); party.setRemotePhaseStartsAt(state.phaseStartsAt ?? null); setPlayerNames(state.playerNames); setOrder(state.order ?? []); setSelectedCategory(state.selectedCategory); setTimerDuration(state.timerDuration); setCurrentRound(state.currentRound); setCurrentWordIndex(state.currentWordIndex); setWordQueue(state.wordQueue); setRoundWords(state.roundWords); setAllRounds(state.allRounds); setCountdownStartsAt(state.countdownStartsAt ?? null); setRemoteTime(state.timeLeft);
   });
   if (online && !online.isHost && screen === 'setup') return <OnlineWaiting />;
+  if (party.handover.overlay) return <>{party.handover.overlay}</>; // Handy unterwegs: nur der deckende Weitergabe-Bildschirm
 
   const finalRounds = allRounds;
   const totalCorrect = finalRounds.reduce((s, r) => s + r.correct, 0);
   const bestRound = finalRounds.reduce((b, r) => (r.correct > b.correct ? r : b), finalRounds[0] ?? { playerName: '', correct: 0, skipped: 0, words: [] });
 
-  const featured = getHeadUpCategories()[0];
+  const featured = getHeadUpCategories()[0], view = party.gate.shown; // gerendert wird die gemeinsam gezeigte Phase
   const gridCats = getHeadUpCategories().slice(1);
 
   return (
@@ -360,7 +359,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
       <AnimatePresence mode="wait">
 
         {/* ── SETUP ─────────────────────────────────────────────────── */}
-        {screen === 'setup' && (
+        {view === 'setup' && (
           <motion.div key="setup" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="py-3 max-w-3xl mx-auto">
             <div className="text-center mb-8 pt-6">
               <h1 className="text-4xl font-extrabold tracking-tighter text-[#f1f3fc]">{t('games.headup.gameTitle')}</h1>
@@ -441,19 +440,18 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         )}
 
         {/* ── READY ─────────────────────────────────────────────────── */}
-        {screen === 'ready' && <motion.div key="ready" initial={{opacity: 0}} animate={{opacity: 1}} className="headup-ready mx-auto flex w-full max-w-lg flex-col items-center justify-center gap-5 text-center">
-          <p className="text-sm font-bold text-[#df8eff]">{playerNames[currentRound - 1]}</p>
-          <Smartphone className="h-20 w-20 text-[#df8eff]" strokeWidth={1} aria-hidden="true" />
+        {view === 'ready' && <motion.div key="ready" initial={{opacity: 0}} animate={{opacity: 1}} className="headup-ready mx-auto flex w-full max-w-lg flex-col items-center justify-center gap-5 text-center">
+          <HeadUpReadyStage name={playerNames[currentRound - 1]} seat={party.actorSeat} />
           <h1 className="text-xl font-bold">{t('games.headup.holdToForehead')}</h1>
           <div className="flex gap-6 text-sm"><span className="flex items-center gap-2 text-[#8ff5ff]"><ChevronDown className="h-5 w-5" />{t('games.headup.tiltDownCorrect')}</span><span className="flex items-center gap-2 text-[#ff6e84]"><ChevronUp className="h-5 w-5" />{t('games.headup.tiltUpSkip')}</span></div>
-          {countdown !== null ? <strong className="text-7xl font-black text-[#df8eff] tabular-nums">{countdown === 0 ? t('games.headup.go') : countdown}</strong> : <div className="flex w-full max-w-xs flex-col gap-2">
+          {countdown !== null ? <strong data-testid="scene-countdown" data-value={countdown} className="text-7xl font-black text-[#df8eff] tabular-nums">{countdown === 0 ? t('games.headup.go') : countdown}</strong> : <div className="flex w-full max-w-xs flex-col gap-2">
             <StageAction disabled={!act.can('ready') || motionPending} onClick={async () => { await requestMotion(); act('ready'); }}>{t('games.headup.readyBtn')}</StageAction>
             <button className="text-sm text-[#a8abb3] underline underline-offset-4" disabled={!act.can('ready') || motionPending} onClick={() => { setMotionAllowed(false); act('ready'); }}>{t('games.headup.buttonsOnly')}</button>
           </div>}
           <p className="text-xs text-[#a8abb3]">{t('games.headup.roundLabel', {current: currentRound, total: totalRounds})} · {selectedCategory?.name}</p>
         </motion.div>}
 
-        {screen === 'playing' && <motion.div key="playing" initial={{opacity: 0}} animate={{opacity: 1}} className="headup-play relative mx-auto flex w-full max-w-5xl flex-col overflow-hidden">
+        {view === 'playing' && <motion.div key="playing" initial={{opacity: 0}} animate={{opacity: 1}} className="headup-play relative mx-auto flex w-full max-w-5xl flex-col overflow-hidden">
           {flash && <div key={currentWordIndex} aria-hidden="true" className={`pointer-events-none absolute inset-0 z-20 ${flash === 'green' ? 'bg-[#8ff5ff]/20' : 'bg-[#ff6e84]/20'}`} />}
           <div className="flex items-center justify-between gap-3">
             <span className="rounded-full border border-[#df8eff]/20 px-3 py-1 text-xs text-[#df8eff]">{playerNames[currentRound - 1]} · {currentRound}/{totalRounds}</span>
@@ -468,19 +466,19 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
             <span className="flex items-center gap-2 text-[#8ff5ff]"><Check className="h-4 w-4" />{correctCount}</span>
             <span className="flex items-center gap-2 text-[#ff6e84]"><X className="h-4 w-4" />{skippedCount}</span>
           </div>
-          {motionAllowed && (!online || actorId === online.myPlayerId) && <p className="mb-2 text-center text-xs text-[#a8abb3]">{isArmed ? t('games.headup.armed') : t('games.headup.holdToForehead')}</p>}
+          {motionAllowed && party.controls && <p className="mb-2 text-center text-xs text-[#a8abb3]">{isArmed ? t('games.headup.armed') : t('games.headup.holdToForehead')}</p>}
           <div className="grid grid-cols-2 gap-3">
             <button className="flex items-center justify-center gap-2 rounded-full border border-[#ff6e84]/25 bg-[#1b2028] px-4 py-3 text-sm font-semibold text-[#ff6e84]" disabled={!act.can('word')} onClick={() => act('word', false)}><X className="h-4 w-4" />{t('games.headup.skip')}</button>
             <button className="flex items-center justify-center gap-2 rounded-full bg-[#8ff5ff] px-4 py-3 text-sm font-semibold text-[#0a0e14]" disabled={!act.can('word')} onClick={() => act('word', true)}><Check className="h-4 w-4" />{t('games.headup.correct')}</button>
           </div>
         </motion.div>}
 
-        {screen === 'roundResult' && <div className="mx-auto w-full max-w-3xl space-y-7 py-4">
+        {view === 'roundResult' && <div className="mx-auto w-full max-w-3xl space-y-7 py-4">
           <StageHeader title={playerNames[currentRound - 1]} eyebrow={t('games.headup.results')} trailing={<span className="text-5xl font-bold tabular-nums text-[#df8eff]">{correctCount}</span>} subtitle={`${correctCount} ${t('games.headup.correct')} · ${skippedCount} ${t('games.headup.skipped')}`} />
           <ul className="divide-y divide-white/15">{roundWords.map((word, index) => <li key={index} className="flex items-center gap-4 py-4 text-lg">{word.correct ? <Check className="h-5 w-5 shrink-0 text-[#df8eff]" /> : <X className="h-5 w-5 shrink-0 text-[#e5a79a]" />}<span className="break-words">{word.word}</span></li>)}</ul>
           <StageFooter><StageAction disabled={!act.can('next')} onClick={() => act('next')}>{currentRound >= totalRounds ? t('games.headup.results') : t('games.headup.nextPlayer')}<ChevronRight className="h-5 w-5" /></StageAction></StageFooter>
         </div>}
-        {screen === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-7 py-4">
+        {view === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-7 py-4">
           <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
           <StageHeader title={t('games.headup.gameOver')} subtitle={t('games.headup.wordsGuessedLabel')} trailing={<span className="text-6xl font-black tabular-nums text-[#df8eff]">{totalCorrect}</span>} />
           <div className="grid grid-cols-2 gap-4"><StagePanel tone="quiet"><p className="text-xs text-[var(--stage-muted)]">{t('games.headup.rounds')}</p><p className="mt-3 text-3xl font-bold">{finalRounds.length}</p></StagePanel><StagePanel tone="quiet"><p className="text-xs text-[var(--stage-muted)]">{t('games.headup.best')}</p><p className="mt-3 text-3xl font-bold">{bestRound.correct}</p></StagePanel></div>
@@ -489,6 +487,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
         </div>}
 
       </AnimatePresence>
+      <PhaseInputGate open={party.gate.inputOpen} />
       <ConfirmExitDialog
         open={exitGuard.open}
         onStay={() => { exitGuard.cancel(); resumeTilt(); }}

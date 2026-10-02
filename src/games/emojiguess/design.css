@@ -48,3 +48,44 @@
 .rebus-game [class*="max-h-64"] { max-height: min(48dvh, 32rem); }
 @media (max-width: 380px) { .rebus-game [class*="px-6"] { padding-left: 1rem; padding-right: 1rem; } }
 @media (prefers-reduced-motion: reduce) { .rebus-game *, .rebus-game *::before, .rebus-game *::after { animation: none !important; scroll-behavior: auto !important; } }
+/* Party-Play stage (design §9): stage on top, action in the thumb zone, the holder's colour is the light. */
+.rebus-game { --emoji-ground: #060810; --emoji-panel: #0d0915; --emoji-active: #16101f; background: var(--emoji-ground); }
+.rebus-game .emoji-screen { width: 100%; max-width: 48rem; margin-inline: auto; }
+.rebus-game .emoji-label { font-size: .8125rem; font-weight: 600; line-height: 1.4; color: #c9c3d6; margin: 0; }
+.rebus-game .emoji-stage { --seat: #eed867; position: relative; isolation: isolate; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1rem; width: 100%; min-height: min(40dvh, 20rem); padding: 1.5rem 1.25rem; border-radius: 28px; background: var(--emoji-panel); border: 1px solid #ffffff14; box-shadow: inset 0 1px 0 #ffffff1f; overflow: hidden; }
+.rebus-game .emoji-stage::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(120% 90% at 20% 0%, color-mix(in srgb, var(--seat) 10%, transparent), transparent 70%); transition: background .4s ease-out; }
+.rebus-game .emoji-stage.is-mine { background: var(--emoji-active); box-shadow: inset 0 1px 0 #ffffff26, 0 0 48px -18px var(--seat); }
+.rebus-game .emoji-stage.is-mine::before { background: radial-gradient(120% 100% at 20% 0%, color-mix(in srgb, var(--seat) 18%, transparent), transparent 72%); }
+.rebus-game .emoji-stage.is-compact { min-height: 0; padding: .875rem 1rem; border-radius: 22px; margin-top: .75rem; }
+.rebus-game .emoji-stage-text { min-width: 0; display: grid; gap: .25rem; }
+.rebus-game .emoji-stage-name { font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', Inter, system-ui, sans-serif; font-size: clamp(2.25rem, 10vw, 3.5rem); font-weight: 800; line-height: 1.02; letter-spacing: -.04em; margin: 0; overflow-wrap: anywhere; color: #f6f1ff; }
+.rebus-game .emoji-stage.is-compact .emoji-stage-name { font-size: 1.75rem; }
+.rebus-game .emoji-stage-line { font-size: 1rem; font-weight: 500; color: #d8d2e4; margin: 0; }
+.rebus-game .emoji-stage .rebus-clock { align-self: center; }
+.rebus-game .emoji-seat-bubble { display: grid; place-items: center; flex-shrink: 0; border-radius: 999px; line-height: 1; }
+.rebus-game .emoji-panel { padding: 1.5rem 1.25rem; border-radius: 24px; background: var(--emoji-panel); border: 1px solid #ffffff12; box-shadow: inset 0 1px 0 #ffffff1a; display: grid; gap: .75rem; }
+.rebus-game .emoji-panel p { color: #d8d2e4; line-height: 1.55; margin: 0; }
+.rebus-game .emoji-title { font-size: 1.75rem; font-weight: 800; line-height: 1.15; letter-spacing: -.02em; margin: 0; color: #f6f1ff; }
+.rebus-game .emoji-facts { display: flex; flex-wrap: wrap; gap: .5rem; }
+.rebus-game .emoji-facts span { padding: .375rem .75rem; border-radius: 999px; background: #ffffff0d; border: 1px solid #ffffff14; font-weight: 600; font-size: .875rem; color: #f4edda; font-variant-numeric: tabular-nums; }
+.rebus-game .emoji-thumb { margin-top: auto; padding-bottom: max(.5rem, env(safe-area-inset-bottom)); }
+.rebus-game .emoji-primary { width: 100%; min-height: 3.5rem; border-radius: 18px; font-size: 1.0625rem; font-weight: 800; background: #eed867; color: #141614; box-shadow: 0 0 32px -10px #eed867; }
+.rebus-game .emoji-watch { --seat: #eed867; display: flex; align-items: center; gap: .875rem; padding: 1.125rem 1.25rem; border-radius: 22px; background: var(--emoji-panel); border: 1px solid #ffffff14; box-shadow: inset 0 1px 0 #ffffff1a; color: #d8d2e4; position: relative; overflow: hidden; }
+.rebus-game .emoji-watch::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(80% 120% at 0% 50%, color-mix(in srgb, var(--seat) 14%, transparent), transparent 70%); animation: emoji-breathe 2.4s ease-in-out infinite; }
+.rebus-game .emoji-watch-title { font-weight: 700; color: #f6f1ff; margin: 0; }
+.rebus-game .emoji-watch-body { font-size: .875rem; margin: .125rem 0 0; }
+@keyframes emoji-breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+.rebus-game .emoji-timebar { height: 4px; border-radius: 4px; background: #ffffff0f; overflow: hidden; }
+.rebus-game .emoji-timebar span { display: block; height: 100%; background: linear-gradient(90deg, #eed867, #e9e4d3); }
+.rebus-game .emoji-timebar span.is-low { background: #f87171; }
+.rebus-game .emoji-teams { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; padding: .5rem 0; }
+.rebus-game .emoji-teams p { display: grid; gap: .25rem; padding: .75rem 1rem; border-radius: 18px; background: var(--emoji-panel); border: 1px solid #ffffff12; margin: 0; }
+.rebus-game .emoji-teams strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; color: #eed867; }
+.rebus-game .emoji-next { color: #d8d2e4; }
+.rebus-game .emoji-rank { --seat: #eed867; display: flex; align-items: center; gap: .75rem; padding: .75rem 1rem; border-radius: 18px; background: var(--emoji-panel); border: 1px solid #ffffff12; box-shadow: inset 0 1px 0 #ffffff14; }
+.rebus-game .emoji-rank.is-top { background: var(--emoji-active); box-shadow: inset 0 1px 0 #ffffff26, 0 0 36px -16px var(--seat); }
+.rebus-game .emoji-rank-pos { width: 1.5rem; text-align: center; font-weight: 700; color: #a49db3; font-variant-numeric: tabular-nums; }
+.rebus-game .emoji-rank-score { font-weight: 800; font-variant-numeric: tabular-nums; }
+.rebus-game .emoji-podium { grid-template-columns: auto minmax(0, 1fr); }
+@media (max-width: 420px) { .rebus-game .emoji-stage:not(.is-compact) { grid-template-columns: minmax(0, 1fr); justify-items: start; } }
+@media (prefers-reduced-motion: reduce) { .rebus-game .emoji-watch::after { animation: none; } }

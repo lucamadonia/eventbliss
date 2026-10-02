@@ -10,7 +10,8 @@ const latest = new Map();
 for (const run of fs.readdirSync(dir).filter(d => /^\d{4}-/.test(d) && d >= since).sort()) {
   const file = path.join(dir, run, 'report.json');
   if (!fs.existsSync(file)) continue;
-  for (const r of JSON.parse(fs.readFileSync(file, 'utf8')).results ?? []) if (r.status !== 'MANUAL') latest.set(r.id, { ...r, run });
+  let report; try { report = JSON.parse(fs.readFileSync(file, 'utf8')); } catch { continue; } // truncated (e.g. disk full)
+  for (const r of report.results ?? []) if (r.status !== 'MANUAL') latest.set(r.id, { ...r, run });
 }
 const rows = [...latest.values()].sort((a, b) => a.id.localeCompare(b.id, 'en', { numeric: true }));
 const counts = rows.reduce((a, r) => ({ ...a, [r.status]: (a[r.status] ?? 0) + 1 }), {});

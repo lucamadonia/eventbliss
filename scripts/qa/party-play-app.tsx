@@ -120,6 +120,8 @@ window.qaErrors = []; window.addEventListener('error', e => window.qaErrors.push
 if (window.controllerCredentials) { const r = await supabase.auth.signInWithPassword(window.controllerCredentials); if (r.error) throw r.error; const u = await supabase.auth.updateUser({ data: { display_name: window.controllerIdentity.user_metadata.display_name } }); if (u.error) throw u.error; window.controllerIdentity = u.data.user; }
 const lang = window.qaLanguage ?? 'en';
 await i18nInitPromise; await loadLocale(lang); await i18n.changeLanguage(lang);
+window.qaT = (key: string) => i18n.t(key); // translated labels for text-based harness steps
+document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
 for (const game of playableGames) for (const id of [game.id, normalizeGameId(game.id)]) sessionStorage.setItem(`eb.rules-seen.${id}`, '1');
 // "App start" for A01: dev-server module loading (unbundled, several seconds) is excluded.
 window.__qaAppStart = wall();

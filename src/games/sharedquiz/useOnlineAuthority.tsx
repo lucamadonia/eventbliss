@@ -3,6 +3,7 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { acceptOnlineAction } from './online-action';
 import { localGuestIds } from '../ui/guest-handover';
 import { hostActor } from './host-actor';
+import { privateRecipients } from '../multiplayer/private-recipients';
 
 type Action = { allow: (sender: string, args: any[]) => boolean; run: (...args: any[]) => void };
 
@@ -101,9 +102,8 @@ export function usePrivateSnapshot(online: OnlineGameProps | undefined, event: s
   useEffect(() => {
     if (!online?.isHost) return;
     const state = JSON.parse(serialized);
-    for (const recipient of online.players) {
-      if (recipient.id !== online.myPlayerId) online.broadcastTo?.(recipient.id, event, callbacks.current.project(state, recipient.id));
-    }
+    // Own-device seats only: guests' private views stay on this device (handover reveal), never on the wire.
+    for (const recipient of privateRecipients(online.players, online.myPlayerId)) online.broadcastTo?.(recipient.id, event, callbacks.current.project(state, recipient.id));
   }, [serialized, online?.isHost, online?.broadcastTo, online?.players, online?.myPlayerId, event]);
   useEffect(() => {
     if (!online || online.isHost) return;

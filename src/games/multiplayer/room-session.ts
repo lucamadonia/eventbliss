@@ -471,7 +471,8 @@ export class RoomSession {
     this.send(event, data);
   };
   broadcastTo = (recipient: string, event: string, data: RoomData): void => {
-    if (!this.isHost() || !object(data)) return;
+    // A 🔁 guest has no device: its private view never goes on the wire (or into the replay cache).
+    if (!this.isHost() || !object(data) || this.snapshot.players.some(p => p.id === recipient && p.controlledBy)) return;
     if (isState(event)) this.cache.set(`${recipient}:${event}`, { event, data: JSON.parse(JSON.stringify(data)), recipient });
     if (recipient === this.identity?.id) return;
     this.send(event, data, recipient);

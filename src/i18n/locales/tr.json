@@ -6398,7 +6398,9 @@
       "tutorialDismiss": "ANLADIM!",
       "taskAllePrompt": "Söyle: {{category}} \"{{letter}}\" ile",
       "taskKategoriePrompt": "Bir {{category}} söyle \"{{letter}}\" ile!",
-      "fewestPenalties": "En az ceza puanı"
+      "fewestPenalties": "En az ceza puanı",
+      "partyHolderWait": "Birazdan sana gelebilir.",
+      "partyHolderPass": "Fitil yanmaya devam ediyor!"
     },
     "headup": {
       "name": "Heads Up",
@@ -6471,7 +6473,13 @@
         "roundLabel": "Tur {{current}} / {{total}}",
         "explainsSuffix": "açıklıyor",
         "isUp": "Sıra {{team}}'de!",
-        "startBtn": "Hadi başlayalım!"
+        "startBtn": "Hadi başlayalım!",
+        "explainerHint": "Takımın hazır olunca Başlat'a dokun. Takımın telefona bakmamalı.",
+        "refereeHint": "Kartı sen de okuyorsun; yasak kelime geçince “Tabu!”ya bas.",
+        "guesserHint": "{{name}} birazdan anlatacak – iyi dinle, yüksek sesle tahmin et.",
+        "watcherHint": "{{name}} birazdan {{team}} için anlatacak.",
+        "cardBack": "Kartın kapalı halde hazır",
+        "waitingFor": "{{name}} bekleniyor …"
       },
       "playing": {
         "currentWord": "Güncel kelime",
@@ -6479,7 +6487,12 @@
         "skipCount": "{{count}} Geç",
         "tabooBtn": "TABU!",
         "skipBtn": "GEÇ",
-        "correctBtn": "DOĞRU"
+        "correctBtn": "DOĞRU",
+        "guessTitle": "Yüksek sesle tahmin et!",
+        "guessBody": "Kartı göremezsin – {{name}} ne diyor, iyi dinle.",
+        "watchTitle": "{{name}} anlatıyor",
+        "watchBody": "Televizyona bak ve gülmeye katıl.",
+        "refereeHint": "Yasak kelime mi duydun? Hemen bas."
       },
       "summary": {
         "roundWord": "TUR",
@@ -6507,7 +6520,13 @@
         "cheers": "Şerefe!"
       },
       "refereeRole": "Hakem: yasak kelimeleri dinle.",
-      "voiceHint": "Takımınla sesli tahmin et. Uzaktan oynarken sesli arama kullanın."
+      "voiceHint": "Takımınla sesli tahmin et. Uzaktan oynarken sesli arama kullanın.",
+      "role": {
+        "explainer": "Sen anlatıyorsun",
+        "referee": "Hakem sensin",
+        "guesser": "Sen de tahmin et",
+        "watcher": "Sıra: {{team}}"
+      }
     },
     "categoryGame": {
       "name": "Zamanlı Kategori",
@@ -6643,7 +6662,9 @@
         "ball": "Futbol topu",
         "plant": "Saksı bitkisi",
         "umbrella": "Şemsiye"
-      }
+      },
+      "watchTurn": "İzle – birazdan sıra sende.",
+      "guessSeat": "{{name}} iğneyi yerleştiriyor"
     },
     "impostor": {
       "title": "Sahtekar",
@@ -6840,7 +6861,9 @@
       "timeToPlace": "Yerleştirme zamanı",
       "songLoading": "Şarkı yükleniyor…",
       "tapToPlayHidden": "Oynatmak için dokun — başlık gizli kalır",
-      "tapAndGo": "Dokun ve başla"
+      "tapAndGo": "Dokun ve başla",
+      "partyCounterLine": "İtirazını zaman çizelgesine koy.",
+      "partyYourTurnLine": "Dinle ve şarkıyı yerine yerleştir."
     },
     "splitquiz": {
       "subtitle": "Her takım cevapların yalnızca yarısını görür!",
@@ -6916,7 +6939,23 @@
       "wins": "{{name}} kazandı!",
       "points": "{{count}} puan",
       "playAgain": "Tekrar oyna",
-      "otherGame": "Başka oyun"
+      "otherGame": "Başka oyun",
+      "taskOf": "{{name}} için görev",
+      "level": "Seviye",
+      "doneDare": "Tamam — oylayın",
+      "hostSpins": "Host çarkı çeviriyor …",
+      "onlyTruth": "Bugün sadece doğruluk",
+      "onlyDare": "Bugün sadece cesaret",
+      "votePassed": "Başardı",
+      "voteFailed": "Başaramadı",
+      "voteProgress": "{{total}} kişiden {{done}} oy verdi",
+      "turnChoose": "doğruluk mu cesaret mi seçiyor",
+      "turnAnswer": "soruyu cevaplıyor",
+      "turnDare": "cesaret görevini yapıyor",
+      "turnVote": "{{name}} hakkında karar veriyor",
+      "turnYou": "Sıra sende",
+      "turnOther": "Şimdi sırada",
+      "watchOther": "Sıra: {{name}} — izle ya da televizyona bak."
     },
     "whoami": {
       "round": "Tur {{round}}/{{total}}",
@@ -7009,7 +7048,25 @@
       "sendQuestion": "Soru sor",
       "guessNow": "Kimliği tahmin et",
       "voteSummary": "Evet: {{yes}} · Hayır: {{no}}",
-      "questionLimit": "Kimlik başına soru"
+      "questionLimit": "Kimlik başına soru",
+      "party": {
+        "isAsking": "şu an soruyor",
+        "theirIdentity": "{{name}} aslında …",
+        "askAloud": "Kendinle ilgili evet/hayır sorusu sor.",
+        "waitingQuestion": "{{name}} bir soru düşünüyor …",
+        "theOthersAre": "Diğerleri bunlar",
+        "notYours": "Kendi karakterin gizli kalır — onu sorarak bulmalısın.",
+        "seenCover": "Gördüm – kapat",
+        "seenPass": "Gördüm – telefonu ver",
+        "allSeen": "Telefondaki herkes kartları gördü",
+        "startWhenReady": "Herkes kartını görünce başlat.",
+        "holdToSee": "Görmek için basılı tut",
+        "lookAtTv": "Televizyona ya da gruba bak",
+        "askerIs": "{{name}} aslında",
+        "waitingAnswer": "{{name}} cevaplıyor …",
+        "waitingGuess": "{{name}} şimdi tahmin ediyor …",
+        "notSeenYet": "Henüz bakmayanlar: {{names}}"
+      }
     },
     "bottlespin": {
       "setupTimerLabel": "Görev zamanlayıcısı (sn.)",
@@ -7083,7 +7140,15 @@
       "finalResults": "Nihai Sonuç",
       "playAgain": "Tekrar Oyna",
       "otherGame": "Başka Oyun",
-      "quit": "Çık"
+      "quit": "Çık",
+      "starts": "{{name}} başlıyor",
+      "passingPhone": "Telefon şimdi {{name}} kişisine geçiyor …",
+      "yourTurn": "Sıra sende – bir kelime söyle!",
+      "othersTurn": "İyi dinle – sıra birazdan sana gelebilir.",
+      "clockStopped": "{{name}} hazır olana kadar saat durdu.",
+      "waitingAnswer": "{{name}} kelime arıyor …",
+      "hostContinues": "Host birazdan yeni turu başlatacak.",
+      "hostDecides": "Nasıl devam edileceğine host karar veriyor."
     },
     "emojiguess": {
       "title": "Emoji Tahmin",
@@ -7106,7 +7171,13 @@
       "nextPlayer": "Sıradaki: {{name}}",
       "clueLabel": "Resimli bulmaca",
       "poolBudget": "{{puzzleCount}} seçilmiş bulmaca. Büyük gruplar daha az tur oynar: herkese eşit sıra, tekrar yok.",
-      "balancedTeamPoints": "Takımların büyüklükleri farklıysa, her turda aynı toplam puana ulaşabilmeleri için puanlar ağırlıklandırılır."
+      "balancedTeamPoints": "Takımların büyüklükleri farklıysa, her turda aynı toplam puana ulaşabilmeleri için puanlar ağırlıklandırılır.",
+      "watchTitle": "{{name}} şu an tahmin ediyor",
+      "watchBody": "Televizyona bak, sessizce sen de tahmin et.",
+      "yourTurn": "Sıra sende",
+      "nextUp": "sıradaki",
+      "solvedBy": "bildi",
+      "notSolved": "bu sefer bilinemedi"
     },
     "fakeorfact": {
       "title": "Yalancı — Fake or Fact",
@@ -7124,7 +7195,19 @@
       "correctPct": "Doğru: {{pct}}%",
       "incorrectPct": "Yanlış: {{pct}}%",
       "continue": "Devam",
-      "noAnswer": "Yanıt yok (süre doldu)"
+      "noAnswer": "Yanıt yok (süre doldu)",
+      "seatResults": "Bu telefondaki sonuçlar",
+      "yourTurn": "Sıra sende",
+      "playerTurn": "Sıra: {{name}}",
+      "onHostPhone": "Host'un telefonunda",
+      "timeLeft": "{{seconds}} saniye kaldı",
+      "progressLabel": "Kim karar verdi",
+      "markDone": "karar verdi",
+      "markNow": "sırada",
+      "markOpen": "bekliyor",
+      "waitingFor": "{{name}} karar veriyor …",
+      "answerLocked": "Cevabın kaydedildi – sonuç birazdan geliyor",
+      "turnSoon": "Birazdan sıra sende"
     },
     "quickdraw": {
       "tagline": "Hızlı çiz — diğerleri tahmin etsin!",
@@ -7152,7 +7235,8 @@
       "penSize": "Kalem kalınlığı {{size}}",
       "eraser": "Silgi",
       "undo": "Geri al",
-      "clear": "Çizimi temizle"
+      "clear": "Çizimi temizle",
+      "lookAtTv": "👀 Televizyona bak"
     },
     "sharedquiz": {
       "title": "Paylaşıldı & Sorgulandı",
@@ -7177,7 +7261,13 @@
       "resultBtn": "Sonuç",
       "modeAnswerTurn": "{{name}} · 3 yanıttan {{n}}. yanıt",
       "chainRules": "Sırayla yanıtlayın. Her doğru yanıt üçlünüze bir puan kazandırır. Üç kişi de yanıtlayana kadar yanıtlar gizli kalır.",
-      "allRules": "Üç kişi de doğru yanıtlamalı. Üçlünüz üç puan kazanır; aksi hâlde sıfır."
+      "allRules": "Üç kişi de doğru yanıtlamalı. Üçlünüz üç puan kazanır; aksi hâlde sıfır.",
+      "sharedPhoneTitle": "Bu telefondaki roller",
+      "sharedPhoneHint": "Herkes sadece kendi rolüne baksın – diğerleri bakmasın.",
+      "viewMyRole": "Rolümü gör",
+      "viewGuestRole": "{{name}}: rolü gör",
+      "seenBadge": "görüldü",
+      "coverRole": "Görüldü – kapat"
     },
     "storybuilder": {
       "setupTimerLabel": "Oyuncu başına cümle",
@@ -7194,7 +7284,9 @@
       "playAgain": "Tekrar oyna",
       "otherGame": "Başka oyun",
       "skipTurn": "Sırayı atla",
-      "emptyStory": "Henüz cümle yok. Birlikte yeni bir hikâyeye başlayın."
+      "emptyStory": "Henüz cümle yok. Birlikte yeni bir hikâyeye başlayın.",
+      "writingNow": "{{name}} şu an yazıyor …",
+      "secondsLeft": "{{count}} sn kaldı"
     },
     "thisorthat": {
       "modeTagPopular": "Popüler",
@@ -7277,7 +7369,9 @@
       "waitForPlayer": "{{name}} başlaması bekleniyor.",
       "exampleCategory": "“{{animal}}”: dokun. “{{object}}”: bekle.",
       "exampleStroop": "Kırmızı yazılmış “{{red}}”: dokun. Mavi yazılmış “{{red}}”: bekle.",
-      "exampleForbidden": "“{{word}}”: bekle. Diğer tüm kelimelere dokun."
+      "exampleForbidden": "“{{word}}”: bekle. Diğer tüm kelimelere dokun.",
+      "partyReadyLine": "“Hazır”a dokun, saat başlasın.",
+      "partyWatchLine": "İzle – birazdan sıra sende."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
@@ -7337,7 +7431,10 @@
       "playersLabel": "Oyuncular",
       "groupsLabel": "Takımlar",
       "teamN": "Takım {{n}}",
-      "retryImage": "Görseli yeniden yükle"
+      "retryImage": "Görseli yeniden yükle",
+      "sayItLoud": "Cevabı yüksek sesle söyle!",
+      "teamHint": "Takım olarak tahmin ediyorsunuz – yanlış cevap tüm telefonu kilitler.",
+      "whoTypes": "Kim yazıyor?"
     },
     "closeenough": {
       "title": "Yaklaştın",
@@ -7578,7 +7675,8 @@
         "wingspan_aircraft": "Airbus A320'nin kanat açıklığı 36 metredir.",
         "employees": "Volkswagen'de yaklaşık 680.000 kişi çalışır.",
         "revenue": "Apple yılda yaklaşık 390 milyar USD ciro yapar."
-      }
+      },
+      "partyYourEstimate": "Tahminin açıklanana kadar gizli kalır."
     },
     "pantomime": {
       "title": "Tek Kelime Yok",
@@ -7889,7 +7987,8 @@
       "counterLabelBrew": "Malzeme rafı",
       "counterLabelBar": "Tezgâh",
       "trayNote": "henüz güvende değil",
-      "counterNote": "herkese açık · sırada 1 kart"
+      "counterNote": "herkese açık · sırada 1 kart",
+      "partyWatch": "İzle – bardağa sığmayan tezgâha dökülür."
     },
     "connectionPaused": "Oyun duraklatıldı",
     "connectionPausedHint": "Devam etmek için yeniden bağlan. Mevcut tur korunur.",
@@ -10087,7 +10186,7 @@
       "leaderLine": "{{name}} {{points}} puanla önde",
       "tapForMap": "Rota için dokun",
       "gameXofY": "Oyun {{current}} / {{total}}",
-      "finaleEyebrow": "Party Night sona erdi",
+      "finaleEyebrow": "Parti gecesi sona erdi",
       "champion": "Gecenin şampiyonu",
       "championLine": "{{name}} {{points}} puanla kazanıyor",
       "finalTable": "Son sıralama",
@@ -10118,7 +10217,8 @@
         }
       },
       "champions": "Ortak şampiyonlar",
-      "championsLine": "{{name}}, kişi başı {{points}} puanla birinciliği paylaşıyor"
+      "championsLine": "{{name}}, kişi başı {{points}} puanla birinciliği paylaşıyor",
+      "drumroll": "Ve gecenin şampiyonu"
     },
     "connectTitle": "TV'yi bağla",
     "openOnTv": "TV'nde aç:",
@@ -10468,7 +10568,20 @@
       "noGame": "Önce bir oyun planla.",
       "notReadyNames": "Henüz hazır değil: {{names}}",
       "nothingFits": "Planlanan oyunların hiçbiri grubunuza uymuyor.",
-      "skipped": "{{game}} şu an uymuyor – {{next}} ile devam."
+      "skipped": "{{game}} şu an uymuyor – {{next}} ile devam.",
+      "kickerEmpty": "Parti gecesi",
+      "tvOn": "TV bağlı",
+      "soon": "Birazdan sıra sende",
+      "running": "Şu an bir oyun sürüyor",
+      "title": "Birazdan başlıyoruz",
+      "nonePlanned": "Henüz planlanmış oyun yok",
+      "notReadyOne": "{{name}} henüz hazır değil",
+      "planned": "{{count}} oyun planlandı",
+      "planned_one": "{{count}} oyun planlandı",
+      "planned_other": "{{count}} oyun planlandı",
+      "waitingFor": "{{names}} bekleniyor",
+      "waitingMany": "{{names}} ve {{count}} kişi daha bekleniyor",
+      "runningNow": "Şu an oynanıyor: {{game}}"
     },
     "onboarding": {
       "back": "Listeye dön",
@@ -10531,7 +10644,9 @@
       "remove": "Çıkar …",
       "unban": "Engeli kaldır",
       "you": "Sen",
-      "banned": "Engellenenler ({{count}})"
+      "banned": "Engellenenler ({{count}})",
+      "addGuestShort": "Senin telefonunda oynar",
+      "full": "Parti dolu"
     },
     "scene": {
       "getReady": "Birazdan başlıyoruz"
@@ -10540,7 +10655,9 @@
       "host": "Ev sahibi",
       "hostDevice": "ev sahibinin telefonunda",
       "pendingClaim": "tur bitince kendi telefonuna geçiyor",
-      "phone": "kendi telefonu"
+      "phone": "kendi telefonu",
+      "inGame": "şu an oyunda",
+      "nextRound": "sonraki turdan itibaren"
     },
     "similar": {
       "no": "Hayır, ben başka biriyim",
@@ -10590,13 +10707,374 @@
       "body": "Oynadığın için teşekkürler! Hemen kendi partini başlat."
     },
     "tv": {
-      "handover": "{{name}} ev sahibinin telefonunda oynuyor …"
+      "handover": "{{name}} ev sahibinin telefonunda oynuyor …",
+      "handoverEyebrow": "Telefonu uzat",
+      "pair": "Eşleştirmek için dokun",
+      "title": "TV",
+      "stagePassing": "Telefon {{name}} adlı oyuncuya geçiyor",
+      "stageViewing": "{{name}} bakıyor …",
+      "short": "TV",
+      "nextUp": "Sıradaki: {{name}}"
     },
     "closing": {
       "title": "Parti sona erdi",
       "placement": "{{rank}}. oldun – {{points}} puan",
       "tv": "Ödül töreni televizyonda.",
-      "done": "Tamam"
+      "done": "Tamam",
+      "winner": "Geceyi sen kazandın!",
+      "rankLine": "{{rank}}. sıra – {{points}} puan"
+    },
+    "invite": {
+      "copied": "Bağlantı kopyalandı",
+      "hint": "Kodu tara ya da gir",
+      "share": "Daveti paylaş",
+      "shareText": "Partime gel! Kod {{code}}",
+      "sheetHint": "Telefon kamerasını koda tut – uygulama açılır ve oyundasın.",
+      "showQr": "QR kodunu büyük göster",
+      "title": "Arkadaşlarını davet et",
+      "chip": "Davet et"
+    },
+    "ready": {
+      "count": "{{total}} kişiden {{ready}} kişi hazır",
+      "cta": "Hazırım",
+      "done": "Hazır",
+      "undo": "Henüz değil"
+    },
+    "next": {
+      "host": "Sıradaki",
+      "player": "Birazdan oynuyorsunuz"
+    },
+    "start": {
+      "with": "Başlat: {{game}}"
+    },
+    "recap": {
+      "title": "Gecenin özeti",
+      "games": "{{count}} oyun oynandı",
+      "games_one": "{{count}} oyun oynandı",
+      "games_other": "{{count}} oyun oynandı",
+      "closest": "Kıl payı galibiyet: {{game}} oyununda {{name}} (+{{margin}})",
+      "mostWins": "En çok galibiyet: {{name}} ({{count}})",
+      "footer": "EventBliss ile kutlandı · event-bliss.com",
+      "winners": "Her oyunun kazananı",
+      "share": "Özeti görsel olarak paylaş"
+    },
+    "turn": {
+      "you": "Sıra sende",
+      "passTo": "Telefonu ver: {{name}}",
+      "other": "Sıra: {{name}}"
+    }
+  },
+  "tvCinema": {
+    "round": "{{round}}. tur",
+    "roundOf": "Tur {{round}} / {{total}}",
+    "impostor": {
+      "roles": "Roller dağıtılıyor",
+      "rolesSub": "Gizlice telefonlarınıza bakın",
+      "discussion": "Tartışma",
+      "discussionSub": "Herkes tek kelime – fazla ele vermeyin",
+      "voting": "Oylama",
+      "votingSub": "Sahtekâr kim?",
+      "caught": "Yakalandı!",
+      "escaped": "Kaçtı!",
+      "spokenProgress": "{{total}} kişiden {{count}} kişi konuştu"
+    },
+    "bottle": {
+      "vote": "Oylama",
+      "voteSub": "{{name}} başardı mı?",
+      "voteSubAnon": "Başarıldı mı?",
+      "yourTurn": "Şişe şunu gösteriyor:",
+      "spinning": "Dönüyor",
+      "card": "Kart"
+    },
+    "thisOrThat": {
+      "voting": "Seçiminizi yapın!",
+      "votingSub": "{{a}} mı {{b}} mi?",
+      "votingNow": "Oylama sürüyor",
+      "debate": "Tartışma",
+      "debateSub": "Karşı tarafı ikna edin",
+      "majority": "Çoğunluk",
+      "tie": "Berabere",
+      "votedCount": "{{count}}/{{total}} oy verdi"
+    },
+    "bomb": {
+      "armed": "Bomba tıkırdıyor!",
+      "armedSub": "Cevapla ve hızla pasla",
+      "holds": "bomba elinde",
+      "plusOne": "+1 ceza",
+      "winners": "{{names}} kazandı!",
+      "winner": "{{name}} kazandı!",
+      "final": "Final skoru",
+      "modeMix": "Renkli karışım",
+      "live": "Bomba aktif",
+      "roundDone": "{{round}}. tur atlatıldı",
+      "gameOver": "Oyun bitti",
+      "preparing": "Bomba kuruluyor …"
+    },
+    "category": {
+      "newCategory": "Yeni kategori",
+      "newCategorySub": "Sırayla söyleyin – duraksayan kaybeder",
+      "category": "Kategori",
+      "yourTurn": "sırada",
+      "named": "{{count}} söylendi",
+      "noWords": "Henüz bir şey yok – kim başlıyor?",
+      "timeUp": "Süre doldu!",
+      "wordsThisRound": "Bu turda {{count}} kelime",
+      "wordsThisRound_one": "Bu turda {{count}} kelime",
+      "wordsThisRound_other": "Bu turda {{count}} kelime",
+      "chain": "Kelime zinciri",
+      "roundOver": "Tur bitti",
+      "starts": "{{name}} başlıyor",
+      "preparing": "Kategori çekiliyor …"
+    },
+    "closeenough": {
+      "guessing": "Tahmin edin!",
+      "guessingSub": "Sayınızı telefona yazın – kim en yakın?",
+      "submitted": "{{total}} kişiden {{count}} yazdı",
+      "closest": "En yakın: {{name}}",
+      "bullseye": "Tam isabet",
+      "revealPill": "Sonuç",
+      "guessingPill": "Tahmin turu",
+      "unit": "Cevap birimi: {{unit}}"
+    },
+    "draw": {
+      "cueDrawer": "Yeni çizim",
+      "cueDrawerSub": "{{name}} çiziyor",
+      "cueDrawerSubAnon": "Çizen telefona baksın",
+      "cueGuess": "Bu ne?",
+      "cueGuessSub": "Sırayla telefondan tahmin edin",
+      "drawerReveal": "Kelimeyi gör",
+      "drawing": "Çizim",
+      "guessing": "Tahmin",
+      "result": "Sonuç",
+      "statusReveal": "kelimeye bakıyor",
+      "statusDrawing": "çiziyor",
+      "statusDone": "çizdi",
+      "timeLeft": "saniye",
+      "guessHeadline": "Bu ne?",
+      "guessHint": "Sırayla telefondan tahmin edin",
+      "wordWas": "Aranan kelime",
+      "getReady": "Birazdan başlıyor …",
+      "coverTitle": "Birazdan çizim başlıyor",
+      "guessedBy": "Bilen: {{name}}"
+    },
+    "emojiGuess": {
+      "title": "Emoji bilmecesi",
+      "upNext": "Sıra: {{name}}",
+      "getReady": "Emojiler birazdan geliyor – herkes tahmin etsin!",
+      "solution": "Cevap",
+      "guessing": "{{name}} tahmin ediyor",
+      "whatIsIt": "Altında ne yatıyor?",
+      "getSet": "Birazdan başlıyor",
+      "guessingNow": "Tahmin zamanı",
+      "reveal": "Sonuç"
+    },
+    "findIt": {
+      "memorize": "Ezberle",
+      "memorizeSub": "Neyin nerede olduğunu aklınızda tutun",
+      "whichCity": "Bu hangi şehir?",
+      "whereIsIt": "Burası nerede?",
+      "spotDiffs": "Farkları bulun",
+      "guessAlong": "Sen de tahmin et",
+      "itWas": "Aranan",
+      "tapOnPhone": "Cevabınızı telefona girin",
+      "reveal": "Sonuç",
+      "roundOver": "Tur bitti",
+      "setup": "Hazırlık",
+      "memorizeBoard": "Tahtayı ezberleyin!",
+      "questionOf": "Soru {{n}} / {{total}}",
+      "lookAtPhone": "Telefonlarınıza bakın",
+      "playerRight": "{{name}} bildi!",
+      "playerWrong": "{{name}} ıskaladı"
+    },
+    "headup": {
+      "yourTurn": "Sıra: {{name}}",
+      "nextTurn": "Sıradaki tur",
+      "readySub": "Telefon alna, diğerleri anlatsın",
+      "guessing": "şu an tahmin ediyor",
+      "explainNow": "Kelimeyi anlatın!",
+      "lookAtPhone": "Kelime telefonda – sadece {{name}} göremiyor",
+      "turnOf": "Tur:",
+      "allDone": "Herkes oynadı!",
+      "winner": "{{name}} kazandı!",
+      "correctCount": "{{count}} doğru",
+      "category": "Kategori: {{name}}",
+      "title": "HeadUp",
+      "holdUp": "Telefon alna – birazdan başlıyor",
+      "roundOver": "Tur bitti",
+      "gameOver": "Oyun bitti"
+    },
+    "ohrwurm": {
+      "turnOf": "Sıra: {{name}}",
+      "listen": "Gizemli şarkı",
+      "listenSub": "İyi dinleyin – ne zaman çıktı?",
+      "counter": "İtiraz şansı",
+      "counterSub": "{{name}} yanılıyor mu? Hemen itiraz et!",
+      "counterSubAnon": "Yerleştirme yanlış mı? Hemen itiraz et!",
+      "counterHint": "{{name}} yanılıyor mu? Şüphesi olan şimdi telefondan itiraz etsin.",
+      "ready": "Birazdan başlıyor",
+      "timelineOf": "Zaman çizelgesi: {{name}}",
+      "winner": "{{name}} kazandı!",
+      "revealPill": "Sonuç",
+      "placing": "Yerleştirme",
+      "listenPill": "Dinleme",
+      "target": "Hedef: {{count}} kart",
+      "target_one": "Hedef: {{count}} kart",
+      "target_other": "Hedef: {{count}} kart"
+    },
+    "pantomime": {
+      "cueTurn": "Sıradaki tur",
+      "cueTurnSub": "{{name}} canlandırıyor",
+      "cueTurnSubAnon": "Canlandıran telefona baksın",
+      "turnStart": "Sıradaki tur",
+      "fetch": "Aksesuar getir",
+      "playing": "Canlandırma",
+      "summary": "Puanlama",
+      "final": "Final skoru",
+      "forTeam": "{{team}} için",
+      "extraHeadline": "Çift puan mı?",
+      "extraDecides": "Karar: {{name}}"
+    },
+    "pixeljagd": {
+      "playing": "Bu ne?",
+      "playingSub": "Tanıdığınız anda buzzer'a basın",
+      "buzzed": "{{name}} buzzer'a bastı!",
+      "solvedBy": "{{name}} bildi",
+      "unsolved": "Kimse bilemedi",
+      "credit": "Görsel: {{credit}}",
+      "revealPill": "Sonuç",
+      "pointsNow": "Şu anki değer"
+    },
+    "quiz": {
+      "newQuestion": "Yeni soru",
+      "teamsSub": "Takım takıma karşı",
+      "betting": "Bahisler",
+      "bettingSub": "Ne kadar eminsiniz?",
+      "factOrFake": "Gerçek mi, uydurma mı?",
+      "whichIsTrue": "Hangisi doğru?",
+      "trueOrFalseSub": "Doğru mu, yalan mı?",
+      "teamwork": "Takım çalışması",
+      "teamworkSub": "Üç rol, tek cevap",
+      "guessing": "Tahmin zamanı",
+      "reveal": "Sonuç",
+      "roundIntro": "Yeni tur",
+      "passPhone": "Telefonu ver",
+      "allVoted": "Herkes seçti",
+      "readingQuestion": "Soru okunuyor",
+      "readingOptions": "Şıklar okunuyor",
+      "answering": "Cevaplar geliyor",
+      "gotItRight": "%{{pct}} doğru",
+      "gotItWrong": "%{{pct}} yanlış",
+      "teamCorrect": "{{count}} doğru",
+      "roleQuestion": "soruyu okuyor",
+      "roleOptions": "şıkları okuyor",
+      "roleGuess": "cevabı tahmin ediyor",
+      "preparing": "Quiz hazırlanıyor …",
+      "rolesTitle": "Bu turun rolleri",
+      "votedCount": "{{total}} kişiden {{count}} seçti",
+      "correctPlayers": "Doğru bilenler",
+      "passPhoneSub": "Birazdan devam",
+      "teamAnswering": "Takım soruyu cevaplıyor",
+      "onPhones": "Soru telefonlarda",
+      "revealOnTv": "Cevap burada, televizyonda açıklanacak",
+      "teamWins": "{{team}} kazandı!",
+      "teamTie": "Berabere!"
+    },
+    "story": {
+      "cueStart": "Bir varmış, bir yokmuş …",
+      "cueStartSub": "Cümle cümle",
+      "cueReveal": "Hikâyenin tamamı",
+      "cueRevealSub": "Birlikte okuyun!",
+      "writing": "Yazma",
+      "passing": "Aktarma",
+      "reveal": "Hikâye",
+      "isWriting": "{{name}} yazıyor",
+      "nextUp": "Telefon: {{name}}"
+    },
+    "taboo": {
+      "teamTurn": "Sıra: {{team}}",
+      "nextTurn": "Sıradaki tur",
+      "explains": "{{name}} anlatıyor",
+      "turnSub": "Yasak kelimeler olmadan anlat",
+      "turnStartSub": "Kart sadece telefonda – yasak kelimeler tabu!",
+      "skipped": "Pas geçildi",
+      "turnPoints": "{{team}} için {{points}} puan",
+      "tie": "Berabere!",
+      "teamWins": "{{team}} kazandı!",
+      "against": "rakip: {{team}}",
+      "summary": "Tur özeti",
+      "gameOver": "Oyun bitti",
+      "preparing": "Takımlar kuruluyor …"
+    },
+    "truthdare": {
+      "cueChoice": "Doğruluk mu cesaret mi?",
+      "cueChoiceSub": "Sıra: {{name}}",
+      "cueVote": "Oylama",
+      "cueVoteSub": "{{name}} başardı mı?",
+      "cueVoteSubAnon": "Başardı mı, başaramadı mı?",
+      "chooses": "{{name}} seçiyor …",
+      "or": "ya da",
+      "voteHeadline": "Başardı mı?",
+      "spin": "Sıra kimde?",
+      "choice": "Seçim",
+      "vote": "Oylama",
+      "final": "Final skoru",
+      "winner": "{{name}} kazandı!"
+    },
+    "whoami": {
+      "cueAssign": "Karakterler dağıtılıyor",
+      "cueAssignSub": "Herkes gizli bir karakter alır",
+      "cueTurn": "Ben kimim?",
+      "cueTurnSub": "{{name}} evet/hayır soruları soruyor",
+      "cueTurnSubAnon": "Evet/hayır soruları sor",
+      "cueGuess": "Tahmin zamanı",
+      "cueGuessSub": "{{name}} karakteri söylüyor",
+      "assign": "Dağıtım",
+      "asking": "Sorular",
+      "answering": "Cevaplar",
+      "guessing": "Tahmin",
+      "verdict": "Karar",
+      "final": "Final skoru",
+      "assignHeadline": "Herkes gizli bir karakter alır",
+      "correct": "Doğru!",
+      "wrong": "Iska!",
+      "winner": "{{name}} kazandı!",
+      "preparing": "Birazdan başlıyor …",
+      "guessingSub": "şimdi karakteri söylüyor",
+      "askingSub": "evet/hayır soruları soruyor",
+      "guessHeadline": "Ben kimim?",
+      "guessHint": "Cevap birazdan …"
+    },
+    "wordpress": {
+      "yourTurn": "Sıra: {{name}}",
+      "nextTurn": "Sıradaki tur",
+      "turnSub": "Doğru kelimeleri yaz – hızlı!",
+      "roundDone": "{{round}}. tur tamam",
+      "gameOver": "Oyun bitti",
+      "preparing": "Birazdan başlıyor …",
+      "combo": "{{count}}× kombo",
+      "accuracy": "%{{pct}} isabet",
+      "progress": "Kelime {{n}} / {{total}}",
+      "bestCombo": "en iyi kombo {{count}}×",
+      "winner": "{{name}} kazandı!",
+      "points": "{{count}} puan",
+      "points_one": "{{count}} puan",
+      "points_other": "{{count}} puan",
+      "final": "Final skoru"
+    },
+    "finalStandings": "Final skoru",
+    "fallback": {
+      "phase": {
+        "playing": "Oyunda",
+        "roundEnd": "Tur bitti",
+        "reveal": "Sonuç",
+        "voting": "Oylama",
+        "results": "Skor"
+      },
+      "roundOver": "Tur bitti!",
+      "team": "Takım {{n}}",
+      "isUp": "sırada",
+      "truth": "💬 Doğruluk",
+      "dare": "🎯 Cesaret"
     }
   }
 }

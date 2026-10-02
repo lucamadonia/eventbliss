@@ -7,6 +7,7 @@ import { playableGames } from '@/lib/playable-games';
 import { buildRoute } from '../party-map';
 import { tvType } from '../tv-tokens';
 import type { PartyPlaylistItem, PartyStanding } from '../party-types';
+import { lookupRoster, useTVRoster } from '../cinema/tv-roster';
 
 /**
  * TVPartyMap — der Abend als Brettspiel-Route.
@@ -69,6 +70,7 @@ export default function TVPartyMap({
 }: Props) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
+  const roster = useTVRoster();
   const route = useMemo(() => buildRoute(playlist.length), [playlist.length]);
 
   /**
@@ -290,7 +292,7 @@ export default function TVPartyMap({
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 18, delay: i * 0.06 }}
               >
-                {s.avatar || s.name.charAt(0)}
+                {s.avatar || lookupRoster(roster, s.id, s.name)?.avatar || s.name.charAt(0)}
               </motion.div>
             ))}
           </div>

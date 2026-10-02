@@ -98,13 +98,16 @@ export const tvScenarios = [
     need('scene-countdown'); needSource(/<SceneCountdown\b/, 'SceneCountdown mounted on phones');
     const { h } = ctx; const { host, code } = await createParty(h); const tv = await connectTv(h, host); const devs = [];
     for (const n of ['A', 'B', 'C']) devs.push(await joinPhone(h, ctx, host, code, n)); for (const d of devs) await ready(d);
-    const watch = [host, tv, ...devs]; const startP = startGame(host, ['this-or-that']); let samples = 0, mismatches = 0;
-    for (let i = 0; i < 40 && samples < 8; i++) {
-      const values = await Promise.all(watch.map(async c => await c.attr('scene-countdown', 'data-value') ?? await c.attr('tv-scene-countdown', 'data-value'))); const shown = values.filter(Boolean);
-      if (shown.length >= 2) { samples++; if (new Set(shown).size > 1) mismatches++; }
-      await pause(150);
-    }
-    await startP; ctx.evidence = { samples, mismatches }; assert(samples >= 3, 'countdown not visible on ≥ 2 devices'); assert(mismatches <= 1, `${mismatches}/${samples} samples showed different numbers`);
+    const watch = [host, tv, ...devs];
+    // Each device records (rAF) the wall time at which its countdown digit changes; digits must flip together.
+    for (const c of watch) await c.page.evaluate(() => { window.__qaCountdown = []; let last = null; const tick = () => { const n = document.querySelector('[data-testid="scene-countdown"], [data-testid="tv-scene-countdown"]'); const v = n?.getAttribute('data-value') ?? null; if (v !== last && v !== null) window.__qaCountdown.push({ v, at: performance.timeOrigin + performance.now() }); last = v; requestAnimationFrame(tick); }; requestAnimationFrame(tick); });
+    await startGame(host, ['this-or-that']); await pause(1500);
+    const logs = await Promise.all(watch.map(c => c.page.evaluate(() => window.__qaCountdown)));
+    const flips = {}; logs.forEach((log, i) => log.forEach(({ v, at }) => { (flips[v] ??= []).push({ device: watch[i].name, at }); }));
+    const skew = Object.fromEntries(Object.entries(flips).filter(([, l]) => l.length >= 2).map(([v, l]) => [v, Math.round(Math.max(...l.map(x => x.at)) - Math.min(...l.map(x => x.at)))]));
+    ctx.evidence = { devicesWithCountdown: logs.filter(l => l.length).length, digits: Object.fromEntries(Object.entries(flips).map(([v, l]) => [v, l.map(x => x.device)])), skewMsPerDigit: skew };
+    assert(Object.keys(skew).length >= 2, 'countdown not visible on ≥ 2 devices');
+    const worst = Math.max(...Object.values(skew)); assert(worst <= 250, `countdown digits flip up to ${worst} ms apart (target ≤ 250 ms)`);
   } },
   { id: 'H03', title: '800 ms latency + 5 % loss → playable, no ghost states', timeoutMs: 420000, async run(ctx) {
     ctx.h.chaos = null; const m = await matchSetup(ctx, { game: 'this-or-that', guests: ['Max'], phones: ['Lena', 'Tom'] });

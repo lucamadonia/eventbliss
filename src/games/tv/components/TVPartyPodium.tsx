@@ -1,3 +1,4 @@
+import TVPlayerAvatar from '../cinema/TVPlayerAvatar';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Crown, Flame } from 'lucide-react';
 import { tvType } from '../tv-tokens';
@@ -33,10 +34,6 @@ interface Props {
   /** Engere Geometrie fuer Telefon und Onboarding. */
   compact?: boolean;
   className?: string;
-}
-
-function initials(entry: PartyStanding): string {
-  return entry.avatar || entry.name?.slice(0, 1).toUpperCase() || '?';
 }
 
 function PodiumColumn({
@@ -110,7 +107,8 @@ function PodiumColumn({
           animate={reveal ? { scale: 1 } : { scale: reduce ? 1 : 0.68 }}
           transition={{ ...entrance, delay: delay + (reduce ? 0 : 0.08) }}
         >
-          <span aria-hidden>{initials(entry)}</span>
+          {/* Dieselbe Spielerkugel wie ueberall auf dem Fernseher — Emoji aus Stand oder Teilnehmerliste. */}
+          <TVPlayerAvatar id={entry.id} name={entry.name} avatar={entry.avatar} color={entry.color} size={`calc(${avatarSize} - 4px)`} active={isChampion} />
           {isChampion && (
             <motion.span
               aria-hidden
@@ -176,7 +174,7 @@ function PodiumColumn({
           className="relative grid h-full place-items-center font-black leading-none tabular-nums"
           style={{
             color: podiumColor,
-            fontSize: compact ? (isChampion ? '2.7rem' : '2rem') : tvType.display,
+            fontSize: compact ? (isChampion ? '2.7rem' : '2rem') : isChampion ? tvType.display : 'min(4.4vw, 5.6vh)',
             textShadow: `0 0 28px ${podiumColor}66`,
           }}
         >

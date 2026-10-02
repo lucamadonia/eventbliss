@@ -37,7 +37,8 @@ export function needSource(pattern, what) { if (!pattern.test(sourceText())) thr
 let accountCounter = 0;
 const newAccount = () => `00000000-0000-4000-8000-${String(++accountCounter).padStart(12, '0')}`;
 
-export async function createHarness({ real = false, out, base, chaos = null, lang = 'en', browser: shared = null }) {
+/** lang: UI language of every device (set before mount); phoneViewport: e.g. { width: 390, height: 844 }. */
+export async function createHarness({ real = false, out, base, chaos = null, lang = 'en', phoneViewport = { width: 390, height: 900 }, browser: shared = null }) {
   fs.mkdirSync(out, { recursive: true });
   const db = real ? await createRealDB() : await createDB();
   const browser = shared ?? await puppeteer.launch({ headless: true, protocolTimeout: 180000, args: ['--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows'] });
@@ -53,7 +54,9 @@ export async function createHarness({ real = false, out, base, chaos = null, lan
     if (net.offline) return;
     if (droppable && cfg.drop && Math.random() < cfg.drop) { stats.dropped++; return; }
     const delay = cfg.delay ? rand(cfg.delay) : 0; stats.delayedMs += delay;
-    if (delay) await pause(delay);
+    // FIFO per channel like a websocket (TCP): jitter delays packets but never reorders them.
+    const arriveAt = Math.max(Date.now() + delay, (ch.lastArrival ?? 0) + 1); ch.lastArrival = arriveAt;
+    if (arriveAt > Date.now()) await pause(arriveAt - Date.now());
     if (ch.page.isClosed() || !channels.has(ch.id) && message.kind !== 'disconnect') return;
     await ch.page.evaluate(packet => window.controllerDeliver?.(packet), { id: ch.id, ...message }).catch(e => { if (!/closed|detached|destroyed|navigat/i.test(String(e))) h.errors.push(String(e)); });
   }
@@ -87,7 +90,7 @@ export async function createHarness({ real = false, out, base, chaos = null, lan
     let credentials = null;
     if (!kind.startsWith('tv') || real) { credentials = await db.seedUser(account, { premium }); if (real) account = credentials.userId; }
     const context = await browser.createBrowserContext(); const page = await context.newPage();
-    await page.setViewport(kind === 'tv' ? { width: 1920, height: 1080 } : { width: 390, height: 900 });
+    await page.setViewport(kind === 'tv' ? { width: 1920, height: 1080 } : phoneViewport);
     await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
     const client = { name, kind, page, context, account, net: { ...net }, console: [], errors: [], shots: [] };
     if (!real) {

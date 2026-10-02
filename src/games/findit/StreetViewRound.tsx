@@ -1,6 +1,12 @@
 import './expedition.css';
 import { usePausableTimeout } from '../engine/TimerSystem';
 import { appendOnlineGuess, publicGuessRound, settleGuessesAfterRemoval } from './online-guesses';
+import { fillMissingGuesses } from './guest-turns';
+import { useGuestGuesser } from './useGuestGuesser';
+import { GuessSeatChip } from './GuessSeatChip';
+import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
+import { localSeats } from '../multiplayer/OnlineGameTypes';
+import type { GuestHandover } from '../ui/useGuestHandover';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Camera, Check, ChevronRight, Trophy, MapPin, Crosshair, Eye, Timer } from 'lucide-react';
@@ -27,7 +33,9 @@ function ClickHandler({ onClick }: { onClick: (lat: number, lng: number) => void
 type Phase = 'explore' | 'guess' | 'result';
 interface Player { id: string; name: string; color: string; avatar: string; score: number; correct: number; wrong: number; streak: number; bestStreak: number; fastestMs: number; }
 export interface StreetViewResult { playerId: string; distanceKm: number; }
-interface Props { location: StreetViewLocation; players: Player[]; roundNumber: number; totalRounds: number; timerSeconds: number; onRoundComplete: (results: StreetViewResult[]) => void; onExit: () => void; online?: OnlineGameProps; }
+interface Props { location: StreetViewLocation; players: Player[]; roundNumber: number; totalRounds: number; timerSeconds: number; onRoundComplete: (results: StreetViewResult[]) => void; onExit: () => void; online?: OnlineGameProps;
+  /** Host phone: pass-the-phone for 🔁 guests (owned by FindItGame for the TV). */
+  handover?: GuestHandover; onLocalSeat?: (seat: string | null) => void; }
 
 function formatDistance(km: number, language: string): string {
   if (km < 1) return `${Math.round(km * 1000)} m`;
@@ -81,7 +89,7 @@ function StreetViewPano({ lat, lng, onStatus }: { lat: number; lng: number; onSt
   return <div ref={containerRef} style={{ width: '100%', height: '100%', background: '#0a0e14' }} />;
 }
 
-export default function StreetViewRound({ location: promptLocation, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online }: Props) {
+export default function StreetViewRound({ location: promptLocation, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online, handover, onLocalSeat }: Props) {
   const { t, i18n } = useTranslation();
   const [revealedLocation, setRevealedLocation] = useState<StreetViewLocation | null>(null);
   const location = revealedLocation ?? promptLocation;
@@ -123,11 +131,22 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   useEffect(() => { playerIdxRef.current = playerIdx; }, [playerIdx]);
   useEffect(() => { pinPosRef.current = pinPos; }, [pinPos]);
 
-  // In online mode, "currentPlayer" is always THIS player
-  const myPlayer = online ? players.find(p => p.id === online.myPlayerId) || players[0] : null;
+  // All devices + TV switch together; the clock only runs once input is open (design §9).
+  const sync = useSyncedPhase(online, phase, [phase]);
+  const view = sync.view, inputOpen = sync.blocker === null;
+  const paused = !!handover?.isPaused;
+  // Host phone: own seat first, then each 🔁 guest after a handover (guest-turns.ts).
+  const guesser = useGuestGuesser(online, phase === 'guess', players, guesses, onLocalSeat);
+  const guesserRef = useRef(guesser);
+  guesserRef.current = guesser;
+  // In online mode, "currentPlayer" is THIS device's seat (or the guest holding the host phone)
+  const myPlayer = online ? players.find(p => p.id === (guesser ?? online.myPlayerId)) || players.find(p => p.id === online.myPlayerId) || players[0] : null;
   const currentPlayer = online ? myPlayer! : players[playerIdx % players.length];
   const currentPlayerRef = useRef(currentPlayer);
   useEffect(() => { currentPlayerRef.current = currentPlayer; }, [currentPlayer]);
+
+  const pendingLocal = (list: readonly { playerId: string }[]) =>
+    online?.isHost ? localSeats(online).filter(id => players.some(p => p.id === id) && !list.some(g => g.playerId === id)) : [];
 
   // Broadcast has no self echo: apply the host's guess locally.
   const receiveGuess = useCallback((playerId: string, lat: number, lng: number, submitted = true) => {
@@ -164,13 +183,14 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   }, [online, receiveGuess, roundNumber]);
   useEffect(() => {
     if (!online?.isHost) return;
-    online.broadcast('findit-sv-state', publicGuessRound({ roundNumber, phase, countdown, guesses, location, exploreTime }));
-  }, [online, roundNumber, phase, countdown, guesses, exploreTime, location]);
+    online.broadcast('findit-sv-state', { ...publicGuessRound({ roundNumber, phase, countdown, guesses, location, exploreTime }), phaseStartsAt: sync.phaseStartsAt });
+  }, [online, roundNumber, phase, countdown, guesses, exploreTime, location, sync.phaseStartsAt]);
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast('findit-sv-state', data => {
       if (data.roundNumber !== roundNumber) return;
       if (data.location) setRevealedLocation(data.location as StreetViewLocation);
+      sync.receive(data.phaseStartsAt);
       setPhase(data.phase as Phase);
       setCountdown(data.countdown as number);
       const incoming = data.guesses as typeof guesses;
@@ -190,7 +210,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
       const { results } = data as { results: { playerId: string; playerName: string; playerColor: string; lat: number; lng: number; distanceKm: number }[] };
       setGuesses(results);
       setWaitingForResults(false);
-      setPhase('result');
+      // The phase itself switches with findit-sv-state (shared start, design §9).
     });
     return unsub;
   }, [online, roundNumber]);
@@ -215,8 +235,8 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   // --- Online: Host broadcasts phase transitions ---
   useEffect(() => {
     if (!online?.isHost) return;
-    online.broadcast('findit-sv-phase', { phase, countdown, roundNumber });
-  }, [online, phase, roundNumber]);
+    online.broadcast('findit-sv-phase', { phase, countdown, roundNumber, phaseStartsAt: sync.phaseStartsAt });
+  }, [online, phase, roundNumber, sync.phaseStartsAt]);
 
   // --- Online: Non-host listens for phase transitions ---
   useEffect(() => {
@@ -224,15 +244,15 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     const unsub = online.onBroadcast('findit-sv-phase', (data) => {
       if (data.roundNumber !== roundNumber) return;
       const { phase: p, countdown: c } = data as { phase: Phase; countdown: number };
-      if (p === 'guess' && !myGuessPlaced) { setPhase('guess'); setCountdown(c); }
+      if (p === 'guess' && !myGuessPlaced) { sync.receive(data.phaseStartsAt); setPhase('guess'); setCountdown(c); }
       // result phase handled by findit-sv-results listener
     });
     return unsub;
-  }, [online, myGuessPlaced, roundNumber]);
+  }, [online, myGuessPlaced, roundNumber, paused, inputOpen]);
 
   // Explore countdown
   useEffect(() => {
-    if (online?.isConnected === false || phase !== 'explore' || !allPanosReady) return;
+    if (online?.isConnected === false || phase !== 'explore' || !allPanosReady || (online && !inputOpen)) return;
     // In online mode, only host runs the timer
     if (online && !online.isHost) return;
     const t = setInterval(() => {
@@ -242,7 +262,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [phase, timerSeconds, playerIdx, online, allPanosReady]);
+  }, [phase, timerSeconds, playerIdx, online, allPanosReady, inputOpen]);
 
   const confirmGuess = useCallback(() => {
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
@@ -251,8 +271,11 @@ export default function StreetViewRound({ location: promptLocation, players, rou
 
     if (online) {
       // Online mode: broadcast guess to host, then wait
-      if (online.isHost) receiveGuess(online.myPlayerId, lat, lng, !!pos);
-      else online.broadcast('findit-sv-guess', { playerId: online.myPlayerId, lat, lng, roundNumber, submitted: !!pos });
+      if (online.isHost) {
+        receiveGuess(guesserRef.current ?? online.myPlayerId, lat, lng, !!pos);
+        // Another seat on this phone still has to guess: fresh pin + full clock after the handover.
+        if (pendingLocal(guessesRef.current).length) { setPinPos(null); setCountdown(timerSeconds); return; }
+      } else online.broadcast('findit-sv-guess', { playerId: online.myPlayerId, lat, lng, roundNumber, submitted: !!pos });
       setMyGuessPlaced(true);
       setWaitingForResults(true);
       // Host also adds own guess via the broadcast listener
@@ -269,59 +292,59 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     const nextIdx = playerIdxRef.current + 1;
     if (nextIdx >= players.length) { setPhase('result'); }
     else { setPlayerIdx(nextIdx); setPhase('explore'); setExploreTime(20); }
-  }, [location, players.length, online, receiveGuess, roundNumber]);
+  }, [location, players.length, online, receiveGuess, roundNumber, timerSeconds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Guess countdown
   useEffect(() => {
-    if (online?.isConnected === false || phase !== 'guess') return;
+    // Stands while the host phone travels and until input opens.
+    if (online?.isConnected === false || phase !== 'guess' || paused || (online && !inputOpen)) return;
     // In online mode, skip timer if already guessed
     if (online && myGuessPlaced) return;
     timerRef.current = setInterval(() => {
       setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
     }, 1000);
     return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
-  }, [phase, playerIdx, confirmGuess, online, myGuessPlaced]);
+  }, [phase, playerIdx, confirmGuess, online, myGuessPlaced, paused, inputOpen, handover?.activeGuest]);
 
   // Preserve the deadline across disconnects, even after this host submitted.
   usePausableTimeout(() => {
     const previous = guessesRef.current;
     if (previous.length >= players.length) return;
-    const missing = players.filter(p => !previous.some(g => g.playerId === p.id));
-    const filled = [...previous, ...missing.map(p => ({ playerId: p.id, playerName: p.name, playerColor: p.color, lat: 0, lng: 0, distanceKm: 20000 }))];
+    // Seats still queued on the host phone keep their own full clock (guest-turns.ts).
+    const { guesses: filled, complete } = fillMissingGuesses(previous, players, pendingLocal(previous),
+      p => ({ playerId: p.id, playerName: p.name, playerColor: p.color, lat: 0, lng: 0, distanceKm: 20000 }));
     guessesRef.current = filled;
     setGuesses(filled);
+    if (!complete) return;
     online?.broadcast('findit-sv-results', { results: filled, roundNumber, location });
 
     setPhase('result');
   }, online?.isHost && phase === 'guess' ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
-    if (online && myGuessPlaced) return; // can't change after confirming
+    if (online && (myGuessPlaced || paused || !inputOpen)) return; // can't change after confirming
     setPinPos({ lat, lng });
-  }, [online, myGuessPlaced, roundNumber]);
+  }, [online, myGuessPlaced, roundNumber, paused, inputOpen]);
   const sorted = [...guesses].sort((a, b) => a.distanceKm - b.distanceKm);
   const winner = sorted[0];
 
   return (
     <APIProvider apiKey={GMAP_KEY}>
       <div className="expedition-map fixed inset-0 bg-[#14281f] overflow-hidden" style={{ fontFamily: "'Plus Jakarta Sans', system-ui" }}>
-        <style>{CSS}</style>
+        <style>{CSS}</style>{sync.blocker}
 
         {/* EXPLORE PHASE — Street View Panorama */}
-        {phase === 'explore' && (
+        {view === 'explore' && (
           <div className="absolute inset-0">
             <StreetViewPano lat={location.lat} lng={location.lng} onStatus={panoStatus} />
             {!panoReady && <div className="absolute inset-0 z-20 bg-black/70 flex flex-col items-center justify-center gap-4 p-6 text-white text-center"><p>{t(panoError ? 'games.findit.panoramaError' : 'games.findit.panoramaLoading')}</p>{panoError && <button onClick={onExit} className="min-h-12 px-6 rounded-xl bg-white/15">{t('games.results.otherGame')}</button>}</div>}
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-10">
-              <div className="glass-panel px-3 py-2 rounded-full flex items-center gap-2 border border-white/5">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: currentPlayer.color }}>{currentPlayer.name.charAt(0)}</div>
-                <span className="text-sm font-bold text-[#f1f3fc]">{currentPlayer.name}</span>
-              </div>
+              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced} guest={!!online && currentPlayer.id !== online.myPlayerId} />
             </div>
             <div className="absolute top-4 right-4 z-10">
               <div className="glass-panel px-3 py-2 rounded-full border border-white/5">
-                <span className="text-[10px] uppercase tracking-wider text-[#a8abb3] font-bold">{t('games.findit.roundLabel', { current: roundNumber, total: totalRounds })}</span>
+                <span className="text-[13px] text-[#a8abb3] font-bold">{t('games.findit.roundLabel', { current: roundNumber, total: totalRounds })}</span>
               </div>
             </div>
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
@@ -345,7 +368,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
         )}
 
         {/* GUESS PHASE — Map to place pin */}
-        {phase === 'guess' && (
+        {view === 'guess' && (
           <div className="absolute inset-0">
             <Map defaultCenter={{ lat: 20, lng: 10 }} defaultZoom={2}
               style={{ width: '100%', height: '100%' }} gestureHandling="greedy"
@@ -356,20 +379,17 @@ export default function StreetViewRound({ location: promptLocation, players, rou
             </Map>
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-10">
-              <div className="glass-panel px-3 py-2 rounded-full flex items-center gap-2 border border-white/5">
-                <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ background: currentPlayer.color }}>{currentPlayer.name.charAt(0)}</div>
-                <span className="text-sm font-bold text-[#f1f3fc]">{currentPlayer.name}</span>
-              </div>
+              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced} guest={!!online && currentPlayer.id !== online.myPlayerId} />
             </div>
             <div className="absolute top-16 left-0 right-0 z-10 px-4 mt-2">
               <div className="max-w-2xl mx-auto bg-[#151a21]/80 backdrop-blur-2xl p-1 rounded-full shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] border border-white/5">
                 <div className="flex items-center justify-between pl-5 pr-2 py-2">
                   <div>
-                    <span className="text-[9px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.svWhereWereYou')}</span>
+                    <span className="text-[13px] text-[#a8abb3] font-bold">{t('games.findit.svWhereWereYou')}</span>
                     <h2 className="text-base font-extrabold tracking-tight text-[#f1f3fc] uppercase">{t('games.findit.svSetPin')}</h2>
                   </div>
                   <div className="bg-[#ff6b98] p-2.5 rounded-full flex flex-col items-center min-w-[60px] shadow-[0_0_20px_rgba(255,107,152,0.4)]">
-                    <span className="text-[8px] font-black uppercase text-white/80 leading-none mb-0.5">{t('games.findit.mapTimeLabel')}</span>
+                    <span className="text-[12px] font-black text-white/80 leading-none mb-0.5">{t('games.findit.mapTimeLabel')}</span>
                     <span className="text-lg font-black text-white leading-none tabular-nums">{countdown}</span>
                   </div>
                 </div>
@@ -378,7 +398,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
             {pinPos && !waitingForResults && (
               <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-10">
                 <div className="bg-[#262c36]/90 backdrop-blur-md px-4 py-2 rounded-xl border border-[#df8eff]/30">
-                  <p className="text-xs font-bold text-[#df8eff] tracking-wide">{t('games.findit.mapPinPlaced')}</p>
+                  <p className="text-xs font-bold text-[#df8eff]">{t('games.findit.mapPinPlaced')}</p>
                 </div>
               </div>
             )}
@@ -395,7 +415,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
                 className="px-12 py-5 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)] disabled:opacity-30 disabled:shadow-none"
                 whileTap={pinPos ? { scale: 0.95 } : undefined}>
                 <span className="flex items-center gap-3">
-                  <span className="text-xl font-black tracking-[0.15em] text-[#4f006d]">{t('games.findit.mapConfirmBtn')}</span>
+                  <span className="text-xl font-black text-[#4f006d]">{t('games.findit.mapConfirmBtn')}</span>
                   <Check className="w-6 h-6 text-[#4f006d]" />
                 </span>
               </motion.button>
@@ -405,16 +425,16 @@ export default function StreetViewRound({ location: promptLocation, players, rou
         )}
 
         {/* RESULT */}
-        {phase === 'result' && (
+        {view === 'result' && (
           <motion.div className="absolute inset-0 z-10 overflow-y-auto" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="w-full max-w-lg mx-auto px-4 pt-6 pb-8">
               <div className="flex items-center justify-between mb-6">
                 <button onClick={onExit} className="text-[#a8abb3]/60 text-sm">{t('games.findit.mapExitBtn')}</button>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.roundLabel', { current: roundNumber, total: totalRounds })}</span>
+                <span className="text-[13px] text-[#a8abb3] font-bold">{t('games.findit.roundLabel', { current: roundNumber, total: totalRounds })}</span>
               </div>
               {winner && (
                 <div className="text-center mb-4">
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-[#ff6b98] font-bold mb-2">{t('games.findit.svRoundLabel')}</p>
+                  <p className="text-[13px] text-[#ff6b98] font-bold mb-2">{t('games.findit.svRoundLabel')}</p>
                   <h1 className="text-4xl font-black italic text-[#df8eff] text-glow-primary">{location.city}, {location.country}</h1>
                 </div>
               )}
@@ -435,14 +455,14 @@ export default function StreetViewRound({ location: promptLocation, players, rou
                   <div className="col-span-2 bg-[#151a21]/60 rounded-xl p-5 border border-white/5">
                     <div className="flex items-center gap-2 mb-2">
                       <Crosshair className="w-4 h-4 text-[#8ff5ff]" />
-                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.svNearestHit')}</span>
+                      <span className="text-[13px] text-[#a8abb3] font-bold">{t('games.findit.svNearestHit')}</span>
                     </div>
                     <p className="text-4xl font-black text-[#8ff5ff] text-glow-cyan">{formatDistance(winner.distanceKm, i18n.language)}</p>
                   </div>
                 )}
                 {winner && (
                   <div className="col-span-2 bg-gradient-to-br from-[#df8eff]/10 to-transparent rounded-xl p-4 border border-[#df8eff]/20">
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#a8abb3] font-bold">{t('games.findit.mapPointsLabel')}</span>
+                    <span className="text-[13px] text-[#a8abb3] font-bold">{t('games.findit.mapPointsLabel')}</span>
                     <p className="text-2xl font-bold text-[#df8eff] mt-1">+{Math.max(0, Math.round(1000 * Math.exp(-winner.distanceKm / 2000)))}</p>
                   </div>
                 )}

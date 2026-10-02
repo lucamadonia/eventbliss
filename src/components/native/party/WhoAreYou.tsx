@@ -118,7 +118,7 @@ export function WhoAreYou({ hostName, members, ownPlayerId, points, busy, notice
         </div>
       )}
 
-      <div className="sticky bottom-0 -mx-1 bg-gradient-to-t from-[#0a0e14] via-[#0a0e14]/95 to-transparent px-1 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-6">
+      <div className="sticky bottom-0 -mx-1 bg-gradient-to-t from-[#060810] via-[#060810]/95 to-transparent px-1 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-6">
         {fullNotice ? <p role="status" data-testid="party-full-message" className="rounded-3xl border border-white/10 bg-white/[.06] p-4 text-center text-sm text-white/80">{fullNotice}</p> : <motion.button type="button" disabled={busy} data-testid="seat-create-new" onClick={() => { haptics.light(); onCreateNew(); }}
           {...(reduced ? {} : pressable)}
           className={cn('flex min-h-16 w-full items-center justify-center gap-3 rounded-3xl px-5 text-base font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] disabled:opacity-50',

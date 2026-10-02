@@ -1,78 +1,34 @@
-import { Check, Play, Plus, Users, X } from 'lucide-react';
+import { Check, Plus, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ControllerPartyData } from '@/games/party/controller-api';
-import { setControllerPlaylist, startControllerGame } from '@/games/party/controller-session';
-import {
-  availabilityStatus, availabilityText, chipFor, controllerGameAvailability, joinNames, nextAvailableIndex, sitOutHint, sittingOutNames,
-} from '@/games/party/party-availability';
+import { setControllerPlaylist } from '@/games/party/controller-session';
+import { availabilityStatus, chipFor, controllerGameAvailability, nextAvailableIndex, sittingOutNames } from '@/games/party/party-availability';
 import { playableGames } from '@/lib/playable-games';
 import { cn } from '@/lib/utils';
 import { AvailabilityChipView } from './AvailabilityChipView';
-import { lobbyButton as button } from './ControllerPartyStart';
 
 interface Props {
   data: ControllerPartyData;
-  /** Names of active phone players that are not ready yet. */
-  notReady: string[];
   busy: boolean;
-  connected: boolean;
 }
 const act = (work: Promise<unknown>) => { void work.catch(() => { /* state displays failure */ }); };
 const nameKey = (id: string) => playableGames.find(g => g.id === id)?.nameKey ?? id;
 
-/** Moves the entry at `from` to `to` (used to play a later fitting game now). */
-export function movePlaylistEntry(playlist: readonly string[], from: number, to: number): string[] {
-  const next = [...playlist];
-  const [entry] = next.splice(from, 1);
-  next.splice(to, 0, entry);
-  return next;
-}
-
 /**
- * Host lobby: next game, start button with its reason, set list and picker.
- * Planning stays open while people still join: only games that can never
- * run here (premium, too many) are disabled. Starting needs `startable`;
- * every game shows its chip („wartet auf 2 Spieler“, „max. 4 Spieler“).
+ * Host lobby: set list and game picker. The next game and its start live in
+ * the hero card and the sticky start bar (useNextGame). Planning stays open
+ * while people still join: only games that can never run here (premium, too
+ * many) are disabled; every game shows its chip.
  */
-export function ControllerPlaylistPanel({ data, notReady, busy, connected }: Props) {
+export function ControllerPlaylistPanel({ data, busy }: Props) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;
-  const tr = (key: string, fallback: string, options?: Record<string, unknown>) => t(key, fallback, options);
   const playlist = data.party.playlist;
   const nextIndex = data.results.length;
   const availability = (id: string) => controllerGameAvailability(id, data);
-  const fitIndex = nextAvailableIndex(playlist, nextIndex, id => availability(id).startable);
-  const next = fitIndex >= 0 ? playlist[fitIndex] : undefined;
-  const skipped = fitIndex > nextIndex;
-  const due = playlist[nextIndex];
-  const nextAvailability = next ? availability(next) : null;
-  const sitOut = next ? sittingOutNames(next, data) : [];
-  const hint = nextAvailability ? sitOutHint(nextAvailability, tr, sitOut, locale) : null;
-  const dueText = due ? availabilityText(availability(due), tr, sittingOutNames(due, data), locale) : null;
-  const disabledReason = !due ? t('partyPlay.lobby.noGame', 'Plane zuerst ein Spiel.')
-    : !next ? (dueText ? `${t(nameKey(due))}: ${dueText}` : t('partyPlay.lobby.nothingFits', 'Kein geplantes Spiel passt zu eurer Runde.'))
-    : !connected ? t('partyPlay.lobby.connecting', 'Verbinde …')
-    : notReady.length ? t('partyPlay.lobby.notReadyNames', 'Noch nicht bereit: {{names}}', { names: joinNames(notReady, locale) })
-    : null;
-
-  const start = () => {
-    if (!next) return;
-    // The server's playlist position is the result count: bring the fitting game forward first.
-    if (skipped) act(setControllerPlaylist(movePlaylistEntry(playlist, fitIndex, nextIndex)).then(() => startControllerGame(next)));
-    else act(startControllerGame(next));
-  };
+  const skipped = nextAvailableIndex(playlist, nextIndex, id => availability(id).startable) > nextIndex;
 
   return <section className="space-y-4">
-    <h2 className="text-lg font-bold">{next ? t('nativeExtra.partyNight.continueTo', { game: t(nameKey(next)) }) : t('partyControllers.playlist')}</h2>
-    {skipped && due && <p role="status" data-testid="setlist-suggestion" data-game-id={next} className="rounded-xl bg-amber-300/10 p-3 text-sm text-amber-100">
-      {t('partyPlay.lobby.skipped', '{{game}} passt gerade nicht – weiter mit {{next}}.', { game: t(nameKey(due)), next: t(nameKey(next!)) })}
-    </p>}
-    <button data-testid="lobby-start" data-disabled-reason={disabledReason ?? undefined} disabled={!!disabledReason || busy}
-      className={`${button} w-full bg-[#df8eff] text-black`} onClick={start}><Play className="me-2 inline h-5 w-5" />{t('partyControllers.startNext')}</button>
-    {disabledReason && <p role="status" className="text-sm text-white/70">{disabledReason}</p>}
-    {hint && <p role="status" data-testid="lobby-sitout-hint" data-player-ids={data.members.filter(m => !m.banned && m.controlled_by != null).map(m => m.player_id).join(',')}
-      className="flex items-center gap-2 text-sm text-[#8ff5ff]"><Users className="h-4 w-4" aria-hidden />{hint}</p>}
-
     {playlist.length > 0 && <details className="rounded-2xl border border-white/10 p-4" open={skipped}><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('partyControllers.playlist')} <span className="text-white/60">({playlist.length})</span></summary>
       <ol className="space-y-2">{playlist.map((id, index) => {
         const done = index < nextIndex;

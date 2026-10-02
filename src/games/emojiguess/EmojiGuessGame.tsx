@@ -1,20 +1,13 @@
-import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
+import { GameStage } from '../ui/GameStage';
 import './design.css';
-import { emojiPointsForTurn, emojiTeamOf, emojiTeamSizes, matchesEmojiAnswer, awardEmojiPoints, publicEmojiPuzzle, nextEmojiTurn, emojiRoundBudget } from './game-rules';
+import { emojiPointsForTurn, emojiTeamSizes, matchesEmojiAnswer, awardEmojiPoints, publicEmojiPuzzle, nextEmojiTurn, emojiRoundBudget } from './game-rules';
 import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import {
-  Play, Trophy, RotateCcw, Timer, ArrowLeft, ArrowRight,
-  Lightbulb, Eye, Smile,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useGameTimer } from '@/games/engine/TimerSystem';
 import { getEMOJI_PUZZLES, type EmojiPuzzle } from './emoji-content';
 import { useGameEnd } from '../social/useGameEnd';
-import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type SettingsConfig } from '../ui/GameSetup';
 import { getTranslatedModes } from '../ui/getTranslatedModes';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
@@ -24,13 +17,16 @@ import { useBackGuard } from '@/lib/back-guard';
 import { PLAYER_COLORS, GAME_MODES, shuffle } from './emoji-setup';
 import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { applyEmojiRemoval } from './removal';
-import { hasShellBackButton } from '@/games/ui/shell-back';
+import { useSeatHandover } from '../multiplayer/useGuestHandover';
+import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
+import { emojiActiveSeat, emojiIsHolder, emojiRevealCard, emojiStartPlayers, emojiTvPlayers, emojiTvPuzzle, type EmojiPhase, type EmojiRevealCard } from './party-turns';
+import { GameOverScreen, PlayingScreen, ReadyScreen, RevealScreen, TeamLine } from './EmojiScreens';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
-type Phase = 'ready' | 'setup' | 'playing' | 'reveal' | 'roundEnd' | 'gameOver';
+type Phase = EmojiPhase;
 
 interface Player {
   team?: number;
@@ -94,6 +90,10 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pointsIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // 🔁 guests hold the host phone for their whole turn (sharedDevice 'turns'); the clock stands while it travels.
+  const handover = useSeatHandover(online, emojiActiveSeat(phase, players, currentPlayerIdx));
+  const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, currentRound, currentPlayerIdx]); // all devices + TV switch together
+
   // Timer
   const handleTimerExpire = useCallback(() => {
     if (online && (!online.isHost || online.isConnected === false)) return;
@@ -102,17 +102,15 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
     setPlayers(prev => awardEmojiPoints(prev, currentPlayerIdx, 0, mode === 'team'));
     setPhase('reveal');
   }, [online, currentPlayerIdx, mode]);
-  const timer = useGameTimer(timerDuration, handleTimerExpire, !online || (online.isHost && online.isConnected !== false));
+  const timer = useGameTimer(timerDuration, handleTimerExpire, !online || (online.isHost && online.isConnected !== false && !handover.isPaused));
   useOnlineSnapshot(online, 'emojiguess-clock-state', { timeLeft: timer.timeLeft }, data => timer.reset(data.timeLeft));
 
   useTVGameBridge('emojiguess', {
-    phase, currentRound, currentPlayerIdx, players, totalRounds,
-    emojis: phase === 'ready' ? '' : currentPuzzle?.emojis || '',
-    category: phase === 'ready' ? '' : currentPuzzle?.category || '',
-    answer: phase === 'reveal' ? (currentPuzzle?.answer || '') : '',
+    phase, phaseStartsAt, handover: handover.tv, currentRound, currentPlayerIdx, players: emojiTvPlayers(players), totalRounds,
+    ...emojiTvPuzzle(phase, currentPuzzle), // answer only in the reveal
     timeLeft: timer.timeLeft,
     maxTime: timerDuration,
-  }, [phase, currentRound, currentPlayerIdx, showAnswer, timer.timeLeft], !online || online.isHost);
+  }, [phase, phaseStartsAt, currentRound, currentPlayerIdx, showAnswer, timer.timeLeft, players.map(p => p.score).join(','), handover.tv?.playerId ?? '', handover.tv?.progress?.phase ?? ''], !online || online.isHost);
 
   // Derived
   const currentPlayer = players[currentPlayerIdx] ?? null;
@@ -128,13 +126,7 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
       settings: { timer: number; rounds: number },
     ) => {
       if (online && (!online.isHost || online.isConnected === false)) return;
-      const mapped: Player[] = setupPlayers.map((p, i) => ({
-        ...p,
-        color: PLAYER_COLORS[i % PLAYER_COLORS.length],
-        score: 0,
-        streak: 0,
-        team: i % 2, // fixed at start: a removal mid-match never moves anyone to the other team
-      }));
+      const mapped: Player[] = emojiStartPlayers(setupPlayers, PLAYER_COLORS, !!online);
       setPlayers(mapped);
       setMode(selectedMode);
       setTimerDuration(selectedMode === 'speed' ? 10 : settings.timer);
@@ -284,7 +276,13 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
     [players],
   );
 
-  useOnlineSnapshot(online, 'game-state', { phase, currentRound, totalRounds, currentPlayerIdx, currentPuzzle: phase === 'ready' ? null : publicEmojiPuzzle(currentPuzzle, phase === 'reveal' || phase === 'gameOver', showHint), players, mode, timerDuration, showHint, showAnswer, pointsAvailable, answerError, attempt, roundPoints }, data => {
+  // Freeze the revealed puzzle: the reveal stays on screen while the next one is already drawn (phase gate).
+  const revealRef = useRef<EmojiRevealCard<EmojiPuzzle, Player> | null>(null);
+  revealRef.current = emojiRevealCard(revealRef.current, phase, { round: currentRound, holder: currentPlayer, puzzle: currentPuzzle, points: roundPoints });
+  const shownReveal = revealRef.current;
+
+  useOnlineSnapshot(online, 'game-state', { phase, currentRound, totalRounds, currentPlayerIdx, currentPuzzle: phase === 'ready' ? null : publicEmojiPuzzle(currentPuzzle, phase === 'reveal' || phase === 'gameOver', showHint), players, mode, timerDuration, showHint, showAnswer, pointsAvailable, answerError, attempt, roundPoints, phaseStartsAt }, data => {
+    receivePhaseStart(data.phaseStartsAt);
     setRoundPoints(data.roundPoints);
     setAnswerError(data.answerError); setAttempt(data.attempt ?? 0);
     setPhase(data.phase);
@@ -305,6 +303,7 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
   // =========================================================================
 
   if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
+  if (handover.overlay) return handover.overlay; // phone in transit: only the opaque pass screen
   if (phase === 'setup') {
     return (
       <>
@@ -323,188 +322,25 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
     );
   }
 
+  const holder = emojiIsHolder(online, currentPlayer?.id, handover.activeGuest);
+  const lastTurn = currentPlayerIdx === players.length - 1 && currentRound >= totalRounds;
+  const revealSeat = shownReveal?.holder ?? currentPlayer;
   return (
-    <div data-phase={phase} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
-      {phase === 'ready' && <section className="rebus-ready">
-        <StageHeader eyebrow={t('games.emojiguess.title')} title={currentPlayer?.name}
-          subtitle={t('games.findit.roundLabel', { current: currentRound, total: totalRounds })} />
-        <StagePanel tone="paper" className="rebus-ready-card">
-          <span className="rebus-issue">{String(currentRound).padStart(2, '0')}</span>
-          <h2>{t('games.emojiguess.readyTitle', { defaultValue: 'Dein Rätsel wartet' })}</h2>
-          <p>{t('games.emojiguess.readyBody', { defaultValue: 'Lies die Bilder von links nach rechts. Gesucht ist ein Begriff aus der angezeigten Kategorie.' })}</p>
-          <p className="rebus-ready-time">{timerDuration} s · {t('games.emojiguess.pointsAvailable')} {emojiPointsForTurn(100, currentPlayerIdx, players, mode === 'team')}</p>
-        </StagePanel>
-        {!online || online.myPlayerId === currentPlayer?.id
-          ? <StageAction onClick={ready}>{t('games.emojiguess.readyStart', { defaultValue: 'Bereit – Rätsel zeigen' })}<ArrowRight className="h-5 w-5" /></StageAction>
-          : <p role="status">{t('games.emojiguess.waitingFor', { name: currentPlayer?.name, defaultValue: 'Warte auf {{name}}' })}</p>}
-      </section>}
-      {/* ---- PLAYING ---- */}
-      {phase === 'playing' && currentPuzzle && (
-        <div className="flex-1 flex flex-col">
-          {/* Timer bar */}
-          <div className="h-1 bg-white/[0.04]">
-            <motion.div
-              className={cn('h-full', timer.percentLeft > 25
-                ? 'bg-gradient-to-r from-[#eed867] to-[#e9e4d3]'
-                : 'bg-red-500')}
-              initial={{ width: '100%' }}
-              animate={{ width: `${timer.percentLeft}%` }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
-
-          <StageHeader eyebrow={t('games.emojiguess.title')} title={currentPlayer?.name}
-            subtitle={t('games.findit.roundLabel', { current: currentRound, total: totalRounds })}
-            trailing={<span className="rebus-clock" role="timer">{timer.timeLeft}<small>s</small></span>} />
-          {/* Category badge */}
-          <div className="flex justify-center mb-2">
-            <span className="px-3 py-1 rounded-full bg-[#1b2028] border border-[#44484f]/20 text-xs font-semibold text-[#eed867]">
-              {currentPuzzle.category} · {currentPuzzle.difficulty}/3
-            </span>
-          </div>
-
-          <div className="rebus-poster" aria-label={t('games.emojiguess.clueLabel', { defaultValue: 'Bilderrätsel' })}>
-            <span className="rebus-caption">{t('games.emojiguess.clueLabel', { defaultValue: 'Bilderrätsel' })}</span>
-            <div className="rebus-glyphs">{currentPuzzle.emojis}</div>
-            <div className="rebus-clue-meta"><span><strong>{emojiPointsForTurn(pointsAvailable, currentPlayerIdx, players, mode === 'team')}</strong> {t('games.emojiguess.pointsAvailable')}</span>
-              {showHint && <span className="rebus-hint"><Lightbulb className="h-4 w-4" />{t('games.emojiguess.hintPrefix', { letter: currentPuzzle.answer.charAt(0) })}</span>}
-            </div>
-          </div>
-
-          {mode === 'team' && new Set(emojiTeamSizes(players)).size > 1 && <p className="px-4 text-center text-sm text-white/70">{t('games.emojiguess.balancedTeamPoints', { defaultValue: 'Bei ungleichen Teams werden die Punkte gewichtet: Beide Teams können pro Runde gleich viele Punkte erreichen.' })}</p>}
-          {mode === 'team' && <div className="flex justify-center gap-6 p-3">{[0, 1].map(team => <p key={team}>{t('games.emojiguess.teamLabel', { team: team === 0 ? 'A' : 'B' })}: {players.filter((p, i) => emojiTeamOf(p, i) === team).map(p => p.name).join(', ')} · {players.find((p, i) => emojiTeamOf(p, i) === team)?.score ?? 0}</p>)}</div>}
-          <form className="rebus-controls" onSubmit={e => { e.preventDefault(); if (answerInput.trim()) handleCorrectGuess(); }}>
-            {!online || online.myPlayerId === currentPlayer?.id ? <>
-              <label htmlFor="rebus-answer">{t('games.emojiguess.answerLabel')}</label>
-              <div className="rebus-entry">
-                <input id="rebus-answer" value={answerInput} onChange={e => { setAnswerInput(e.target.value); }} maxLength={120}
-                  autoComplete="off" autoCorrect="off" spellCheck={false} enterKeyHint="send" aria-invalid={answerError} aria-describedby={answerError ? 'rebus-error' : undefined}
-                  placeholder={t('games.emojiguess.answerLabel')} />
-                <StageAction type="submit" disabled={!answerInput.trim()}>{t('games.emojiguess.submitAnswer', { defaultValue: 'Antwort prüfen' })}<ArrowRight className="h-5 w-5" /></StageAction>
-              </div>
-              {answerError && <p id="rebus-error" role="status" className="rebus-error">{t('games.emojiguess.tryAgain', { defaultValue: 'Noch nicht richtig. Versuche einen anderen Begriff.' })}</p>}
-              <div className="rebus-secondary-actions">
-                <StageAction type="button" variant="ghost" onClick={toggleAnswer}><Eye className="h-4 w-4" />{t('games.emojiguess.showAnswer')}</StageAction>
-                <StageAction type="button" variant="ghost" onClick={handleSkip}>{t('games.emojiguess.skipPuzzle', { defaultValue: 'Überspringen' })}</StageAction>
-              </div>
-            </> : <p role="status">{t('games.emojiguess.waitingFor', { name: currentPlayer?.name, defaultValue: 'Warte auf {{name}}' })}</p>}
-          </form>
-        </div>
-      )}
-
-      {/* ---- REVEAL ---- */}
-      {phase === 'reveal' && currentPuzzle && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="rebus-result flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full"
-        >
-          <span className="rebus-caption">{t(roundPoints > 0 ? 'games.emojiguess.solved' : 'games.emojiguess.solution', { defaultValue: roundPoints > 0 ? 'Gelöst' : 'Auflösung' })}</span>
-          <StagePanel tone="paper" className="rebus-solution">
-            <div className="rebus-glyphs">{currentPuzzle.emojis}</div>
-            <p className="rebus-caption">{currentPuzzle.category}</p>
-            <h2>{currentPuzzle.answer}</h2>
-          </StagePanel>
-          <p role="status" className="rebus-score">+{roundPoints}</p>
-          {!(currentPlayerIdx === players.length - 1 && currentRound >= totalRounds) && <p>{t('games.emojiguess.nextPlayer', { name: players[(currentPlayerIdx + 1) % players.length]?.name, defaultValue: 'Als Nächstes: {{name}}' })}</p>}
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            disabled={!!online && !online.isHost}
-            onClick={advanceRound}
-            className="w-full mt-4 flex items-center justify-center gap-2 bg-[#eed867] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(150,160,165,0.3)]"
-          >
-            {t('games.play.next')} <ArrowRight className="w-5 h-5" />
-          </motion.button>
-        </motion.div>
-      )}
-
-
-      {/* ---- GAME OVER ---- */}
-      {phase === 'gameOver' && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex-1 flex flex-col items-center justify-center gap-6 px-4 py-8 max-w-lg mx-auto w-full"
-        >
-          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', bounce: 0.5 }}
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20">
-              <Trophy className="w-8 h-8 text-amber-400" />
-            </div>
-          </motion.div>
-          <h2 className="text-3xl font-extrabold font-sans text-[#eed867] neon-glow">
-            {t('games.results.gameOver')}
-          </h2>
-
-          {sortedPlayers[0] && (
-            <div className="flex items-center gap-3 px-6 py-3 rounded-full bg-[#1b2028] border border-amber-500/20">
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
-                style={{ backgroundColor: sortedPlayers[0].color }}
-              >
-                {sortedPlayers[0].avatar}
-              </div>
-              <div>
-                <div className="font-bold text-white">{sortedPlayers.filter(p => p.score === sortedPlayers[0].score).map(p => p.name).join(' & ')}</div>
-                <div className="text-amber-400 text-sm font-semibold">{t('games.findit.points', { score: sortedPlayers[0].score })}</div>
-              </div>
-            </div>
-          )}
-
-          {/* Leaderboard */}
-          <div className="w-full space-y-2">
-            {sortedPlayers.map((p, i) => (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-                className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-[1rem] border',
-                  i === 0
-                    ? 'bg-amber-500/10 border-amber-500/20'
-                    : 'bg-[#1b2028] border-[#44484f]/20',
-                )}
-              >
-                <span className="text-sm font-bold text-white/40 w-6 text-center">{i + 1}</span>
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                  style={{ backgroundColor: p.color }}
-                >
-                  {p.avatar}
-                </div>
-                <span className="flex-1 text-white font-medium text-sm truncate">{p.name}</span>
-                <span className="text-sm font-bold text-white/70">{p.score}</span>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Buttons */}
-          <div className="w-full space-y-3 mt-2">
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              disabled={!!online && !online.isHost}
-              onClick={playAgain}
-              className="w-full flex items-center justify-center gap-2 bg-[#eed867] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(150,160,165,0.3)]"
-            >
-              <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
-            </motion.button>
-            {/* Nur im Web. In der App macht das der FloatingBackButton. */}
-            {!hasShellBackButton() && (
-              <button
-                onClick={() => navigate('/games')}
-                className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors"
-              >
-                {t('games.results.otherGame')}
-              </button>
-            )}
-          </div>
-        </motion.div>
-      )}
+    <div data-phase={view} className="relative min-h-[100dvh] text-white flex flex-col">
+      {blocker}
+      {view === 'ready' && currentPlayer && <ReadyScreen seat={currentPlayer} round={currentRound} total={totalRounds} seconds={timerDuration}
+        points={emojiPointsForTurn(100, currentPlayerIdx, players, mode === 'team')} holder={holder} onReady={ready} />}
+      {view === 'playing' && currentPuzzle && currentPlayer && <PlayingScreen seat={currentPlayer} puzzle={currentPuzzle} round={currentRound} total={totalRounds}
+        timeLeft={timer.timeLeft} percentLeft={timer.percentLeft} points={emojiPointsForTurn(pointsAvailable, currentPlayerIdx, players, mode === 'team')}
+        showHint={showHint} holder={holder} answer={answerInput} answerError={answerError} onAnswer={setAnswerInput}
+        onSubmit={() => handleCorrectGuess()} onReveal={toggleAnswer} onSkip={handleSkip}
+        teamNote={mode === 'team' && new Set(emojiTeamSizes(players)).size > 1 && <p className="px-4 text-center text-sm text-white/70">{t('games.emojiguess.balancedTeamPoints', { defaultValue: 'Bei ungleichen Teams werden die Punkte gewichtet: Beide Teams können pro Runde gleich viele Punkte erreichen.' })}</p>}
+        teams={mode === 'team' && <TeamLine players={players} label={team => t('games.emojiguess.teamLabel', { team: team === 0 ? 'A' : 'B' })} />} />}
+      {view === 'reveal' && shownReveal && revealSeat && <RevealScreen seat={revealSeat} puzzle={shownReveal.puzzle} points={shownReveal.points}
+        nextName={phase === 'reveal' && !lastTurn ? players[(currentPlayerIdx + 1) % players.length]?.name ?? null : null}
+        canAdvance={(!online || online.isHost) && phase === 'reveal'} onNext={advanceRound} />}
+      {view === 'gameOver' && <GameOverScreen sorted={sortedPlayers} achievements={newAchievements} onDismiss={clearAchievements}
+        canReplay={!online || online.isHost} onReplay={playAgain} onLeave={() => navigate('/games')} />}
       <ConfirmExitDialog {...exitGuard.dialogProps} accent="#eed867" />
     </div>
   );

@@ -1,293 +1,205 @@
-import { useRef, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Pencil } from 'lucide-react';
+import { useEffect, useMemo, type ReactNode } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Pencil, Smartphone, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
+import { partyEase } from '@/lib/party-motion';
+import { useAmbientMotion } from '@/lib/useAmbientMotion';
 import type { Stroke } from '../drawing';
+import type { PartyNightState } from '../party-types';
+import TVPlayerAvatar from '../cinema/TVPlayerAvatar';
+import TVBurst from '../cinema/TVBurst';
+import { useTVCue } from '../cinema/tv-cue-context';
+import TVScoreboard, { type TVScorePlayer } from '../components/TVScoreboard';
+import { lu } from '../components/tv-lobby-scale';
+import { tvPanel, tvType } from '../tv-tokens';
+import DrawCanvas from './draw/DrawCanvas';
+import { TS, TVTimerRing, TVTopBar, Wash, emojiOnly, hexOr } from './turn-stage/kit';
 
-export default function TVDrawView({ gameState, drawing }: { gameState: any; drawing?: Stroke[] }) {
+interface Player { id?: string; name: string; color?: string; avatar?: string; score?: number }
+interface ViewState {
+  partyNight?: PartyNightState;
+  phase?: string;
+  round?: number;
+  totalRounds?: number;
+  drawerId?: string;
+  drawer?: string;
+  currentPlayer?: string;
+  drawerColor?: string;
+  timeLeft?: number | '';
+  maxTime?: number;
+  drawingDataURL?: string;
+  currentWord?: string;
+  word?: string;
+  guessedBy?: string;
+  players?: Player[];
+}
+
+/**
+ * TVDrawView — Schnellzeichner auf dem Fernseher.
+ *
+ * GEHEIMNIS: Der Begriff kommt erst mit der Aufloesung (`quickDrawTvWord`
+ * schickt ihn nur in roundResult/gameOver). Die Ansicht zeigt ihn zusaetzlich
+ * nur in diesen Phasen — alle im Raum raten auf dieses Bild.
+ *
+ * Die Zeichenflaeche ist eine durchgehende Szene und wird nie neu
+ * eingehaengt; Phasen wechseln nur Rahmen, Seitenleisten und Ueberlagerungen.
+ */
+const EMPTY: Player[] = [];
+
+export default function TVDrawView({ gameState, drawing }: { gameState: ViewState; drawing?: Stroke[] }) {
   const { t } = useTranslation();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const drawnCount = useRef(0);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const reduced = !!useReducedMotion();
+  const ambient = useAmbientMotion();
+  const cue = useTVCue();
 
-  const drawer = gameState?.drawer || gameState?.currentPlayer || '';
-  const drawerColor = gameState?.drawerColor || '#ff6b98';
-  const timeLeft = gameState?.timeLeft ?? '';
-  const maxTime = gameState?.maxTime ?? 60;
-  const round = gameState?.round || 1;
-  const total = gameState?.totalRounds || '?';
   const phase = gameState?.phase || 'drawing';
-  // The host broadcasts the word as `currentWord` (party bridge). It is sent
-  // during play too, so the view must mask it until `roundResult` (below).
-  const word = gameState?.currentWord || gameState?.word || '';
+  const round = gameState?.round || 1;
+  const total = gameState?.totalRounds || 0;
+  const players = gameState?.players || EMPTY;
+  const drawerName = gameState?.drawer || gameState?.currentPlayer || '';
+  const drawerPlayer = players.find((p) => (gameState?.drawerId && p.id === gameState.drawerId) || p.name === drawerName);
+  const drawerColor = hexOr(drawerPlayer?.color ?? gameState?.drawerColor, TS.pink);
+  const timeLeft = typeof gameState?.timeLeft === 'number' ? gameState.timeLeft : null;
+  const maxTime = gameState?.maxTime ?? 60;
+  const revealed = phase === 'roundResult' || phase === 'gameOver';
+  const word = revealed ? (gameState?.currentWord || gameState?.word || '') : '';
   const guessedBy = gameState?.guessedBy || '';
+  const strokes = drawing ?? EMPTY_STROKES;
 
-  // Timer ring
-  const timerRadius = 32;
-  const timerCircumference = 2 * Math.PI * timerRadius;
-  const timerProgress = timeLeft !== '' && maxTime > 0 ? Number(timeLeft) / maxTime : 1;
-  const timerOffset = timerCircumference * (1 - timerProgress);
-  const timerColor = timerProgress > 0.5 ? '#10b981' : timerProgress > 0.2 ? '#f59e0b' : '#ef4444';
+  // Die Aufloesung klingt aus dem Cue; der richtige Tipp bekommt den Treffer-Ton.
+  useEffect(() => { if (guessedBy) cue.play('correct'); }, [guessedBy]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Confetti on correct guess
-  useEffect(() => {
-    if (guessedBy) {
-      setShowConfetti(true);
-      const t = setTimeout(() => setShowConfetti(false), 2000);
-      return () => clearTimeout(t);
-    }
-  }, [guessedBy]);
+  const phaseBadge = {
+    drawerReveal: { label: t('tvCinema.draw.drawerReveal', 'Begriff ansehen'), color: TS.accent },
+    drawing: { label: t('tvCinema.draw.drawing', 'Zeichnen'), color: drawerColor },
+    guessing: { label: t('tvCinema.draw.guessing', 'Raten'), color: TS.cyan },
+    roundResult: { label: t('tvCinema.draw.result', 'Auflösung'), color: TS.gold },
+    gameOver: { label: t('tvCinema.draw.result', 'Auflösung'), color: TS.gold },
+  }[phase] ?? null;
 
-  // Render strokes onto canvas
-  useEffect(() => {
-    if (typeof gameState?.drawingDataURL === 'string') return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+  const roster: TVScorePlayer[] = useMemo(() => players.map((p) => ({
+    id: p.id || p.name, name: p.name, color: hexOr(p.color, TS.accent), score: p.score, avatar: emojiOnly(p.avatar),
+  })), [players]);
+  const drawerId = drawerPlayer ? (drawerPlayer.id || drawerPlayer.name) : null;
 
-    const strokes = drawing || [];
-    if (strokes.length === 0) {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      drawnCount.current = 0;
-      return;
-    }
+  const drawerStatus = phase === 'drawerReveal' ? t('tvCinema.draw.statusReveal', 'schaut sich den Begriff an')
+    : phase === 'drawing' ? t('tvCinema.draw.statusDrawing', 'zeichnet')
+      : t('tvCinema.draw.statusDone', 'hat gezeichnet');
 
-    for (let i = drawnCount.current; i < strokes.length; i++) {
-      const s = strokes[i];
-      ctx.beginPath();
-      ctx.moveTo(s.from.x, s.from.y);
-      ctx.lineTo(s.to.x, s.to.y);
-      if (s.tool === 'eraser') {
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.lineWidth = (s.size || 6) * 3;
-      } else {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = s.color || '#000000';
-        ctx.lineWidth = s.size || 6;
-      }
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.stroke();
-      ctx.globalCompositeOperation = 'source-over';
-    }
-    drawnCount.current = strokes.length;
-  }, [drawing, gameState?.drawingDataURL]);
-
-  useEffect(() => {
-    const source = gameState?.drawingDataURL;
-    const canvas = canvasRef.current;
-    if (typeof source !== 'string' || !canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    let cancelled = false;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    drawnCount.current = 0;
-    if (!source.startsWith('data:image/png;base64,')) return;
-    const picture = new Image();
-    picture.onload = () => {
-      if (!cancelled) ctx.drawImage(picture, 0, 0, canvas.width, canvas.height);
-    };
-    picture.src = source;
-    return () => { cancelled = true; picture.onload = null; };
-  }, [gameState?.drawingDataURL]);
-
-  // Initialize canvas white
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }, []);
+  let rail: ReactNode = null;
+  if (phase === 'drawing' && timeLeft !== null) {
+    rail = (
+      <>
+        <TVTimerRing timeLeft={timeLeft} total={maxTime} size={18} />
+        <span className="font-bold" style={{ fontSize: tvType.body, color: TS.dim }}>{t('tvCinema.draw.timeLeft', 'Sekunden')}</span>
+      </>
+    );
+  } else if (phase === 'guessing') {
+    rail = (
+      <>
+        <motion.span className="grid place-items-center rounded-full" style={{ width: lu(12), height: lu(12), background: `${TS.cyan}1a`, boxShadow: `0 0 0 2px ${TS.cyan}66` }}
+          animate={ambient ? { scale: [1, 1.05, 1] } : { scale: 1 }} transition={ambient ? { repeat: Infinity, duration: 2.4, ease: 'easeInOut' } : { duration: 0.2 }}>
+          <Smartphone style={{ width: lu(5.5), height: lu(5.5), color: TS.cyan }} />
+        </motion.span>
+        <span className="text-center font-black leading-tight" style={{ fontSize: tvType.title, color: TS.text }}>{t('tvCinema.draw.guessHeadline', 'Was ist das?')}</span>
+        <span className="text-center font-bold" style={{ fontSize: tvType.body, color: TS.dim }}>{t('tvCinema.draw.guessHint', 'Ratet der Reihe nach am Handy')}</span>
+      </>
+    );
+  } else if (revealed && word) {
+    // Aufloesung: der Begriff als Held neben dem Bild — die Zeichnung bleibt ganz sichtbar.
+    rail = (
+      <motion.div data-testid="tv-draw-word" className="flex flex-col items-center gap-2 rounded-[28px] px-[2.4vw] py-[3vh] text-center"
+        style={{ background: TS.raised, boxShadow: `0 0 0 2px ${TS.gold}, 0 0 60px -10px ${TS.gold}aa` }}
+        initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.7 }} animate={{ opacity: 1, scale: 1 }}
+        transition={reduced ? { duration: 0.2 } : { type: 'spring', duration: 0.6, bounce: 0.4, delay: 0.15 }}>
+        <span className="font-bold" style={{ fontSize: tvType.body, color: TS.dim }}>{t('tvCinema.draw.wordWas', 'Gesucht war')}</span>
+        <span className="break-words font-black leading-none" style={{ fontSize: word.length > 10 ? tvType.title : tvType.display, color: '#fff', textShadow: `0 0 40px ${TS.gold}88` }}>{word}</span>
+      </motion.div>
+    );
+  } else if (phase === 'drawerReveal') {
+    rail = (
+      <span className="text-center font-bold" style={{ fontSize: tvType.body, color: TS.dim }}>{t('tvCinema.draw.getReady', 'Gleich geht’s los …')}</span>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 relative overflow-hidden" style={{ background: '#060810' }}>
-      {/* Ambient glow */}
-      <div className="absolute inset-0 pointer-events-none"
-        style={{ background: `radial-gradient(ellipse 60% 50% at 50% 50%, ${drawerColor}08 0%, transparent 70%)` }} />
+    <div className="relative h-screen overflow-hidden" style={{ background: TS.bg, color: TS.text }}>
+      <Wash color={revealed ? TS.gold : phase === 'guessing' ? TS.cyan : drawerColor} strength={0.12} />
+      {revealed && word && (
+        <div className="pointer-events-none absolute inset-0 z-0"><TVBurst colors={[TS.gold, TS.cyan, TS.accent, '#ffffff']} count={48} delay={0.25} /></div>
+      )}
 
-      {/* Confetti burst on correct guess */}
-      <AnimatePresence>
-        {showConfetti && Array.from({ length: 20 }).map((_, i) => {
-          const angle = (i / 20) * 360;
-          const rad = (angle * Math.PI) / 180;
-          const dist = 100 + Math.random() * 300;
-          const colors = ['#fbbf24', '#10b981', '#df8eff', '#8ff5ff', '#ff6b98'];
-          return (
-            <motion.div
-              key={`conf-${i}`}
-              className="absolute w-3 h-3 rounded-full"
-              style={{
-                backgroundColor: colors[i % colors.length],
-                left: '50%',
-                top: '50%',
-                boxShadow: `0 0 6px ${colors[i % colors.length]}`,
-              }}
-              initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-              animate={{
-                x: Math.cos(rad) * dist,
-                y: Math.sin(rad) * dist - 100,
-                opacity: 0,
-                scale: 0,
-              }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: 'easeOut' }}
-            />
-          );
-        })}
-      </AnimatePresence>
+      <TVTopBar phase={phaseBadge} round={total ? t('tvCinema.roundOf', 'Runde {{round}} von {{total}}', { round, total }) : t('tvCinema.round', 'Runde {{round}}', { round })} />
 
-      {/* Top bar */}
-      <div className="absolute top-6 left-8 right-8 flex items-center justify-between z-10">
-        {/* Artist badge */}
-        <motion.div
-          className="flex items-center gap-3 px-6 py-3 rounded-2xl"
-          style={{
-            background: `${drawerColor}12`,
-            border: `2px solid ${drawerColor}44`,
-            boxShadow: `0 0 25px ${drawerColor}15`,
-          }}
-          initial={{ x: -30, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-        >
-          <Pencil className="w-5 h-5" style={{ color: drawerColor }} />
-          <span className="text-2xl font-bold" style={{ color: drawerColor }}>{drawer}</span>
-          <motion.span
-            className="text-lg text-[#a8abb3] ml-1"
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ repeat: Infinity, duration: 2 }}
-          >
-            zeichnet gerade...
-          </motion.span>
+      <div className="absolute left-[5vw] right-[5vw] top-[16vh] bottom-[21vh] z-10 grid grid-cols-[1fr_auto_1fr] items-center gap-[3vw]">
+        {/* Links: der Zeichner */}
+        <div className="flex flex-col items-center justify-center gap-4 text-center">
+          {drawerName && (
+            <motion.div key={drawerName} className="flex flex-col items-center gap-4"
+              initial={reduced ? { opacity: 0 } : { opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, ease: partyEase.out }}>
+              <div className="relative">
+                <TVPlayerAvatar id={drawerPlayer?.id} name={drawerName} avatar={emojiOnly(drawerPlayer?.avatar)} color={drawerColor} size={lu(15)} active={phase === 'drawing' || phase === 'drawerReveal'} />
+                <span className="absolute -bottom-1 -right-1 grid place-items-center rounded-full" style={{ width: lu(5.5), height: lu(5.5), background: TS.raised, boxShadow: `0 0 0 2px ${drawerColor}` }}>
+                  {phase === 'drawerReveal' ? <Eye style={{ width: lu(2.8), height: lu(2.8), color: TS.text }} /> : <Pencil style={{ width: lu(2.8), height: lu(2.8), color: TS.text }} />}
+                </span>
+              </div>
+              <span className="font-black leading-tight" style={{ fontSize: tvType.title }}>{drawerName}</span>
+              <span className="font-bold" style={{ fontSize: tvType.body, color: TS.dim }}>{drawerStatus}</span>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Mitte: die Zeichenflaeche — bleibt eingehaengt */}
+        <motion.div className="relative" style={{ width: 'min(60vh, 40vw)', height: 'min(60vh, 40vw)' }}
+          animate={{ scale: revealed ? 0.94 : 1 }} transition={{ duration: 0.6, ease: partyEase.out }}>
+          <div className="absolute inset-0 overflow-hidden rounded-[28px]"
+            style={{ boxShadow: `0 0 0 3px ${revealed ? TS.gold : drawerColor}88, 0 0 70px -12px ${revealed ? TS.gold : drawerColor}88, 0 30px 80px rgba(0,0,0,0.55)`, transition: 'box-shadow 600ms ease' }}>
+            <DrawCanvas strokes={strokes} dataURL={gameState?.drawingDataURL} />
+            <AnimatePresence>
+              {phase === 'drawerReveal' && (
+                <motion.div key="cover" className="absolute inset-0 flex flex-col items-center justify-center gap-4"
+                  style={{ background: `radial-gradient(circle at 50% 45%, ${drawerColor}40, rgba(13,9,21,0.96) 70%)` }}
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.35 } }}>
+                  <motion.span style={{ fontSize: lu(10) }} aria-hidden
+                    animate={ambient ? { rotate: [-6, 6, -6] } : { rotate: 0 }} transition={ambient ? { repeat: Infinity, duration: 2.6, ease: 'easeInOut' } : { duration: 0.2 }}>🎨</motion.span>
+                  <span className="px-8 text-center font-black leading-tight" style={{ fontSize: tvType.title, color: TS.text }}>
+                    {t('tvCinema.draw.coverTitle', 'Gleich wird gezeichnet')}
+                  </span>
+                </motion.div>
+              )}
+              {guessedBy && !revealed && (
+                <motion.div key="hit" className="absolute inset-0" style={{ background: `${TS.good}33` }}
+                  initial={{ opacity: 0 }} animate={{ opacity: [0, 1, 0.4] }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }} />
+              )}
+            </AnimatePresence>
+          </div>
+
         </motion.div>
 
-        {/* Timer ring */}
-        <div className="flex items-center gap-4">
-          <div className="px-4 py-2 rounded-full bg-[#151a21]/80 border border-white/5">
-            <span className="text-lg font-bold text-[#a8abb3]">RUNDE {round}/{total}</span>
-          </div>
-          {timeLeft !== '' && (
-            <div className="relative w-20 h-20 flex items-center justify-center">
-              <svg className="absolute inset-0" width="80" height="80" style={{ transform: 'rotate(-90deg)' }}>
-                <circle cx="40" cy="40" r={timerRadius} fill="none" stroke="#1b2028" strokeWidth="4" />
-                <motion.circle
-                  cx="40" cy="40" r={timerRadius}
-                  fill="none" stroke={timerColor} strokeWidth="4" strokeLinecap="round"
-                  strokeDasharray={timerCircumference}
-                  animate={{ strokeDashoffset: timerOffset }}
-                  transition={{ duration: 0.5 }}
-                  style={{ filter: `drop-shadow(0 0 6px ${timerColor})` }}
-                />
-              </svg>
-              <motion.span
-                className="text-xl font-mono font-black relative z-10"
-                style={{ color: timerColor }}
-                animate={Number(timeLeft) <= 10 ? { scale: [1, 1.15, 1] } : {}}
-                transition={{ repeat: Infinity, duration: 0.5 }}
-              >
-                {timeLeft}
-              </motion.span>
-            </div>
+        {/* Rechts: Uhr bzw. Hinweis der Phase */}
+        <div className="flex flex-col items-center justify-center gap-4">
+          <AnimatePresence mode="wait">
+            {rail && (
+              <motion.div key={phase} className={`${phase === 'guessing' ? `${tvPanel} px-[2vw] py-[3vh]` : ''} flex max-w-[22vw] flex-col items-center gap-4`}
+                initial={reduced ? { opacity: 0 } : { opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20, transition: { duration: 0.25 } }}
+                transition={{ duration: 0.5, ease: partyEase.out }}>
+                {rail}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {revealed && guessedBy && (
+            <span className="font-bold" style={{ fontSize: tvType.body, color: TS.text }}>{t('tvCinema.draw.guessedBy', 'Erraten von {{name}}', { name: guessedBy })}</span>
           )}
         </div>
       </div>
 
-      {/* Canvas - large and prominent */}
-      <motion.div
-        className="rounded-3xl overflow-hidden relative"
-        style={{
-          border: '3px solid #2a2f38',
-          boxShadow: `0 0 50px ${drawerColor}15, 0 20px 60px rgba(0,0,0,0.5)`,
-        }}
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', damping: 20 }}
-      >
-        <canvas ref={canvasRef} width={700} height={700} className="w-[700px] h-[700px] bg-white" />
-
-        {/* Green flash overlay on correct guess */}
-        <AnimatePresence>
-          {guessedBy && (
-            <motion.div
-              className="absolute inset-0 flex items-center justify-center"
-              style={{ background: 'rgba(16,185,129,0.2)' }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 1, 0.3] }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <motion.span
-                className="text-6xl"
-                initial={{ scale: 0 }}
-                animate={{ scale: [0, 1.3, 1] }}
-                transition={{ duration: 0.5 }}
-              >
-                &#10003;
-              </motion.span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* Word LENGTH hint only — the actual word must stay secret until the
-          round result (guessers watch this same screen). Show one underscore
-          per letter (spaces preserved) + a letter count, never the word. */}
-      {word && phase !== 'roundResult' && (
-        <motion.div
-          className="mt-6 px-8 py-4 rounded-2xl flex flex-col items-center gap-1.5"
-          style={{
-            background: 'rgba(21,26,33,0.9)',
-            border: '2px solid rgba(255,255,255,0.05)',
-            boxShadow: '0 0 30px rgba(0,0,0,0.3)',
-          }}
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <span className="text-3xl font-black tracking-[0.4em] text-[#f1f3fc]" aria-label={t('tv.wordLength')}>
-            {word.split('').map((ch: string) => (ch === ' ' ? ' ' : '_')).join('')}
-          </span>
-          <span className="text-sm uppercase tracking-widest text-[#a8abb3]">
-            {word.replace(/\s/g, '').length} Buchstaben
-          </span>
-        </motion.div>
-      )}
-
-      {/* Round result - word revealed */}
-      {phase === 'roundResult' && word && (
-        <motion.div className="mt-6 text-center"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring' }}
-        >
-          <h2 className="text-5xl font-black italic text-[#ff6b98]"
-            style={{ textShadow: '0 0 30px rgba(255,107,152,0.5)' }}>
-            {word}
-          </h2>
-          {guessedBy && (
-            <motion.p className="text-2xl text-[#10b981] mt-3 font-bold"
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
-              Erraten von {guessedBy}!
-            </motion.p>
-          )}
-        </motion.div>
-      )}
-
-      {/* Hint text */}
-      {phase === 'drawing' && !guessedBy && (
-        <motion.p
-          className="mt-4 text-xl text-[#a8abb3]"
-          animate={{ opacity: [0.3, 0.7, 0.3] }}
-          transition={{ repeat: Infinity, duration: 3 }}
-        >
-          Schaut auf den Fernseher und ratet!
-        </motion.p>
+      {roster.length > 0 && (
+        <div className="absolute bottom-[5vh] left-[5vw] right-[5vw] z-10">
+          <TVScoreboard party={gameState?.partyNight} players={roster} activeId={phase === 'drawing' || phase === 'drawerReveal' ? drawerId : null} sort="order" />
+        </div>
       )}
     </div>
   );
 }
+
+const EMPTY_STROKES: Stroke[] = [];

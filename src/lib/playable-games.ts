@@ -83,31 +83,39 @@ export const GAME_BADGE_KEY: Record<"Hot" | "Neu", string> = {
  *   die Uhr laeuft erst nach dem Start des Zugs.
  * - split-quiz, geteilt-gequizzt → `secret`: Antworten bzw. Rollen-Infos sind
  *   pro Team/Person verdeckt (`private-state.ts`).
- * - pixeljagd → `sitout`: Buzzer-Rennen ums schnellste Erraten; nacheinander
- *   antworten hiesse ein schaerferes Bild fuer spaetere Gaeste.
- * - bomb bleibt `sitout`: die versteckte Zuendschnur darf fuer eine Weitergabe
- *   nicht anhalten.
+ * - pixeljagd → `team`: Buzzer-Rennen ums schnellste Erraten. Das Host-Handy
+ *   ist EIN Buzzer fuer seine Plaetze; Punkte gehen an genau einen gewaehlten
+ *   Platz, eine falsche Antwort sperrt das ganze Handy.
+ * - bomb → `turns`, aber ohne Weitergabe-Bildschirm und ohne Pause: der Host
+ *   reicht das Handy einfach weiter, die versteckte Zuendschnur brennt weiter
+ *   (eine Pause machte Gaeste zum sicheren Hafen und verriete die Restzeit).
+ * - schnellzeichner → `turns`: ein Zeichner, danach raten die Mitspielenden
+ *   einzeln nacheinander mit eigener Frist — kein Echtzeit-Rennen.
+ * - fake-or-fact → `turns`: die Mitspielenden urteilen einzeln nacheinander
+ *   (Warteschlange), nicht gleichzeitig.
+ * - wer-bin-ich → `secret`: die eigene Figur sehen alle ausser der Person
+ *   selbst — Weitergabe nur verdeckt.
  */
 export const playableGames: PlayableGame[] = [
-  { id: "bomb",            nameKey: "native.gameNames.bomb",            descKey: "native.gameDescs.bomb",            image: "/images/games/bomb.webp",            gradient: "from-orange-500 to-red-600",       minPlayers: 2, maxPlayers: 20, tier: "free",    badge: "Hot", sharedDevice: "sitout", categories: ["party", "quiz"] },
+  { id: "bomb",            nameKey: "native.gameNames.bomb",            descKey: "native.gameDescs.bomb",            image: "/images/games/bomb.webp",            gradient: "from-orange-500 to-red-600",       minPlayers: 2, maxPlayers: 20, tier: "free",    badge: "Hot", sharedDevice: "turns", categories: ["party", "quiz"] },
   { id: "headup",          nameKey: "native.gameNames.headup",          descKey: "native.gameDescs.headup",          image: "/images/games/headup.webp",          gradient: "from-violet-500 to-purple-600",    minPlayers: 2, maxPlayers: 12, tier: "free",                  sharedDevice: "turns", categories: ["party", "wort"] },
   { id: "taboo",           nameKey: "native.gameNames.taboo",           descKey: "native.gameDescs.taboo",           image: "/images/games/taboo.webp",           gradient: "from-cyan-500 to-blue-600",        minPlayers: 4, maxPlayers: 20, tier: "free",                  sharedDevice: "turns", categories: ["party", "wort"] },
   { id: "category",        nameKey: "native.gameNames.category",        descKey: "native.gameDescs.category",        image: "/images/games/category.webp",        gradient: "from-amber-500 to-orange-600",     minPlayers: 2, maxPlayers: 15, tier: "free",                  sharedDevice: "turns", categories: ["wort", "reaktion"] },
   { id: "this-or-that",    nameKey: "native.gameNames.thisOrThat",      descKey: "native.gameDescs.thisOrThat",      image: "/images/games/this-or-that.webp",    gradient: "from-violet-500 to-fuchsia-600",   minPlayers: 2, maxPlayers: 20, tier: "free",    badge: "Neu", sharedDevice: "sequential", sharedDeviceSupported: true, categories: ["party", "social"] },
   { id: "hochstapler",     nameKey: "native.gameNames.hochstapler",     descKey: "native.gameDescs.hochstapler",     image: "/images/games/hochstapler.webp",     gradient: "from-slate-600 to-gray-800",       minPlayers: 4, maxPlayers: 15, tier: "premium", badge: "Neu", sharedDevice: "secret", sharedDeviceSupported: true, categories: ["social", "party"] },
   { id: "wahrheit-pflicht",nameKey: "native.gameNames.wahrheitPflicht", descKey: "native.gameDescs.wahrheitPflicht", image: "/images/games/wahrheit-pflicht.webp",gradient: "from-pink-500 to-rose-600",        minPlayers: 2, maxPlayers: 20, tier: "premium", badge: "Neu", sharedDevice: "turns", categories: ["party", "social"] },
-  { id: "wer-bin-ich",     nameKey: "native.gameNames.werBinIch",       descKey: "native.gameDescs.werBinIch",       image: "/images/games/wer-bin-ich.webp",     gradient: "from-amber-400 to-orange-500",     minPlayers: 2, maxPlayers: 10, tier: "premium", badge: "Neu", sharedDevice: "turns", categories: ["social", "party"] },
+  { id: "wer-bin-ich",     nameKey: "native.gameNames.werBinIch",       descKey: "native.gameDescs.werBinIch",       image: "/images/games/wer-bin-ich.webp",     gradient: "from-amber-400 to-orange-500",     minPlayers: 2, maxPlayers: 10, tier: "premium", badge: "Neu", sharedDevice: "secret", categories: ["social", "party"] },
   { id: "flaschendrehen",  nameKey: "native.gameNames.flaschendrehen",  descKey: "native.gameDescs.flaschendrehen",  image: "/images/games/flaschendrehen.webp",  gradient: "from-violet-500 to-pink-500",      minPlayers: 2, maxPlayers: 12, tier: "premium", badge: "Hot", sharedDevice: "turns", sharedDeviceSupported: true, categories: ["party", "social"] },
   { id: "emoji-raten",     nameKey: "native.gameNames.emojiRaten",      descKey: "native.gameDescs.emojiRaten",      image: "/images/games/emoji-raten.webp",     gradient: "from-yellow-400 to-amber-500",     minPlayers: 2, maxPlayers: 20, tier: "premium", badge: "Neu", sharedDevice: "turns", categories: ["quiz", "kreativ"] },
-  { id: "fake-or-fact",    nameKey: "native.gameNames.fakeOrFact",      descKey: "native.gameDescs.fakeOrFact",      image: "/images/games/fake-or-fact.webp",    gradient: "from-red-500 to-rose-600",         minPlayers: 2, maxPlayers: 20, tier: "premium", badge: "Neu", sharedDevice: "sequential", categories: ["quiz", "wort"] },
-  { id: "schnellzeichner", nameKey: "native.gameNames.schnellzeichner", descKey: "native.gameDescs.schnellzeichner", image: "/images/games/schnellzeichner.webp", gradient: "from-orange-500 to-red-500",       minPlayers: 2, maxPlayers: 10, tier: "premium", badge: "Neu", sharedDevice: "sitout", categories: ["kreativ", "party"] },
+  { id: "fake-or-fact",    nameKey: "native.gameNames.fakeOrFact",      descKey: "native.gameDescs.fakeOrFact",      image: "/images/games/fake-or-fact.webp",    gradient: "from-red-500 to-rose-600",         minPlayers: 2, maxPlayers: 20, tier: "premium", badge: "Neu", sharedDevice: "turns", categories: ["quiz", "wort"] },
+  { id: "schnellzeichner", nameKey: "native.gameNames.schnellzeichner", descKey: "native.gameDescs.schnellzeichner", image: "/images/games/schnellzeichner.webp", gradient: "from-orange-500 to-red-500",       minPlayers: 2, maxPlayers: 10, tier: "premium", badge: "Neu", sharedDevice: "turns", categories: ["kreativ", "party"] },
   { id: "split-quiz",      nameKey: "native.gameNames.splitQuiz",       descKey: "native.gameDescs.splitQuiz",       image: "/images/games/split-quiz.webp",      gradient: "from-blue-500 to-indigo-700",      minPlayers: 4, maxPlayers: 30, tier: "premium",               sharedDevice: "secret", categories: ["quiz", "social"] },
   { id: "geteilt-gequizzt",nameKey: "native.gameNames.geteiltGequizzt", descKey: "native.gameDescs.geteiltGequizzt", image: "/images/games/geteilt-gequizzt.webp",gradient: "from-cyan-500 to-blue-600",        minPlayers: 3, maxPlayers: 10, tier: "premium", badge: "Neu", sharedDevice: "secret", categories: ["quiz", "social"] },
   { id: "story-builder",   nameKey: "native.gameNames.storyBuilder",    descKey: "native.gameDescs.storyBuilder",    image: "/images/games/story-builder.webp",   gradient: "from-teal-400 to-emerald-500",     minPlayers: 2, maxPlayers: 20, tier: "premium", badge: "Neu", sharedDevice: "turns", categories: ["kreativ", "wort"] },
   { id: "wo-ist-was",      nameKey: "native.gameNames.woIstWas",        descKey: "native.gameDescs.woIstWas",        image: "/images/games/wo-ist-was.webp",      gradient: "from-cyan-500 to-blue-600",        minPlayers: 1, maxPlayers: 10, tier: "premium",               sharedDevice: "sequential", categories: ["karte", "quiz"] },
   { id: "drueck-das-wort", nameKey: "native.gameNames.drueckDasWort",   descKey: "native.gameDescs.drueckDasWort",   image: "/images/games/drueck-das-wort.webp", gradient: "from-emerald-500 to-green-600",    minPlayers: 1, maxPlayers:  8, tier: "premium",               sharedDevice: "turns", categories: ["wort", "reaktion"] },
   { id: "ohrwurm",         nameKey: "native.gameNames.ohrwurm",         descKey: "native.gameDescs.ohrwurm",         image: "/images/games/ohrwurm.webp",         gradient: "from-pink-500 to-teal-400",        minPlayers: 2, maxPlayers:  4, tier: "free",    badge: "Neu", sharedDevice: "turns", categories: ["party", "quiz"] },
-  { id: "pixeljagd",       nameKey: "native.gameNames.pixeljagd",       descKey: "native.gameDescs.pixeljagd",       image: "/images/games/pixeljagd.webp",       gradient: "from-sky-400 to-violet-500",       minPlayers: 2, maxPlayers:  8, tier: "free",    badge: "Neu", sharedDevice: "sitout", categories: ["quiz", "reaktion"] },
+  { id: "pixeljagd",       nameKey: "native.gameNames.pixeljagd",       descKey: "native.gameDescs.pixeljagd",       image: "/images/games/pixeljagd.webp",       gradient: "from-sky-400 to-violet-500",       minPlayers: 2, maxPlayers:  8, tier: "free",    badge: "Neu", sharedDevice: "team", categories: ["quiz", "reaktion"] },
   { id: "closeenough",     nameKey: "native.gameNames.closeenough",     descKey: "native.gameDescs.closeenough",     image: "/images/games/closeenough.webp",     gradient: "from-amber-400 to-emerald-400",     minPlayers: 2, maxPlayers:  8, tier: "free",    badge: "Neu", sharedDevice: "sequential", categories: ["quiz", "party"] },
   { id: "pantomime",       nameKey: "native.gameNames.pantomime",       descKey: "native.gameDescs.pantomime",       image: "/images/games/pantomime.webp",       gradient: "from-amber-400 to-pink-400",        minPlayers: 4, maxPlayers: 16, tier: "free",    badge: "Neu", sharedDevice: "turns", categories: ["party", "kreativ"] },
   // GEBRAEU: Aushaengeschild, deshalb "free" statt hinter der Schranke.
@@ -127,7 +135,25 @@ export const playableGameIds = new Set(playableGames.map((g) => g.id));
  */
 export function guestPolicy(gameId: string): SharedDeviceMode {
   const game = playableGames.find((g) => g.id === gameId);
-  return game?.sharedDeviceSupported ? game.sharedDevice : "sitout";
+  return game && (game.sharedDeviceSupported || qaForcedSharedDevice(gameId)) ? game.sharedDevice : "sitout";
+}
+
+/**
+ * NUR fuer die QA-Laeufe (qa-party, Dev-Server oder Build mit VITE_QA_HARNESS):
+ * `window.__partyPlayForceShared = ['headup']`
+ * auf dem Host-Geraet laesst Gaeste in einem angepassten, aber noch nicht
+ * freigegebenen Spiel mitspielen — die Freigabe (`sharedDeviceSupported`) gibt
+ * es erst nach bestandenen Szenarien. Im Betrieb setzt das niemand.
+ */
+export function qaForcedSharedDevice(
+  gameId: string,
+  env: { DEV?: boolean; VITE_QA_HARNESS?: string | boolean } = import.meta.env,
+): boolean {
+  // Nur Dev-Server und QA-Builds: im Produktions-Bundle ist `DEV` fest false
+  // und `VITE_QA_HARNESS` ungesetzt — der Schalter ist dort wirkungslos.
+  if (!env.DEV && !env.VITE_QA_HARNESS) return false;
+  const forced = (globalThis as { __partyPlayForceShared?: unknown }).__partyPlayForceShared;
+  return Array.isArray(forced) && forced.includes(gameId);
 }
 
 /**

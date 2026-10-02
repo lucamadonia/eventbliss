@@ -6348,7 +6348,9 @@
       "tutorialDismiss": "COMPRIS!",
       "taskAllePrompt": "Cite: {{category}} avec \"{{letter}}\"",
       "taskKategoriePrompt": "Cite un/une {{category}} avec \"{{letter}}\"!",
-      "fewestPenalties": "Le moins de pénalités"
+      "fewestPenalties": "Le moins de pénalités",
+      "partyHolderWait": "Elle pourrait bientôt atterrir chez toi.",
+      "partyHolderPass": "La mèche brûle toujours !"
     },
     "headup": {
       "name": "Devine-Tête",
@@ -6421,7 +6423,13 @@
         "roundLabel": "Manche {{current}} / {{total}}",
         "explainsSuffix": "explique",
         "isUp": "C'est au tour de {{team}} !",
-        "startBtn": "C'est parti !"
+        "startBtn": "C'est parti !",
+        "explainerHint": "Appuie sur Démarrer dès que ton équipe est prête. Ton équipe ne doit pas regarder le téléphone.",
+        "refereeHint": "Lis la carte et appuie sur « Tabou ! » dès qu'un mot interdit est prononcé.",
+        "guesserHint": "{{name}} va faire deviner – écoute bien et devine à voix haute.",
+        "watcherHint": "{{name}} va faire deviner pour {{team}}.",
+        "cardBack": "Ta carte t'attend, face cachée",
+        "waitingFor": "En attente de {{name}} …"
       },
       "playing": {
         "currentWord": "Mot actuel",
@@ -6429,7 +6437,12 @@
         "skipCount": "{{count}} Skip",
         "tabooBtn": "TABOU !",
         "skipBtn": "PASSER",
-        "correctBtn": "CORRECT"
+        "correctBtn": "CORRECT",
+        "guessTitle": "Devine à voix haute !",
+        "guessBody": "Tu ne vois pas la carte – écoute bien {{name}}.",
+        "watchTitle": "{{name}} fait deviner",
+        "watchBody": "Regarde la télé et rigole avec les autres.",
+        "refereeHint": "Un mot interdit ? Appuie tout de suite."
       },
       "summary": {
         "roundWord": "MANCHE",
@@ -6457,7 +6470,13 @@
         "cheers": "Santé !"
       },
       "refereeRole": "Arbitre : surveille les mots interdits.",
-      "voiceHint": "Devinez à voix haute avec votre équipe. À distance, utilisez un appel vocal."
+      "voiceHint": "Devinez à voix haute avec votre équipe. À distance, utilisez un appel vocal.",
+      "role": {
+        "explainer": "Tu fais deviner",
+        "referee": "Tu es l'arbitre",
+        "guesser": "Tu devines",
+        "watcher": "C'est au tour de {{team}}"
+      }
     },
     "categoryGame": {
       "name": "Chrono Catégorie",
@@ -6593,7 +6612,9 @@
         "ball": "Ballon de football",
         "plant": "Plante en pot",
         "umbrella": "Parapluie"
-      }
+      },
+      "watchTurn": "Regarde – c'est bientôt à toi.",
+      "guessSeat": "{{name}} place l'épingle"
     },
     "impostor": {
       "title": "Imposteur",
@@ -6790,7 +6811,9 @@
       "timeToPlace": "Temps pour placer",
       "songLoading": "Chargement de la chanson…",
       "tapToPlayHidden": "Appuie pour jouer — le titre reste secret",
-      "tapAndGo": "Appuie et c'est parti"
+      "tapAndGo": "Appuie et c'est parti",
+      "partyCounterLine": "Place ta contestation sur la frise.",
+      "partyYourTurnLine": "Écoute et place la chanson."
     },
     "splitquiz": {
       "subtitle": "Chaque équipe ne voit que la moitié des réponses !",
@@ -6866,7 +6889,23 @@
       "wins": "{{name}} gagne !",
       "points": "{{count}} pts.",
       "playAgain": "Rejouer",
-      "otherGame": "Autre jeu"
+      "otherGame": "Autre jeu",
+      "taskOf": "Défi pour {{name}}",
+      "level": "Niveau",
+      "doneDare": "Fait — on vote",
+      "hostSpins": "L'hôte fait tourner la roue …",
+      "onlyTruth": "Ce soir, que des vérités",
+      "onlyDare": "Ce soir, que des actions",
+      "votePassed": "Réussi",
+      "voteFailed": "Raté",
+      "voteProgress": "{{done}} sur {{total}} ont voté",
+      "turnChoose": "choisit action ou vérité",
+      "turnAnswer": "répond à la question",
+      "turnDare": "relève le défi",
+      "turnVote": "juge {{name}}",
+      "turnYou": "À toi de jouer",
+      "turnOther": "Au tour de",
+      "watchOther": "C'est au tour de {{name}} — regarde ici ou sur la télé."
     },
     "whoami": {
       "round": "Manche {{round}}/{{total}}",
@@ -6959,7 +6998,25 @@
       "sendQuestion": "Poser la question",
       "guessNow": "Deviner l’identité",
       "voteSummary": "Oui : {{yes}} · Non : {{no}}",
-      "questionLimit": "Questions par identité"
+      "questionLimit": "Questions par identité",
+      "party": {
+        "isAsking": "pose une question",
+        "theirIdentity": "{{name}} est …",
+        "askAloud": "Pose une question oui/non sur toi.",
+        "waitingQuestion": "{{name}} réfléchit à une question …",
+        "theOthersAre": "Voici les autres",
+        "notYours": "Ton propre personnage reste secret — à toi de le découvrir.",
+        "seenCover": "Vu – cacher",
+        "seenPass": "Vu – passe le téléphone",
+        "allSeen": "Tout le monde sur ce téléphone a vu les cartes",
+        "startWhenReady": "Lance dès que tout le monde a vu sa carte.",
+        "holdToSee": "Maintiens pour voir",
+        "lookAtTv": "Regarde la télé ou autour de toi",
+        "askerIs": "{{name}} est",
+        "waitingAnswer": "{{name}} répond …",
+        "waitingGuess": "{{name}} devine maintenant …",
+        "notSeenYet": "Pas encore vu : {{names}}"
+      }
     },
     "bottlespin": {
       "setupTimerLabel": "Minuteur de défi (sec.)",
@@ -7033,7 +7090,15 @@
       "finalResults": "Résultat Final",
       "playAgain": "Rejouer",
       "otherGame": "Autre Jeu",
-      "quit": "Quitter"
+      "quit": "Quitter",
+      "starts": "{{name}} commence",
+      "passingPhone": "{{name}} récupère le téléphone …",
+      "yourTurn": "À toi – donne un mot !",
+      "othersTurn": "Écoute bien – ça peut bientôt tomber sur toi.",
+      "clockStopped": "Le chrono est en pause jusqu'à ce que {{name}} soit prêt.",
+      "waitingAnswer": "{{name}} cherche un mot …",
+      "hostContinues": "L'hôte lance bientôt la manche suivante.",
+      "hostDecides": "L'hôte décide de la suite."
     },
     "emojiguess": {
       "title": "Devine l'Emoji",
@@ -7056,7 +7121,13 @@
       "nextPlayer": "À suivre : {{name}}",
       "clueLabel": "Rébus",
       "poolBudget": "{{puzzleCount}} énigmes sélectionnées. Les grands groupes jouent moins de manches : autant de tours pour chacun, sans répétition.",
-      "balancedTeamPoints": "Si les équipes sont inégales, les points sont pondérés pour que chacune puisse obtenir le même total par manche."
+      "balancedTeamPoints": "Si les équipes sont inégales, les points sont pondérés pour que chacune puisse obtenir le même total par manche.",
+      "watchTitle": "{{name}} devine",
+      "watchBody": "Regarde la télé et devine en silence.",
+      "yourTurn": "À toi de jouer",
+      "nextUp": "joue ensuite",
+      "solvedBy": "a trouvé",
+      "notSolved": "pas trouvé cette fois"
     },
     "fakeorfact": {
       "title": "Menteur — Fake or Fact",
@@ -7074,7 +7145,19 @@
       "correctPct": "Correct : {{pct}} %",
       "incorrectPct": "Faux : {{pct}} %",
       "continue": "Continuer",
-      "noAnswer": "Aucune réponse (temps écoulé)"
+      "noAnswer": "Aucune réponse (temps écoulé)",
+      "seatResults": "Résultats sur ce téléphone",
+      "yourTurn": "À toi de jouer",
+      "playerTurn": "C'est au tour de {{name}}",
+      "onHostPhone": "Sur le téléphone de l'hôte",
+      "timeLeft": "Encore {{seconds}} secondes",
+      "progressLabel": "Qui a déjà choisi",
+      "markDone": "a choisi",
+      "markNow": "joue",
+      "markOpen": "à venir",
+      "waitingFor": "{{name}} réfléchit …",
+      "answerLocked": "Ta réponse est enregistrée – la révélation arrive",
+      "turnSoon": "C'est bientôt à toi"
     },
     "quickdraw": {
       "tagline": "Dessine vite — les autres devinent !",
@@ -7102,7 +7185,8 @@
       "penSize": "Épaisseur {{size}}",
       "eraser": "Gomme",
       "undo": "Annuler",
-      "clear": "Effacer le dessin"
+      "clear": "Effacer le dessin",
+      "lookAtTv": "👀 Regarde la télé"
     },
     "sharedquiz": {
       "title": "Partagé & Questionné",
@@ -7127,7 +7211,13 @@
       "resultBtn": "Résultats",
       "modeAnswerTurn": "{{name}} · Réponse {{n}} sur 3",
       "chainRules": "Répondez à tour de rôle. Chaque bonne réponse rapporte un point au trio. Les réponses restent cachées jusqu’à la troisième réponse.",
-      "allRules": "Vous devez tous les trois répondre correctement. Le trio gagne trois points, sinon zéro."
+      "allRules": "Vous devez tous les trois répondre correctement. Le trio gagne trois points, sinon zéro.",
+      "sharedPhoneTitle": "Rôles sur ce téléphone",
+      "sharedPhoneHint": "Chacun ne regarde que son rôle – les autres détournent les yeux.",
+      "viewMyRole": "Voir mon rôle",
+      "viewGuestRole": "{{name}} : voir le rôle",
+      "seenBadge": "vu",
+      "coverRole": "Vu – cacher"
     },
     "storybuilder": {
       "setupTimerLabel": "Phrases par joueur",
@@ -7144,7 +7234,9 @@
       "playAgain": "Rejouer",
       "otherGame": "Autre jeu",
       "skipTurn": "Passer son tour",
-      "emptyStory": "Aucune phrase pour le moment. Commencez une nouvelle histoire ensemble."
+      "emptyStory": "Aucune phrase pour le moment. Commencez une nouvelle histoire ensemble.",
+      "writingNow": "{{name}} est en train d'écrire …",
+      "secondsLeft": "encore {{count}} s"
     },
     "thisorthat": {
       "modeTagPopular": "Populaire",
@@ -7227,7 +7319,9 @@
       "waitForPlayer": "En attendant que {{name}} commence.",
       "exampleCategory": "« {{animal}} » : touche. « {{object}} » : attends.",
       "exampleStroop": "« {{red}} » écrit en rouge : touche. En bleu : attends.",
-      "exampleForbidden": "« {{word}} » : attends. Tout autre mot : touche."
+      "exampleForbidden": "« {{word}} » : attends. Tout autre mot : touche.",
+      "partyReadyLine": "Appuie sur « Prêt » et le chrono démarre.",
+      "partyWatchLine": "Regarde – c'est bientôt à toi."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
@@ -7287,7 +7381,10 @@
       "playersLabel": "Joueurs",
       "groupsLabel": "Équipes",
       "teamN": "Équipe {{n}}",
-      "retryImage": "Recharger l’image"
+      "retryImage": "Recharger l’image",
+      "sayItLoud": "Dis la réponse à voix haute !",
+      "teamHint": "Vous devinez en équipe – une mauvaise réponse bloque tout le téléphone.",
+      "whoTypes": "Qui tape ?"
     },
     "closeenough": {
       "title": "Presque !",
@@ -7528,7 +7625,8 @@
         "wingspan_aircraft": "Un Airbus A320 a une envergure de 36 mètres.",
         "employees": "Volkswagen emploie environ 680 000 personnes.",
         "revenue": "Apple réalise environ 390 milliards USD de chiffre d'affaires par an."
-      }
+      },
+      "partyYourEstimate": "Ton estimation reste secrète jusqu'à la révélation."
     },
     "pantomime": {
       "title": "Sans un mot",
@@ -7839,7 +7937,8 @@
       "counterLabelBrew": "Étagère",
       "counterLabelBar": "Comptoir",
       "trayNote": "pas encore en sécurité",
-      "counterNote": "libre pour tous · 1 carte par tour"
+      "counterNote": "libre pour tous · 1 carte par tour",
+      "partyWatch": "Regarde – ce qui déborde du verre finit sur le comptoir."
     },
     "connectionPaused": "Partie en pause",
     "connectionPausedHint": "Reconnectez-vous pour continuer. Le tour en cours est conservé.",
@@ -10037,7 +10136,7 @@
       "leaderLine": "{{name}} mène avec {{points}} points",
       "tapForMap": "Touchez pour l'itinéraire",
       "gameXofY": "Jeu {{current}} sur {{total}}",
-      "finaleEyebrow": "La Party Night est terminée",
+      "finaleEyebrow": "La soirée est terminée",
       "champion": "Champion de la soirée",
       "championLine": "{{name}} gagne avec {{points}} points",
       "finalTable": "Classement final",
@@ -10068,7 +10167,8 @@
         }
       },
       "champions": "Victoire partagée",
-      "championsLine": "{{name}} partagent la victoire avec {{points}} points chacun"
+      "championsLine": "{{name}} partagent la victoire avec {{points}} points chacun",
+      "drumroll": "Et le champion de la soirée est"
     },
     "connectTitle": "Connecter la TV",
     "openOnTv": "Ouvre sur ta TV :",
@@ -10421,7 +10521,22 @@
       "noGame": "Planifie d'abord un jeu.",
       "notReadyNames": "Pas encore prêts : {{names}}",
       "nothingFits": "Aucun jeu prévu ne convient à votre groupe.",
-      "skipped": "{{game}} ne convient pas pour l'instant – on passe à {{next}}."
+      "skipped": "{{game}} ne convient pas pour l'instant – on passe à {{next}}.",
+      "kickerEmpty": "Soirée jeux",
+      "tvOn": "Télé connectée",
+      "soon": "C'est bientôt à toi",
+      "running": "Une partie est en cours",
+      "title": "Ça commence bientôt",
+      "nonePlanned": "Aucun jeu prévu pour l'instant",
+      "notReadyOne": "{{name}} n'est pas encore prêt",
+      "planned": "{{count}} jeux prévus",
+      "planned_one": "{{count}} jeu prévu",
+      "planned_other": "{{count}} jeux prévus",
+      "waitingFor": "On attend {{names}}",
+      "waitingMany": "On attend {{names}} et {{count}} autres",
+      "waitingMany_one": "On attend {{names}} et 1 autre",
+      "waitingMany_other": "On attend {{names}} et {{count}} autres",
+      "runningNow": "En cours : {{game}}"
     },
     "onboarding": {
       "back": "Retour à la liste",
@@ -10484,7 +10599,9 @@
       "remove": "Retirer …",
       "unban": "Débloquer",
       "you": "Toi",
-      "banned": "Bloqués ({{count}})"
+      "banned": "Bloqués ({{count}})",
+      "addGuestShort": "Joue sur ton téléphone",
+      "full": "La soirée est complète"
     },
     "scene": {
       "getReady": "Ça commence !"
@@ -10493,7 +10610,9 @@
       "host": "Hôte",
       "hostDevice": "sur le téléphone de l'hôte",
       "pendingClaim": "passe sur son téléphone après la manche",
-      "phone": "son propre téléphone"
+      "phone": "son propre téléphone",
+      "inGame": "en pleine partie",
+      "nextRound": "dès la prochaine manche"
     },
     "similar": {
       "no": "Non, je suis quelqu'un d'autre",
@@ -10543,13 +10662,374 @@
       "body": "Merci d'avoir joué ! Lance donc ta propre soirée."
     },
     "tv": {
-      "handover": "{{name}} joue sur le téléphone de l'hôte …"
+      "handover": "{{name}} joue sur le téléphone de l'hôte …",
+      "handoverEyebrow": "Passe le téléphone",
+      "pair": "Touche pour associer",
+      "title": "Télé",
+      "stagePassing": "{{name}} reçoit le téléphone",
+      "stageViewing": "{{name}} regarde …",
+      "short": "Télé",
+      "nextUp": "Ensuite : {{name}}"
     },
     "closing": {
       "title": "La soirée est terminée",
       "placement": "Tu termines {{rank}}e – {{points}} points",
       "tv": "La remise des prix passe à la télé.",
-      "done": "Terminé"
+      "done": "Terminé",
+      "winner": "Tu as gagné la soirée !",
+      "rankLine": "{{rank}}e place – {{points}} points"
+    },
+    "invite": {
+      "copied": "Lien copié",
+      "hint": "Scanne ou saisis le code",
+      "share": "Partager l'invitation",
+      "shareText": "Viens à ma soirée ! Code {{code}}",
+      "sheetHint": "Vise le code avec l'appareil photo : l'appli s'ouvre et tu es de la partie.",
+      "showQr": "Afficher le QR en grand",
+      "title": "Inviter des amis",
+      "chip": "Inviter"
+    },
+    "ready": {
+      "count": "{{ready}} sur {{total}} prêts",
+      "cta": "Je suis prêt",
+      "done": "Prêt",
+      "undo": "Pas encore, finalement"
+    },
+    "next": {
+      "host": "À suivre",
+      "player": "Vous jouez bientôt"
+    },
+    "start": {
+      "with": "Lancer : {{game}}"
+    },
+    "recap": {
+      "title": "Récap de la soirée",
+      "games": "{{count}} jeux joués",
+      "games_one": "{{count}} jeu joué",
+      "games_other": "{{count}} jeux joués",
+      "closest": "Victoire la plus serrée : {{name}} à {{game}} (+{{margin}})",
+      "mostWins": "Le plus de victoires : {{name}} ({{count}})",
+      "footer": "Fêté avec EventBliss · event-bliss.com",
+      "winners": "Gagnants par jeu",
+      "share": "Partager le récap en image"
+    },
+    "turn": {
+      "you": "À toi de jouer",
+      "passTo": "Passe le téléphone à {{name}}",
+      "other": "C'est au tour de {{name}}"
+    }
+  },
+  "tvCinema": {
+    "round": "Manche {{round}}",
+    "roundOf": "Manche {{round}} sur {{total}}",
+    "impostor": {
+      "roles": "Distribution des rôles",
+      "rolesSub": "Regardez discrètement vos téléphones",
+      "discussion": "Discussion",
+      "discussionSub": "Un mot chacun – n'en dites pas trop",
+      "voting": "Vote",
+      "votingSub": "Qui est l'imposteur ?",
+      "caught": "Démasqué !",
+      "escaped": "Il s'en sort !",
+      "spokenProgress": "{{count}} sur {{total}} ont parlé"
+    },
+    "bottle": {
+      "vote": "Vote",
+      "voteSub": "{{name}} a-t-il réussi ?",
+      "voteSubAnon": "Réussi ou pas ?",
+      "yourTurn": "La bouteille désigne",
+      "spinning": "Ça tourne",
+      "card": "Carte"
+    },
+    "thisOrThat": {
+      "voting": "À vous de choisir !",
+      "votingSub": "{{a}} ou {{b}} ?",
+      "votingNow": "Vote en cours",
+      "debate": "Discussion",
+      "debateSub": "Convainquez l'autre camp",
+      "majority": "Majorité",
+      "tie": "Égalité",
+      "votedCount": "{{count}}/{{total}} ont voté"
+    },
+    "bomb": {
+      "armed": "La bombe tourne !",
+      "armedSub": "Réponds et passe-la vite",
+      "holds": "a la bombe",
+      "plusOne": "+1 pénalité",
+      "winners": "{{names}} gagnent !",
+      "winner": "{{name}} gagne !",
+      "final": "Classement final",
+      "modeMix": "Mix surprise",
+      "live": "Bombe activée",
+      "roundDone": "Manche {{round}} survécue",
+      "gameOver": "Fin de partie",
+      "preparing": "On arme la bombe …"
+    },
+    "category": {
+      "newCategory": "Nouvelle catégorie",
+      "newCategorySub": "Chacun son tour – qui hésite perd",
+      "category": "Catégorie",
+      "yourTurn": "joue",
+      "named": "{{count}} cités",
+      "noWords": "Rien pour l'instant – qui commence ?",
+      "timeUp": "Temps écoulé !",
+      "wordsThisRound": "{{count}} mots cette manche",
+      "wordsThisRound_one": "{{count}} mot cette manche",
+      "wordsThisRound_other": "{{count}} mots cette manche",
+      "chain": "Chaîne de mots",
+      "roundOver": "Fin de la manche",
+      "starts": "{{name}} commence",
+      "preparing": "Tirage de la catégorie …"
+    },
+    "closeenough": {
+      "guessing": "Estimez !",
+      "guessingSub": "Tapez votre nombre sur le téléphone – qui sera le plus proche ?",
+      "submitted": "{{count}} sur {{total}} ont répondu",
+      "closest": "Le plus proche : {{name}}",
+      "bullseye": "En plein dans le mille",
+      "revealPill": "Révélation",
+      "guessingPill": "Manche d'estimation",
+      "unit": "Réponse en : {{unit}}"
+    },
+    "draw": {
+      "cueDrawer": "Nouveau dessin",
+      "cueDrawerSub": "{{name}} dessine",
+      "cueDrawerSubAnon": "Celui qui dessine regarde son téléphone",
+      "cueGuess": "C'est quoi ?",
+      "cueGuessSub": "Devinez chacun votre tour sur le téléphone",
+      "drawerReveal": "Voir le mot",
+      "drawing": "Dessin",
+      "guessing": "Devinettes",
+      "result": "Révélation",
+      "statusReveal": "regarde le mot",
+      "statusDrawing": "dessine",
+      "statusDone": "a dessiné",
+      "timeLeft": "secondes",
+      "guessHeadline": "C'est quoi ?",
+      "guessHint": "Devinez chacun votre tour sur le téléphone",
+      "wordWas": "Le mot était",
+      "getReady": "Ça commence …",
+      "coverTitle": "Le dessin arrive",
+      "guessedBy": "Trouvé par {{name}}"
+    },
+    "emojiGuess": {
+      "title": "Devinette emoji",
+      "upNext": "C'est au tour de {{name}}",
+      "getReady": "Les emojis arrivent – tout le monde devine !",
+      "solution": "La solution",
+      "guessing": "{{name}} devine",
+      "whatIsIt": "Qu'est-ce qui se cache derrière ?",
+      "getSet": "Ça commence",
+      "guessingNow": "On devine",
+      "reveal": "Révélation"
+    },
+    "findIt": {
+      "memorize": "Mémorise",
+      "memorizeSub": "Retenez ce qui est où",
+      "whichCity": "Quelle ville est-ce ?",
+      "whereIsIt": "C'est où ?",
+      "spotDiffs": "Trouvez les différences",
+      "guessAlong": "Devine aussi",
+      "itWas": "La réponse était",
+      "tapOnPhone": "Tapez votre réponse sur le téléphone",
+      "reveal": "Révélation",
+      "roundOver": "Fin de la manche",
+      "setup": "Préparation",
+      "memorizeBoard": "Mémorisez le plateau !",
+      "questionOf": "Question {{n}} sur {{total}}",
+      "lookAtPhone": "Regardez vos téléphones",
+      "playerRight": "{{name}} a raison !",
+      "playerWrong": "{{name}} s'est trompé"
+    },
+    "headup": {
+      "yourTurn": "C'est au tour de {{name}}",
+      "nextTurn": "Tour suivant",
+      "readySub": "Téléphone sur le front, les autres font deviner",
+      "guessing": "devine",
+      "explainNow": "Faites deviner le mot !",
+      "lookAtPhone": "Le mot est sur le téléphone – seul {{name}} ne le voit pas",
+      "turnOf": "Tour de",
+      "allDone": "Tout le monde est passé !",
+      "winner": "{{name}} gagne !",
+      "correctCount": "{{count}} bonnes réponses",
+      "category": "Catégorie : {{name}}",
+      "title": "HeadUp",
+      "holdUp": "Téléphone sur le front – c'est parti",
+      "roundOver": "Fin du tour",
+      "gameOver": "Fin de partie"
+    },
+    "ohrwurm": {
+      "turnOf": "C'est au tour de {{name}}",
+      "listen": "Chanson mystère",
+      "listenSub": "Écoutez bien – elle est sortie quand ?",
+      "counter": "Contestation !",
+      "counterSub": "{{name}} se trompe ? Contestez maintenant !",
+      "counterSubAnon": "Mal placée ? Contestez maintenant !",
+      "counterHint": "{{name}} se trompe ? Si tu doutes, conteste maintenant sur ton téléphone.",
+      "ready": "Ça commence",
+      "timelineOf": "Frise de {{name}}",
+      "winner": "{{name}} gagne !",
+      "revealPill": "Révélation",
+      "placing": "Placement",
+      "listenPill": "Écoute",
+      "target": "Objectif : {{count}} cartes",
+      "target_one": "Objectif : {{count}} carte",
+      "target_other": "Objectif : {{count}} cartes"
+    },
+    "pantomime": {
+      "cueTurn": "Tour suivant",
+      "cueTurnSub": "{{name}} mime",
+      "cueTurnSubAnon": "Celui qui mime regarde son téléphone",
+      "turnStart": "Tour suivant",
+      "fetch": "Va chercher un accessoire",
+      "playing": "Mime",
+      "summary": "Score",
+      "final": "Classement final",
+      "forTeam": "pour {{team}}",
+      "extraHeadline": "Points doublés ?",
+      "extraDecides": "{{name}} décide"
+    },
+    "pixeljagd": {
+      "playing": "C'est quoi ?",
+      "playingSub": "Buzzez dès que vous reconnaissez",
+      "buzzed": "{{name}} a buzzé !",
+      "solvedBy": "{{name}} a trouvé",
+      "unsolved": "Personne n'a trouvé",
+      "credit": "Image : {{credit}}",
+      "revealPill": "Révélation",
+      "pointsNow": "Vaut maintenant"
+    },
+    "quiz": {
+      "newQuestion": "Nouvelle question",
+      "teamsSub": "Équipe contre équipe",
+      "betting": "Faites vos mises",
+      "bettingSub": "Vous êtes sûrs à quel point ?",
+      "factOrFake": "Vrai ou fake ?",
+      "whichIsTrue": "Quelle affirmation est vraie ?",
+      "trueOrFalseSub": "Vrai ou inventé ?",
+      "teamwork": "Travail d'équipe",
+      "teamworkSub": "Trois rôles, une réponse",
+      "guessing": "À vous de deviner",
+      "reveal": "Révélation",
+      "roundIntro": "Nouvelle manche",
+      "passPhone": "Passe le téléphone",
+      "allVoted": "Tout le monde a répondu",
+      "readingQuestion": "Lecture de la question",
+      "readingOptions": "Lecture des options",
+      "answering": "Réponses en cours",
+      "gotItRight": "{{pct}} % de bonnes réponses",
+      "gotItWrong": "{{pct}} % à côté",
+      "teamCorrect": "{{count}} bonnes réponses",
+      "roleQuestion": "lit la question",
+      "roleOptions": "lit les options",
+      "roleGuess": "devine la réponse",
+      "preparing": "Préparation du quiz …",
+      "rolesTitle": "Les rôles de cette manche",
+      "votedCount": "{{count}} sur {{total}} ont répondu",
+      "correctPlayers": "Bonne réponse",
+      "passPhoneSub": "On reprend tout de suite",
+      "teamAnswering": "L'équipe répond à la question",
+      "onPhones": "La question est sur les téléphones",
+      "revealOnTv": "La révélation s'affiche ici sur la télé",
+      "teamWins": "{{team}} gagne !",
+      "teamTie": "Égalité !"
+    },
+    "story": {
+      "cueStart": "Il était une fois …",
+      "cueStartSub": "Une phrase après l'autre",
+      "cueReveal": "L'histoire complète",
+      "cueRevealSub": "Lisez avec nous !",
+      "writing": "Écriture",
+      "passing": "On passe",
+      "reveal": "L'histoire",
+      "isWriting": "{{name}} écrit",
+      "nextUp": "Téléphone à {{name}}"
+    },
+    "taboo": {
+      "teamTurn": "C'est au tour de {{team}}",
+      "nextTurn": "Tour suivant",
+      "explains": "{{name}} fait deviner",
+      "turnSub": "Fais deviner sans les mots interdits",
+      "turnStartSub": "La carte n'est que sur le téléphone – les mots interdits sont tabous !",
+      "skipped": "Passée",
+      "turnPoints": "{{points}} points pour {{team}}",
+      "tie": "Égalité !",
+      "teamWins": "{{team}} gagne !",
+      "against": "contre {{team}}",
+      "summary": "Bilan du tour",
+      "gameOver": "Fin de partie",
+      "preparing": "Formation des équipes …"
+    },
+    "truthdare": {
+      "cueChoice": "Action ou vérité ?",
+      "cueChoiceSub": "C'est au tour de {{name}}",
+      "cueVote": "Vote",
+      "cueVoteSub": "{{name}} a-t-il réussi ?",
+      "cueVoteSubAnon": "Réussi ou pas ?",
+      "chooses": "{{name}} choisit …",
+      "or": "ou",
+      "voteHeadline": "Réussi ?",
+      "spin": "C'est à qui ?",
+      "choice": "Choix",
+      "vote": "Vote",
+      "final": "Classement final",
+      "winner": "{{name}} gagne !"
+    },
+    "whoami": {
+      "cueAssign": "Distribution des personnages",
+      "cueAssignSub": "Chacun reçoit un personnage secret",
+      "cueTurn": "Qui suis-je ?",
+      "cueTurnSub": "{{name}} pose des questions oui/non",
+      "cueTurnSubAnon": "Pose des questions oui/non",
+      "cueGuess": "À toi de deviner",
+      "cueGuessSub": "{{name}} donne le personnage",
+      "assign": "Distribution des personnages",
+      "asking": "Questions",
+      "answering": "Réponses",
+      "guessing": "Devinette",
+      "verdict": "Verdict",
+      "final": "Classement final",
+      "assignHeadline": "Chacun reçoit un personnage secret",
+      "correct": "Bonne réponse !",
+      "wrong": "Raté !",
+      "winner": "{{name}} gagne !",
+      "preparing": "Ça commence …",
+      "guessingSub": "donne maintenant le personnage",
+      "askingSub": "pose des questions oui/non",
+      "guessHeadline": "Qui suis-je ?",
+      "guessHint": "La réponse arrive …"
+    },
+    "wordpress": {
+      "yourTurn": "C'est au tour de {{name}}",
+      "nextTurn": "Tour suivant",
+      "turnSub": "Tape les bons mots – vite !",
+      "roundDone": "Manche {{round}} réussie",
+      "gameOver": "Fin de partie",
+      "preparing": "Ça commence …",
+      "combo": "Combo ×{{count}}",
+      "accuracy": "{{pct}} % de précision",
+      "progress": "Mot {{n}} sur {{total}}",
+      "bestCombo": "meilleur combo ×{{count}}",
+      "winner": "{{name}} gagne !",
+      "points": "{{count}} points",
+      "points_one": "{{count}} point",
+      "points_other": "{{count}} points",
+      "final": "Classement final"
+    },
+    "finalStandings": "Classement final",
+    "fallback": {
+      "phase": {
+        "playing": "En cours",
+        "roundEnd": "Fin de la manche",
+        "reveal": "Révélation",
+        "voting": "Vote",
+        "results": "Résultat"
+      },
+      "roundOver": "Fin de la manche !",
+      "team": "Équipe {{n}}",
+      "isUp": "joue",
+      "truth": "💬 Vérité",
+      "dare": "🎯 Action"
     }
   }
 }

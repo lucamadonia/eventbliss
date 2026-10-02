@@ -28,10 +28,11 @@ export async function advanceHandover(host, before) {
 }
 
 /** Host-side setup screen: minimum rounds, then "Start game". Returns false if no setup screen appeared. */
-export async function hostSetup(host, game, timeout = 20000, { rounds = 'min' } = {}) {
+export async function hostSetup(host, game, timeout = 20000, { rounds = 'min', mode } = {}) {
   if (game === 'flaschendrehen') { await host.clickText('^questions only', 8000); await host.clickText('^prepare', 8000); }
   const ok = await host.page.waitForFunction(() => [...document.querySelectorAll('button')].some(b => /^(start game|start|los geht|spiel starten)/i.test(b.innerText.trim()) && !b.disabled) || document.querySelector('input[type=range]'), { timeout, polling: 200 }).then(() => true, () => false);
   if (!ok) return false;
+  if (mode) await host.clickText(`^${mode}`, 5000); // game mode tile, e.g. this-or-that "Speed" (F12)
   const ranges = await host.page.$$('input[type=range]');
   // Rounds slider is the last range: Home = shortest match, End = longest (kick tests need time).
   if (ranges.length) { await ranges.at(-1).focus(); await host.page.keyboard.press(rounds === 'max' ? 'End' : 'Home'); }

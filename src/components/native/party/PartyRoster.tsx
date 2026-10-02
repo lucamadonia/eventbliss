@@ -9,7 +9,7 @@ import {
   unbanControllerPlayer, updateControllerProfile, type PlayerProfile,
 } from '@/games/party/controller-session';
 import { MAX_PARTY_PLAYERS, suggestPlayerLook } from '@/games/party/session-schema';
-import { listStagger, partyMotion, pressable } from '@/lib/party-motion';
+import { listStagger, partyMotion, playerGlow, pressable } from '@/lib/party-motion';
 import { cn } from '@/lib/utils';
 import { KickPlayerSheet, type KickTarget } from './KickPlayerSheet';
 import { scheduleKick } from './kick-queue';
@@ -50,6 +50,10 @@ export function PartyRoster({ data, myUserId, presence, participantIds, busy }: 
     const seen = presence.find(p => p.id === member.player_id);
     if (!seen) return { text: t('partyControllers.offline'), tone: 'text-rose-200', offline: true };
     if (member.is_host) return { text: t('partyPlay.seat.host', 'Host'), tone: 'text-[#df8eff]' };
+    // During a game "bereit" means nothing: say who plays now and who joins next round.
+    if (playing) return participantIds.includes(member.player_id)
+      ? { text: t('partyPlay.seat.inGame', 'spielt gerade'), tone: 'text-[#8ff5ff]' }
+      : { text: t('partyPlay.seat.nextRound', 'ab der nächsten Runde'), tone: 'text-white/55' };
     return seen.isReady ? { text: t('partyControllers.ready'), tone: 'text-[#8ff5ff]', ready: true } : { text: t('partyControllers.notReadyYet'), tone: 'text-white/55' };
   };
   const canOpen = (member: ControllerMember) => isHost || member.user_id === myUserId;
@@ -59,13 +63,7 @@ export function PartyRoster({ data, myUserId, presence, participantIds, busy }: 
   return (
     <section className="space-y-3" aria-labelledby="roster-title">
       <div className="flex items-end justify-between gap-3">
-        <h2 id="roster-title" className="text-lg font-bold">{t('partyControllers.players', { count: members.filter(m => data.party.host_plays || !m.is_host).length })}</h2>
-        {isHost && !playing && (
-          <button type="button" data-testid="lobby-add-guest" disabled={busy || full} onClick={() => { haptics.light(); setSheet({ kind: 'add' }); }}
-            className="flex min-h-11 items-center gap-2 rounded-full bg-white/[.07] px-4 text-sm font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] active:bg-white/15 disabled:opacity-40">
-            <UserPlus className="h-4 w-4" aria-hidden />{t('partyPlay.roster.addGuest', 'Spieler ohne Handy')}
-          </button>
-        )}
+        <h2 id="roster-title" className="sr-only">{t('partyControllers.players', { count: members.filter(m => data.party.host_plays || !m.is_host).length })}</h2>
       </div>
 
       <motion.ul className="space-y-2" variants={listStagger} initial="initial" animate="animate">
@@ -81,17 +79,19 @@ export function PartyRoster({ data, myUserId, presence, participantIds, busy }: 
                 <motion.button type="button" disabled={!canOpen(member)} aria-haspopup="dialog" {...(reduced || !canOpen(member) ? {} : pressable)}
                   aria-label={`${member.name}, ${guest ? t('partyPlay.seat.hostDevice', 'am Host-Handy') : t('partyPlay.seat.phone', 'eigenes Handy')}, ${s.text}`}
                   onClick={() => { haptics.light(); setSheet({ kind: 'actions', member }); }}
-                  className={cn('flex min-h-16 w-full items-center gap-3 rounded-2xl border px-3 text-start transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff]',
+                  className={cn('flex min-h-[72px] w-full items-center gap-3 rounded-3xl border px-3 text-start transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff]',
                     mine ? 'border-[#8ff5ff]/35 bg-[#8ff5ff]/[.06]' : 'border-white/[.06] bg-white/[.04]')}>
-                  <span className="relative">
-                    <SeatAvatar avatar={member.avatar} color={member.color} size={44} dimmed={'offline' in s} />
+                  {/* Same colour glow as the TV card; it lights up when the player is ready (T04). */}
+                  <motion.span className="relative rounded-full" variants={partyMotion('avatarArrive', reduced)}
+                    style={{ boxShadow: 'offline' in s ? undefined : playerGlow(member.color, 'ready' in s ? 'active' : 'soft') }}>
+                    <SeatAvatar avatar={member.avatar} color={member.color} size={48} dimmed={'offline' in s} />
                     <span aria-hidden className="absolute -bottom-1 -end-1 grid h-5 w-5 place-items-center rounded-full bg-[#0a0e14] text-white/70"><SeatIcon guest={guest} /></span>
-                  </span>
+                  </motion.span>
                   <span className="min-w-0 flex-1">
                     <span className="flex items-center gap-1.5">
                       <strong className="truncate">{member.name}</strong>
                       {member.is_host && <Crown className="h-4 w-4 shrink-0 text-amber-300" aria-hidden />}
-                      {mine && <span className="rounded-full bg-[#8ff5ff]/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#8ff5ff]">{t('partyPlay.roster.you', 'Du')}</span>}
+                      {mine && <span className="rounded-full bg-[#8ff5ff]/15 px-2 py-0.5 text-[11px] font-bold text-[#8ff5ff]">{t('partyPlay.roster.you', 'Du')}</span>}
                     </span>
                     <span className={cn('flex items-center gap-1 text-sm', s.tone)}>
                       {'offline' in s && <WifiOff className="h-3.5 w-3.5" aria-hidden />}
@@ -105,6 +105,19 @@ export function PartyRoster({ data, myUserId, presence, participantIds, busy }: 
             );
           })}
         </AnimatePresence>
+        {/* Add-card at the end of the roster: a seat for someone without a phone. */}
+        {isHost && !playing && (
+          <motion.li layout={!reduced} variants={partyMotion('cardEnter', reduced)}>
+            <button type="button" data-testid="lobby-add-guest" disabled={busy || full} onClick={() => { haptics.light(); setSheet({ kind: 'add' }); }}
+              className="flex min-h-[72px] w-full items-center gap-3 rounded-3xl border border-dashed border-white/20 bg-white/[.02] px-3 text-start text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] active:bg-white/[.06] disabled:opacity-40">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-white/[.06]"><UserPlus className="h-5 w-5 text-[#8ff5ff]" aria-hidden /></span>
+              <span className="min-w-0 flex-1">
+                <strong className="block">{t('partyPlay.roster.addGuest', 'Spieler ohne Handy')}</strong>
+                <span className="text-sm text-white/50">{full ? t('partyPlay.roster.full', 'Die Party ist voll') : t('partyPlay.roster.addGuestShort', 'Spielt an deinem Handy mit')}</span>
+              </span>
+            </button>
+          </motion.li>
+        )}
       </motion.ul>
 
       {isHost && banned.length > 0 && (

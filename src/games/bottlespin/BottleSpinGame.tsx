@@ -18,6 +18,7 @@ import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameTimer } from '../engine/TimerSystem';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
 import { useSeatHandover } from '../multiplayer/useGuestHandover';
 import { bottleActiveSeat, dropBottlePlayers } from './guest-turns';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
@@ -30,13 +31,11 @@ import { BottleVote, BottleGameOver } from './BottlePanels';
 
 type Phase = 'setup' | 'spinning' | 'card' | 'vote' | 'gameOver';
 interface Player { id: string; name: string; color: string; avatar: string; score: number; }
-
 const PLAYER_COLORS = ['#e6b880','#ff6b98','#91b8a1','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
 const GAME_MODES: GameMode[] = [
   { id: 'fragen', name: 'Mit Fragen', desc: 'Flasche + Fragen & Aufgaben', icon: <MessageCircle className="w-6 h-6" /> },
   { id: 'nur-flasche', name: 'Nur Flasche', desc: 'Reines Flaschendrehen', icon: <Wine className="w-6 h-6" /> },
 ];
-
 const RADIUS = 130;
 
 function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
@@ -92,10 +91,11 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
 
   // 🔁 guests play their turn/vote on the host phone; the clock stands while it is passed.
   const handover = useSeatHandover(online, bottleActiveSeat(phase, players, selectedIdx, voterIdx));
+  const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, currentRound, isSpinning]); // all devices + TV switch together
   useTVGameBridge(
     'bottlespin',
     {
-      handover: handover.tv,
+      handover: handover.tv, phaseStartsAt, votedIds: Object.keys(votes), // who voted, never what
       phase, currentRound, selectedIdx, rotation, players, mode, totalRounds,
       selectedName: selectedIdx >= 0 ? players[selectedIdx]?.name ?? '' : '',
       // Task text stays hidden until the card phase (and lingers through the vote).
@@ -106,7 +106,7 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
       voteYes: Object.values(votes).filter(Boolean).length,
       voteNo: Object.values(votes).filter((v) => !v).length,
     },
-    [phase, currentRound, selectedIdx, votes, handover.tv?.playerId], !online || online.isHost);
+    [phase, currentRound, selectedIdx, votes, JSON.stringify(handover.tv), phaseStartsAt], !online || online.isHost);
 
   // The host freezes the selected language/content at match start, including replay.
   const matchCards = useRef<BottleCard[]>([]);
@@ -247,8 +247,8 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
     next: { allowed: phase === 'spinning' && !isSpinning && selectedIdx >= 0 ? 'host' : false, run: nextRoundBottleOnly },
     again: { allowed: phase === 'gameOver' ? 'host' : false, run: playAgain },
   });
-  useOnlineSnapshot(online, 'bottlespin', { phase, players, mode, timerSec, totalRounds, currentRound, selectedCategories, contentSelection, rotation, isSpinning, selectedIdx, currentCard, declined, votes, voterIdx, timeLeft: timer.timeLeft }, s => {
-    setPhase(s.phase); setPlayers(s.players); setMode(s.mode); setTimerSec(s.timerSec); setTotalRounds(s.totalRounds); setCurrentRound(s.currentRound); setSelectedCategories(s.selectedCategories); setContentSelection(s.contentSelection ?? 'mixed'); setRotation(s.rotation); setIsSpinning(s.isSpinning); setSelectedIdx(s.selectedIdx); setCurrentCard(s.currentCard); setDeclined(s.declined); setVotes(s.votes); setVoterIdx(s.voterIdx); timer.reset(s.timeLeft);
+  useOnlineSnapshot(online, 'bottlespin', { phase, players, mode, timerSec, totalRounds, currentRound, selectedCategories, contentSelection, rotation, isSpinning, selectedIdx, currentCard, declined, votes, voterIdx, timeLeft: timer.timeLeft, phaseStartsAt }, s => {
+    setPhase(s.phase); setPlayers(s.players); setMode(s.mode); setTimerSec(s.timerSec); setTotalRounds(s.totalRounds); setCurrentRound(s.currentRound); setSelectedCategories(s.selectedCategories); setContentSelection(s.contentSelection ?? 'mixed'); setRotation(s.rotation); setIsSpinning(s.isSpinning); setSelectedIdx(s.selectedIdx); setCurrentCard(s.currentCard); setDeclined(s.declined); setVotes(s.votes); setVoterIdx(s.voterIdx); timer.reset(s.timeLeft); receivePhaseStart(s.phaseStartsAt);
   });
   if (online && !online.isHost && phase === 'setup') return <OnlineWaiting />;
   if (handover.overlay) return handover.overlay; // phone in transit: only the opaque pass screen
@@ -267,8 +267,8 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
   }
 
   return (
-    <div data-phase={phase} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game overflow-hidden">
-      <style>{neonStyles}</style>
+    <div data-phase={view} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game overflow-hidden">
+      <style>{neonStyles}</style>{blocker}
 
       {/* Background aura blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -284,7 +284,7 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
             nicht entfernen: der Platzhalter hält die Kopfzeile im Gleichgewicht
             und den Platz unter dem schwebenden Pfeil frei. */}
         <button
-          onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())}
+          onClick={() => (view === 'gameOver' ? navigate('/games') : exitGuard.request())}
           className={`p-2 text-white/40 hover:text-[#e6b880] transition-colors${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
           aria-hidden={hasShellBackButton()}
           tabIndex={hasShellBackButton() ? -1 : undefined}
@@ -301,7 +301,7 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
 
       <AnimatePresence mode="wait">
         {/* SPINNING PHASE */}
-        {phase === 'spinning' && (
+        {view === 'spinning' && (
           <motion.div key="spinning" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="table-play relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4">
             <h2 className="text-xl font-extrabold">
@@ -391,7 +391,7 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
         )}
 
         {/* CARD PHASE */}
-        {phase === 'card' && currentCard && selectedPlayer && (
+        {view === 'card' && currentCard && selectedPlayer && (
           <motion.div key="card" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4 py-6">
 
@@ -477,13 +477,13 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
         )}
 
         {/* VOTE PHASE */}
-        {phase === 'vote' && selectedPlayer && (
+        {view === 'vote' && selectedPlayer && (
           <BottleVote key="vote" players={players} selectedIdx={selectedIdx} voterIdx={voterIdx} selectedName={selectedPlayer.name}
             canVote={act.can('vote')} onVote={yes => act('vote', yes)} />
         )}
 
         {/* GAME OVER */}
-        {phase === 'gameOver' && (
+        {view === 'gameOver' && (
           <BottleGameOver key="over" players={players} winner={winner} mode={mode} totalRounds={totalRounds} achievements={newAchievements}
             onDismissAchievements={clearAchievements} canAgain={act.can('again')} onAgain={() => act('again')} onOtherGame={() => navigate('/games')} />
         )}

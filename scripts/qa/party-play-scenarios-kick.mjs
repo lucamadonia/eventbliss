@@ -12,10 +12,12 @@ import { playMatch } from './party-play-games.mjs';
 const registry = fs.readFileSync('src/lib/playable-games.ts', 'utf8');
 const games = [...registry.matchAll(/\{\s*id:\s*"([^"]+)"[^}]*?minPlayers:\s*(\d+),\s*maxPlayers:\s*(\d+)[^}]*\}/g)].map(m => ({ id: m[1], min: +m[2], max: +m[3] }));
 const NAMES = ['Lena', 'Tom', 'Uwe', 'Vera', 'Wim'];
+// Matches the driver finishes within ~30 s: kick early (the baseline then cannot judge stalls).
+const FAST_GAMES = ['hochstapler', 'wer-bin-ich', 'story-builder'];
 
 /** Every broadcast payload a phone saw (room-wire unwrapped to room:<event>), newest first. */
 const broadcasts = c => c.page.evaluate(() => Object.entries(window.__qaBroadcasts ?? {}).map(([event, v]) => ({ event, at: v.at, payload: v.payload })).sort((a, z) => z.at - a.at));
-const ACTIVE_KEY = /^(current|active|turn|selected)?(player|explainer|actor|drawer|guesser|speaker|writer|asker|holder|bombHolder|turn)(Id|Idx|Index)?$/i;
+const ACTIVE_KEY = /^(current|active|selected|turn)(Player)?(Id|Idx|Index)$|^(current|active)?(player|explainer|actor|drawer|guesser|speaker|writer|asker|holder|voter|bombHolder)(Id|Idx|Index)$/i;
 /** Game roster = top-level players[] of a game payload; active = a top-level turn key (id or index into players). */
 function inspect(p) {
   if (!p || typeof p !== 'object') return null;
@@ -45,7 +47,8 @@ function kickGame(game, kickActive) {
       } });
       return { res, maxStill: Math.max(maxStill, Date.now() - still) }; };
     // Kick-active waits (≤ 25 s) until a kickable phone holds the turn.
-    const pre = await progress([m.host, ...m.phones], kickActive ? 25000 : 12000, async () => { before = await gameView(observer); return kickActive ? candidates.includes(before.active) : false; });
+    // 30 s baseline: long enough to show whether the generic driver keeps this game moving without any kick.
+    const pre = await progress([m.host, ...m.phones], FAST_GAMES.includes(game.id) ? 4000 : 30000, async () => { before = await gameView(observer); return kickActive ? candidates.includes(before.active) : false; });
     before = await gameView(observer); ctx.evidence = { ...ctx.evidence, events: before.events, keys: before.keys, activeBefore: before.active, preStillMs: pre.maxStill };
     if (pre.res.finished || pre.res.returnedToLobby) throw new Inconclusive(`${game.id} ended before the kick (${JSON.stringify(pre.res)})`);
     // Targets: K13 one non-active phone. K14 the active phone; when the game does not expose who is active,
@@ -56,8 +59,19 @@ function kickGame(game, kickActive) {
       else if (!before.active) { targets = candidates; proxy = true; ctx.notes.push(`active player not exposed in broadcasts (keys ${(before.keys ?? []).join(',')}); kicked all ${candidates.length} non-observer phones`); }
       else throw new Inconclusive('the observable active player was the host/observer for 25 s');
     } else targets = [candidates.find(id => id !== before.active) ?? candidates[0]];
+    if ((await m.host.snapshot()).room?.status !== 'playing') throw new Inconclusive(`${game.id} match already over before the kick`);
     const victims = m.phones.filter(p => targets.includes(m.ids[p.name]));
-    for (const t of targets) { rpcAt = await kickMidGame(m.host, t, 'party', { h: m.h }); m.map.delete(t); }
+    for (const [i, t] of targets.entries()) {
+      rpcAt = await kickMidGame(m.host, t, 'party', { h: m.h }); m.map.delete(t);
+      // Dropping below the minimum mid-sequence: the below-min guard must ask the host instead of hanging.
+      if (players - (i + 1) < Math.max(2, game.min)) {
+        // Either the wrapper's below-min guard asks the host, or the game ends itself (e.g. taboo: empty team → game over).
+        const seen = await m.host.waitAny(['below-min-dialog'], 8000); await m.h.shotAll(`${game.id}-below-min`);
+        if (seen) await m.host.click('below-min-abort', { timeout: 4000 }).catch(() => {}); // the game may end itself first
+        await m.host.until(async c => (await c.route()).startsWith('/party'), 'host not back in lobby after below-min', 15000);
+        ctx.notes.push(`below ${game.min} players after ${i + 1} kick(s): ${seen ? 'guard dialog → abort' : 'game ended itself'} → lobby`); return;
+      }
+    }
     // Within 5 s: removed screen on each victim, roster + turn in the game state no longer reference them.
     for (const v of victims) await v.wait('party-removed-screen', { timeout: 5000 });
     let after = null; const end = Date.now() + 5000;
@@ -78,6 +92,12 @@ function kickGame(game, kickActive) {
     const { res, maxStill } = await progress([m.host, ...m.phones.filter(p => !victims.includes(p))], 45000);
     ctx.evidence.res = res; ctx.evidence.maxStillMs = maxStill;
     if (maxStill > 10000 && !res.finished && !res.returnedToLobby) {
+      // Waiting on a PRESENT player's input (turn moved on, kicked names gone) is not a hang — the driver just can't answer.
+      const kickedNames = victims.map(v => v.name); const view = await gameView(observer);
+      const texts = await Promise.all([m.host, ...m.phones.filter(p => !victims.includes(p))].map(d => d.text().catch(() => '')));
+      const ghost = texts.some(t => kickedNames.some(n => new RegExp('\\b' + n + '\\b').test(t)));
+      if (!ghost && !view.active) throw new Inconclusive(`${game.id}: no progress for ${Math.round(maxStill / 1000)} s, but no device references the kicked player any more and the game exposes no turn — waiting on a step the driver cannot perform`);
+      if (!ghost && view.active && !targets.includes(view.active)) { ctx.notes.push(`after the kick the turn moved to a present player; then waiting for that player's input (driver limit, ${Math.round(maxStill / 1000)} s)`); return; }
       if (pre.maxStill > 10000) throw new Inconclusive(`${game.id}: the generic driver cannot move this game even before the kick (${Math.round(pre.maxStill / 1000)} s still); turn/roster checks passed`);
       throw new Error(`${game.id}: no progress for ${Math.round(maxStill / 1000)} s after the kick (it progressed before)`);
     }

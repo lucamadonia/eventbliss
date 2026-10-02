@@ -1,10 +1,16 @@
 import { GameStage } from '../ui/GameStage';
 import { TeamRail } from './TeamRail';
-import { partitionRoster, wagerPoints } from './rules';
+import { wagerPoints } from './rules';
 import { splitQuizSnapshotFor } from './private-state';
 import { useOnlineAuthority, useOnlineSnapshot, usePrivateSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { removeFromSplitQuiz } from './roster-change';
+import { assignTeams } from './guest-teams';
+import { useSplitGuests } from './useSplitGuests';
+import { localActiveSeats } from '../ui/guest-handover';
+import { serverClock } from '../party/scene-clock';
+import { planPhaseStart } from '../party/phase-gate';
+import { usePhaseGate } from '../party/usePhaseGate';
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
@@ -250,14 +256,31 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   /* ---- Round tracking for MVP ---- */
   const playerCorrectMap = useRef<Record<string, number>>({});
 
+
+
+  // 🔁-Gaeste am Host-Handy: verdeckte Weitergabe an das aktive Team (secret).
+  const guests = useSplitGuests({ online, teams: [teamA.players, teamB.players], activeTeam: activeTeamIdx, phase });
+  // Gemeinsamer Phasenstart (Serverzeit): der Host plant jeden Wechsel mit
+  // Vorlauf und schickt ihn an Handys und TV — alle wechseln gleichzeitig.
+  const [remotePhaseStartsAt, setRemotePhaseStartsAt] = useState<number | null>(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const plannedPhaseStart = useMemo(() => (online ? planPhaseStart() : serverClock.now()), [phase, currentRound, activeTeamIdx]);
+  const phaseStartsAt = online && !online.isHost ? remotePhaseStartsAt : plannedPhaseStart;
+  const gate = usePhaseGate(phase, online ? phaseStartsAt : null);
+
+  const seatInfo = (id: string) => online?.players.find(p => p.id === id);
   useTVGameBridge('splitquiz', {
     partyScoresById: online ? Object.fromEntries([teamA, teamB].flatMap(team => team.players.map(id => [id, team.score]))) : undefined,
-    phase, currentRound, players: playerNames, teamA: { ...teamA, players: teamA.players.map(nameFor) }, teamB: { ...teamB, players: teamB.players.map(nameFor) }, totalRounds,
+    phase, phaseStartsAt, currentRound, players: playerNames, teamA: { ...teamA, players: teamA.players.map(nameFor) }, teamB: { ...teamB, players: teamB.players.map(nameFor) }, totalRounds,
+    // Volle Spieler-Identitaet fuer den TV (nur Oeffentliches: Name, Symbol, Farbe, Team).
+    playerInfo: rosterIds.map(id => ({ id, name: nameFor(id), avatar: seatInfo(id)?.avatar ?? '', color: seatInfo(id)?.color ?? '', team: teamA.players.includes(id) ? 0 : teamB.players.includes(id) ? 1 : -1 })),
+    handover: guests.handover.tv,
     question: !online || (phase === 'reveal' && teamAnswered[activeTeamIdx === 0 ? 1 : 0]) ? currentQuestion?.question || '' : '',
     answers: !online || (phase === 'reveal' && teamAnswered[activeTeamIdx === 0 ? 1 : 0]) ? currentQuestion?.answers || [] : [],
-    category: currentQuestion?.category || '',
+    // Online sieht das wartende Team die Kategorie erst zur Aufloesung — der TV auch.
+    category: !online || phase === 'reveal' ? currentQuestion?.category || '' : '',
     correctAnswer: phase === 'reveal' && teamAnswered.every(Boolean) ? currentQuestion?.correct ?? -1 : -1,
-  }, [phase, currentRound, activeTeamIdx], !online || online.isHost);
+  }, [phase, currentRound, activeTeamIdx, phaseStartsAt, guests.handover.tv?.playerId ?? '', guests.handover.tv?.progress?.phase ?? '', rosterIds.join(',')], !online || online.isHost);
 
   const commitAnswerRef = useRef<(answer: number) => void>(() => {});
   /* ---- Timer ---- */
@@ -271,7 +294,8 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
-  const timer = useGameTimer(20, handleTimerExpire, !online || (online.isHost && online.isConnected !== false));
+  // Die Frage-Uhr steht, solange das Handy unterwegs ist und bis der Einblend-Takt die Eingabe freigibt.
+  const timer = useGameTimer(20, handleTimerExpire, (!online || (online.isHost && online.isConnected !== false)) && !guests.handover.isPaused && gate.inputOpen);
 
   /* ---- Derived ---- */
   const activeTeam = activeTeamIdx === 0 ? teamA : teamB;
@@ -285,7 +309,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     return {
       name,
       color,
-      players: partitionRoster(shuffled)[half],
+      // Plaetze des Host-Handys moeglichst in EIN Team (guest-teams.ts) — dann
+      // braucht es keine verdeckte Weitergabe zwischen den Teams.
+      players: assignTeams(shuffled, localActiveSeats(online))[half],
       score: 0,
       correctCount: 0,
     };
@@ -382,10 +408,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   /* ---- Shuffle teams ---- */
   function reshuffleTeams() {
     const all = [...teamA.players, ...teamB.players];
-    const shuffled = shuffle(all);
-    const mid = Math.ceil(shuffled.length / 2);
-    setTeamA(prev => ({ ...prev, players: shuffled.slice(0, mid) }));
-    setTeamB(prev => ({ ...prev, players: shuffled.slice(mid) }));
+    const [nextA, nextB] = assignTeams(shuffle(all), localActiveSeats(online));
+    setTeamA(prev => ({ ...prev, players: nextA }));
+    setTeamB(prev => ({ ...prev, players: nextB }));
   }
 
   const route = useOnlineAuthority(online, 'splitquiz', `${phase}:${currentRound}:${activeTeamIdx}`, {
@@ -398,8 +423,9 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
     chooseBet: { allow: (sender, args) => phase === "betting" && [1,2,3].includes(args[0]) && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => chooseBet(args[0]) },
   });
 
-  usePrivateSnapshot(online, 'splitquiz-state', { phase, teamA, teamB, currentRound, activeTeamIdx, currentQuestion, answerSplit, selectedAnswer, roundOutcomes, teamAnswered, totalRounds, bettingEnabled, currentBet, showBetting, playerNames, rosterIds, correctMap: playerCorrectMap.current }, (state, recipient) => splitQuizSnapshotFor(state, recipient), data => {
+  usePrivateSnapshot(online, 'splitquiz-state', { phase, phaseStartsAt, teamA, teamB, currentRound, activeTeamIdx, currentQuestion, answerSplit, selectedAnswer, roundOutcomes, teamAnswered, totalRounds, bettingEnabled, currentBet, showBetting, playerNames, rosterIds, correctMap: playerCorrectMap.current }, (state, recipient) => splitQuizSnapshotFor(state, recipient), data => {
     setPhase(data.phase);
+    setRemotePhaseStartsAt(typeof data.phaseStartsAt === 'number' ? data.phaseStartsAt : null);
     setTeamA(data.teamA);
     setTeamB(data.teamB);
     setCurrentRound(data.currentRound);
@@ -635,10 +661,16 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   /*  RENDER                                                             */
   /* ================================================================== */
 
+  // Gerendert wird die GEZEIGTE Phase (usePhaseGate) — Host, Handys und TV wechseln gleichzeitig.
+  const view = gate.shown;
+  const renderPhase = () => {
+  // Waehrend das Host-Handy weitergegeben wird, ist NUR der deckende Weitergabe-Bildschirm im DOM.
+  if (guests.handover.overlay) return <>{guests.handover.overlay}{exitDialog}</>;
+
   /* ---- SETUP ---- */
-  const myTeamName = online?.myPlayerId ?? '';
-  const myTeamIndex = teamA.players.includes(myTeamName) ? 0 : teamB.players.includes(myTeamName) ? 1 : -1;
-  if (online && phase !== 'setup' && phase !== 'gameOver' && phase !== 'reveal' && myTeamIndex !== activeTeamIdx) {
+  // Wer das Handy haelt, bestimmt, welche Team-Haelfte es zeigen darf (eigener Platz oder bestaetigter Gast).
+  const myTeamIndex = guests.holderTeam;
+  if (online && view !== 'setup' && view !== 'gameOver' && view !== 'reveal' && myTeamIndex !== activeTeamIdx) {
     return <GameStage gameId="split-quiz" className="quiz-arena min-h-[100dvh]  text-white px-5 py-10 flex flex-col items-center justify-center gap-6">
       {exitDialog}
         {arenaRail}
@@ -652,8 +684,8 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
       <p>{teamA.name}: {teamA.score} · {teamB.name}: {teamB.score}</p>
     </GameStage>;
   }
-  if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
-  if (phase === 'setup') {
+  if (view === 'setup' && online && !online.isHost) return <OnlineWaiting />;
+  if (view === 'setup') {
     return (
       <GameStage gameId="split-quiz" className="quiz-arena min-h-screen     px-4 py-6">
         <div className="mx-auto max-w-lg space-y-6">
@@ -806,7 +838,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   }
 
   /* ---- HANDOFF (pass the phone) ---- */
-  if (phase === 'handoff') {
+  if (view === 'handoff') {
     return (
       <GameStage gameId="split-quiz" className="quiz-arena arena-stacked min-h-screen flex flex-col items-center px-4">
         {exitDialog}
@@ -855,7 +887,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   }
 
   /* ---- BETTING ---- */
-  if (phase === 'betting' && showBetting && currentQuestion) {
+  if (view === 'betting' && showBetting && currentQuestion) {
     return (
       <GameStage gameId="split-quiz" className="quiz-arena arena-stacked min-h-screen flex flex-col items-center px-4">
         {exitDialog}
@@ -924,7 +956,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   }
 
   /* ---- QUESTION ---- */
-  if (phase === 'question' && currentQuestion) {
+  if (view === 'question' && currentQuestion) {
     const visibleAnswerIndices = getTeamAnswers(activeTeamIdx);
     const answerLabels = activeTeamIdx === 0 ? ['A', 'B'] : ['C', 'D'];
 
@@ -1021,7 +1053,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   }
 
   /* ---- REVEAL ---- */
-  if (phase === 'reveal' && currentQuestion) {
+  if (view === 'reveal' && currentQuestion) {
     const isCorrect = selectedAnswer === currentQuestion.correct;
     const points = wagerPoints(isCorrect, currentBet);
 
@@ -1147,7 +1179,7 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   }
 
   /* ---- GAME OVER ---- */
-  if (phase === 'gameOver') {
+  if (view === 'gameOver') {
     const winner = teamA.score >= teamB.score ? teamA : teamB;
     const loser = teamA.score >= teamB.score ? teamB : teamA;
     const isDraw = teamA.score === teamB.score;
@@ -1325,4 +1357,11 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
 
   /* Fallback */
   return exitDialog;
+  };
+
+  return <>
+    {renderPhase()}
+    {/* Einblend-Takt (Design §9): Eingaben erst ab 1200 ms nach dem Wechsel — die Weitergabe (z-90) bleibt bedienbar. */}
+    {!gate.inputOpen && <div data-testid="phase-input-gate" aria-hidden className="fixed inset-0 z-[80]" />}
+  </>;
 }

@@ -2,8 +2,16 @@ import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
 import { tvType, tvActiveRing } from '../tv-tokens';
+import { lu } from './tv-lobby-scale';
+
+/** Schein einer Ranglisten-Karte — nie undefined, damit kein alter Ring stehen bleibt. */
+export function scoreChipShadow(isActive: boolean, isLeader: boolean, color: string): string {
+  if (isActive) return String(tvActiveRing(color).boxShadow);
+  return isLeader ? `0 0 28px -8px ${color}` : 'none';
+}
 import { withPartyContext } from '../withPartyContext';
 import type { PartyNightState } from '../party-types';
+import TVPlayerAvatar from '../cinema/TVPlayerAvatar';
 
 /**
  * TVScoreboard — the shared "every player is on screen" roster for all TV views.
@@ -78,7 +86,8 @@ function TVScoreboardImpl({ players: rawPlayers, activeId, target, layout = 'str
         const status = p.status ?? (p.id === activeId ? 'active' : 'waiting');
         const isActive = status === 'active';
         const isLeader = hasScores && (p.score ?? 0) === leaderScore && leaderScore > 0;
-        const dimmed = status === 'out' || status === 'done';
+        // „Fertig“ ist ein ✓, kein Abdunkeln — nur wer ausgeschieden ist, tritt zurueck.
+        const dimmed = status === 'out';
         const pct = target ? Math.max(0, Math.min(1, (p.score ?? 0) / target)) : 0;
 
         const rank = sort === 'score' && hasScores ? i + 1 : null;
@@ -95,7 +104,8 @@ function TVScoreboardImpl({ players: rawPlayers, activeId, target, layout = 'str
             style={{
               background: isLeader ? `linear-gradient(120deg, ${p.color}1f, #140e24 60%)` : '#140e24',
               border: `1.5px solid ${isActive ? p.color : isLeader ? `${p.color}66` : 'rgba(255,255,255,0.08)'}`,
-              ...(isActive ? tvActiveRing(p.color) : isLeader ? { boxShadow: `0 0 28px -8px ${p.color}` } : {}),
+              // Immer explizit setzen: ein weggelassener Schluessel bliebe sonst stehen (Ring nach activeId=null).
+              boxShadow: scoreChipShadow(isActive, isLeader, p.color),
             }}
           >
             {showRank && (
@@ -106,13 +116,11 @@ function TVScoreboardImpl({ players: rawPlayers, activeId, target, layout = 'str
                 {rank}
               </span>
             )}
-            <div
-              className="relative shrink-0 rounded-full flex items-center justify-center font-black text-white"
-              style={{ width: 'clamp(2rem,2.6vw,2.75rem)', height: 'clamp(2rem,2.6vw,2.75rem)', fontSize: tvType.micro, background: p.color }}
-            >
-              {p.avatar || p.name?.slice(0, 1).toUpperCase()}
+            <div className="relative shrink-0">
+              {/* Dasselbe Gesicht wie im Wartebereich (Emoji aus der Teilnehmerliste). */}
+              <TVPlayerAvatar id={p.id} name={p.name} avatar={p.avatar} color={p.color} size={lu(4.4)} />
               {status === 'done' && (
-                <span className="absolute -right-1 -bottom-1 rounded-full bg-emerald-500 text-white w-4 h-4 flex items-center justify-center text-[10px]">✓</span>
+                <span className="absolute -right-1 -bottom-1 grid place-items-center rounded-full font-black" style={{ width: lu(2), height: lu(2), fontSize: lu(1.4), background: '#8ff5ff', color: '#060810' }}>✓</span>
               )}
               {status === 'out' && (
                 <span className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center text-[11px]">💀</span>
@@ -122,7 +130,7 @@ function TVScoreboardImpl({ players: rawPlayers, activeId, target, layout = 'str
             <div className="leading-tight min-w-0">
               <div className="flex items-center gap-1.5">
                 {isLeader && <span style={{ fontSize: tvType.micro }}>👑</span>}
-                <span className="font-bold text-white truncate" style={{ fontSize: tvType.micro }}>{p.name}</span>
+                <span className="font-bold text-white truncate" style={{ fontSize: lu(2.2) }}>{p.name}</span>
               </div>
               <div className="flex items-center gap-2 mt-0.5">
                 {typeof p.score === 'number' && target ? (
@@ -130,7 +138,7 @@ function TVScoreboardImpl({ players: rawPlayers, activeId, target, layout = 'str
                     <div className="h-full rounded-full origin-left" style={{ background: p.color, transform: `scaleX(${pct})` }} />
                   </div>
                 ) : null}
-                <span className="font-mono tabular-nums whitespace-nowrap" style={{ fontSize: tvType.micro, color: '#b3a8c9' }}>
+                <span className="font-bold tabular-nums whitespace-nowrap" style={{ fontSize: lu(2.2), color: '#c9bfdc' }}>
                   {typeof p.score === 'number' ? (target ? `${p.score}/${target}` : p.score) : ''}
                   {p.subtitle ? `${typeof p.score === 'number' ? ' · ' : ''}${p.subtitle}` : ''}
                 </span>

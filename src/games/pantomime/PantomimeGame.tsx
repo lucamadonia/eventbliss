@@ -75,6 +75,13 @@ import {
 import { PANTOMIME_MIX_ASSET, PANTOMIME_THEME_ASSETS } from './pantomime-theme-assets';
 import { removeFromPantomime } from './roster-change';
 import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { useSeatHandover } from '../multiplayer/useGuestHandover';
+import { localGuestIds } from '../ui/guest-handover';
+import { serverClock } from '../party/scene-clock';
+import { planPhaseStart } from '../party/phase-gate';
+import { usePhaseGate } from '../party/usePhaseGate';
+import { playerGlow } from '@/lib/party-motion';
+import { pantomimeHandoverSeat, pantomimeTvRoster, showsActorView, turnClockShouldRun } from './pantomime-guests';
 import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
 
 /**
@@ -173,8 +180,24 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
 
   const activeTeam = teams[activeTeamIdx];
   const actor = activeTeam.players[actorIdx[activeTeamIdx]] ?? null;
-  /** Auf diesem Gerät den Begriff zeigen? Offline immer, online nur beim Darsteller. */
-  const iAmActor = !isOnline || (!!myId && actor?.id === myId);
+
+  // 🔁-Gaeste am Host-Handy (sharedDevice 'turns'): Ist ein Gast Darsteller,
+  // wandert das Handy vor seinem Zug verdeckt zu ihm (Halten — der Begriff
+  // bleibt seinem Team verborgen) und danach zugedeckt zurueck.
+  const guestIds = useMemo(() => localGuestIds(online), [online]);
+  const handover = useSeatHandover(online, pantomimeHandoverSeat(phase, actor?.id, (id) => guestIds.includes(id)), { secret: true });
+  /** Auf diesem Gerät den Begriff zeigen? Offline immer, online beim Darsteller (Gast erst nach „Ich bin …“). */
+  const iAmActor = showsActorView({
+    isOnline, myId, actorId: actor?.id, activeGuest: handover.activeGuest, handoverPaused: handover.isPaused,
+  });
+
+  // Gemeinsamer Phasenstart (Design §9): Der Host plant jeden Wechsel mit
+  // Vorlauf, Handys (Snapshot) und TV (Bridge) wechseln im selben Moment.
+  const [remotePhaseStartsAt, setRemotePhaseStartsAt] = useState<number | null>(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const plannedPhaseStart = useMemo(() => (online ? planPhaseStart() : serverClock.now()), [phase, round, activeTeamIdx]);
+  const phaseStartsAt = online && !online.isHost ? remotePhaseStartsAt : plannedPhaseStart;
+  const gate = usePhaseGate(phase, online ? phaseStartsAt : null);
 
   // --- Inhalte -------------------------------------------------------------
   useEffect(() => {
@@ -355,6 +378,22 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     if (change.state.phase !== phase) setPhase(change.state.phase as Phase);
   });
 
+  // Zuguhr online erst mit dem gemeinsamen Start und nie waehrend einer Weitergabe.
+  useEffect(() => {
+    const run = turnClockShouldRun({
+      isOnline, isHost, phase, inputOpen: gate.inputOpen, handoverPaused: handover.isPaused, timeLeft: timer.timeLeft,
+    });
+    if (run === null) return;
+    if (run && !timer.isRunning) timer.start();
+    else if (!run && timer.isRunning) timer.pause();
+  }, [isOnline, isHost, phase, gate.inputOpen, handover.isPaused, timer]);
+
+  // Handys: kurze Haptik beim Phasenband (Design §9.3).
+  const shownPhase = gate.shown;
+  useEffect(() => {
+    if (isOnline && shownPhase !== 'setup') void haptics.light();
+  }, [isOnline, shownPhase, haptics]);
+
   // --- Online --------------------------------------------------------------
   const act = useCallback(
     (type: string, payload: Record<string, unknown>, run: () => void) => {
@@ -422,9 +461,10 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
   useEffect(() => {
     if (!online || !isHost) return;
     for (const recipient of online.players) {
-      if (recipient.id === online.myPlayerId) continue;
+      // Eigene 🔁-Gaeste haben kein eigenes Geraet.
+      if (recipient.id === online.myPlayerId || guestIds.includes(recipient.id)) continue;
       online.broadcastTo?.(recipient.id, 'pantomime-state', { snapshot: {
-        phase, teams, activeTeamIdx, actorIdx, round, totalRounds, mode, categories,
+        phase, phaseStartsAt, teams, activeTeamIdx, actorIdx, round, totalRounds, mode, categories,
         extrasEnabled, skipLimit, skipsUsed, extra, extraAccepted, fetchLeft,
         deck: [], deckPos: 0,
         turnResults: phase === 'turnSummary' || phase === 'gameOver' ? turnResults : turnResults.map(result => ({ ...result, word: '' })),
@@ -434,7 +474,9 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
   }, [
     online,
     isHost,
+    guestIds,
     phase,
+    phaseStartsAt,
     teams,
     activeTeamIdx,
     actorIdx,
@@ -460,6 +502,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       const s = (d as { snapshot?: Record<string, unknown> }).snapshot;
       if (!s) return;
       setPhase(s.phase as Phase);
+      setRemotePhaseStartsAt(typeof s.phaseStartsAt === 'number' ? s.phaseStartsAt : null);
       setTeams(s.teams as [Team, Team]);
       setActiveTeamIdx(s.activeTeamIdx as 0 | 1);
       setActorIdx(s.actorIdx as [number, number]);
@@ -524,10 +567,18 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
       // ob der Kochlöffel wirklich benutzt wurde.
       extra: extraAccepted && extra ? { text: extraText, kind: extra.kind } : null,
       fetchLeft: phase === 'fetch' ? fetchLeft : 0,
+      // Party-Play: gemeinsamer Phasenstart, volle Identitaet, Weitergabe.
+      phaseStartsAt,
+      actorId: actor?.id ?? null,
+      roster: pantomimeTvRoster(teams, online?.players),
+      handover: handover.tv,
       // KEIN `word` — alle schauen auf den Fernseher.
     }),
     [
       phase,
+      phaseStartsAt,
+      online?.players,
+      handover.tv,
       round,
       totalRounds,
       teams,
@@ -563,6 +614,9 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
     turnPoints,
     fetchLeft,
     teams,
+    phaseStartsAt,
+    handover.tv?.playerId ?? '',
+    handover.tv?.progress?.phase ?? '',
   ], isHost);
 
   // --- Persistenz (offline) ------------------------------------------------
@@ -693,8 +747,13 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
   }
 
   // =========================================================================
-  if (phase === 'setup' && online && !isHost) return <OnlineWaiting />;
-  if (phase === 'setup') {
+  // Gerendert wird die GEZEIGTE Phase (usePhaseGate): online wechseln Host,
+  // Handys und TV erst zum gemeinsamen Start.
+  const view = gate.shown;
+  if (view === 'setup' && online && !isHost) return <OnlineWaiting />;
+  // Waehrend das Handy wandert, ist NUR der deckende Weitergabe-Bildschirm im DOM.
+  if (handover.overlay) return <>{handover.overlay}</>;
+  if (view === 'setup') {
     return (
       <PantomimeSetup
         onStart={handleStart}
@@ -731,7 +790,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
         Ohne Ausblendung haengt der Phasenwechsel an nichts als am Zustand.
       */}
         {/* ---------------------------------------------------------------- */}
-        {phase === 'turnStart' && (
+        {view === 'turnStart' && (
           <motion.div
             key="turnStart"
             initial={{ opacity: 0, y: 12 }}
@@ -763,7 +822,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
 
         {/* ---------------------------------------------------------------- */}
         {/* Das Angebot — der Moment, in dem der Kochlöffel ins Spiel kommt.   */}
-        {phase === 'extra' && extra && (
+        {view === 'extra' && extra && (
           <motion.div
             key="extra"
             initial={{ opacity: 0, scale: 0.94 }}
@@ -814,7 +873,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
         )}
 
         {/* ---------------------------------------------------------------- */}
-        {phase === 'fetch' && extra && (
+        {view === 'fetch' && extra && (
           <motion.div
             key="fetch"
             initial={{ opacity: 0 }}
@@ -848,7 +907,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
         )}
 
         {/* ---------------------------------------------------------------- */}
-        {phase === 'playing' && (
+        {view === 'playing' && (
           <motion.div
             key="playing"
             initial={{ opacity: 0 }}
@@ -937,9 +996,14 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
               </>
             ) : (
               // Alle anderen Geräte: bloß nicht der Begriff.
+              // Design §9 „Warten“: ruhige Buehne in der Teamfarbe statt leerer Karte.
               <div
                 className="theater-audience mt-6 text-center"
-                style={{ background: PM.elevated }}
+                data-testid="pantomime-audience"
+                style={{
+                  background: `radial-gradient(circle at 50% 0%, ${activeTeam.color}2e 0%, transparent 65%), ${PM.elevated}`,
+                  boxShadow: playerGlow(activeTeam.color, 'soft'),
+                }}
               >
                 <Drama className="w-10 h-10 mx-auto" style={{ color: activeTeam.color }} />
                 <p className="mt-3 text-xl font-black">
@@ -956,7 +1020,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
         )}
 
         {/* ---------------------------------------------------------------- */}
-        {phase === 'turnSummary' && (
+        {view === 'turnSummary' && (
           <motion.div
             key="summary"
             initial={{ opacity: 0, y: 12 }}
@@ -1014,7 +1078,7 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
         )}
 
         {/* ---------------------------------------------------------------- */}
-        {phase === 'gameOver' && (
+        {view === 'gameOver' && (
           <motion.div
             key="over"
             initial={{ opacity: 0, scale: 0.96 }}
@@ -1063,6 +1127,9 @@ export default function PantomimeGame({ online }: { online?: OnlineGameProps } =
             )}
           </motion.div>
         )}
+
+      {/* Einblend-Takt (Design §9): Eingabe erst ab 1200 ms nach dem gemeinsamen Wechsel. */}
+      {!gate.inputOpen && <div data-testid="phase-input-gate" aria-hidden className="fixed inset-0 z-[80]" />}
 
       {/* Verlassen bestätigen */}
       <AnimatePresence>

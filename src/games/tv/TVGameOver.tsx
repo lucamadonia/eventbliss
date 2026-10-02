@@ -1,3 +1,4 @@
+import TVPlayerAvatar from './cinema/TVPlayerAvatar';
 import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -159,7 +160,7 @@ export default function TVGameOver({ scores, gameId }: { scores: TVScore[]; game
               >
                 {index === 0 && <span aria-hidden className="absolute inset-y-[18%] left-0 w-[3px] rounded-full" style={{ background: entry.color, boxShadow: `0 0 16px ${entry.color}` }} />}
                 <span className="w-[1.8em] shrink-0 text-center font-black tabular-nums" style={{ color: index < 3 ? [theme.warm, '#D9E1F2', '#E99A67'][index] : 'rgba(255,255,255,.3)', fontSize: tvType.label }}>{String(index + 1).padStart(2, '0')}</span>
-                <span className="grid h-[clamp(2.1rem,3vw,3.2rem)] w-[clamp(2.1rem,3vw,3.2rem)] shrink-0 place-items-center rounded-full border font-black" style={{ background: `linear-gradient(145deg,${entry.color},#0b0b16)`, borderColor: `${entry.color}b0`, fontSize: tvType.label }}>{entry.name.slice(0, 1).toUpperCase()}</span>
+                <TVPlayerAvatar name={entry.name} color={entry.color} size="clamp(2.1rem,3vw,3.2rem)" active={index === 0} />
                 <span className="min-w-0 flex-1 truncate font-black" style={{ fontSize: tvType.label }}>{entry.name}</span>
                 <span className="shrink-0 font-black tabular-nums" style={{ color: index === 0 ? theme.warm : 'rgba(255,255,255,.68)', fontSize: tvType.label }}>{entry.score.toLocaleString('de-DE')}</span>
               </motion.div>

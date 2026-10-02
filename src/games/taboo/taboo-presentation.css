@@ -9,3 +9,30 @@
 .taboo-playing .stage-footer{position:relative;bottom:auto;margin-top:0;padding-bottom:0}.taboo-playing .stage-footer .stage-action:last-child{background:linear-gradient(120deg,#00deec,#8ff5ff);color:#092127;box-shadow:0 8px 26px #00deec20}
 @media(min-width:900px){.taboo-stage.game-stage{padding-inline:max(32px,calc((100% - 1100px)/2))}}
 @media(orientation:landscape) and (max-height:540px){.taboo-playing{display:grid;grid-template-columns:minmax(180px,.75fr) minmax(0,1.25fr);gap:20px;align-items:start}.taboo-playing .stage-header{grid-column:1;grid-row:1}.taboo-stage .taboo-word-card{grid-column:2;grid-row:1 / span 3;padding:24px}.taboo-word-card h2{font-size:42px;margin-bottom:16px}.taboo-word-card li{font-size:20px;padding:8px 0}.taboo-playing .stage-footer{grid-column:1}.taboo-playing .stage-footer .stage-action{font-size:13px;min-height:66px;flex-direction:column;gap:4px}.taboo-playing .stage-header-tools{float:none;margin-bottom:12px}}
+/* Party-Play (design §9): stage on top in the explainer's light, action in the thumb zone. Seat colour only as glow, never as text. */
+.taboo-screen{display:flex;flex-direction:column;gap:20px;min-height:78dvh;max-width:720px;margin:0 auto;width:100%}
+.taboo-seat-stage{position:relative;display:flex;align-items:center;gap:18px;padding:22px 20px;border-radius:28px;background:#0d0915;border:1px solid #ffffff12;box-shadow:inset 0 1px 0 #ffffff14;overflow:hidden}
+.taboo-seat-stage::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 18% 30%,color-mix(in srgb,var(--seat) 18%,transparent),transparent 70%);opacity:.55;transition:opacity .4s}
+.taboo-seat-stage.is-mine{background:#16101f}.taboo-seat-stage.is-mine::before{opacity:1}
+.taboo-seat-stage>*{position:relative}.taboo-seat-stage.is-compact{padding:14px 16px;gap:14px;border-radius:22px}
+.taboo-avatar{display:grid;place-items:center;flex-shrink:0;border-radius:999px;line-height:1}
+.taboo-label{font-size:.8125rem;font-weight:600;color:#b6abc9}
+.taboo-stage-name{font-family:var(--font-game,inherit);font-size:clamp(2.25rem,10vw,3.5rem);font-weight:800;line-height:1.02;letter-spacing:-.03em;color:#f6efff;overflow-wrap:anywhere}
+.taboo-seat-stage.is-compact .taboo-stage-name{font-size:1.75rem}
+.taboo-stage-line{margin-top:6px;font-size:1rem;font-weight:500;color:#d9cfe6}
+.taboo-role-pill{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:7px 14px;border-radius:999px;font-size:.8125rem;font-weight:600;background:#ffffff0d;border:1px solid #ffffff1a;color:#e9dcf7}
+.taboo-role-pill.is-explainer{background:#df8eff22;border-color:#df8eff66}.taboo-role-pill.is-referee{background:#ff6e8420;border-color:#ff6e8466;color:#ffc2cd}.taboo-role-pill.is-guesser{background:#8ff5ff1a;border-color:#8ff5ff55;color:#c9fbff}
+.taboo-center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center}
+.taboo-countdown{font-family:var(--font-game,inherit);font-size:clamp(6rem,32vw,11rem);font-weight:900;line-height:1;color:#f6efff;text-shadow:0 0 50px #df8eff55}
+.taboo-card-back{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;width:min(100%,340px);aspect-ratio:3/4;border-radius:28px;color:#f6efff;font-weight:600;background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--seat) 30%,#16101f) 0 14px,#16101f 14px 28px);box-shadow:0 0 0 2px color-mix(in srgb,var(--seat) 80%,transparent),0 0 48px -8px var(--seat)}
+.taboo-card-back p{max-width:80%;padding:8px 14px;border-radius:14px;background:#060810cc}
+.taboo-hint{max-width:30rem;font-size:1rem;line-height:1.5;color:#d9cfe6}
+.taboo-thumb{margin-top:auto;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+.taboo-wait{text-align:center;font-weight:600;color:#b6abc9}
+.taboo-timer{font-size:1.75rem;font-weight:800;color:#f6efff}.taboo-timer.is-low{color:#ff9aae}
+.taboo-progress{height:5px;border-radius:999px;background:#df8eff16;overflow:hidden}.taboo-progress>span{display:block;height:100%;background:linear-gradient(90deg,#8ff5ff,#df8eff);transition:width 1s linear}
+.taboo-listen{flex:1;display:flex;align-items:center;gap:16px;min-height:16rem;padding:28px 24px;border-radius:28px;background:radial-gradient(ellipse at 50% 0,color-mix(in srgb,var(--seat) 16%,transparent),transparent 70%),#0d0915;border:1px solid #ffffff12;box-shadow:inset 0 1px 0 #ffffff14;color:#f6efff}
+.taboo-listen-title{font-size:1.75rem;font-weight:800}.taboo-listen-body{margin-top:6px;font-size:1rem;font-weight:500;color:#d9cfe6}
+.taboo-playing .stage-footer .stage-action.taboo-buzz{min-height:84px;font-size:1.25rem;font-weight:800;background:linear-gradient(120deg,#ff6e84,#ff9aae);color:#2a0710;box-shadow:0 10px 36px #ff6e8433}
+@media(prefers-reduced-motion:reduce){.taboo-progress>span,.taboo-seat-stage::before{transition:none}}
+@media(orientation:landscape) and (max-height:540px){.taboo-playing>.taboo-seat-stage,.taboo-playing>.taboo-progress{grid-column:1}.taboo-playing>.taboo-card-slot,.taboo-playing>.taboo-listen{grid-column:2;grid-row:1 / span 4;min-height:0}.taboo-screen{min-height:0}.taboo-card-back{width:200px}.taboo-countdown{font-size:6rem}}

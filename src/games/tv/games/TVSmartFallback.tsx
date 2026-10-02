@@ -1,16 +1,26 @@
-interface FallbackPlayer {name:string;score?:number;color?:string}
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { partyEase, partyMotion } from '@/lib/party-motion';
+import { useAmbientMotion } from '@/lib/useAmbientMotion';
+import { tvPanel, tvType, tvActiveRing } from '../tv-tokens';
+import { lu } from '../components/tv-lobby-scale';
+import TVScoreboard, { type TVScorePlayer } from '../components/TVScoreboard';
+import TVPlayerAvatar from '../cinema/TVPlayerAvatar';
+import type { PartyNightState } from '../party-types';
+
+interface FallbackPlayer { id?: string; name: string; score?: number; color?: string; avatar?: string }
 interface FallbackState {
+  partyNight?: PartyNightState;
   game?: string;
   phase?: string;
   category?: string;
   currentCategory?: string;
   task?: string;
   currentTask?: string;
-  currentWord?: string;
   statement?: string;
   question?: string;
   emojis?: string;
-  answer?: string;
   choiceType?: string;
   explainer?: string;
   currentPlayerIndex?: number;
@@ -21,28 +31,38 @@ interface FallbackState {
   totalRounds?: number;
   total?: number;
   activeTeamIdx?: number;
-  players?:FallbackPlayer[]; teams?:{name?:string;score?:number}[];
+  players?: FallbackPlayer[];
+  teams?: { name?: string; score?: number }[];
 }
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
 interface Props {
   gameState: FallbackState;
   drawing?: unknown[];
 }
 
-const GAME_NAMES: Record<string, string> = {
-  taboo: 'TABOO',
-  category: 'KATEGORIE',
-  impostor: 'HOCHSTAPLER',
-  whoami: 'WER BIN ICH?',
-  truthdare: 'WAHRHEIT ODER PFLICHT',
-  emojiguess: 'EMOJI RATEN',
-  wordpress: 'DRÜCK DAS WORT',
-  findit: 'WO IST WAS?',
+const ACC = { purple: '#df8eff', cyan: '#8ff5ff', amber: '#fbbf24', text: '#f1f3fc', dim: '#a8abb3', truth: '#3b82f6', dare: '#ef4444' };
+
+/** Bekannte Spielnamen (Rueckfall, falls ein Spiel ohne eigene Ansicht laeuft). */
+const GAME_NAMES: Record<string, [string, string]> = {
+  taboo: ['tvCinema.fallback.games.taboo', 'Tabu'],
+  category: ['tvCinema.fallback.games.category', 'Kategorie'],
+  impostor: ['tvCinema.fallback.games.impostor', 'Hochstapler'],
+  whoami: ['tvCinema.fallback.games.whoami', 'Wer bin ich?'],
+  truthdare: ['tvCinema.fallback.games.truthdare', 'Wahrheit oder Pflicht'],
+  emojiguess: ['tvCinema.fallback.games.emojiguess', 'Emoji raten'],
+  wordpress: ['tvCinema.fallback.games.wordpress', 'Drück das Wort'],
+  findit: ['tvCinema.fallback.games.findit', 'Wo ist was?'],
 };
 
+/**
+ * TVSmartFallback — Fernsehbild fuer Spiele ohne eigene Ansicht.
+ *
+ * GEHEIMNIS-DISZIPLIN: Das Spiel ist hier unbekannt, also kann diese Ansicht
+ * nicht wissen, welche Felder geheim sind. Sie zeigt deshalb nur, was in jedem
+ * Spiel oeffentlich ist (Runde, wer dran ist, Teams, Kategorie, eine
+ * Aufgabe/Frage, Emoji-Raetsel) — NIE `answer`, `currentWord`, Loesungen
+ * oder Rollen, auch wenn ein Spiel sie mitschickt.
+ */
 function extractTVState(gs: FallbackState) {
   const players = gs.players || [];
   const currentIdx = gs.currentPlayerIndex ?? gs.activeIdx ?? gs.currentPlayerIdx ?? null;
@@ -58,295 +78,165 @@ function extractTVState(gs: FallbackState) {
     activeTeamIdx: gs.activeTeamIdx ?? null,
     explainer: gs.explainer || null,
     category: gs.category || gs.currentCategory || '',
-    task: gs.task || gs.currentTask || gs.currentWord || '',
+    task: gs.task || gs.currentTask || '',
     statement: gs.statement || gs.question || '',
     emojis: gs.emojis || '',
-    answer: gs.answer || '',
     choiceType: gs.choiceType || null,
   };
 }
 
-const glass = {
-  background: 'rgba(255,255,255,0.04)',
-  backdropFilter: 'blur(16px)',
-  border: '1px solid rgba(255,255,255,0.08)',
-};
-
 export default function TVSmartFallback({ gameState }: Props) {
   const { t } = useTranslation();
+  const reduced = !!useReducedMotion();
+  const ambient = useAmbientMotion();
   const tv = useMemo(() => extractTVState(gameState), [gameState]);
-  const displayName = GAME_NAMES[tv.gameName] || tv.gameName.toUpperCase();
+  const named = GAME_NAMES[tv.gameName];
+  const displayName = named ? t(named[0], named[1]) : tv.gameName;
   const hasScores = tv.players.some((p) => typeof p.score === 'number');
-  const sortedPlayers = useMemo(
-    () => hasScores ? [...tv.players].sort((a, b) => (b.score ?? 0) - (a.score ?? 0)) : tv.players,
-    [tv.players, hasScores],
-  );
 
-  // Phase overlay
+  const phaseText: Record<string, string> = {
+    playing: t('tvCinema.fallback.phase.playing', 'Läuft'),
+    roundEnd: t('tvCinema.fallback.phase.roundEnd', 'Runde vorbei'),
+    reveal: t('tvCinema.fallback.phase.reveal', 'Auflösung'),
+    voting: t('tvCinema.fallback.phase.voting', 'Abstimmung'),
+    results: t('tvCinema.fallback.phase.results', 'Ergebnis'),
+  };
+  const phaseLabel = phaseText[tv.phase] ?? null;
+
+  // Kurzer Zwischentitel bei Rundenende — als Szene mit dunkler Freiflaeche.
   const [phaseFlash, setPhaseFlash] = useState('');
   const [prevPhase, setPrevPhase] = useState(tv.phase);
   useEffect(() => {
-    if (tv.phase !== prevPhase) {
-      setPrevPhase(tv.phase);
-      if (tv.phase === 'roundEnd') setPhaseFlash('RUNDE VORBEI!');
-      else if (tv.phase === 'gameOver') setPhaseFlash('SPIELENDE!');
-      else setPhaseFlash('');
-    }
-  }, [tv.phase, prevPhase]);
+    if (tv.phase === prevPhase) return;
+    setPrevPhase(tv.phase);
+    setPhaseFlash(tv.phase === 'roundEnd' ? t('tvCinema.fallback.roundOver', 'Runde vorbei!') : '');
+  }, [tv.phase, prevPhase, t]);
   useEffect(() => {
     if (!phaseFlash) return;
-    const t = setTimeout(() => setPhaseFlash(''), 2200);
-    return () => clearTimeout(t);
+    const id = setTimeout(() => setPhaseFlash(''), 2200);
+    return () => clearTimeout(id);
   }, [phaseFlash]);
 
+  const scorePlayers = useMemo<TVScorePlayer[]>(() => tv.players.map((p, i) => ({
+    id: p.id || p.name || String(i), name: p.name, color: p.color || ACC.purple, score: p.score, avatar: p.avatar,
+  })), [tv.players]);
+  const current = tv.currentPlayer;
+  const currentId = current ? current.id || current.name : null;
+  const pill = (text: string, color: string) => (
+    <div className="rounded-full px-[1.4vw] py-[0.8vh]" style={{ background: `${color}1a`, border: `1px solid ${color}4d` }}>
+      <span className="font-bold" style={{ fontSize: lu(2.4), color }}>{text}</span>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden font-game">
+    <div className="relative flex h-screen flex-col overflow-hidden px-[5vw] pb-[5vh] pt-[5vh] font-game" style={{ background: '#060810', color: ACC.text }}>
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: `radial-gradient(ellipse 60% 50% at 50% 45%, ${ACC.purple}14 0%, transparent 70%)` }} />
 
-      {/* ── Top Bar ── */}
-      <div className="flex items-center justify-between px-10 py-6 relative z-10">
-        <h1
-          className="text-3xl font-black italic"
-          style={{
-            background: 'linear-gradient(135deg, #df8eff 0%, #8ff5ff 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 18px rgba(223,142,255,0.4))',
-          }}
-        >
-          {displayName}
-        </h1>
-
+      {/* Kopfzeile: Spiel + Phase links, Runde rechts — die Mitte bleibt fuer die Uebergabe frei. */}
+      <div className="relative z-10 flex shrink-0 items-center justify-between">
+        <div className="flex items-center gap-[1vw]">
+          {displayName && (
+            <span className="font-black italic" style={{ fontSize: lu(3), color: ACC.purple, textShadow: `0 0 24px ${ACC.purple}55` }}>{displayName}</span>
+          )}
+          <AnimatePresence mode="wait">
+            {phaseLabel && (
+              <motion.div key={tv.phase} variants={partyMotion('phaseTitleSweep', reduced)} initial="initial" animate="animate" exit="exit">
+                {pill(phaseLabel, ACC.cyan)}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
         {tv.round > 0 && (
-          <motion.div
-            key={tv.round}
-            className="px-5 py-2 rounded-full"
-            style={glass}
-            initial={{ scale: 0.7, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-          >
-            <span className="text-xl font-bold text-[#f1f3fc]" style={{ fontVariantNumeric: 'tabular-nums' }}>
-              RUNDE {tv.round}{tv.totalRounds ? `/${tv.totalRounds}` : ''}
+          <div className={`${tvPanel} px-[1.4vw] py-[0.8vh]`}>
+            <span className="font-bold tabular-nums" style={{ fontSize: lu(2.4), color: ACC.dim }}>
+              {tv.totalRounds
+                ? t('tvCinema.roundOf', 'Runde {{round}} von {{total}}', { round: tv.round, total: tv.totalRounds })
+                : t('tvCinema.round', 'Runde {{round}}', { round: tv.round })}
             </span>
-          </motion.div>
+          </div>
         )}
-
-        <motion.div
-          key={tv.phase}
-          className="px-4 py-2 rounded-full"
-          style={{ ...glass, borderColor: 'rgba(143,245,255,0.2)' }}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-        >
-          <span className="text-xl font-semibold text-[#8ff5ff]">{tv.phase.toUpperCase()}</span>
-        </motion.div>
       </div>
 
-      {/* ── Center Area ── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-10 relative z-10">
+      {/* Mitte */}
+      <div className="relative z-10 flex min-h-0 flex-1 flex-col items-center justify-center gap-[2.4vh]">
         <AnimatePresence mode="wait">
-
-          {/* Teams display (taboo-style) */}
           {tv.teams ? (
-            <motion.div key="teams" className="flex gap-10 items-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              {tv.teams.map((team, i: number) => {
+            <motion.div key="teams" className="flex items-end gap-[3vw]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {tv.teams.map((team, i) => {
                 const isActive = i === tv.activeTeamIdx;
                 return (
-                  <motion.div
-                    key={i}
-                    className="flex flex-col items-center gap-4 px-10 py-8 rounded-3xl"
-                    style={{
-                      ...glass,
-                      ...(isActive ? { boxShadow: '0 0 40px rgba(223,142,255,0.3)', borderColor: 'rgba(223,142,255,0.3)' } : {}),
-                    }}
-                    animate={isActive ? { scale: [1, 1.03, 1] } : {}}
-                    transition={isActive ? { repeat: Infinity, duration: 2, ease: 'easeInOut' } : {}}
-                  >
-                    <span className="text-3xl font-black text-[#f1f3fc]">{team.name || `Team ${i + 1}`}</span>
-                    <span className="text-6xl font-black" style={{ color: isActive ? '#df8eff' : '#a8abb3', fontVariantNumeric: 'tabular-nums' }}>
+                  <motion.div key={i} className={`${tvPanel} flex flex-col items-center gap-[1.4vh] px-[3vw] py-[3vh]`}
+                    style={isActive ? tvActiveRing(ACC.purple) : undefined}
+                    animate={isActive && ambient ? { scale: [1, 1.03, 1] } : { scale: 1 }}
+                    transition={isActive && ambient ? { repeat: Infinity, duration: 2, ease: 'easeInOut' } : { duration: 0.3 }}>
+                    <span className="font-black" style={{ fontSize: tvType.title, color: ACC.text }}>
+                      {team.name || t('tvCinema.fallback.team', 'Team {{n}}', { n: i + 1 })}
+                    </span>
+                    <span className="font-black tabular-nums" style={{ fontSize: tvType.hero, color: isActive ? ACC.purple : ACC.dim, lineHeight: 1 }}>
                       {team.score ?? 0}
                     </span>
                   </motion.div>
                 );
               })}
             </motion.div>
-          ) : tv.currentPlayer ? (
-            /* Current player display */
-            <motion.div
-              key={`player-${tv.currentPlayerIndex}`}
-              className="flex flex-col items-center gap-4"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-            >
-              {/* Avatar circle */}
-              <motion.div
-                className="w-32 h-32 rounded-full flex items-center justify-center text-6xl font-black text-white"
-                style={{
-                  background: `${tv.currentPlayer.color || '#df8eff'}22`,
-                  border: `4px solid ${tv.currentPlayer.color || '#df8eff'}`,
-                  boxShadow: `0 0 30px ${tv.currentPlayer.color || '#df8eff'}44`,
-                }}
-                animate={{ boxShadow: [
-                  `0 0 20px ${tv.currentPlayer.color || '#df8eff'}33`,
-                  `0 0 40px ${tv.currentPlayer.color || '#df8eff'}55`,
-                  `0 0 20px ${tv.currentPlayer.color || '#df8eff'}33`,
-                ]}}
-                transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
-              >
-                {(tv.currentPlayer.name || '?')[0].toUpperCase()}
-              </motion.div>
-
-              {/* Name */}
-              <h2 className="text-5xl font-black" style={{ color: tv.currentPlayer.color || '#df8eff' }}>
-                {tv.currentPlayer.name}
-              </h2>
-              <span className="text-2xl font-medium text-[#a8abb3] tracking-widest">IST DRAN</span>
-
-              {/* Explainer sub-label */}
+          ) : current ? (
+            <motion.div key={`player-${currentId}`} className="flex flex-col items-center gap-[1.6vh]"
+              variants={partyMotion('spotlight', reduced)} initial="initial" animate="animate" exit="exit">
+              <TVPlayerAvatar id={current.id} name={current.name} avatar={current.avatar} color={current.color} size={lu(16)} active />
+              <h2 className="font-black" style={{ fontSize: tvType.display, color: '#fff' }}>{current.name}</h2>
+              <span className="font-semibold" style={{ fontSize: tvType.body, color: ACC.dim }}>{t('tvCinema.fallback.isUp', 'ist dran')}</span>
               {tv.explainer && (
-                <span className="text-xl text-[#8ff5ff] mt-2">{t('tv.explainedBy')} <b>{tv.explainer}</b></span>
+                <span style={{ fontSize: tvType.body, color: ACC.cyan }}>{t('tv.explainedBy', 'Erklärt:')} <b>{tv.explainer}</b></span>
               )}
             </motion.div>
           ) : (
-            <motion.div key="idle" className="text-3xl text-[#a8abb3]" animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 2 }}>
-              {t('tv.waitingForPlayers')}…
+            <motion.div key="idle" style={{ fontSize: tvType.title, color: ACC.dim }}
+              animate={ambient ? { opacity: [0.4, 1, 0.4] } : { opacity: 0.8 }} transition={ambient ? { repeat: Infinity, duration: 2 } : { duration: 0.3 }}>
+              {t('tv.waitingForPlayers', 'Warte auf Spieler…')}
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Category pill */}
-        {tv.category && (
-          <motion.div
-            className="mt-8 px-8 py-3 rounded-full"
-            style={glass}
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-          >
-            <span className="text-2xl font-semibold text-[#8ff5ff]">{tv.category}</span>
-          </motion.div>
-        )}
+        {tv.category && pill(tv.category, ACC.cyan)}
 
-        {/* Emoji puzzle display */}
         {tv.emojis && (
-          <motion.div
-            key={tv.emojis}
-            className="mt-6 flex flex-col items-center gap-3"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          >
-            <span className="text-7xl">{tv.emojis}</span>
-            {tv.answer && (
-              <motion.span
-                className="text-3xl font-bold text-[#10b981]"
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-              >
-                {tv.answer}
-              </motion.span>
-            )}
-          </motion.div>
+          <motion.span key={tv.emojis} style={{ fontSize: tvType.hero, lineHeight: 1.1 }}
+            initial={reduced ? { opacity: 0 } : { scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.4, ease: partyEase.out }}>
+            {tv.emojis}
+          </motion.span>
         )}
 
-        {/* Statement / Question display */}
         {tv.statement && !tv.emojis && (
-          <motion.div
-            key={tv.statement}
-            className="mt-6 px-10 py-6 rounded-2xl max-w-4xl text-center"
-            style={glass}
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 250, damping: 20 }}
-          >
-            <p className="text-3xl font-bold text-[#f1f3fc]" style={{ textShadow: '0 0 20px rgba(223,142,255,0.2)' }}>
-              {tv.statement}
-            </p>
+          <motion.div key={tv.statement} className={`${tvPanel} max-w-[70vw] px-[3vw] py-[2.4vh] text-center`}
+            initial={reduced ? { opacity: 0 } : { scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.4, ease: partyEase.out }}>
+            <p className="font-bold" style={{ fontSize: tvType.title, color: ACC.text }}>{tv.statement}</p>
           </motion.div>
         )}
 
-        {/* Choice type badge (truth/dare) */}
-        {tv.choiceType && (
-          <motion.div
-            className="mt-4 px-6 py-2 rounded-full"
-            style={{ ...glass, borderColor: tv.choiceType === 'truth' ? 'rgba(59,130,246,0.3)' : 'rgba(239,68,68,0.3)' }}
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-          >
-            <span className="text-xl font-bold" style={{ color: tv.choiceType === 'truth' ? '#3b82f6' : '#ef4444' }}>
-              {tv.choiceType === 'truth' ? '💬 WAHRHEIT' : '🎯 PFLICHT'}
-            </span>
-          </motion.div>
+        {tv.choiceType && pill(
+          tv.choiceType === 'truth' ? t('tvCinema.fallback.truth', '💬 Wahrheit') : t('tvCinema.fallback.dare', '🎯 Pflicht'),
+          tv.choiceType === 'truth' ? ACC.truth : ACC.dare,
         )}
 
-        {/* Task / Current word */}
         {tv.task && (
-          <motion.p
-            className="mt-5 text-xl text-[#f1f3fc]/80 text-center max-w-3xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            {tv.task}
-          </motion.p>
+          <p className="max-w-[60vw] text-center font-semibold" style={{ fontSize: tvType.body, color: ACC.text }}>{tv.task}</p>
         )}
       </div>
 
-      {/* ── Bottom Scoreboard ── */}
       {hasScores && (
-        <div className="px-10 pb-8 relative z-10">
-          <div className="flex gap-3 justify-center flex-wrap">
-            {sortedPlayers.map((p, i: number) => {
-              const isCurrent = tv.currentPlayer?.name === p.name;
-              const clr = p.color || '#df8eff';
-              return (
-                <motion.div
-                  key={p.name || i}
-                  className="flex flex-col items-center px-5 py-3 rounded-xl min-w-[100px]"
-                  style={{
-                    ...glass,
-                    borderTop: `3px solid ${clr}`,
-                    ...(isCurrent ? { boxShadow: `0 0 20px ${clr}33` } : {}),
-                  }}
-                  layout
-                >
-                  <span className="text-xl font-bold text-[#f1f3fc] truncate max-w-[120px]">{p.name}</span>
-                  <motion.span
-                    className="text-3xl font-black mt-1"
-                    style={{ color: clr, fontVariantNumeric: 'tabular-nums' }}
-                    key={p.score}
-                    initial={{ scale: 1.3 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: 'spring', stiffness: 400 }}
-                  >
-                    {p.score ?? 0}
-                  </motion.span>
-                </motion.div>
-              );
-            })}
-          </div>
+        <div className="relative z-10 shrink-0">
+          <TVScoreboard party={gameState?.partyNight} players={scorePlayers} activeId={currentId} />
         </div>
       )}
 
-      {/* ── Phase Overlay ── */}
       <AnimatePresence>
         {phaseFlash && (
-          <motion.div
-            className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <motion.h1
-              className="text-8xl font-black italic text-[#f1f3fc]"
-              style={{ textShadow: '0 0 60px rgba(223,142,255,0.6), 0 0 120px rgba(143,245,255,0.3)' }}
-              initial={{ scale: 0.3, opacity: 0 }}
-              animate={{ scale: [0.3, 1.15, 1], opacity: [0, 1, 1] }}
-              exit={{ scale: 1.4, opacity: 0 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-            >
+          <motion.div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center"
+            style={{ background: 'radial-gradient(ellipse 50% 40% at 50% 50%, rgba(6,8,16,0.92) 40%, rgba(6,8,16,0.6) 75%, transparent 100%)' }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
+            <motion.h1 className="font-black italic" style={{ fontSize: tvType.display, color: ACC.text, textShadow: `0 0 60px ${ACC.purple}99` }}
+              initial={reduced ? { opacity: 0 } : { scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
+              exit={{ opacity: 0 }} transition={{ duration: 0.45, ease: partyEase.out }}>
               {phaseFlash}
             </motion.h1>
           </motion.div>

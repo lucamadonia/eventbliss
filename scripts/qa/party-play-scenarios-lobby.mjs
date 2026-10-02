@@ -5,7 +5,8 @@ import { seedResult } from './party-play-scenarios-join.mjs';
 
 const own = async (host, phone) => (await memberBy(host, m => m.user_id === phone.account)).player_id;
 async function openEditor(c, pid) {
-  if (await c.exists('profile-editor')) return;
+  // A just-saved editor is still animating out; only reuse one that is really staying open.
+  if (await c.exists('profile-editor')) { await pause(900); if (await c.exists('profile-editor')) return; }
   await rowAction(c, pid, `lobby-edit-${pid}`); await c.wait('profile-editor');
 }
 async function pickOther(c, kind) {
@@ -43,7 +44,7 @@ export const lobbyScenarios = [
     need('profile-name', 'profile-save', 'lobby-edit-');
     const { h } = ctx; const { host, code } = await createParty(h); const tv = await connectTv(h, host); const lena = await joinPhone(h, ctx, host, code, 'Lena'); const pid = await own(host, lena);
     // Read the server directly: the host's own copy only refreshes on its poll.
-    const attempt = async name => { await openEditor(lena, pid); await lena.type('profile-name', name); const disabled = await lena.page.$eval('[data-testid="profile-save"]', b => b.disabled); if (!disabled) await lena.click('profile-save'); await pause(1200); if (disabled) await lena.page.keyboard.press('Escape'); const read = await lena.request('read', code); return { disabled, error: await lena.attr('profile-error', 'data-error-code'), saved: read.data.members.find(m => m.player_id === pid).name }; };
+    const attempt = async name => { await openEditor(lena, pid); await lena.type('profile-name', name); await lena.wait('profile-save'); const disabled = await lena.page.$eval('[data-testid="profile-save"]', b => b.disabled); if (!disabled) await lena.click('profile-save'); await pause(1200); if (disabled) await lena.page.keyboard.press('Escape'); const read = await lena.request('read', code); return { disabled, error: await lena.attr('profile-error', 'data-error-code'), saved: read.data.members.find(m => m.player_id === pid).name }; };
     const empty = await attempt('   '); assert(empty.saved === 'Lena' && (empty.disabled || empty.error), 'whitespace name accepted');
     const long = await attempt('A'.repeat(30)); assert(long.saved.length <= 24, `>24 chars saved (${long.saved.length})`);
     const emoji = await attempt('Lena 🎉'); assert(emoji.saved === 'Lena 🎉', 'emoji name rejected');
@@ -100,7 +101,7 @@ export const lobbyScenarios = [
     need('lobby-start');
     const { h } = ctx; const { host, code } = await createParty(h); const lena = await joinPhone(h, ctx, host, code, 'Lena'); await joinPhone(h, ctx, host, code, 'Tom'); await ready(lena);
     await host.page.evaluate(() => controllerQA.playlist(['this-or-that'])); await pause(1500);
-    const disabled = await host.page.$eval('[data-testid="lobby-start"]', b => b.disabled || b.getAttribute('aria-disabled') === 'true');
+    await host.wait('lobby-start'); const disabled = await host.page.$eval('[data-testid="lobby-start"]', b => b.disabled || b.getAttribute('aria-disabled') === 'true');
     const reason = await host.attr('lobby-start', 'data-disabled-reason') ?? await host.text(); await h.shotAll('not-ready');
     assert(disabled, 'start enabled although Tom is not ready'); assert(/Tom/.test(reason) && !/Lena/.test(await host.attr('lobby-start', 'data-disabled-reason') ?? ''), `reason does not name exactly the missing player: ${reason?.slice(0, 120)}`);
   } },
@@ -126,7 +127,7 @@ export const lobbyScenarios = [
     need('lobby-start');
     const { h } = ctx; const { host, code } = await createParty(h); await addGuest(ctx, host, code, 'Max'); await addGuest(ctx, host, code, 'Gerda');
     await host.page.evaluate(() => controllerQA.playlist(['brew'])); await pause(1500);
-    const disabled = await host.page.$eval('[data-testid="lobby-start"]', b => b.disabled || b.getAttribute('aria-disabled') === 'true');
+    await host.wait('lobby-start'); const disabled = await host.page.$eval('[data-testid="lobby-start"]', b => b.disabled || b.getAttribute('aria-disabled') === 'true');
     ctx.evidence.reason = await host.attr('lobby-start', 'data-disabled-reason'); await h.shotAll('too-few');
     assert(disabled && ctx.evidence.reason, 'brew startable with only the host active (guests sit out)');
   } },

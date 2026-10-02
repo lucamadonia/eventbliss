@@ -6,18 +6,8 @@ import { partyEase, playerGlow } from '@/lib/party-motion';
 import type { TvHandover } from '@/games/ui/guest-handover';
 import { lu } from './tv-lobby-scale';
 
-/** Prueft `handover` aus dem Spielzustand — oeffentliche Daten, aber trotzdem Leitung. */
-export function parseTvHandover(value: unknown): TvHandover | null {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-  const raw = value as Record<string, unknown>;
-  if (typeof raw.playerId !== 'string' || !raw.playerId || typeof raw.name !== 'string' || !raw.name.trim()) return null;
-  return {
-    playerId: raw.playerId.slice(0, 128),
-    name: raw.name.trim().slice(0, 40),
-    avatar: typeof raw.avatar === 'string' ? raw.avatar.slice(0, 16) : '',
-    color: typeof raw.color === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(raw.color) ? raw.color : '#df8eff',
-  };
-}
+// Pruefung der Leitung lebt in cinema/tv-handover (rein, getestet).
+export { parseTvHandover } from '../cinema/tv-handover';
 
 /**
  * T07 „Gast ist dran“ — generisch fuer jedes Spiel, das `handover` in seinen
@@ -38,7 +28,8 @@ export default function TVHandoverBanner({ handover, onCue }: { handover: TvHand
   }, [handover?.playerId]);
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 z-40 flex justify-center" style={{ insetBlockEnd: '5vh', paddingInline: '5vw' }}>
+    // Oben mittig: unten liegen Ranglisten-Leisten und der Nachzuegler-QR.
+    <div className="pointer-events-none fixed inset-x-0 z-40 flex justify-center" style={{ insetBlockStart: '5vh', paddingInline: '22vw' }}>
       <AnimatePresence mode="wait">
         {handover && (
           <motion.div
@@ -47,22 +38,45 @@ export default function TVHandoverBanner({ handover, onCue }: { handover: TvHand
             data-player-id={handover.playerId}
             role="status"
             aria-live="polite"
-            className="flex min-w-0 items-center rounded-full border border-white/10 bg-[#0d0915]/92 font-black text-white"
-            style={{ gap: lu(1.4), paddingBlock: lu(1), paddingInlineStart: lu(1.1), paddingInlineEnd: lu(2.8), fontSize: lu(2.8), boxShadow: `${playerGlow(handover.color, 'active')}, 0 24px 70px -20px rgba(0,0,0,0.85)` }}
-            initial={reduced ? { opacity: 0 } : { opacity: 0, y: 30, scale: 0.94 }}
+            className="relative flex min-w-0 items-center overflow-hidden rounded-full border border-white/10 bg-[#0d0915]/92 font-black text-white"
+            style={{ gap: lu(1.6), paddingBlock: lu(1), paddingInlineStart: lu(1.1), paddingInlineEnd: lu(3), fontSize: lu(2.8), boxShadow: `${playerGlow(handover.color, 'active')}, 0 24px 70px -20px rgba(0,0,0,0.85)` }}
+            initial={reduced ? { opacity: 0 } : { opacity: 0, y: -30, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reduced ? { opacity: 0 } : { opacity: 0, y: 16, transition: { duration: 0.26, ease: partyEase.exit } }}
+            exit={reduced ? { opacity: 0 } : { opacity: 0, y: -16, transition: { duration: 0.26, ease: partyEase.exit } }}
             transition={{ duration: 0.5, ease: partyEase.out }}
           >
-            <span
-              className="grid shrink-0 place-items-center rounded-full leading-none"
-              style={{ width: lu(5.6), height: lu(5.6), fontSize: lu(3.4), background: `radial-gradient(circle at 35% 30%, ${handover.color}66, ${handover.color}24 70%)` }}
-              aria-hidden
-            >
-              {handover.avatar}
+            {/* Lichtkante beim Auftritt — einmal, nur transform. */}
+            {!reduced && (
+              <motion.span aria-hidden className="pointer-events-none absolute inset-y-0 w-1/3"
+                style={{ background: `linear-gradient(90deg, transparent, ${handover.color}33, transparent)` }}
+                initial={{ x: '-120%' }} animate={{ x: '420%' }} transition={{ duration: 1.2, ease: partyEase.inOut, delay: 0.15 }} />
+            )}
+            <span className="relative grid shrink-0 place-items-center" style={{ width: lu(6.4), height: lu(6.4) }} aria-hidden>
+              {/* Wartering: dreht sich, bis die Person „Ich bin …“ bestaetigt hat. */}
+              <motion.span className="absolute inset-0 rounded-full"
+                style={{
+                  background: `conic-gradient(from 0deg, ${handover.color}, transparent 35%, transparent 65%, ${handover.color})`,
+                  WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px))',
+                  mask: 'radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 2px))',
+                }}
+                animate={reduced ? undefined : { rotate: 360 }} transition={{ duration: 2.4, repeat: Infinity, ease: 'linear' }} />
+              <span className="grid place-items-center rounded-full leading-none"
+                style={{ width: lu(5.4), height: lu(5.4), fontSize: lu(3.3), background: `radial-gradient(circle at 35% 30%, ${handover.color}66, ${handover.color}24 70%)` }}>
+                {handover.avatar}
+              </span>
             </span>
-            <span className="min-w-0 truncate">
-              {t('partyPlay.tv.handover', '{{name}} spielt am Host-Handy …', { name: handover.name })}
+            <span className="relative flex min-w-0 flex-col">
+              <span className="font-bold uppercase text-white/55" style={{ fontSize: lu(1.9), letterSpacing: '0.2em' }}>
+                {t('partyPlay.tv.handoverEyebrow', 'Handy weitergeben')}
+              </span>
+              <span className="min-w-0 truncate leading-tight">
+                {t('partyPlay.tv.handover', '{{name}} spielt am Host-Handy …', { name: handover.name })}
+              </span>
+              {handover.next && (
+                <span data-testid="tv-handover-next" className="truncate font-semibold text-white/60" style={{ fontSize: lu(2) }}>
+                  {t('partyPlay.tv.nextUp', 'Als Nächstes: {{name}}', { name: handover.next.name })}
+                </span>
+              )}
             </span>
             <Repeat2 aria-hidden strokeWidth={2.5} className="shrink-0 text-[#df8eff]" style={{ width: lu(3), height: lu(3) }} />
           </motion.div>

@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { QRCodeSVG } from 'qrcode.react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, Check, Download, Loader2, PartyPopper, Tv } from 'lucide-react';
+import { ArrowLeft, Download, Loader2, PartyPopper } from 'lucide-react';
 import { useAuthContext } from '@/components/auth/AuthProvider';
 import { useGameRoom } from '@/games/multiplayer/useGameRoom';
 import {
@@ -13,8 +11,7 @@ import {
 import { needsClientUpdate } from '@/games/party/controller-api';
 import { controllerErrorCode, describeControllerError } from '@/games/party/controller-errors';
 import { playableGames } from '@/lib/playable-games';
-import { getBaseUrl, isNative } from '@/lib/platform';
-import { checkPop, partyMotion } from '@/lib/party-motion';
+import { isNative } from '@/lib/platform';
 import { usePartySession } from '@/hooks/usePartySession';
 import { PartyStandingsList } from './PartyStandingsList';
 import { derivePartyStandings } from '@/games/party/standings';
@@ -28,6 +25,16 @@ import { PartyClosingScreen } from './PartyClosingScreen';
 import { PartyConfirmSheet } from './PartyConfirmSheet';
 import { PartyRemovedNotice } from './PartyRemovedNotice';
 import { PartyRoster } from './PartyRoster';
+import { PartyLobbyHeader } from './PartyLobbyHeader';
+import { PartyReadyBar } from './PartyReadyBar';
+import { PartyInviteCard, PartyTvTile } from './PartyInviteCard';
+import { HostStartBar } from './HostStartBar';
+import { PartyBottomBarSpacer } from './PartyBottomBar';
+import { NextGameCard } from './NextGameCard';
+import { useNextGame } from './useNextGame';
+import { WaitingFor } from './WaitingFor';
+import { SeatAvatar } from './PartySheet';
+import { playerGlow } from '@/lib/party-motion';
 import { usePartyScreenTrace } from './ui-trace';
 import { useControllerTvLobby } from './useControllerTvLobby';
 
@@ -43,7 +50,6 @@ export default function ControllerPartyLobby() {
   const room = useGameRoom();
   const party = usePartySession();
   const tv = useTVContext();
-  const reduced = !!useReducedMotion();
   const [finaleSeen, setFinaleSeen] = useState(0);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const [switchDevice, setSwitchDevice] = useState<string | null>(null);
@@ -57,11 +63,18 @@ export default function ControllerPartyLobby() {
   const ended = data?.party.status === 'finished';
   const playing = data?.party.status === 'playing';
   const notReady = roster.filter(member => member.controlled_by == null && !room.players.some(player => player.id === member.player_id && player.isReady)).map(member => member.name);
-  const readyCount = roster.length - notReady.length;
+  // Who counts as ready on the stage: phones that tapped (Host included), plus guests at the Host's phone.
+  const readyIds = new Set(roster.filter(member => member.controlled_by != null
+    || room.players.some(player => player.id === member.player_id && player.isReady)).map(member => member.player_id));
   const me = ownMember(data, auth.user?.id);
   const pendingClaim = data ? myPendingClaim(data) : null;
   const inMatch = !!room.room?.participantIds.includes(room.myPlayerId);
   const myReady = !!room.players.find(p => p.id === room.myPlayerId)?.isReady;
+  const next = useNextGame(data, notReady, room.connection === 'connected');
+  const minPlayers = Math.max(2, next.game?.minPlayers ?? 2);
+  // A ready player is told who the room still waits for (with faces), not just a count.
+  const waitingFor = !isHost && myReady && !playing ? roster.filter(m => m.controlled_by == null && m.player_id !== me?.player_id
+    && !room.players.some(p => p.id === m.player_id && p.isReady)) : [];
   // Empty metadata strings must not win (A05: the profile opened with an empty name).
   const accountName = String(auth.user?.user_metadata?.display_name || auth.user?.user_metadata?.full_name || auth.user?.email?.split('@')[0] || t('partyControllers.player')).trim().slice(0, 24);
   const errorText = describeControllerError(controller.error, (key, fallback) => t(key, fallback));
@@ -79,6 +92,11 @@ export default function ControllerPartyLobby() {
   };
   usePartyScreenTrace('lobby');
   useControllerTvLobby(data, party.session, room.players, isHost);
+
+  // The Host is implicitly ready (the TV shows it that way); the room still wants the flag.
+  useEffect(() => {
+    if (isHost && data?.party.status === 'lobby' && room.connection === 'connected' && !myReady) room.setReady(true);
+  }, [isHost, data?.party.status, room.connection, myReady]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Park the invitation before any login detour (social sign-in may lose ?redirect).
   useEffect(() => { if (inviteCode && !auth.isLoading && !auth.user) rememberInvitation(inviteCode); }, [inviteCode, auth.isLoading, auth.user]);
@@ -105,7 +123,9 @@ export default function ControllerPartyLobby() {
   if (!auth.user) return <ControllerPartyLogin inviteCode={inviteCode} onLogin={path => navigate(path)} />;
 
   const shell = (children: ReactNode) => <main data-testid="party-lobby" data-role={isHost ? 'host' : 'player'}
-    className="h-full min-h-0 overflow-y-auto overscroll-y-contain native-scroll bg-[#0a0e14] px-5 pb-tabbar pt-[max(24px,env(safe-area-inset-top))] text-white">
+    className="relative h-full min-h-dvh overflow-y-auto overscroll-y-contain native-scroll bg-[#060810] px-5 pb-tabbar pt-[max(24px,env(safe-area-inset-top))] text-white">
+    {/* The party surface fills the whole viewport on tall screens — never a white strip below. */}
+    <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-[#060810]" />
     <div className="mx-auto max-w-2xl space-y-6">{children}</div></main>;
 
   // A fresh invitation replaces the old removal notice (the effect above clears it and joins).
@@ -131,14 +151,19 @@ export default function ControllerPartyLobby() {
   </section>);
   // D04/T16: the party is over — every device shows the closing screen; the TV runs the finale.
   if (data && ended) return shell(<PartyClosingScreen myPlayerId={me?.player_id ?? null}
+    history={party.session?.gameHistory ?? []} partyDateMs={party.session?.createdAt || Date.now()}
     standings={party.session ? derivePartyStandings([...party.session.players, ...(party.session.archivedPlayers ?? [])], party.session.gameHistory) : []}
     onStartOwn={() => { closeControllerParty(); navigate('/party/controllers', { replace: true }); }}
     onDone={() => { closeControllerParty(); navigate('/games', { replace: true }); }} />);
   if (data && controller.onboarding && !isHost && (me || pendingClaim || controller.seatless)) return shell(<ControllerOnboarding data={data} userId={auth.user.id} busy={controller.busy} seatless={controller.seatless} />);
 
   return shell(<>
-    <header className="flex items-center gap-3"><button className={`${button} bg-white/5`} aria-label={t('common.back')} onClick={() => data ? setConfirmLeave(true) : navigate('/party')}><ArrowLeft size={20} className="rtl:rotate-180" /></button><div><p className="text-xs uppercase tracking-widest text-[#8ff5ff]">EventBliss Party</p><h1 className="text-2xl font-bold">{t('partyControllers.title')}</h1></div></header>
-    <p className="text-white/70">{t('partyControllers.subtitle')}</p>
+    {data ? <PartyLobbyHeader members={roster} readyIds={readyIds} gamesPlanned={playlist.length} tvConnected={!!tv?.isActive}
+      hostColor={data.members.find(m => m.is_host)?.color ?? '#df8eff'} onBack={() => setConfirmLeave(true)}
+      runningGame={playing ? t(playableGames.find(game => game.id === data.party.current_game_id)?.nameKey ?? data.party.current_game_id ?? '') : null}
+      now={waitingFor.length > 0 && <WaitingFor members={waitingFor} />} />
+      : <><header className="flex items-center gap-3"><button className={`${button} bg-white/5`} aria-label={t('common.back')} onClick={() => navigate('/party')}><ArrowLeft size={20} className="rtl:rotate-180" /></button><div><p className="text-xs uppercase tracking-widest text-[#8ff5ff]">EventBliss Party</p><h1 className="text-2xl font-bold">{t('partyControllers.title')}</h1></div></header>
+        <p className="text-white/70">{t('partyControllers.subtitle')}</p></>}
     {controller.pendingResults > 0 && <p role="status" className="rounded-xl bg-white/5 p-4">{t('partyControllers.pendingResults')}</p>}
     {errorText && <div role="alert" data-testid={errorCode === 'party_full' ? 'party-full-message' : errorCode === 'banned' ? 'seat-error' : 'party-error'} data-error-code={errorCode ?? ''} className="rounded-xl border border-rose-300/30 bg-rose-300/10 p-4">{errorText}</div>}
     {data && room.connection !== 'connected' && !ended && <button className={`${button} w-full border border-white/20`} disabled={controller.busy} onClick={() => act(retryControllerConnection())}>{t('partyControllers.retry')}</button>}
@@ -146,31 +171,32 @@ export default function ControllerPartyLobby() {
       onCreate={(name, hostPlays) => act(openControllerParty(auth.user!.id, name, undefined, hostPlays))}
       onJoin={(name, code) => act(openControllerParty(auth.user!.id, name, code))} /> : <>
       {pendingClaim && <PendingClaim guest={pendingClaim} onCancel={() => act(releaseControllerSeat(pendingClaim.player_id))} />}
-      <details className="rounded-2xl border border-white/10 p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('partyControllers.scan')} <span className="ms-2 font-mono text-[#8ff5ff]">{data.party.code}</span></summary>
-        <div className="grid gap-5 rounded-3xl border border-[#df8eff]/20 bg-gradient-to-br from-[#df8eff]/10 to-[#8ff5ff]/5 p-5 sm:grid-cols-[auto_1fr]">
-          <div className="mx-auto rounded-2xl bg-white p-3"><QRCodeSVG value={`${getBaseUrl()}/party/join/${data.party.code}`} size={160} title={t('partyControllers.scan')} /></div>
-          <div className="space-y-3"><h2 className="text-lg font-bold">{t('partyControllers.scan')}</h2><p className="font-mono text-3xl tracking-widest">{data.party.code}</p><p className="text-sm text-white/70">{t('partyControllers.accountHint')}</p></div>
+      {/* NOW-first mid-game: what happens for me comes right under the stage. */}
+      {playing && <section className="flex items-center gap-4 rounded-3xl border border-white/10 bg-white/[.04] p-4" {...(!inMatch && !isHost ? { 'data-testid': 'join-next-round' } : {})}>
+        {me && <span className="rounded-full" style={{ boxShadow: playerGlow(me.color) }}><SeatAvatar avatar={me.avatar} color={me.color} size={48} /></span>}
+        <div className="min-w-0 flex-1">
+          <p className="font-bold">{!inMatch && !isHost ? t('partyPlay.lobby.soon', 'Gleich bist du dran') : t('partyPlay.lobby.running', 'Gerade läuft ein Spiel')}</p>
+          <p className="text-sm text-white/60">{!inMatch && !isHost ? t('partyPlay.lobby.nextRound', 'Ab der nächsten Runde bist du dabei.') : t('partyControllers.waitNext')}</p>
+          {isHost && <button className="mt-2 min-h-11 rounded-full px-4 text-sm font-semibold text-rose-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] active:bg-white/5" onClick={() => act(abortControllerGame())}>{t('partyControllers.abort')}</button>}
         </div>
-      </details>
-      {isHost && <button className={`${button} border border-white/20`} onClick={() => tv?.openConnection()}><Tv className="me-2 inline h-4 w-4" />{t('partyControllers.tv')}</button>}
-      <PartyRoster data={data} myUserId={auth.user.id} presence={room.players} participantIds={room.room?.participantIds ?? []} busy={controller.busy} />
-      {!ended && me && <button data-testid="lobby-ready-toggle" aria-pressed={myReady}
-        className={`${button} flex w-full items-center justify-center gap-2 focus-visible:outline-[#8ff5ff] ${myReady ? 'bg-emerald-400 text-black' : 'bg-[#8ff5ff] text-black'}`} onClick={() => room.setReady(!myReady)}>
-        <AnimatePresence mode="popLayout" initial={false}>{myReady && <motion.span key="check" variants={reduced ? undefined : checkPop} initial="initial" animate="animate" exit="exit"><Check className="h-5 w-5" aria-hidden /></motion.span>}</AnimatePresence>
-        {t('partyControllers.readyToggle')}
-        <motion.span key={readyCount} className="rounded-full bg-black/15 px-2 text-sm tabular-nums" initial={reduced ? false : { scale: 1 }} animate={reduced ? undefined : { scale: [1, 1.12, 1] }} transition={{ duration: 0.2 }}>
-          {readyCount}/{roster.length}
-        </motion.span>
-      </button>}
-      {playing && <section className="rounded-xl bg-amber-200/10 p-4" {...(!inMatch && !isHost ? { 'data-testid': 'join-next-round' } : {})}>
-        <p>{!inMatch && !isHost ? t('partyPlay.lobby.nextRound', 'Ab der nächsten Runde bist du dabei.') : t('partyControllers.waitNext')}</p>
-        {isHost && <button className={`${button} mt-3 border border-white/20`} onClick={() => act(abortControllerGame())}>{t('partyControllers.abort')}</button>}
       </section>}
-      {isHost && data.party.status === 'lobby' && <ControllerPlaylistPanel data={data} notReady={notReady} busy={controller.busy} connected={room.connection === 'connected'} />}
-      {!isHost && data.party.status === 'lobby' && <p role="status" className="rounded-2xl bg-white/5 p-5">{t('partyControllers.hostChoosing')}</p>}
+      {data.party.status === 'lobby' && <NextGameCard next={next} role={isHost ? 'host' : 'player'}
+        sitOutIds={data.members.filter(m => !m.banned && m.controlled_by != null).map(m => m.player_id)} />}
+      {/* Progressive disclosure: big invitation while people still join, a chip once everyone is in or a game runs. */}
+      {!ended && <PartyInviteCard code={data.party.code} compact={playing || (notReady.length === 0 && roster.length >= minPlayers)} />}
+      {isHost && !tv?.isActive && <PartyTvTile connected={false} onPair={() => tv?.openConnection()} />}
+      <PartyRoster data={data} myUserId={auth.user.id} presence={room.players} participantIds={room.room?.participantIds ?? []} busy={controller.busy} />
+
+      {isHost && data.party.status === 'lobby' && <ControllerPlaylistPanel data={data} busy={controller.busy} />}
       {party.session && data.results.length > 0 && <details className="rounded-2xl border border-white/10 p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.partyLobby.overallScore')}</summary><PartyStandingsList standings={derivePartyStandings([...party.session.players, ...(party.session.archivedPlayers ?? [])], party.session.gameHistory)} /></details>}
       {party.session && nextIndex > finaleSeen && playlist.length > 0 && nextIndex >= playlist.length && <PartyFinaleOverlay open standings={derivePartyStandings([...party.session.players, ...(party.session.archivedPlayers ?? [])], party.session.gameHistory)} history={party.session.gameHistory.map(entry => ({ ...entry, gameName: t(playableGames.find(game => game.id === entry.gameId)?.nameKey ?? entry.gameName) }))} gamesPlayed={nextIndex} playerCount={roster.length} onDone={() => setFinaleSeen(nextIndex)} />}
-      <button data-testid={isHost ? 'end-party' : 'leave-party'} disabled={controller.busy} className={`${button} w-full border border-white/20`} onClick={() => setConfirmLeave(true)}>{t(isHost ? 'partyControllers.end' : 'partyControllers.leave')}</button>
+      <button data-testid={isHost ? 'end-party' : 'leave-party'} disabled={controller.busy}
+        className="mx-auto block min-h-11 rounded-full px-4 text-sm font-semibold text-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] active:bg-white/5 disabled:opacity-40"
+        onClick={() => setConfirmLeave(true)}>{t(isHost ? 'partyControllers.end' : 'partyControllers.leave')}</button>
+      {data.party.status === 'lobby' && (isHost || me) && <PartyBottomBarSpacer />}
+      {/* NOW-first: the one action for this person, always in the thumb zone. */}
+      {data.party.status === 'lobby' && isHost && <HostStartBar next={next} busy={controller.busy} />}
+      {data.party.status === 'lobby' && !isHost && me && <PartyReadyBar ready={myReady} color={me.color} onToggle={ready => room.setReady(ready)} />}
     </>}
     <PartyConfirmSheet open={confirmLeave} onClose={() => setConfirmLeave(false)} danger={isHost} busy={controller.busy}
       testId={isHost ? 'end-party-prompt' : 'leave-party-prompt'} confirmTestId={isHost ? 'end-party-confirm' : 'leave-confirm'}

@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { usePartyScene, type PartyScene } from '@/games/party/party-scene';
 import { useTranslation } from 'react-i18next';
 import type { RoomPlayer } from '@/games/multiplayer/room-types';
 import type { ControllerPartyData } from '@/games/party/controller-api';
@@ -20,6 +21,11 @@ import { playableGames } from '@/lib/playable-games';
 export function useControllerTvLobby(data: ControllerPartyData | null, session: PartySession | null, presence: RoomPlayer[], isHost: boolean) {
   const { t, i18n } = useTranslation();
   const tv = useTVContext();
+  // Keep the finale scene once seen: the closing screen clears it after its confetti, the TV still needs it.
+  const scene = usePartyScene();
+  const finale = useRef<PartyScene | null>(null);
+  if (scene?.scene === 'finale') finale.current = scene;
+  if (data?.party.status !== 'finished') finale.current = null;
   useEffect(() => {
     if (!isHost || !tv?.isActive || !session || !data || data.party.status === 'playing') return;
     const playlist = data.party.playlist, nextIndex = data.results.length;
@@ -36,6 +42,11 @@ export function useControllerTvLobby(data: ControllerPartyData | null, session: 
       nextGame: game ? { id: game.id, name: nameFor(game.id), minPlayers: game.minPlayers, maxPlayers: game.maxPlayers } : null,
     });
     tv.broadcastTV('tv-state', { game: 'lobby', phase: 'idle', lang: i18n.language, partyNight,
-      controllerJoinCode: ended ? null : data.party.code, players: session.players, serverNow: new Date(serverClock.now()).toISOString(), ...(lobby ? { lobby } : {}) });
-  }, [isHost, tv, session, data, presence, t, i18n.language]);
+      controllerJoinCode: ended ? null : data.party.code,
+      // Same player shape as the local party (PartyLobbyScreen): the TV's standings read `score`.
+      players: partyNight.standings.map(p => ({ id: p.id, name: p.name, score: p.points, color: p.color, avatar: p.avatar })),
+      serverNow: new Date(serverClock.now()).toISOString(), ...(lobby ? { lobby } : {}),
+      // T16: the TV reveals the podium at the same startsAt as the phones' confetti.
+      ...(ended && finale.current ? { scene: finale.current } : {}) });
+  }, [isHost, tv, session, data, presence, t, i18n.language, scene]);
 }

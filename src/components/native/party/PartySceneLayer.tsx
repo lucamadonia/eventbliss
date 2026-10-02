@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ConfettiBurst } from '@/components/vfx/ConfettiBurst';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { NativeOverlayPortal } from '@/components/native/NativeOverlayPortal';
@@ -9,7 +10,7 @@ import { sceneLocalTime } from '@/games/party/scene-schedule';
 import { useScene } from '@/games/party/useScene';
 import { applyPartySceneMessage, parsePartySceneMessage, sceneGoAt, usePartyScene, type PartyScene } from '@/games/party/party-scene';
 import { SceneCountdown } from '@/games/ui/SceneCountdown';
-import { partyMotion } from '@/lib/party-motion';
+import { confettiBurst, partyMotion } from '@/lib/party-motion';
 import { playableGames } from '@/lib/playable-games';
 
 interface Props {
@@ -25,6 +26,14 @@ interface Props {
  */
 export function PartySceneLayer({ isHost, onGo }: Props) {
   const scene = usePartyScene();
+  const reduced = !!useReducedMotion();
+  // "Los!" is a moment: a short confetti burst on every device at the same time.
+  const [celebrate, setCelebrate] = useState(false);
+  useEffect(() => {
+    if (!celebrate) return;
+    const id = setTimeout(() => setCelebrate(false), confettiBurst.durationMs);
+    return () => clearTimeout(id);
+  }, [celebrate]);
   const tv = useTVContext();
   const onGoRef = useRef(onGo);
   onGoRef.current = onGo;
@@ -50,8 +59,9 @@ export function PartySceneLayer({ isHost, onGo }: Props) {
 
   return <NativeOverlayPortal>
     <AnimatePresence>
-      {scene?.scene === 'game-start' && <GameStartOverlay key={scene.sceneId} scene={scene} onGo={() => onGoRef.current(scene)} />}
+      {scene?.scene === 'game-start' && <GameStartOverlay key={scene.sceneId} scene={scene} onGo={() => { if (!reduced) setCelebrate(true); onGoRef.current(scene); }} />}
     </AnimatePresence>
+    <ConfettiBurst active={celebrate} count={confettiBurst.particles.phone} />
   </NativeOverlayPortal>;
 }
 

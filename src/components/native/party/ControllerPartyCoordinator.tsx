@@ -61,7 +61,7 @@ export function ControllerPartyCoordinator() {
     // "Wer bist du?" first; a joiner never gets pulled into a running game before it.
     if (controller.onboarding) return;
     // A planned scene decides the moment; routing waits for its "Los!".
-    if (scene) return;
+    if (scene && scene.scene !== 'finale') return;
     const isHost = data.party.host_user_id === auth.user?.id;
     const active = room.room.participantIds.includes(room.myPlayerId);
     // The signed room state from the Host is immediate; the party poll is only the fallback.

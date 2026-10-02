@@ -5,6 +5,12 @@ import { advanceReveal, storyTurn } from './reveal-rules';
 import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { removeFromStory } from './roster-change';
+import { phaseOfBeat, storyBeatKey, writerSeat, writingClockRuns, writingTimedOut } from './guest-turn';
+import { WritingWait } from './WritingWait';
+import { useSeatHandover } from '../multiplayer/useGuestHandover';
+import { usePhaseGate } from '../party/usePhaseGate';
+import { planPhaseStart } from '../party/phase-gate';
+import { serverClock } from '../party/scene-clock';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -133,10 +139,24 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
   const startersDeck = useRef<string[]>([]);
   const startersPos = useRef(0);
 
+  // 🔁-Gaeste am Host-Handy schreiben selbst (guest-turn.ts): erst weitergeben, Uhr steht solange.
+  const writerId = writerSeat(phase, players[currentPlayerIdx]?.id);
+  const handover = useSeatHandover(online, writerId);
+  const awaitingGuest = !!writerId && handover.isGuest(writerId) && handover.activeGuest !== writerId;
+  // Gemeinsamer Takt: Der Host plant jeden Wechsel (Phase und Zug) mit Vorlauf;
+  // Handys (Snapshot) und TV (Bridge) wechseln zum selben Moment.
+  const beat = storyBeatKey(phase, currentRound, currentPlayerIdx, currentSentenceNum);
+  const [remotePhaseStartsAt, setRemotePhaseStartsAt] = useState<number | null>(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const plannedPhaseStart = useMemo(() => (online ? planPhaseStart() : serverClock.now()), [beat]);
+  const phaseStartsAt = online && !online.isHost ? remotePhaseStartsAt : plannedPhaseStart;
+  const gate = usePhaseGate(beat, online ? phaseStartsAt : null);
+  const view = phaseOfBeat(gate.shown);
+
   useTVGameBridge(
     'storybuilder',
     {
-      phase, currentRound, currentPlayerIdx, players, mode, totalRounds,
+      phase, phaseStartsAt, handover: handover.tv, currentRound, currentPlayerIdx, players, mode, totalRounds,
       partyScoresById: Object.fromEntries(players.map(p => [p.id, 0])),
       // Only finished sentences are broadcast — never the in-progress typed input.
       sentences: sentences.map((s) => ({
@@ -147,7 +167,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
       // 'vorgabe'/'reimzeit' carry a prompt/constraint line; classic does not.
       prompt: mode === 'classic' ? '' : currentPrompt,
     },
-    [phase, currentRound, currentPlayerIdx, sentences.length, currentPrompt],
+    [phase, phaseStartsAt, currentRound, currentPlayerIdx, sentences.length, currentPrompt, handover.tv?.playerId ?? '', handover.tv?.progress?.phase ?? ''],
     !online || online.isHost,
   );
 
@@ -289,14 +309,15 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
 
   const [writingSeconds, setWritingSeconds] = useState(90);
   useEffect(() => { setWritingSeconds(90); }, [phase, currentRound, currentPlayerIdx, currentSentenceNum]);
+  const clock = { phase, seconds: writingSeconds, authoritative: !online || online.isHost, handoverPaused: handover.isPaused || awaitingGuest, connected: online?.isConnected !== false };
   useEffect(() => {
-    if (phase !== 'writing' || writingSeconds <= 0 || (online && !online.isHost)) return;
+    if (!writingClockRuns(clock)) return;
     const pending = setTimeout(() => setWritingSeconds(s => Math.max(0, s - 1)), 1000);
     return () => clearTimeout(pending);
-  }, [phase, writingSeconds, currentRound, currentPlayerIdx, currentSentenceNum]);
+  }, [phase, writingSeconds, currentRound, currentPlayerIdx, currentSentenceNum, clock.handoverPaused]);
   useEffect(() => {
-    if (writingSeconds === 0 && phase === 'writing' && (!online || online.isHost) && online?.isConnected !== false) submitSentence('', true);
-  }, [writingSeconds, phase, online?.isConnected]);
+    if (writingTimedOut(clock)) submitSentence('', true);
+  }, [writingSeconds, phase, online?.isConnected, clock.handoverPaused]);
 
   useEffect(() => {
     if (phase === 'storyReveal' && !gameRecordedRef.current) {
@@ -362,8 +383,9 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
     skip: { allowed: phase === 'writing' || phase === 'passing' ? currentPlayer?.id ?? false : false, run: () => submitSentence('', true) },
     again: { allowed: phase === 'storyReveal' || phase === 'gameOver' ? 'host' : false, run: rematch },
   });
-  useOnlineSnapshot(online, 'storybuilder', { phase, players, mode, sentencesPerPlayer, totalRounds, currentRound, currentPlayerIdx, currentSentenceNum, sentences, currentPrompt, writingSeconds }, s => {
+  useOnlineSnapshot(online, 'storybuilder', { phase, phaseStartsAt, players, mode, sentencesPerPlayer, totalRounds, currentRound, currentPlayerIdx, currentSentenceNum, sentences, currentPrompt, writingSeconds }, s => {
     setWritingSeconds(s.writingSeconds);
+    setRemotePhaseStartsAt(typeof s.phaseStartsAt === 'number' ? s.phaseStartsAt : null);
     setPhase(s.phase); setPlayers(s.players); setMode(s.mode); setSentencesPerPlayer(s.sentencesPerPlayer); setTotalRounds(s.totalRounds); setCurrentRound(s.currentRound); setCurrentPlayerIdx(s.currentPlayerIdx); setCurrentSentenceNum(s.currentSentenceNum); setSentences(s.sentences); setCurrentPrompt(s.currentPrompt);
   });
   useEffect(() => { setInputText(''); }, [sentences.length, currentPlayerIdx, currentRound, currentSentenceNum]);
@@ -374,7 +396,10 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
   // RENDER
   // =========================================================================
 
-  if (phase === 'setup') {
+  // Handy unterwegs zu einem Gast: nur der deckende Weitergabe-Bildschirm.
+  if (handover.overlay || awaitingGuest) return <>{handover.overlay}<ConfirmExitDialog {...exitGuard.dialogProps} accent="#227768" /></>;
+
+  if (view === 'setup') {
     return (
       <GameSetup
         gameId="storybuilder"
@@ -391,11 +416,11 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
 
   return (
     <GameStage gameId="storybuilder" className="story-manuscript" style={{ '--stage-bg': '#f4eee0', '--stage-surface': '#e9e2d3', '--stage-accent': '#227768', '--stage-secondary': '#227768', '--stage-ink': '#20332d', '--stage-muted': '#52605a' } as React.CSSProperties}>
-      <StageHeader title={phase === 'storyReveal' ? t('games.storybuilder.ourStory') : currentPlayer?.name ?? 'StoryBuilder'}
-        eyebrow="StoryBuilder" progress={phase === 'storyReveal' ? { value: Math.min(revealIdx + 1, sentences.length), total: sentences.length } : { value: currentTurn, total: totalTurns }}
-        trailing={(phase === 'writing' || phase === 'passing') && <span className="tabular-nums text-lg font-semibold">{writingSeconds}s</span>} />
+      <StageHeader title={view === 'storyReveal' ? t('games.storybuilder.ourStory') : currentPlayer?.name ?? 'StoryBuilder'}
+        eyebrow="StoryBuilder" progress={view === 'storyReveal' ? { value: Math.min(revealIdx + 1, sentences.length), total: sentences.length } : { value: currentTurn, total: totalTurns }}
+        trailing={(view === 'writing' || view === 'passing') && <span className="tabular-nums text-lg font-semibold">{writingSeconds}s</span>} />
 
-      {phase === 'writing' && currentPlayer && (
+      {view === 'writing' && currentPlayer && (
         <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-5 py-5">
           {lastSentence && <section className="border-l-2 border-[#227768]/30 pl-5 py-2">
             <p className="mb-2 text-xs font-semibold tracking-wide text-[#52605a]">{t('games.storybuilder.lastSentenceBy', { name: lastSentence.playerName })}</p>
@@ -403,6 +428,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
           </section>}
           {mode === 'vorgabe' && currentPrompt && <p className="text-sm font-semibold text-[#227768]">{currentPrompt}</p>}
           {mode === 'reimzeit' && <p className="text-sm font-semibold text-[#227768]">{t('games.storybuilder.rhymeMustRhyme')}</p>}
+          {online && !act.can('sentence') ? <WritingWait name={currentPlayer.name} avatar={currentPlayer.avatar} color={currentPlayer.color} seconds={writingSeconds} /> : <>
           <StagePanel tone="paper" className="flex-1 !rounded-sm !p-5 sm:!p-8 min-h-64 border-t-4 !border-t-[#227768]">
             <label htmlFor="story-sentence" className="mb-5 block text-sm font-semibold text-[#52605a]">{t('games.storybuilder.inputPlaceholder')}</label>
             <textarea id="story-sentence" value={inputText} disabled={!act.can('sentence')}
@@ -414,16 +440,16 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
           <StageFooter className="!bg-transparent !px-0 flex flex-wrap gap-3">
             <StageAction variant="secondary" disabled={!act.can('skip')} onClick={() => act('skip')}>{t('games.storybuilder.skipTurn')}</StageAction>
             <StageAction className="flex-1" disabled={!inputText.trim() || !act.can('sentence')} onClick={() => act('sentence', inputText)}><Pen className="h-5 w-5" />{t('games.storybuilder.submitBtn')}</StageAction>
-          </StageFooter>
+          </StageFooter></>}
         </div>
       )}
-      {phase === 'passing' && <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-8 py-10">
+      {view === 'passing' && <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col justify-center gap-8 py-10">
         <p className="font-serif text-4xl sm:text-6xl leading-tight">{t('games.storybuilder.passDevice')}</p>
         <p className="text-lg text-[#52605a]">{t('games.storybuilder.playerIsNext', { name: players[currentPlayerIdx]?.name })}</p>
         <StageAction disabled={!act.can('ready')} onClick={() => act('ready')}><ArrowRight className="h-5 w-5" />{t('games.storybuilder.readyBtn')}</StageAction>
         <StageAction variant="ghost" disabled={!act.can('skip')} onClick={() => act('skip')}>{t('games.storybuilder.skipTurn')}</StageAction>
       </div>}
-      {phase === 'storyReveal' && <div className="mx-auto w-full max-w-3xl py-5">
+      {view === 'storyReveal' && <div className="mx-auto w-full max-w-3xl py-5">
         <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
         <StagePanel tone="paper" className="!rounded-sm !p-6 sm:!p-10">
           <article className="space-y-8">
@@ -439,6 +465,8 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
           {!hasShellBackButton() && <StageAction variant="secondary" onClick={() => navigate('/games')}>{t('games.storybuilder.otherGame')}</StageAction>}
         </StageFooter>
       </div>}
+      {/* Einblend-Takt (Design §9): Eingaben erst nach dem gemeinsamen Wechsel. */}
+      {!gate.inputOpen && <div data-testid="phase-input-gate" aria-hidden className="fixed inset-0 z-[80]" />}
       <ConfirmExitDialog {...exitGuard.dialogProps} accent="#227768" />
     </GameStage>
   );

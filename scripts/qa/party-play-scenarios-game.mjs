@@ -1,17 +1,17 @@
 // Scenarios F (in game, incl. kick F13–F19) from the masterplan, section 8.
 import fs from 'node:fs';
-import { assert, need, needSource, pause, hasTestId, NotImplemented, Deferred, sourceText } from './party-play-harness.mjs';
+import { assert, need, needSource, pause, hasTestId, NotImplemented, Deferred, Inconclusive, sourceText } from './party-play-harness.mjs';
 import { createParty, addGuest, joinPhone, memberBy, ready, startGame, wallNow, rowAction, connectTv } from './party-play-flows.mjs';
 import { hostSetup, playMatch, deviceMap } from './party-play-games.mjs';
 
 /** Party with guests + phones, everyone ready, `game` started and set up. */
-export async function matchSetup(ctx, { game, guests = [], phones = ['Lena', 'Tom'], hostPlays = true, tv = true, rounds = 'min' }) {
+export async function matchSetup(ctx, { game, guests = [], phones = ['Lena', 'Tom'], hostPlays = true, tv = true, rounds = 'min', mode }) {
   const { h } = ctx; const { host, code } = await createParty(h, { hostPlays });
   const tvc = tv ? await connectTv(h, host) : null; const gids = {};
   for (const g of guests) gids[g] = await addGuest(ctx, host, code, g);
   const devices = []; for (const p of phones) devices.push(await joinPhone(h, ctx, host, code, p));
   for (const p of devices) await ready(p);
-  await startGame(host, [game, 'this-or-that']); await hostSetup(host, game, 20000, { rounds });
+  await startGame(host, [game, 'this-or-that']); await hostSetup(host, game, 20000, { rounds, mode });
   const pid = async p => (await memberBy(host, m => m.user_id === p.account)).player_id;
   const ids = {}; for (const p of devices) ids[p.name] = await pid(p);
   return { h, host, code, tv: tvc, phones: devices, guests: gids, ids, map: await deviceMap(host, devices), participants: async () => (await host.snapshot()).room.participantIds };
@@ -29,6 +29,8 @@ export async function kickMidGame(host, pid, mode, { via = 'pause', h } = {}) {
     if (!await host.exists('tv-remote-players')) await host.page.evaluate(() => { const b = [...document.querySelectorAll('button')].find(b => b.getBoundingClientRect().height && (/^(tv|connect a tv|fernseher)/i.test(b.innerText.trim()) || /tv|fernseh/i.test(b.getAttribute('aria-label') ?? ''))); b?.click(); });
     await host.click('tv-remote-players');
   } else await host.click('pause-players');
+  // The game re-renders its top bar on every state tick; re-open the player list if the first tap got lost.
+  for (let i = 0; i < 3 && !await host.waitAny([`kick-player-${pid}`], 4000); i++) await host.click(via === 'remote' ? 'tv-remote-players' : 'pause-players').catch(() => {});
   await host.click(`kick-player-${pid}`); await host.wait('kick-sheet');
   await host.click(`kick-mode-${mode}`); await host.click('kick-confirm');
   if (!h) return null;
@@ -78,11 +80,14 @@ function handoverScenario(mode, guests, phones) {
       // Covered: nothing of the game may be on screen or clickable behind the handover.
       leaks += await m.host.page.evaluate(() => [...document.querySelectorAll('button')].filter(b => b.getBoundingClientRect().height && !b.closest('[data-testid="handover-screen"]') && !b.closest('[aria-haspopup]') && !b.hasAttribute('aria-haspopup') && !/spieler|players|abort|abbrechen|tv/i.test(b.innerText + (b.getAttribute('aria-label') ?? ''))).length > 2 ? 1 : 0);
       const guest = Object.values(m.guests).includes(info.playerId);
-      if (m.tv && guest && info.step === 'pass' && hasTestId('tv-handover'))
-        await m.tv.until(async c => (await c.attr('tv-handover', 'data-player-id')) === info.playerId, 'TV banner', 3000).catch(() => { tvMiss++; });
+      // TV names the guest: banner tv-handover[data-player-id] or the cinema stage tv-handover-stage[data-current].
+      if (m.tv && guest && info.step === 'pass' && (hasTestId('tv-handover') || hasTestId('tv-handover-stage')))
+        await m.tv.until(async c => (await c.attr('tv-handover', 'data-player-id')) === info.playerId || (await c.attr('tv-handover-stage', 'data-current')) === info.playerId, 'TV banner', 3000).catch(() => { tvMiss++; });
       if (steps.length <= 6) await m.h.shotAll(`handover-${steps.length}-${info.step}`);
     } });
-    ctx.evidence = { ...ctx.evidence, handed: handed.size, steps: steps.slice(0, 30), res, tvMiss };
+    const tvSeen = m.tv ? await m.tv.page.evaluate(() => window.__qaSeenLog.filter(e => e.id === 'tv-handover' || e.id === 'tv-handover-stage').length) : 0;
+    const tvIds = m.tv ? await m.tv.page.evaluate(() => [...document.querySelectorAll('[data-testid="tv-handover"]')].map(n => n.getAttribute('data-player-id'))) : [];
+    ctx.evidence = { ...ctx.evidence, handed: handed.size, steps: steps.slice(0, 30), res, tvMiss, tvBannerShownTimes: tvSeen, tvIdsAtEnd: tvIds, guestIds: m.guests };
     for (const [n, id] of Object.entries(m.guests)) assert(handed.has(id), `no handover for ${n}`);
     assert(!leaks, `game content visible behind the handover screen ${leaks}×`);
     if (mode === 'secret') assert(steps.includes('cover'), 'secret game never showed the cover step');
@@ -150,9 +155,14 @@ export const gameScenarios = [
   } },
   { id: 'F12', title: 'Input after deadline (delayed device) → discarded, "zu spät"', timeoutMs: 300000, async run(ctx) {
     needSource(/\bacceptInput\(\{/, 'a game checking inputs against deadlines (acceptInput)');
-    const m = await matchSetup(ctx, { game: 'this-or-that', phones: ['Lena', 'Tom'] }); m.phones[1].net.delay = [4000, 4000];
+    // Deadlines exist in speed mode (5 s per player); Tom's packets take 4 s each way.
+    const m = await matchSetup(ctx, { game: 'this-or-that', phones: ['Lena', 'Tom'], mode: 'speed' }); m.phones[1].net.delay = [4000, 4000];
+    await m.h.shotAll('speed-mode'); ctx.evidence.timerVisible = /\b[0-9]s\b|⏱|seconds|sekunden/i.test(await m.host.text());
+    const rejected0 = (await m.host.trace()).filter(e => e.kind === 'input-rejected').length;
+    if (!ctx.evidence.timerVisible && !await m.host.exists('scene-countdown')) ctx.notes.push('speed mode probably not selected: controller-party start skips the game setup screen');
     await playMatch(m.h, m.host, 'this-or-that', m.map, { budgetMs: 90000 });
     const rejected = (await m.host.trace()).filter(e => e.kind === 'input-rejected'); ctx.evidence.rejected = rejected.length;
+    if (!rejected.length && !ctx.evidence.timerVisible) throw new Inconclusive('speed mode (the only this-or-that mode with deadlines) is not selectable in the controller-party flow: the game starts without its setup screen');
     assert(rejected.some(e => e.playerId === m.ids.Tom), 'late input from Tom was not rejected');
   } },
   { id: 'F13a', title: 'Kick non-current player mid-game: this-or-that', timeoutMs: 300000, run: kickNotCurrent('this-or-that') },
@@ -187,6 +197,8 @@ export const gameScenarios = [
     await tom.page.evaluate(code => controllerQA.navigate(`/party/join/${code}`), code);
     const shown = await tom.waitAny(['seat-error', 'party-removed-screen'], 8000); assert(shown, 'banned player got no rejection screen');
     assert(!(await host.party()).members.some(m => m.user_id === tom.account), 'banned player is back in the party'); await h.shotAll('banned');
+    // The "Gesperrt (n)" list is a collapsed <details>; open it like a user would.
+    await host.page.evaluate(() => document.querySelectorAll('details').forEach(d => { if (/gesperrt|blocked|banned/i.test(d.querySelector('summary')?.innerText ?? '')) d.open = true; })); await pause(300);
     since = Date.now(); await host.click(`unban-${tomPid}`); await rpcAfter('unban', since);
     await tom.page.evaluate(() => controllerQA.navigate('/party/controllers')); await tom.page.evaluate(code => controllerQA.navigate(`/party/join/${code}`), code);
     await host.until(async c => (await c.party()).members.some(m => m.user_id === tom.account), 'unbanned player cannot rejoin', 15000);

@@ -8,12 +8,13 @@
  *
  *   game-start  → 3-2-1-Los! overlay, then everyone routes into the game
  *   round-end   → everyone returns to the lobby/standings at the same moment
+ *   finale      → party ended: confetti on every phone together with the TV podium
  */
 import { useSyncExternalStore } from 'react';
 import { planScene, type Scene } from './scene-schedule';
 import { SCENE_LEAD_MS } from '@/lib/party-motion';
 
-export type PartySceneName = 'game-start' | 'round-end';
+export type PartySceneName = 'game-start' | 'round-end' | 'finale';
 export interface PartySceneData { gameId?: string; matchKey?: string }
 export type PartyScene = Scene<PartySceneData> & { scene: PartySceneName };
 /** Wire message: a scene, or the cancellation of one (start failed). */
@@ -43,7 +44,7 @@ export function parsePartySceneMessage(value: unknown, serverNowMs: number): Par
   if (typeof raw.cancel === 'string' && raw.cancel) return { cancel: raw.cancel.slice(0, 128) };
   const scene = raw.scene as Record<string, unknown> | undefined;
   if (!scene || typeof scene !== 'object') return null;
-  if (scene.scene !== 'game-start' && scene.scene !== 'round-end') return null;
+  if (scene.scene !== 'game-start' && scene.scene !== 'round-end' && scene.scene !== 'finale') return null;
   if (typeof scene.sceneId !== 'string' || !scene.sceneId || typeof scene.startsAt !== 'number' || !Number.isFinite(scene.startsAt)) return null;
   // Far future (bad clock) or long past: ignore instead of freezing the screen.
   if (scene.startsAt > serverNowMs + 10_000 || sceneGoAt(scene as PartyScene) < serverNowMs - STALE_MS) return null;

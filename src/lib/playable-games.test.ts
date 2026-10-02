@@ -16,29 +16,33 @@ import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 
-import { AVAILABILITY_TONE_HEX, availabilityChip, gameAvailability, joinNames, guestPolicy, playableGames, startBlockReason } from "./playable-games";
+import { AVAILABILITY_TONE_HEX, availabilityChip, gameAvailability, joinNames, qaForcedSharedDevice, guestPolicy, playableGames, startBlockReason } from "./playable-games";
 
 const GAMES_DIR = path.resolve(__dirname, "../games");
 
-/** Kennung → Datei mit dem Setup-Bildschirm. Die Ordnernamen weichen ab. */
+/**
+ * Kennung → Spielordner. Gelesen werden ALLE Quellen des Ordners (ohne Tests):
+ * Setup-Bildschirme wandern beim Aufraeumen in eigene Dateien (CategorySetup,
+ * BrewSetup …) — ein fester Dateiname liess den Test still ins Leere laufen.
+ */
 const SETUP_FILE: Record<string, string> = {
-  bomb: "bomb/BombSetupScreen.tsx",
-  headup: "headup/HeadUpGame.tsx",
-  taboo: "taboo/TabooGame.tsx",
-  category: "category/CategoryGame.tsx",
-  "this-or-that": "thisorthat/ThisOrThatGame.tsx",
-  hochstapler: "impostor/ImpostorGame.tsx",
-  "wer-bin-ich": "whoami/WhoAmIGame.tsx",
-  "split-quiz": "splitquiz/SplitQuizGame.tsx",
-  "geteilt-gequizzt": "sharedquiz/SharedQuizGame.tsx",
-  "wo-ist-was": "findit/FindItGame.tsx",
-  "drueck-das-wort": "wordpress/WordPressGame.tsx",
-  schnellzeichner: "quickdraw/QuickDrawGame.tsx",
-  ohrwurm: "ohrwurm/OhrwurmGame.tsx",
-  pixeljagd: "pixeljagd/PixeljagdGame.tsx",
-  closeenough: "closeenough/CloseEnoughGame.tsx",
-  pantomime: "pantomime/PantomimeGame.tsx",
-  brew: "brew/BrewGame.tsx",
+  bomb: "bomb",
+  headup: "headup",
+  taboo: "taboo",
+  category: "category",
+  "this-or-that": "thisorthat",
+  hochstapler: "impostor",
+  "wer-bin-ich": "whoami",
+  "split-quiz": "splitquiz",
+  "geteilt-gequizzt": "sharedquiz",
+  "wo-ist-was": "findit",
+  "drueck-das-wort": "wordpress",
+  schnellzeichner: "quickdraw",
+  ohrwurm: "ohrwurm",
+  pixeljagd: "pixeljagd",
+  closeenough: "closeenough",
+  pantomime: "pantomime",
+  brew: "brew",
 };
 
 /**
@@ -65,7 +69,11 @@ const UNREADABLE = [
  * fast nichts.
  */
 function boundsFromSource(rel: string): { min?: number; max?: number } {
-  const src = fs.readFileSync(path.join(GAMES_DIR, rel), "utf8");
+  const dir = path.join(GAMES_DIR, rel);
+  const src = fs.readdirSync(dir)
+    .filter((f) => /\.tsx?$/.test(f) && !/\.test\.tsx?$/.test(f))
+    .map((f) => fs.readFileSync(path.join(dir, f), "utf8"))
+    .join(String.fromCharCode(10));
 
   // Nur die Setup-Elemente betrachten, nicht die ganze Datei.
   const blocks: string[] = [];
@@ -440,5 +448,52 @@ describe("availabilityChip — jeder Schluessel existiert in allen 10 Sprachen",
       if (!plain && !plural) missing.push(chip.key);
     }
     expect([...new Set(missing)], `Chip zeigt sonst den rohen Schluessel (${file})`).toEqual([]);
+  });
+});
+
+describe("guestPolicy — QA-Schalter fuer noch nicht freigegebene Spiele", () => {
+  it("nur mit gesetztem Schalter, nur fuer genannte Spiele", () => {
+    const g = globalThis as { __partyPlayForceShared?: unknown };
+    const unsupported = playableGames.find((x) => !x.sharedDeviceSupported && x.sharedDevice !== "sitout")!;
+    expect(guestPolicy(unsupported.id)).toBe("sitout");
+    try {
+      g.__partyPlayForceShared = [unsupported.id];
+      expect(guestPolicy(unsupported.id)).toBe(unsupported.sharedDevice);
+      expect(guestPolicy("gibt-es-nicht")).toBe("sitout");
+      g.__partyPlayForceShared = "kein-array";
+      expect(guestPolicy(unsupported.id)).toBe("sitout");
+    } finally {
+      delete g.__partyPlayForceShared;
+    }
+  });
+});
+
+describe("qaForcedSharedDevice — im Produktions-Build wirkungslos", () => {
+  it("Prod (DEV false, kein VITE_QA_HARNESS) ignoriert den Schalter, Dev/QA nicht", () => {
+    const g = globalThis as { __partyPlayForceShared?: unknown };
+    try {
+      g.__partyPlayForceShared = ["headup"];
+      expect(qaForcedSharedDevice("headup", { DEV: false })).toBe(false);
+      expect(qaForcedSharedDevice("headup", { DEV: false, VITE_QA_HARNESS: "" })).toBe(false);
+      expect(qaForcedSharedDevice("headup", { DEV: true })).toBe(true);
+      expect(qaForcedSharedDevice("headup", { DEV: false, VITE_QA_HARNESS: "1" })).toBe(true);
+    } finally {
+      delete g.__partyPlayForceShared;
+    }
+  });
+});
+
+describe("sharedDevice — festgelegte Einordnung je Spiel", () => {
+  // Bewusste Liste: Aendert sich ein Modus, muss das hier nachgezogen werden —
+  // der Laufzeit-Ablauf fuer Gaeste haengt direkt daran.
+  const EXPECTED: Record<string, string> = {
+    bomb: "turns", headup: "turns", taboo: "turns", category: "turns", "this-or-that": "sequential",
+    hochstapler: "secret", "wahrheit-pflicht": "turns", "wer-bin-ich": "secret", flaschendrehen: "turns",
+    "emoji-raten": "turns", "fake-or-fact": "turns", schnellzeichner: "turns", "split-quiz": "secret",
+    "geteilt-gequizzt": "secret", "story-builder": "turns", "wo-ist-was": "sequential", "drueck-das-wort": "turns",
+    ohrwurm: "turns", pixeljagd: "team", closeenough: "sequential", pantomime: "turns", brew: "turns",
+  };
+  it("jedes Spiel hat den abgestimmten Modus", () => {
+    expect(Object.fromEntries(playableGames.map((g) => [g.id, g.sharedDevice]))).toEqual(EXPECTED);
   });
 });

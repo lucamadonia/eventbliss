@@ -9,12 +9,12 @@
  * der Weitergabe. `isPaused` → Spieluhr anhalten. `tv` gehoert in den
  * TV-Zustand (`handover`), damit der Fernseher „Max spielt am Host-Handy“ zeigt.
  */
-import { useCallback, useEffect, useMemo, useReducer, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
 
 import type { OnlineGameProps } from "../multiplayer/OnlineGameTypes";
 import { activeGuest as activeGuestOf, handoverReducer, initialHandoverState, isClockPaused, handoverRecipient, type HandoverState } from "./handover-machine";
 import { HandoverScreen } from "./HandoverScreen";
-import { handoverScreenProps, localGuestIds, seatLookup, tvHandover, type TvHandover } from "./guest-handover";
+import { handoverScreenProps, localGuestIds, nextDoneIds, seatLookup, tvHandover, type TvHandover } from "./guest-handover";
 
 export interface GuestHandover {
   state: HandoverState;
@@ -38,6 +38,9 @@ export interface GuestHandover {
 
 export function useGuestHandover(online: OnlineGameProps | undefined, opts: { secret?: boolean; clockPaused?: boolean } = {}): GuestHandover {
   const [state, dispatch] = useReducer(handoverReducer, initialHandoverState);
+  // Fertige Gaeste der laufenden Kette (TV-Fortschritt) — im Rendern mitgefuehrt.
+  const chain = useRef<{ state: HandoverState; done: string[] }>({ state, done: [] });
+  if (chain.current.state !== state) chain.current = { state, done: nextDoneIds(chain.current.state, state, chain.current.done) };
   const guests = useMemo(() => localGuestIds(online), [online]);
   const seatOf = useMemo(() => seatLookup(online?.players ?? []), [online?.players]);
   const hostSeat = online ? seatOf(online.myPlayerId) ?? { id: online.myPlayerId, name: "Host", avatar: "👑", color: "#df8eff" } : undefined;
@@ -71,6 +74,6 @@ export function useGuestHandover(online: OnlineGameProps | undefined, opts: { se
     done,
     cancel,
     overlay,
-    tv: tvHandover(state, seatOf),
+    tv: tvHandover(state, seatOf, chain.current.done),
   };
 }

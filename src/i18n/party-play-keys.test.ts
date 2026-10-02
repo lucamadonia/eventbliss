@@ -17,7 +17,7 @@ import path from 'node:path';
 const SRC = path.resolve(__dirname, '..');
 const LOCALES = path.join(SRC, 'i18n/locales');
 const CODES = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'pl', 'tr', 'ar'];
-const NAMESPACES = ['tvLobby', 'handover', 'partyPlay'];
+const NAMESPACES = ['tvLobby', 'handover', 'partyPlay', 'tvCinema'];
 /**
  * Namensraeume, deren Texte gerade zusammengetragen werden. Bewusst sichtbar
  * statt still ausgelassen — sobald die Liste steht, hier entfernen.

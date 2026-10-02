@@ -4,7 +4,7 @@
 import { describe, it, expect } from "vitest";
 
 import { handoverReducer, initialHandoverState, type HandoverEvent } from "./handover-machine";
-import { handoverScreenProps, localActiveSeats, localGuestIds, seatLookup, tvHandover } from "./guest-handover";
+import { handoverScreenProps, localActiveSeats, localGuestIds, nextDoneIds, seatLookup, tvHandover, TV_HANDOVER_MAX_IDS } from "./guest-handover";
 
 const players = [
   { id: "host", name: "Luca", avatar: "👑", color: "#ff0000" },
@@ -58,14 +58,53 @@ describe("handoverScreenProps", () => {
   });
 });
 
-describe("tvHandover — nur Name/Symbol/Farbe, nie Geheimes", () => {
-  it("zeigt, wer am Host-Handy spielt oder es gleich bekommt", () => {
+describe("tvHandover — nur Name/Symbol/Farbe + Fortschritt, nie Geheimes", () => {
+  const req = (ids: string[]): HandoverEvent => ({ type: "request", playerIds: ids });
+  const C: HandoverEvent = { type: "confirm" }, D: HandoverEvent = { type: "done" };
+
+  it("idle → nichts", () => {
     expect(tvHandover(initialHandoverState, seatOf)).toBeNull();
-    expect(tvHandover(run([{ type: "request", playerIds: ["max"] }]), seatOf)).toEqual({ playerId: "max", name: "Max", avatar: "🎸", color: "#0000ff" });
-    expect(tvHandover(run([{ type: "request", playerIds: ["max"] }, { type: "confirm" }]), seatOf)?.playerId).toBe("max");
-    expect(tvHandover(run([{ type: "request", playerIds: ["max", "gerda"] }, { type: "confirm" }, { type: "done" }]), seatOf)?.playerId).toBe("gerda");
-    expect(tvHandover(run([{ type: "request", playerIds: ["max"] }, { type: "confirm" }, { type: "done" }]), seatOf)).toBeNull();
-    const keys = Object.keys(tvHandover(run([{ type: "request", playerIds: ["max"] }]), seatOf)!);
-    expect(keys.sort()).toEqual(["avatar", "color", "name", "playerId"]);
+  });
+
+  it("Kette Max → Gerda → Host mit Fortschritt", () => {
+    const passing = run([req(["max", "gerda"])]);
+    expect(tvHandover(passing, seatOf)).toEqual({
+      playerId: "max", name: "Max", avatar: "🎸", color: "#0000ff",
+      progress: { doneIds: [], currentId: "max", queueIds: ["gerda"], phase: "passing" },
+      next: { name: "Gerda", avatar: "G", color: "#df8eff" },
+    });
+    const viewing = handoverReducer(passing, C);
+    expect(tvHandover(viewing, seatOf)?.progress).toEqual({ doneIds: [], currentId: "max", queueIds: ["gerda"], phase: "viewing" });
+    const toGerda = handoverReducer(viewing, D);
+    const done1 = nextDoneIds(viewing, toGerda, []);
+    expect(done1).toEqual(["max"]);
+    expect(tvHandover(toGerda, seatOf, done1)?.progress).toEqual({ doneIds: ["max"], currentId: "gerda", queueIds: [], phase: "passing" });
+    expect(tvHandover(toGerda, seatOf, done1)?.next).toBeUndefined();
+    const gerdaViewing = handoverReducer(toGerda, C);
+    const toHost = handoverReducer(gerdaViewing, D);
+    const done2 = nextDoneIds(gerdaViewing, toHost, nextDoneIds(toGerda, gerdaViewing, done1));
+    expect(done2).toEqual(["max", "gerda"]);
+    expect(tvHandover(toHost, seatOf, done2)).toMatchObject({
+      playerId: "gerda", progress: { doneIds: ["max", "gerda"], currentId: "gerda", queueIds: [], phase: "covered" },
+    });
+    const idle = handoverReducer(toHost, C);
+    expect(nextDoneIds(toHost, idle, done2)).toEqual([]);
+    expect(tvHandover(idle, seatOf, [])).toBeNull();
+  });
+
+  it("nur oeffentliche Felder", () => {
+    const tv = tvHandover(run([req(["max"])]), seatOf)!; // ohne Nachfolger: kein `next`
+    expect(Object.keys(tv).sort()).toEqual(["avatar", "color", "name", "playerId", "progress"]);
+    expect(Object.keys(tv.progress!).sort()).toEqual(["currentId", "doneIds", "phase", "queueIds"]);
+  });
+
+  it("Grenzen: hoechstens 12 Kennungen, keine ueberlangen, keine Unbekannten", () => {
+    const many = Array.from({ length: 20 }, (_, i) => `g${i}`);
+    const lookup = seatLookup(many.map((id) => ({ id, name: id })).concat([{ id: "x".repeat(200), name: "lang" }]));
+    const s = run([req([...many, "x".repeat(200)])]);
+    const p = tvHandover(s, lookup, ["weg", "x".repeat(200)])!.progress!;
+    expect(p.queueIds.length).toBe(TV_HANDOVER_MAX_IDS);
+    expect(p.queueIds.every((id) => id.length <= 128)).toBe(true);
+    expect(p.doneIds).toEqual([]);
   });
 });

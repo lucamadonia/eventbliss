@@ -1,3 +1,4 @@
+import { lookupRoster, useTVRoster } from './cinema/tv-roster';
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -41,6 +42,7 @@ function BoardRow({
   index: number;
   reveal: boolean;
 }) {
+  const roster = useTVRoster();
   const isLeader = entry.rank === 1;
   return (
     <motion.div
@@ -76,7 +78,7 @@ function BoardRow({
           boxShadow: isLeader ? `0 0 22px ${entry.color}66` : undefined,
         }}
       >
-        {entry.avatar || entry.name?.slice(0, 1).toUpperCase()}
+        {entry.avatar || lookupRoster(roster, entry.id, entry.name)?.avatar || entry.name?.slice(0, 1).toUpperCase()}
       </span>
       <span className="flex-1 min-w-0 truncate font-black text-white" style={{ fontSize: tvType.label }}>
         {entry.name}
