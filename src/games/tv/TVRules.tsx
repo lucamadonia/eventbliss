@@ -60,7 +60,7 @@ export default function TVRules({ gameId, gameName }: Props) {
         )}
         <div className="min-w-0">
           <div
-      className="font-black text-[#b3a8c9]"
+            className="font-black text-[#b3a8c9]"
             style={{ fontSize: lu(1.9) }}
           >
             {t('tv.remote.rules')}

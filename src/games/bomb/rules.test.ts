@@ -1,5 +1,5 @@
-import { it, expect } from 'vitest';
-import { speedFuseMs, publicBombState } from './rules';
+import { describe, it, expect } from 'vitest';
+import { speedFuseMs, publicBombState, bombRanks } from './rules';
 it('retains seconds-long fuses after many speed rounds', () => {
   for (const reduction of [0,3000,6000,12000,60000]) {
     const result = speedFuseMs(5,10,reduction);
@@ -16,4 +16,8 @@ it('keeps the quiz answer key off every playing snapshot without changing the ho
   expect(state.currentQuiz.correctIndex).toBe(3);
   expect(publicState.currentQuiz.answers).toEqual(state.currentQuiz.answers);
   expect(publicBombState({ ...state, phase: 'gameOver' }).currentQuiz.correctIndex).toBe(3);
+});
+
+describe('bombRanks', () => {
+  it('numbers places plainly and shares ties', () => expect(bombRanks([0, 0, 2, 5])).toEqual([1, 1, 3, 4]));
 });

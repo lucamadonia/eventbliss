@@ -470,7 +470,7 @@ export default function TVScreen() {
               />
             </Suspense>
           ) : showPartyIntro ? (
-            <TVLobby lobby={lobbyState} notice={lobbyNotice} isConnected={isConnected} error={error} onSound={playLobbySound} />
+            <TVLobby lobby={lobbyState} notice={lobbyNotice} isConnected={isConnected} error={error} onSound={playLobbySound} setlist={partyNight?.playlist} />
           ) : showGameOver ? (
             <TVGameOver scores={scores} gameId={gameState?.game as string | undefined} />
           ) : showLeaderboard ? (
@@ -478,7 +478,7 @@ export default function TVScreen() {
           ) : showGame ? (
             <TVCueContext.Provider value={cueApi}><GameView gameState={gatedGameState ?? gameState} drawing={drawing} /></TVCueContext.Provider>
           ) : (
-            <TVLobby lobby={lobbyState} notice={lobbyNotice} isConnected={isConnected} error={error} onSound={playLobbySound} />
+            <TVLobby lobby={lobbyState} notice={lobbyNotice} isConnected={isConnected} error={error} onSound={playLobbySound} setlist={partyNight?.playlist} />
           )}
         </motion.div>
     </div>

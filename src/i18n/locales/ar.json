@@ -6188,12 +6188,14 @@
       "tutorialStep4": "من تنفجر عنده القنبلة = نقطتا عقوبة",
       "tutorialStep5": "يجب ألا تتكرر الإجابات!",
       "tutorialDismiss": "فهمت!",
-      "taskAllePrompt": "اذكر: {{category}} بـ \"{{letter}}\"",
-      "taskKategoriePrompt": "اذكر {{category}} بـ \"{{letter}}\"!",
+      "taskAllePrompt": "الجميع بالدور: «{{category}}» بـ «{{letter}}»",
+      "taskKategoriePrompt": "اذكر شيئًا من «{{category}}» يبدأ بـ «{{letter}}»!",
       "fewestPenalties": "أقل نقاط جزاء",
       "partyHolderWait": "قد تصل إليك بعد لحظات.",
       "partyHolderPass": "الفتيل ما زال يشتعل!",
-      "partyRound": "الجولة {{round}} من {{total}}"
+      "partyRound": "الجولة {{round}} من {{total}}",
+      "hostStartsRound": "سيبدأ المضيف الجولة {{round}} بعد قليل …",
+      "hostDecidesNext": "المضيف يقرر ما سيحدث بعد ذلك …"
     },
     "headup": {
       "name": "خمّن الكلمة",

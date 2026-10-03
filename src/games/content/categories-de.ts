@@ -11,22 +11,22 @@ export interface GameCategory {
 }
 
 const CATEGORY_NAMES = [
-  'Tiere', 'Länder', 'Staedte', 'Berufe', 'Sportarten', 'Filme',
+  'Tiere', 'Länder', 'Städte', 'Berufe', 'Sportarten', 'Filme',
   'Serien', 'Marken', 'Obstsorten', 'Gemüsesorten', 'Automarken',
   'Farben', 'Musikinstrumente', 'Getränke', 'Süßigkeiten',
-  'Schulfaecher', 'Sprachen', 'Blumen', 'Baeume', 'Gewürze',
-  'Kleidungsstücke', 'Moebelstücke', 'Körperteile', 'Werkzeuge',
+  'Schulfächer', 'Sprachen', 'Blumen', 'Bäume', 'Gewürze',
+  'Kleidungsstücke', 'Möbelstücke', 'Körperteile', 'Werkzeuge',
   'Musikbands', 'Comicfiguren', 'Superhelden', 'Disney-Figuren',
-  'Kuechengeraete', 'Ballsportarten', 'Wassersportarten',
+  'Küchengeräte', 'Ballsportarten', 'Wassersportarten',
   'Wintersportarten', 'Säugetiere', 'Vögel', 'Fische',
-  'Insekten', 'Europaeische Hauptstaedte', 'Deutsche Staedte',
-  'Pizzabelaege', 'Cocktails', 'Brotsorten', 'Käsesorten',
+  'Insekten', 'Europäische Hauptstädte', 'Deutsche Städte',
+  'Pizzabeläge', 'Cocktails', 'Brotsorten', 'Käsesorten',
   'Tanzstile', 'Kartenspiele', 'Brettspiele', 'Videospiele',
-  'Kraeuter', 'Nüsse', 'Minerale', 'Stoffarten',
+  'Kräuter', 'Nüsse', 'Minerale', 'Stoffarten',
   'Hunderassen', 'Dinosaurier', 'Erfindungen', 'Cocktails',
   'Computerbegriffe', 'Mythologie', 'Brotsorten', 'Säugetiere',
-  'Vögel', 'Fische', 'Süßigkeiten', 'Deutsche Staedte',
-  'Europaeische Hauptstaedte', 'Gemüsesorten', 'Musikinstrumente',
+  'Vögel', 'Fische', 'Süßigkeiten', 'Deutsche Städte',
+  'Europäische Hauptstädte', 'Gemüsesorten', 'Musikinstrumente',
 ];
 
 const LETTERS = 'ABCDEFGHIKLMNOPRSTUVW'.split('');
@@ -41,18 +41,18 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-tiere',
     name: 'Tiere',
-    terms: ['Hund', 'Katze', 'Pferd', 'Kuh', 'Schwein', 'Huhn', 'Schaf', 'Ziege', 'Elefant', 'Löwe', 'Tiger', 'Baer', 'Affe', 'Delfin', 'Adler', 'Schlange', 'Frosch', 'Hase', 'Igel', 'Eichhörnchen'],
+    terms: ['Hund', 'Katze', 'Pferd', 'Kuh', 'Schwein', 'Huhn', 'Schaf', 'Ziege', 'Elefant', 'Löwe', 'Tiger', 'Bär', 'Affe', 'Delfin', 'Adler', 'Schlange', 'Frosch', 'Hase', 'Igel', 'Eichhörnchen'],
     difficulty: 'easy',
   },
   {
     id: 'cat-länder',
     name: 'Länder',
-    terms: ['Deutschland', 'Frankreich', 'Italien', 'Spanien', 'England', 'USA', 'Japan', 'Brasilien', 'Australien', 'Kanada', 'Mexiko', 'Indien', 'China', 'Russland', 'Ägypten', 'Suedafrika', 'Argentinien', 'Schweden', 'Griechenland', 'Portugal'],
+    terms: ['Deutschland', 'Frankreich', 'Italien', 'Spanien', 'England', 'USA', 'Japan', 'Brasilien', 'Australien', 'Kanada', 'Mexiko', 'Indien', 'China', 'Russland', 'Ägypten', 'Südafrika', 'Argentinien', 'Schweden', 'Griechenland', 'Portugal'],
     difficulty: 'easy',
   },
   {
     id: 'cat-staedte',
-    name: 'Staedte',
+    name: 'Städte',
     terms: ['Berlin', 'Paris', 'London', 'Rom', 'Madrid', 'New York', 'Tokio', 'Wien', 'Zürich', 'Amsterdam', 'Prag', 'Barcelona', 'Istanbul', 'Dubai', 'Sydney', 'München', 'Hamburg', 'Köln', 'Stockholm', 'Lissabon'],
     difficulty: 'easy',
   },
@@ -101,7 +101,7 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-essen',
     name: 'Essen',
-    terms: ['Pizza', 'Pasta', 'Burger', 'Sushi', 'Schnitzel', 'Bratwurst', 'Kartoffelsalat', 'Lasagne', 'Tacos', 'Curry', 'Pommes', 'Döner', 'Steak', 'Suppe', 'Salat', 'Brezel', 'Croissant', 'Pfannkuchen', 'Knoedel', 'Rouladen'],
+    terms: ['Pizza', 'Pasta', 'Burger', 'Sushi', 'Schnitzel', 'Bratwurst', 'Kartoffelsalat', 'Lasagne', 'Tacos', 'Curry', 'Pommes', 'Döner', 'Steak', 'Suppe', 'Salat', 'Brezel', 'Croissant', 'Pfannkuchen', 'Knödel', 'Rouladen'],
     difficulty: 'easy',
   },
   {
@@ -119,43 +119,43 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-farben',
     name: 'Farben',
-    terms: ['Rot', 'Blau', 'Gruen', 'Gelb', 'Orange', 'Lila', 'Rosa', 'Weiss', 'Schwarz', 'Braun', 'Grau', 'Tuerkis', 'Gold', 'Silber', 'Beige', 'Bordeaux', 'Mint', 'Koralle', 'Indigo', 'Khaki'],
+    terms: ['Rot', 'Blau', 'Grün', 'Gelb', 'Orange', 'Lila', 'Rosa', 'Weiß', 'Schwarz', 'Braun', 'Grau', 'Tuerkis', 'Gold', 'Silber', 'Beige', 'Bordeaux', 'Mint', 'Koralle', 'Indigo', 'Khaki'],
     difficulty: 'easy',
   },
   {
     id: 'cat-instrumente',
     name: 'Instrumente',
-    terms: ['Gitarre', 'Klavier', 'Schlagzeug', 'Geige', 'Floete', 'Trompete', 'Saxophon', 'Harfe', 'Cello', 'Klarinette', 'Oboe', 'Posaune', 'Akkordeon', 'Ukulele', 'Tuba', 'Kontrabass', 'Dudelsack', 'Mundharmonika', 'Triangel', 'Xylophon'],
+    terms: ['Gitarre', 'Klavier', 'Schlagzeug', 'Geige', 'Flöte', 'Trompete', 'Saxophon', 'Harfe', 'Cello', 'Klarinette', 'Oboe', 'Posaune', 'Akkordeon', 'Ukulele', 'Tuba', 'Kontrabass', 'Dudelsack', 'Mundharmonika', 'Triangel', 'Xylophon'],
     difficulty: 'easy',
   },
   {
     id: 'cat-kleidung',
     name: 'Kleidung',
-    terms: ['T-Shirt', 'Jeans', 'Kleid', 'Anzug', 'Pullover', 'Jacke', 'Mantel', 'Schuhe', 'Stiefel', 'Muetze', 'Schal', 'Handschuhe', 'Rock', 'Bluse', 'Hemd', 'Socken', 'Guertel', 'Krawatte', 'Shorts', 'Badeanzug'],
+    terms: ['T-Shirt', 'Jeans', 'Kleid', 'Anzug', 'Pullover', 'Jacke', 'Mantel', 'Schuhe', 'Stiefel', 'Mütze', 'Schal', 'Handschuhe', 'Rock', 'Bluse', 'Hemd', 'Socken', 'Gürtel', 'Krawatte', 'Shorts', 'Badeanzug'],
     difficulty: 'easy',
   },
   {
     id: 'cat-moebel',
-    name: 'Moebel',
-    terms: ['Tisch', 'Stuhl', 'Sofa', 'Bett', 'Schrank', 'Regal', 'Kommode', 'Schreibtisch', 'Sessel', 'Hocker', 'Vitrine', 'Nachttisch', 'Garderobe', 'Truhe', 'Bank', 'Sideboard', 'Haengematte', 'Buecherregal', 'Esstisch', 'Couchtisch'],
+    name: 'Möbel',
+    terms: ['Tisch', 'Stuhl', 'Sofa', 'Bett', 'Schrank', 'Regal', 'Kommode', 'Schreibtisch', 'Sessel', 'Hocker', 'Vitrine', 'Nachttisch', 'Garderobe', 'Truhe', 'Bank', 'Sideboard', 'Hängematte', 'Bücherregal', 'Esstisch', 'Couchtisch'],
     difficulty: 'easy',
   },
   {
     id: 'cat-werkzeuge',
     name: 'Werkzeuge',
-    terms: ['Hammer', 'Schraubenzieher', 'Zange', 'Saege', 'Bohrmaschine', 'Schraubenschluessel', 'Wasserwaage', 'Meissel', 'Feile', 'Schleifpapier', 'Massband', 'Loetkolben', 'Axt', 'Hobel', 'Stechbeitel', 'Pinsel', 'Spachtel', 'Kelle', 'Sechskantschluessel', 'Rohrzange'],
+    terms: ['Hammer', 'Schraubenzieher', 'Zange', 'Säge', 'Bohrmaschine', 'Schraubenschlüssel', 'Wasserwaage', 'Meissel', 'Feile', 'Schleifpapier', 'Massband', 'Lötkolben', 'Axt', 'Hobel', 'Stechbeitel', 'Pinsel', 'Spachtel', 'Kelle', 'Sechskantschlüssel', 'Rohrzange'],
     difficulty: 'medium',
   },
   {
     id: 'cat-blumen',
     name: 'Blumen',
-    terms: ['Rose', 'Tulpe', 'Sonnenblume', 'Lilie', 'Orchidee', 'Gaensebluemchen', 'Nelke', 'Veilchen', 'Lavendel', 'Geranie', 'Dahlie', 'Mohn', 'Iris', 'Narzisse', 'Chrysantheme', 'Hibiskus', 'Jasmin', 'Magnolie', 'Krokus', 'Primel'],
+    terms: ['Rose', 'Tulpe', 'Sonnenblume', 'Lilie', 'Orchidee', 'Gänseblümchen', 'Nelke', 'Veilchen', 'Lavendel', 'Geranie', 'Dahlie', 'Mohn', 'Iris', 'Narzisse', 'Chrysantheme', 'Hibiskus', 'Jasmin', 'Magnolie', 'Krokus', 'Primel'],
     difficulty: 'medium',
   },
   {
     id: 'cat-gewuerze',
     name: 'Gewürze',
-    terms: ['Salz', 'Pfeffer', 'Paprika', 'Zimt', 'Kurkuma', 'Oregano', 'Basilikum', 'Rosmarin', 'Thymian', 'Muskatnuss', 'Ingwer', 'Knoblauch', 'Safran', 'Chili', 'Vanille', 'Koriander', 'Kreuzkuemmel', 'Anis', 'Dill', 'Petersilie'],
+    terms: ['Salz', 'Pfeffer', 'Paprika', 'Zimt', 'Kurkuma', 'Oregano', 'Basilikum', 'Rosmarin', 'Thymian', 'Muskatnuss', 'Ingwer', 'Knoblauch', 'Safran', 'Chili', 'Vanille', 'Koriander', 'Kreuzkümmel', 'Anis', 'Dill', 'Petersilie'],
     difficulty: 'medium',
   },
   {
@@ -166,14 +166,14 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   },
   {
     id: 'cat-schulfaecher',
-    name: 'Schulfaecher',
-    terms: ['Mathematik', 'Deutsch', 'Englisch', 'Biologie', 'Physik', 'Chemie', 'Geschichte', 'Geografie', 'Kunst', 'Musik', 'Sport', 'Informatik', 'Franzoesisch', 'Religion', 'Ethik', 'Politik', 'Wirtschaft', 'Latein', 'Philosophie', 'Spanisch'],
+    name: 'Schulfächer',
+    terms: ['Mathematik', 'Deutsch', 'Englisch', 'Biologie', 'Physik', 'Chemie', 'Geschichte', 'Geografie', 'Kunst', 'Musik', 'Sport', 'Informatik', 'Französisch', 'Religion', 'Ethik', 'Politik', 'Wirtschaft', 'Latein', 'Philosophie', 'Spanisch'],
     difficulty: 'easy',
   },
   {
     id: 'cat-sprachen',
     name: 'Sprachen',
-    terms: ['Deutsch', 'Englisch', 'Franzoesisch', 'Spanisch', 'Italienisch', 'Portugiesisch', 'Russisch', 'Chinesisch', 'Japanisch', 'Arabisch', 'Tuerkisch', 'Koreanisch', 'Hindi', 'Polnisch', 'Niederlaendisch', 'Schwedisch', 'Griechisch', 'Tschechisch', 'Ungarisch', 'Finnisch'],
+    terms: ['Deutsch', 'Englisch', 'Französisch', 'Spanisch', 'Italienisch', 'Portugiesisch', 'Russisch', 'Chinesisch', 'Japanisch', 'Arabisch', 'Türkisch', 'Koreanisch', 'Hindi', 'Polnisch', 'Niederländisch', 'Schwedisch', 'Griechisch', 'Tschechisch', 'Ungarisch', 'Finnisch'],
     difficulty: 'easy',
   },
   {
@@ -185,13 +185,13 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-körperteile',
     name: 'Körperteile',
-    terms: ['Kopf', 'Hand', 'Fuss', 'Auge', 'Nase', 'Mund', 'Ohr', 'Arm', 'Bein', 'Finger', 'Zehe', 'Knie', 'Ellbogen', 'Schulter', 'Rücken', 'Bauch', 'Hals', 'Stirn', 'Lippe', 'Zunge'],
+    terms: ['Kopf', 'Hand', 'Fuß', 'Auge', 'Nase', 'Mund', 'Ohr', 'Arm', 'Bein', 'Finger', 'Zehe', 'Knie', 'Ellbogen', 'Schulter', 'Rücken', 'Bauch', 'Hals', 'Stirn', 'Lippe', 'Zunge'],
     difficulty: 'easy',
   },
   {
     id: 'cat-maerchenfiguren',
     name: 'Märchenfiguren',
-    terms: ['Rotkappchen', 'Aschenputtel', 'Schneewittchen', 'Rapunzel', 'Haensel', 'Gretel', 'Dornroeschen', 'Rumpelstilzchen', 'Frau Holle', 'Der gestiefelte Kater', 'Hans im Glück', 'Bremer Stadtmusikanten', 'Froschkönig', 'Sterntaler', 'Schneekönigin', 'Goldloeckchen', 'Daeumling', 'Der Wolf', 'Die boese Stiefmutter', 'Pinocchio'],
+    terms: ['Rotkappchen', 'Aschenputtel', 'Schneewittchen', 'Rapunzel', 'Hänsel', 'Gretel', 'Dornröschen', 'Rumpelstilzchen', 'Frau Holle', 'Der gestiefelte Kater', 'Hans im Glück', 'Bremer Stadtmusikanten', 'Froschkönig', 'Sterntaler', 'Schneekönigin', 'Goldlöckchen', 'Däumling', 'Der Wolf', 'Die böse Stiefmutter', 'Pinocchio'],
     difficulty: 'easy',
   },
   {
@@ -203,13 +203,13 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-emojis',
     name: 'Emojis beschreiben',
-    terms: ['Lachendes Gesicht', 'Herz', 'Daumen hoch', 'Feuer', 'Traenen lachen', 'Kuss', 'Zwinkern', 'Nachdenklich', 'Trauriges Gesicht', 'Wuetend', 'Party', 'Geist', 'Clown', 'Roboter', 'Affe', 'Einhorn', 'Regenbogen', 'Rakete', 'Krone', 'Diamant'],
+    terms: ['Lachendes Gesicht', 'Herz', 'Daumen hoch', 'Feuer', 'Tränen lachen', 'Kuss', 'Zwinkern', 'Nachdenklich', 'Trauriges Gesicht', 'Wütend', 'Party', 'Geist', 'Clown', 'Roboter', 'Affe', 'Einhorn', 'Regenbogen', 'Rakete', 'Krone', 'Diamant'],
     difficulty: 'medium',
   },
   {
     id: 'cat-brettspiele',
     name: 'Brettspiele',
-    terms: ['Schach', 'Monopoly', 'Risiko', 'Scrabble', 'Cluedo', 'Mensch ärgere dich nicht', 'Siedler von Catan', 'Dame', 'Backgammon', 'Trivial Pursuit', 'Uno', 'Halma', 'Muehlespiel', 'Activity', 'Tabu', 'Pictionary', 'Jenga', 'Stratego', 'Vier gewinnt', 'Memory'],
+    terms: ['Schach', 'Monopoly', 'Risiko', 'Scrabble', 'Cluedo', 'Mensch ärgere dich nicht', 'Siedler von Catan', 'Dame', 'Backgammon', 'Trivial Pursuit', 'Uno', 'Halma', 'Mühlespiel', 'Activity', 'Tabu', 'Pictionary', 'Jenga', 'Stratego', 'Vier gewinnt', 'Memory'],
     difficulty: 'easy',
   },
   {
@@ -221,24 +221,24 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-desserts',
     name: 'Desserts',
-    terms: ['Schokoladenkuchen', 'Tiramisu', 'Creme brulee', 'Eis', 'Panna Cotta', 'Apfelstrudel', 'Brownie', 'Cheesecake', 'Mousse au Chocolat', 'Waffeln', 'Pfannkuchen', 'Pudding', 'Muffin', 'Macaron', 'Donut', 'Baklava', 'Schwarzwaelder Kirschtorte', 'Kaiserschmarrn', 'Strudel', 'Creme Caramel'],
+    terms: ['Schokoladenkuchen', 'Tiramisu', 'Creme brulee', 'Eis', 'Panna Cotta', 'Apfelstrudel', 'Brownie', 'Cheesecake', 'Mousse au Chocolat', 'Waffeln', 'Pfannkuchen', 'Pudding', 'Muffin', 'Macaron', 'Donut', 'Baklava', 'Schwarzwälder Kirschtorte', 'Kaiserschmarrn', 'Strudel', 'Creme Caramel'],
     difficulty: 'easy',
   },
   {
     id: 'cat-wetter',
-    name: 'Wetterphaenomene',
-    terms: ['Regen', 'Schnee', 'Gewitter', 'Hagel', 'Nebel', 'Wind', 'Sturm', 'Tornado', 'Hurrikan', 'Sonnenschein', 'Regenbogen', 'Frost', 'Tau', 'Blitz', 'Donner', 'Wolken', 'Hitze', 'Kaelte', 'Eiszapfen', 'Schneeflocke'],
+    name: 'Wetterphänomene',
+    terms: ['Regen', 'Schnee', 'Gewitter', 'Hagel', 'Nebel', 'Wind', 'Sturm', 'Tornado', 'Hurrikan', 'Sonnenschein', 'Regenbogen', 'Frost', 'Tau', 'Blitz', 'Donner', 'Wolken', 'Hitze', 'Kälte', 'Eiszapfen', 'Schneeflocke'],
     difficulty: 'easy',
   },
   {
     id: 'cat-transportmittel',
     name: 'Transportmittel',
-    terms: ['Auto', 'Fahrrad', 'Bus', 'Zug', 'Flugzeug', 'Schiff', 'Motorrad', 'Straßenbahn', 'U-Bahn', 'Taxi', 'Hubschrauber', 'Roller', 'Boot', 'Segelboot', 'Kanu', 'Heissluftballon', 'Einrad', 'Skateboard', 'Kutsche', 'Gondel'],
+    terms: ['Auto', 'Fahrrad', 'Bus', 'Zug', 'Flugzeug', 'Schiff', 'Motorrad', 'Straßenbahn', 'U-Bahn', 'Taxi', 'Hubschrauber', 'Roller', 'Boot', 'Segelboot', 'Kanu', 'Heißluftballon', 'Einrad', 'Skateboard', 'Kutsche', 'Gondel'],
     difficulty: 'easy',
   },
   {
     id: 'cat-hauptstaedte',
-    name: 'Hauptstaedte',
+    name: 'Hauptstädte',
     terms: ['Berlin', 'Paris', 'London', 'Madrid', 'Rom', 'Wien', 'Bern', 'Washington', 'Tokio', 'Peking', 'Moskau', 'Canberra', 'Ottawa', 'Brasilia', 'Buenos Aires', 'Kairo', 'Athen', 'Warschau', 'Prag', 'Budapest'],
     difficulty: 'medium',
   },
@@ -250,25 +250,25 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   },
   {
     id: 'cat-beruehmt',
-    name: 'Beruehmte Personen',
+    name: 'Berühmte Personen',
     terms: ['Albert Einstein', 'Wolfgang Amadeus Mozart', 'Leonardo da Vinci', 'Kleopatra', 'Napoleon', 'Martin Luther King', 'Marie Curie', 'Mahatma Gandhi', 'Nelson Mandela', 'Frida Kahlo', 'Charles Darwin', 'Nikola Tesla', 'Che Guevara', 'Anne Frank', 'Pablo Picasso', 'Beethoven', 'Goethe', 'Schiller', 'Karl Marx', 'Angela Merkel'],
     difficulty: 'medium',
   },
   {
     id: 'cat-gemuese',
     name: 'Gemüse',
-    terms: ['Tomate', 'Gurke', 'Karotte', 'Brokkoli', 'Blumenkohl', 'Paprika', 'Zwiebel', 'Knoblauch', 'Spinat', 'Zucchini', 'Aubergine', 'Erbsen', 'Bohnen', 'Mais', 'Sellerie', 'Radieschen', 'Kohlrabi', 'Kuerbis', 'Spargel', 'Rosenkohl'],
+    terms: ['Tomate', 'Gurke', 'Karotte', 'Brokkoli', 'Blumenkohl', 'Paprika', 'Zwiebel', 'Knoblauch', 'Spinat', 'Zucchini', 'Aubergine', 'Erbsen', 'Bohnen', 'Mais', 'Sellerie', 'Radieschen', 'Kohlrabi', 'Kürbis', 'Spargel', 'Rosenkohl'],
     difficulty: 'easy',
   },
   {
     id: 'cat-insekten',
     name: 'Insekten und Krabbeltiere',
-    terms: ['Ameise', 'Biene', 'Schmetterling', 'Marienkaefer', 'Spinne', 'Muecke', 'Fliege', 'Wespe', 'Heuschrecke', 'Libelle', 'Kaefer', 'Raupe', 'Grille', 'Hummel', 'Schnecke', 'Regenwurm', 'Kakerlake', 'Ohrwurm', 'Zecke', 'Floh'],
+    terms: ['Ameise', 'Biene', 'Schmetterling', 'Marienkäfer', 'Spinne', 'Mücke', 'Fliege', 'Wespe', 'Heuschrecke', 'Libelle', 'Käfer', 'Raupe', 'Grille', 'Hummel', 'Schnecke', 'Regenwurm', 'Kakerlake', 'Ohrwurm', 'Zecke', 'Floh'],
     difficulty: 'medium',
   },
   {
     id: 'cat-bauwerke',
-    name: 'Beruehmte Bauwerke',
+    name: 'Berühmte Bauwerke',
     terms: ['Eiffelturm', 'Kolosseum', 'Chinesische Mauer', 'Taj Mahal', 'Freiheitsstatue', 'Big Ben', 'Brandenburger Tor', 'Pyramiden von Gizeh', 'Akropolis', 'Petersdom', 'Burj Khalifa', 'Sydney Opera House', 'Sagrada Familia', 'Tower Bridge', 'Schloss Neuschwanstein', 'Stonehenge', 'Machu Picchu', 'Cristo Redentor', 'Golden Gate Bridge', 'Alhambra'],
     difficulty: 'medium',
   },
@@ -281,7 +281,7 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-kaesesorten',
     name: 'Käsesorten',
-    terms: ['Gouda', 'Emmentaler', 'Camembert', 'Brie', 'Mozzarella', 'Parmesan', 'Cheddar', 'Feta', 'Gorgonzola', 'Roquefort', 'Gruyere', 'Edamer', 'Tilsiter', 'Mascarpone', 'Raclette', 'Ziegenkaese', 'Manchego', 'Pecorino', 'Havarti', 'Bergkaese'],
+    terms: ['Gouda', 'Emmentaler', 'Camembert', 'Brie', 'Mozzarella', 'Parmesan', 'Cheddar', 'Feta', 'Gorgonzola', 'Roquefort', 'Gruyere', 'Edamer', 'Tilsiter', 'Mascarpone', 'Raclette', 'Ziegenkäse', 'Manchego', 'Pecorino', 'Havarti', 'Bergkäse'],
     difficulty: 'hard',
   },
   {
@@ -299,7 +299,7 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-erfindungen',
     name: 'Erfindungen',
-    terms: ['Buchdruck', 'Gluehbirne', 'Telefon', 'Dampfmaschine', 'Automobil', 'Flugzeug', 'Kompass', 'Schiesspulver', 'Penicillin', 'Internet', 'Rad', 'Fernseher', 'Kugelschreiber', 'Reissverschluss', 'Dynamit', 'Roentgenstrahlen', 'Mikroskop', 'Thermometer', 'Streichholz', 'Toilettenspuelung'],
+    terms: ['Buchdruck', 'Glühbirne', 'Telefon', 'Dampfmaschine', 'Automobil', 'Flugzeug', 'Kompass', 'Schiesspulver', 'Penicillin', 'Internet', 'Rad', 'Fernseher', 'Kugelschreiber', 'Reissverschluss', 'Dynamit', 'Röntgenstrahlen', 'Mikroskop', 'Thermometer', 'Streichholz', 'Toilettenspülung'],
     difficulty: 'medium',
   },
   {
@@ -317,7 +317,7 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-brotsorten',
     name: 'Brotsorten',
-    terms: ['Vollkornbrot', 'Weissbrot', 'Roggenbrot', 'Pumpernickel', 'Baguette', 'Ciabatta', 'Focaccia', 'Fladenbrot', 'Sauerteigbrot', 'Toastbrot', 'Dinkelbrot', 'Bauernbrot', 'Mehrkornbrot', 'Nussbrot', 'Schwarzbrot', 'Brioche', 'Knäckebrot', 'Laugenbrot', 'Mischbrot', 'Kartoffelbrot'],
+    terms: ['Vollkornbrot', 'Weißbrot', 'Roggenbrot', 'Pumpernickel', 'Baguette', 'Ciabatta', 'Focaccia', 'Fladenbrot', 'Sauerteigbrot', 'Toastbrot', 'Dinkelbrot', 'Bauernbrot', 'Mehrkornbrot', 'Nussbrot', 'Schwarzbrot', 'Brioche', 'Knäckebrot', 'Laugenbrot', 'Mischbrot', 'Kartoffelbrot'],
     difficulty: 'medium',
   },
   {
@@ -341,18 +341,18 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-nuesse',
     name: 'Nüsse',
-    terms: ['Walnuss', 'Haselnuss', 'Mandel', 'Cashew', 'Pistazie', 'Erdnuss', 'Macadamia', 'Pekanuss', 'Paranuss', 'Kokosnuss', 'Pinienkern', 'Maroni', 'Muskatnuss', 'Sonnenblumenkern', 'Sesam', 'Kuerbiskern', 'Chiasamen', 'Leinsamen', 'Hanfsamen', 'Mohnsamen'],
+    terms: ['Walnuss', 'Haselnuss', 'Mandel', 'Cashew', 'Pistazie', 'Erdnuss', 'Macadamia', 'Pekanuss', 'Paranuss', 'Kokosnuss', 'Pinienkern', 'Maroni', 'Muskatnuss', 'Sonnenblumenkern', 'Sesam', 'Kürbiskern', 'Chiasamen', 'Leinsamen', 'Hanfsamen', 'Mohnsamen'],
     difficulty: 'medium',
   },
   {
     id: 'cat-kraeuter',
-    name: 'Kraeuter',
-    terms: ['Basilikum', 'Petersilie', 'Schnittlauch', 'Minze', 'Rosmarin', 'Thymian', 'Oregano', 'Salbei', 'Dill', 'Koriander', 'Estragon', 'Majoran', 'Liebstoeckel', 'Kerbel', 'Zitronenmelisse', 'Bohnenkraut', 'Lorbeer', 'Brunnenkresse', 'Baerlauch', 'Borretsch'],
+    name: 'Kräuter',
+    terms: ['Basilikum', 'Petersilie', 'Schnittlauch', 'Minze', 'Rosmarin', 'Thymian', 'Oregano', 'Salbei', 'Dill', 'Koriander', 'Estragon', 'Majoran', 'Liebstöckel', 'Kerbel', 'Zitronenmelisse', 'Bohnenkraut', 'Lorbeer', 'Brunnenkresse', 'Bärlauch', 'Borretsch'],
     difficulty: 'medium',
   },
   {
     id: 'cat-baeume',
-    name: 'Baeume',
+    name: 'Bäume',
     terms: ['Eiche', 'Buche', 'Birke', 'Kiefer', 'Fichte', 'Tanne', 'Ahorn', 'Linde', 'Kastanie', 'Weide', 'Pappel', 'Erle', 'Esche', 'Ulme', 'Platane', 'Zeder', 'Mammutbaum', 'Olivenbaum', 'Palme', 'Eukalyptus'],
     difficulty: 'medium',
   },
@@ -376,14 +376,14 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   },
   {
     id: 'cat-pizzabelaege',
-    name: 'Pizzabelaege',
+    name: 'Pizzabeläge',
     terms: ['Salami', 'Schinken', 'Pilze', 'Paprika', 'Oliven', 'Zwiebel', 'Ananas', 'Thunfisch', 'Mozzarella', 'Parmesan', 'Rucola', 'Artischocken', 'Sardellen', 'Mais', 'Jalapenos', 'Spinat', 'Gorgonzola', 'Knoblauch', 'Peperoni', 'Kapern'],
     difficulty: 'easy',
   },
   {
     id: 'cat-wintersportarten',
     name: 'Wintersportarten',
-    terms: ['Skifahren', 'Snowboarden', 'Eislaufen', 'Eishockey', 'Rodeln', 'Biathlon', 'Langlauf', 'Skispringen', 'Curling', 'Eisschnelllauf', 'Bobfahren', 'Eiskunstlauf', 'Freestyle-Ski', 'Skeleton', 'Nordische Kombination', 'Eisstockschiessen', 'Schneeschuhwandern', 'Eisklettern', 'Hundeschlitten', 'Skicross'],
+    terms: ['Skifahren', 'Snowboarden', 'Eislaufen', 'Eishockey', 'Rodeln', 'Biathlon', 'Langlauf', 'Skispringen', 'Curling', 'Eisschnelllauf', 'Bobfahren', 'Eiskunstlauf', 'Freestyle-Ski', 'Skeleton', 'Nordische Kombination', 'Eisstockschießen', 'Schneeschuhwandern', 'Eisklettern', 'Hundeschlitten', 'Skicross'],
     difficulty: 'medium',
   },
   {
@@ -401,7 +401,7 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   {
     id: 'cat-comicfiguren',
     name: 'Comicfiguren',
-    terms: ['Mickey Mouse', 'Donald Duck', 'Asterix', 'Obelix', 'Tim und Struppi', 'Lucky Luke', 'Garfield', 'Snoopy', 'Die Schluempfe', 'SpongeBob', 'Bart Simpson', 'Homer Simpson', 'Bugs Bunny', 'Tom und Jerry', 'Popeye', 'Werner', 'Fix und Foxi', 'Wickie', 'Biene Maja', 'Benjamin Bluemchen'],
+    terms: ['Mickey Mouse', 'Donald Duck', 'Asterix', 'Obelix', 'Tim und Struppi', 'Lucky Luke', 'Garfield', 'Snoopy', 'Die Schlümpfe', 'SpongeBob', 'Bart Simpson', 'Homer Simpson', 'Bugs Bunny', 'Tom und Jerry', 'Popeye', 'Werner', 'Fix und Foxi', 'Wickie', 'Biene Maja', 'Benjamin Blümchen'],
     difficulty: 'easy',
   },
   {
@@ -412,8 +412,8 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   },
   {
     id: 'cat-kuechengeraete',
-    name: 'Kuechengeraete',
-    terms: ['Mixer', 'Toaster', 'Wasserkocher', 'Kaffeemaschine', 'Mikrowelle', 'Backofen', 'Herd', 'Kuehlschrank', 'Geschirrspueler', 'Pfanne', 'Topf', 'Nudelholz', 'Schneebesen', 'Sieb', 'Reibe', 'Dosenöffner', 'Brotmaschine', 'Waffeleisen', 'Entsafter', 'Thermomix'],
+    name: 'Küchengeräte',
+    terms: ['Mixer', 'Toaster', 'Wasserkocher', 'Kaffeemaschine', 'Mikrowelle', 'Backofen', 'Herd', 'Kühlschrank', 'Geschirrspüler', 'Pfanne', 'Topf', 'Nudelholz', 'Schneebesen', 'Sieb', 'Reibe', 'Dosenöffner', 'Brotmaschine', 'Waffeleisen', 'Entsafter', 'Thermomix'],
     difficulty: 'easy',
   },
   {
@@ -430,32 +430,32 @@ export const GAME_CATEGORIES_DE: GameCategory[] = [
   },
   {
     id: 'cat-deutsche-staedte',
-    name: 'Deutsche Staedte',
-    terms: ['Berlin', 'München', 'Hamburg', 'Köln', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dresden', 'Leipzig', 'Hannover', 'Nürnberg', 'Bremen', 'Dortmund', 'Essen', 'Bonn', 'Freiburg', 'Heidelberg', 'Potsdam', 'Rostock', 'Luebeck'],
+    name: 'Deutsche Städte',
+    terms: ['Berlin', 'München', 'Hamburg', 'Köln', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dresden', 'Leipzig', 'Hannover', 'Nürnberg', 'Bremen', 'Dortmund', 'Essen', 'Bonn', 'Freiburg', 'Heidelberg', 'Potsdam', 'Rostock', 'Lübeck'],
     difficulty: 'easy',
   },
   {
     id: 'cat-europaeische-hauptstaedte',
-    name: 'Europaeische Hauptstaedte',
-    terms: ['Berlin', 'Paris', 'London', 'Madrid', 'Rom', 'Wien', 'Bern', 'Bruessel', 'Amsterdam', 'Kopenhagen', 'Stockholm', 'Oslo', 'Helsinki', 'Prag', 'Warschau', 'Budapest', 'Athen', 'Lissabon', 'Dublin', 'Bukarest'],
+    name: 'Europäische Hauptstädte',
+    terms: ['Berlin', 'Paris', 'London', 'Madrid', 'Rom', 'Wien', 'Bern', 'Brüssel', 'Amsterdam', 'Kopenhagen', 'Stockholm', 'Oslo', 'Helsinki', 'Prag', 'Warschau', 'Budapest', 'Athen', 'Lissabon', 'Dublin', 'Bukarest'],
     difficulty: 'easy',
   },
   {
     id: 'cat-gemuesesorten',
     name: 'Gemüsesorten',
-    terms: ['Tomate', 'Gurke', 'Karotte', 'Brokkoli', 'Blumenkohl', 'Paprika', 'Zwiebel', 'Spinat', 'Zucchini', 'Aubergine', 'Erbsen', 'Bohnen', 'Mais', 'Sellerie', 'Radieschen', 'Kohlrabi', 'Kuerbis', 'Spargel', 'Rosenkohl', 'Fenchel'],
+    terms: ['Tomate', 'Gurke', 'Karotte', 'Brokkoli', 'Blumenkohl', 'Paprika', 'Zwiebel', 'Spinat', 'Zucchini', 'Aubergine', 'Erbsen', 'Bohnen', 'Mais', 'Sellerie', 'Radieschen', 'Kohlrabi', 'Kürbis', 'Spargel', 'Rosenkohl', 'Fenchel'],
     difficulty: 'easy',
   },
   {
     id: 'cat-musikinstrumente',
     name: 'Musikinstrumente',
-    terms: ['Gitarre', 'Klavier', 'Schlagzeug', 'Geige', 'Floete', 'Trompete', 'Saxophon', 'Harfe', 'Cello', 'Klarinette', 'Oboe', 'Posaune', 'Akkordeon', 'Ukulele', 'Tuba', 'Kontrabass', 'Dudelsack', 'Mundharmonika', 'Triangel', 'Xylophon'],
+    terms: ['Gitarre', 'Klavier', 'Schlagzeug', 'Geige', 'Flöte', 'Trompete', 'Saxophon', 'Harfe', 'Cello', 'Klarinette', 'Oboe', 'Posaune', 'Akkordeon', 'Ukulele', 'Tuba', 'Kontrabass', 'Dudelsack', 'Mundharmonika', 'Triangel', 'Xylophon'],
     difficulty: 'easy',
   },
   {
     id: 'cat-hunderassen',
     name: 'Hunderassen',
-    terms: ['Labrador', 'Dackel', 'Schaeferhund', 'Golden Retriever', 'Pudel', 'Chihuahua', 'Bulldogge', 'Husky', 'Dalmatiner', 'Beagle', 'Boxer', 'Rottweiler', 'Dobermann', 'Mops', 'Collie', 'Bernhardiner', 'Cocker Spaniel', 'Yorkshire Terrier', 'Corgi', 'Shiba Inu'],
+    terms: ['Labrador', 'Dackel', 'Schäferhund', 'Golden Retriever', 'Pudel', 'Chihuahua', 'Bulldogge', 'Husky', 'Dalmatiner', 'Beagle', 'Boxer', 'Rottweiler', 'Dobermann', 'Mops', 'Collie', 'Bernhardiner', 'Cocker Spaniel', 'Yorkshire Terrier', 'Corgi', 'Shiba Inu'],
     difficulty: 'medium',
   },
 ];

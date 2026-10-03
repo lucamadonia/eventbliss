@@ -81,16 +81,17 @@ export function TurnStartScreen({ explainer, teamName, round, total, countdown, 
         line={t('games.taboo.turn.isUp', { team: teamName })} />
       <RolePill role={role} team={teamName} />
       <div className="taboo-center">
-        <AnimatePresence mode="wait" initial={false}>
+        {/* popLayout, not wait: the role card shows at once, even if a tab throttles the countdown's exit tween. */}
+        <AnimatePresence mode="popLayout" initial={false}>
           {countdown !== null
             ? <motion.p key={`c${countdown}`} className="taboo-countdown tabular-nums" variants={countdownTick} initial={reduce ? false : 'initial'} animate="animate" exit="exit">{countdown}</motion.p>
             : mine || role === 'referee'
-              ? <motion.div key="back" data-testid={mine ? 'taboo-card-back' : 'taboo-referee-preview'} className="taboo-card-back" style={seatVars(explainer.color)} variants={cardEnter} initial={reduce ? false : 'initial'} animate="animate" exit="exit">
+              ? <motion.div key="back" data-testid={mine ? 'taboo-card-back' : 'taboo-referee-preview'} className="taboo-card-back" style={seatVars(explainer.color)} variants={cardEnter} initial={false} animate="animate" exit="exit">
                   <Ban className="h-10 w-10" aria-hidden />
                   <p>{mine ? t('games.taboo.turn.cardBack', 'Deine Karte liegt verdeckt bereit')
                     : t('games.taboo.turn.refereePreview', { name: explainer.name, defaultValue: 'Du siehst die Karte, sobald {{name}} erklärt' })}</p>
                 </motion.div>
-              : <motion.p key="hint" className="taboo-hint" variants={cardEnter} initial={reduce ? false : 'initial'} animate="animate" exit="exit">{hint}</motion.p>}
+              : <motion.p key="hint" className="taboo-hint" variants={cardEnter} initial={false} animate="animate" exit="exit">{hint}</motion.p>}
         </AnimatePresence>
         {(mine || role === 'referee') && countdown === null && <p className="taboo-hint">{hint}</p>}
       </div>

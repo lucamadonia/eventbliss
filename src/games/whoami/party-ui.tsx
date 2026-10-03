@@ -29,8 +29,10 @@ export function SeatAvatar({ seat, size = 56, active = false }: { seat: Seat; si
  * Buehne oben (Design §9.1): wer dran ist, gross und in seiner Farbe; darunter
  * die Handlung in der Daumenzone (`children`).
  */
-export function PartyStage({ seat, eyebrow, title, subtitle, children, testId }: {
+export function PartyStage({ seat, eyebrow, title, subtitle, children, testId, contentTop = false }: {
   seat?: Seat; eyebrow?: ReactNode; title: ReactNode; subtitle?: ReactNode; children?: ReactNode; testId?: string;
+  /** Content follows the subline directly (lists) instead of sitting in the thumb zone. */
+  contentTop?: boolean;
 }) {
   const reduce = !!useReducedMotion();
   const glow = seat?.color ?? '#ef987e';
@@ -45,7 +47,7 @@ export function PartyStage({ seat, eyebrow, title, subtitle, children, testId }:
         <h2 className="max-w-[18ch] font-game text-[clamp(1.75rem,8vw,2.75rem)] font-extrabold leading-tight text-white">{title}</h2>
         {subtitle && <p className="max-w-sm text-base font-medium text-white/60">{subtitle}</p>}
       </div>
-      <div className="relative mx-auto mt-auto flex w-full max-w-md flex-col gap-3 pt-4">{children}</div>
+      <div className={`relative mx-auto ${contentTop ? 'mt-2' : 'mt-auto'} flex w-full max-w-md flex-col gap-3 pt-4`}>{children}</div>
     </motion.div>
   );
 }

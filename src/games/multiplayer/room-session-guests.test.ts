@@ -157,3 +157,16 @@ describe('host-announced guests in a controller party room', () => {
     expect(host.getSnapshot().connection).toBe('connected');
   });
 });
+
+describe('shared same-topic channel removed by another owner (TV hook)', () => {
+  it('rebuilds the room channel when it is closed from outside', async () => {
+    const network = new Network(), host = session(network), guest = session(network);
+    const code = await host.createRoom('bomb', false, 'Host');
+    await guest.joinRoom(code, 'Guest');
+    const shared = network.channels.find(channel => channel.presence?.id === guest.getSnapshot().myPlayerId)!;
+    // Another owner (useTVBroadcast) removes the deduped channel instance.
+    shared.state = 'closed'; shared.presence = null; network.sync(shared.topic); shared.status?.('CLOSED');
+    await until(() => guest.getSnapshot().connection === 'connected' && network.channels.filter(ch => ch.topic === shared.topic && ch.state === 'joined').length === 2);
+    await until(() => host.getSnapshot().players.length === 2);
+  });
+});

@@ -243,7 +243,7 @@ export default function TVPartyMap({
               </motion.div>
 
               <div
-        className="mt-2 text-center font-black"
+                className="mt-2 text-center font-black"
                 style={{
                   fontSize: lu(1.9),
                   color: active ? '#ffffff' : 'rgba(255,255,255,0.45)',
@@ -316,7 +316,7 @@ export default function TVPartyMap({
           className="text-center"
         >
           <div
-      className="font-black"
+            className="font-black"
             style={{ fontSize: lu(1.9), color: '#b3a8c9' }}
           >
             {t('tv.partyNight.upNext')}

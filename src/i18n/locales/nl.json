@@ -6396,12 +6396,14 @@
       "tutorialStep4": "Bij wie de bom ontploft = 2 strafpunten",
       "tutorialStep5": "Antwoorden mogen niet herhaald worden!",
       "tutorialDismiss": "BEGREPEN!",
-      "taskAllePrompt": "Noem: {{category}} met \"{{letter}}\"",
-      "taskKategoriePrompt": "Noem een {{category}} met \"{{letter}}\"!",
+      "taskAllePrompt": "Iedereen om de beurt: ‘{{category}}’ met ‘{{letter}}’",
+      "taskKategoriePrompt": "Noem iets uit ‘{{category}}’ met ‘{{letter}}’!",
       "fewestPenalties": "Minste strafpunten",
       "partyHolderWait": "Zo meteen kan hij bij jou belanden.",
       "partyHolderPass": "Het lontje blijft branden!",
-      "partyRound": "Ronde {{round}} van {{total}}"
+      "partyRound": "Ronde {{round}} van {{total}}",
+      "hostStartsRound": "De host start zo ronde {{round}} …",
+      "hostDecidesNext": "De host beslist hoe het verdergaat …"
     },
     "headup": {
       "name": "Heads Up",

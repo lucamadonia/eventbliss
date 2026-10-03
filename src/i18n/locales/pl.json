@@ -6396,12 +6396,14 @@
       "tutorialStep4": "U kogo bomba wybucha = 2 punkty karne",
       "tutorialStep5": "Odpowiedzi nie mogą się powtarzać!",
       "tutorialDismiss": "ROZUMIEM!",
-      "taskAllePrompt": "Podaj: {{category}} z \"{{letter}}\"",
-      "taskKategoriePrompt": "Podaj {{category}} z \"{{letter}}\"!",
+      "taskAllePrompt": "Wszyscy po kolei: „{{category}}” na „{{letter}}”",
+      "taskKategoriePrompt": "Podaj coś z „{{category}}” na „{{letter}}”!",
       "fewestPenalties": "Najmniej kar",
       "partyHolderWait": "Zaraz może trafić do ciebie.",
       "partyHolderPass": "Lont dalej się pali!",
-      "partyRound": "Runda {{round}} z {{total}}"
+      "partyRound": "Runda {{round}} z {{total}}",
+      "hostStartsRound": "Host zaraz zacznie rundę {{round}} …",
+      "hostDecidesNext": "Host zdecyduje, co dalej …"
     },
     "headup": {
       "name": "Heads Up",

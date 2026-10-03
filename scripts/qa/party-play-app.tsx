@@ -37,12 +37,15 @@ const games: Record<string, React.ComponentType<any>> = {
   pixeljagd: lazy(() => import('@/games/pixeljagd/PixeljagdGame')), closeenough: lazy(() => import('@/games/closeenough/CloseEnoughGame')),
   pantomime: lazy(() => import('@/games/pantomime/PantomimeGame')), brew: lazy(() => import('@/games/brew/BrewGame')),
 };
+const LocalGamesHub = lazy(() => import('@/pages/GamesHub'));
 
 function GameRoute() {
-  const { gameId: id } = useParams(); const room = useGameRoom(); const tv = useTVContext(); const navigate = useNavigate();
+  const { gameId: id } = useParams(); const room = useGameRoom(); const tv = useTVContext(); const navigate = useNavigate(); const loc = useLocation();
   useEffect(() => { tv?.setOnlineRoom(room.room?.roomCode ?? null); }, [room.room?.roomCode, tv]);
   const Game = games[id!];
   if (!Game) return <p data-testid="qa-missing-game">Missing game {id}</p>;
+  // One-phone local party (/games/<id>?party=true, no room): the real GamesHub, as in NativeApp.
+  if (!room.room && new URLSearchParams(loc.search).get('party') === 'true') return <Suspense fallback={null}><LocalGamesHub /></Suspense>;
   if (!room.room) return <p data-testid="qa-no-room">No room</p>;
   return <OnlineGameWrapper key={`${id}:${room.room.sessionId}`} gameId={id!} roomCode={room.room.roomCode} playerName={String(window.controllerIdentity?.user_metadata?.display_name ?? 'Player')}>
     {online => <><ControllerGameControls /><Game online={online} onClose={() => navigate('/party/controllers')} /></>}

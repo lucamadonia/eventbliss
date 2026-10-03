@@ -6346,12 +6346,14 @@
       "tutorialStep4": "Chi fa esplodere la bomba = 2 punti di penalità",
       "tutorialStep5": "Le risposte non possono ripetersi!",
       "tutorialDismiss": "CAPITO!",
-      "taskAllePrompt": "Nomina: {{category}} con \"{{letter}}\"",
-      "taskKategoriePrompt": "Nomina un/una {{category}} con \"{{letter}}\"!",
+      "taskAllePrompt": "Tutti a turno: «{{category}}» con «{{letter}}»",
+      "taskKategoriePrompt": "Di’ qualcosa da «{{category}}» con «{{letter}}»!",
       "fewestPenalties": "Meno penalità",
       "partyHolderWait": "Tra poco potrebbe arrivare a te.",
       "partyHolderPass": "La miccia continua a bruciare!",
-      "partyRound": "Round {{round}} di {{total}}"
+      "partyRound": "Round {{round}} di {{total}}",
+      "hostStartsRound": "L’host avvia a breve il round {{round}} …",
+      "hostDecidesNext": "L’host decide come proseguire …"
     },
     "headup": {
       "name": "Indovina Chi",

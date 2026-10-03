@@ -481,13 +481,13 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
       )}
       {view === 'roundEnd' && (
         <motion.div key="roundEnd" exit={{ opacity: 0 }}>
-          <BombRoundEndScreen state={state} onNext={handleNextRound} />
+          <BombRoundEndScreen state={state} onNext={handleNextRound} seats={online ? bombTvPlayers(state.players, online.players) : undefined} canAdvance={!online || online.isHost} />
         </motion.div>
       )}
       {view === 'gameOver' && (
         <motion.div key="gameOver" exit={{ opacity: 0 }}>
           <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-          <BombResultsScreen state={state} onRestart={handleRestart} onExit={handleExit} />
+          <BombResultsScreen state={state} onRestart={handleRestart} onExit={handleExit} seats={online ? bombTvPlayers(state.players, online.players) : undefined} canAdvance={!online || online.isHost} />
         </motion.div>
       )}
     </AnimatePresence>

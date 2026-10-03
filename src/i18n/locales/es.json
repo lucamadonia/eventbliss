@@ -6346,12 +6346,14 @@
       "tutorialStep4": "A quien le explote la bomba = 2 puntos de penalización",
       "tutorialStep5": "¡Las respuestas no se pueden repetir!",
       "tutorialDismiss": "¡ENTENDIDO!",
-      "taskAllePrompt": "Di: {{category}} con \"{{letter}}\"",
-      "taskKategoriePrompt": "¡Di un/a {{category}} con \"{{letter}}\"!",
+      "taskAllePrompt": "Todos por turnos: «{{category}}» con «{{letter}}»",
+      "taskKategoriePrompt": "¡Di algo de «{{category}}» con «{{letter}}»!",
       "fewestPenalties": "Menos penalizaciones",
       "partyHolderWait": "En nada podría caerte a ti.",
       "partyHolderPass": "¡La mecha sigue ardiendo!",
-      "partyRound": "Ronda {{round}} de {{total}}"
+      "partyRound": "Ronda {{round}} de {{total}}",
+      "hostStartsRound": "El anfitrión empieza enseguida la ronda {{round}} …",
+      "hostDecidesNext": "El anfitrión decide cómo seguir …"
     },
     "headup": {
       "name": "Heads Up",

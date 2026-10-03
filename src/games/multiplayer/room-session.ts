@@ -381,6 +381,8 @@ export class RoomSession {
       } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
         this.stale = true;
         this.publish({ connection: 'reconnecting', error: 'Verbindung unterbrochen. Das Spiel wird erneut verbunden.' });
+        // CLOSED without our own disconnect = someone removed the shared same-topic channel (supabase-js dedupes topics): rebuild.
+        if (status === 'CLOSED') setTimeout(() => { if (generation === this.generation) void this.reconnect().catch(error => this.fail(error)); }, 500);
       }
     });
     this.heartbeat = setInterval(() => {

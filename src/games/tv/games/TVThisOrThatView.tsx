@@ -79,7 +79,7 @@ function Half({ side, option, percent, votes, voters, showResults, winner, loser
         <AnimatePresence>
           {winner && (
             <motion.span
-       className="mb-4 inline-flex items-center gap-2 rounded-full px-5 py-2 font-black"
+              className="mb-4 inline-flex items-center gap-2 rounded-full px-5 py-2 font-black"
               style={{ fontSize: tvType.label, color: '#060810', background: color }}
               initial={reduced ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}

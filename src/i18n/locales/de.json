@@ -6386,12 +6386,14 @@
       "tutorialStep4": "Bei wem die Bombe explodiert = 2 Strafpunkte",
       "tutorialStep5": "Antworten dürfen sich nicht wiederholen!",
       "tutorialDismiss": "VERSTANDEN!",
-      "taskAllePrompt": "Nenne: {{category}} mit \"{{letter}}\"",
-      "taskKategoriePrompt": "Nenne ein/eine {{category}} mit \"{{letter}}\"!",
+      "taskAllePrompt": "Alle reihum: „{{category}}“ mit „{{letter}}“",
+      "taskKategoriePrompt": "Nenne etwas aus „{{category}}“ mit „{{letter}}“!",
       "fewestPenalties": "Wenigste Strafpunkte",
       "partyHolderWait": "Gleich könnte sie bei dir landen.",
       "partyHolderPass": "Die Zündschnur brennt weiter!",
-      "partyRound": "Runde {{round}} von {{total}}"
+      "partyRound": "Runde {{round}} von {{total}}",
+      "hostStartsRound": "Der Host startet gleich Runde {{round}} …",
+      "hostDecidesNext": "Der Host entscheidet, wie es weitergeht …"
     },
     "headup": {
       "name": "Stirnraten",

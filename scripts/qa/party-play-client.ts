@@ -27,6 +27,8 @@ window.controllerDeliver = (packet:any) => {
     // Signed room packets: key by the inner event and keep the inner data.
     if(event==='room-wire'&&typeof payload?.body==='string'){try{const b=JSON.parse(payload.body);event=`room:${b.event}`;payload=b.data;}catch{/* opaque */}}
     (w.__qaBroadcasts??={})[event]={at:performance.timeOrigin+performance.now(),payload};
+    // Ordered log of everything received (repro of TV hangs), capped.
+    const log=(w.__qaPacketLog??=[]);log.push({at:performance.timeOrigin+performance.now(),topic:channel.name,event,game:payload?.game,phase:payload?.phase,keys:payload&&typeof payload==='object'?Object.keys(payload).slice(0,12):[]});if(log.length>800)log.splice(0,log.length-800);
   }
   const type=packet.kind==='presence'?'presence':'broadcast';
   const event=packet.kind==='presence'?'sync':packet.message.event;

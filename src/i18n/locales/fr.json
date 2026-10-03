@@ -6346,12 +6346,14 @@
       "tutorialStep4": "Celui sur qui la bombe explose = 2 points de pénalité",
       "tutorialStep5": "Les réponses ne doivent pas se répéter!",
       "tutorialDismiss": "COMPRIS!",
-      "taskAllePrompt": "Cite: {{category}} avec \"{{letter}}\"",
-      "taskKategoriePrompt": "Cite un/une {{category}} avec \"{{letter}}\"!",
+      "taskAllePrompt": "Chacun son tour : « {{category}} » avec « {{letter}} »",
+      "taskKategoriePrompt": "Cite quelque chose de « {{category}} » avec « {{letter}} » !",
       "fewestPenalties": "Le moins de pénalités",
       "partyHolderWait": "Elle pourrait bientôt atterrir chez toi.",
       "partyHolderPass": "La mèche brûle toujours !",
-      "partyRound": "Manche {{round}} sur {{total}}"
+      "partyRound": "Manche {{round}} sur {{total}}",
+      "hostStartsRound": "L’hôte lance bientôt la manche {{round}} …",
+      "hostDecidesNext": "L’hôte décide de la suite …"
     },
     "headup": {
       "name": "Devine-Tête",

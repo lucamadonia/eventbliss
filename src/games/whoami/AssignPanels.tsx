@@ -35,7 +35,7 @@ export function OnlineAssign({ holder, shown, isHost, hasGuests, holderIsGuest, 
   const reduce = !!useReducedMotion();
   const blocked = notSeen.length > 0;
   return (
-    <PartyStage testId="whoami-assign" seat={holder} eyebrow={t('games.whoami.setup.heading')}
+    <PartyStage testId="whoami-assign" contentTop seat={holder} eyebrow={t('games.whoami.setup.heading')}
       title={holder ? t('games.whoami.party.theOthersAre', 'Das sind die anderen') : t('native.gameNames.werBinIch')}
       subtitle={t('games.whoami.party.notYours', 'Deine eigene Figur bleibt geheim — die musst du erfragen.')}>
       <motion.ul variants={listStagger} initial="initial" animate="animate" className="grid max-h-[46dvh] gap-2.5 overflow-y-auto pb-1" aria-label={t('games.whoami.onlineRoles')}>

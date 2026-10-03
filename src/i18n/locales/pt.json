@@ -6396,12 +6396,14 @@
       "tutorialStep4": "Em quem a bomba explode = 2 pontos de penalidade",
       "tutorialStep5": "As respostas não podem se repetir!",
       "tutorialDismiss": "ENTENDIDO!",
-      "taskAllePrompt": "Diga: {{category}} com \"{{letter}}\"",
-      "taskKategoriePrompt": "Diga um/a {{category}} com \"{{letter}}\"!",
+      "taskAllePrompt": "Todos na vez: “{{category}}” com “{{letter}}”",
+      "taskKategoriePrompt": "Diga algo de “{{category}}” com “{{letter}}”!",
       "fewestPenalties": "Menos penalizações",
       "partyHolderWait": "Daqui a pouco ela pode cair na sua mão.",
       "partyHolderPass": "O pavio continua queimando!",
-      "partyRound": "Rodada {{round}} de {{total}}"
+      "partyRound": "Rodada {{round}} de {{total}}",
+      "hostStartsRound": "O host já vai começar a rodada {{round}} …",
+      "hostDecidesNext": "O host decide o que vem agora …"
     },
     "headup": {
       "name": "Heads Up",

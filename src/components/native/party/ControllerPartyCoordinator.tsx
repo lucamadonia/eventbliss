@@ -65,7 +65,10 @@ export function ControllerPartyCoordinator() {
     const isHost = data.party.host_user_id === auth.user?.id;
     const active = room.room.participantIds.includes(room.myPlayerId);
     // The signed room state from the Host is immediate; the party poll is only the fallback.
-    const playing = room.room.status === 'playing' && room.room.sessionId !== endedMatch.current;
+    // The signed room state is fast, but only a match the SERVER started counts: a stale or
+    // unsynced 'playing' room must never pull anyone into a game the Host did not start.
+    const serverStarted = data.party.status === 'playing' || data.party.current_match_id === room.room.sessionId;
+    const playing = room.room.status === 'playing' && serverStarted && room.room.sessionId !== endedMatch.current;
     const path = playing && (active || isHost)
       ? `/games/${room.room.gameId}?room=${data.party.code}&party=true`
       : '/party/controllers';

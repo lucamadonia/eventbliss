@@ -51,7 +51,7 @@ export default function TVLobbyFooter({ lobby }: { lobby: TVLobbyState }) {
     >
       {lobby.nextGame ? (
         <div data-testid="tv-lobby-next-game" data-game-id={lobby.nextGame.id} data-startable={String(!!availability?.startable)} className="flex min-w-0 flex-wrap items-center" style={{ columnGap: lu(1.8), rowGap: lu(0.6) }}>
-          <span className="font-black uppercase text-white/55" style={{ fontSize: lu(1.9), letterSpacing: '0.2em' }}>
+          <span className="font-bold text-white/65" style={{ fontSize: lu(2.1) }}>
             {t('tvLobby.nextUp', 'Als Nächstes')}
           </span>
           <span

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const state = vi.hoisted(() => ({
   effects: [] as Array<() => void>, navigate: vi.fn(), open: vi.fn(), stop: vi.fn(),
-  pathname: '/party/join/BCDEFG', code: 'ABCDEF', playing: true, restored: true,
+  pathname: '/party/join/BCDEFG', code: 'ABCDEF', playing: true, restored: true, serverPlaying: null as boolean | null,
 }));
 vi.mock('react', async importOriginal => ({
   ...await importOriginal<typeof import('react')>(),
@@ -21,7 +21,7 @@ vi.mock('@/components/auth/AuthProvider', () => ({ useAuthContext: () => ({ isLo
 vi.mock('@/games/party/controller-session', () => ({
   openControllerParty: state.open, stopControllerParty: state.stop, refreshControllerParty: async () => {},
   ownMember: (data: { members: { user_id: string }[] } | null, userId: string) => data?.members.find(m => m.user_id === userId) ?? null,
-  useControllerParty: () => ({ data: state.restored ? { party: { code: state.code, host_user_id: 'host', status: state.playing ? 'playing' : 'lobby' }, members: [{ user_id: 'guest' }] } : null }),
+  useControllerParty: () => ({ data: state.restored ? { party: { code: state.code, host_user_id: 'host', status: (state.serverPlaying ?? state.playing) ? 'playing' : 'lobby', current_match_id: null }, members: [{ user_id: 'guest' }] } : null }),
 }));
 vi.mock('@/games/multiplayer/useGameRoom', () => ({ useGameRoom: () => ({ myPlayerId: 'guest-player', room: state.restored ? { roomCode: state.code, gameId: 'bomb', participantIds: ['guest-player'], status: state.playing ? 'playing' : 'lobby' } : null }) }));
 import { ControllerPartyCoordinator } from '@/components/native/party/ControllerPartyCoordinator';
@@ -34,7 +34,7 @@ function renderAndRunEffects() {
   state.effects.forEach(effect => effect());
 }
 beforeEach(() => {
-  vi.clearAllMocks(); state.pathname = '/party/join/BCDEFG'; state.code = 'ABCDEF'; state.playing = true; state.restored = true;
+  vi.clearAllMocks(); state.pathname = '/party/join/BCDEFG'; state.code = 'ABCDEF'; state.playing = true; state.restored = true; state.serverPlaying = null;
 });
 describe('actual coordinator invitation routing effects', () => {
   it('does not redirect a warm B invitation into the active A game', () => {
@@ -60,5 +60,9 @@ describe('actual coordinator invitation routing effects', () => {
   it('returns to A when the user cancels the replacement invitation', () => {
     state.pathname = '/party/controllers'; renderAndRunEffects();
     expect(state.navigate).toHaveBeenCalledWith('/games/bomb?room=ABCDEF&party=true', { replace: true });
+  });
+  it('never jumps into a game the server has not started (stale room state)', () => {
+    state.pathname = '/party/controllers'; state.serverPlaying = false; renderAndRunEffects();
+    expect(state.navigate).not.toHaveBeenCalledWith('/games/bomb?room=ABCDEF&party=true', { replace: true });
   });
 });

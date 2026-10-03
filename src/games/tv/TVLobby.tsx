@@ -8,6 +8,8 @@ import TVLobbyJoinPanel from './components/TVLobbyJoinPanel';
 import TVLobbyPlayerCard, { type LobbyCardSize } from './components/TVLobbyPlayerCard';
 import TVLobbyFooter from './components/TVLobbyFooter';
 import TVLobbyNotice from './components/TVLobbyNotice';
+import TVLobbySetlist from './components/TVLobbySetlist';
+import type { PartyPlaylistItem } from './party-types';
 import { LOBBY_ACCENTS, lu } from './components/tv-lobby-scale';
 import { diffLobbyPlayers, isActiveLobbyPlayer, type TVLobbyState } from './tv-lobby-state';
 
@@ -53,8 +55,10 @@ const SOUND_THROTTLE_MS = 400;
 
 type Toast = { id: string; kind: 'left' | 'joined'; text: string };
 
-export default function TVLobby({ lobby, notice = null, isConnected, error, onSound }: {
+export default function TVLobby({ lobby, notice = null, isConnected, error, onSound, setlist = null }: {
   lobby: TVLobbyState;
+  /** Die Set-Liste des Abends („Heute spielen wir“) — nur in einer Party mit Plan. */
+  setlist?: PartyPlaylistItem[] | null;
   /** Kein Wartebereich bekannt: Gastgeber noch nicht verbunden, oder die Party ist vorbei. */
   notice?: 'waiting-host' | 'ended' | null;
   isConnected: boolean;
@@ -177,13 +181,13 @@ export default function TVLobby({ lobby, notice = null, isConnected, error, onSo
           <TVLobbyNotice kind={notice} code={lobby.code} />
         </main>
       ) : (
-      <main className="relative z-10 grid min-h-0" style={{ gridTemplateColumns: 'auto minmax(0,1fr)', columnGap: lu(6) }}>
+      <main className="relative z-10 grid min-h-0" style={{ gridTemplateColumns: setlist?.length ? `auto minmax(0,1fr) ${lu(48)}` : 'auto minmax(0,1fr)', columnGap: setlist?.length ? lu(4) : lu(6) }}>
         <TVLobbyJoinPanel joinUrl={lobby.joinUrl} code={lobby.code} />
 
         <section className="flex min-h-0 flex-col" style={{ gap: lu(1.6) }}>
           <div className="flex items-center" style={{ gap: lu(1.4) }}>
             <Users className="text-[#df8eff]" style={{ width: lu(2.8), height: lu(2.8) }} />
-            <h3 className="font-black uppercase text-white/85" style={{ fontSize: lu(2.6), letterSpacing: '0.18em' }}>
+            <h3 className="font-black text-white/85" style={{ fontSize: lu(2.8) }}>
               {t('tvLobby.playersHeading', 'Dabei')}
             </h3>
             {/* Die Zahl gleitet weiter, statt neu aufzuploppen. */}
@@ -240,6 +244,7 @@ export default function TVLobby({ lobby, notice = null, isConnected, error, onSo
             ))}
           </motion.div>
         </section>
+        {setlist?.length ? <TVLobbySetlist playlist={setlist} players={activeCount} /> : null}
       </main>
       )}
 

@@ -30,6 +30,7 @@ import { setTvView, resetTvView, getRulesIntro, getTvView, setRulesIntro,
          subscribeTvView, rulesIntroServerSnapshot, tvViewServerSnapshot } from "@/games/tv/tv-view";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { localLobbyState } from "@/games/tv/tv-lobby-state";
+import { partyTvLinkCode } from "@/games/party/tv-link";
 import { PartyStandingsList } from "@/components/native/party/PartyStandingsList";
 import { EventParticipantPicker } from "@/games/ui/EventParticipantPicker";
 import { buildPartyNightState, derivePartyStandings } from "@/games/party/standings";
@@ -47,6 +48,10 @@ export default function PartyLobbyScreen() {
   const party = usePartySession();
   // Seit der Provider ueber der ganzen App haengt, kann auch die Lobby senden.
   const tv = useTVContext();
+  // The TV must open the code this phone actually broadcasts on. The app-wide
+  // provider fixes its code at app start, so a party started later has a
+  // different session code — showing that one left the TV on "Warte auf den Host".
+  const tvLinkCode = partyTvLinkCode(tv?.displayCode, party.tvCode);
   // Vorliebe der Gruppe, nicht Eigenschaft des Abends — wer die Spiele kennt,
   // will die Anleitungen dauerhaft aus haben.
   const rulesIntro = useSyncExternalStore(subscribeTvView, getRulesIntro, rulesIntroServerSnapshot);
@@ -60,6 +65,8 @@ export default function PartyLobbyScreen() {
   const [copied, setCopied] = useState(false);
   const [confirmEnd, setConfirmEnd] = useState(false);
   const [readyGameId, setReadyGameId] = useState<string | null>(null);
+  /** The ready step came from a single pick, not from the set list. */
+  const [singlePick, setSinglePick] = useState(false);
 
   const startSession = party.startSession;
   const isPartyActive = party.isPartyActive;
@@ -136,7 +143,7 @@ export default function PartyLobbyScreen() {
     const next = currentPlaylistGame ? playableGames.find((g) => g.id === currentPlaylistGame) : undefined;
     const lobby = localLobbyState({
       session,
-      code: session.tvCode,
+      code: tvLinkCode ?? session.tvCode,
       nextGame: next ? { id: next.id, name: nameFor(next.id), minPlayers: next.minPlayers, maxPlayers: next.maxPlayers } : null,
     });
     tv.broadcastTV("tv-state", {
@@ -206,8 +213,13 @@ export default function PartyLobbyScreen() {
   }, [playlist, playlistIndex, party, launchGame]);
 
   const handleSelectGame = useCallback((gameId: string) => {
+    // Picking a game never starts it: like the set list, it opens the ready
+    // step with an explicit Start (and the TV shows the "ready" scene).
     haptics.medium();
-    launchGame(gameId);
+    setShowPicker(false);
+    setSinglePick(true);
+    setReadyGameId(gameId);
+    setTvView("ready");
   }, [haptics, launchGame]);
 
   /** Set-Liste uebernehmen und vor Spiel eins bewusst im Ready Room halten. */
@@ -226,12 +238,13 @@ export default function PartyLobbyScreen() {
   const handleReadyStart = useCallback(() => {
     if (!readyGameId) return;
     haptics.celebrate();
+    if (singlePick) { setSinglePick(false); launchGame(readyGameId); return; }
     launchPlaylistEntry(readyGameId);
-  }, [readyGameId, haptics, launchPlaylistEntry]);
+  }, [readyGameId, haptics, launchPlaylistEntry, singlePick, launchGame]);
 
   const handleReadyBack = useCallback(() => {
     haptics.light();
-    setReadyGameId(null);
+    setReadyGameId(null); setSinglePick(false);
     setTvView("map");
   }, [haptics]);
 
@@ -289,16 +302,17 @@ export default function PartyLobbyScreen() {
   }, [party, navigate]);
 
   const handleCopyTvLink = useCallback(async () => {
-    if (!party.tvCode) return;
+    if (!tvLinkCode) return;
+    tv?.activate();
     haptics.success();
     try {
-      await navigator.clipboard.writeText(`${getBaseUrl()}/tv/${party.tvCode}?lang=${i18n.language}`);
+      await navigator.clipboard.writeText(`${getBaseUrl()}/tv/${tvLinkCode}?lang=${i18n.language}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Zwischenablage nicht verfuegbar — der Code steht ja daneben.
     }
-  }, [party.tvCode, haptics, i18n.language]);
+  }, [tvLinkCode, tv, haptics, i18n.language]);
 
   return (
     <div className="relative h-full min-h-0 overflow-y-auto overscroll-y-contain native-scroll bg-background safe-top">
@@ -521,8 +535,8 @@ export default function PartyLobbyScreen() {
         />
 
         {/* TV-Verbindung */}
-        {party.tvCode && (
-          <details className="mx-5 my-5 rounded-2xl border border-border p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.connectTV')}</summary>
+        {tvLinkCode && (
+          <details className="mx-5 my-5 rounded-2xl border border-border p-4" onToggle={event => { if ((event.currentTarget as HTMLDetailsElement).open) tv?.activate(); }}><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.connectTV')}</summary>
             <motion.div
               className="p-4 rounded-2xl bg-[#df8eff]/5 border border-[#df8eff]/15"
               variants={blissBloom}
@@ -536,12 +550,12 @@ export default function PartyLobbyScreen() {
                 <div className="flex-1 min-w-0 text-start">
                   <p className="text-sm font-semibold text-foreground">{t('nativeExtra.connectTV')}</p>
                   <p className="text-xs text-muted-foreground truncate">
-                    {getBaseUrl()}/tv/{party.tvCode}
+                    {getBaseUrl()}/tv/{tvLinkCode}
                   </p>
                 </div>
                 <div className="text-center shrink-0">
                   <p className="text-xl font-display font-black text-violet-500 dark:text-[#df8eff] tracking-[0.15em]">
-                    {party.tvCode}
+                    {tvLinkCode}
                   </p>
                 </div>
               </div>

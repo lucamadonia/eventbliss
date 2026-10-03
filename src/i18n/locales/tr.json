@@ -6396,12 +6396,14 @@
       "tutorialStep4": "Bomba kimin elinde patlarsa = 2 ceza puanı",
       "tutorialStep5": "Cevaplar tekrar edemez!",
       "tutorialDismiss": "ANLADIM!",
-      "taskAllePrompt": "Söyle: {{category}} \"{{letter}}\" ile",
-      "taskKategoriePrompt": "Bir {{category}} söyle \"{{letter}}\" ile!",
+      "taskAllePrompt": "Sırayla herkes: “{{category}}”, “{{letter}}” ile",
+      "taskKategoriePrompt": "“{{category}}” içinden “{{letter}}” ile başlayan bir şey söyle!",
       "fewestPenalties": "En az ceza puanı",
       "partyHolderWait": "Birazdan sana gelebilir.",
       "partyHolderPass": "Fitil yanmaya devam ediyor!",
-      "partyRound": "Tur {{round}} / {{total}}"
+      "partyRound": "Tur {{round}} / {{total}}",
+      "hostStartsRound": "Host birazdan {{round}}. turu başlatıyor …",
+      "hostDecidesNext": "Host nasıl devam edileceğine karar veriyor …"
     },
     "headup": {
       "name": "Heads Up",

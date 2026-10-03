@@ -6386,12 +6386,14 @@
       "tutorialStep4": "Whoever the bomb explodes on = 2 penalty points",
       "tutorialStep5": "Answers must not repeat!",
       "tutorialDismiss": "GOT IT!",
-      "taskAllePrompt": "Name: {{category}} with \"{{letter}}\"",
-      "taskKategoriePrompt": "Name a {{category}} with \"{{letter}}\"!",
+      "taskAllePrompt": "Everyone in turn: “{{category}}” with “{{letter}}”",
+      "taskKategoriePrompt": "Name something from “{{category}}” starting with “{{letter}}”!",
       "fewestPenalties": "Fewest penalties",
       "partyHolderWait": "It could land on you any second.",
       "partyHolderPass": "The fuse is still burning!",
-      "partyRound": "Round {{round}} of {{total}}"
+      "partyRound": "Round {{round}} of {{total}}",
+      "hostStartsRound": "The host starts round {{round}} in a moment …",
+      "hostDecidesNext": "The host decides what’s next …"
     },
     "headup": {
       "name": "Heads Up",
