@@ -727,7 +727,7 @@ export default function PartyLobbyScreen() {
           const at = playlist.indexOf(readyGameId ?? '', playlistIndex) + 1 + offset;
           if (at > 0) party.setPlaylist(playlist.filter((_, i) => i !== at));
         }}
-        onEditSetlist={() => openPicker('setlist')}
+        onEditSetlist={() => { setReadyGameId(null); setSinglePick(false); openPicker('setlist'); }}
         onCountdown={scene => tv?.broadcastTV('game-start', { scene, serverNow: new Date(serverClock.now()).toISOString() })}
         onStart={handleReadyStart}
         onBack={handleReadyBack}
