@@ -7,3 +7,7 @@ android
 appstore
 *.log
 .DS_Store
+*.aab
+*.apk
+.android-release-*
+scripts/tmp
