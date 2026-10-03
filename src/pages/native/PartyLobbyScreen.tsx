@@ -22,7 +22,8 @@ import { usePartySession } from "@/hooks/usePartySession";
 import { useBackGuard } from "@/lib/back-guard";
 import { PartyGamePicker, type PartyPickerMode } from "@/components/native/PartyGamePicker";
 import { PartyFinaleOverlay } from "@/components/native/party/PartyFinaleOverlay";
-import { PartyReadyOverlay } from "@/components/native/party/PartyReadyOverlay";
+import { PartyEveningScreen } from "@/components/native/party/PartyEveningScreen";
+import { serverClock } from "@/games/party/scene-clock";
 import { PartySetlistStrip } from "@/components/native/party/PartySetlistStrip";
 import { nextFittingIndex } from "@/components/native/party/setlist";
 import { TVRemote } from "@/components/native/party/TVRemote";
@@ -123,6 +124,13 @@ export default function PartyLobbyScreen() {
   const currentPlaylistName = currentPlaylistGame
     ? t(playableGames.find((g) => g.id === currentPlaylistGame)?.nameKey ?? currentPlaylistGame)
     : null;
+  // The evening from the ready game on (a single pick is an evening of one game).
+  const eveningGames = useMemo(() => {
+    if (!readyGameId) return [];
+    if (singlePick) return [readyGameId];
+    const at = playlist.indexOf(readyGameId, playlistIndex);
+    return at >= 0 ? playlist.slice(at) : [readyGameId];
+  }, [readyGameId, singlePick, playlist, playlistIndex]);
   const readyGameName = readyGameId
     ? t(playableGames.find((g) => g.id === readyGameId)?.nameKey ?? readyGameId)
     : null;
@@ -704,12 +712,23 @@ export default function PartyLobbyScreen() {
         onStartSetlist={handleStartSetlist}
       />
 
-      <PartyReadyOverlay
+      {/* "Euer Abend": nothing starts on selection — players and plan stay editable until „Erstes Spiel starten“. */}
+      <PartyEveningScreen
         open={!!readyGameId}
-        gameId={readyGameId}
-        gameName={readyGameName}
-        playerCount={players.length}
+        players={players}
+        gameIds={eveningGames}
         tvActive={!!tv?.isActive}
+        onConnectTv={() => tv?.openConnection()}
+        onAddPlayer={profile => { haptics.success(); party.addPlayer(profile.name, { avatar: profile.avatar, color: profile.color }); }}
+        onUpdatePlayer={(id, profile) => party.updatePlayer(id, profile)}
+        onRemovePlayer={id => { haptics.light(); party.removePlayer(id); }}
+        onMovePlayer={(from, to) => party.movePlayer(from, to)}
+        onRemoveGame={offset => {
+          const at = playlist.indexOf(readyGameId ?? '', playlistIndex) + 1 + offset;
+          if (at > 0) party.setPlaylist(playlist.filter((_, i) => i !== at));
+        }}
+        onEditSetlist={() => openPicker('setlist')}
+        onCountdown={scene => tv?.broadcastTV('game-start', { scene, serverNow: new Date(serverClock.now()).toISOString() })}
         onStart={handleReadyStart}
         onBack={handleReadyBack}
       />

@@ -25,13 +25,17 @@ function useTabBarOnScreen(): boolean {
  * fades the content scrolling underneath. Pages leave room for it with
  * <PartyBottomBarSpacer />.
  */
-export function PartyBottomBar({ children, testId }: { children: ReactNode; testId?: string }) {
-  const tabBar = useTabBarOnScreen();
+export function PartyBottomBar({ children, testId, zIndex, coversTabBar = false }: {
+  children: ReactNode; testId?: string;
+  /** Above a full-screen overlay (e.g. "Euer Abend"), which also hides the tab bar. */
+  zIndex?: number; coversTabBar?: boolean;
+}) {
+  const tabBar = useTabBarOnScreen() && !coversTabBar;
   return (
     <NativeOverlayPortal>
       {/* Opaque where the bar and its subline sit, fading out only in the top 32px — nothing shows through. */}
       <div data-testid={testId} className="pointer-events-none fixed inset-x-0 z-40 mx-auto max-w-2xl px-5 pt-8"
-        style={{ bottom: tabBar ? 'var(--tabbar-space)' : 0, paddingBottom: tabBar ? '0.75rem' : 'calc(1rem + env(safe-area-inset-bottom))',
+        style={{ ...(zIndex ? { zIndex } : {}), bottom: tabBar ? 'var(--tabbar-space)' : 0, paddingBottom: tabBar ? '0.75rem' : 'calc(1rem + env(safe-area-inset-bottom))',
           background: 'linear-gradient(to top, #060810 0%, #060810 78%, rgba(6,8,16,0) 100%)' }}>
         <div className="pointer-events-auto">{children}</div>
       </div>
