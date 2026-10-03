@@ -183,3 +183,13 @@ export function tabooTvState(input: {
     roster: input.players, handover: input.handover ?? null,
   };
 }
+
+/**
+ * „Zu spät“ only when the explaining turn itself closed (phase, round or team changed) —
+ * a fast double tap racing the next card is the same turn and is dropped silently (F12).
+ * Turn token: `${phase}:${round}:${team}:${explainers}:${cardKey}:${countdown}`.
+ */
+export function turnClosed(staleTurn: string, currentTurn: string): boolean {
+  const key = (turn: string) => turn.split(':').slice(0, 3).join(':');
+  return key(staleTurn) !== key(currentTurn);
+}

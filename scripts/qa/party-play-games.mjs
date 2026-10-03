@@ -30,14 +30,17 @@ export async function advanceHandover(host, before) {
 /** Host-side setup screen: minimum rounds, then "Start game". Returns false if no setup screen appeared. */
 export async function hostSetup(host, game, timeout = 20000, { rounds = 'min', mode } = {}) {
   if (game === 'flaschendrehen') { await host.clickText('^questions only', 8000); await host.clickText('^prepare', 8000); }
-  const ok = await host.page.waitForFunction(() => [...document.querySelectorAll('button')].some(b => /^(start game|start|los geht|spiel starten)/i.test(b.innerText.trim()) && !b.disabled) || document.querySelector('input[type=range]'), { timeout, polling: 200 }).then(() => true, () => false);
+  // Generic labels plus the game's own translated start label (e.g. closeenough "Losraten").
+  const own = await host.page.evaluate(id => { const k = `games.${id.replace(/-/g, '')}.start`; const v = window.qaT?.(k); return v && v !== k ? v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : null; }, game).catch(() => null);
+  const startRe = `^(start game|start|los geht|spiel starten${own ? `|${own}` : ''})`;
+  const ok = await host.page.waitForFunction(re => [...document.querySelectorAll('button')].some(b => new RegExp(re, 'i').test(b.innerText.trim()) && !b.disabled) || document.querySelector('input[type=range]'), { timeout, polling: 200 }, startRe).then(() => true, () => false);
   if (!ok) return false;
   if (mode) await host.clickText(`^${mode}`, 5000); // game mode tile, e.g. this-or-that "Speed" (F12)
   const ranges = await host.page.$$('input[type=range]');
   // Rounds slider is the last range: Home = shortest match, End = longest (kick tests need time).
   if (ranges.length) { await ranges.at(-1).focus(); await host.page.keyboard.press(rounds === 'max' ? 'End' : 'Home'); }
   if (game === 'fake-or-fact' && ranges.length > 1) { await ranges[0].focus(); await host.page.keyboard.press('End'); }
-  await host.clickText('^(start game|start|los geht|spiel starten)', 8000);
+  await host.clickText(startRe, 8000);
   return true;
 }
 

@@ -481,7 +481,8 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
         </div>
       )}
 
-      <ScoreStrip players={players} />
+      {/* While buzzers show name + score here, the strip lists only the others. */}
+      <ScoreStrip players={players} hide={view === 'playing' && !buzzedBy ? (isOnline ? mySeats : players.map((p) => p.id)) : []} />
 
       {toast && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-2xl text-sm font-bold"

@@ -32,6 +32,7 @@ import { Scoreboard } from './OhrwurmParts';
 import { CounterPanel, CounterPlacePanel, DrawPanel, PlacePanel } from './OhrwurmTurnPanels';
 import { GameOverPanel, LeaveDialog, OhrwurmToast, QrOverlay, RevealPanel, SpotifyStatusBar } from './OhrwurmRevealPanels';
 import { PartyTurnRibbon } from '../ui/PartyTurnRibbon';
+import { OhrwurmWaitStage } from './OhrwurmWaitStage';
 import { OhrwurmSetup, OhrwurmWaiting } from './OhrwurmSetup';
 import { authorizeOhrwurmAction, canCounterAs, ohrwurmActingSeat, ohrwurmAudioHere, ohrwurmBeatPhase, ohrwurmTvPlayers } from './guest-turns';
 
@@ -839,9 +840,9 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
         )}
         {/* Online: block input on devices that aren't the acting player right now — a calm stage, not a spinner. */}
         {isOnline && !canInteract && (
-          <div className="absolute inset-0 z-30 flex items-start justify-center px-4 pt-6" style={{ background: 'rgba(22,16,31,0.55)', backdropFilter: 'blur(1px)' }}>
+          <div className="absolute inset-0 z-30 flex items-start justify-center px-4 pb-6 pt-2" style={{ background: OW.bg }}>
             {actingSeat ? (
-              <PartyTurnRibbon className="max-w-md" player={actingSeat} kind="other"
+              <OhrwurmWaitStage acting={actingSeat} mine={participants.find((p) => p.id === myId)}
                 line={tvConnected ? t('games.ohrwurm.watchTV') : t('games.ohrwurm.yourTurnSoon')} />
             ) : (
               <p className="px-5 py-3 rounded-2xl text-sm font-bold" style={{ background: OW.surface }}>{t('games.ohrwurm.waiting')}</p>

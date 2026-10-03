@@ -326,7 +326,8 @@ export default function TVScreen() {
 
   return (
     <TVRosterContext.Provider value={roster}>
-    <div className="min-h-screen bg-[#060810] text-[#f1f3fc] overflow-hidden font-game">
+    {/* Ueberschriften ausgewogen umbrechen (text-wrap: balance) — nie ein einzelnes Wort allein in Zeile 2. */}
+    <div className="min-h-screen bg-[#060810] text-[#f1f3fc] overflow-hidden font-game [&_h1]:[text-wrap:balance] [&_h2]:[text-wrap:balance] [&_h3]:[text-wrap:balance]">
       {/*
         Eine einzige Klickflaeche fuer beides: solange der Ton nicht frei ist,
         gibt der erste Klick ihn frei; danach blendet jeder Klick die

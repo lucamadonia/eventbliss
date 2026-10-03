@@ -7,12 +7,14 @@ import { confettiBurst, partyEase } from '@/lib/party-motion';
 import { serverClock } from '@/games/party/scene-clock';
 import { tvGrid } from './tv-tokens';
 import { useTVAudio } from './TVAudioManager';
-import TVPartyPodium from './components/TVPartyPodium';
+import TVPartyPodium, { MEDAL_COLORS } from './components/TVPartyPodium';
 import TVFinaleAward from './components/TVFinaleAward';
 import TVPlayerAvatar from './cinema/TVPlayerAvatar';
 import { lu } from './components/tv-lobby-scale';
 import { FINALE_AT, finaleSchedule, type FinaleBeat } from './cinema/finale-timeline';
 import { computePartyAwards } from './partyAwards';
+import { finaleHighlight } from './cinema/finale-highlight';
+import { playableGames } from '@/lib/playable-games';
 import type { PartyNightState } from './party-types';
 
 const GOLD = '#FFD23F';
@@ -42,12 +44,12 @@ export default function TVPartyFinale({ party, startsAt = null }: { party: Party
   );
   const champions = useMemo(() => partyChampions(standings), [standings]);
   const champion = champions[0];
-  const winnerNames = new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(champions.map((entry) => entry.name));
   const awards = useMemo(() => {
     if (!champion) return [];
     return computePartyAwards(party.history ?? [], standings.map((s) => s.id), { excludeIds: champions.map((entry) => entry.id), max: 4 });
   }, [party.history, standings, champion, champions]);
   const byId = useMemo(() => new Map(standings.map((s) => [s.id, s])), [standings]);
+  const highlight = useMemo(() => finaleHighlight(standings, party.history ?? []), [standings, party.history]);
 
   // Einmal beim Einblenden festlegen: Wo im Ablauf steht der Abend gerade?
   const [schedule] = useState(() => finaleSchedule(startsAt !== null ? serverClock.now() - startsAt : 0));
@@ -82,6 +84,21 @@ export default function TVPartyFinale({ party, startsAt = null }: { party: Party
   }
 
   const totalPoints = standings.reduce((sum, s) => sum + s.points, 0);
+  const medal = (rank: number) => (rank <= 3 ? MEDAL_COLORS[rank - 1] : '#e8e2f4');
+  const gameLabel = (id: string, fallback: string) => {
+    const key = playableGames.find((g) => g.id === id)?.nameKey;
+    return key ? t(key, fallback) : fallback;
+  };
+  // Neue Information statt Wiederholung: das Highlight des Abends wie im Handy-Rueckblick.
+  const highlightLine = highlight.kind === 'closest'
+    ? t('partyPlay.recap.closest', 'Knappster Sieg: {{name}} in {{game}} (+{{margin}})', {
+      name: new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(highlight.names),
+      game: gameLabel(highlight.gameId, highlight.gameName),
+      margin: highlight.margin,
+    })
+    : highlight.kind === 'mostWins'
+      ? t('partyPlay.recap.mostWins', 'Meiste Siege: {{name}} ({{count}})', { name: highlight.name, count: highlight.wins })
+      : t('tv.partyNight.recapOnPhones', 'Euer Rückblick ist auf den Handys');
   const gamesPlayed = party.history?.length ?? party.playlist.filter((p) => p.done).length;
   const revealed = beat >= 1;
   const rail = (delay = 0) => ({
@@ -136,10 +153,10 @@ export default function TVPartyFinale({ party, startsAt = null }: { party: Party
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.45, ease: partyEase.out, delay: Math.min(0.12 + i * 0.05, 0.6) }}
                   >
-                    <span className="shrink-0 font-black tabular-nums text-center" style={{ fontSize: lu(2.2), width: '1.4em', color: entry.rank === 1 ? GOLD : '#8a82a0' }}>{entry.rank}</span>
+                    <span className="shrink-0 font-black tabular-nums text-center" style={{ fontSize: lu(2.2), width: '1.4em', color: entry.rank <= 3 ? medal(entry.rank) : '#8a82a0' }}>{entry.rank}</span>
                     <TVPlayerAvatar id={entry.id} name={entry.name} avatar={entry.avatar} color={entry.color} size={lu(4)} />
                     <span className="flex-1 min-w-0 truncate font-bold text-white" style={{ fontSize: lu(2.2) }}>{entry.name}</span>
-                    <span className="shrink-0 font-black tabular-nums" style={{ fontSize: lu(2.2), color: entry.rank === 1 ? GOLD : '#e8e2f4' }}>{entry.points.toLocaleString(i18n.language)}</span>
+                    <span className="shrink-0 font-black tabular-nums" style={{ fontSize: lu(2.2), color: medal(entry.rank) }}>{entry.points.toLocaleString(i18n.language)}</span>
                   </motion.div>
                 ))}
               </div>
@@ -183,22 +200,19 @@ export default function TVPartyFinale({ party, startsAt = null }: { party: Party
           </AnimatePresence>
         </div>
 
-        <TVPartyPodium entries={standings} reveal={revealed} variant="finale" className="max-w-[min(56rem,100%)]" />
+        {/* Waehrend des Wirbels stehen die Sockel schon als Silhouette und fuellen sich beim Reveal. */}
+        <TVPartyPodium entries={standings} reveal={revealed} ghost variant="finale" className="max-w-[min(56rem,100%)]" />
 
         <AnimatePresence>
           {beat >= 2 && (
             <motion.div
               key="line"
+              data-testid="tv-finale-highlight"
               className="relative overflow-hidden rounded-full border border-[#FFD23F]/25 bg-[#FFD23F]/[0.08]"
               style={{ padding: `${lu(1)} ${lu(2.4)}`, boxShadow: `inset 0 1px 0 rgba(255,255,255,.08), 0 20px 50px -34px ${GOLD}b0` }}
               {...rail()}
             >
-              <span className="font-black text-white" style={{ fontSize: lu(2.6) }}>
-                {t(champions.length > 1 ? 'tv.partyNight.championsLine' : 'tv.partyNight.championLine', '{{name}} gewinnt mit {{points}} Punkten', {
-                  name: winnerNames,
-                  points: champion.points.toLocaleString(i18n.language),
-                })}
-              </span>
+              <span className="font-black text-white" style={{ fontSize: lu(2.6) }}>{highlightLine}</span>
             </motion.div>
           )}
         </AnimatePresence>

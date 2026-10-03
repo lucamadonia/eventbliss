@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { partyEase, playerGlow } from '@/lib/party-motion';
 import type { TvHandover } from '@/games/ui/guest-handover';
 import { lu } from './tv-lobby-scale';
+import { avatarFor, useTVRoster } from '../cinema/tv-roster';
 
 // Pruefung der Leitung lebt in cinema/tv-handover (rein, getestet).
 export { parseTvHandover } from '../cinema/tv-handover';
@@ -16,6 +17,7 @@ export { parseTvHandover } from '../cinema/tv-handover';
  */
 export default function TVHandoverBanner({ handover, onCue }: { handover: TvHandover | null; onCue?: () => void }) {
   const { t } = useTranslation();
+  const roster = useTVRoster();
   const reduced = !!useReducedMotion();
   const lastIdRef = useRef<string | null>(null);
   const cueRef = useRef(onCue);
@@ -62,13 +64,10 @@ export default function TVHandoverBanner({ handover, onCue }: { handover: TvHand
                 animate={reduced ? undefined : { rotate: 360 }} transition={{ duration: 2.4, repeat: Infinity, ease: 'linear' }} />
               <span className="grid place-items-center rounded-full leading-none"
                 style={{ width: lu(5.4), height: lu(5.4), fontSize: lu(3.3), background: `radial-gradient(circle at 35% 30%, ${handover.color}66, ${handover.color}24 70%)` }}>
-                {handover.avatar}
+                {avatarFor(roster, { id: handover.playerId, name: handover.name, avatar: handover.avatar })}
               </span>
             </span>
             <span className="relative flex min-w-0 flex-col">
-              <span className="font-bold uppercase text-white/55" style={{ fontSize: lu(1.9), letterSpacing: '0.2em' }}>
-                {t('partyPlay.tv.handoverEyebrow', 'Handy weitergeben')}
-              </span>
               <span className="min-w-0 truncate leading-tight">
                 {t('partyPlay.tv.handover', '{{name}} spielt am Host-Handy …', { name: handover.name })}
               </span>

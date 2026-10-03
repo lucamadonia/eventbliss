@@ -467,6 +467,7 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
             onQuizAnswer={handleQuizAnswer}
             onAlleAnswer={handleAlleAnswer}
             holder={online && holderSeat ? { player: holderSeat, kind: holderKind } : undefined}
+            seats={online ? bombTvPlayers(state.players, online.players) : undefined}
           />
         </motion.div>
       )}

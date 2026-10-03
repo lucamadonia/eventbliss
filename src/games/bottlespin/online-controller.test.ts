@@ -16,6 +16,8 @@ vi.mock('react', () => ({
   },
 }));
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (key: string) => key }) }));
+// The shared waiting stage reads the live room (supabase client → localStorage); it is not under test here.
+vi.mock('../multiplayer/OnlineWaiting', () => ({ default: () => null }));
 import { canAct, useOnlineActions, useOnlinePrivateSnapshot, useOnlineSnapshot } from './online-controller';
 
 function render<T>(key: string, run: () => T): T {
@@ -136,5 +138,24 @@ describe('non-playing moderator authority', () => {
     }));
     act('start'); act('move');
     expect(setup).toHaveBeenCalledOnce(); expect(move).not.toHaveBeenCalled();
+  });
+});
+
+describe('„zu spät“ notice (F12)', () => {
+  it('never fires for a flaschendrehen spin race, only for a late answer', () => {
+    const r = room();
+    const notices: string[] = [];
+    const host = { ...r.host, broadcastTo: (recipient: string, event: string) => { if (event === 'party-late') notices.push(recipient); } };
+    const run = vi.fn();
+    // Turn moved from "spinning:1:-1:0:true" to "spinning:1:-1:0:false" (spin stopped) while Alice tapped spin.
+    render('host', () => useOnlineActions(host, 'bottlespin', 'spinning:1:-1:0:false:false', { spin: { allowed: 'alice', run } }));
+    r.alice.broadcast('bottlespin-action', { action: 'spin', args: [], turn: 'spinning:1:-1:0:true:false' });
+    expect(notices).toEqual([]);
+    expect(run).not.toHaveBeenCalled();
+    // A vote for a voter turn that already closed is a late answer.
+    render('host', () => useOnlineActions(host, 'bottlespin', 'vote:1:2:1:false:false', { vote: { allowed: 'alice', run, answer: true } }));
+    r.alice.broadcast('bottlespin-action', { action: 'vote', args: [true], turn: 'vote:1:2:0:false:false' });
+    expect(notices).toEqual(['alice']);
+    expect(run).not.toHaveBeenCalled();
   });
 });

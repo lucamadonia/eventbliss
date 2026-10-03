@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Crown, Loader2, WifiOff, RefreshCw } from "lucide-react";
-import { useGameRoom, type RoomPlayer } from "./useGameRoom";
+import { gameRoomSession, useGameRoom, type RoomPlayer } from "./useGameRoom";
 import ConnectionStatus from "./ConnectionStatus";
 import { gameStageStyle } from '../ui/GameStage';
 import type { OnlineGameProps } from "./OnlineGameTypes";
@@ -9,11 +9,15 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import MatchGuardOverlay from "./MatchGuardOverlay";
 import WaitingForPlayer from "./WaitingForPlayer";
+import LateToast from "./LateToast";
 import { matchGuard, readIds } from "./party-roster";
 import { localPlayerIdsFor } from "./participants";
 import { abortControllerGame, kickControllerPlayer, releaseControllerSeat } from "@/games/party/controller-session";
 import { playableGames } from "@/lib/playable-games";
 import { partyMotion } from "@/lib/party-motion";
+import { useTvLink } from "./useTvLink";
+import { tvLinked } from "./tv-link";
+import { useTVContext } from "@/contexts/TVBroadcastContext";
 
 const EP = {
   bg: "#0a0e14",
@@ -236,6 +240,14 @@ export default function OnlineGameWrapper({
     gameId: room.gameId, activeCount: room.participantIds.length, isHost }) : 'ok';
   const removedFromMatch = !isHost && !!myPlayerId && removedPlayerIds.includes(myPlayerId);
   const reduced = !!useReducedMotion();
+  const tvCtx = useTVContext();
+  // TV heartbeat on the room channel, or (host) on its TV channel; phones also see the host's shared flag.
+  const tvHeard = useTvLink(room?.roomCode === roomCode);
+  const hostTvSeenAt = tvCtx?.lastTvReadyAt ?? 0;
+  const tvLinkedNow = tvHeard || (isHost ? hostTvSeenAt > 0 && tvLinked(hostTvSeenAt, Date.now(), 45_000) : room?.settings.tvLinked === true);
+  useEffect(() => {
+    if (isHost && room?.settings.controllerParty && room.settings.tvLinked !== tvLinkedNow) gameRoomSession.updatePartySettings({ tvLinked: tvLinkedNow });
+  }, [isHost, tvLinkedNow, room?.settings.controllerParty, room?.settings.tvLinked]);
   const game = playableGames.find(candidate => candidate.id === room?.gameId);
   const gameTitle = game ? t(game.nameKey) : gameId;
   const seat = useCallback((id: string) => {
@@ -311,7 +323,8 @@ export default function OnlineGameWrapper({
   }), [isHost, connectionState, roomCode, players, myPlayerId, localPlayerIds, sittingOut, removedPlayerIds, room?.hostId, roomHasPremium, broadcast, broadcastTo, onBroadcast]);
 
   return (
-    <div className="relative online-game-surface font-sans" style={gameStageStyle(gameId)}>
+    // Fill the viewport in the stage colour: no white strip below short game screens.
+    <div className="relative online-game-surface font-sans min-h-[100dvh]" style={{ background: 'var(--stage-bg, #060810)', ...gameStageStyle(gameId) }}>
       <div className="sticky top-0 z-[90]">
       {/* Connection status bar */}
       <ConnectionStatus
@@ -321,6 +334,7 @@ export default function OnlineGameWrapper({
         reconnecting={connectionState === "connecting"}
         onPlayersClick={() => setPlayerListExpanded(v => !v)}
         expanded={playerListExpanded}
+        tv={{ linked: tvLinkedNow, onOpen: isHost ? tvCtx?.openConnection : undefined }}
       />
 
       {/* Floating player list during gameplay */}
@@ -356,6 +370,7 @@ export default function OnlineGameWrapper({
             min={Math.max(2, game?.minPlayers ?? 2)} onAbort={abortMatch} onLobby={returnToLobby} />
         )}
       </AnimatePresence>
+      {!isHost && <LateToast onBroadcast={onBroadcast} hostId={room?.hostId} />}
 
       {/* Game content via render props */}
       <div className="contents" data-online-game-content

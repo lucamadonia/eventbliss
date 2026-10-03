@@ -52,6 +52,22 @@ describe('host-announced guests in a controller party room', () => {
     expect(sent.some(packet => packet.recipient === 'guest-max')).toBe(false);
   });
 
+  it('shows every phone player with the avatar and colour of their party profile (same as the lobby), never initials', async () => {
+    const network = new Network();
+    const rooms = [session(network), session(network)];
+    const ids = await Promise.all(rooms.map((room, index) => room.prepareAccountIdentity(`look-${index}`)));
+    const looks = { [ids[0]]: { avatar: '🦄', color: '#ff6b98' }, [ids[1]]: { avatar: '🎸', color: '#8ff5ff' } };
+    const access = (): PartyRoomAccess => ({ code: 'ABCDEF', hostId: ids[0], hostPlays: true, premium: true, memberIds: [...ids], looks,
+      refresh: async () => access(), start: async () => crypto.randomUUID() });
+    rooms.forEach(room => room.configureParty(access()));
+    await rooms[0].createPartyRoom('ABCDEF', 'Host');
+    await rooms[1].joinRoom('ABCDEF', 'Lena');
+    await until(() => rooms.every(room => room.getSnapshot().players.length === 2));
+    for (const room of rooms) {
+      for (const player of room.getSnapshot().players) expect({ avatar: player.avatar, color: player.color }).toEqual(looks[player.id]);
+    }
+  });
+
   it('seats guests per game policy and keeps sit-out guests out of the match', async () => {
     const { rooms, ids, start } = await partyWithGuests();
     const [host, , other] = rooms;

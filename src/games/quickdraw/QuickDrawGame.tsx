@@ -383,8 +383,8 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
     draw: { allowed: phase === 'drawerReveal' ? drawer?.id ?? false : false, run: startDrawing },
     image: { allowed: phase === 'drawing' ? drawer?.id ?? false : false, run: (url: unknown) => { if (typeof url === 'string' && url.startsWith('data:image/png;base64,') && url.length <= 500000) setDrawingDataURL(url); } },
     finish: { allowed: phase === 'drawing' ? drawer?.id ?? false : false, run: (url: unknown) => { if (typeof url === 'string' && url.startsWith('data:image/png;base64,') && url.length <= 500000) setDrawingDataURL(url); stopTimer(); setPhase('guessing'); setCurrentGuesser(0); } },
-    guess: { allowed: phase === 'guessing' ? guessers[currentGuesser]?.id ?? false : false, run: (text: unknown) => { if (typeof text === 'string' && text.length <= 200) submitGuess(text); } },
-    pass: { allowed: phase === 'guessing' ? guessers[currentGuesser]?.id ?? false : false, run: () => submitGuess('', true) },
+    guess: { answer: true, allowed: phase === 'guessing' ? guessers[currentGuesser]?.id ?? false : false, run: (text: unknown) => { if (typeof text === 'string' && text.length <= 200) submitGuess(text); } },
+    pass: { answer: true, allowed: phase === 'guessing' ? guessers[currentGuesser]?.id ?? false : false, run: () => submitGuess('', true) },
     next: { allowed: phase === 'roundResult' ? 'host' : false, run: nextRound },
     again: { allowed: phase === 'gameOver' ? 'host' : false, run: playAgain },
   });

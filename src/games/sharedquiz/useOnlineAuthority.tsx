@@ -3,9 +3,11 @@ import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { acceptOnlineAction } from './online-action';
 import { localGuestIds } from '../ui/guest-handover';
 import { hostActor } from './host-actor';
+import { reportLateIntent } from './late-intent';
 import { privateRecipients } from '../multiplayer/private-recipients';
 
-type Action = { allow: (sender: string, args: any[]) => boolean; run: (...args: any[]) => void };
+/** `answer`: a vote/guess/choice that closes with its turn — a late one gets the „zu spät“ notice (F12). */
+type Action = { allow: (sender: string, args: any[]) => boolean; run: (...args: any[]) => void; answer?: boolean };
 
 /** All mutations run on the host; clients submit intent against a turn token. */
 export function useOnlineAuthority(online: OnlineGameProps | undefined, game: string, token: string,
@@ -42,6 +44,8 @@ export function useOnlineAuthority(online: OnlineGameProps | undefined, game: st
       const action = current.current.actions[data.action as string];
       const args = Array.isArray(data.args) ? data.args : [];
       if (current.current.online?.isConnected === false) return;
+      // An intent for an earlier turn (token already moved on) arrived too late: drop it, but visibly (F12).
+      if (action && reportLateIntent(online, data, current.current.token, !!action.answer)) return;
       if (!action || busy.current || !acceptOnlineAction(data, current.current.token,
           [...online.players.map(p => p.id), ...(online.hostPlayerId ? [online.hostPlayerId] : [])], seen.current, (id) => action.allow(id, args))) return;
       if (!claim(sender as string, data.action as string)) return;

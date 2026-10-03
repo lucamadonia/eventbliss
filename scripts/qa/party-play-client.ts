@@ -37,7 +37,14 @@ const session=()=>window.controllerIdentity?{user:window.controllerIdentity,acce
 /** Harness-driven sign-in/out; listeners mirror supabase.auth.onAuthStateChange. */
 window.partyQAAuth=(identity:any)=>{window.controllerIdentity=identity;for(const fn of authListeners)fn(identity?'SIGNED_IN':'SIGNED_OUT',session());};
 // Table reads return nothing, except the premium row for devices opened with premium (usePremium reads it).
-const query=(table?:string):any=>{const result={data:table==='subscriptions'&&(window as any).controllerPremium?{plan:'premium',expires_at:null,stripe_subscription_id:null}:null,error:null};const builder:any=new Proxy(function(){},{get:(_t,key)=>key==='then'?(resolve:any,reject:any)=>Promise.resolve(result).then(resolve,reject):()=>builder,apply:()=>builder});return builder;};
+// Content tables some games load (same fixtures as local-game-network.mjs; images are same-origin).
+const FIXTURES:Record<string,unknown>={
+  pixel_images:['bomb','headup','taboo','category','brew','ohrwurm'].map((g,i)=>({id:`qa-image-${i}`,image_path:`/images/games/${g}.webp`,answers:{de:g,en:g},aliases:[],category:'filme',difficulty:1,credit:'Local QA fixture',source_url:null})),
+  closeenough_questions:Array.from({length:10},(_,i)=>({id:`qa-question-${i}`,name_i18n:{de:'Test',en:'Test'},question_i18n:{de:'Wie viele Seiten haben drei Quadrate zusammen?',en:'How many sides do three squares have in total?'},frame_key:'custom',answer:12,unit_key:'count',category:'alltag',tolerance_pct:10,as_of_year:null,difficulty:1,source_label:'Local QA fixture',source_url:null})),
+};
+// Like supabase-js, from() itself is not thenable (closeenough awaits an async helper returning it);
+// only the filter builder after the first call resolves to {data,error}.
+const query=(table?:string):any=>{const result={data:table==='subscriptions'?((window as any).controllerPremium?{plan:'premium',expires_at:null,stripe_subscription_id:null}:null):(table&&FIXTURES[table])??null,error:null};const builder:any=new Proxy(function(){},{get:(_t,key)=>key==='then'?(resolve:any,reject:any)=>Promise.resolve(result).then(resolve,reject):()=>builder,apply:()=>builder});return new Proxy({},{get:(_t,key)=>key==='then'?undefined:()=>builder});};
 export const supabase:any = {
   channel:(topic:string)=>byTopic.get(`realtime:${topic}`)&&byTopic.get(`realtime:${topic}`)!.state!=='closed'?byTopic.get(`realtime:${topic}`):new LocalChannel(topic),
   removeChannel:(channel:LocalChannel)=>channel.unsubscribe(),

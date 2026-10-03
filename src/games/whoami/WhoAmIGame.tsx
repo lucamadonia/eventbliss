@@ -110,10 +110,10 @@ function WhoAmIGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const hostId = online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id;
   const route = useOnlineAuthority(online, 'whoami', `${phase}:${currentRound}:${activeIdx}:${voterIdx}:${revealIdx}`, {
     submitQuestion: { allow: sender => phase === 'asking' && sender === players[activeIdx]?.id, run: (...args) => submitQuestion(args[0]) },
-    tryGuess: { allow: (sender, args) => phase === 'guessing' && sender === players[activeIdx]?.id && typeof args[0] === 'string' && args[0].length <= 100, run: (...args) => tryGuess(args[0]) },
+    tryGuess: { allow: (sender, args) => phase === 'guessing' && sender === players[activeIdx]?.id && typeof args[0] === 'string' && args[0].length <= 100, run: (...args) => tryGuess(args[0]), answer: true },
     skipToGuess: { allow: sender => phase === 'asking' && sender === players[activeIdx]?.id, run: () => skipToGuess() },
     nextReveal: { allow: sender => phase === 'assign' && sender === hostId, run: () => nextReveal() },
-    castAnswer: { allow: (sender, args) => phase === 'answerVote' && ['yes', 'no', 'maybe'].includes(args[0]) && sender === answerVoter(players, activeIdx, voterIdx)?.id, run: (...args) => castAnswer(args[0]) },
+    castAnswer: { allow: (sender, args) => phase === 'answerVote' && ['yes', 'no', 'maybe'].includes(args[0]) && sender === answerVoter(players, activeIdx, voterIdx)?.id, run: (...args) => castAnswer(args[0]), answer: true },
     afterGuess: { allow: sender => phase === 'guessResult' && sender === hostId, run: () => afterGuess() },
     handleSolvedDirect: { allow: () => false, run: () => handleSolvedDirect() },
     handleSkipDirect: { allow: sender => phase === 'asking' && sender === players[activeIdx]?.id, run: () => handleSkipDirect() },

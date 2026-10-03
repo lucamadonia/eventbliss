@@ -3,7 +3,7 @@ import { playableGames } from '@/lib/playable-games';
 import { claimTabIdentity, identityId, identityStorage, verifyRoomSignature, type RoomIdentity, type PublicRoomIdentity } from './room-identity';
 import { rememberRoom, getSavedRoom, type GameRoom, type RoomPlayer, type RoomSnapshot, type RoomData, type RoomListener } from './room-types';
 import type { PartyRoomAccess } from './party-access';
-import { dropFromMatch, partyRoomUpdate, readGuests, seatPresent, traceParticipants, withGuests } from './party-roster';
+import { dropFromMatch, ownLook, partyRoomUpdate, readGuests, seatPresent, traceParticipants, withGuests } from './party-roster';
 import { localPlayerIdsFor } from './participants';
 import { planMatch } from './match-plan';
 
@@ -67,6 +67,8 @@ export class RoomSession {
     const access = this.partyAccess, room = this.snapshot.room;
     if (!access || !room || access.code !== room.roomCode || !this.identity) return;
     if (!access.memberIds.includes(this.identity.id)) { this.removeSelf('Du bist nicht mehr in dieser Party.'); return; }
+    const look = this.own && ownLook(access, this.own.id, this.own.color, () => this.own!.color); // profile edited in the lobby
+    if (look && this.own && (look.avatar !== this.own.avatar || look.color !== this.own.color)) { Object.assign(this.own, look); void this.track().catch(error => this.fail(error)); }
     const next = this.isHost() ? partyRoomUpdate(room, access) : null;
     if (!next) return;
     const players = withGuests(this.live, readGuests(next.settings));
@@ -109,13 +111,9 @@ export class RoomSession {
   };
 
   constructor(private client: Pick<SupabaseClient, 'channel' | 'removeChannel'>) {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('offline', () => {
-        this.stale = true;
-        if (this.snapshot.room) this.publish({ connection: 'reconnecting', error: 'Keine Internetverbindung. Das Spiel ist pausiert.' });
-      });
-      window.addEventListener('online', () => { void this.reconnect().catch(error => this.fail(error)); });
-    }
+    if (typeof window === 'undefined') return;
+    window.addEventListener('offline', () => { this.stale = true; if (this.snapshot.room) this.publish({ connection: 'reconnecting', error: 'Keine Internetverbindung. Das Spiel ist pausiert.' }); });
+    window.addEventListener('online', () => { void this.reconnect().catch(error => this.fail(error)); });
   }
   /** Rebuild the channel of the current room even if it still looks joined (retry buttons, back online). */
   reconnect = async (): Promise<void> => {
@@ -346,7 +344,7 @@ export class RoomSession {
     const generation = this.generation;
     this.stale = false;
     const hostId = this.partyAccess?.hostId || (gameId ? identity.id : previous?.hostId || '');
-    this.own = { id: identity.id, name: name.trim().slice(0, 40), avatar: name.trim().slice(0, 1).toUpperCase(), color: own?.color || COLORS[crypto.getRandomValues(new Uint8Array(1))[0] % COLORS.length], isReady: own?.isReady ?? !!gameId, isPremium: premium, isCreator: own?.isCreator ?? !!gameId, joinedAt: own?.joinedAt || Date.now(), signingKey: identity.signingKey, encryptionKey: identity.encryptionKey };
+    this.own = { id: identity.id, name: name.trim().slice(0, 40), ...ownLook(this.partyAccess, identity.id, own?.color, () => COLORS[crypto.getRandomValues(new Uint8Array(1))[0] % COLORS.length]), isReady: own?.isReady ?? !!gameId, isPremium: premium, isCreator: own?.isCreator ?? !!gameId, joinedAt: own?.joinedAt || Date.now(), signingKey: identity.signingKey, encryptionKey: identity.encryptionKey };
     const room: GameRoom = previous || { roomCode: code, hostId, players: [], gameId: gameId || '', status: 'lobby', settings: recovered ? { recoveredAfterReload: true } : {}, sessionId: gameId ? crypto.randomUUID() : '', participantIds: [] };
     this.live = [];
     this.publish({ room, players: [], myPlayerId: identity.id, connection: 'connecting', error: null, removed: false });

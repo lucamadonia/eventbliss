@@ -215,7 +215,7 @@ export default function CategoryGame({ online }: { online?: OnlineGameProps } = 
     start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },
     ready: { allowed: phase === 'categoryReveal' ? 'host' : false, run: handleRevealReady },
     // The answerer's seat; a 🔁 guest's word comes from the device that controls the seat (canAct).
-    word: { allowed: phase === 'playing' ? players[currentPlayerIndex]?.id ?? false : false, run: (word: unknown) => {
+    word: { answer: true, allowed: phase === 'playing' ? players[currentPlayerIndex]?.id ?? false : false, run: (word: unknown) => {
       if (!isValidWordPayload(word)) return;
       const playerId = players[currentPlayerIndex].id;
       const result = handleWordSaid(word);

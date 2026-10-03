@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { activeGuest, handoverReducer, initialHandoverState, isClockPaused, type HandoverState } from '../ui/handover-machine';
 import {
   mayHolderSeeCard, phoneHolder, pickReferee, tabooHandoverSeat, tabooRecipients, tabooRoles, tabooSeatRole,
-  tabooSnapshotFor, tabooTvPlayers, tabooTvState, type TabooRoles,
+  tabooSnapshotFor, tabooTvPlayers, tabooTvState, turnClosed, type TabooRoles,
 } from './taboo-seats';
 
 /*
@@ -222,5 +222,13 @@ describe('TV', () => {
     expect(JSON.stringify(tv)).not.toContain('Zähne');
     expect(tv).toMatchObject({ turnCorrect: 1, turnTaboo: 1, turnSkipped: 0, phaseStartsAt: 1, explainer: { name: 'Max' } });
     expect(tv.teams[0]).toEqual({ name: 'Team A', color: 'bg-[#ff8572]', score: 2, players: ['HOST', 'G1'], ids: ['host', 'g1'] });
+  });
+});
+
+describe('taboo: late scoring taps (F12)', () => {
+  it('counts as late only when the explaining turn closed, not when the next card came up', () => {
+    expect(turnClosed('playing:3:0:1,0:7:null', 'playing:3:0:1,0:8:null')).toBe(false);
+    expect(turnClosed('playing:3:0:1,0:7:null', 'turnSummary:3:0:1,0:7:null')).toBe(true);
+    expect(turnClosed('playing:3:0:1,0:7:null', 'playing:4:1:1,0:0:null')).toBe(true);
   });
 });

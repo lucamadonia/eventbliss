@@ -79,7 +79,7 @@ function Half({ side, option, percent, votes, voters, showResults, winner, loser
         <AnimatePresence>
           {winner && (
             <motion.span
-              className="mb-4 inline-flex items-center gap-2 rounded-full px-5 py-2 font-black uppercase tracking-[0.2em]"
+       className="mb-4 inline-flex items-center gap-2 rounded-full px-5 py-2 font-black"
               style={{ fontSize: tvType.label, color: '#060810', background: color }}
               initial={reduced ? { opacity: 0 } : { opacity: 0, y: -16, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -194,7 +194,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: ViewState }
             transition={{ repeat: !showResults && !reduced ? Infinity : 0, duration: 2 }}
           >
             {showResults && winnerSide === 'tie'
-              ? <span className="px-2 text-center font-black uppercase leading-tight" style={{ fontSize: tvType.micro, color: '#fbbf24' }}>{t('tvCinema.thisOrThat.tie', 'Gleichstand')}</span>
+              ? <span className="px-2 text-center font-black leading-tight" style={{ fontSize: lu(1.9), color: '#fbbf24' }}>{t('tvCinema.thisOrThat.tie', 'Gleichstand')}</span>
               : <span className="font-black italic" style={{ fontSize: tvType.title, color: DIM }}>VS</span>}
           </motion.div>
         </div>
@@ -207,7 +207,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: ViewState }
       {phase === 'voting' && players.length > 0 && (
         <motion.div data-testid="tv-tot-voters" className="absolute inset-x-0 bottom-[5vh] z-30 flex flex-col items-center gap-3"
           initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: partyEase.out, delay: 0.4 }}>
-          <span className="font-bold" style={{ fontSize: tvType.label, color: '#f1f3fc' }}>
+          <span className="font-extrabold tabular-nums" style={{ fontSize: lu(2.4), color: '#f1f3fc' }}>
             {votedIds || votedCount > 0
               ? t('tvCinema.thisOrThat.votedCount', '{{count}}/{{total}} abgestimmt', { count: votedCount, total: players.length })
               : t('tvCinema.thisOrThat.votingNow', 'Abstimmung läuft')}
@@ -218,7 +218,7 @@ export default function TVThisOrThatView({ gameState }: { gameState: ViewState }
               return (
                 <motion.div key={p.id ?? `${p.name}-${i}`} data-voted={String(voted)} className="relative"
                   animate={{ opacity: voted || !votedIds ? 1 : 0.45, scale: voted ? 1.06 : 1 }} transition={{ duration: 0.35, ease: partyEase.out }}>
-                  <TVPlayerAvatar id={p.id} name={p.name} avatar={p.avatar} color={p.color} size="clamp(2.6rem,3.4vw,3.6rem)" active={voted} />
+                  <TVPlayerAvatar id={p.id} name={p.name} avatar={p.avatar} color={p.color} size={lu(5.6)} active={voted} />
                   {voted && (
                     <span className="absolute -bottom-1 -right-1 grid place-items-center rounded-full font-black"
                       style={{ width: '1.4em', height: '1.4em', fontSize: tvType.micro, background: '#8ff5ff', color: '#060810' }}>✓</span>

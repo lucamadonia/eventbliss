@@ -6257,7 +6257,8 @@
       "retryImage": "Bild erneut laden",
       "sayItLoud": "Sag die Lösung laut!",
       "teamHint": "Ihr ratet als Team – eine falsche Antwort sperrt das ganze Handy.",
-      "whoTypes": "Wer tippt?"
+      "whoTypes": "Wer tippt?",
+      "pointsShort": "{{count}} Pkt."
     },
     "hub": {
       "title": "EventBliss Spiele",
@@ -6357,7 +6358,7 @@
       "sameCategoryHintOn": "Alle Spieler beantworten die gleiche Kategorie",
       "sameCategoryHintOff": "Jeder Spieler bekommt eine neue Kategorie",
       "startGame": "SPIEL STARTEN",
-      "roundLabel": "RUNDE {{round}}/{{total}}",
+      "roundLabel": "Runde {{round}} von {{total}}",
       "theChallenge": "Die Challenge",
       "random": "Zufall",
       "seconds": "Sekunden",
@@ -6365,7 +6366,7 @@
       "noRepeat": "Keine Wiederholungen erlaubt!",
       "btnDone": "GESCHAFFT!",
       "btnDontKnow": "WEISS NICHT",
-      "btnSolved": "GELÖST!",
+      "btnSolved": "Gelöst",
       "drinkingModeMsg": "Prost, du trinkst!",
       "drinkRound": "Runde {{count}} · Trinkt verantwortungsvoll",
       "nextRound": "Nächste Runde",
@@ -6389,7 +6390,8 @@
       "taskKategoriePrompt": "Nenne ein/eine {{category}} mit \"{{letter}}\"!",
       "fewestPenalties": "Wenigste Strafpunkte",
       "partyHolderWait": "Gleich könnte sie bei dir landen.",
-      "partyHolderPass": "Die Zündschnur brennt weiter!"
+      "partyHolderPass": "Die Zündschnur brennt weiter!",
+      "partyRound": "Runde {{round}} von {{total}}"
     },
     "headup": {
       "name": "Stirnraten",
@@ -6468,7 +6470,8 @@
         "guesserHint": "{{name}} erklärt gleich – hör gut zu und rate laut.",
         "watcherHint": "{{name}} erklärt gleich für {{team}}.",
         "cardBack": "Deine Karte liegt verdeckt bereit",
-        "waitingFor": "Warte auf {{name}} …"
+        "waitingFor": "Warte auf {{name}} …",
+        "refereePreview": "Du siehst die Karte, sobald {{name}} erklärt"
       },
       "playing": {
         "currentWord": "Aktuelles Wort",
@@ -6852,7 +6855,10 @@
       "tapToPlayHidden": "Tippen zum Abspielen — Titel bleibt geheim",
       "tapAndGo": "Antippen & los",
       "partyCounterLine": "Setz deinen Konter auf den Zeitstrahl.",
-      "partyYourTurnLine": "Hör rein und ordne den Song ein."
+      "partyYourTurnLine": "Hör rein und ordne den Song ein.",
+      "partyListenClose": "Hört gut hin",
+      "partyYourTimeline": "Dein Zeitstrahl",
+      "partyTimelineEmpty": "Noch leer – dein erster Song kommt bald."
     },
     "splitquiz": {
       "subtitle": "Jedes Team sieht nur die Hälfte der Antworten!",
@@ -7602,7 +7608,13 @@
         "employees": "Wie viele Menschen arbeiten bei {{name}}?",
         "revenue": "Wie hoch ist der Umsatz von {{name}}?"
       },
-      "partyYourEstimate": "Dein Tipp bleibt geheim bis zur Auflösung."
+      "partyYourEstimate": "Dein Tipp bleibt geheim bis zur Auflösung.",
+      "loadFailedTitle": "Fragen konnten nicht geladen werden",
+      "loadFailedHint": "Prüfe die Verbindung und versuch es noch einmal.",
+      "retryLoad": "Erneut versuchen",
+      "emptySelectionTitle": "Keine Fragen für diese Auswahl",
+      "emptySelectionHint": "Wähle andere Kategorien oder spiel den Mix.",
+      "useMix": "Mix spielen"
     },
     "brew": {
       "titleBrew": "Zaubertrank",
@@ -10144,7 +10156,8 @@
       },
       "champions": "Gemeinsamer Sieg",
       "championsLine": "{{name}} teilen sich den Sieg mit je {{points}} Punkten",
-      "drumroll": "Und der Champion des Abends ist"
+      "drumroll": "Und der Champion des Abends ist",
+      "recapOnPhones": "Euer Rückblick ist auf den Handys"
     },
     "connectTitle": "TV verbinden",
     "openOnTv": "Öffne auf deinem TV:",
@@ -10171,9 +10184,9 @@
       "waiting": "Warte auf Aufgabe..."
     },
     "bottle": {
-      "spinning": "DREHT",
-      "card": "KARTE",
-      "vote": "ABSTIMMUNG",
+      "spinning": "Dreht",
+      "card": "Karte",
+      "vote": "Abstimmung",
       "question": "Frage",
       "task": "Aufgabe",
       "spinningHint": "Flasche dreht sich..."
@@ -10213,8 +10226,8 @@
     "leaderboard": "Rangliste",
     "headup": {
       "correctShort": "{{count}} richtig",
-      "gameOver": "SPIELENDE!",
-      "roundOver": "RUNDE VORBEI!",
+      "gameOver": "Spielende!",
+      "roundOver": "Runde vorbei!",
       "correct": "Richtig",
       "skipped": "Übersprungen",
       "describe": "Beschreibe es!",
@@ -10222,17 +10235,17 @@
       "skip": "Skip"
     },
     "impostor": {
-      "checkPhones": "SCHAUT AUF EURE HANDYS!",
+      "checkPhones": "Schaut auf eure Handys!",
       "oneWordOneDifferent": "Ein Wort — aber einer hat ein anderes...",
-      "discussion": "DISKUSSION",
-      "whoIsImpostor": "WER IST DER HOCHSTAPLER?",
-      "voting": "ABSTIMMUNG",
-      "whoIsSuspected": "WER WIRD VERDÄCHTIGT?",
-      "revealIn": "ENTHÜLLUNG IN...",
-      "theImpostorIs": "DER HOCHSTAPLER IST...",
-      "label": "HOCHSTAPLER",
-      "canImpostorGuess": "KANN DER HOCHSTAPLER DAS WORT ERRATEN?",
-      "results": "ERGEBNIS",
+      "discussion": "Diskussion",
+      "whoIsImpostor": "Wer ist der Hochstapler?",
+      "voting": "Abstimmung",
+      "whoIsSuspected": "Wer wird verdächtigt?",
+      "revealIn": "Enthüllung in …",
+      "theImpostorIs": "Der Hochstapler ist …",
+      "label": "Hochstapler",
+      "canImpostorGuess": "Kann der Hochstapler das Wort erraten?",
+      "results": "Ergebnis",
       "preparing": "Spiel wird vorbereitet..."
     },
     "ohrwurm": {
@@ -10278,7 +10291,7 @@
     },
     "truthdare": {
       "wpCount": "{{w}}× W · {{p}}× P",
-      "title": "WAHRHEIT ODER PFLICHT",
+      "title": "Wahrheit oder Pflicht",
       "isUp": "ist dran",
       "whosNext": "Wer ist als Nächstes dran?",
       "chooses": "wählt…",
@@ -10287,7 +10300,7 @@
     "whoami": {
       "questionsCount": "{{n}} Fragen",
       "questionN": "Frage {{x}}/{{max}}",
-      "title": "WER BIN ICH?",
+      "title": "Wer bin ich?",
       "assigning": "Rollen werden verteilt…",
       "asks": "fragt",
       "askPrompt": "Stell eine Ja/Nein-Frage",
@@ -10311,7 +10324,9 @@
       "game": "Zurück zum Spiel",
       "rules": "Anleitung",
       "menu": "Menü"
-    }
+    },
+    "winnerLead": "+{{margin}} vor {{name}}",
+    "winnerTie": "Gleichstand mit {{name}}"
   },
   "partyControllers": {
     "title": "Joystick-Modus",
@@ -10688,7 +10703,12 @@
       "you": "Du bist dran",
       "passTo": "Gib das Handy an {{name}}",
       "other": "{{name}} ist dran"
-    }
+    },
+    "waitingTitle": "Gleich geht’s los",
+    "nextGame": "Als Nächstes: {{game}}",
+    "tvLinked": "Fernseher verbunden",
+    "tvNotLinked": "Kein Fernseher verbunden",
+    "tooLate": "Zu spät – die Runde ist schon weiter"
   },
   "tvCinema": {
     "round": "Runde {{round}}",
@@ -10702,7 +10722,10 @@
       "votingSub": "Wer ist der Hochstapler?",
       "caught": "Erwischt!",
       "escaped": "Entkommen!",
-      "spokenProgress": "{{count}} von {{total}} haben gesprochen"
+      "spokenProgress": "{{count}} von {{total}} haben gesprochen",
+      "chip": "Hochstapler",
+      "theImpostorIs": "Der Hochstapler ist …",
+      "revealIn": "Enthüllung in …"
     },
     "bottle": {
       "vote": "Abstimmung",
@@ -10710,7 +10733,8 @@
       "voteSubAnon": "Geschafft oder nicht?",
       "yourTurn": "Die Flasche zeigt auf",
       "spinning": "Dreht",
-      "card": "Karte"
+      "card": "Karte",
+      "spinningPill": "Flasche dreht sich …"
     },
     "thisOrThat": {
       "voting": "Entscheidet euch!",
@@ -10887,7 +10911,7 @@
       "allVoted": "Alle haben getippt",
       "readingQuestion": "Frage wird vorgelesen",
       "readingOptions": "Optionen werden vorgelesen",
-      "answering": "Antworten läuft",
+      "answering": "Antwortzeit läuft",
       "gotItRight": "{{pct}} % richtig",
       "gotItWrong": "{{pct}} % daneben",
       "teamCorrect": "{{count}} richtig",

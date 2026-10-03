@@ -24,7 +24,7 @@ import { dropTabooPlayers, teamIndexOf } from './removal';
 import { useSeatHandover } from '../multiplayer/useGuestHandover';
 import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
 import { localActiveSeats, localGuestIds } from '../ui/guest-handover';
-import { mayHolderSeeCard, phoneHolder, tabooHandoverSeat, tabooRoles, tabooSeat, tabooSeatRole, tabooSnapshotFor, tabooTvPlayers, tabooTvState } from './taboo-seats';
+import { mayHolderSeeCard, phoneHolder, tabooHandoverSeat, tabooRoles, tabooSeat, tabooSeatRole, tabooSnapshotFor, tabooTvPlayers, tabooTvState, turnClosed } from './taboo-seats';
 import { useTabooSync } from './useTabooSync';
 import { PlayingScreen, TurnStartScreen } from './TabooScreens';
 
@@ -298,10 +298,10 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const act = useOnlineActions(online, 'taboo', `${phase}:${currentRound}:${activeTeamIdx}:${explainerIdx.join(',')}:${cardKey}:${countdown}`, {
     start: { allowed: phase === 'setup' ? 'host' : false, run: () => { const names = online ? online.players.map(p => p.name) : playerNames; if (names.length < 4 || names.some(name => !name.trim())) return; setPlayerNames(names); setTeams(buildTeams(names, online?.players.map(p => p.id))); const cycle = Math.ceil(names.length / 2); setTotalRounds(Math.ceil(totalRounds / cycle) * cycle); setPhase('turnStart'); } },
     begin: { allowed: phase === 'turnStart' && countdown === null ? actorId : false, run: startTurn },
-    correct: { allowed: phase === 'playing' ? actorId : false, run: handleCorrect },
-    skip: { allowed: phase === 'playing' ? actorId : false, run: handleSkip },
-    taboo: { allowed: phase === 'playing' ? actorId : false, run: handleTaboo },
-    referee: { allowed: phase === 'playing' ? refereeId : false, run: handleTaboo },
+    correct: { allowed: phase === 'playing' ? actorId : false, run: handleCorrect, answer: turnClosed },
+    skip: { allowed: phase === 'playing' ? actorId : false, run: handleSkip, answer: turnClosed },
+    taboo: { allowed: phase === 'playing' ? actorId : false, run: handleTaboo, answer: turnClosed },
+    referee: { allowed: phase === 'playing' ? refereeId : false, run: handleTaboo, answer: turnClosed },
     next: { allowed: phase === 'turnSummary' ? 'host' : false, run: endTurn },
     again: { allowed: phase === 'gameOver' && teams[0].players.length + teams[1].players.length >= 2 ? 'host' : false, run: playAgain },
   });

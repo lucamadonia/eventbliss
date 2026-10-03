@@ -83,3 +83,25 @@ describe('B06/B07: seat status before joining by invitation', () => {
     expect(await controllerSeatStatus('me', 'ABCDEF')).toBe('none');
   });
 });
+
+describe('D04 mid-game: round-end, then the chained finale', () => {
+  it('announces round-end now and the finale right after its moment', async () => {
+    vi.useFakeTimers();
+    const me = { ...host, user_id: 'me', player_id: 'me-id' };
+    const snap = (status: string, revision: number) => ({ data: { party: { ...party, host_user_id: 'me', host_player_id: 'me-id', status, revision }, members: [me], results: [] }, error: null });
+    rpc.mockResolvedValueOnce(snap('playing', 5));
+    await openControllerParty('me', 'Luca');
+    room.getSnapshot.mockReturnValue({ room: { status: 'playing', sessionId: 'm1' } } as never);
+    room.broadcast.mockClear();
+    rpc.mockResolvedValueOnce(snap('finished', 6));
+    await endControllerParty();
+    const scenes = () => room.broadcast.mock.calls.filter(c => c[0] === 'party-scene').map(c => (c[1] as { scene: { scene: string; startsAt: number } }).scene);
+    expect(scenes().map(s => s.scene)).toEqual(['round-end']);
+    await vi.advanceTimersByTimeAsync(2000);
+    const [roundEnd, finale] = scenes();
+    expect(finale?.scene).toBe('finale');
+    expect(finale.startsAt).toBe(roundEnd.startsAt + 600);
+    room.getSnapshot.mockReturnValue({ room: null } as never);
+    vi.useRealTimers();
+  });
+});

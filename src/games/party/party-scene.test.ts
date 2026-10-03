@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyPartySceneMessage, getPartyScene, parsePartySceneMessage, sceneGoAt, showPartyScene, clearPartyScene } from './party-scene';
+import { applyPartySceneMessage, chainedFinale, getPartyScene, parsePartySceneMessage, sceneGoAt, showPartyScene, clearPartyScene } from './party-scene';
 
 const NOW = 1_000_000;
 const scene = { sceneId: 's1', scene: 'game-start', startsAt: NOW + 600, data: { gameId: 'bomb' } };
@@ -32,5 +32,14 @@ describe('party-scene', () => {
   it('strips unexpected data fields', () => {
     const parsed = parsePartySceneMessage({ scene: { ...scene, data: { gameId: 'bomb', evil: '<script>' } } }, NOW);
     expect(parsed && 'scene' in parsed && parsed.scene.data).toEqual({ gameId: 'bomb' });
+  });
+});
+
+describe('chainedFinale', () => {
+  it('starts one scene lead after the round-end moment', () => {
+    const finale = chainedFinale({ startsAt: 5000 });
+    expect(finale.scene).toBe('finale');
+    expect(finale.startsAt).toBe(5600);
+    expect(finale.sceneId).toBeTruthy();
   });
 });

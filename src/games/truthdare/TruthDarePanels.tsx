@@ -19,9 +19,9 @@ export function SpinPanel({ players, spinAngle, canSpin, onSpin }: {
 }) {
   const { t } = useTranslation();
   return (
-    <motion.div key="spin" {...enter} className="flex-1 flex flex-col items-center justify-center gap-7 px-4">
+    <motion.div key="spin" {...enter} className="flex-1 flex flex-col items-center justify-start gap-7 px-4 pt-[6dvh]">
       <h2 className="text-2xl font-extrabold text-white neon-glow">{t('games.truthdare.whosNext')}</h2>
-      <div className="relative w-60 h-60">
+      <div className="relative w-72 h-72">
         <motion.div className="w-full h-full rounded-full border-4 border-[#f09a8a]/30 relative bg-[#0d0915]"
           animate={{ rotate: spinAngle }} transition={{ duration: 2.5, ease: [0.2, 0.8, 0.3, 1] }}>
           {players.map((p, i) => {
@@ -29,12 +29,9 @@ export function SpinPanel({ players, spinAngle, canSpin, onSpin }: {
             return (
               <div key={p.id} className="absolute" style={{
                 top: '50%', left: '50%',
-                transform: `rotate(${angle}deg) translateY(-92px) rotate(-${angle}deg) translate(-50%, -50%)`,
+                transform: `rotate(${angle}deg) translateY(-112px) rotate(-${angle}deg) translate(-50%, -50%)`,
               }}>
-                <div className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                  style={{ backgroundColor: p.color, boxShadow: playerGlow(p.color) }}>
-                  {p.avatar}
-                </div>
+                <span className="block rounded-full" style={{ boxShadow: playerGlow(p.color) }}><SeatAvatar avatar={p.avatar} color={p.color} size={52} /></span>
               </div>
             );
           })}
@@ -47,7 +44,8 @@ export function SpinPanel({ players, spinAngle, canSpin, onSpin }: {
           <Zap className="w-5 h-5" /> {t('games.truthdare.spin')}
         </motion.button>
       ) : (
-        <p className="text-[0.9375rem] font-medium text-white/50">{t('games.truthdare.hostSpins', 'Der Host dreht das Rad …')}</p>
+        <p role="status" className="flex items-center gap-2 rounded-full px-4 py-2 text-base font-semibold text-white/80" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}>
+          <span aria-hidden className="h-2 w-2 rounded-full bg-[#f09a8a] animate-pulse" />{t('games.truthdare.hostSpins', 'Der Host dreht das Rad …')}</p>
       )}
     </motion.div>
   );

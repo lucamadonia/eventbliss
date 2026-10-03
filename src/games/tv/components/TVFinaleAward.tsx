@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { CloudRain, Target, TrendingUp, Trophy, Zap } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { partyEase } from '@/lib/party-motion';
+import { partyEase, playerGlow } from '@/lib/party-motion';
 import TVPlayerAvatar from '../cinema/TVPlayerAvatar';
 import { lu } from './tv-lobby-scale';
 import type { PartyAward, PartyAwardKey } from '../partyAwards';
@@ -52,12 +52,11 @@ export default function TVFinaleAward({ award, player, index }: { award: PartyAw
     <motion.div
       data-testid={`tv-finale-award-${award.key}`}
       className="relative flex items-center overflow-hidden rounded-[1.4rem] border bg-white/[0.04]"
-      style={{ gap: lu(1.6), padding: `${lu(1.2)} ${lu(1.6)}`, borderColor: `${meta.color}3a`, boxShadow: `inset 0 1px 0 rgba(255,255,255,.07), 0 18px 46px -38px ${meta.color}` }}
+      style={{ gap: lu(1.6), padding: `${lu(1.2)} ${lu(1.6)}`, borderColor: 'rgba(255,255,255,0.08)', boxShadow: `inset 0 1px 0 rgba(255,255,255,.07), ${playerGlow(player.color, 'soft')}` }}
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, ease: partyEase.out, delay: 0.08 + index * 0.12 }}
     >
-      <span className="absolute inset-y-[20%] left-0 w-[3px] rounded-full" style={{ background: meta.color, boxShadow: `0 0 14px ${meta.color}` }} aria-hidden />
       <div className="relative shrink-0">
         <TVPlayerAvatar id={player.id} name={player.name} avatar={player.avatar} color={player.color} size={lu(5.2)} />
         <span className="absolute -right-1 -bottom-1 grid place-items-center rounded-full" style={{ width: lu(2.4), height: lu(2.4), background: '#0d0915', border: `1.5px solid ${meta.color}`, color: meta.color }}>

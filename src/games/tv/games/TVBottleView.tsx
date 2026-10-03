@@ -66,7 +66,7 @@ export default function TVBottleView({ gameState }: { gameState: ViewState }) {
   const isResult = selectedIdx >= 0 && (phase === 'card' || phase === 'vote');
 
   const phaseBadge =
-    phase === 'spinning' ? { label: t('tvCinema.bottle.spinning', 'Dreht'), color: BTL.secondary }
+    phase === 'spinning' ? { label: t('tvCinema.bottle.spinningPill', 'Flasche dreht sich …'), color: BTL.secondary }
     : phase === 'card' ? { label: t('tvCinema.bottle.card', 'Karte'), color: BTL.primary }
     : phase === 'vote' ? { label: t('tvCinema.bottle.vote', 'Abstimmung'), color: BTL.no }
     : null;
@@ -97,7 +97,12 @@ export default function TVBottleView({ gameState }: { gameState: ViewState }) {
       {/* Top bar — phase badge + round counter */}
       <div className="absolute top-8 left-8 right-8 flex items-center justify-between z-20">
         {phaseBadge ? (
-          <div className="px-5 py-2 rounded-full" style={{ background: `${phaseBadge.color}1f`, border: `1px solid ${phaseBadge.color}55` }}>
+          <div data-testid="tv-bottle-phase" className="flex items-center gap-3 px-5 py-2 rounded-full" style={{ background: `${phaseBadge.color}1f`, border: `1px solid ${phaseBadge.color}55` }}>
+            {phase === 'spinning' && (
+              <motion.span aria-hidden className="rounded-full" style={{ width: lu(1.1), height: lu(1.1), background: phaseBadge.color, boxShadow: `0 0 12px ${phaseBadge.color}` }}
+                animate={ambient ? { opacity: [0.35, 1, 0.35], scale: [0.85, 1.1, 0.85] } : { opacity: 0.9 }}
+                transition={ambient ? { repeat: Infinity, duration: 1.1, ease: 'easeInOut' } : { duration: 0.2 }} />
+            )}
             <span className="font-bold" style={{ fontSize: lu(2.4), color: phaseBadge.color }}>{phaseBadge.label}</span>
           </div>
         ) : <span />}
@@ -206,7 +211,7 @@ export default function TVBottleView({ gameState }: { gameState: ViewState }) {
                   color={players[selectedIdx]?.color || BTL.primary} size="clamp(6rem,11vh,9rem)" active />
               </motion.div>
               <div className="flex min-w-0 flex-col">
-                <span className="font-bold uppercase tracking-[0.25em]" style={{ fontSize: tvType.label, color: BTL.dim }}>
+                <span className="font-bold" style={{ fontSize: tvType.label, color: BTL.dim }}>
                   {t('tvCinema.bottle.yourTurn', 'Die Flasche zeigt auf')}
                 </span>
                 <h2 className="break-words font-black italic leading-none" style={{ fontSize: tvType.display, color: '#fff', textShadow: `0 0 60px ${BTL.primary}66`, paddingInlineEnd: '0.15em' }}>
@@ -223,7 +228,7 @@ export default function TVBottleView({ gameState }: { gameState: ViewState }) {
                 style={{ transformPerspective: 900 }}
               >
                 {taskType && (
-                  <span className="mb-3 block font-bold uppercase tracking-[0.2em]" style={{ fontSize: tvType.label, color: BTL.primary }}>
+                  <span className="mb-3 block font-bold" style={{ fontSize: tvType.label, color: BTL.primary }}>
                     {taskType === 'frage' ? t('tv.bottle.question', 'Frage') : taskType === 'aufgabe' ? t('tv.bottle.task', 'Aufgabe') : taskType}
                   </span>
                 )}
@@ -235,8 +240,8 @@ export default function TVBottleView({ gameState }: { gameState: ViewState }) {
             {phase === 'vote' && (
               <motion.div className="w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="font-bold uppercase tracking-[0.15em]" style={{ fontSize: tvType.label, color: BTL.yes }}>👍 {voteYes}</span>
-                  <span className="font-bold uppercase tracking-[0.15em]" style={{ fontSize: tvType.label, color: BTL.no }}>{voteNo} 👎</span>
+                  <span className="font-bold" style={{ fontSize: tvType.label, color: BTL.yes }}>👍 {voteYes}</span>
+                  <span className="font-bold" style={{ fontSize: tvType.label, color: BTL.no }}>{voteNo} 👎</span>
                 </div>
                 <div className="flex h-4 overflow-hidden rounded-full" style={{ background: totalVotes > 0 ? `${BTL.no}55` : 'rgba(255,255,255,0.08)' }}>
                   <motion.div className="h-full origin-left" style={{ width: '100%', background: BTL.yes }}
@@ -247,16 +252,6 @@ export default function TVBottleView({ gameState }: { gameState: ViewState }) {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Spinning hint */}
-      {phase === 'spinning' && (
-        // Oben mittig zwischen Phasen- und Rundenanzeige — unten liegt die Rangliste.
-        <motion.div className="absolute left-1/2 top-8 z-20 -translate-x-1/2"
-          animate={ambient ? { opacity: [0.3, 0.8, 0.3] } : { opacity: 0.6 }}
-          transition={ambient ? { repeat: Infinity, duration: 1 } : { duration: 0.3 }}>
-          <span className="font-bold tracking-wide" style={{ fontSize: tvType.body, color: BTL.dim }}>{t('tv.bottle.spinningHint', 'Flasche dreht sich...')}</span>
-        </motion.div>
-      )}
 
       {/* Full-party scoreboard strip — every player on screen */}
       {players.length > 0 && (

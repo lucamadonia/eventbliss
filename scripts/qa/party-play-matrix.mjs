@@ -19,7 +19,8 @@ const base = process.env.QA_PARTY_URL ?? (real ? 'http://127.0.0.1:5185' : 'http
 const registry = fs.readFileSync('src/lib/playable-games.ts', 'utf8');
 const games = [...registry.matchAll(/\{\s*id:\s*"([^"]+)"[^}]*?minPlayers:\s*(\d+),\s*maxPlayers:\s*(\d+)[^}]*?\}/g)]// Effective guest policy mirrors guestPolicy(): declared sharedDevice applies only once sharedDeviceSupported is set.
   .map(m => ({ id: m[1], min: +m[2], max: +m[3], declared: (m[0].match(/sharedDevice:\s*"(\w+)"/) ?? [])[1] ?? null, supported: /sharedDeviceSupported:\s*true/.test(m[0]) }))
-  .map(g => ({ ...g, shared: g.supported ? g.declared : 'sitout' }))
+  // --force-shared: guests play in every adapted game (QA switch), so the declared mode applies.
+  .map(g => ({ ...g, shared: g.supported || args.includes('--force-shared') ? (g.declared ?? 'sitout') : 'sitout' }))
   .filter(g => !opt('games') || opt('games').split(',').includes(g.id));
 const shares = opt('shares', '0,30,100').split(',').map(Number);
 const hostModes = opt('host', 'yes,no').split(',').map(x => x === 'yes');
@@ -40,6 +41,7 @@ try {
     const h = await createHarness({ real, out: `${root}/g${share}-h${hostPlays ? 1 : 0}`, base, browser });
     try {
       const { host, code } = await createParty(h, { hostPlays }); await connectTv(h, host); const ctx = { notes: [] };
+      if (args.includes('--force-shared')) await host.page.evaluate(ids => { window.__partyPlayForceShared = ids; }, games.map(g => g.id));
       for (let i = 0; i < guestsN; i++) await addGuest(ctx, host, code, ['Max', 'Gerda', 'Udo'][i], { via: 'rpc' });
       const phones = []; for (let i = 0; i < phonesN; i++) phones.push(await joinPhone(h, ctx, host, code, ['Lena', 'Tom', 'Sara'][i]));
       for (const game of games) {

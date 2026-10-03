@@ -86,3 +86,14 @@ export function headUpCountdown(startsAt: number | null | undefined, clock: Scen
     ? { value: HEADUP_COUNTDOWN_DIGITS, msUntilNext: state.msUntilNext }
     : { value: state.value, msUntilNext: state.msUntilNext };
 }
+
+/**
+ * „Zu spaet“ nur, wenn der Zug wirklich vorbei ist. Das Aktions-Token
+ * (`screen:runde:wort:countdown`) tickt mit jedem Wort — ein schneller
+ * Doppeltipp auf die naechste Karte ist kein verspaetetes Raten.
+ */
+export function headUpTurnClosed(staleTurn: string, currentTurn: string): boolean {
+  const [staleScreen, staleRound] = staleTurn.split(":");
+  const [screen, round] = currentTurn.split(":");
+  return staleScreen !== screen || staleRound !== round;
+}

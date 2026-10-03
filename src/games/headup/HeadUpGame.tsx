@@ -27,7 +27,7 @@ import { useBackGuard } from '@/lib/back-guard';
 import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { removeFromHeadUp } from './roster-change';
 import { useHeadUpParty, PhaseInputGate, HeadUpReadyStage } from './useHeadUpParty';
-import { useHeadUpCountdown, countdownStartNow } from './useHeadUpCountdown';
+import { useHeadUpCountdown, countdownStartNow, headUpTurnClosed } from './useHeadUpCountdown';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -334,7 +334,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
   const act = useOnlineActions(online, 'headup', `${screen}:${currentRound}:${currentWordIndex}:${countdown}`, {
     start: { allowed: screen === 'setup' ? 'host' : false, run: () => { if (online) { setPlayerNames(online.players.map(p => p.name)); setOrder(online.players.map(p => p.id)); } handleStartRound(); } },
     ready: { allowed: screen === 'ready' && countdown === null ? actorId : false, run: () => { if (screen === 'ready' && countdown === null) setCountdownStartsAt(countdownStartNow()); } },
-    word: { allowed: screen === 'playing' ? actorId : false, run: (correct: unknown) => { if (typeof correct === 'boolean') advanceWord(correct); } },
+    word: { answer: headUpTurnClosed, allowed: screen === 'playing' ? actorId : false, run: (correct: unknown) => { if (typeof correct === 'boolean') advanceWord(correct); } },
     next: { allowed: screen === 'roundResult' ? 'host' : false, run: handleNextRound },
     again: { allowed: screen === 'gameOver' ? 'host' : false, run: playAgain },
     restart: { allowed: 'host', run: handleRestart },

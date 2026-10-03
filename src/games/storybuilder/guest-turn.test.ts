@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from 'vitest';
 
-import { phaseOfBeat, storyBeatKey, writerSeat, writingClockRuns, writingTimedOut, type WritingClockInput } from './guest-turn';
+import { phaseOfBeat, storyBeatKey, storyTurnClosed, writerSeat, writingClockRuns, writingTimedOut, type WritingClockInput } from './guest-turn';
 
 describe('writerSeat', () => {
   it('nur beim Schreiben', () => {
@@ -54,5 +54,16 @@ describe('Schreib-Uhr', () => {
     expect(writingTimedOut({ ...base, seconds: 0 })).toBe(true);
     expect(writingTimedOut({ ...base, seconds: 1 })).toBe(false);
     expect(writingTimedOut({ ...base, seconds: 0, authoritative: false })).toBe(false);
+  });
+});
+
+describe("storyTurnClosed — „zu spaet“ nur bei beendetem Schreibzug", () => {
+  it("naechster Satz desselben Zugs ist nicht zu spaet", () => {
+    expect(storyTurnClosed("writing:1:2:1:4", "writing:1:2:2:5")).toBe(false);
+  });
+  it("anderer Schreiber, Runde oder Phase ist zu spaet", () => {
+    expect(storyTurnClosed("writing:1:2:2:5", "writing:1:3:1:6")).toBe(true);
+    expect(storyTurnClosed("writing:1:2:2:5", "writing:2:0:1:6")).toBe(true);
+    expect(storyTurnClosed("writing:1:2:2:5", "reveal:1:2:2:6")).toBe(true);
   });
 });

@@ -1,6 +1,7 @@
 import { playableGames } from '@/lib/playable-games';
 import type { GameRoom, RoomPlayer } from './room-types';
 import type { PartyGuestSeat, PartyRoomAccess } from './party-access';
+import { avatarOrFallback } from './seat-avatar';
 
 /**
  * Party seats that live inside the host's signed room state (`room.settings`):
@@ -68,6 +69,13 @@ export function partyRoomUpdate(room: GameRoom, access: PartyRoomAccess): GameRo
 export function dropFromMatch(room: GameRoom, ids: readonly string[]): GameRoom {
   return { ...room, participantIds: room.participantIds.filter(id => !ids.includes(id)),
     settings: { ...room.settings, removedPlayerIds: [...new Set([...readIds(room.settings, 'removedPlayerIds'), ...ids])] } };
+}
+
+/** Own presence look: the party member's avatar/colour (same on lobby, game and TV), else a stable party emoji. */
+export function ownLook(access: PartyRoomAccess | null, id: string, previousColor: string | undefined, randomColor: () => string): { avatar: string; color: string } {
+  const look = access?.looks?.[id];
+  const color = look?.color && /^#[0-9a-f]{6}$/i.test(look.color) ? look.color : previousColor || randomColor();
+  return { avatar: avatarOrFallback(look?.avatar, id), color };
 }
 
 export type MatchGuard = 'ok' | 'host-decide' | 'wait';

@@ -13,7 +13,8 @@ import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
 import { CLOSE_ENOUGH_THEME_ASSETS } from '../ui/premium-game-assets';
 import { compactWords } from './number-format';
 import { CloseEnoughAtmosphere } from './CloseEnoughAtmosphere';
-import { categoryLabelKey, CE_CATEGORIES, type CeCategory, type CeQuestion } from './closeenough-content';
+import { categoryLabelKey, ceContentState, CE_CATEGORIES, type CeCategory, type CeQuestion } from './closeenough-content';
+import { CeContentNotice } from './CeContentNotice';
 import { CE, MODES, type ModeId } from './ce-theme';
 
 // ===========================================================================
@@ -25,6 +26,8 @@ export function CloseEnoughSetup({
   onlinePlayers,
   pool,
   contentReady,
+  contentFailed = false,
+  onRetry,
   toast,
 }: {
   onStart: (cfg: {
@@ -36,6 +39,8 @@ export function CloseEnoughSetup({
   onlinePlayers?: { id: string; name: string }[];
   pool: CeQuestion[];
   contentReady: boolean;
+  contentFailed?: boolean;
+  onRetry?: () => void;
   toast: string | null;
 }) {
   const { t, i18n } = useTranslation();
@@ -87,6 +92,7 @@ export function CloseEnoughSetup({
         : t('games.closeenough.playerN', { n: i + 1 })),
   }));
   const canStart = contentReady && available > 0 && named.length >= 2;
+  const contentState = ceContentState({ contentReady, failed: contentFailed, poolSize: pool.length, available });
 
   return (
     <div className="min-h-[100dvh] relative" style={{ background: CE.bg, color: CE.text }}>
@@ -312,14 +318,7 @@ export function CloseEnoughSetup({
           style={{ accentColor: CE.accent }}
         />
 
-        {contentReady && available === 0 && (
-          <div
-            className="mt-6 rounded-2xl p-4 text-sm"
-            style={{ background: CE.surface, color: CE.dim }}
-          >
-            {t('games.closeenough.noQuestionsSetup')}
-          </div>
-        )}
+        <CeContentNotice state={contentState} onRetry={onRetry} onAllCategories={() => setCats([])} />
 
         {/* Beispiel für die Wortform, damit die Eingabefläche keine Überraschung
             ist: so groß wird die eigene Zahl später angezeigt. */}

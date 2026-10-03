@@ -189,8 +189,8 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const hostId = online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id;
 
   const route = useOnlineAuthority(online, 'fakeorfact', turnToken, {
-    handleClassicVote: { allow: (sender, args) => mode !== "three" && typeof args[0] === "boolean" && isTurn(sender), run: (...args) => handleClassicVote(args[0]) },
-    handleThreeVote: { allow: (sender, args) => mode === "three" && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 3 && isTurn(sender), run: (...args) => handleThreeVote(args[0]) },
+    handleClassicVote: { allow: (sender, args) => mode !== "three" && typeof args[0] === "boolean" && isTurn(sender), run: (...args) => handleClassicVote(args[0]), answer: true },
+    handleThreeVote: { allow: (sender, args) => mode === "three" && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 3 && isTurn(sender), run: (...args) => handleThreeVote(args[0]), answer: true },
     advanceRound: { allow: (sender) => phase === "reveal" && sender === hostId, run: () => advanceRound() },
     playAgain: { allow: (sender) => phase === "gameOver" && sender === hostId, run: () => playAgain() },
   });

@@ -6368,7 +6368,7 @@
       "sameCategoryHintOn": "Alle spelers beantwoorden dezelfde categorie",
       "sameCategoryHintOff": "Elke speler krijgt een nieuwe categorie",
       "startGame": "SPEL STARTEN",
-      "roundLabel": "RONDE {{round}}/{{total}}",
+      "roundLabel": "Ronde {{round}} van {{total}}",
       "theChallenge": "De Uitdaging",
       "random": "Willekeurig",
       "seconds": "Seconden",
@@ -6376,7 +6376,7 @@
       "noRepeat": "Geen herhalingen toegestaan!",
       "btnDone": "GELUKT!",
       "btnDontKnow": "WEET NIET",
-      "btnSolved": "OPGELOST!",
+      "btnSolved": "Opgelost",
       "drinkingModeMsg": "Proost, jij drinkt!",
       "drinkRound": "Ronde {{count}} · Drink verantwoord",
       "nextRound": "Volgende ronde",
@@ -6400,7 +6400,8 @@
       "taskKategoriePrompt": "Noem een {{category}} met \"{{letter}}\"!",
       "fewestPenalties": "Minste strafpunten",
       "partyHolderWait": "Zo meteen kan hij bij jou belanden.",
-      "partyHolderPass": "Het lontje blijft branden!"
+      "partyHolderPass": "Het lontje blijft branden!",
+      "partyRound": "Ronde {{round}} van {{total}}"
     },
     "headup": {
       "name": "Heads Up",
@@ -6479,7 +6480,8 @@
         "guesserHint": "{{name}} legt zo uit – luister goed en raad hardop.",
         "watcherHint": "{{name}} legt zo uit voor {{team}}.",
         "cardBack": "Je kaart ligt omgekeerd klaar",
-        "waitingFor": "Wachten op {{name}} …"
+        "waitingFor": "Wachten op {{name}} …",
+        "refereePreview": "Je ziet de kaart zodra {{name}} gaat uitleggen"
       },
       "playing": {
         "currentWord": "Huidig woord",
@@ -6863,7 +6865,10 @@
       "tapToPlayHidden": "Tik om af te spelen — titel blijft geheim",
       "tapAndGo": "Tik & ga",
       "partyCounterLine": "Zet je counter op de tijdlijn.",
-      "partyYourTurnLine": "Luister en plaats het nummer."
+      "partyYourTurnLine": "Luister en plaats het nummer.",
+      "partyListenClose": "Luister goed",
+      "partyYourTimeline": "Jouw tijdlijn",
+      "partyTimelineEmpty": "Nog leeg – je eerste nummer komt zo."
     },
     "splitquiz": {
       "subtitle": "Elk team ziet maar de helft van de antwoorden!",
@@ -7434,7 +7439,8 @@
       "retryImage": "Afbeelding opnieuw laden",
       "sayItLoud": "Zeg het antwoord hardop!",
       "teamHint": "Jullie raden als team – één fout antwoord blokkeert de hele telefoon.",
-      "whoTypes": "Wie typt?"
+      "whoTypes": "Wie typt?",
+      "pointsShort": "{{count}} ptn"
     },
     "closeenough": {
       "title": "Bijna Raak",
@@ -7676,7 +7682,13 @@
         "employees": "Volkswagen heeft ongeveer 680.000 medewerkers.",
         "revenue": "Apple zet ongeveer 390 miljard USD per jaar om."
       },
-      "partyYourEstimate": "Je schatting blijft geheim tot de onthulling."
+      "partyYourEstimate": "Je schatting blijft geheim tot de onthulling.",
+      "loadFailedTitle": "Vragen konden niet worden geladen",
+      "loadFailedHint": "Controleer je verbinding en probeer het opnieuw.",
+      "retryLoad": "Opnieuw proberen",
+      "emptySelectionTitle": "Geen vragen voor deze selectie",
+      "emptySelectionHint": "Kies andere categorieën of speel de mix.",
+      "useMix": "Mix spelen"
     },
     "pantomime": {
       "title": "Zonder Woorden",
@@ -10218,7 +10230,8 @@
       },
       "champions": "Gedeelde overwinning",
       "championsLine": "{{name}} delen de overwinning met elk {{points}} punten",
-      "drumroll": "En de kampioen van de avond is"
+      "drumroll": "En de kampioen van de avond is",
+      "recapOnPhones": "Jullie terugblik staat op de telefoons"
     },
     "connectTitle": "TV verbinden",
     "openOnTv": "Open op je tv:",
@@ -10245,9 +10258,9 @@
       "waiting": "Wachten op opdracht..."
     },
     "bottle": {
-      "spinning": "DRAAIT",
-      "card": "KAART",
-      "vote": "STEMMING",
+      "spinning": "Draait",
+      "card": "Kaart",
+      "vote": "Stemming",
       "question": "Vraag",
       "task": "Opdracht",
       "spinningHint": "De fles draait..."
@@ -10287,8 +10300,8 @@
     "leaderboard": "Ranglijst",
     "headup": {
       "correctShort": "{{count}} goed",
-      "gameOver": "EINDE SPEL!",
-      "roundOver": "RONDE VOORBIJ!",
+      "gameOver": "Einde spel!",
+      "roundOver": "Ronde voorbij!",
       "correct": "Goed",
       "skipped": "Overgeslagen",
       "describe": "Beschrijf het!",
@@ -10296,17 +10309,17 @@
       "skip": "Skip"
     },
     "impostor": {
-      "checkPhones": "KIJK OP JE TELEFOON!",
+      "checkPhones": "Kijk op je telefoon!",
       "oneWordOneDifferent": "Eén woord — maar één heeft een ander...",
-      "discussion": "DISCUSSIE",
-      "whoIsImpostor": "WIE IS DE BEDRIEGER?",
-      "voting": "STEMMING",
-      "whoIsSuspected": "WIE WORDT VERDACHT?",
-      "revealIn": "ONTHULLING OVER...",
-      "theImpostorIs": "DE BEDRIEGER IS...",
-      "label": "BEDRIEGER",
-      "canImpostorGuess": "KAN DE BEDRIEGER HET WOORD RADEN?",
-      "results": "RESULTAAT",
+      "discussion": "Discussie",
+      "whoIsImpostor": "Wie is de bedrieger?",
+      "voting": "Stemming",
+      "whoIsSuspected": "Wie wordt verdacht?",
+      "revealIn": "Onthulling over …",
+      "theImpostorIs": "De bedrieger is …",
+      "label": "Bedrieger",
+      "canImpostorGuess": "Kan de bedrieger het woord raden?",
+      "results": "Resultaat",
       "preparing": "Spel wordt voorbereid..."
     },
     "ohrwurm": {
@@ -10352,7 +10365,7 @@
     },
     "truthdare": {
       "wpCount": "{{w}}× W · {{p}}× D",
-      "title": "WAARHEID OF DURF",
+      "title": "Waarheid of durf",
       "isUp": "is aan de beurt",
       "whosNext": "Wie is de volgende?",
       "chooses": "kiest…",
@@ -10361,7 +10374,7 @@
     "whoami": {
       "questionsCount": "{{n}} vragen",
       "questionN": "Vraag {{x}}/{{max}}",
-      "title": "WIE BEN IK?",
+      "title": "Wie ben ik?",
       "assigning": "Rollen worden verdeeld…",
       "asks": "vraagt",
       "askPrompt": "Stel een ja/nee-vraag",
@@ -10385,7 +10398,9 @@
       "game": "Terug naar het spel",
       "rules": "Spelregels",
       "menu": "Menu"
-    }
+    },
+    "winnerLead": "+{{margin}} voor op {{name}}",
+    "winnerTie": "Gelijk met {{name}}"
   },
   "partyControllers": {
     "title": "Controllermodus",
@@ -10762,7 +10777,12 @@
       "you": "Jij bent aan de beurt",
       "passTo": "Geef de telefoon aan {{name}}",
       "other": "{{name}} is aan de beurt"
-    }
+    },
+    "waitingTitle": "Zo begint het",
+    "nextGame": "Hierna: {{game}}",
+    "tvLinked": "Tv verbonden",
+    "tvNotLinked": "Geen tv verbonden",
+    "tooLate": "Te laat – de ronde is al verder"
   },
   "tvCinema": {
     "round": "Ronde {{round}}",
@@ -10776,7 +10796,10 @@
       "votingSub": "Wie is de bedrieger?",
       "caught": "Betrapt!",
       "escaped": "Ontsnapt!",
-      "spokenProgress": "{{count}} van {{total}} hebben gesproken"
+      "spokenProgress": "{{count}} van {{total}} hebben gesproken",
+      "chip": "Bedrieger",
+      "theImpostorIs": "De bedrieger is …",
+      "revealIn": "Onthulling over …"
     },
     "bottle": {
       "vote": "Stemmen",
@@ -10784,7 +10807,8 @@
       "voteSubAnon": "Gelukt of niet?",
       "yourTurn": "De fles wijst naar",
       "spinning": "Draait",
-      "card": "Kaart"
+      "card": "Kaart",
+      "spinningPill": "De fles draait …"
     },
     "thisOrThat": {
       "voting": "Maak je keuze!",
@@ -10961,7 +10985,7 @@
       "allVoted": "Iedereen heeft getypt",
       "readingQuestion": "Vraag wordt voorgelezen",
       "readingOptions": "Opties worden voorgelezen",
-      "answering": "Er wordt geantwoord",
+      "answering": "Antwoordtijd loopt",
       "gotItRight": "{{pct}} % goed",
       "gotItWrong": "{{pct}} % fout",
       "teamCorrect": "{{count}} goed",

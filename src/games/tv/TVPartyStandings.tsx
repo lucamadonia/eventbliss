@@ -1,5 +1,7 @@
-import { lookupRoster, useTVRoster } from './cinema/tv-roster';
+import { avatarFor, useTVRoster } from './cinema/tv-roster';
 import { useEffect, useRef, useState } from 'react';
+import { MEDAL_COLORS } from './components/TVPartyPodium';
+import { lu } from './components/tv-lobby-scale';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Flame, Trophy } from 'lucide-react';
@@ -62,10 +64,11 @@ function BoardRow({
         style={{
           fontSize: tvType.body,
           width: '1.6em',
-          color: entry.rank === 1 ? '#FFD23F' : entry.rank === 2 ? '#cfd3dc' : entry.rank === 3 ? '#e0915b' : '#6b6480',
+          color: entry.rank <= 3 ? MEDAL_COLORS[entry.rank - 1] : '#8a82a0',
         }}
       >
-        {String(entry.rank).padStart(2, '0')}
+        {/* „1“ statt „01“ — feste Breite + tabular-nums halten die Spalte buendig. */}
+        {entry.rank}
       </span>
       <span
         className="shrink-0 rounded-full flex items-center justify-center font-black text-white"
@@ -78,7 +81,7 @@ function BoardRow({
           boxShadow: isLeader ? `0 0 22px ${entry.color}66` : undefined,
         }}
       >
-        {entry.avatar || lookupRoster(roster, entry.id, entry.name)?.avatar || entry.name?.slice(0, 1).toUpperCase()}
+        {avatarFor(roster, entry)}
       </span>
       <span className="flex-1 min-w-0 truncate font-black text-white" style={{ fontSize: tvType.label }}>
         {entry.name}
@@ -219,8 +222,8 @@ export default function TVPartyStandings({ party }: { party: PartyNightState }) 
           transition={spring}
         >
           <span
-            className="inline-flex items-center gap-[.55em] rounded-full border border-[#8ff5ff]/20 bg-[#8ff5ff]/8 px-[1em] py-[.45em] uppercase font-black tracking-[0.28em]"
-            style={{ fontSize: tvType.micro, color: '#9bf7ff' }}
+      className="inline-flex items-center gap-[.55em] rounded-full border border-[#8ff5ff]/20 bg-[#8ff5ff]/8 px-[1em] py-[.45em] font-black"
+            style={{ fontSize: lu(1.9), color: '#9bf7ff' }}
           >
             <span className="h-[.55em] w-[.55em] rounded-full bg-[#8ff5ff] shadow-[0_0_14px_#8ff5ff]" aria-hidden />
             {t('tv.partyNight.standingsEyebrow', 'Zwischenstand')}
@@ -264,8 +267,8 @@ export default function TVPartyStandings({ party }: { party: PartyNightState }) 
           >
             <span className="absolute inset-y-[22%] left-0 w-[3px] rounded-full bg-[#df8eff] shadow-[0_0_16px_#df8eff]" aria-hidden />
             <span
-              className="uppercase font-black tracking-[0.24em]"
-              style={{ fontSize: tvType.micro, color: '#b3a8c9' }}
+       className="font-black"
+              style={{ fontSize: lu(1.9), color: '#b3a8c9' }}
             >
               {t('tv.partyNight.upNext', 'Als Nächstes')}
             </span>
@@ -279,8 +282,8 @@ export default function TVPartyStandings({ party }: { party: PartyNightState }) 
       {/* ── Right rail: the full ranked board ── */}
       <div className="relative z-10 flex min-h-0 flex-col rounded-[28px] border border-white/[0.075] bg-white/[0.035] p-[clamp(0.9rem,1.6vw,1.75rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.07),0_30px_80px_-56px_rgba(223,142,255,.65)] backdrop-blur-xl">
         <span
-          className="uppercase font-black tracking-[0.24em] mb-[clamp(0.5rem,1vh,1rem)] shrink-0"
-          style={{ fontSize: tvType.micro, color: '#b3a8c9' }}
+     className="font-black mb-[clamp(0.5rem,1vh,1rem)] shrink-0"
+          style={{ fontSize: lu(1.9), color: '#b3a8c9' }}
         >
           {t('tv.partyNight.tonightTotal', 'Gesamt heute Abend')}
         </span>

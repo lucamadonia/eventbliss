@@ -20,3 +20,5 @@ export function useHeadUpCountdown(startsAt: number | null): number | null {
 
 /** Startzeit eines neuen Countdowns (Serverzeit, erste Ziffer sofort). */
 export const countdownStartNow = (): number => serverClock.now();
+
+export { headUpTurnClosed } from "./party-play";

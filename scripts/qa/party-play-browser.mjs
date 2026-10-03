@@ -12,6 +12,7 @@ import { gameScenarios } from './party-play-scenarios-game.mjs';
 import { tvScenarios } from './party-play-scenarios-tv.mjs';
 import { manualScenarios } from './party-play-manual.mjs';
 import { kickScenarios } from './party-play-scenarios-kick.mjs';
+import { guestScenarios } from './party-play-scenarios-guests.mjs';
 
 const args = process.argv.slice(2);
 const opt = (name, fallback = null) => { const i = args.indexOf(`--${name}`); return i >= 0 ? (args[i + 1] ?? true) : fallback; };
@@ -29,7 +30,7 @@ fs.mkdirSync(root, { recursive: true });
 
 // F14 (kick the active player) uses the kick matrix's state-based check for fake-or-fact.
 { const f14 = gameScenarios.find(s => s.id === 'F14'), k14 = kickScenarios.find(s => s.id === 'K14-fake-or-fact'); if (f14 && k14) f14.run = k14.run; }
-const all = [...joinScenarios, ...lobbyScenarios, ...gameScenarios, ...tvScenarios, ...kickScenarios];
+const all = [...joinScenarios, ...lobbyScenarios, ...gameScenarios, ...tvScenarios, ...kickScenarios, ...guestScenarios];
 const wanted = selection === 'all' ? all : selection === 'none' ? [] : all.filter(s => selection.split(',').some(sel => sel.endsWith('*') ? s.id.startsWith(sel.slice(0, -1)) : s.id === sel));
 if (!wanted.length && !chaosRuns) { console.error(`No scenario matches "${selection}". Known: ${all.map(s => s.id).join(' ')}`); process.exit(2); }
 

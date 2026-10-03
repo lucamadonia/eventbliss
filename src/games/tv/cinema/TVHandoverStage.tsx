@@ -80,8 +80,8 @@ export default function TVHandoverStage({ handover, onCue }: { handover: TvHando
             animate={reduced ? { opacity: 0.8 } : { opacity: [0.45, 1, 0.45] }}
             transition={reduced ? { duration: 0.2 } : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }} />
 
-          <span className="relative inline-flex items-center gap-3 rounded-full px-6 py-2 font-bold uppercase"
-            style={{ fontSize: lu(2.1), letterSpacing: '0.2em', color: ACCENT, background: `${ACCENT}1a`, boxShadow: `inset 0 0 0 1px ${ACCENT}38` }}>
+          <span className="relative inline-flex items-center gap-3 rounded-full px-6 py-2 font-bold"
+            style={{ fontSize: lu(2.2), color: ACCENT, background: `${ACCENT}1a`, boxShadow: `inset 0 0 0 1px ${ACCENT}38` }}>
             <Repeat2 aria-hidden strokeWidth={2.5} style={{ width: '1.1em', height: '1.1em' }} />
             {t('partyPlay.tv.handoverEyebrow', 'Handy weitergeben')}
           </span>

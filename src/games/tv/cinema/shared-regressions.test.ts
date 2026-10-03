@@ -31,3 +31,29 @@ describe('TV scene container', () => {
     expect(scene).toMatch(/className="[^"]*\bh-screen\b[^"]*"/);
   });
 });
+
+describe('TV sentence case', () => {
+  // Design-Regel: Satzschreibung, kein Sperrsatz ueber 0.04em. Ausnahme nur echte
+  // Wortmarken (Brew-Titel, markiert mit „Wortmarke“).
+  const SHARED = ['TVGameOver.tsx', 'TVPartyReady.tsx', 'TVPartyStandings.tsx', 'TVRules.tsx', 'TVLeaderboard.tsx',
+    'components/TVPartyMap.tsx', 'components/TVPartyRoadmap.tsx', 'components/TVPartyProgressStrip.tsx',
+    'games/TVBottleView.tsx', 'games/TVThisOrThatView.tsx', 'TVPartyFinale.tsx'];
+  it.each(SHARED)('%s has no tracked caps', (file) => {
+    const src = fs.readFileSync(path.resolve(__dirname, '..', file), 'utf8');
+    expect(src).not.toMatch(/(?<![-:])\buppercase\b/);
+    expect(src).not.toMatch(/tracking-\[0?\.(0[5-9]|[1-9])/);
+  });
+
+  it('keeps every TV/bomb headline value out of all caps in every language', () => {
+    const KEYS = ['tv.impostor.whoIsImpostor', 'tv.impostor.checkPhones', 'tv.impostor.results', 'tv.whoami.title',
+      'tv.truthdare.title', 'games.bomb.btnSolved', 'games.bomb.roundLabel', 'tv.headup.gameOver'];
+    for (const code of ['de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'pl', 'tr', 'ar']) {
+      const tree = JSON.parse(fs.readFileSync(path.resolve(__dirname, `../../../i18n/locales/${code}.json`), 'utf8'));
+      for (const key of KEYS) {
+        const value = String(key.split('.').reduce((n: Record<string, unknown>, p) => n?.[p] as Record<string, unknown>, tree));
+        const letters = value.replace(/\{\{\w+\}\}/g, '').replace(/[^\p{L}]/gu, '');
+        expect(letters === letters.toUpperCase() && letters !== letters.toLowerCase(), `${code} ${key}: ${value}`).toBe(false);
+      }
+    }
+  });
+});

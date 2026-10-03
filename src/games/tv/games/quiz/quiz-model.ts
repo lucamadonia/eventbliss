@@ -80,7 +80,7 @@ export function quizPhaseLabel(game: string, phase: string, t: TFunction): HudPh
     if (role === 2) return { text: t('tvCinema.quiz.guessing', 'Jetzt wird geraten'), color: QZ.amber };
   }
   if (game === 'splitquiz' && phase === 'betting') return { text: t('tvCinema.quiz.betting', 'Einsätze setzen'), color: QZ.amber };
-  return { text: t('tvCinema.quiz.answering', 'Antworten läuft'), color: QZ.purple };
+  return { text: t('tvCinema.quiz.answering', 'Antwortzeit läuft'), color: QZ.purple };
 }
 
 /** Spieler-Objekte aus dem Zustand (splitquiz liefert Namen + `playerInfo`). */

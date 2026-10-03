@@ -130,10 +130,10 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const hostId = online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id;
   const route = useOnlineAuthority(online, 'truthdare', `${phase}:${currentRound}:${activeIdx}:${voterIdx}`, {
     doSpin: { allow: (sender) => phase === "spin" && sender === hostId, run: () => doSpin() },
-    handleChoice: { allow: (sender, args) => phase === "choice" && ["truth", "dare"].includes(args[0]) && sender === players[activeIdx]?.id, run: (...args) => handleChoice(args[0]) },
+    handleChoice: { allow: (sender, args) => phase === "choice" && ["truth", "dare"].includes(args[0]) && sender === players[activeIdx]?.id, run: (...args) => handleChoice(args[0]), answer: true },
     rerollCurrent: { allow: (sender) => phase === "reveal" && sender === players[activeIdx]?.id, run: () => rerollCurrent() },
     startVote: { allow: (sender) => phase === "reveal" && sender === players[activeIdx]?.id, run: () => startVote() },
-    castVote: { allow: (sender, args) => phase === "vote" && typeof args[0] === "boolean" && sender === voterOrder(players, activeIdx)[voterIdx]?.id, run: (...args) => castVote(args[0]) },
+    castVote: { allow: (sender, args) => phase === "vote" && typeof args[0] === "boolean" && sender === voterOrder(players, activeIdx)[voterIdx]?.id, run: (...args) => castVote(args[0]), answer: true },
     nextRound: { allow: (sender) => ["choice", "reveal"].includes(phase) && sender === players[activeIdx]?.id, run: () => nextRound() },
     playAgain: { allow: (sender) => phase === "gameOver" && sender === hostId, run: () => playAgain() },
   });

@@ -65,12 +65,15 @@ export interface TVBroadcastAPI {
   broadcastTV: (event: string, data: Record<string, unknown>) => void;
   /** Set online room code — adds extra channel for online mode */
   setOnlineRoom: (code: string | null) => void;
+  /** Last 'tv-ready' heartbeat from a TV (ms epoch, 0 = never / deactivated) — the host forwards it to the phones. */
+  lastTvReadyAt: number;
 }
 
 export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
   const [tvCode] = useState(() => sessionCode || getSessionTVCode());
   const [isActive, setIsActive] = useState(false);
   const [onlineCode, setOnlineCode] = useState<string | null>(null);
+  const [lastTvReadyAt, setLastTvReadyAt] = useState(0);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const gameChannelRef = useRef<RealtimeChannel | null>(null);
   const onlineChannelRef = useRef<RealtimeChannel | null>(null);
@@ -95,6 +98,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     const now = Date.now();
     if (now - lastReadyHandledAtRef.current < 250) return;
     lastReadyHandledAtRef.current = now;
+    setLastTvReadyAt(now);
     const channels = [channelRef.current, gameChannelRef.current, onlineChannelRef.current];
     if (lastStateRef.current) {
       const syncPayload = { type: "broadcast" as const, event: "tv-state-sync", payload: lastStateRef.current };
@@ -152,6 +156,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     activatedRef.current = false;
     setOnlineCode(null);
     setIsActive(false);
+    setLastTvReadyAt(0);
     try { sessionStorage.removeItem(TV_ACTIVE_KEY); } catch { /* ok */ }
   }, []);
 
@@ -237,5 +242,5 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     };
   }, []);
 
-  return { tvCode, displayCode: onlineCode || tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom };
+  return { tvCode, displayCode: onlineCode || tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom, lastTvReadyAt };
 }

@@ -55,10 +55,11 @@ function LobbyRoute() {
   return <GameLobby gameId={gameId!} gameName={gameId!} onBack={() => navigate('/party')} onStart={(_players: unknown, code: string, id: string) => navigate(`/games/${id}?room=${code}`)} />;
 }
 
-/** Mirrors NativeApp: party TV code, floating TV pill only on /games routes. */
+/** Mirrors NativeApp: party TV code, floating TV pill only on /games routes and never in a joystick party. */
 function ShellTV({ children }: { children: React.ReactNode }) {
   const location = useLocation(); const party = useSyncExternalStore(subscribePartySession, getActivePartySession, () => null);
-  return <TVBroadcastProvider sessionCode={party?.isActive ? party.tvCode : undefined} showConnectButton={location.pathname.startsWith('/games')}>{children}</TVBroadcastProvider>;
+  const showTvPill = location.pathname.startsWith('/games') && party?.playMode !== 'controllers';
+  return <TVBroadcastProvider sessionCode={party?.isActive ? party.tvCode : undefined} showConnectButton={showTvPill}>{children}</TVBroadcastProvider>;
 }
 
 /** Stand-in for /auth: after the harness signs in, continue to ?redirect= like the real page. */

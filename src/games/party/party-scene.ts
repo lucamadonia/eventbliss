@@ -33,6 +33,14 @@ export function planPartyScene(name: PartySceneName, data: PartySceneData = {}):
   return planScene(name, data, { leadMs: SCENE_LEAD_MS }) as PartyScene;
 }
 
+/**
+ * Party ended mid-game: the finale follows the round-end scene — it starts one
+ * scene lead after the round-end moment, so every device (and the TV) celebrates together.
+ */
+export function chainedFinale(roundEnd: Pick<PartyScene, 'startsAt'>): PartyScene {
+  return { ...planPartyScene('finale'), startsAt: sceneGoAt({ scene: 'round-end', startsAt: roundEnd.startsAt }) + SCENE_LEAD_MS };
+}
+
 /** When the scene's action happens (route): after the countdown for game-start, at start otherwise. */
 export const sceneGoAt = (scene: Pick<PartyScene, 'scene' | 'startsAt'>) =>
   scene.startsAt + (scene.scene === 'game-start' ? COUNTDOWN_DIGITS * 1000 : 0);

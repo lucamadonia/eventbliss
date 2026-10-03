@@ -5,7 +5,7 @@ import { advanceReveal, storyTurn } from './reveal-rules';
 import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { removeFromStory } from './roster-change';
-import { phaseOfBeat, storyBeatKey, writerSeat, writingClockRuns, writingTimedOut } from './guest-turn';
+import { phaseOfBeat, storyBeatKey, storyTurnClosed, writerSeat, writingClockRuns, writingTimedOut } from './guest-turn';
 import { WritingWait } from './WritingWait';
 import { useSeatHandover } from '../multiplayer/useGuestHandover';
 import { usePhaseGate } from '../party/usePhaseGate';
@@ -378,7 +378,7 @@ export default function StoryBuilderGame({ online }: { online?: OnlineGameProps 
   });
   const act = useOnlineActions(online, 'storybuilder', `${phase}:${currentRound}:${currentPlayerIdx}:${currentSentenceNum}:${sentences.length}`, {
     start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },
-    sentence: { allowed: phase === 'writing' ? currentPlayer?.id ?? false : false, run: (text: unknown) => { if (typeof text === 'string') submitSentence(text); } },
+    sentence: { answer: storyTurnClosed, allowed: phase === 'writing' ? currentPlayer?.id ?? false : false, run: (text: unknown) => { if (typeof text === 'string') submitSentence(text); } },
     ready: { allowed: phase === 'passing' ? currentPlayer?.id ?? false : false, run: confirmPass },
     skip: { allowed: phase === 'writing' || phase === 'passing' ? currentPlayer?.id ?? false : false, run: () => submitSentence('', true) },
     again: { allowed: phase === 'storyReveal' || phase === 'gameOver' ? 'host' : false, run: rematch },

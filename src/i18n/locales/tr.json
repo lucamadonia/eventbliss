@@ -6368,7 +6368,7 @@
       "sameCategoryHintOn": "Tüm oyuncular aynı kategoriye cevap verir",
       "sameCategoryHintOff": "Her oyuncu yeni bir kategori alır",
       "startGame": "OYUNU BAŞLAT",
-      "roundLabel": "TUR {{round}}/{{total}}",
+      "roundLabel": "Tur {{round}} / {{total}}",
       "theChallenge": "Görev",
       "random": "Rastgele",
       "seconds": "Saniye",
@@ -6376,7 +6376,7 @@
       "noRepeat": "Tekrar yok!",
       "btnDone": "BAŞARDIM!",
       "btnDontKnow": "BİLMİYORUM",
-      "btnSolved": "ÇÖZÜLDÜ!",
+      "btnSolved": "Çözüldü",
       "drinkingModeMsg": "Şerefe, içiyorsun!",
       "drinkRound": "Tur {{count}} · Sorumlu iç",
       "nextRound": "Sonraki tur",
@@ -6400,7 +6400,8 @@
       "taskKategoriePrompt": "Bir {{category}} söyle \"{{letter}}\" ile!",
       "fewestPenalties": "En az ceza puanı",
       "partyHolderWait": "Birazdan sana gelebilir.",
-      "partyHolderPass": "Fitil yanmaya devam ediyor!"
+      "partyHolderPass": "Fitil yanmaya devam ediyor!",
+      "partyRound": "Tur {{round}} / {{total}}"
     },
     "headup": {
       "name": "Heads Up",
@@ -6479,7 +6480,8 @@
         "guesserHint": "{{name}} birazdan anlatacak – iyi dinle, yüksek sesle tahmin et.",
         "watcherHint": "{{name}} birazdan {{team}} için anlatacak.",
         "cardBack": "Kartın kapalı halde hazır",
-        "waitingFor": "{{name}} bekleniyor …"
+        "waitingFor": "{{name}} bekleniyor …",
+        "refereePreview": "{{name}} anlatmaya başlayınca kartı göreceksin"
       },
       "playing": {
         "currentWord": "Güncel kelime",
@@ -6863,7 +6865,10 @@
       "tapToPlayHidden": "Oynatmak için dokun — başlık gizli kalır",
       "tapAndGo": "Dokun ve başla",
       "partyCounterLine": "İtirazını zaman çizelgesine koy.",
-      "partyYourTurnLine": "Dinle ve şarkıyı yerine yerleştir."
+      "partyYourTurnLine": "Dinle ve şarkıyı yerine yerleştir.",
+      "partyListenClose": "İyi dinleyin",
+      "partyYourTimeline": "Zaman çizelgen",
+      "partyTimelineEmpty": "Henüz boş – ilk şarkın birazdan geliyor."
     },
     "splitquiz": {
       "subtitle": "Her takım cevapların yalnızca yarısını görür!",
@@ -7434,7 +7439,8 @@
       "retryImage": "Görseli yeniden yükle",
       "sayItLoud": "Cevabı yüksek sesle söyle!",
       "teamHint": "Takım olarak tahmin ediyorsunuz – yanlış cevap tüm telefonu kilitler.",
-      "whoTypes": "Kim yazıyor?"
+      "whoTypes": "Kim yazıyor?",
+      "pointsShort": "{{count}} puan"
     },
     "closeenough": {
       "title": "Yaklaştın",
@@ -7676,7 +7682,13 @@
         "employees": "Volkswagen'de yaklaşık 680.000 kişi çalışır.",
         "revenue": "Apple yılda yaklaşık 390 milyar USD ciro yapar."
       },
-      "partyYourEstimate": "Tahminin açıklanana kadar gizli kalır."
+      "partyYourEstimate": "Tahminin açıklanana kadar gizli kalır.",
+      "loadFailedTitle": "Sorular yüklenemedi",
+      "loadFailedHint": "Bağlantını kontrol et ve tekrar dene.",
+      "retryLoad": "Tekrar dene",
+      "emptySelectionTitle": "Bu seçim için soru yok",
+      "emptySelectionHint": "Başka kategoriler seç ya da karışık oyna.",
+      "useMix": "Karışık oyna"
     },
     "pantomime": {
       "title": "Tek Kelime Yok",
@@ -10218,7 +10230,8 @@
       },
       "champions": "Ortak şampiyonlar",
       "championsLine": "{{name}}, kişi başı {{points}} puanla birinciliği paylaşıyor",
-      "drumroll": "Ve gecenin şampiyonu"
+      "drumroll": "Ve gecenin şampiyonu",
+      "recapOnPhones": "Gecenin özeti telefonlarınızda"
     },
     "connectTitle": "TV'yi bağla",
     "openOnTv": "TV'nde aç:",
@@ -10245,9 +10258,9 @@
       "waiting": "Görev bekleniyor..."
     },
     "bottle": {
-      "spinning": "DÖNÜYOR",
-      "card": "KART",
-      "vote": "OYLAMA",
+      "spinning": "Dönüyor",
+      "card": "Kart",
+      "vote": "Oylama",
       "question": "Soru",
       "task": "Görev",
       "spinningHint": "Şişe dönüyor..."
@@ -10287,8 +10300,8 @@
     "leaderboard": "Sıralama",
     "headup": {
       "correctShort": "{{count}} doğru",
-      "gameOver": "OYUN BİTTİ!",
-      "roundOver": "TUR BİTTİ!",
+      "gameOver": "Oyun bitti!",
+      "roundOver": "Tur bitti!",
       "correct": "Doğru",
       "skipped": "Pas geçildi",
       "describe": "Anlat!",
@@ -10296,17 +10309,17 @@
       "skip": "Pas"
     },
     "impostor": {
-      "checkPhones": "TELEFONLARINIZA BAKIN!",
+      "checkPhones": "Telefonlarınıza bakın!",
       "oneWordOneDifferent": "Bir kelime — ama birinde farklı...",
-      "discussion": "TARTIŞMA",
-      "whoIsImpostor": "SAHTEKÂR KİM?",
-      "voting": "OYLAMA",
-      "whoIsSuspected": "KİMDEN ŞÜPHELENİLİYOR?",
-      "revealIn": "AÇIKLANIYOR...",
-      "theImpostorIs": "SAHTEKÂR...",
-      "label": "SAHTEKÂR",
-      "canImpostorGuess": "SAHTEKÂR KELİMEYİ TAHMİN EDEBİLİR Mİ?",
-      "results": "SONUÇ",
+      "discussion": "Tartışma",
+      "whoIsImpostor": "Sahtekâr kim?",
+      "voting": "Oylama",
+      "whoIsSuspected": "Kimden şüpheleniliyor?",
+      "revealIn": "Açıklanıyor …",
+      "theImpostorIs": "Sahtekâr …",
+      "label": "Sahtekâr",
+      "canImpostorGuess": "Sahtekâr kelimeyi tahmin edebilir mi?",
+      "results": "Sonuç",
       "preparing": "Oyun hazırlanıyor..."
     },
     "ohrwurm": {
@@ -10352,7 +10365,7 @@
     },
     "truthdare": {
       "wpCount": "{{w}}× D · {{p}}× C",
-      "title": "DOĞRULUK MU CESARET Mİ",
+      "title": "Doğruluk mu cesaret mi",
       "isUp": "sırada",
       "whosNext": "Sıradaki kim?",
       "chooses": "seçiyor…",
@@ -10361,7 +10374,7 @@
     "whoami": {
       "questionsCount": "{{n}} soru",
       "questionN": "Soru {{x}}/{{max}}",
-      "title": "BEN KİMİM?",
+      "title": "Ben kimim?",
       "assigning": "Roller dağıtılıyor…",
       "asks": "soruyor",
       "askPrompt": "Evet/hayır sorusu sor",
@@ -10385,7 +10398,9 @@
       "game": "Oyuna dön",
       "rules": "Nasıl oynanır",
       "menu": "Menü"
-    }
+    },
+    "winnerLead": "{{name}} önünde +{{margin}}",
+    "winnerTie": "{{name}} ile berabere"
   },
   "partyControllers": {
     "title": "Kontrolcü modu",
@@ -10762,7 +10777,12 @@
       "you": "Sıra sende",
       "passTo": "Telefonu ver: {{name}}",
       "other": "Sıra: {{name}}"
-    }
+    },
+    "waitingTitle": "Birazdan başlıyor",
+    "nextGame": "Sırada: {{game}}",
+    "tvLinked": "TV bağlı",
+    "tvNotLinked": "Bağlı TV yok",
+    "tooLate": "Çok geç – tur çoktan ilerledi"
   },
   "tvCinema": {
     "round": "{{round}}. tur",
@@ -10776,7 +10796,10 @@
       "votingSub": "Sahtekâr kim?",
       "caught": "Yakalandı!",
       "escaped": "Kaçtı!",
-      "spokenProgress": "{{total}} kişiden {{count}} kişi konuştu"
+      "spokenProgress": "{{total}} kişiden {{count}} kişi konuştu",
+      "chip": "Sahtekâr",
+      "theImpostorIs": "Sahtekâr …",
+      "revealIn": "Açıklama geliyor …"
     },
     "bottle": {
       "vote": "Oylama",
@@ -10784,7 +10807,8 @@
       "voteSubAnon": "Başarıldı mı?",
       "yourTurn": "Şişe şunu gösteriyor:",
       "spinning": "Dönüyor",
-      "card": "Kart"
+      "card": "Kart",
+      "spinningPill": "Şişe dönüyor …"
     },
     "thisOrThat": {
       "voting": "Seçiminizi yapın!",
@@ -10961,7 +10985,7 @@
       "allVoted": "Herkes seçti",
       "readingQuestion": "Soru okunuyor",
       "readingOptions": "Şıklar okunuyor",
-      "answering": "Cevaplar geliyor",
+      "answering": "Cevap süresi",
       "gotItRight": "%{{pct}} doğru",
       "gotItWrong": "%{{pct}} yanlış",
       "teamCorrect": "{{count}} doğru",

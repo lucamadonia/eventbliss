@@ -75,7 +75,10 @@ export const lobbyScenarios = [
     if (hasTestId('end-party')) { await host.click('end-party'); if (!await host.waitAny(['end-party-confirm'], 4000)) { ctx.notes.push('end-party-confirm test id not rendered'); await host.clickText('^(leave|verlassen|party beenden|end party|yes|ja|confirm)$', 4000); } else await host.click('end-party-confirm'); }
     else { assert(await host.clickText('^end party|party beenden'), 'no end-party button'); await pause(500); await host.clickText('^(leave|verlassen|party beenden|yes|ja|confirm)$', 4000); }
     await host.until(async c => (await c.party())?.party?.status === 'finished' || !(await c.party()), 'party not finished', 10000);
-    await tv.until(async c => !(await c.exists('tv-lobby')) || /lena/i.test(await c.text()) && /9/.test(await c.text()), 'TV did not leave the lobby for the finale', 10000);
+    // The finale rows exist invisibly during the drumroll; beat 3 is the revealed podium (tv-lobby contract).
+    if (hasTestId('tv-party-finale')) await tv.until(async c => (await c.attr('tv-party-finale', 'data-beat')) === '3', 'TV finale never reached beat 3', 20000);
+    else await tv.until(async c => !(await c.exists('tv-lobby')) || /lena/i.test(await c.text()) && /9/.test(await c.text()), 'TV did not leave the lobby for the finale', 10000);
+    await h.shotAll('tv-finale');
     const screen = await lena.waitAny(['party-ended-screen'], 10000); await h.shotAll('ended');
     if (!screen) { need('party-ended-screen'); throw new Error('phone shows no closing screen'); }
   } },

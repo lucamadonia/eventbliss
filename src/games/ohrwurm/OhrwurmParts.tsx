@@ -1,4 +1,5 @@
 // OHRWURM — Teilansichten (Spielerchips, Karten, Zeitstrahl, Auflösung).
+import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import { ExternalLink, Loader2, Music2, Plus, Users } from 'lucide-react';
@@ -10,7 +11,7 @@ import { OW } from './ohrwurm-theme';
 export function Avatar({ p, size = 32 }: { p: Pick<Participant, 'color' | 'avatar' | 'type'>; size?: number }) {
   return (
     <div className="rounded-full flex items-center justify-center font-black text-white shrink-0 relative"
-      style={{ width: size, height: size, background: p.color, fontSize: size * 0.42 }}>
+      style={{ width: size, height: size, fontSize: size * 0.5, background: `radial-gradient(circle at 30% 25%, ${p.color}55, ${p.color}22)`, boxShadow: `inset 0 0 0 2px ${p.color}aa` }}>
       {p.avatar}
       {p.type === 'group' && (
         <Users className="absolute -bottom-1 -right-1 w-3 h-3 p-[1px] rounded-full" style={{ background: OW.bg, color: p.color }} />
@@ -19,14 +20,29 @@ export function Avatar({ p, size = 32 }: { p: Pick<Participant, 'color' | 'avata
   );
 }
 
+const FADE = 'linear-gradient(to var(--ow-fade, right), #000 82%, transparent)';
+
 export function Scoreboard({ participants, activeId, winTarget }: { participants: Participant[]; activeId?: string; winTarget: number }) {
+  // Mehr Plaetze als Breite: weich ausblenden + einrasten, damit klar ist, dass es weitergeht.
+  const strip = useRef<HTMLDivElement>(null);
+  const [overflows, setOverflows] = useState(false);
+  useEffect(() => {
+    const el = strip.current;
+    if (!el) return;
+    const check = () => setOverflows(el.scrollWidth > el.clientWidth + 1);
+    check();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(check) : null;
+    ro?.observe(el);
+    return () => ro?.disconnect();
+  }, [participants.length]);
   return (
-    <div className="relative z-10 flex gap-2 overflow-x-auto px-4 py-3 no-scrollbar">
+    <div ref={strip} className="relative z-10 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 py-3 no-scrollbar rtl:[--ow-fade:left]"
+      style={overflows ? { maskImage: FADE, WebkitMaskImage: FADE } : undefined}>
       {participants.map((p) => {
         const isActive = p.id === activeId;
         return (
           <div key={p.id}
-            className="shrink-0 flex items-center gap-2.5 rounded-2xl px-3 py-2 transition-all"
+            className="shrink-0 snap-start flex items-center gap-2.5 rounded-2xl px-3 py-2 transition-all"
             style={{
               background: OW.surface,
               border: `1.5px solid ${isActive ? p.color : 'transparent'}`,

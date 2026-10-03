@@ -416,8 +416,8 @@ export default function SplitQuizGame({ players: initialPlayers, onClose, online
   const route = useOnlineAuthority(online, 'splitquiz', `${phase}:${currentRound}:${activeTeamIdx}`, {
     startGame: { allow: (sender, args) => phase === "setup" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => startGame() },
     beginQuestion: { allow: (sender, args) => phase === "handoff" && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => beginQuestion() },
-    confirmBet: { allow: (sender, args) => phase === "betting" && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => confirmBet() },
-    handleAnswer: { allow: (sender, args) => phase === "question" && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 4 && answerSplit[activeTeamIdx].includes(args[0]) && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => handleAnswer(args[0]) },
+    confirmBet: { answer: true, allow: (sender, args) => phase === "betting" && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => confirmBet() },
+    handleAnswer: { answer: true, allow: (sender, args) => phase === "question" && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 4 && answerSplit[activeTeamIdx].includes(args[0]) && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => handleAnswer(args[0]) },
     nextAfterReveal: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => nextAfterReveal() },
     playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
     chooseBet: { allow: (sender, args) => phase === "betting" && [1,2,3].includes(args[0]) && (activeTeamIdx === 0 ? teamA : teamB).players.includes(sender), run: (...args) => chooseBet(args[0]) },

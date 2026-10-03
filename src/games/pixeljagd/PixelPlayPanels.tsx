@@ -17,6 +17,9 @@ import type { PixelPuzzle } from './pixeljagd-content';
 import { PJ, type AnswerMode, type Player } from './pixeljagd-theme';
 import { typistFor } from './team-buzzer';
 
+/** Break at hyphens/spaces ("ALEXANDRA-" / "MARIE"), never mid-word. */
+const NAME_WRAP = { wordBreak: 'normal', overflowWrap: 'break-word', hyphens: 'manual' } as const;
+
 const initial = (p: Player) => avatarOrFallback(p.avatar, p.id);
 
 export function RoundReveal({ puzzle, winner, isHost, onNext }: {
@@ -123,7 +126,7 @@ function SeatKey({ player, onPress, disabled, pressed, big }: {
       }}>
       <SeatAvatar avatar={initial(player)} color={player.color} size={44} dimmed={player.locked} />
       <span className="min-w-0 flex-1">
-        <span dir="auto" className="block line-clamp-2 break-words text-base leading-tight">{player.name}</span>
+        <span dir="auto" className="block line-clamp-2 text-base leading-tight" style={NAME_WRAP}>{player.name}</span>
         <span className="block text-[13px] font-bold tabular-nums opacity-70">{player.score}</span>
       </span>
     </motion.button>
@@ -210,8 +213,10 @@ export function AnswerPad({ answerMode, isOnline, players, localSeats, imageRead
   );
 }
 
-export function ScoreStrip({ players }: { players: Player[] }) {
-  const sorted = [...players].sort((a, b) => b.score - a.score);
+/** `hide`: seats that already show their score on a buzzer on this device — no duplicates. */
+export function ScoreStrip({ players, hide = [] }: { players: Player[]; hide?: readonly string[] }) {
+  const sorted = [...players].filter((p) => !hide.includes(p.id)).sort((a, b) => b.score - a.score);
+  if (!sorted.length) return null;
   return (
     <div className="relative z-10 px-4 pb-10 flex flex-wrap gap-2 justify-center">
       {sorted.map((p) => (
@@ -261,7 +266,7 @@ export function PixelHeader({ round, total, points, onLeave }: { round: number; 
         {t('games.pixeljagd.roundOf', { round, total })}
       </div>
       <div className="flex items-center gap-1 text-sm font-black tabular-nums" style={{ color: PJ.accent }}>
-        <Zap className="w-4 h-4" /> {points}
+        <Zap className="w-4 h-4" aria-hidden /> {t('games.pixeljagd.pointsShort', '{{count}} Pkt.', { count: points })}
       </div>
     </div>
   );

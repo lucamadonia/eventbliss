@@ -201,7 +201,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
 
   const route = useOnlineAuthority(online, 'sharedquiz', `${phase}:${round}:${teamAnswers.length}`, {
     startGame: { allow: (sender, args) => phase === "setup" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => startGame() },
-    handleAnswer: { allow: (sender, args) => phase === "playerC" && sender === players[roleIndices[mode === 'trio' ? 2 : teamAnswers.length]]?.id && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 4, run: (...args) => handleAnswer(args[0]) },
+    handleAnswer: { answer: true, allow: (sender, args) => phase === "playerC" && sender === players[roleIndices[mode === 'trio' ? 2 : teamAnswers.length]]?.id && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 4, run: (...args) => handleAnswer(args[0]) },
     playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
     nextRound: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => nextRound() },
     advancePhase: { allow: (sender, args) => sender === players[roleIndices[phase === "playerB" || phase === "handoffAB" ? 1 : phase === "handoffBC" ? 2 : 0]]?.id && ["roundIntro", "playerA", "handoffAB", "playerB", "handoffBC"].includes(phase), run: (...args) => advancePhase() },

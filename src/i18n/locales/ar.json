@@ -6160,7 +6160,7 @@
       "sameCategoryHintOn": "جميع اللاعبين يجيبون على نفس الفئة",
       "sameCategoryHintOff": "كل لاعب يحصل على فئة جديدة",
       "startGame": "ابدأ اللعبة",
-      "roundLabel": "الجولة {{round}}/{{total}}",
+      "roundLabel": "الجولة {{round}} من {{total}}",
       "theChallenge": "التحدي",
       "random": "عشوائي",
       "seconds": "ثوانٍ",
@@ -6168,7 +6168,7 @@
       "noRepeat": "لا تكرار مسموح!",
       "btnDone": "أنجزت!",
       "btnDontKnow": "لا أعرف",
-      "btnSolved": "تم الحل!",
+      "btnSolved": "تم الحل",
       "drinkingModeMsg": "بالصحة، تشرب!",
       "drinkRound": "الجولة {{count}} · اشرب بمسؤولية",
       "nextRound": "الجولة التالية",
@@ -6192,7 +6192,8 @@
       "taskKategoriePrompt": "اذكر {{category}} بـ \"{{letter}}\"!",
       "fewestPenalties": "أقل نقاط جزاء",
       "partyHolderWait": "قد تصل إليك بعد لحظات.",
-      "partyHolderPass": "الفتيل ما زال يشتعل!"
+      "partyHolderPass": "الفتيل ما زال يشتعل!",
+      "partyRound": "الجولة {{round}} من {{total}}"
     },
     "headup": {
       "name": "خمّن الكلمة",
@@ -6271,7 +6272,8 @@
         "guesserHint": "{{name}} سيشرح الآن – استمع جيدًا وخمّن بصوت عالٍ.",
         "watcherHint": "{{name}} سيشرح بعد قليل لـ {{team}}.",
         "cardBack": "بطاقتك جاهزة ومقلوبة",
-        "waitingFor": "بانتظار {{name}} …"
+        "waitingFor": "بانتظار {{name}} …",
+        "refereePreview": "سترى البطاقة بمجرد أن يبدأ {{name}} بالشرح"
       },
       "playing": {
         "currentWord": "الكلمة الحالية",
@@ -6655,7 +6657,10 @@
       "tapToPlayHidden": "اضغط للتشغيل — العنوان يبقى سراً",
       "tapAndGo": "اضغط وابدأ",
       "partyCounterLine": "ضع تحدّيك على الخط الزمني.",
-      "partyYourTurnLine": "استمع وضع الأغنية في مكانها."
+      "partyYourTurnLine": "استمع وضع الأغنية في مكانها.",
+      "partyListenClose": "استمعوا جيدًا",
+      "partyYourTimeline": "خطك الزمني",
+      "partyTimelineEmpty": "لا يزال فارغًا – أغنيتك الأولى قادمة قريبًا."
     },
     "splitquiz": {
       "subtitle": "كل فريق يرى نصف الإجابات فقط!",
@@ -7226,7 +7231,8 @@
       "retryImage": "إعادة تحميل الصورة",
       "sayItLoud": "قل الإجابة بصوت عالٍ!",
       "teamHint": "تخمّنون كفريق – إجابة خاطئة تقفل الهاتف كله.",
-      "whoTypes": "من سيكتب؟"
+      "whoTypes": "من سيكتب؟",
+      "pointsShort": "{{count}} نقطة"
     },
     "closeenough": {
       "title": "قريب جدًا",
@@ -7516,7 +7522,13 @@
         "employees": "يعمل في فولكسفاغن نحو 680000 شخص.",
         "revenue": "تحقق أبل نحو 390 مليار دولار من الإيرادات سنويًا."
       },
-      "partyYourEstimate": "تخمينك يبقى سرًا حتى الكشف."
+      "partyYourEstimate": "تخمينك يبقى سرًا حتى الكشف.",
+      "loadFailedTitle": "تعذّر تحميل الأسئلة",
+      "loadFailedHint": "تحقق من الاتصال وحاول مرة أخرى.",
+      "retryLoad": "حاول مجددًا",
+      "emptySelectionTitle": "لا توجد أسئلة لهذا الاختيار",
+      "emptySelectionHint": "اختر فئات أخرى أو العب المزيج.",
+      "useMix": "العب المزيج"
     },
     "pantomime": {
       "title": "بلا كلمات",
@@ -10266,7 +10278,8 @@
       },
       "champions": "فوز مشترك",
       "championsLine": "يتقاسم {{name}} الفوز برصيد {{points}} نقطة لكل منهم",
-      "drumroll": "وبطل السهرة هو"
+      "drumroll": "وبطل السهرة هو",
+      "recapOnPhones": "ملخّص سهرتكم على هواتفكم"
     },
     "connectTitle": "توصيل التلفاز",
     "openOnTv": "افتح على تلفازك:",
@@ -10350,8 +10363,8 @@
       "whoIsImpostor": "من المحتال؟",
       "voting": "التصويت",
       "whoIsSuspected": "من المشتبه به؟",
-      "revealIn": "الكشف خلال...",
-      "theImpostorIs": "المحتال هو...",
+      "revealIn": "الكشف خلال …",
+      "theImpostorIs": "المحتال هو …",
       "label": "المحتال",
       "canImpostorGuess": "هل يستطيع المحتال تخمين الكلمة؟",
       "results": "النتيجة",
@@ -10433,7 +10446,9 @@
       "game": "العودة إلى اللعبة",
       "rules": "كيف تلعب",
       "menu": "القائمة"
-    }
+    },
+    "winnerLead": "+{{margin}} أمام {{name}}",
+    "winnerTie": "تعادل مع {{name}}"
   },
   "partyControllers": {
     "title": "وضع التحكم",
@@ -10870,7 +10885,12 @@
       "you": "دورك الآن",
       "passTo": "أعطِ الهاتف إلى {{name}}",
       "other": "دور {{name}}"
-    }
+    },
+    "waitingTitle": "سنبدأ بعد لحظات",
+    "nextGame": "التالي: {{game}}",
+    "tvLinked": "التلفاز متصل",
+    "tvNotLinked": "لا يوجد تلفاز متصل",
+    "tooLate": "متأخر جدًا – الجولة انتقلت"
   },
   "tvCinema": {
     "round": "الجولة {{round}}",
@@ -10884,7 +10904,10 @@
       "votingSub": "من هو المحتال؟",
       "caught": "انكشف!",
       "escaped": "نجا!",
-      "spokenProgress": "تحدّث {{count}} من {{total}}"
+      "spokenProgress": "تحدّث {{count}} من {{total}}",
+      "chip": "المحتال",
+      "theImpostorIs": "المحتال هو …",
+      "revealIn": "الكشف خلال …"
     },
     "bottle": {
       "vote": "التصويت",
@@ -10892,7 +10915,8 @@
       "voteSubAnon": "نجح أم لا؟",
       "yourTurn": "الزجاجة تشير إلى",
       "spinning": "تدور",
-      "card": "البطاقة"
+      "card": "البطاقة",
+      "spinningPill": "الزجاجة تدور …"
     },
     "thisOrThat": {
       "voting": "اختاروا!",
@@ -11077,7 +11101,7 @@
       "allVoted": "الجميع اختار",
       "readingQuestion": "قراءة السؤال",
       "readingOptions": "قراءة الخيارات",
-      "answering": "الإجابة جارية",
+      "answering": "وقت الإجابة",
       "gotItRight": "{{pct}}% أصابوا",
       "gotItWrong": "{{pct}}% أخطأوا",
       "teamCorrect": "{{count}} صحيحة",

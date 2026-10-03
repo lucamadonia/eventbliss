@@ -148,7 +148,7 @@ function EmojiGuessGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const route = useOnlineAuthority(online, 'emojiguess', `${phase}:${currentRound}:${currentPlayerIdx}:${attempt}`, {
     ready: { allow: sender => phase === 'ready' && sender === players[currentPlayerIdx]?.id, run: () => ready() },
     toggleAnswer: { allow: sender => phase === 'playing' && sender === players[currentPlayerIdx]?.id, run: () => toggleAnswer() },
-    handleCorrectGuess: { allow: (sender, args) => phase === "playing" && typeof args[0] === "string" && args[0].length <= 120 && sender === players[currentPlayerIdx]?.id, run: (...args) => handleCorrectGuess(args[0]) },
+    handleCorrectGuess: { allow: (sender, args) => phase === "playing" && typeof args[0] === "string" && args[0].length <= 120 && sender === players[currentPlayerIdx]?.id, run: (...args) => handleCorrectGuess(args[0]), answer: true },
     handleSkip: { allow: (sender, args) => phase === "playing" && sender === players[currentPlayerIdx]?.id, run: (...args) => handleSkip() },
     advanceRound: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => advanceRound() },
     playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },

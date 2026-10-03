@@ -1,5 +1,5 @@
 import { playerGlow, readableOn } from '@/lib/party-motion';
-import { lookupRoster, useTVRoster } from './tv-roster';
+import { lookupRoster, realAvatar, useTVRoster } from './tv-roster';
 
 const FALLBACK_COLOR = '#df8eff';
 
@@ -22,7 +22,7 @@ export default function TVPlayerAvatar({ id, name, avatar, color, size, active =
 }) {
   const roster = useTVRoster();
   const known = lookupRoster(roster, id, name);
-  const emoji = (avatar && avatar.trim()) || known?.avatar || '';
+  const emoji = realAvatar(avatar) || known?.avatar || '';
   const tone = color || known?.color || FALLBACK_COLOR;
   return (
     <span

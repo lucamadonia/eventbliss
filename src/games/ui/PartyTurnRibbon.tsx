@@ -17,9 +17,18 @@ import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
 import { firePartyHaptic, partyCue, partyMotion, playerGlow } from "@/lib/party-motion";
 import { SeatAvatar } from "@/components/native/party/PartySheet";
-import { avatarOrFallback } from "../multiplayer/seat-avatar";
+import { resolveSeatAvatar } from "./seat-avatar-resolve";
+import { useControllerParty } from "../party/controller-session";
+
+export { resolveSeatAvatar };
 
 export type TurnRibbonKind = "me" | "pass" | "other";
+
+/** Hook form: resolves against the live controller-party roster. */
+export function useSeatAvatar(): (avatar: string | undefined, id: string) => string {
+  const members = useControllerParty().data?.members ?? [];
+  return (avatar, id) => resolveSeatAvatar(avatar, id, members);
+}
 
 export interface TurnRibbonPlayer {
   id: string;
@@ -39,7 +48,7 @@ export function PartyTurnRibbon({ player, kind, line, className = "" }: {
   const reduced = !!useReducedMotion();
   const haptics = useHaptics();
   const color = player.color || "#df8eff";
-  const avatar = avatarOrFallback(player.avatar, player.id);
+  const avatar = useSeatAvatar()(player.avatar, player.id);
   const lit = kind !== "other";
 
   // T06/T07: nur wenn es fuer dieses Handy neu losgeht.

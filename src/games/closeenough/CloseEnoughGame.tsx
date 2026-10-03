@@ -43,7 +43,7 @@ import { dropRemovedPlayers } from './removal';
 import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import { CloseEnoughAtmosphere } from './CloseEnoughAtmosphere';
 import { setReportContext } from '@/games/ui/useReportContext';
-import { loadQuestions, type CeCategory, type CeQuestion } from './closeenough-content';
+import { loadQuestionPool, type CeCategory, type CeQuestion } from './closeenough-content';
 import { CE, MODES, shuffle, type ModeId, type Phase, type Player } from './ce-theme';
 import { CloseEnoughSetup } from './CloseEnoughSetup';
 import { useCeTv } from './useCeTv';
@@ -109,18 +109,23 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   // Einmal alles laden und danach im Speicher filtern. 864 Zeilen sind
   // harmlos, und die Einrichtung kann so die Anzahl je Kategorie sofort
   // anzeigen, statt bei jedem Antippen erneut zu fragen.
+  // Ein DB-Aussetzer darf keinen stummen grauen Startknopf hinterlassen:
+  // `contentFailed` + „Erneut versuchen“ (loadAttempt) in der Einrichtung.
+  const [contentFailed, setContentFailed] = useState(false);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   useEffect(() => {
     let cancelled = false;
     setContentReady(false);
-    void loadQuestions(lang).then((qs) => {
+    void loadQuestionPool(lang).then(({ questions, failed }) => {
       if (cancelled) return;
-      setPool(qs);
+      setPool(questions);
+      setContentFailed(failed);
       setContentReady(true);
     });
     return () => {
       cancelled = true;
     };
-  }, [lang]);
+  }, [lang, loadAttempt]);
 
   // --- Runde ---------------------------------------------------------------
   const finishRoundRef = useRef<(() => void) | null>(null);
@@ -397,6 +402,8 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
         onlinePlayers={online?.players}
         pool={pool}
         contentReady={contentReady}
+        contentFailed={contentFailed}
+        onRetry={() => setLoadAttempt((n) => n + 1)}
         toast={toast}
       />
     );

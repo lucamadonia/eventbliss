@@ -20,6 +20,9 @@ interface ViewState {
   round?: number;
 }
 
+/** „Erwischt!“: massives Gold (Design P2), kontraststark auf dem dunklen Rechteck. */
+const CAUGHT_GOLD = '#f9ca24';
+
 /**
  * TVImpostorView — big-screen view for the Impostor (Hochstapler) game.
  *
@@ -185,7 +188,7 @@ export default function TVImpostorView({ gameState }: { gameState: ViewState }) 
         <motion.div className="flex flex-col items-center gap-6 text-center" variants={staggerChildren(120)} initial="initial" animate="animate">
           <motion.span variants={riseIn(reduced)} style={{ fontSize: 'clamp(4rem,9vw,9rem)' }} aria-hidden>🤫</motion.span>
           <motion.h1 variants={riseIn(reduced)} className="font-black" style={{ fontSize: tvType.display, color: IMP.text }}>
-            {t('tv.impostor.checkPhones', 'SCHAUT AUF EURE HANDYS!')}
+            {t('tv.impostor.checkPhones', 'Schaut auf eure Handys!')}
           </motion.h1>
           <motion.p variants={riseIn(reduced)} style={{ fontSize: tvType.title, color: IMP.dim }}>
             {t('tv.impostor.oneWordOneDifferent', 'Ein Wort — aber einer hat ein anderes...')}
@@ -198,7 +201,7 @@ export default function TVImpostorView({ gameState }: { gameState: ViewState }) 
       <>
         <TopBar label={t('tvCinema.impostor.discussion', 'Diskussion')} color={IMP.amber} />
         <h1 className="mb-4 text-center font-black leading-tight" style={{ fontSize: tvType.display, color: IMP.text }}>
-          {t('tv.impostor.whoIsImpostor', 'WER IST DER HOCHSTAPLER?')}
+          {t('tv.impostor.whoIsImpostor', 'Wer ist der Hochstapler?')}
         </h1>
         <p className="mb-10 font-semibold" style={{ fontSize: tvType.body, color: IMP.dim }}>
           {t('tvCinema.impostor.spokenProgress', '{{count}} von {{total}} haben gesprochen', { count: spokenCount, total: players.length })}
@@ -217,7 +220,7 @@ export default function TVImpostorView({ gameState }: { gameState: ViewState }) 
         <TopBar label={t('tvCinema.impostor.voting', 'Abstimmung')} color={IMP.red} />
         <Wash color={IMP.red} strength={0.07} />
         <h1 className="mb-10 font-black" style={{ fontSize: tvType.display, color: IMP.text }}>
-          {t('tv.impostor.whoIsSuspected', 'WER WIRD VERDÄCHTIGT?')}
+          {t('tv.impostor.whoIsSuspected', 'Wer wird verdächtigt?')}
         </h1>
         <motion.div className="flex max-w-6xl flex-wrap justify-center gap-5" variants={staggerChildren()} initial="initial" animate="animate">
           {playersWithVotes.map((p) => <PlayerCard key={pid(p)} player={p} showVotes highlight={p.isTopVoted} ambient={ambient} />)}
@@ -239,13 +242,13 @@ export default function TVImpostorView({ gameState }: { gameState: ViewState }) 
         <motion.h1 className="relative font-black" style={{ fontSize: tvType.display, color: IMP.text, textShadow: `0 0 50px ${IMP.red}88` }}
           animate={reduced ? { opacity: 1 } : { scale: [1, 1.06, 1] }}
           transition={reduced ? { duration: 0.3 } : { repeat: Infinity, duration: 0.8, ease: 'easeInOut' }}>
-          {t('tv.impostor.revealIn', 'ENTHÜLLUNG IN...')}
+          {t('tvCinema.impostor.revealIn', 'Enthüllung in …')}
         </motion.h1>
       </>
     );
   } else if (phase === 'reveal') {
     // Helles Gold mit Schein (≥ 4.5:1 auf dem Grund) — das alte Gold wirkte auf dem Rot-Schleier braun.
-    const verdictColor = caught ? IMP.brightGold : IMP.red;
+    const verdictColor = caught ? CAUGHT_GOLD : IMP.red;
     content = (
       <>
         <Wash color={revealStep === 2 ? verdictColor : IMP.red} strength={0.14} />
@@ -256,31 +259,34 @@ export default function TVImpostorView({ gameState }: { gameState: ViewState }) 
               animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
               exit={{ opacity: 0, scale: 1.08, transition: { duration: 0.22, ease: partyEase.exit } }}
               transition={{ duration: 0.6, ease: partyEase.out }}>
-              {t('tv.impostor.theImpostorIs', 'DER HOCHSTAPLER IST...')}
+              {t('tvCinema.impostor.theImpostorIs', 'Der Hochstapler ist …')}
             </motion.h1>
           )}
           {revealStep === 2 && impostor && (
-            <motion.div key="step2" data-testid="tv-impostor-verdict" data-caught={String(!!caught)} className="relative z-10 flex flex-col items-center gap-5 rounded-[50%] px-[8vw] py-[4vh]"
-              // Freie Zone hinter der Schrift: Konfetti fliegt aussen herum, nie ueber Name und Urteil.
-              style={{ background: 'radial-gradient(ellipse closest-side, #060810 62%, rgba(6,8,16,0.85) 80%, transparent 100%)' }}>
+            <motion.div key="step2" data-testid="tv-impostor-verdict" data-caught={String(!!caught)} className="relative z-10 flex flex-col items-center gap-5 rounded-[2.5rem] px-[6vw] py-[4vh]"
+              // Konfetti-freies Rechteck um Name, Chip und Urteil — Konfetti fliegt aussen herum (Design P2).
+              style={{ background: 'rgba(6,8,16,0.94)', boxShadow: '0 0 60px 36px rgba(6,8,16,0.9)' }}>
               <motion.div className="relative"
                 initial={reduced ? { opacity: 0 } : { scale: 0.3, opacity: 0, rotate: -12 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
                 transition={reduced ? { duration: 0.2 } : { type: 'spring', duration: 0.7, bounce: 0.45 }}>
                 <TVPlayerAvatar id={impostor.id} name={impostor.name} avatar={impostor.avatar} color={impostor.color || IMP.red} size="clamp(9rem,16vh,13rem)" active />
               </motion.div>
-              <motion.h1 className="font-black leading-none" style={{ fontSize: tvType.hero, color: '#fff', textShadow: `0 0 70px ${verdictColor}aa` }}
+              <motion.h1 className="relative font-black leading-none" style={{ fontSize: tvType.hero, color: '#fff', textShadow: `0 0 70px ${verdictColor}aa` }}
                 initial={reduced ? { opacity: 0 } : { y: 40, opacity: 0, scale: 0.9 }} animate={{ y: 0, opacity: 1, scale: 1 }}
                 transition={{ duration: 0.55, ease: partyEase.out, delay: 0.15 }}>
                 {impostor.name}
+                {/* Schein unter dem Namen in der Urteilsfarbe */}
+                <span aria-hidden className="pointer-events-none absolute left-1/2 -translate-x-1/2 rounded-full"
+                  style={{ bottom: '-0.32em', width: '110%', height: '0.42em', background: `radial-gradient(ellipse at center, ${verdictColor}88, transparent 70%)`, filter: 'blur(12px)' }} />
               </motion.h1>
-              <motion.span className="rounded-full px-6 py-2 font-black uppercase tracking-[0.25em]"
-                style={{ fontSize: tvType.label, color: IMP.red, background: `${IMP.red}1a`, border: `1px solid ${IMP.red}55` }}
+              <motion.span className="rounded-full px-6 py-2 font-bold"
+                style={{ fontSize: lu(2.2), color: IMP.red, background: `${IMP.red}1a`, border: `1px solid ${IMP.red}55` }}
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-                {t('tv.impostor.label', 'HOCHSTAPLER')}
+                {t('tvCinema.impostor.chip', 'Hochstapler')}
               </motion.span>
               {caught !== null && (
-                <motion.p className="font-black italic" style={{ fontSize: tvType.display, color: verdictColor, textShadow: `0 0 36px ${verdictColor}aa, 0 0 2px ${verdictColor}` }}
+                <motion.p className="font-black italic" style={{ fontSize: tvType.display, color: verdictColor, textShadow: `0 0 28px ${verdictColor}66` }}
                   initial={reduced ? { opacity: 0 } : { opacity: 0, scale: 1.6 }} animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.45, ease: partyEase.out, delay: 0.7 }}>
                   {caught ? t('tvCinema.impostor.caught', 'Erwischt!') : t('tvCinema.impostor.escaped', 'Entkommen!')}
@@ -300,14 +306,14 @@ export default function TVImpostorView({ gameState }: { gameState: ViewState }) 
         <Wash color={IMP.amber} strength={0.12} />
         <motion.h1 className="px-8 text-center font-black leading-relaxed" style={{ fontSize: tvType.display, color: IMP.text }}
           animate={ambient ? { scale: [1, 1.02, 1] } : { scale: 1 }} transition={ambient ? { repeat: Infinity, duration: 2 } : { duration: 0.3 }}>
-          {t('tv.impostor.canImpostorGuess', 'KANN DER HOCHSTAPLER DAS WORT ERRATEN?')}
+          {t('tv.impostor.canImpostorGuess', 'Kann der Hochstapler das Wort erraten?')}
         </motion.h1>
       </>
     );
   } else if (phase === 'results') {
     content = (
       <>
-        <h2 className="mb-8 font-black" style={{ fontSize: tvType.display, color: IMP.text }}>{t('tv.impostor.results', 'ERGEBNIS')}</h2>
+        <h2 className="mb-8 font-black" style={{ fontSize: tvType.display, color: IMP.text }}>{t('tv.impostor.results', 'Ergebnis')}</h2>
         <motion.div className="flex w-full max-w-2xl flex-col gap-3" variants={staggerChildren(90)} initial="initial" animate="animate">
           {sortedResults.map((p, i) => (
             <motion.div key={pid(p)} variants={riseIn(reduced)}
@@ -316,7 +322,7 @@ export default function TVImpostorView({ gameState }: { gameState: ViewState }) 
               <span className="font-black" style={{ fontSize: tvType.body, color: i === 0 ? IMP.gold : IMP.dim, minWidth: '2.5rem' }}>{i === 0 ? '👑' : `#${i + 1}`}</span>
               <TVPlayerAvatar id={p.id} name={p.name} avatar={p.avatar} color={p.color || IMP.accent} size="clamp(2.5rem,3.4vw,3.4rem)" />
               <span className="flex-1 font-bold" style={{ fontSize: tvType.body, color: IMP.text }}>{p.name}</span>
-              {p.isImpostor && <span className="font-bold uppercase tracking-[0.12em]" style={{ fontSize: tvType.label, color: IMP.red }}>{t('tv.impostor.label', 'HOCHSTAPLER')}</span>}
+              {p.isImpostor && <span className="font-bold" style={{ fontSize: lu(2.2), color: IMP.red }}>{t('tvCinema.impostor.chip', 'Hochstapler')}</span>}
               <span className="font-black" style={{ fontSize: tvType.body, color: i === 0 ? IMP.gold : IMP.accent }}>{p.score || 0}</span>
             </motion.div>
           ))}

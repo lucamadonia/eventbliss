@@ -5,8 +5,10 @@ import { createParty, addGuest, joinPhone, memberBy, ready, startGame, wallNow, 
 import { hostSetup, playMatch, deviceMap } from './party-play-games.mjs';
 
 /** Party with guests + phones, everyone ready, `game` started and set up. */
-export async function matchSetup(ctx, { game, guests = [], phones = ['Lena', 'Tom'], hostPlays = true, tv = true, rounds = 'min', mode }) {
+export async function matchSetup(ctx, { game, guests = [], phones = ['Lena', 'Tom'], hostPlays = true, tv = true, rounds = 'min', mode, forceShared = [] }) {
   const { h } = ctx; const { host, code } = await createParty(h, { hostPlays });
+  // QA-only switch (dev builds): guests play in adapted games whose release flag is still off.
+  if (forceShared.length) await host.page.evaluate(g => { window.__partyPlayForceShared = g; }, forceShared);
   const tvc = tv ? await connectTv(h, host) : null; const gids = {};
   for (const g of guests) gids[g] = await addGuest(ctx, host, code, g);
   const devices = []; for (const p of phones) devices.push(await joinPhone(h, ctx, host, code, p));
@@ -155,15 +157,21 @@ export const gameScenarios = [
   } },
   { id: 'F12', title: 'Input after deadline (delayed device) → discarded, "zu spät"', timeoutMs: 300000, async run(ctx) {
     needSource(/\bacceptInput\(\{/, 'a game checking inputs against deadlines (acceptInput)');
-    // Deadlines exist in speed mode (5 s per player); Tom's packets take 4 s each way.
-    const m = await matchSetup(ctx, { game: 'this-or-that', phones: ['Lena', 'Tom'], mode: 'speed' }); m.phones[1].net.delay = [4000, 4000];
-    await m.h.shotAll('speed-mode'); ctx.evidence.timerVisible = /\b[0-9]s\b|⏱|seconds|sekunden/i.test(await m.host.text());
-    const rejected0 = (await m.host.trace()).filter(e => e.kind === 'input-rejected').length;
-    if (!ctx.evidence.timerVisible && !await m.host.exists('scene-countdown')) ctx.notes.push('speed mode probably not selected: controller-party start skips the game setup screen');
-    await playMatch(m.h, m.host, 'this-or-that', m.map, { budgetMs: 90000 });
-    const rejected = (await m.host.trace()).filter(e => e.kind === 'input-rejected'); ctx.evidence.rejected = rejected.length;
-    if (!rejected.length && !ctx.evidence.timerVisible) throw new Inconclusive('speed mode (the only this-or-that mode with deadlines) is not selectable in the controller-party flow: the game starts without its setup screen');
-    assert(rejected.some(e => e.playerId === m.ids.Tom), 'late input from Tom was not rejected');
+    // Release 1: party flow uses default modes; fake-or-fact checks every answer against the turn deadline
+    // (750 ms grace). Tom's packets take 20 s each way, so his answers land after the deadline.
+    const m = await matchSetup(ctx, { game: 'fake-or-fact', phones: ['Lena', 'Tom'] }); m.phones[1].net.delay = [20000, 20000];
+    let rejected = [];
+    await playMatch(m.h, m.host, 'fake-or-fact', m.map, { budgetMs: 150000, onTick: async () => {
+      rejected = (await m.host.trace()).filter(e => e.kind === 'input-rejected'); if (rejected.some(e => e.playerId === m.ids.Tom)) return 'stop';
+    } });
+    ctx.evidence.rejected = rejected.map(e => ({ player: Object.entries(m.ids).find(([, id]) => id === e.playerId)?.[0] ?? e.playerId, reason: e.reason }));
+    assert(rejected.some(e => e.playerId === m.ids.Tom), 'late answer from Tom was not rejected');
+    // The private "zu spät" notice also travels 20 s to Tom; the toast stays ~2.8 s.
+    if (hasTestId('late-toast')) {
+      const toast = await m.phones[1].wait('late-toast', { timeout: 45000 }).then(() => true, () => false);
+      await m.h.shotAll('late-input');
+      assert(toast, 'Tom never saw the late-toast ("zu spät")');
+    } else await m.h.shotAll('late-input');
   } },
   { id: 'F13a', title: 'Kick non-current player mid-game: this-or-that', timeoutMs: 300000, run: kickNotCurrent('this-or-that') },
   { id: 'F13b', title: 'Kick non-current player mid-game: fake-or-fact', timeoutMs: 300000, run: kickNotCurrent('fake-or-fact') },

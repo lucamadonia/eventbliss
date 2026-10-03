@@ -20,6 +20,8 @@ export interface PartyRoomAccess {
   guests?: PartyGuestSeat[];
   /** Server's current match (party.current_match_id); scopes matchParticipantIds. */
   matchId?: string | null;
+  /** Party profile per member (avatar/colour from controller_party_members): presence and TV use it, never initials. */
+  looks?: Record<string, { avatar?: string | null; color?: string | null }>;
   /** Participants of that match per server; shrinks on kick 'match_only'. Null/absent = unknown. */
   matchParticipantIds?: string[] | null;
   refresh: () => Promise<PartyRoomAccess>;

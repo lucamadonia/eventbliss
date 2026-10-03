@@ -1,9 +1,16 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { privateRecipients } from '../multiplayer/private-recipients';
+import { reportLateIntent } from '../sharedquiz/late-intent';
 
-type Action = { allowed: boolean | string; run: (...args: never[]) => void };
+/**
+ * `answer`: a vote/choice that closes with its turn — a late one gets the „zu spät“ notice (F12).
+ * A function decides from (staleTurn, currentTurn) whether the turn really closed (not just a sub-tick like the next card).
+ */
+export type AnswerRule = boolean | ((staleTurn: string, currentTurn: string) => boolean);
+type Action = { allowed: boolean | string; run: (...args: never[]) => void; answer?: AnswerRule };
+export const answerClosed = (rule: AnswerRule | undefined, stale: unknown, current: string) =>
+  typeof rule === 'function' ? typeof stale === 'string' && rule(stale, current) : !!rule;
 export function canAct(online: OnlineGameProps, allowed: boolean | string, sender: unknown): boolean {
   if (typeof sender !== 'string') return false;
   const hostId = online.hostPlayerId ?? online.players.find(p => p.isHost)?.id;
@@ -28,7 +35,10 @@ export function useOnlineActions(online: OnlineGameProps | undefined, game: stri
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast(`${game}-action`, data => {
-      if (typeof data.action === 'string' && Array.isArray(data.args)) apply(data.action, data.args, data.__senderId, data.turn);
+      if (typeof data.action !== 'string' || !Array.isArray(data.args)) return;
+      // Intent for a turn that already moved on: dropped, traced, the sender sees „zu spät“ (F12).
+      if (latest.current.online && reportLateIntent(latest.current.online, { __senderId: data.__senderId, token: data.turn }, latest.current.turn, answerClosed(latest.current.actions[data.action]?.answer, data.turn, latest.current.turn))) return;
+      apply(data.action, data.args, data.__senderId, data.turn);
     });
   }, [online?.isHost, online?.onBroadcast, game, apply]);
   const dispatch = useCallback((name: string, ...args: unknown[]) => {
@@ -44,10 +54,7 @@ export function useOnlineActions(online: OnlineGameProps | undefined, game: stri
   } });
 }
 
-export function OnlineWaiting() {
-  const { t } = useTranslation();
-  return <div className="min-h-[100dvh] grid place-items-center bg-[#0a0e14] text-white px-6 text-center"><p>{t('games.ohrwurm.waitingForHost')}</p></div>;
-}
+export { default as OnlineWaiting } from '../multiplayer/OnlineWaiting';
 
 export function useOnlineSnapshot<T extends Record<string, unknown>>(online: OnlineGameProps | undefined, game: string, state: T, receive: (state: T) => void) {
   const receiver = useRef(receive);

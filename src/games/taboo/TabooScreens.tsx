@@ -84,14 +84,15 @@ export function TurnStartScreen({ explainer, teamName, round, total, countdown, 
         <AnimatePresence mode="wait" initial={false}>
           {countdown !== null
             ? <motion.p key={`c${countdown}`} className="taboo-countdown tabular-nums" variants={countdownTick} initial={reduce ? false : 'initial'} animate="animate" exit="exit">{countdown}</motion.p>
-            : mine
-              ? <motion.div key="back" className="taboo-card-back" style={seatVars(explainer.color)} variants={cardEnter} initial={reduce ? false : 'initial'} animate="animate" exit="exit">
+            : mine || role === 'referee'
+              ? <motion.div key="back" data-testid={mine ? 'taboo-card-back' : 'taboo-referee-preview'} className="taboo-card-back" style={seatVars(explainer.color)} variants={cardEnter} initial={reduce ? false : 'initial'} animate="animate" exit="exit">
                   <Ban className="h-10 w-10" aria-hidden />
-                  <p>{t('games.taboo.turn.cardBack', 'Deine Karte liegt verdeckt bereit')}</p>
+                  <p>{mine ? t('games.taboo.turn.cardBack', 'Deine Karte liegt verdeckt bereit')
+                    : t('games.taboo.turn.refereePreview', { name: explainer.name, defaultValue: 'Du siehst die Karte, sobald {{name}} erklärt' })}</p>
                 </motion.div>
               : <motion.p key="hint" className="taboo-hint" variants={cardEnter} initial={reduce ? false : 'initial'} animate="animate" exit="exit">{hint}</motion.p>}
         </AnimatePresence>
-        {mine && countdown === null && <p className="taboo-hint">{hint}</p>}
+        {(mine || role === 'referee') && countdown === null && <p className="taboo-hint">{hint}</p>}
       </div>
       <div className="taboo-thumb">
         {canBegin

@@ -4,7 +4,7 @@ import { ArrowRight, Check, EyeOff, Play, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { listStagger, partyMotion, pressable } from '@/lib/party-motion';
 import { StageAction } from '../ui/GameStage';
-import OnlineWaiting from '../multiplayer/OnlineWaiting';
+import { WaitingDot } from '../multiplayer/MatchGuardOverlay';
 import { DEPTH, PartyStage, SeatAvatar, SecretName } from './party-ui';
 import type { CharacterView } from './party-seats';
 
@@ -75,7 +75,12 @@ export function OnlineAssign({ holder, shown, isHost, hasGuests, holderIsGuest, 
                 {t('games.whoami.party.notSeenYet', 'Noch nicht gesehen: {{names}}', { names: listNames(notSeen, i18n.language) })}</p>
             : <p className="text-center text-[0.8125rem] font-semibold text-white/60">{t('games.whoami.party.startWhenReady', 'Starte, sobald alle ihre Karten gesehen haben.')}</p>}
         </>
-      ) : <OnlineWaiting />}
+      ) : (
+        // Inline note, not the full-screen waiting stage: the list above stays the focus.
+        <p role="status" data-testid="whoami-assign-waiting" className="flex items-center justify-center gap-2 text-base font-semibold text-white/75">
+          <WaitingDot color={holder?.color} />{t('games.ohrwurm.waitingForHost')}
+        </p>
+      )}
       {footer}
     </PartyStage>
   );

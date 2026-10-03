@@ -241,9 +241,9 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const act = useOnlineActions(online, 'bottlespin', `${phase}:${currentRound}:${selectedIdx}:${voterIdx}:${isSpinning}:${declined}`, {
     start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },
     spin: { allowed: phase === 'spinning' && !isSpinning ? 'host' : false, run: doSpin },
-    accept: { allowed: phase === 'card' && !declined ? actor : false, run: handleAccept },
-    decline: { allowed: phase === 'card' && !declined ? actor : false, run: handleDecline },
-    vote: { allowed: phase === 'vote' ? voter : false, run: (yes: unknown) => { if (typeof yes === 'boolean') castVote(yes); } },
+    accept: { allowed: phase === 'card' && !declined ? actor : false, run: handleAccept, answer: true },
+    decline: { allowed: phase === 'card' && !declined ? actor : false, run: handleDecline, answer: true },
+    vote: { allowed: phase === 'vote' ? voter : false, run: (yes: unknown) => { if (typeof yes === 'boolean') castVote(yes); }, answer: true },
     next: { allowed: phase === 'spinning' && !isSpinning && selectedIdx >= 0 ? 'host' : false, run: nextRoundBottleOnly },
     again: { allowed: phase === 'gameOver' ? 'host' : false, run: playAgain },
   });

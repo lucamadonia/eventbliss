@@ -6368,7 +6368,7 @@
       "sameCategoryHintOn": "Todos os jogadores respondem à mesma categoria",
       "sameCategoryHintOff": "Cada jogador recebe uma nova categoria",
       "startGame": "INICIAR JOGO",
-      "roundLabel": "RODADA {{round}}/{{total}}",
+      "roundLabel": "Rodada {{round}} de {{total}}",
       "theChallenge": "O Desafio",
       "random": "Aleatório",
       "seconds": "Segundos",
@@ -6376,7 +6376,7 @@
       "noRepeat": "Sem repetições!",
       "btnDone": "FEZ!",
       "btnDontKnow": "NÃO SEI",
-      "btnSolved": "RESOLVIDO!",
+      "btnSolved": "Resolvido",
       "drinkingModeMsg": "Saúde, você bebe!",
       "drinkRound": "Rodada {{count}} · Beba com responsabilidade",
       "nextRound": "Próxima rodada",
@@ -6400,7 +6400,8 @@
       "taskKategoriePrompt": "Diga um/a {{category}} com \"{{letter}}\"!",
       "fewestPenalties": "Menos penalizações",
       "partyHolderWait": "Daqui a pouco ela pode cair na sua mão.",
-      "partyHolderPass": "O pavio continua queimando!"
+      "partyHolderPass": "O pavio continua queimando!",
+      "partyRound": "Rodada {{round}} de {{total}}"
     },
     "headup": {
       "name": "Heads Up",
@@ -6479,7 +6480,8 @@
         "guesserHint": "{{name}} já vai explicar – presta atenção e chuta em voz alta.",
         "watcherHint": "{{name}} já vai explicar para {{team}}.",
         "cardBack": "Sua carta está pronta, virada pra baixo",
-        "waitingFor": "Esperando {{name}} …"
+        "waitingFor": "Esperando {{name}} …",
+        "refereePreview": "Você vê a carta assim que {{name}} começar a explicar"
       },
       "playing": {
         "currentWord": "Palavra atual",
@@ -6863,7 +6865,10 @@
       "tapToPlayHidden": "Toque para reproduzir — título permanece oculto",
       "tapAndGo": "Toque e vá",
       "partyCounterLine": "Coloca seu desafio na linha do tempo.",
-      "partyYourTurnLine": "Escuta e encaixa a música."
+      "partyYourTurnLine": "Escuta e encaixa a música.",
+      "partyListenClose": "Escutem bem",
+      "partyYourTimeline": "Sua linha do tempo",
+      "partyTimelineEmpty": "Ainda vazia – sua primeira música chega já já."
     },
     "splitquiz": {
       "subtitle": "Cada equipe vê apenas metade das respostas!",
@@ -7434,7 +7439,8 @@
       "retryImage": "Recarregar imagem",
       "sayItLoud": "Fala a resposta em voz alta!",
       "teamHint": "Vocês adivinham em equipe – uma resposta errada bloqueia o celular inteiro.",
-      "whoTypes": "Quem digita?"
+      "whoTypes": "Quem digita?",
+      "pointsShort": "{{count}} pts"
     },
     "closeenough": {
       "title": "Quase Lá",
@@ -7676,7 +7682,13 @@
         "employees": "A Volkswagen emprega cerca de 680 000 pessoas.",
         "revenue": "A Apple fatura cerca de 390 mil milhões de USD por ano."
       },
-      "partyYourEstimate": "Seu palpite fica em segredo até a revelação."
+      "partyYourEstimate": "Seu palpite fica em segredo até a revelação.",
+      "loadFailedTitle": "Não deu para carregar as perguntas",
+      "loadFailedHint": "Confira a conexão e tente de novo.",
+      "retryLoad": "Tentar de novo",
+      "emptySelectionTitle": "Nenhuma pergunta para esta seleção",
+      "emptySelectionHint": "Escolha outras categorias ou jogue o mix.",
+      "useMix": "Jogar o mix"
     },
     "pantomime": {
       "title": "Sem Palavras",
@@ -10218,7 +10230,8 @@
       },
       "champions": "Vitória partilhada",
       "championsLine": "{{name}} partilham a vitória com {{points}} pontos cada",
-      "drumroll": "E o campeão da noite é"
+      "drumroll": "E o campeão da noite é",
+      "recapOnPhones": "O resumo de vocês está nos celulares"
     },
     "connectTitle": "Conectar TV",
     "openOnTv": "Abre na tua TV:",
@@ -10245,9 +10258,9 @@
       "waiting": "Aguardando tarefa..."
     },
     "bottle": {
-      "spinning": "GIRANDO",
-      "card": "CARTA",
-      "vote": "VOTAÇÃO",
+      "spinning": "Girando",
+      "card": "Carta",
+      "vote": "Votação",
       "question": "Pergunta",
       "task": "Tarefa",
       "spinningHint": "A garrafa está girando..."
@@ -10287,8 +10300,8 @@
     "leaderboard": "Classificação",
     "headup": {
       "correctShort": "{{count}} certos",
-      "gameOver": "FIM DE JOGO!",
-      "roundOver": "RODADA ENCERRADA!",
+      "gameOver": "Fim de jogo!",
+      "roundOver": "Rodada encerrada!",
       "correct": "Certo",
       "skipped": "Pulado",
       "describe": "Descreva!",
@@ -10296,17 +10309,17 @@
       "skip": "Pular"
     },
     "impostor": {
-      "checkPhones": "OLHEM SEUS CELULARES!",
+      "checkPhones": "Olhem seus celulares!",
       "oneWordOneDifferent": "Uma palavra — mas alguém tem outra...",
-      "discussion": "DISCUSSÃO",
-      "whoIsImpostor": "QUEM É O IMPOSTOR?",
-      "voting": "VOTAÇÃO",
-      "whoIsSuspected": "QUEM É O SUSPEITO?",
-      "revealIn": "REVELAÇÃO EM...",
-      "theImpostorIs": "O IMPOSTOR É...",
-      "label": "IMPOSTOR",
-      "canImpostorGuess": "O IMPOSTOR CONSEGUE ADIVINHAR A PALAVRA?",
-      "results": "RESULTADO",
+      "discussion": "Discussão",
+      "whoIsImpostor": "Quem é o impostor?",
+      "voting": "Votação",
+      "whoIsSuspected": "Quem é o suspeito?",
+      "revealIn": "Revelação em …",
+      "theImpostorIs": "O impostor é …",
+      "label": "Impostor",
+      "canImpostorGuess": "O impostor consegue adivinhar a palavra?",
+      "results": "Resultado",
       "preparing": "Preparando o jogo..."
     },
     "ohrwurm": {
@@ -10352,7 +10365,7 @@
     },
     "truthdare": {
       "wpCount": "{{w}}× V · {{p}}× D",
-      "title": "VERDADE OU DESAFIO",
+      "title": "Verdade ou desafio",
       "isUp": "é a vez",
       "whosNext": "Quem é o próximo?",
       "chooses": "escolhe…",
@@ -10361,7 +10374,7 @@
     "whoami": {
       "questionsCount": "{{n}} perguntas",
       "questionN": "Pergunta {{x}}/{{max}}",
-      "title": "QUEM SOU EU?",
+      "title": "Quem sou eu?",
       "assigning": "Distribuindo papéis…",
       "asks": "pergunta",
       "askPrompt": "Faça uma pergunta de sim/não",
@@ -10385,7 +10398,9 @@
       "game": "Voltar ao jogo",
       "rules": "Como se joga",
       "menu": "Menu"
-    }
+    },
+    "winnerLead": "+{{margin}} à frente de {{name}}",
+    "winnerTie": "Empate com {{name}}"
   },
   "partyControllers": {
     "title": "Modo comando",
@@ -10765,7 +10780,12 @@
       "you": "Sua vez",
       "passTo": "Passa o celular para {{name}}",
       "other": "Vez de {{name}}"
-    }
+    },
+    "waitingTitle": "Já vai começar",
+    "nextGame": "A seguir: {{game}}",
+    "tvLinked": "TV conectada",
+    "tvNotLinked": "Nenhuma TV conectada",
+    "tooLate": "Tarde demais – a rodada já seguiu"
   },
   "tvCinema": {
     "round": "Ronda {{round}}",
@@ -10779,7 +10799,10 @@
       "votingSub": "Quem é o impostor?",
       "caught": "Apanhado!",
       "escaped": "Escapou!",
-      "spokenProgress": "{{count}} de {{total}} já falaram"
+      "spokenProgress": "{{count}} de {{total}} já falaram",
+      "chip": "Impostor",
+      "theImpostorIs": "O impostor é …",
+      "revealIn": "Revelação em …"
     },
     "bottle": {
       "vote": "Votação",
@@ -10787,7 +10810,8 @@
       "voteSubAnon": "Conseguiu ou não?",
       "yourTurn": "A garrafa aponta para",
       "spinning": "A girar",
-      "card": "Carta"
+      "card": "Carta",
+      "spinningPill": "A garrafa está girando …"
     },
     "thisOrThat": {
       "voting": "Decidam-se!",
@@ -10964,7 +10988,7 @@
       "allVoted": "Todo mundo respondeu",
       "readingQuestion": "Lendo a pergunta",
       "readingOptions": "Lendo as opções",
-      "answering": "Respondendo",
+      "answering": "Tempo de resposta",
       "gotItRight": "{{pct}} % acertaram",
       "gotItWrong": "{{pct}} % erraram",
       "teamCorrect": "{{count}} certas",

@@ -7,7 +7,7 @@ import { describe, it, expect } from "vitest";
 
 import { PHASE_INPUT_DELAY_MS } from "../party/phase-gate";
 import { ServerClock } from "../party/scene-clock";
-import { actorControls, headUpActiveSeat, headUpCountdown, headUpInputDelayMs, headUpPhaseLeadMs, headUpTvSeats, isLocalActor } from "./party-play";
+import { actorControls, headUpActiveSeat, headUpCountdown, headUpTurnClosed, headUpInputDelayMs, headUpPhaseLeadMs, headUpTvSeats, isLocalActor } from "./party-play";
 
 describe("isLocalActor", () => {
   it("lokales Spiel: immer", () => {
@@ -102,5 +102,15 @@ describe("headUpCountdown — 3-2-1 aus der gemeinsamen Uhr (T-4)", () => {
       expect(new Set(devices.map((c) => headUpCountdown(startsAt, c).value)).size).toBe(1);
       server += 97;
     }
+  });
+});
+
+describe("headUpTurnClosed — „zu spaet“ nur bei wirklich beendetem Zug", () => {
+  it("naechstes Wort im selben Zug ist nicht zu spaet", () => {
+    expect(headUpTurnClosed("playing:2:4:null", "playing:2:5:null")).toBe(false);
+  });
+  it("Rundenende oder naechster Spieler ist zu spaet", () => {
+    expect(headUpTurnClosed("playing:2:4:null", "roundResult:2:7:null")).toBe(true);
+    expect(headUpTurnClosed("playing:2:4:null", "playing:3:0:null")).toBe(true);
   });
 });

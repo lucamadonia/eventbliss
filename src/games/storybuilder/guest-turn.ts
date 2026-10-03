@@ -48,3 +48,13 @@ export function writingClockRuns({ phase, seconds, authoritative, handoverPaused
 export function writingTimedOut(input: WritingClockInput): boolean {
   return input.phase === 'writing' && input.seconds === 0 && input.authoritative && input.connected && !input.handoverPaused;
 }
+
+/**
+ * „Zu spaet“ nur, wenn der Schreibzug wirklich vorbei ist. Das Aktions-Token
+ * (`phase:runde:spieler:satz:anzahl`) tickt mit jedem Satz desselben Zugs —
+ * ein schneller zweiter Satz ist kein verspaeteter.
+ */
+export function storyTurnClosed(staleTurn: string, currentTurn: string): boolean {
+  const a = staleTurn.split(":"), b = currentTurn.split(":");
+  return a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2];
+}

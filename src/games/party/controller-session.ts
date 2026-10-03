@@ -9,7 +9,7 @@ import { controllerErrorCode } from './controller-errors';
 import { serverClock } from './scene-clock';
 import { setPartyTraceDevice } from './party-trace';
 import { sceneLocalTime } from './scene-schedule';
-import { clearPartyScene, planPartyScene, showPartyScene, type PartyScene } from './party-scene';
+import { chainedFinale, clearPartyScene, planPartyScene, showPartyScene, type PartyScene } from './party-scene';
 import { readControllerResults, writeControllerResults, type PendingControllerResult } from './controller-outbox';
 
 /** The account lost its seat: kicked, banned or the party is gone for it. */
@@ -151,6 +151,8 @@ function accessFor(data: ControllerPartyData): PartyRoomAccess {
       .map(m => ({ id: m.player_id, name: m.name, avatar: m.avatar, color: m.color, controlledBy: m.controlled_by! })),
     matchId: data.party.current_match_id,
     matchParticipantIds: Array.isArray(data.party.participant_ids) ? data.party.participant_ids : null,
+    // Each seat's own symbol and colour for its room presence (no initials, no random colours).
+    looks: Object.fromEntries(data.members.filter(m => !m.banned).map(m => [m.player_id, { avatar: m.avatar, color: m.color }])),
     refresh: async () => accessFor(await refresh()),
     start: async (gameId, participantIds) => {
       const current = generation;
@@ -372,8 +374,8 @@ export async function startControllerGame(gameId: string) {
  * at the scene's start so every device switches at the same moment.
  */
 const endingMatches = new Set<string>();
-function endMatchTogether(matchId: string) {
-  if (endingMatches.has(matchId)) return;
+function endMatchTogether(matchId: string): PartyScene | null {
+  if (endingMatches.has(matchId)) return null;
   endingMatches.add(matchId);
   const scene = planPartyScene('round-end', { matchKey: matchId });
   announceScene(scene);
@@ -383,6 +385,7 @@ function endMatchTogether(matchId: string) {
     const room = gameRoomSession.getSnapshot().room;
     if (current === generation && room?.status === 'playing' && room.sessionId === matchId) gameRoomSession.finishPartyGame();
   }, Math.max(0, sceneLocalTime(scene.startsAt) - Date.now()));
+  return scene;
 }
 export function recordControllerResult(gameId: string, scores: Record<string, number>, scored: boolean): boolean {
   const data = state.data;
@@ -443,8 +446,12 @@ export async function endControllerParty() {
     // Ended mid-game: everyone leaves the match together, then lands on the closing screen.
     // Otherwise the finale scene lets every phone celebrate in sync with the TV podium (T16).
     const room = gameRoomSession.getSnapshot().room;
-    if (room?.status === 'playing') endMatchTogether(room.sessionId);
-    else announceScene(planPartyScene('finale'));
+    const roundEnd = room?.status === 'playing' ? endMatchTogether(room.sessionId) : null;
+    if (!roundEnd) { announceScene(planPartyScene('finale')); return; }
+    // Mid-game: the finale is chained right after the round-end moment (one scene store,
+    // so it is announced once the round-end scene has fired on every device).
+    const finale = chainedFinale(roundEnd);
+    setTimeout(() => { if (current === generation) announceScene(finale); }, Math.max(0, sceneLocalTime(roundEnd.startsAt) - Date.now()) + 50);
   });
 }
 /** Leave a finished party on this device only (nothing left to tell the server). */

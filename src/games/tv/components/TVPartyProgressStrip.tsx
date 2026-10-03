@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { tvType } from '../tv-tokens';
+import { lu } from './tv-lobby-scale';
 import type { PartyPlaylistItem } from '../party-types';
 
 /**
@@ -20,7 +20,8 @@ interface Props {
 
 export default function TVPartyProgressStrip({ playlist, index }: Props) {
   const { t } = useTranslation();
-  if (!playlist.length) return null;
+  // Bei nur einem geplanten Spiel sagt „Spiel 1 von 1“ nichts — dann gar keine Leiste.
+  if (playlist.length <= 1) return null;
 
   const current = Math.min(Math.max(index, 0), playlist.length - 1);
 
@@ -47,8 +48,9 @@ export default function TVPartyProgressStrip({ playlist, index }: Props) {
         })}
       </div>
       <span
-        className="shrink-0 font-black tabular-nums tracking-[0.14em] uppercase leading-none"
-        style={{ fontSize: tvType.micro, color: '#6b6480' }}
+        data-testid="tv-party-progress-label"
+        className="shrink-0 font-bold tabular-nums leading-none"
+        style={{ fontSize: lu(1.9), color: '#a59cba' }}
       >
         {t('tv.partyNight.gameXofY', 'Spiel {{current}} von {{total}}', {
           current: current + 1,

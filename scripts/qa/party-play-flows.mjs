@@ -155,7 +155,7 @@ export const fingerprint = c => c.page.evaluate(() => (document.body.innerText.s
  */
 /** isDone(): optional completion check → 'finished' | 'lobby' | null (online rooms, local party). */
 export async function driveGame(devices, host, { budgetMs = 90000, stallMs = 10000, before = 0, tick, isDone } = {}) {
-  const verbs = '^(start game|start|los|play|let.?s go|begin|ready|bereit|weiter|continue|next|n.chste|accept|done|fertig|submit|senden|ok|reveal|aufdecken|view|ansehen|show|zeigen|spin|drehen|truth|dare|true|wahr|a\\b|yes|ja|confirm|skip|game over|results?|ergebnis|ich bin|i.m |got it|verstanden|close)';
+  const verbs = '^(start game|start|los|play|let.?s go|begin|ready|bereit|weiter|continue|next|n.chste|accept|done|fertig|submit|senden|ok|reveal|aufdecken|view|ansehen|show|zeigen|spin|drehen|truth|dare|true|wahr|a\\b|yes|ja|confirm|skip|game over|results?|ergebnis|ich bin|i.m |got it|verstanden|close|gel.st|solved)';
   const end = Date.now() + budgetMs; let last = '', lastChange = Date.now(), stalls = 0, clicks = 0;
   while (Date.now() < end) {
     if (isDone) { const d = await isDone().catch(() => null); if (d === 'finished') return { finished: true, clicks, stalls }; if (d === 'lobby') return { finished: false, returnedToLobby: true, clicks, stalls }; }

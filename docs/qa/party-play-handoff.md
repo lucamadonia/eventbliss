@@ -4,8 +4,8 @@
 - DONE (after the stop was lifted): headup's 3-2-1 is now derived from the shared scene clock (`headUpCountdown`/`useHeadUpCountdown`, testid `scene-countdown`).
 - DONE: scene clock (`scene-clock.ts`, `party_server_now`), scene schedule, `usePhaseGate` + `phaseStartsAt`, party trace hook, `SceneCountdown`, `HandoverScreen` + `handover-machine` + `useGuestHandover` (TV progress/next), `playable-games.ts` (`sharedDevice` for all 22 games, `guestPolicy`, `gameAvailability` plannable/startable, `availabilityChip`, QA switch `__partyPlayForceShared` for dev/QA only).
 - DONE: hochstapler pilot (`secret`); removing players mid-game handled in headup/pantomime/storybuilder/sharedquiz/splitquiz/quickdraw; all 6 at pilot level in code (guests, phase gate, TV bridge); quickdraw → `turns`.
-- FLAGS: `sharedDeviceSupported` is set only for hochstapler (provisional, F03 rerun pending), flaschendrehen and this-or-that (F01/F02 green). My other 6 and room-runtime's 6 are adapted, but their flags stay OFF until qa-party passes them.
-- OPEN: qa runs F01–F04/F09/F13/F14/F19/T-1 per game; F03 rerun for hochstapler; browser runs of the phase gate online. PantomimeGame.tsx (1613 lines) and SplitQuizGame.tsx (1367 lines) are over 500 lines.
+- FLAGS: `sharedDeviceSupported` is set for hochstapler, flaschendrehen and this-or-that (F01/F02/F03 + T-1/T-4 green on 42984bd). My other 6 and room-runtime's 6 are adapted, but their flags stay OFF until qa-party passes them.
+- OPEN: qa runs F01–F04/F09/F13/F14/F19/T-1 per game; browser runs of the phase gate online. PantomimeGame.tsx (1613 lines) and SplitQuizGame.tsx (1367 lines) are over 500 lines.
 - OPEN (games-c request, not yet done): registry changes bomb → `turns` (no clock pause, update comment), pixeljagd → `team` (update comment), wo-ist-was/closeenough `sequential`, drueck-das-wort/ohrwurm/brew `turns`; flags only after qa is green.
 - OPEN: tsc errors in other agents' files (`bomb/BombGame.tsx:519`, `fakeorfact/turn-order.test.ts:35/37`), as of the last run; my files had 0 errors.
 
