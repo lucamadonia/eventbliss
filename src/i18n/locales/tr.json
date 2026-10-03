@@ -10480,7 +10480,18 @@
     "waitingForHost": "Ev sahibi bekleniyor …",
     "waitingForHostHint": "Ev sahibinin telefonunda: partiyi aç ve “{{button}}” düğmesine dokun.",
     "partyEnded": "Bu parti sona erdi",
-    "partyEndedHint": "Oynadığın için teşekkürler! Yeni bir tur için yeni bir parti başlat."
+    "partyEndedHint": "Oynadığın için teşekkürler! Yeni bir tur için yeni bir parti başlat.",
+    "setlist": {
+      "title": "Bu gece oynuyoruz",
+      "played": "Oynandı",
+      "tooFew": "En az {{count}} oyuncu",
+      "tooMany": "En fazla {{count}} oyuncu",
+      "progress": "{{done}} / {{total}}",
+      "more": "+{{count}} tane daha",
+      "count": "{{count}} oyun",
+      "count_one": "1 oyun",
+      "count_other": "{{count}} oyun"
+    }
   },
   "handover": {
     "announce": "Telefonu {{name}} adlı oyuncuya ver.",
@@ -10663,7 +10674,8 @@
       "you": "Sen",
       "banned": "Engellenenler ({{count}})",
       "addGuestShort": "Senin telefonunda oynar",
-      "full": "Parti dolu"
+      "full": "Parti dolu",
+      "removePlayer": "Kaldır"
     },
     "scene": {
       "getReady": "Birazdan başlıyoruz"
@@ -10784,7 +10796,23 @@
     "nextGame": "Sırada: {{game}}",
     "tvLinked": "TV bağlı",
     "tvNotLinked": "Bağlı TV yok",
-    "tooLate": "Çok geç – tur çoktan ilerledi"
+    "tooLate": "Çok geç – tur çoktan ilerledi",
+    "evening": {
+      "rest": "Sonra",
+      "editOrder": "Sırayı değiştir",
+      "players": "Oyuncular · sıra",
+      "addPlayer": "Oyuncu ekle",
+      "moveUp": "Yukarı",
+      "moveDown": "Aşağı",
+      "drag": "Sıralamak için sürükle",
+      "needTwo": "En az 2 oyuncu",
+      "title": "Sizin geceniz",
+      "howTo": "Nasıl oynanır: {{text}}",
+      "start": "İlk oyunu başlat",
+      "meta": "{{count}} oyun · yakl. {{minutes}} dk",
+      "meta_one": "1 oyun · yakl. {{minutes}} dk",
+      "meta_other": "{{count}} oyun · yakl. {{minutes}} dk"
+    }
   },
   "tvCinema": {
     "round": "{{round}}. tur",

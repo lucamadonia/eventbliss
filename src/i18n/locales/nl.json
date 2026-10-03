@@ -10480,7 +10480,18 @@
     "waitingForHost": "Wachten op de host …",
     "waitingForHostHint": "Op de telefoon van de host: open het feest en tik op ‘{{button}}’.",
     "partyEnded": "Dit feest is voorbij",
-    "partyEndedHint": "Bedankt voor het meespelen! Start voor een nieuwe ronde gewoon een nieuw feest."
+    "partyEndedHint": "Bedankt voor het meespelen! Start voor een nieuwe ronde gewoon een nieuw feest.",
+    "setlist": {
+      "title": "Vanavond spelen we",
+      "played": "Gespeeld",
+      "tooFew": "Vanaf {{count}} spelers",
+      "tooMany": "Maximaal {{count}} spelers",
+      "progress": "{{done}} van {{total}}",
+      "more": "+{{count}} meer",
+      "count": "{{count}} spellen",
+      "count_one": "1 spel",
+      "count_other": "{{count}} spellen"
+    }
   },
   "handover": {
     "announce": "Geef de telefoon aan {{name}}.",
@@ -10663,7 +10674,8 @@
       "you": "Jij",
       "banned": "Geblokkeerd ({{count}})",
       "addGuestShort": "Speelt mee op jouw telefoon",
-      "full": "Het feest is vol"
+      "full": "Het feest is vol",
+      "removePlayer": "Verwijderen"
     },
     "scene": {
       "getReady": "Zo meteen begint het"
@@ -10784,7 +10796,23 @@
     "nextGame": "Hierna: {{game}}",
     "tvLinked": "Tv verbonden",
     "tvNotLinked": "Geen tv verbonden",
-    "tooLate": "Te laat – de ronde is al verder"
+    "tooLate": "Te laat – de ronde is al verder",
+    "evening": {
+      "rest": "Daarna",
+      "editOrder": "Volgorde wijzigen",
+      "players": "Spelers · volgorde",
+      "addPlayer": "Speler toevoegen",
+      "moveUp": "Omhoog",
+      "moveDown": "Omlaag",
+      "drag": "Sleep om te ordenen",
+      "needTwo": "Minstens 2 spelers",
+      "title": "Jullie avond",
+      "howTo": "Zo werkt het: {{text}}",
+      "start": "Eerste spel starten",
+      "meta": "{{count}} spellen · ca. {{minutes}} min",
+      "meta_one": "1 spel · ca. {{minutes}} min",
+      "meta_other": "{{count}} spellen · ca. {{minutes}} min"
+    }
   },
   "tvCinema": {
     "round": "Ronde {{round}}",

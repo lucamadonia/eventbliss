@@ -10508,7 +10508,20 @@
     "waitingForHost": "Czekamy na gospodarza …",
     "waitingForHostHint": "Na telefonie gospodarza: otwórz imprezę i dotknij „{{button}}”.",
     "partyEnded": "Ta impreza się skończyła",
-    "partyEndedHint": "Dzięki za grę! Na kolejną rundę po prostu zacznij nową imprezę."
+    "partyEndedHint": "Dzięki za grę! Na kolejną rundę po prostu zacznij nową imprezę.",
+    "setlist": {
+      "title": "Dziś gramy w",
+      "played": "Zagrane",
+      "tooFew": "Od {{count}} graczy",
+      "tooMany": "Maks. {{count}} graczy",
+      "progress": "{{done}} z {{total}}",
+      "more": "+{{count}} więcej",
+      "count": "{{count}} gier",
+      "count_one": "1 gra",
+      "count_few": "{{count}} gry",
+      "count_many": "{{count}} gier",
+      "count_other": "{{count}} gier"
+    }
   },
   "handover": {
     "announce": "Podaj telefon osobie: {{name}}.",
@@ -10709,7 +10722,8 @@
       "you": "Ty",
       "banned": "Zablokowani ({{count}})",
       "addGuestShort": "Gra na twoim telefonie",
-      "full": "Impreza jest pełna"
+      "full": "Impreza jest pełna",
+      "removePlayer": "Usuń"
     },
     "scene": {
       "getReady": "Zaraz zaczynamy"
@@ -10838,7 +10852,25 @@
     "nextGame": "Następnie: {{game}}",
     "tvLinked": "Telewizor połączony",
     "tvNotLinked": "Brak połączonego telewizora",
-    "tooLate": "Za późno – runda już poszła dalej"
+    "tooLate": "Za późno – runda już poszła dalej",
+    "evening": {
+      "rest": "Potem",
+      "editOrder": "Zmień kolejność",
+      "players": "Gracze · kolejność",
+      "addPlayer": "Dodaj gracza",
+      "moveUp": "W górę",
+      "moveDown": "W dół",
+      "drag": "Przeciągnij, by zmienić kolejność",
+      "needTwo": "Co najmniej 2 graczy",
+      "title": "Wasz wieczór",
+      "howTo": "Jak to działa: {{text}}",
+      "start": "Zacznij pierwszą grę",
+      "meta": "{{count}} gier · ok. {{minutes}} min",
+      "meta_one": "1 gra · ok. {{minutes}} min",
+      "meta_few": "{{count}} gry · ok. {{minutes}} min",
+      "meta_many": "{{count}} gier · ok. {{minutes}} min",
+      "meta_other": "{{count}} gier · ok. {{minutes}} min"
+    }
   },
   "tvCinema": {
     "round": "Runda {{round}}",

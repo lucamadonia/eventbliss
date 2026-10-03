@@ -10483,7 +10483,18 @@
     "waitingForHost": "À espera do anfitrião …",
     "waitingForHostHint": "No telemóvel do anfitrião: abre a festa e toca em «{{button}}».",
     "partyEnded": "Esta festa acabou",
-    "partyEndedHint": "Obrigado por jogares! Para outra ronda, cria uma festa nova."
+    "partyEndedHint": "Obrigado por jogares! Para outra ronda, cria uma festa nova.",
+    "setlist": {
+      "title": "Hoje a gente joga",
+      "played": "Jogado",
+      "tooFew": "A partir de {{count}} jogadores",
+      "tooMany": "Máximo {{count}} jogadores",
+      "progress": "{{done}} de {{total}}",
+      "more": "+{{count}} a mais",
+      "count": "{{count}} jogos",
+      "count_one": "1 jogo",
+      "count_other": "{{count}} jogos"
+    }
   },
   "handover": {
     "announce": "Passa o telemóvel a {{name}}.",
@@ -10666,7 +10677,8 @@
       "you": "Tu",
       "banned": "Bloqueados ({{count}})",
       "addGuestShort": "Joga no teu telemóvel",
-      "full": "A festa está cheia"
+      "full": "A festa está cheia",
+      "removePlayer": "Remover"
     },
     "scene": {
       "getReady": "Está quase a começar"
@@ -10787,7 +10799,23 @@
     "nextGame": "A seguir: {{game}}",
     "tvLinked": "TV conectada",
     "tvNotLinked": "Nenhuma TV conectada",
-    "tooLate": "Tarde demais – a rodada já seguiu"
+    "tooLate": "Tarde demais – a rodada já seguiu",
+    "evening": {
+      "rest": "Depois",
+      "editOrder": "Mudar ordem",
+      "players": "Jogadores · ordem",
+      "addPlayer": "Adicionar jogador",
+      "moveUp": "Subir",
+      "moveDown": "Descer",
+      "drag": "Arraste para reordenar",
+      "needTwo": "Mínimo 2 jogadores",
+      "title": "A noite de vocês",
+      "howTo": "Como funciona: {{text}}",
+      "start": "Começar o primeiro jogo",
+      "meta": "{{count}} jogos · cerca de {{minutes}} min",
+      "meta_one": "1 jogo · cerca de {{minutes}} min",
+      "meta_other": "{{count}} jogos · cerca de {{minutes}} min"
+    }
   },
   "tvCinema": {
     "round": "Ronda {{round}}",

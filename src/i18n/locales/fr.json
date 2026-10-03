@@ -10433,7 +10433,18 @@
     "waitingForHost": "En attente de l'hôte …",
     "waitingForHostHint": "Sur le téléphone de l'hôte : ouvre la soirée et touche « {{button}} ».",
     "partyEnded": "Cette soirée est terminée",
-    "partyEndedHint": "Merci d'avoir joué ! Pour une nouvelle partie, lance simplement une nouvelle soirée."
+    "partyEndedHint": "Merci d'avoir joué ! Pour une nouvelle partie, lance simplement une nouvelle soirée.",
+    "setlist": {
+      "title": "Ce soir, on joue à",
+      "played": "Joué",
+      "tooFew": "Dès {{count}} joueurs",
+      "tooMany": "{{count}} joueurs max.",
+      "progress": "{{done}} sur {{total}}",
+      "more": "+{{count}} autres",
+      "count": "{{count}} jeux",
+      "count_one": "1 jeu",
+      "count_other": "{{count}} jeux"
+    }
   },
   "handover": {
     "announce": "Passe le téléphone à {{name}}.",
@@ -10618,7 +10629,8 @@
       "you": "Toi",
       "banned": "Bloqués ({{count}})",
       "addGuestShort": "Joue sur ton téléphone",
-      "full": "La soirée est complète"
+      "full": "La soirée est complète",
+      "removePlayer": "Retirer"
     },
     "scene": {
       "getReady": "Ça commence !"
@@ -10739,7 +10751,23 @@
     "nextGame": "Ensuite : {{game}}",
     "tvLinked": "Télé connectée",
     "tvNotLinked": "Aucune télé connectée",
-    "tooLate": "Trop tard – la manche a continué"
+    "tooLate": "Trop tard – la manche a continué",
+    "evening": {
+      "rest": "Ensuite",
+      "editOrder": "Changer l’ordre",
+      "players": "Joueurs · ordre",
+      "addPlayer": "Ajouter un joueur",
+      "moveUp": "Monter",
+      "moveDown": "Descendre",
+      "drag": "Glisse pour réordonner",
+      "needTwo": "Au moins 2 joueurs",
+      "title": "Votre soirée",
+      "howTo": "Comment ça marche : {{text}}",
+      "start": "Lancer le premier jeu",
+      "meta": "{{count}} jeux · env. {{minutes}} min",
+      "meta_one": "1 jeu · env. {{minutes}} min",
+      "meta_other": "{{count}} jeux · env. {{minutes}} min"
+    }
   },
   "tvCinema": {
     "round": "Manche {{round}}",

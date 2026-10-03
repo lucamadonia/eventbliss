@@ -10406,7 +10406,18 @@
     "waitingForHost": "Warte auf den Host …",
     "waitingForHostHint": "Auf dem Handy des Hosts: Party öffnen und „{{button}}“ antippen.",
     "partyEnded": "Diese Party ist vorbei",
-    "partyEndedHint": "Danke fürs Mitspielen! Für eine neue Runde einfach eine neue Party starten."
+    "partyEndedHint": "Danke fürs Mitspielen! Für eine neue Runde einfach eine neue Party starten.",
+    "setlist": {
+      "title": "Heute spielen wir",
+      "played": "Gespielt",
+      "tooFew": "Ab {{count}} Spielern",
+      "tooMany": "Höchstens {{count}} Spieler",
+      "progress": "{{done}} von {{total}}",
+      "more": "+{{count}} weitere",
+      "count": "{{count}} Spiele",
+      "count_one": "1 Spiel",
+      "count_other": "{{count}} Spiele"
+    }
   },
   "handover": {
     "announce": "Handy an {{name}} weitergeben.",
@@ -10589,7 +10600,8 @@
       "you": "Du",
       "banned": "Gesperrt ({{count}})",
       "addGuestShort": "Spielt an deinem Handy mit",
-      "full": "Die Party ist voll"
+      "full": "Die Party ist voll",
+      "removePlayer": "Entfernen"
     },
     "scene": {
       "getReady": "Gleich geht’s los"
@@ -10710,7 +10722,23 @@
     "nextGame": "Als Nächstes: {{game}}",
     "tvLinked": "Fernseher verbunden",
     "tvNotLinked": "Kein Fernseher verbunden",
-    "tooLate": "Zu spät – die Runde ist schon weiter"
+    "tooLate": "Zu spät – die Runde ist schon weiter",
+    "evening": {
+      "rest": "Danach",
+      "editOrder": "Reihenfolge ändern",
+      "players": "Spieler · Reihenfolge",
+      "addPlayer": "Spieler hinzufügen",
+      "moveUp": "Nach oben",
+      "moveDown": "Nach unten",
+      "drag": "Reihenfolge ziehen",
+      "needTwo": "Mindestens 2 Spieler",
+      "title": "Euer Abend",
+      "howTo": "So geht's: {{text}}",
+      "start": "Erstes Spiel starten",
+      "meta": "{{count}} Spiele · ca. {{minutes}} Min.",
+      "meta_one": "1 Spiel · ca. {{minutes}} Min.",
+      "meta_other": "{{count}} Spiele · ca. {{minutes}} Min."
+    }
   },
   "tvCinema": {
     "round": "Runde {{round}}",

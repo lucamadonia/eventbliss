@@ -10406,7 +10406,18 @@
     "waitingForHost": "Waiting for the host …",
     "waitingForHostHint": "On the host's phone: open the party and tap “{{button}}”.",
     "partyEnded": "This party is over",
-    "partyEndedHint": "Thanks for playing! For another round, just start a new party."
+    "partyEndedHint": "Thanks for playing! For another round, just start a new party.",
+    "setlist": {
+      "title": "Tonight we play",
+      "played": "Played",
+      "tooFew": "From {{count}} players",
+      "tooMany": "Max {{count}} players",
+      "progress": "{{done}} of {{total}}",
+      "more": "+{{count}} more",
+      "count": "{{count}} games",
+      "count_one": "1 game",
+      "count_other": "{{count}} games"
+    }
   },
   "handover": {
     "announce": "Pass the phone to {{name}}.",
@@ -10591,7 +10602,8 @@
       "you": "You",
       "banned": "Blocked ({{count}})",
       "addGuestShort": "Plays on your phone",
-      "full": "The party is full"
+      "full": "The party is full",
+      "removePlayer": "Remove"
     },
     "scene": {
       "getReady": "Get ready"
@@ -10712,7 +10724,23 @@
     "nextGame": "Up next: {{game}}",
     "tvLinked": "TV connected",
     "tvNotLinked": "No TV connected",
-    "tooLate": "Too late – the round has moved on"
+    "tooLate": "Too late – the round has moved on",
+    "evening": {
+      "rest": "After that",
+      "editOrder": "Change order",
+      "players": "Players · order",
+      "addPlayer": "Add player",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "drag": "Drag to reorder",
+      "needTwo": "At least 2 players",
+      "title": "Your evening",
+      "howTo": "How it works: {{text}}",
+      "start": "Start first game",
+      "meta": "{{count}} games · about {{minutes}} min",
+      "meta_one": "1 game · about {{minutes}} min",
+      "meta_other": "{{count}} games · about {{minutes}} min"
+    }
   },
   "tvCinema": {
     "round": "Round {{round}}",

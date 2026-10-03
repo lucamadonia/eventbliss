@@ -10536,7 +10536,22 @@
     "waitingForHost": "بانتظار المضيف …",
     "waitingForHostHint": "على هاتف المضيف: افتح الحفلة واضغط «{{button}}».",
     "partyEnded": "انتهت هذه الحفلة",
-    "partyEndedHint": "شكرًا على اللعب! لجولة جديدة ابدأ حفلة جديدة."
+    "partyEndedHint": "شكرًا على اللعب! لجولة جديدة ابدأ حفلة جديدة.",
+    "setlist": {
+      "title": "الليلة نلعب",
+      "played": "تم لعبها",
+      "tooFew": "من {{count}} لاعبين",
+      "tooMany": "{{count}} لاعبين كحد أقصى",
+      "progress": "{{done}} من {{total}}",
+      "more": "+{{count}} أخرى",
+      "count": "{{count}} لعبة",
+      "count_zero": "لا ألعاب",
+      "count_one": "لعبة واحدة",
+      "count_two": "لعبتان",
+      "count_few": "{{count}} ألعاب",
+      "count_many": "{{count}} لعبة",
+      "count_other": "{{count}} لعبة"
+    }
   },
   "handover": {
     "announce": "أعطِ الهاتف إلى {{name}}.",
@@ -10755,7 +10770,8 @@
       "you": "أنت",
       "banned": "المحظورون ({{count}})",
       "addGuestShort": "يلعب على هاتفك",
-      "full": "الحفلة ممتلئة"
+      "full": "الحفلة ممتلئة",
+      "removePlayer": "إزالة"
     },
     "scene": {
       "getReady": "نبدأ بعد قليل"
@@ -10892,7 +10908,27 @@
     "nextGame": "التالي: {{game}}",
     "tvLinked": "التلفاز متصل",
     "tvNotLinked": "لا يوجد تلفاز متصل",
-    "tooLate": "متأخر جدًا – الجولة انتقلت"
+    "tooLate": "متأخر جدًا – الجولة انتقلت",
+    "evening": {
+      "rest": "بعد ذلك",
+      "editOrder": "تغيير الترتيب",
+      "players": "اللاعبون · الترتيب",
+      "addPlayer": "إضافة لاعب",
+      "moveUp": "للأعلى",
+      "moveDown": "للأسفل",
+      "drag": "اسحب لإعادة الترتيب",
+      "needTwo": "لاعبان على الأقل",
+      "title": "سهرتكم",
+      "howTo": "طريقة اللعب: {{text}}",
+      "start": "ابدأ أول لعبة",
+      "meta": "{{count}} لعبة · حوالي {{minutes}} د",
+      "meta_zero": "لا ألعاب · حوالي {{minutes}} د",
+      "meta_one": "لعبة واحدة · حوالي {{minutes}} د",
+      "meta_two": "لعبتان · حوالي {{minutes}} د",
+      "meta_few": "{{count}} ألعاب · حوالي {{minutes}} د",
+      "meta_many": "{{count}} لعبة · حوالي {{minutes}} د",
+      "meta_other": "{{count}} لعبة · حوالي {{minutes}} د"
+    }
   },
   "tvCinema": {
     "round": "الجولة {{round}}",
