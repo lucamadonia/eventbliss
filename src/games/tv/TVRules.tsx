@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { lu } from './components/tv-lobby-scale';
 
 import { resolveGameRules } from '@/games/ui/game-rules';
 import { playableGames } from '@/lib/playable-games';
@@ -59,8 +60,8 @@ export default function TVRules({ gameId, gameName }: Props) {
         )}
         <div className="min-w-0">
           <div
-            className="font-black uppercase tracking-[0.3em] text-[#b3a8c9]"
-            style={{ fontSize: tvType.micro }}
+            className="font-black text-[#b3a8c9]"
+            style={{ fontSize: lu(1.9) }}
           >
             {t('tv.remote.rules')}
           </div>

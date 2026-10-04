@@ -96,3 +96,12 @@ export async function claimTabIdentity(storage?: Storage): Promise<RoomIdentity>
   window.addEventListener('pagehide', () => channel.close(), { once: true });
   return identity;
 }
+
+/** Account sessions keep one identity per account across tabs; anonymous rooms one per tab. */
+export function identityStorage(accountId: string | null): Storage | undefined {
+  try {
+    if (!accountId) return sessionStorage;
+    const prefix = `eventbliss_account_${accountId}:`;
+    return { getItem: key => localStorage.getItem(prefix + key), setItem: (key, value) => localStorage.setItem(prefix + key, value), removeItem: key => localStorage.removeItem(prefix + key) } as Storage;
+  } catch { return undefined; /* SSR/private browsing */ }
+}

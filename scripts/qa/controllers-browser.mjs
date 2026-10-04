@@ -3,9 +3,10 @@ import fs from 'node:fs';
 import {createDB} from './controller-db.mjs';
 import {createRealDB} from './controller-real-db.mjs';
 const real=process.argv.includes('--real');
+const historySmoke=process.argv.includes('--history-smoke');
 const base=process.env.QA_CONTROLLER_URL||(real?'http://127.0.0.1:5185':'http://127.0.0.1:5183');
 const moderator=!process.argv.includes('--host-plays');const guestCount=moderator?4:3;
-const output=`scripts/tmp/controllers-browser/${real?'real-':''}${moderator?'moderator':'host'}`;fs.mkdirSync(output,{recursive:true});
+const output=`scripts/tmp/controllers-browser/${historySmoke?'history-smoke':`${real?'real-':''}${moderator?'moderator':'host'}`}`;fs.mkdirSync(output,{recursive:true});
 console.log(real?'Connecting local Supabase':'Creating PGlite');const db=real?await createRealDB():await createDB();console.log('Launching browser');const browser=await puppeteer.launch({headless:true,protocolTimeout:120000});
 const channels=new Map(),clients=[],evidence={backend:real?'real-local-supabase':'pglite-broker',scope:real?'Real React lobby, coordinator, auth provider, games and Supabase SDK against isolated local GoTrue/Postgres/Realtime; native route eligibility simulated. No production access.':'Real React lobby/controller-session/game UI, signed RoomSession packets, actual migration in PGlite; synthetic account identity, local asynchronous transport, simulated native routing only.',checks:[],errors:[],packets:0,rpc:[]};
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
@@ -24,7 +25,7 @@ async function client(index,name,route='/party/controllers'){console.log('Client
  const context=await browser.createBrowserContext();const page=await context.newPage();console.log('Page',name);await page.setViewport({width:390,height:900});await page.emulateMediaFeatures([{name:'prefers-reduced-motion',value:'reduce'}]);
  await page.setRequestInterception(true);page.on('request',request=>{const u=new URL(request.url());if(u.origin===base||(real&&u.origin===db.url)||['data:','blob:'].includes(u.protocol))void request.continue();else void request.abort('blockedbyclient');});
  await page.exposeFunction('controllerWire',packet=>wire(page,packet));await page.exposeFunction('controllerRPC',async args=>{try{const data=await db.request(account,args.action,args.code,args.payload);if(args.action!=='read')evidence.rpc.push({account,action:args.action,revision:data.party.revision});return{data,error:null};}catch(e){return{data:null,error:{message:e.message}};}});
- await page.evaluateOnNewDocument((identity,route,credentials)=>{window.controllerCredentials=credentials;const Native=WebSocket;class Quiet extends EventTarget{readyState=0;send(){}close(){}}window.WebSocket=new Proxy(Native,{construct(t,a){return a[1]==='vite-hmr'?new Quiet():Reflect.construct(t,a);}});window.controllerIdentity=identity;window.controllerInitialRoute=route;},{id:account,user_metadata:{display_name:name}},route,real?{email:credentials.email,password:credentials.password}:null);
+ await page.evaluateOnNewDocument((identity,route,credentials,browserHistory)=>{window.controllerCredentials=credentials;window.controllerBrowserHistory=browserHistory;window.controllerNativeShell=browserHistory;window.controllerHistoryReplacements=[];if(browserHistory){const replace=history.replaceState.bind(history);history.replaceState=(state,title,url)=>{window.controllerHistoryReplacements.push(String(url??location.pathname+location.search));if(window.controllerHistoryReplacements.length>100)throw new Error('Synthetic WebKit replaceState limit exceeded');return replace(state,title,url);};}const Native=WebSocket;class Quiet extends EventTarget{readyState=0;send(){}close(){}}window.WebSocket=new Proxy(Native,{construct(t,a){return a[1]==='vite-hmr'?new Quiet():Reflect.construct(t,a);}});window.controllerIdentity=identity;window.controllerInitialRoute=route;},{id:account,user_metadata:{display_name:name}},route,real?{email:credentials.email,password:credentials.password}:null,historySmoke);
  page.on('pageerror',error=>{console.log('PAGE ERROR',name,error.message);evidence.errors.push(`${name}: ${error.stack}`);});
  console.log('Navigating',name);await page.goto(`${base}/scripts/qa/controllers-browser.html`,{waitUntil:'domcontentloaded',timeout:120000});console.log('Loaded',name);await page.waitForFunction(()=>!!window.controllerQA,{timeout:30000});console.log('Mounted',name);
  const entry={page,account,name,context};clients.push(entry);return entry;
@@ -34,9 +35,23 @@ async function until(test,label,timeout=16000){for(let i=0;i<timeout/100;i++){if
 const snapshot=client=>client.page.evaluate(()=>controllerQA.snapshot());
 let television=null;
 try{
- const host=await client(0,moderator?'Moderator':'Host');if(moderator)await host.page.click('input[type=checkbox]');await click(host.page,'create');
+ const host=await client(0,moderator?'Moderator':'Host',historySmoke?'/party':'/party/controllers');
+ if(historySmoke)await click(host.page,'joystick mode');
+ if(moderator&&!historySmoke)await host.page.click('input[type=checkbox]');await click(host.page,'create');
  await until(async()=>!!(await host.page.evaluate(()=>controllerQA.state())).data,'Party was not created');
  const code=await host.page.evaluate(()=>controllerQA.state().data.party.code);
+ if(historySmoke){
+   await host.page.evaluate(()=>controllerQA.navigate('/party'));
+   await pause(5000); // One server poll must not reassert the old lobby route.
+   assert(await host.page.evaluate(()=>location.pathname)==='/party','Coordinator redirected without a party phase change');
+   await host.page.evaluate(()=>controllerQA.navigate('/party/controllers'));
+   await pause(500);
+   const replacements=await host.page.evaluate(()=>controllerHistoryReplacements);
+   assert(replacements.length<10,`Too many history replacements: ${replacements.length}`);
+   assert(!evidence.errors.length,'Browser runtime errors recorded');
+   evidence.checks.push({name:'joystick-entry-and-stable-browser-history',passed:true,replacements});
+   console.log('History smoke passed');
+ }else{
  television=real?await client(99,'TV',`/tv/${code}`):null;if(television){clients.pop();await television.page.setViewport({width:1280,height:720});}
  for(let i=1;i<=guestCount;i++)await client(i,['','Anna','Ben','Clara','David'][i],`/party/join/${code}`);
  await until(async()=>(await snapshot(host)).players.length===guestCount+1,'Roster never reached moderator plus four guests');
@@ -110,6 +125,7 @@ try{
  evidence.checks.push({name:'three-game-set-plus-fresh-rematch',passed:true});
  if(television){const messages=await television.page.evaluate(()=>controllerTVMessages);assert(messages.every(m=>!m.internalScoresPresent),'TV exposed internal score map');const statements=messages.filter(m=>m.game==='fakeorfact'&&m.phase==='statement');assert(statements.length>0,'TV received no playable Fake state');assert(statements.every(m=>m.correctAnswer===-1),'TV exposed quiz answer before reveal');evidence.checks.push({name:'actual-tv-screen-public-realtime',passed:true,messages:messages.length});}
  assert(evidence.checks.filter(check=>check.name==='tv-rendered-playing').every(check=>check.passed),'TV retained lobby over gameplay');assert(!evidence.errors.length,'Browser runtime errors recorded');
+ }
 
 }catch(error){if(television)evidence.tv={messages:await television.page.evaluate(()=>controllerTVMessages),text:await television.page.evaluate(()=>document.body.innerText)};evidence.lastStates=await Promise.all(clients.map(async c=>({name:c.name,snapshot:await snapshot(c),controller:await c.page.evaluate(()=>controllerQA.state()),transport:await c.page.evaluate(()=>controllerQA.connection()),text:await c.page.evaluate(()=>document.body.innerText)})));evidence.failure=String(error.stack??error);for(const c of clients)await c.page.screenshot({path:`${output}/failure-${c.name}.png`,fullPage:true}).catch(()=>{});process.exitCode=1;}
 finally{fs.writeFileSync(`${output}/report.json`,JSON.stringify(evidence,null,2));console.log(JSON.stringify(evidence,null,2));await browser.close();await db.close();}

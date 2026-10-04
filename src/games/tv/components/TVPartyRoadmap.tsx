@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { lu } from './tv-lobby-scale';
 import { Check, Circle, Play } from 'lucide-react';
 import { tvPanel, tvType, tvActiveRing } from '../tv-tokens';
 import type { PartyPlaylistItem } from '../party-types';
@@ -33,8 +34,8 @@ export default function TVPartyRoadmap({ playlist, index, reveal = true, classNa
     <div className={`${tvPanel} flex flex-col min-h-0 p-[clamp(0.9rem,1.6vw,1.75rem)] ${className ?? ''}`}>
       <div className="flex items-baseline justify-between gap-2 mb-[clamp(0.5rem,1vh,1rem)] shrink-0">
         <span
-          className="uppercase font-black tracking-[0.24em]"
-          style={{ fontSize: tvType.micro, color: '#b3a8c9' }}
+          className="font-black"
+          style={{ fontSize: lu(1.9), color: '#b3a8c9' }}
         >
           {t('tv.partyNight.roadmapTitle', 'Der Abend')}
         </span>
@@ -75,8 +76,8 @@ export default function TVPartyRoadmap({ playlist, index, reveal = true, classNa
               </span>
               {isCurrent && (
                 <span
-                  className="shrink-0 uppercase font-black tracking-[0.18em]"
-                  style={{ fontSize: tvType.micro, color: '#df8eff' }}
+                  className="shrink-0 font-black"
+                  style={{ fontSize: lu(1.9), color: '#df8eff' }}
                 >
                   {t('tv.partyNight.nextUp', 'Jetzt')}
                 </span>

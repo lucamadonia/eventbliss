@@ -9,12 +9,8 @@ import { useOnlineActions, useOnlineSnapshot, OnlineWaiting } from '../bottlespi
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import {
-  ArrowLeft, RotateCcw, Trophy, ThumbsUp, ThumbsDown,
-  Timer, Sparkles, Zap, MessageCircle, Wine, Heart,
-} from 'lucide-react';
+import { ArrowLeft, ThumbsUp, Timer, Sparkles, Zap, MessageCircle, Wine } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
-import { GameEndOverlay } from '../social/GameEndOverlay';
 import { haptics } from '@/hooks/useHaptics';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
@@ -22,50 +18,25 @@ import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameTimer } from '../engine/TimerSystem';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
+import { useSeatHandover } from '../multiplayer/useGuestHandover';
+import { bottleActiveSeat, dropBottlePlayers } from './guest-turns';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { getBOTTLE_CARDS, getCATEGORY_META, localizeBottleCard, type BottleCard, type BottleCategory } from './bottlespin-content';
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
 import { hasShellBackButton } from '@/games/ui/shell-back';
+import { neonStyles, playStopSound } from './bottle-styles';
+import { BottleVote, BottleGameOver } from './BottlePanels';
 
 type Phase = 'setup' | 'spinning' | 'card' | 'vote' | 'gameOver';
 interface Player { id: string; name: string; color: string; avatar: string; score: number; }
-
 const PLAYER_COLORS = ['#e6b880','#ff6b98','#91b8a1','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
 const GAME_MODES: GameMode[] = [
   { id: 'fragen', name: 'Mit Fragen', desc: 'Flasche + Fragen & Aufgaben', icon: <MessageCircle className="w-6 h-6" /> },
   { id: 'nur-flasche', name: 'Nur Flasche', desc: 'Reines Flaschendrehen', icon: <Wine className="w-6 h-6" /> },
 ];
-
-function playStopSound() {
-  try {
-    const ctx = new AudioContext(), osc = ctx.createOscillator(), gain = ctx.createGain();
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value = 880;
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-    osc.start(); osc.stop(ctx.currentTime + 0.3);
-  } catch { /* audio unavailable */ }
-}
-
 const RADIUS = 130;
-
-const neonStyles = `
-  .neon-text { text-shadow: 0 0 15px rgba(255,107,152,0.6), 0 0 40px rgba(150,160,165,0.2); }
-  .neon-text-cyan { text-shadow: 0 0 15px rgba(143,245,255,0.6), 0 0 40px rgba(0,238,252,0.2); }
-  .neon-text-purple { text-shadow: 0 0 15px rgba(150,160,165,0.6), 0 0 40px rgba(150,160,165,0.2); }
-  .glass-panel { backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border: 1.5px solid rgba(150,160,165,0.1); background: rgba(21,26,33,0.8); }
-  .glass-panel-elevated { backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-    border: 1.5px solid rgba(150,160,165,0.08); background: rgba(27,32,40,0.85); }
-  .card-glow { box-shadow: 0 0 40px -10px rgba(255,107,152,0.4), 0 0 80px -20px rgba(150,160,165,0.2); }
-  .btn-glow { box-shadow: 0 0 30px -5px rgba(150,160,165,0.4), 0 0 60px -10px rgba(255,107,152,0.2); }
-  .trophy-glow { box-shadow: 0 0 30px rgba(251,191,36,0.3), 0 0 60px rgba(251,191,36,0.1); }
-  @keyframes pulse-ring { 0%,100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
-  .pulse-ring { animation: pulse-ring 2s ease-in-out infinite; }
-  @keyframes float-aura { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(5px,-5px) scale(1.05); } }
-  .float-aura { animation: float-aura 6s ease-in-out infinite; }
-`;
 
 function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const reduceMotion = useReducedMotion();
@@ -118,9 +89,13 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const [votes, setVotes] = useState<Record<string, boolean>>({});
   const [voterIdx, setVoterIdx] = useState(0);
 
+  // 🔁 guests play their turn/vote on the host phone; the clock stands while it is passed.
+  const handover = useSeatHandover(online, bottleActiveSeat(phase, players, selectedIdx, voterIdx));
+  const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, currentRound, isSpinning]); // all devices + TV switch together
   useTVGameBridge(
     'bottlespin',
     {
+      handover: handover.tv, phaseStartsAt, votedIds: Object.keys(votes), // who voted, never what
       phase, currentRound, selectedIdx, rotation, players, mode, totalRounds,
       selectedName: selectedIdx >= 0 ? players[selectedIdx]?.name ?? '' : '',
       // Task text stays hidden until the card phase (and lingers through the vote).
@@ -131,15 +106,14 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
       voteYes: Object.values(votes).filter(Boolean).length,
       voteNo: Object.values(votes).filter((v) => !v).length,
     },
-    [phase, currentRound, selectedIdx, votes], !online || online.isHost,
-  );
+    [phase, currentRound, selectedIdx, votes, JSON.stringify(handover.tv), phaseStartsAt], !online || online.isHost);
 
   // The host freezes the selected language/content at match start, including replay.
   const matchCards = useRef<BottleCard[]>([]);
   const deck = useRef(createBottleDeck([]));
 
   const handleTimerExpire = useCallback(() => { if ((!online || online.isHost) && phase === 'card') startVote(); }, [phase, online?.isHost]);
-  const timer = useGameTimer(timerSec, handleTimerExpire, online?.isConnected !== false);
+  const timer = useGameTimer(timerSec, handleTimerExpire, online?.isConnected !== false && !handover.isPaused);
 
   const handleStart = (
     mapped: { id: string; name: string; color: string; avatar: string }[],
@@ -215,6 +189,18 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
     } else { setVoterIdx((v) => v + 1); }
   };
 
+  // Host: a removed player leaves the circle; their turn is skipped, a pending vote closes without them.
+  const removedKey = online?.removedPlayerIds?.join(',') ?? '';
+  useEffect(() => {
+    if (!online?.isHost) return;
+    const drop = dropBottlePlayers(players, selectedIdx, voterIdx, online.removedPlayerIds ?? []);
+    if (!drop) return;
+    const chosen = players[selectedIdx]?.id, others = drop.players.filter(p => p.id !== chosen), yes = others.filter(p => votes[p.id]).length;
+    const pts = drop.votingDone && phase === 'vote' ? (yes > others.length / 2 ? 2 : 0) : 0;
+    setPlayers(drop.players.map(p => p.id === chosen ? { ...p, score: p.score + pts } : p)); lastSelectedRef.current = -1; setSelectedIdx(drop.selectedIdx); setVoterIdx(drop.voterIdx);
+    if ((drop.skipTurn && (phase === 'card' || phase === 'vote')) || (drop.votingDone && phase === 'vote')) nextRound();
+  }, [removedKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const nextRoundBottleOnly = () => {
     if (currentRound >= totalRounds) { setPhase('gameOver'); return; }
     setCurrentRound((r) => r + 1); setSelectedIdx(-1); setPhase('spinning');
@@ -255,17 +241,17 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const act = useOnlineActions(online, 'bottlespin', `${phase}:${currentRound}:${selectedIdx}:${voterIdx}:${isSpinning}:${declined}`, {
     start: { allowed: phase === 'setup' ? 'host' : false, run: handleStart },
     spin: { allowed: phase === 'spinning' && !isSpinning ? 'host' : false, run: doSpin },
-    accept: { allowed: phase === 'card' && !declined ? actor : false, run: handleAccept },
-    decline: { allowed: phase === 'card' && !declined ? actor : false, run: handleDecline },
-    vote: { allowed: phase === 'vote' ? voter : false, run: (yes: unknown) => { if (typeof yes === 'boolean') castVote(yes); } },
+    accept: { allowed: phase === 'card' && !declined ? actor : false, run: handleAccept, answer: true },
+    decline: { allowed: phase === 'card' && !declined ? actor : false, run: handleDecline, answer: true },
+    vote: { allowed: phase === 'vote' ? voter : false, run: (yes: unknown) => { if (typeof yes === 'boolean') castVote(yes); }, answer: true },
     next: { allowed: phase === 'spinning' && !isSpinning && selectedIdx >= 0 ? 'host' : false, run: nextRoundBottleOnly },
     again: { allowed: phase === 'gameOver' ? 'host' : false, run: playAgain },
   });
-  useOnlineSnapshot(online, 'bottlespin', { phase, players, mode, timerSec, totalRounds, currentRound, selectedCategories, contentSelection, rotation, isSpinning, selectedIdx, currentCard, declined, votes, voterIdx, timeLeft: timer.timeLeft }, s => {
-    setPhase(s.phase); setPlayers(s.players); setMode(s.mode); setTimerSec(s.timerSec); setTotalRounds(s.totalRounds); setCurrentRound(s.currentRound); setSelectedCategories(s.selectedCategories); setContentSelection(s.contentSelection ?? 'mixed'); setRotation(s.rotation); setIsSpinning(s.isSpinning); setSelectedIdx(s.selectedIdx); setCurrentCard(s.currentCard); setDeclined(s.declined); setVotes(s.votes); setVoterIdx(s.voterIdx); timer.reset(s.timeLeft);
+  useOnlineSnapshot(online, 'bottlespin', { phase, players, mode, timerSec, totalRounds, currentRound, selectedCategories, contentSelection, rotation, isSpinning, selectedIdx, currentCard, declined, votes, voterIdx, timeLeft: timer.timeLeft, phaseStartsAt }, s => {
+    setPhase(s.phase); setPlayers(s.players); setMode(s.mode); setTimerSec(s.timerSec); setTotalRounds(s.totalRounds); setCurrentRound(s.currentRound); setSelectedCategories(s.selectedCategories); setContentSelection(s.contentSelection ?? 'mixed'); setRotation(s.rotation); setIsSpinning(s.isSpinning); setSelectedIdx(s.selectedIdx); setCurrentCard(s.currentCard); setDeclined(s.declined); setVotes(s.votes); setVoterIdx(s.voterIdx); timer.reset(s.timeLeft); receivePhaseStart(s.phaseStartsAt);
   });
   if (online && !online.isHost && phase === 'setup') return <OnlineWaiting />;
-
+  if (handover.overlay) return handover.overlay; // phone in transit: only the opaque pass screen
 
   if (phase === 'setup') {
     if (!contentReady) return <BottleContentSelection cards={getBOTTLE_CARDS()} categories={getCATEGORY_META()}
@@ -281,8 +267,8 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
   }
 
   return (
-    <div data-phase={phase} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game overflow-hidden">
-      <style>{neonStyles}</style>
+    <div data-phase={view} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game overflow-hidden">
+      <style>{neonStyles}</style>{blocker}
 
       {/* Background aura blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -298,7 +284,7 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
             nicht entfernen: der Platzhalter hält die Kopfzeile im Gleichgewicht
             und den Platz unter dem schwebenden Pfeil frei. */}
         <button
-          onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())}
+          onClick={() => (view === 'gameOver' ? navigate('/games') : exitGuard.request())}
           className={`p-2 text-white/40 hover:text-[#e6b880] transition-colors${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
           aria-hidden={hasShellBackButton()}
           tabIndex={hasShellBackButton() ? -1 : undefined}
@@ -315,7 +301,7 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
 
       <AnimatePresence mode="wait">
         {/* SPINNING PHASE */}
-        {phase === 'spinning' && (
+        {view === 'spinning' && (
           <motion.div key="spinning" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="table-play relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4">
             <h2 className="text-xl font-extrabold">
@@ -405,7 +391,7 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
         )}
 
         {/* CARD PHASE */}
-        {phase === 'card' && currentCard && selectedPlayer && (
+        {view === 'card' && currentCard && selectedPlayer && (
           <motion.div key="card" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4 py-6">
 
@@ -491,97 +477,15 @@ function BottleSpinGameContent({ online }: { online?: OnlineGameProps } = {}) {
         )}
 
         {/* VOTE PHASE */}
-        {phase === 'vote' && selectedPlayer && (() => {
-          const otherPlayers = players.filter((_, i) => i !== selectedIdx);
-          const voter = otherPlayers[voterIdx];
-          if (!voter) return null;
-          return (
-            <motion.div key="vote" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="relative z-10 flex-1 flex flex-col items-center justify-center gap-6 px-4">
-              <h2 className="text-xl font-extrabold neon-text-purple text-[#e6b880]">
-                {t('games.bottlespin.voteQuestion', { name: selectedPlayer.name })}
-              </h2>
-              <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }}
-                className="relative">
-                <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-[#e6b880]/20 to-[#ff6b98]/20 blur-lg" />
-                <div className="relative w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white ring-2 ring-[#e6b880]/30"
-                  style={{ backgroundColor: voter.color, boxShadow: `0 0 20px ${voter.color}44` }}>
-                  {voter.avatar}
-                </div>
-              </motion.div>
-              <p className="text-white/50 font-semibold">{t('games.bottlespin.voting', { name: voter.name })}</p>
-              <div className="flex gap-5">
-                <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} disabled={!act.can('vote')} onClick={() => act('vote', true)}
-                  className="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-emerald-500/20 hover:border-emerald-500/40 transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]">
-                  <ThumbsUp className="w-8 h-8 text-emerald-400" />
-                </motion.button>
-                <motion.button whileTap={{ scale: 0.9 }} whileHover={{ scale: 1.05 }} disabled={!act.can('vote')} onClick={() => act('vote', false)}
-                  className="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center border-[#ff6e84]/20 hover:border-[#ff6e84]/40 transition-all hover:shadow-[0_0_20px_rgba(255,110,132,0.2)]">
-                  <ThumbsDown className="w-8 h-8 text-[#ff6e84]" />
-                </motion.button>
-              </div>
-              <div className="flex gap-1.5">
-                {otherPlayers.map((_, i) => (
-                  <div key={i} className={cn('w-2.5 h-2.5 rounded-full transition-all duration-300',
-                    i < voterIdx ? 'bg-[#e6b880]' : i === voterIdx ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.4)]' : 'bg-white/[0.08]')} />
-                ))}
-              </div>
-            </motion.div>
-          );
-        })()}
+        {view === 'vote' && selectedPlayer && (
+          <BottleVote key="vote" players={players} selectedIdx={selectedIdx} voterIdx={voterIdx} selectedName={selectedPlayer.name}
+            canVote={act.can('vote')} onVote={yes => act('vote', yes)} />
+        )}
 
         {/* GAME OVER */}
-        {phase === 'gameOver' && (
-          <motion.div key="over" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-            className="table-results relative z-10 flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full">
-            <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
-              <div className="relative">
-                <div className="absolute -inset-3 rounded-full bg-amber-500/10 blur-xl" />
-                <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-full bg-amber-500/10 border border-amber-500/20 trophy-glow">
-                  <Trophy className="w-10 h-10 text-amber-400" />
-                </div>
-              </div>
-            </motion.div>
-            <h2 className="text-3xl font-black neon-text bg-gradient-to-r from-amber-400 via-[#ff6b98] to-[#e6b880] bg-clip-text text-transparent">
-              {t('games.bottlespin.gameOver')}
-            </h2>
-            {mode === 'fragen' && winner && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                className="text-lg font-bold text-[#e6b880] neon-text-purple">{t('games.bottlespin.wins', { name: players.filter(p => p.score === winner.score).map(p => p.name).join(' & ') })}</motion.div>
-            )}
-            {mode === 'fragen' && (
-              <div className="w-full space-y-2.5 max-h-64 overflow-y-auto">
-                {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
-                  <motion.div key={p.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.08 }}
-                    className={cn('flex items-center gap-3 rounded-2xl px-4 py-3 glass-panel-elevated',
-                      i === 0 && 'border-amber-500/20 card-glow')}>
-                    <span className="text-white/30 text-sm font-bold w-5">#{i + 1}</span>
-                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white ring-2 ring-white/[0.08]"
-                      style={{ backgroundColor: p.color }}>{p.avatar}</div>
-                    <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
-                    <span className="text-[#e6b880] font-bold">{t('games.bottlespin.scorePoints', { score: p.score })}</span>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-            {mode === 'nur-flasche' && (
-              <p className="text-white/30 text-center text-sm">{t('games.bottlespin.roundsPlayed', { rounds: totalRounds })}</p>
-            )}
-            <div className="w-full space-y-3 mt-3">
-              <motion.button whileTap={{ scale: 0.97 }} disabled={!act.can('again')} onClick={() => act('again')}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#e6b880] to-[#d779ff] text-white py-4 rounded-2xl h-14 font-extrabold btn-glow">
-                <RotateCcw className="w-4 h-4" /> {t('games.bottlespin.playAgain')}
-              </motion.button>
-              {!hasShellBackButton() && (
-                <button onClick={() => navigate('/games')}
-                  className="w-full py-3.5 rounded-2xl border border-[#e6b880]/10 text-white/40 text-sm font-semibold hover:bg-white/[0.02] hover:border-[#e6b880]/20 transition-all">
-                  {t('games.bottlespin.otherGame')}
-                </button>
-              )}
-            </div>
-          </motion.div>
+        {view === 'gameOver' && (
+          <BottleGameOver key="over" players={players} winner={winner} mode={mode} totalRounds={totalRounds} achievements={newAchievements}
+            onDismissAchievements={clearAchievements} canAgain={act.can('again')} onAgain={() => act('again')} onOtherGame={() => navigate('/games')} />
         )}
       </AnimatePresence>
 

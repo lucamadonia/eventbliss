@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo, useEffect, useRef, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
@@ -17,8 +17,20 @@ import type { BrewCue } from '@/games/brew/brew-audio';
 import type { PartyNightState } from './party-types';
 import { resolveTvView } from './tv-view';
 import { isStroke } from './drawing';
-import { QRCodeSVG } from 'qrcode.react';
 import { getBaseUrl } from '@/lib/platform';
+import { setPartyTraceDevice } from '@/games/party/party-trace';
+import TVLatecomerQR from './components/TVLatecomerQR';
+import TVHandoverBanner from './components/TVHandoverBanner';
+import TVHandoverStage from './cinema/TVHandoverStage';
+import { parseTvHandover } from './cinema/tv-handover';
+import { TVRosterContext, buildRoster } from './cinema/tv-roster';
+import TVPhaseCard from './cinema/TVPhaseCard';
+import { useTVCinema } from './cinema/useTVCinema';
+import { useTVPhaseGate } from './cinema/useTVPhaseGate';
+import { TVCueContext } from './cinema/tv-cue-context';
+import TVSceneCountdown, { parseWireScene } from './components/TVSceneCountdown';
+import { useTVServerClock } from './useTVServerClock';
+import { legacyLobbyState, parseTVLobbyState, type TVLobbyPlayer, type TVLobbyState } from './tv-lobby-state';
 
 // Lazy load game-specific TV views
 const TVBombView = lazy(() => import('./games/TVBombView'));
@@ -100,6 +112,8 @@ export default function TVScreen() {
    * sonst steht die TV-Lobby in der Browsersprache des Fernsehers da.
    * Der Broadcast korrigiert spaeter, falls der Gastgeber umschaltet.
    */
+  // Timing-Messpunkte dieses Geraets als Fernseher kennzeichnen (party-trace).
+  useEffect(() => { setPartyTraceDevice('tv'); }, []);
   useEffect(() => {
     const lang = new URLSearchParams(window.location.search).get('lang');
     if (!lang) return;
@@ -138,13 +152,62 @@ export default function TVScreen() {
 
   // Party Night context, if the phone is running a playlist evening. Absent for
   // single games, in which case everything below behaves exactly as before.
-  const partyNight = gameState?.partyNight as PartyNightState | undefined;
+  const wirePartyNight = gameState?.partyNight as PartyNightState | undefined;
+  /**
+   * „Party beenden“ (D04): Das Telefon meldet das Ende als Leerlauf-Zustand mit
+   * `controllerJoinCode: null` — oft schon ohne Party-Block, weil die Sitzung
+   * dort geschlossen ist. Der Fernseher zeigt dann die Siegerehrung aus dem
+   * zuletzt bekannten Abend, statt in einen leeren Wartebereich zu fallen.
+   */
+  const partyEnded = gameState?.game === 'lobby' && gameState?.controllerJoinCode === null;
+  const lastPartyNightRef = useRef<PartyNightState | undefined>(undefined);
+  if (wirePartyNight?.active && (wirePartyNight.history?.length ?? 0) > 0) lastPartyNightRef.current = wirePartyNight;
+  // Ein Finale ohne Stand (Sitzung schon zu) faellt ebenfalls auf den letzten Abend zurueck.
+  const wireFinaleEmpty = wirePartyNight?.phase === 'finale' && !(wirePartyNight.standings?.length);
+  const partyNight: PartyNightState | undefined = (wireFinaleEmpty ? undefined : wirePartyNight)
+    ?? ((partyEnded || wireFinaleEmpty) && lastPartyNightRef.current ? { ...lastPartyNightRef.current, phase: 'finale' } : wirePartyNight);
   const partyActive = !!partyNight?.active && (partyNight.standings?.length ?? 0) > 0;
   const showLeaderboard = gameState?.phase === 'leaderboard' || gameState?.phase === 'roundEnd';
   const showGameOver = gameEnded || gameState?.phase === 'gameOver';
   // Explicit host intent wins over the derived per-game phases below.
   const wirePhase = partyNight?.phase ?? 'ingame';
-  const effectiveView = resolveTvView(localView ?? wirePhase, { partyActive, gameOver: showGameOver });
+  /**
+   * Wartebereich: Neue Telefone senden ihn als `lobby` im Leerlauf-Zustand
+   * (`game: 'lobby'`). Alte Telefone senden ihn nicht — dann leitet der
+   * Fernseher einen Ersatz aus der Anwesenheit ab.
+   */
+  const wireLobby = useMemo(() => parseTVLobbyState(gameState?.lobby), [gameState?.lobby]);
+  const legacyJoinCode = typeof gameState?.controllerJoinCode === 'string' && /^[A-HJ-NP-Z2-9]{6}$/.test(gameState.controllerJoinCode)
+    ? gameState.controllerJoinCode : null;
+  /**
+   * Waehrend eines Spiels traegt der Zustand keinen Wartebereich. Ruft der
+   * Gastgeber dann das „Startbild“ (G05), zeigt der Fernseher den zuletzt
+   * empfangenen — mit dem grossen QR — statt eines Ersatzes ohne Mitglieder.
+   */
+  const lastWireLobbyRef = useRef<TVLobbyState | null>(null);
+  if (wireLobby) lastWireLobbyRef.current = wireLobby;
+  if (partyEnded) lastWireLobbyRef.current = null;
+  const rememberedLobby = wireLobby ?? lastWireLobbyRef.current;
+  const lobbyState = useMemo(
+    () => rememberedLobby ?? legacyLobbyState({ code, presence: players, controllerJoinCode: legacyJoinCode, baseUrl: getBaseUrl() }),
+    [rememberedLobby, code, players, legacyJoinCode],
+  );
+  /**
+   * Nichts bekannt: kein Wartebereich, keine Anwesenheit, kein Beitrittscode.
+   * Dann ist es kein „lokaler Abend mit 0 Spielern“, sondern der Gastgeber hat
+   * (noch) keinen Fernseher verbunden — oder die Party ist vorbei.
+   */
+  const lobbyNotice: 'waiting-host' | 'ended' | null = rememberedLobby || legacyJoinCode || players.length > 0
+    ? null
+    : partyEnded ? 'ended' : 'waiting-host';
+  const idleLobby = gameState?.game === 'lobby' && !!wireLobby;
+  /**
+   * Vor dem ersten Spiel gehoert der Bildschirm dem Wartebereich — auch wenn
+   * das Telefon dort schon die Nacht-Route vorschlaegt. Danach entscheidet der
+   * Gastgeber ("Startbild"), und eine am Fernseher gewaehlte Ansicht gewinnt.
+   */
+  const lobbyFirst = idleLobby && !localView && (partyNight?.history?.length ?? 0) === 0 && (wirePhase === 'map' || wirePhase === 'ingame');
+  const effectiveView = lobbyFirst ? 'intro' : resolveTvView(localView ?? wirePhase, { partyActive, gameOver: showGameOver });
   const showPartyFinale = partyActive && effectiveView === 'finale';
   const showPartyStandings = partyActive && effectiveView === 'between';
   const showPartyMap = partyActive && effectiveView === 'map';
@@ -166,11 +229,51 @@ export default function TVScreen() {
   }, [wirePhase]);
 
   // Determine the remaining per-game phases.
-  const showGame = gameStarted && gameState && !showLeaderboard && !showGameOver;
+  const showGame = gameStarted && gameState && !idleLobby && !showLeaderboard && !showGameOver;
   const showLobby = !gameStarted || (!showGame && !showLeaderboard && !showGameOver);
+  const showLobbyScene = showPartyIntro || (!showPartyFinale && !showPartyStandings && !showPartyReady && !showPartyRules && !showGameOver && !showLeaderboard && !showGame);
+
+  /**
+   * Beitrittslink fuer Nachzuegler im Spiel (T15). Die Spielzustaende tragen
+   * ihn nicht, also merkt sich der Fernseher den letzten aus dem Wartebereich.
+   * Nur fuer Joystick-Partys: einem laufenden Online-Raum tritt niemand bei.
+   */
+  const [latecomerJoin, setLatecomerJoin] = useState<{ url: string; code: string; players: TVLobbyPlayer[] } | null>(null);
+  useEffect(() => {
+    if (wireLobby) {
+      setLatecomerJoin(wireLobby.mode === 'controller-party' && wireLobby.joinUrl ? { url: wireLobby.joinUrl, code: wireLobby.code, players: wireLobby.players } : null);
+    } else if (legacyJoinCode) {
+      // Altes Telefon: keine Mitgliederliste, also auch keine Beitrittsmeldung.
+      setLatecomerJoin((prev) => ({ url: `${getBaseUrl()}/party/join/${legacyJoinCode}`, code: legacyJoinCode, players: prev?.code === legacyJoinCode ? prev.players : [] }));
+    } else if (gameState?.game === 'lobby' && gameState.controllerJoinCode === null) {
+      setLatecomerJoin(null); // Party beendet
+    }
+  }, [wireLobby, legacyJoinCode, gameState?.game, gameState?.controllerJoinCode]);
+
+  // Gemeinsame Uhr (T-1): echte Serverzeit, der Stempel vom Telefon nur als Notbehelf.
+  useTVServerClock(typeof gameState?.serverNow === 'string' ? gameState.serverNow : null);
+  const wireScene = useMemo(() => parseWireScene(gameState?.scene), [gameState?.scene]);
+  // Gemeinsamer Start der Siegerehrung — Podest und Konfetti im selben Moment wie die Telefone.
+  const finaleStartsRef = useRef<number | null>(null);
+  if (wireScene?.scene === 'finale') finaleStartsRef.current = wireScene.startsAt;
 
   // Audio
   const audio = useTVAudio();
+  /**
+   * Teilnehmerliste mit Symbolen fuer ALLE Ansichten: Wartebereich, Abend-
+   * Tabelle und Spielzustand. So bleibt „🦊 Lena“ auch im Spiel „🦊 Lena“.
+   */
+  const roster = useMemo(() => buildRoster(
+    lobbyState.players,
+    partyNight?.standings,
+    Array.isArray(gameState?.players) ? (gameState.players as { id?: unknown; name?: unknown; avatar?: unknown; color?: unknown }[]) : null,
+  ), [lobbyState.players, partyNight?.standings, gameState?.players]);
+  const handover = useMemo(() => (showGame ? parseTvHandover(gameState?.handover) : null), [showGame, gameState?.handover]);
+
+  // Toene + Titelkarten (Wartebereich, Szenen-Cues der Pilotspiele) — cinema/useTVCinema.
+  // Phasenwechsel zur geplanten gemeinsamen Zeit (phaseStartsAt) — wie Host und Handys.
+  const gatedGameState = useTVPhaseGate(gameState);
+  const { playSound: playLobbySound, cueApi, phaseCue, phaseStartsAt, cueGame } = useTVCinema(audio, gatedGameState, !!showGame);
   const prevPhaseRef = useRef<string>('');
   const prevBrewCueRef = useRef<number | null>(null);
 
@@ -178,14 +281,16 @@ export default function TVScreen() {
   useEffect(() => {
     const phase = gameState?.phase || '';
     const prev = prevPhaseRef.current;
-    if (phase && phase !== prev) {
+    if (phase && phase !== prev && cueGame && phase !== 'gameOver') {
+      prevPhaseRef.current = phase;
+    } else if (phase && phase !== prev) {
       if (phase === 'leaderboard' || phase === 'roundEnd') audio.playChime();
       else if (phase === 'gameOver') audio.playFanfare();
       else if (phase === 'reveal') audio.playReveal();
       else if (phase === 'voting') audio.playTick();
       prevPhaseRef.current = phase;
     }
-  }, [gameState?.phase, audio]);
+  }, [gameState?.phase, audio, cueGame]);
 
   // Timer tick sound
   useEffect(() => {
@@ -220,7 +325,9 @@ export default function TVScreen() {
     : 'ambient' as const;
 
   return (
-    <div className="min-h-screen bg-[#060810] text-[#f1f3fc] overflow-hidden font-game">
+    <TVRosterContext.Provider value={roster}>
+    {/* Ueberschriften ausgewogen umbrechen (text-wrap: balance) — nie ein einzelnes Wort allein in Zeile 2. */}
+    <div className="min-h-screen bg-[#060810] text-[#f1f3fc] overflow-hidden font-game [&_h1]:[text-wrap:balance] [&_h2]:[text-wrap:balance] [&_h3]:[text-wrap:balance]">
       {/*
         Eine einzige Klickflaeche fuer beides: solange der Ton nicht frei ist,
         gibt der erste Klick ihn frei; danach blendet jeder Klick die
@@ -269,11 +376,23 @@ export default function TVScreen() {
       <TVParticles mood={particleMood} />
       <TVGlowFrame color={glowColor || '#df8eff'} intensity={glowIntensity} rainbow={glowRainbow} />
       <TVVFXLayer gameState={gameState} />
-      {typeof gameState?.controllerJoinCode === 'string' && /^[A-HJ-NP-Z2-9]{6}$/.test(gameState.controllerJoinCode) && (
-        <aside className="fixed bottom-8 end-8 z-40 max-w-[230px] rounded-3xl border border-white/15 bg-[#151a21]/95 p-5 text-center shadow-xl">
-          <div className="mx-auto w-fit rounded-xl bg-white p-3"><QRCodeSVG size={148} value={`${getBaseUrl()}/party/join/${gameState.controllerJoinCode}`} title={t('partyControllers.scan')} /></div>
-          <p className="mt-3 text-base font-bold">{t('partyControllers.scan')}</p><p className="mt-2 font-mono tracking-widest text-[#8ff5ff]">{gameState.controllerJoinCode}</p>
-        </aside>
+      <TVSceneCountdown scene={wireScene} />
+      {/* T07: Gast am Host-Handy — generisch fuer jedes Spiel, das `handover` sendet. */}
+      {/* T07: mit Fortschritt die Buehne (Design §9.3), sonst das schmale Band. */}
+      <TVHandoverStage handover={handover?.progress ? handover : null} onCue={audio.playChime} />
+      <TVHandoverBanner handover={handover && !handover.progress ? handover : null} onCue={audio.playChime} />
+      <TVCueContext.Provider value={cueApi}>
+        <TVPhaseCard cue={phaseCue} phaseStartsAt={phaseStartsAt} />
+      </TVCueContext.Provider>
+      {latecomerJoin && !showLobbyScene && !showPartyFinale && (
+        <TVLatecomerQR
+          url={latecomerJoin.url}
+          code={latecomerJoin.code}
+          expandKey={showGame ? `game:${String(gameState?.game ?? '')}:${String(gameState?.round ?? '')}` : `scene:${effectiveView}:${showLeaderboard}`}
+          // Nur Listen vom Telefon — die Anwesenheit im Spiel kennt andere Kennungen.
+          players={latecomerJoin.players}
+          onLateJoin={audio.playTick}
+        />
       )}
       {/* Floating live-stats overlay removed: every game view now renders its
           own full TVScoreboard roster, so this only duplicated the standings
@@ -314,6 +433,8 @@ export default function TVScreen() {
           nested animations finish. The keyed scene still fades in. */}
         <motion.div
           data-tv-scene
+          // Volle Bildhoehe: Ansichten mit h-full/flex-1 brauchen eine feste Hoehe darueber.
+          className="relative h-screen w-full"
           key={
             showPartyFinale ? 'partyFinale'
             : showPartyStandings ? 'partyStandings'
@@ -336,7 +457,7 @@ export default function TVScreen() {
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         >
           {showPartyFinale ? (
-            <Suspense fallback={TVFallback}><TVPartyFinale party={partyNight!} /></Suspense>
+            <Suspense fallback={TVFallback}><TVPartyFinale party={partyNight!} startsAt={finaleStartsRef.current} /></Suspense>
           ) : showPartyStandings ? (
             <Suspense fallback={TVFallback}><TVPartyStandings party={partyNight!} /></Suspense>
           ) : showPartyReady ? (
@@ -349,50 +470,21 @@ export default function TVScreen() {
               />
             </Suspense>
           ) : showPartyIntro ? (
-            <TVLobby roomCode={code} players={players} isConnected={isConnected} error={error} />
+            <TVLobby lobby={lobbyState} notice={lobbyNotice} isConnected={isConnected} error={error} onSound={playLobbySound} setlist={partyNight?.playlist} />
           ) : showGameOver ? (
             <TVGameOver scores={scores} gameId={gameState?.game as string | undefined} />
           ) : showLeaderboard ? (
             <TVLeaderboard scores={scores} party={partyNight} />
           ) : showGame ? (
-            <GameView gameState={gameState} drawing={drawing} />
+            <TVCueContext.Provider value={cueApi}><GameView gameState={gatedGameState ?? gameState} drawing={drawing} /></TVCueContext.Provider>
           ) : (
-            <TVLobby roomCode={code} players={players} isConnected={isConnected} error={error} />
+            <TVLobby lobby={lobbyState} notice={lobbyNotice} isConnected={isConnected} error={error} onSound={playLobbySound} setlist={partyNight?.playlist} />
           )}
         </motion.div>
     </div>
+    </TVRosterContext.Provider>
   );
 }
 
-/** Simple code entry page at /tv */
-export function TVCodeEntry() {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
-    const code = (form.get('code') as string || '').toUpperCase().trim();
-    if (code.length === 6) navigate(`/tv/${code}`);
-  };
-
-  return (
-    <div className="min-h-screen bg-[#060810] flex flex-col items-center justify-center p-8 font-game">
-      <TVParticles />
-      <div className="relative z-10 text-center">
-        <h1 className="text-6xl font-black italic mb-4"
-          style={{ background: 'linear-gradient(135deg, #df8eff, #8ff5ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          TV SCREEN
-        </h1>
-        <p className="text-xl text-[#a8abb3] mb-12">{t('tv.enterCode')}</p>
-        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-6">
-          <input name="code" type="text" maxLength={6} placeholder="PARTY7" autoFocus
-            className="w-80 text-center text-5xl font-black tracking-[0.3em] bg-[#151a21] border-2 border-[#df8eff]/30 rounded-2xl px-6 py-5 text-[#df8eff] placeholder:text-[#df8eff]/20 focus:outline-none focus:border-[#df8eff]/60 uppercase"
-            onChange={(e) => { e.target.value = e.target.value.toUpperCase(); }} />
-          <button type="submit" className="px-12 py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] text-xl font-black text-white tracking-wider shadow-[0_0_30px_rgba(223,142,255,0.3)]">
-            {t('tv.connect')}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
+// Die Code-Eingabe unter /tv lebt in TVCodeEntry.tsx (App.tsx laedt sie ueber diesen Export).
+export { TVCodeEntry } from './TVCodeEntry';

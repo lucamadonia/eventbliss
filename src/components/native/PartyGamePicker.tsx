@@ -37,7 +37,8 @@ import {
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
-import { GAME_BADGE_KEY } from "@/lib/playable-games";
+import { availabilityChip, GAME_BADGE_KEY } from "@/lib/playable-games";
+import { AvailabilityChipView } from "@/components/native/party/AvailabilityChipView";
 import { cn } from "@/lib/utils";
 
 export type PartyPickerMode = "single" | "setlist";
@@ -126,11 +127,11 @@ export function PartyGamePicker({
   }, [search, catalog, t]);
 
   const handleTap = (game: SetlistGame) => {
-    // Nur zu WENIGE Leute sind ein Hindernis. Zu viele nicht: das Maximum ist
-    // eine Bedien-Obergrenze, kein Spielabbruch (siehe `findUnfitSetlistEntries`).
-    if (game.playerFit === "tooFew") {
+    // Party-Regel `gameAvailability`: Planen braucht `plannable` (fehlen nur
+    // Leute, darf es trotzdem auf die Liste), sofort Spielen braucht `startable`.
+    if (!(planning ? game.availability.plannable : game.availability.startable)) {
       haptics.warning();
-      setGate({ kind: "players", id: game.id, fit: "tooFew" });
+      setGate({ kind: "players", id: game.id, fit: game.availability.reason === "too_many" ? "tooMany" : "tooFew" });
       return;
     }
     if (game.locked) {
@@ -179,7 +180,8 @@ export function PartyGamePicker({
     const unfit = findUnfitSetlistEntries(ids, playerCount);
     if (unfit.length > 0) {
       haptics.warning();
-      setGate({ kind: "players", id: unfit[0], fit: "tooFew" });
+      const first = catalogIndex.get(unfit[0]);
+      setGate({ kind: "players", id: unfit[0], fit: first?.availability.reason === "too_many" ? "tooMany" : "tooFew" });
       return;
     }
     // Und dieselbe zweite Pruefung fuer die Laengen-Grenze: `handleTap`
@@ -347,22 +349,28 @@ export function PartyGamePicker({
                 {filtered.map((game) => {
                   const position = planning ? ids.indexOf(game.id) : -1;
                   const picked = position >= 0;
+                  const unavailable = game.locked || !(planning ? game.availability.plannable : game.availability.startable);
+                  const chip = game.availability.startable ? null : availabilityChip(game.availability);
 
                   return (
                     <motion.button
                       key={game.id}
                       type="button"
                       variants={staggerItem}
-                      whileTap={{ scale: game.locked || game.playerFit === "tooFew" ? 1 : 0.96 }}
+                      whileTap={{ scale: unavailable ? 1 : 0.96 }}
                       transition={spring.snappy}
                       onClick={() => handleTap(game)}
                       aria-pressed={planning ? picked : undefined}
+                      aria-disabled={unavailable || undefined}
+                      data-testid={`game-option-${game.id}`}
+                      data-available={!unavailable}
                       className={cn(
                         "cursor-pointer relative aspect-[3/4] rounded-2xl overflow-hidden text-start border bg-card transition-all",
                         picked
                           ? "border-[#df8eff] ring-2 ring-[#df8eff]/60 shadow-[0_0_22px_rgba(223,142,255,0.35)]"
                           : "border-border",
-                        (game.locked || game.playerFit === "tooFew") && "opacity-50"
+                        // Nur Bild und Titel dimmen — der Hinweis-Chip bleibt voll lesbar (Design §4.1).
+                        unavailable && "[&_img]:opacity-45 [&_img]:grayscale"
                       )}
                     >
                       <div className="absolute inset-0">
@@ -396,16 +404,10 @@ export function PartyGamePicker({
                           </span>
                         ) : <span />}
 
-                        {game.playerFit !== "ok" ? (
-                          /* Eigenes Abzeichen mit der Zahl — nicht das Schloss,
-                             damit "zu wenige Leute" und "Premium" auf einen
-                             Blick unterscheidbar bleiben. */
-                          <span className="px-2 h-7 rounded-full bg-black/60 backdrop-blur flex items-center gap-1 border border-[#8ff5ff]/40">
-                            <Users className="w-3 h-3 text-[#8ff5ff]" aria-hidden />
-                            <span className="text-[10px] font-bold text-[#8ff5ff]">
-                              {game.playerFit === "tooFew" ? `${game.minPlayers}+` : `≤${game.maxPlayers}`}
-                            </span>
-                          </span>
+                        {chip ? (
+                          /* Der gemeinsame Verfuegbarkeits-Chip (Design §4.1) — dieselben
+                             Worte, Farben und Icons wie am Fernseher. */
+                          <AvailabilityChipView chip={chip} className="bg-black/60 backdrop-blur" />
                         ) : game.locked ? (
                           <span className="w-7 h-7 rounded-full bg-black/60 backdrop-blur flex items-center justify-center border border-amber-400/40">
                             <Lock className="w-3.5 h-3.5 text-amber-300" aria-hidden />

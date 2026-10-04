@@ -243,7 +243,7 @@ export function NumberEntry({
                   }}
                 />
                 <span
-                  className="text-[8px] font-bold leading-none"
+                  className="text-[12px] font-bold leading-none"
                   style={{
                     // Aktive Sprosse voll, Anfang und Ende als Orientierung
                     // gedaempft — ohne jede Beschriftung waere die Leiter eine

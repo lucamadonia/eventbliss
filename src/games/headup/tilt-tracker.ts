@@ -28,9 +28,9 @@ export class HeadUpTiltTracker {
     }
     if (Math.abs(delta) <= 25) return null;
     this.armed = false;
-    // W3C accelerationIncludingGravity.z is positive with the screen facing up.
-    // At the forehead, nodding down makes the screen face down (negative z).
-    return delta < 0 ? 'correct' : 'skip';
+    // On the forehead, the downward answer gesture increases this measured
+    // pitch relative to neutral. Reversing this sign made it count as Skip.
+    return delta > 0 ? 'correct' : 'skip';
   }
 }
 

@@ -129,7 +129,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
           <SectionHeader color="#8ff5ff" title={t('games.findit.wfsDifficultyLabel')} />
           <div className="mt-4 rounded-xl bg-[#151a21] p-6">
             {/* Labels */}
-            <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+            <div className="flex items-center justify-between text-xs text-white/60 mb-2">
               <span>{t('games.findit.wfsDiffLevel1')}</span>
               <span>{t('games.findit.wfsDiffLevel3')}</span>
             </div>
@@ -148,7 +148,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
               <span className="inline-block rounded-full bg-[#8ff5ff]/10 px-4 py-1.5 text-sm font-bold text-[#8ff5ff]">
                 {DIFF_LABELS[difficulty]}
               </span>
-              <span className="text-[11px] text-gray-500">{DIFF_SUB[difficulty]}</span>
+              <span className="text-[13px] text-white/60">{DIFF_SUB[difficulty]}</span>
             </div>
           </div>
         </motion.section>
@@ -181,7 +181,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
                     <p className={cn('text-sm font-bold', active ? 'text-white' : 'text-gray-400')}>
                       {opt.label}
                     </p>
-                    <p className="text-[11px] text-gray-600">{opt.sub}</p>
+                    <p className="text-[13px] text-white/60">{opt.sub}</p>
                   </div>
                   {active && (
                     <motion.div
@@ -202,7 +202,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
         <motion.section variants={sectionVariants} initial="hidden" animate="visible" custom={4} className="space-y-4">
           <div className="flex items-center gap-2">
             <div className="h-8 w-1 rounded-full bg-[#8ff5ff]" />
-            <h2 className="text-sm font-black uppercase tracking-[0.15em] text-[#a8abb3]">{t('games.findit.wfsTimePerRound')}</h2>
+            <h2 className="text-sm font-black text-[#a8abb3]">{t('games.findit.wfsTimePerRound')}</h2>
           </div>
           <div className="grid grid-cols-4 gap-2">
             {TIMER_OPTIONS.map(opt => {
@@ -213,7 +213,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
                   className={cn('flex flex-col items-center gap-1 rounded-xl py-3 transition-all border',
                     active ? 'border-[#8ff5ff]/40 bg-[#8ff5ff]/10' : 'border-transparent bg-[#151a21]')}>
                   <span className={cn('text-xl font-black italic', active ? 'text-[#8ff5ff]' : 'text-gray-400')}>{opt.label}</span>
-                  <span className="text-[10px] text-gray-500">{opt.desc}</span>
+                  <span className="text-[13px] text-white/60">{opt.desc}</span>
                 </motion.button>
               );
             })}
@@ -228,7 +228,7 @@ export default function WorldFinderSetup({ onStart, onBack }: WorldFinderSetupPr
           whileTap={{ scale: 0.95 }}
           onClick={() => onStart({ region, difficulty, rounds, timer })}
           className={cn(
-            'relative w-full rounded-2xl py-4 text-xl font-black uppercase tracking-[0.1em] text-white',
+            'relative w-full rounded-2xl py-4 text-xl font-black tracking-[0.1em] text-white',
             'bg-gradient-to-r from-[#df8eff] to-[#d779ff]',
             'shadow-[0_20px_50px_rgba(223,142,255,0.3)]',
             'transition-transform',
@@ -289,7 +289,7 @@ function SectionHeader({ color, title }: { color: string; title: string }) {
   return (
     <div className="flex items-center gap-3">
       <div className="h-8 w-1 rounded-full" style={{ backgroundColor: color }} />
-      <h2 className="text-xs font-bold uppercase tracking-widest text-gray-400">{title}</h2>
+      <h2 className="text-xs font-bold text-gray-400">{title}</h2>
     </div>
   );
 }

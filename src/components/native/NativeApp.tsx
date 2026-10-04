@@ -142,7 +142,9 @@ function GameBackTarget({ children }: { children: ReactNode }) {
   const [params] = useSearchParams();
   // Ausnahme Party-Lobby: Dort ist das Spiel Teil eines laufenden Abends, und
   // die Spieleübersicht wäre ein Bruch im Ablauf.
-  const to = params.get("party") === "true" ? "/party" : "/games";
+  const to = params.get("party") === "true"
+    ? getActivePartySession()?.playMode === "controllers" ? "/party/controllers" : "/party"
+    : "/games";
 
   useBackGuard(
     () => {
@@ -204,7 +206,9 @@ export function NativeApp() {
   const partyTvCode = partySession?.isActive ? partySession.tvCode : undefined;
   // Die schwebende Pille nur dort, wo sie hingehoert. Die Party-Lobby hat ihre
   // eigene TV-Karte; zwei Bedienelemente fuer dieselbe Sache verwirren.
-  const showTvPill = shellPath.startsWith("/games");
+  // Joystick-Party: kein Pill im Spiel — es verdeckte Spielstatus, die TV-Kachel
+  // lebt in der Lobby und der Code steht schon in der Verbindungsleiste.
+  const showTvPill = shellPath.startsWith("/games") && partySession?.playMode !== "controllers";
 
   // Warm all tab chunks while the splash plays (see preloadTabScreens).
   useEffect(() => {

@@ -268,8 +268,15 @@ jobs:
             --apiKey "$APP_STORE_CONNECT_KEY_ID" \
             --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID" 2>&1 | tee altool-output.log
 
-          if grep -qE "UPLOAD FAILED|Validation failed|Failed to upload" altool-output.log; then
+          # Run 297: "ERROR: [altool…] … agreement is missing or has expired
+          # (403)" also exited 0 — treat any altool ERROR line as a failure and
+          # require an explicit success marker.
+          if grep -qE "UPLOAD FAILED|Validation failed|Failed to upload|ERROR: \[altool|agreement is missing" altool-output.log; then
             echo "::error::TestFlight upload failed — see altool output above"
+            exit 1
+          fi
+          if ! grep -qiE "UPLOAD SUCCEEDED|No errors uploading" altool-output.log; then
+            echo "::error::altool reported no upload success — treating as failed"
             exit 1
           fi
 

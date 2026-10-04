@@ -1,4 +1,6 @@
+import { avatarFor, useTVRoster } from './cinema/tv-roster';
 import { motion, useReducedMotion } from 'framer-motion';
+import { lu } from './components/tv-lobby-scale';
 import { Gamepad2, Sparkles, Users, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -123,6 +125,7 @@ function GenericReadyArt({ art, accent, reduced }: { art: string | null; accent:
 }
 
 export default function TVPartyReady({ party }: { party: PartyNightState }) {
+  const roster = useTVRoster();
   const { t } = useTranslation();
   const reduced = !!useReducedMotion();
   const game = party.playlist[party.index] ?? party.playlist[0];
@@ -153,11 +156,11 @@ export default function TVPartyReady({ party }: { party: PartyNightState }) {
       >
         <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.055] px-5 py-3 backdrop-blur-xl">
           <span className="h-2.5 w-2.5 rounded-full" style={{ background: secondary, boxShadow: `0 0 18px ${secondary}` }} />
-          <span className="font-black uppercase tracking-[0.25em] text-white/70" style={{ fontSize: tvType.micro }}>
+          <span className="font-black text-white/70" style={{ fontSize: lu(1.9) }}>
             {t('tv.partyNight.gameXofY', { current: party.index + 1, total: party.playlist.length })}
           </span>
         </div>
-        <div className="inline-flex items-center gap-2 font-black uppercase tracking-[0.2em]" style={{ color: secondary, fontSize: tvType.micro }}>
+        <div className="inline-flex items-center gap-2 font-black" style={{ color: secondary, fontSize: lu(1.9) }}>
           <Users className="h-[1.2em] w-[1.2em]" aria-hidden />
           {t('nativeExtra.partyNight.playersReady', { n: party.standings.length })}
         </div>
@@ -175,7 +178,7 @@ export default function TVPartyReady({ party }: { party: PartyNightState }) {
           transition={{ ...spring, delay: reduced ? 0 : 0.18 }}
         >
           <div aria-hidden className="absolute inset-x-[12%] top-0 h-px" style={{ background: `linear-gradient(90deg,transparent,${secondary},${warm},transparent)` }} />
-          <div className="inline-flex items-center gap-2 rounded-full border px-4 py-2 font-black uppercase tracking-[0.24em]" style={{ borderColor: `${accent}52`, background: `${accent}16`, color: secondary, fontSize: tvType.micro }}>
+          <div className="inline-flex items-center gap-2 rounded-full border px-4 py-2 font-black" style={{ borderColor: `${accent}52`, background: `${accent}16`, color: secondary, fontSize: lu(1.9) }}>
             <Sparkles className="h-[1.15em] w-[1.15em]" aria-hidden />
             {t('tv.partyNight.title')}
           </div>
@@ -202,7 +205,7 @@ export default function TVPartyReady({ party }: { party: PartyNightState }) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ ...spring, delay: reduced ? 0 : 0.42 + index * 0.055 }}
               >
-                {player.avatar || player.name.slice(0, 1).toUpperCase()}
+                {avatarFor(roster, player)}
               </motion.span>
             ))}
           </div>

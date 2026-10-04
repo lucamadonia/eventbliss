@@ -121,7 +121,7 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
                   "Coconut Cream"); laengeres wird abgeschnitten statt die
                   Karte zu sprengen. */}
               <span
-                className="w-full text-[10px] leading-tight font-bold text-center line-clamp-2 break-words"
+                className="w-full text-[12px] leading-tight font-bold text-center line-clamp-2 break-words"
                 style={{ color: pal.text }}
               >
                 {name}

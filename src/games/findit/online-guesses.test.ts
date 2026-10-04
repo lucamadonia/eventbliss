@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { appendOnlineGuess, publicGuessRound } from './online-guesses';
+import { appendOnlineGuess, publicGuessRound, settleGuessesAfterRemoval } from './online-guesses';
 const players = [{ id: 'host', name: 'Host', color: 'red' }, { id: 'guest', name: 'Guest', color: 'blue' }];
 const target = { lat: 47, lng: 8 };
 describe('online map guesses without broadcast self echo', () => {
@@ -35,4 +35,19 @@ it('keeps submitted pins, distances and target private until every guess is lock
   const result = publicGuessRound({phase:'result',guesses,location});
   expect(result.guesses).toEqual(guesses);
   expect(result.location).toEqual(location);
+});
+
+describe('guess rounds after a mid-round removal', () => {
+  const g = (playerId: string) => ({ playerId });
+  it('closes the round when everyone remaining has already guessed', () => {
+    expect(settleGuessesAfterRemoval([g('host'), g('gone')], [{ id: 'host' }])).toEqual({ guesses: [g('host')], complete: true });
+    expect(settleGuessesAfterRemoval([g('host')], [{ id: 'host' }])).toEqual({ guesses: [g('host')], complete: true });
+  });
+  it('keeps waiting for remaining players but drops the removed pin', () => {
+    expect(settleGuessesAfterRemoval([g('gone')], [{ id: 'host' }, { id: 'guest' }])).toEqual({ guesses: [], complete: false });
+  });
+  it('changes nothing while no pin is stale and guesses are still open', () => {
+    expect(settleGuessesAfterRemoval([g('host')], [{ id: 'host' }, { id: 'guest' }])).toBeNull();
+    expect(settleGuessesAfterRemoval([], [])).toBeNull();
+  });
 });

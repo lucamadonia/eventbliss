@@ -7,7 +7,7 @@
  */
 import { ReactNode, Suspense } from "react";
 import { useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type TargetAndTransition } from "framer-motion";
 import { pageVariants, reducedPageVariants } from "@/lib/motion";
 import { useNavigationDirection } from "@/hooks/useNavigationDirection";
 import { TABS } from "./BottomTabBar";
@@ -51,7 +51,10 @@ export function PageTransition({ children }: Props) {
     // blocked the new page behind the old page's full exit animation — under
     // load or when tapping tabs quickly this queued/wedged transitions
     // (frozen frames, screens stuck mid-transform, multi-second switches).
-    <AnimatePresence initial={false}>
+    // The destination tab is already visible in TabsLayer. Pass that target
+    // to the departing route: a stack-page slide would briefly cover the tab
+    // with a dark panel ending at 70% of the screen.
+    <AnimatePresence initial={false} custom={isTabRoot}>
       {!isTabRoot && (
         <motion.div
           key={location.pathname}
@@ -59,7 +62,12 @@ export function PageTransition({ children }: Props) {
           initial="initial"
           animate="animate"
           exit="exit"
-          variants={variants}
+          variants={{
+            ...variants,
+            exit: (toTabRoot: boolean) => toTabRoot
+              ? { opacity: 0, x: 0, transition: { duration: 0 } }
+              : variants.exit as TargetAndTransition,
+          }}
         >
           <Suspense fallback={<PageLoader />}>{children}</Suspense>
         </motion.div>

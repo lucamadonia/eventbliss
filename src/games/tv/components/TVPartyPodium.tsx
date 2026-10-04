@@ -1,3 +1,4 @@
+import TVPlayerAvatar from '../cinema/TVPlayerAvatar';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Crown, Flame } from 'lucide-react';
 import { tvType } from '../tv-tokens';
@@ -16,7 +17,9 @@ import type { PartyStanding } from '../party-types';
  * - preview: kompakter Auftritt im Onboarding
  */
 const entrance = { type: 'spring' as const, stiffness: 230, damping: 22, mass: 0.8 };
-const PLACE_COLOR = ['#FFD75E', '#D9E1F2', '#E99A67'];
+/** Medaillenfarben Gold, Silber, Bronze fuer Sockelnummer und Punkte (Cyan heisst bei uns: bereit). */
+export const MEDAL_COLORS = ['#f9ca24', '#d7dce4', '#e0a36b'] as const;
+const PLACE_COLOR = MEDAL_COLORS;
 const REVEAL_DELAY = [0.42, 0.1, 0.24];
 
 export type TVPartyPodiumVariant = 'standings' | 'finale' | 'preview';
@@ -32,11 +35,9 @@ interface Props {
   variant?: TVPartyPodiumVariant;
   /** Engere Geometrie fuer Telefon und Onboarding. */
   compact?: boolean;
+  /** Vor dem Reveal: leere Sockel als Silhouette (Trommelwirbel), ohne Namen. */
+  ghost?: boolean;
   className?: string;
-}
-
-function initials(entry: PartyStanding): string {
-  return entry.avatar || entry.name?.slice(0, 1).toUpperCase() || '?';
 }
 
 function PodiumColumn({
@@ -46,6 +47,7 @@ function PodiumColumn({
   showDelta,
   compact,
   reduce,
+  ghost,
 }: {
   entry: PartyStanding;
   place: number;
@@ -53,7 +55,9 @@ function PodiumColumn({
   showDelta: boolean;
   compact: boolean;
   reduce: boolean;
+  ghost: boolean;
 }) {
+  const silhouette = ghost && !reveal;
   const animatedPoints = useCountUp(entry.points, reduce ? 0.01 : 1.15, reveal);
   const isChampion = entry.rank === 1;
   const delay = reduce ? 0 : REVEAL_DELAY[place];
@@ -68,12 +72,12 @@ function PodiumColumn({
   return (
     <motion.div
       className="relative flex min-w-0 flex-col items-center justify-end"
-      initial={{ opacity: 0, y: reduce ? 0 : 28 }}
-      animate={reveal ? { opacity: 1, y: 0 } : { opacity: 0, y: reduce ? 0 : 28 }}
-      transition={{ ...entrance, delay }}
+      initial={silhouette ? { opacity: 0 } : { opacity: 0, y: reduce ? 0 : 28 }}
+      animate={reveal ? { opacity: 1, y: 0 } : silhouette ? { opacity: 0.15, y: 0 } : { opacity: 0, y: reduce ? 0 : 28 }}
+      transition={silhouette ? { duration: 0.6, ease: [0.22, 1, 0.36, 1] } : { ...entrance, delay }}
       aria-label={`${entry.rank}. ${entry.name}, ${entry.points}`}
     >
-      <div className="relative z-20 flex min-w-0 flex-col items-center">
+      <div className="relative z-20 flex min-w-0 flex-col items-center" style={silhouette ? { visibility: 'hidden' } : undefined}>
         {isChampion && (
           <motion.div
             className="absolute -top-[2.2rem] left-1/2 -translate-x-1/2"
@@ -110,7 +114,8 @@ function PodiumColumn({
           animate={reveal ? { scale: 1 } : { scale: reduce ? 1 : 0.68 }}
           transition={{ ...entrance, delay: delay + (reduce ? 0 : 0.08) }}
         >
-          <span aria-hidden>{initials(entry)}</span>
+          {/* Dieselbe Spielerkugel wie ueberall auf dem Fernseher — Emoji aus Stand oder Teilnehmerliste. */}
+          <TVPlayerAvatar id={entry.id} name={entry.name} avatar={entry.avatar} color={entry.color} size={`calc(${avatarSize} - 4px)`} active={isChampion} />
           {isChampion && (
             <motion.span
               aria-hidden
@@ -132,7 +137,7 @@ function PodiumColumn({
           <div className="mt-1.5 flex items-center justify-center gap-[.45em]">
             <span
               className="font-black tabular-nums"
-              style={{ color: isChampion ? podiumColor : entry.color, fontSize: compact ? '.78rem' : tvType.label }}
+              style={{ color: podiumColor, fontSize: compact ? '.78rem' : tvType.label }}
             >
               {animatedPoints.toLocaleString('de-DE')}
             </span>
@@ -157,8 +162,8 @@ function PodiumColumn({
             ? `inset 0 1px 0 ${podiumColor}aa, inset 0 -36px 60px rgba(0,0,0,.42), 0 0 48px -14px ${entry.color}`
             : 'inset 0 1px 0 rgba(255,255,255,.24), inset 0 -30px 50px rgba(0,0,0,.4)',
         }}
-        initial={{ scaleY: reduce ? 1 : 0 }}
-        animate={reveal ? { scaleY: 1 } : { scaleY: reduce ? 1 : 0 }}
+        initial={{ scaleY: reduce || silhouette ? 1 : 0 }}
+        animate={reveal || silhouette ? { scaleY: 1 } : { scaleY: reduce ? 1 : 0 }}
         transition={{ ...entrance, delay: delay + (reduce ? 0 : 0.04) }}
       >
         <div aria-hidden className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-transparent via-white/70 to-transparent" />
@@ -175,8 +180,9 @@ function PodiumColumn({
         <span
           className="relative grid h-full place-items-center font-black leading-none tabular-nums"
           style={{
+            visibility: silhouette ? 'hidden' : undefined,
             color: podiumColor,
-            fontSize: compact ? (isChampion ? '2.7rem' : '2rem') : tvType.display,
+            fontSize: compact ? (isChampion ? '2.7rem' : '2rem') : isChampion ? tvType.display : 'min(4.4vw, 5.6vh)',
             textShadow: `0 0 28px ${podiumColor}66`,
           }}
         >
@@ -193,6 +199,7 @@ export default function TVPartyPodium({
   showDelta = false,
   variant = 'standings',
   compact = false,
+  ghost = false,
   className,
 }: Props) {
   const reduce = !!useReducedMotion();
@@ -252,6 +259,7 @@ export default function TVPartyPodium({
             showDelta={showDelta}
             compact={compact}
             reduce={reduce}
+            ghost={ghost}
           />
         ))}
       </div>
@@ -263,8 +271,8 @@ export default function TVPartyPodium({
           background: `linear-gradient(90deg, rgba(11,10,22,.98), ${accent}35 50%, rgba(11,10,22,.98))`,
           boxShadow: `inset 0 1px 0 rgba(255,255,255,.22), 0 18px 50px -22px ${accent}`,
         }}
-        initial={{ opacity: 0, scaleX: reduce ? 1 : 0.62 }}
-        animate={reveal ? { opacity: 1, scaleX: 1 } : { opacity: 0, scaleX: reduce ? 1 : 0.62 }}
+        initial={{ opacity: 0, scaleX: reduce || ghost ? 1 : 0.62 }}
+        animate={reveal ? { opacity: 1, scaleX: 1 } : ghost ? { opacity: 0.15, scaleX: 1 } : { opacity: 0, scaleX: reduce ? 1 : 0.62 }}
         transition={{ duration: reduce ? 0.1 : 0.55, delay: reduce ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="absolute inset-x-[8%] top-0 h-px bg-gradient-to-r from-transparent via-white/85 to-transparent" />

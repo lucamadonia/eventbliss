@@ -4,40 +4,30 @@ import { completeTruth } from './scoring';
 import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Play, RotateCcw, Trophy, ArrowLeft, ArrowRight, ThumbsUp, ThumbsDown,
-  Timer, Flame, Heart, Shield, Sparkles, Zap, Check, RefreshCw, Info,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Flame, Heart, Shield, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useGameEnd } from '../social/useGameEnd';
-import { GameEndOverlay } from '../social/GameEndOverlay';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameTimer } from '../engine/TimerSystem';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
 import { haptics } from '@/hooks/useHaptics';
 import { getTRUTH_QUESTIONS, getDARE_CHALLENGES, type TruthQuestion, type DareChallenge } from './truthdare-content';
-import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
-import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { localSeats, type OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
+import { useSeatHandover } from '../multiplayer/useGuestHandover';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from "@/games/ui/useConfirmExit";
 import { useBackGuard } from '@/lib/back-guard';
 import { hasShellBackButton } from '@/games/ui/shell-back';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-type Phase = 'setup' | 'spin' | 'choice' | 'reveal' | 'vote' | 'gameOver';
-
-interface Player {
-  id: string; name: string; color: string; avatar: string;
-  score: number; truthCount: number; dareCount: number;
-}
-
-const PLAYER_COLORS = ['#06b6d4','#0ea5e9','#8b5cf6','#f59e0b','#ef4444','#10b981','#ec4899','#f97316','#6366f1','#14b8a6'];
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { dropTruthDarePlayers, scoreVote } from './removal';
+import { PLAYER_COLORS, shuffle, getIntensityForRound, type Phase, type Player } from './game-model';
+import { canActFor, seatRoster, truthDareActiveSeat, turnRole, voterOrder } from './turns';
+import { TurnHeader } from './TurnHeader';
+import { SpinPanel, ChoicePanel, VotePanel, GameOverPanel } from './TruthDarePanels';
+import { RevealPanel } from './RevealPanel';
 
 const GAME_MODES: GameMode[] = [
   { id: 'classic', name: 'Classic', desc: 'All categories mixed', icon: <Sparkles className="w-6 h-6" /> },
@@ -55,34 +45,8 @@ function getSetupSettings(t: TFn): SettingsConfig {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function getIntensityForRound(mode: string, round: number, total: number): (1|2|3)[] {
-  if (mode !== 'eskalation') return [1, 2, 3];
-  const pct = round / total;
-  if (pct < 0.33) return [1];
-  if (pct < 0.66) return [1, 2];
-  return [2, 3];
-}
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
-
 const EP_STYLE = `
 .neon-glow { text-shadow: 0 0 20px rgba(150,160,165,0.6), 0 0 40px rgba(150,160,165,0.4); }
-.neon-glow-secondary { text-shadow: 0 0 15px rgba(255,107,152,0.6); }
 .glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
 `;
 
@@ -97,11 +61,9 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
 
   const [phase, setPhase] = useState<Phase>('setup');
 
-  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
-  // liegt über dem Pfeil im Spiel und läuft nicht über dessen onClick.
-  // Ohne Eintrag im Back-Guard-Stapel navigiert er mitten in der Runde weg und
-  // die Partie ist futsch. Delegiert bewusst an denselben `exitGuard` wie der
-  // Pfeil, damit es genau EINEN Bestätigungsdialog gibt.
+  // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste) liegt über
+  // dem Pfeil im Spiel; ohne Back-Guard navigiert er mitten in der Runde weg.
+  // Delegiert an denselben `exitGuard` wie der Pfeil → genau EIN Dialog.
   useBackGuard(() => {
     if (phase === 'setup' || phase === 'gameOver') return false;
     if (exitGuard.open) { exitGuard.cancel(); return true; }
@@ -130,20 +92,29 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const truthPos = useMemo(() => ({ current: 0 }), []);
   const darePos = useMemo(() => ({ current: 0 }), []);
 
+  // 🔁 guests (sharedDevice 'turns'): the chosen guest gets the host phone to choose and act,
+  // each guest voter gets it for their vote; while it travels the dare clock stands still.
+  const actingSeat = truthDareActiveSeat(phase, players, activeIdx, voterIdx);
+  const handover = useSeatHandover(online, actingSeat);
+  // All devices + TV switch phase together (design §9.3).
+  const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, currentRound]);
+
   const handleTimerExpire = useCallback(() => {
     if (online && (!online.isHost || online.isConnected === false)) return;
     if (choiceType === 'dare') { setVotes({}); setVoterIdx(0); setPhase('vote'); }
   }, [choiceType, online]);
 
-  const timer = useGameTimer(timerSec, handleTimerExpire, !online || (online.isHost && online.isConnected !== false));
+  const timer = useGameTimer(timerSec, handleTimerExpire, (!online || (online.isHost && online.isConnected !== false)) && !handover.isPaused);
   useOnlineSnapshot(online, 'truthdare-clock-state', { timeLeft: timer.timeLeft }, data => timer.reset(data.timeLeft));
 
   const activePlayer = players[activeIdx];
 
-  // NOTE: must come AFTER `timer` is declared — referencing timer.timeLeft above
-  // its declaration caused a TDZ crash ("Cannot access uninitialized variable").
+  // NOTE: must come AFTER `timer` is declared (TDZ crash otherwise).
   useTVGameBridge('truthdare', {
-    phase, currentRound, totalRounds, activeIdx, players,
+    phase, phaseStartsAt, handover: handover.tv,
+    currentRound, totalRounds, activeIdx,
+    players: players.map(p => ({ id: p.id, name: p.name, avatar: p.avatar, color: p.color, score: p.score, truthCount: p.truthCount, dareCount: p.dareCount })),
+    actingId: actingSeat,
     choiceType,
     task: currentItem?.text ?? '',
     timeLeft: timer.timeLeft,
@@ -152,21 +123,20 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
       yes: Object.values(votes).filter(Boolean).length,
       no: Object.values(votes).filter((v) => !v).length,
     },
-  }, [phase, currentRound, activeIdx, choiceType, timer.timeLeft, votes], !online || online.isHost);
+  }, [phase, phaseStartsAt, currentRound, activeIdx, choiceType, timer.timeLeft, votes, players, handover.tv?.playerId, handover.tv?.progress?.phase], !online || online.isHost);
 
-  // ---------------------------------------------------------------------------
+  // Host-authoritative: the host device acts for its own seat AND its 🔁 guests (hostActor),
+  // so every `allow` names the seat by turn order, never by myPlayerId.
+  const hostId = online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id;
   const route = useOnlineAuthority(online, 'truthdare', `${phase}:${currentRound}:${activeIdx}:${voterIdx}`, {
-    doSpin: { allow: (sender, args) => phase === "spin" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => doSpin() },
-    handleChoice: { allow: (sender, args) => phase === "choice" && ["truth", "dare"].includes(args[0]) && sender === players[activeIdx]?.id, run: (...args) => handleChoice(args[0]) },
-    rerollCurrent: { allow: (sender, args) => phase === "reveal" && sender === players[activeIdx]?.id, run: (...args) => rerollCurrent() },
-    startVote: { allow: (sender, args) => phase === "reveal" && sender === players[activeIdx]?.id, run: (...args) => startVote() },
-    castVote: { allow: (sender, args) => phase === "vote" && typeof args[0] === "boolean" && sender === players.filter((_, i) => i !== activeIdx)[voterIdx]?.id, run: (...args) => castVote(args[0]) },
-    nextRound: { allow: (sender, args) => ["choice", "reveal"].includes(phase) && sender === players[activeIdx]?.id, run: (...args) => nextRound() },
-    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
+    doSpin: { allow: (sender) => phase === "spin" && sender === hostId, run: () => doSpin() },
+    handleChoice: { allow: (sender, args) => phase === "choice" && ["truth", "dare"].includes(args[0]) && sender === players[activeIdx]?.id, run: (...args) => handleChoice(args[0]), answer: true },
+    rerollCurrent: { allow: (sender) => phase === "reveal" && sender === players[activeIdx]?.id, run: () => rerollCurrent() },
+    startVote: { allow: (sender) => phase === "reveal" && sender === players[activeIdx]?.id, run: () => startVote() },
+    castVote: { allow: (sender, args) => phase === "vote" && typeof args[0] === "boolean" && sender === voterOrder(players, activeIdx)[voterIdx]?.id, run: (...args) => castVote(args[0]), answer: true },
+    nextRound: { allow: (sender) => ["choice", "reveal"].includes(phase) && sender === players[activeIdx]?.id, run: () => nextRound() },
+    playAgain: { allow: (sender) => phase === "gameOver" && sender === hostId, run: () => playAgain() },
   });
-
-  // Setup handler
-  // ---------------------------------------------------------------------------
 
   const handleStart = (
     mapped: { id: string; name: string; color: string; avatar: string }[],
@@ -174,10 +144,7 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     settings: { timer: number; rounds: number },
   ) => {
     if (online && (!online.isHost || online.isConnected === false)) return;
-    setPlayers(mapped.map((p, i) => ({
-      ...p, color: PLAYER_COLORS[i % PLAYER_COLORS.length],
-      score: 0, truthCount: 0, dareCount: 0,
-    })));
+    setPlayers(seatRoster(mapped, PLAYER_COLORS, !!online));
     setMode(selectedMode);
     setTimerSec(settings.timer);
     setTotalRounds(settings.rounds);
@@ -186,10 +153,7 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     setPhase('spin');
   };
 
-  // ---------------------------------------------------------------------------
   // Spin
-  // ---------------------------------------------------------------------------
-
   const spinPending = useRef(false);
   const spinRemaining = useRef(2800);
   const doSpin = () => {
@@ -202,8 +166,7 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     setSpinTarget(target);
     const extraSpins = 3 + Math.floor(Math.random() * 3);
     const sliceAngle = 360 / players.length;
-    const angle = extraSpins * 360 + target * sliceAngle + sliceAngle / 2;
-    setSpinAngle((prev) => prev + angle);
+    setSpinAngle((prev) => prev + extraSpins * 360 + target * sliceAngle + sliceAngle / 2);
   };
   useEffect(() => {
     if (!spinPending.current || phase !== 'spin' || (online && (!online.isHost || online.isConnected === false))) return;
@@ -219,16 +182,12 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     };
   }, [spinAngle, spinTarget, phase, online?.isHost, online?.isConnected]);
 
-  // ---------------------------------------------------------------------------
   // Draw card
-  // ---------------------------------------------------------------------------
-
   const drawTruth = () => {
     const intensities = getIntensityForRound(mode, currentRound, totalRounds);
     const pool = truthDeck.filter((q) => intensities.includes(q.intensity));
     if (truthPos.current >= pool.length) truthPos.current = 0;
-    const item = pool[truthPos.current++ % pool.length];
-    setCurrentItem(item);
+    setCurrentItem(pool[truthPos.current++ % pool.length]);
     setChoiceType('truth');
     setPhase('reveal');
   };
@@ -237,8 +196,7 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     const intensities = getIntensityForRound(mode, currentRound, totalRounds);
     const pool = dareDeck.filter((q) => intensities.includes(q.intensity));
     if (darePos.current >= pool.length) darePos.current = 0;
-    const item = pool[darePos.current++ % pool.length];
-    setCurrentItem(item);
+    setCurrentItem(pool[darePos.current++ % pool.length]);
     setChoiceType('dare');
     timer.reset(timerSec);
     timer.start();
@@ -253,19 +211,14 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     else drawDare();
   };
 
-  // Re-draw the same type without advancing the round. Used by the
-  // "Neue Aufgabe"-Button on the reveal card.
+  // Re-draw the same type without advancing the round ("Neue Aufgabe").
   const rerollCurrent = () => {
     if (route("rerollCurrent", [])) return;
-    haptics.light();
     if (choiceType === 'truth') drawTruth();
     else if (choiceType === 'dare') drawDare();
   };
 
-  // ---------------------------------------------------------------------------
-  // Vote
-  // ---------------------------------------------------------------------------
-
+  // Vote — the others judge one after another, in roster order.
   const startVote = () => {
     if (route("startVote", [])) return;
     setVotes({});
@@ -276,33 +229,21 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
 
   const castVote = (yes: boolean) => {
     if (route("castVote", [yes])) return;
-    const otherPlayers = players.filter((_, i) => i !== activeIdx);
+    const otherPlayers = voterOrder(players, activeIdx);
+    // Credited by turn order: `allow` already pinned the sender (phone, host or the host's guest) to this seat.
     const voter = otherPlayers[voterIdx];
     if (!voter) return;
     setVotes((prev) => ({ ...prev, [voter.id]: yes }));
     if (voterIdx + 1 >= otherPlayers.length) {
-      // tally
       const allVotes = { ...votes, [voter.id]: yes };
-      const yesCount = Object.values(allVotes).filter(Boolean).length;
-      const passed = yesCount > otherPlayers.length / 2;
-      setPlayers((prev) => prev.map((p, i) =>
-        i === activeIdx ? {
-          ...p,
-          score: p.score + (passed ? (choiceType === 'dare' ? 2 : 1) : 0),
-          truthCount: p.truthCount + (choiceType === 'truth' ? 1 : 0),
-          dareCount: p.dareCount + (choiceType === 'dare' ? 1 : 0),
-        } : p,
-      ));
+      setPlayers((prev) => scoreVote(prev, activeIdx, allVotes, choiceType));
       advanceAfterVote();
     } else {
       setVoterIdx((v) => v + 1);
     }
   };
 
-  // ---------------------------------------------------------------------------
   // Next round
-  // ---------------------------------------------------------------------------
-
   const nextRound = () => {
     if (route("nextRound", [])) return;
     if (phase === 'reveal' && choiceType === 'truth') {
@@ -311,16 +252,21 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     advanceAfterVote();
   };
   const advanceAfterVote = () => {
+    timer.pause();
     if (currentRound >= totalRounds) { setPhase('gameOver'); return; }
     setCurrentRound((r) => r + 1);
     setChoiceType(null);
     setCurrentItem(null);
     setPhase('spin');
   };
-
-  // ---------------------------------------------------------------------------
-  // Reset
-  // ---------------------------------------------------------------------------
+  // Host: a kicked/left player leaves the wheel; their turn ends unscored, a vote waiting on them closes.
+  useRemovedPlayers(online, ids => {
+    const drop = dropTruthDarePlayers({ phase, players, activeIdx, spinTarget, turnQueue: turnQueue.current, votes, voterIdx, choiceType }, ids);
+    if (!drop) return;
+    turnQueue.current = drop.turnQueue;
+    setPlayers(drop.players); setActiveIdx(drop.activeIdx); setSpinTarget(drop.spinTarget); setVotes(drop.votes); setVoterIdx(drop.voterIdx);
+    if (drop.endTurn) { timer.pause(); advanceAfterVote(); }
+  });
 
   useEffect(() => {
     if (phase === 'gameOver' && !gameRecordedRef.current) {
@@ -352,7 +298,7 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     setPhase('spin');
   };
 
-  useOnlineSnapshot(online, 'game-state', { phase, currentRound, totalRounds, activeIdx, choiceType, currentItem, players, mode, timerSec, votes, voterIdx, spinAngle, spinTarget }, data => {
+  useOnlineSnapshot(online, 'game-state', { phase, phaseStartsAt, currentRound, totalRounds, activeIdx, choiceType, currentItem, players, mode, timerSec, votes, voterIdx, spinAngle, spinTarget }, data => {
     setPhase(data.phase);
     setCurrentRound(data.currentRound);
     setTotalRounds(data.totalRounds);
@@ -366,16 +312,22 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     setVoterIdx(data.voterIdx);
     setSpinAngle(data.spinAngle);
     setSpinTarget(data.spinTarget);
+    receivePhaseStart(data.phaseStartsAt);
   });
 
-  const winner = useMemo(() =>
-    [...players].sort((a, b) => b.score - a.score)[0], [players]);
+  const drink = () => {
+    const d = drinkingMode.recordDrink();
+    if (d) {
+      haptics.warning();
+      setDisclaimer(d);
+      setTimeout(() => setDisclaimer(null), 5000);
+    }
+    nextRound();
+  };
 
-  // ---------------------------------------------------------------------------
   // Render
-  // ---------------------------------------------------------------------------
-
   if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
+  if (handover.overlay) return <>{handover.overlay}<ConfirmExitDialog {...exitGuard.dialogProps} accent="#f09a8a" /></>; // phone in transit: only the opaque pass screen
   if (phase === 'setup') {
     return (
       <GameSetup
@@ -391,27 +343,31 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
     );
   }
 
+  // Who acts in the shown phase, and may this device act for them (own seat or a 🔁 guest)?
+  const seats = online ? localSeats(online) : null;
+  const viewSeatId = truthDareActiveSeat(view, players, activeIdx, voterIdx);
+  const viewSeat = players.find(p => p.id === viewSeatId);
+  const role = turnRole(view, choiceType);
+  const mine = canActFor(viewSeatId, seats);
+  const voters = voterOrder(players, activeIdx);
+
   return (
-    <div data-phase={phase} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col font-game">
-      <style>{EP_STYLE}</style>
-      {/* Ambient glow orbs */}
+    <div data-phase={view} className="relative min-h-[100dvh] bg-[#060810] text-white flex flex-col font-game">
+      <style>{EP_STYLE}</style>{blocker}
       <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#f09a8a]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#ff6b98]/8 rounded-full blur-[120px] pointer-events-none" />
-      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#44484f]/20">
-        {/* In der App liegt der FloatingBackButton genau auf diesem Pfeil und
-            tut über den Back-Guard dasselbe — dort nur unsichtbar schalten,
-            nicht entfernen: der Platzhalter hält die Kopfzeile im Gleichgewicht
-            und den Platz unter dem schwebenden Pfeil frei. */}
+        {/* In der App liegt der FloatingBackButton genau auf diesem Pfeil — dort nur unsichtbar
+            schalten: der Platzhalter hält die Kopfzeile im Gleichgewicht. */}
         <button
-          onClick={() => (phase === 'gameOver' ? navigate('/games') : exitGuard.request())}
+          onClick={() => (view === 'gameOver' ? navigate('/games') : exitGuard.request())}
           className={`p-2 text-[#a8abb3] hover:text-white${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
           aria-hidden={hasShellBackButton()}
           tabIndex={hasShellBackButton() ? -1 : undefined}
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <div className="text-xs font-bold uppercase tracking-widest text-[#a8abb3]">
+        <div className="text-[0.8125rem] font-semibold text-[#a8abb3] tabular-nums">
           {t('games.truthdare.roundHeader', { current: currentRound, total: totalRounds })}
         </div>
         <div className="px-3 py-1 rounded-full glass-card border border-[#44484f]/30 text-sm font-bold text-[#f09a8a]">
@@ -419,410 +375,32 @@ function TruthDareGameContent({ online }: { online?: OnlineGameProps } = {}) {
         </div>
       </div>
 
+      {viewSeat && role && (
+        <div className="px-4 pt-4">
+          <TurnHeader seat={viewSeat} role={role} isMe={!!online && mine} subject={role === 'vote' ? activePlayer : undefined} />
+        </div>
+      )}
+
       <AnimatePresence mode="wait">
-        {/* SPIN PHASE */}
-        {phase === 'spin' && (
-          <motion.div key="spin" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
-            <h2 className="text-2xl font-extrabold text-white neon-glow">{t('games.truthdare.whosNext')}</h2>
-            {/* Wheel */}
-            <div className="relative w-52 h-52">
-              <motion.div
-                className="w-full h-full rounded-full border-4 border-[#f09a8a]/30 relative"
-                animate={{ rotate: spinAngle }}
-                transition={{ duration: 2.5, ease: [0.2, 0.8, 0.3, 1] }}
-              >
-                {players.map((p, i) => {
-                  const angle = (360 / players.length) * i;
-                  return (
-                    <div key={p.id} className="absolute" style={{
-                      top: '50%', left: '50%',
-                      transform: `rotate(${angle}deg) translateY(-80px) rotate(-${angle}deg) translate(-50%, -50%)`,
-                    }}>
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
-                        style={{ backgroundColor: p.color }}>
-                        {p.avatar}
-                      </div>
-                    </div>
-                  );
-                })}
-              </motion.div>
-              {/* Pointer */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 w-4 h-4 bg-[#f09a8a] rotate-45 shadow-[0_0_12px_rgba(150,160,165,0.5)]" />
-            </div>
-            <motion.button whileTap={{ scale: 0.97 }} disabled={!!online && !online.isHost} onClick={doSpin}
-              className="flex items-center gap-2 bg-gradient-to-r from-[#f09a8a] to-[#d779ff] text-[#0a0e14] px-8 py-3.5 rounded-2xl h-14 font-extrabold text-base shadow-[0_0_20px_rgba(150,160,165,0.3)]">
-              <Zap className="w-5 h-5" /> {t('games.truthdare.spin')}
-            </motion.button>
-          </motion.div>
+        {view === 'spin' && (
+          <SpinPanel key="spin" players={players} spinAngle={spinAngle} canSpin={!online || online.isHost} onSpin={doSpin} />
         )}
-
-        {/* CHOICE PHASE */}
-        {phase === 'choice' && activePlayer && (
-          <motion.div key="choice" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center gap-6 px-4">
-            <ActivePlayerBanner
-              playerName={activePlayer.name}
-              playerColor={activePlayer.color}
-              playerAvatar={activePlayer.avatar}
-              hidden={false}
-            />
-            <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white"
-              style={{ backgroundColor: activePlayer.color }}>
-              {activePlayer.avatar}
-            </div>
-            <h2 className="text-2xl font-extrabold">{t('games.truthdare.playersTurn', { name: activePlayer.name })}</h2>
-            <p className="text-white/40 text-sm">
-              {isDrinkingMode ? t('games.truthdare.chooseOrDrink') : t('games.truthdare.choosePrompt')}
-            </p>
-            <div className="flex gap-4 w-full max-w-sm">
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('truth')} data-choice="truth"
-                disabled={mode === 'nur-pflicht' || (!!online && online.myPlayerId !== players[activeIdx]?.id)}
-                className={cn("flex-1 py-5 rounded-2xl font-extrabold text-lg transition-all",
-                  mode === 'nur-pflicht' ? 'bg-white/5 text-white/20 cursor-not-allowed' :
-                  'bg-gradient-to-br from-[#f09a8a] to-[#d779ff] text-white shadow-[0_0_20px_rgba(150,160,165,0.3)]')}>
-                <Heart className="w-6 h-6 mx-auto mb-1" /> {t('games.truthdare.truth')}
-              </motion.button>
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleChoice('dare')} data-choice="dare"
-                disabled={mode === 'nur-wahrheit' || (!!online && online.myPlayerId !== players[activeIdx]?.id)}
-                className={cn("flex-1 py-5 rounded-2xl font-extrabold text-lg transition-all",
-                  mode === 'nur-wahrheit' ? 'bg-white/5 text-white/20 cursor-not-allowed' :
-                  'bg-gradient-to-br from-[#ff6b98] to-[#ff6b98]/80 text-white shadow-[0_0_20px_rgba(255,107,152,0.3)]')}>
-                <Flame className="w-6 h-6 mx-auto mb-1" /> {t('games.truthdare.dare')}
-              </motion.button>
-            </div>
-            {isDrinkingMode && (
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  const d = drinkingMode.recordDrink();
-                  if (d) {
-                    haptics.warning();
-                    setDisclaimer(d);
-                    setTimeout(() => setDisclaimer(null), 5000);
-                    nextRound();
-                  } else {
-                    nextRound();
-                  }
-                }}
-                className="w-full max-w-sm py-4 rounded-2xl font-extrabold text-lg bg-gradient-to-br from-amber-500/30 to-orange-500/20 border border-amber-400/30 text-amber-300 shadow-[0_0_20px_rgba(245,158,11,0.15)]"
-              >
-                {"\uD83C\uDF7A"} {t('games.truthdare.drinkInstead')}
-              </motion.button>
-            )}
-
-            {/* Disclaimer banner — appears when drink threshold is hit */}
-            <AnimatePresence>
-              {disclaimer && (
-                <motion.div
-                  className="relative z-10 mt-4 mx-6 px-5 py-3 rounded-2xl bg-amber-900/40 border border-amber-500/30 backdrop-blur text-center"
-                  initial={{ y: 30, opacity: 0, scale: 0.8 }}
-                  animate={{ y: 0, opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ type: "spring", bounce: 0.3 }}
-                >
-                  <span className="text-2xl">{disclaimer.emoji}</span>
-                  <p className="text-sm text-amber-200 font-semibold mt-1">{disclaimer.message}</p>
-                  <p className="text-[10px] text-amber-300/50 mt-1">
-                    {t('games.truthdare.drinkCount', { count: drinkingMode.drinkCount })} · {t('games.truthdare.drinkResponsibly')}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
+        {view === 'choice' && activePlayer && (
+          <ChoicePanel key="choice" player={activePlayer} mode={mode} canAct={mine} isDrinkingMode={isDrinkingMode}
+            onChoose={handleChoice} onDrink={drink} disclaimer={disclaimer} drinkCount={drinkingMode.drinkCount} />
         )}
-
-        {/* REVEAL PHASE */}
-        {phase === 'reveal' && currentItem && (() => {
-          const isTruth = choiceType === 'truth';
-          // Tone tokens — full color palette per type
-          const tone = isTruth
-            ? { main: '#f09a8a', dim: '#d779ff', onChip: '#3d0055', glow: 'rgba(150,160,165,0.3)' }
-            : { main: '#ff6b98', dim: '#e4006c', onChip: '#47001d', glow: 'rgba(255,107,152,0.3)' };
-          const others = players.filter((_, i) => i !== activeIdx);
-          const urgent = isTruth ? false : timer.timeLeft <= 10;
-          const timeStr = timer.timeLeft >= 60
-            ? `${Math.floor(timer.timeLeft / 60)}:${String(timer.timeLeft % 60).padStart(2, '0')}`
-            : `0:${String(timer.timeLeft).padStart(2, '0')}`;
-
-          return (
-            <motion.div
-              key="reveal"
-              initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-              className="split-challenge flex-1 flex flex-col items-center px-5 py-6 max-w-xl mx-auto w-full" data-kind={isTruth ? 'truth' : 'dare'}
-            >
-              {/* Timer chip — only for dares */}
-              {!isTruth && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="mb-6 flex flex-col items-center"
-                >
-                  <motion.div
-                    animate={urgent ? { scale: [1, 1.04, 1] } : {}}
-                    transition={urgent ? { duration: 0.6, repeat: Infinity } : {}}
-                    className={cn(
-                      'inline-flex items-center gap-2 px-6 py-2 rounded-full border',
-                      urgent
-                        ? 'bg-[#ff6e84]/15 border-[#ff6e84]/40 shadow-[0_0_20px_rgba(255,110,132,0.35)]'
-                        : 'bg-[#20262f] border-[#ff6b98]/30 shadow-[0_0_20px_rgba(255,107,152,0.25)]',
-                    )}
-                  >
-                    <Timer className={cn('w-5 h-5', urgent ? 'text-[#ff6e84]' : 'text-[#ff6b98]')} />
-                    <span className={cn('font-black text-2xl tracking-tighter tabular-nums', urgent ? 'text-[#ff6e84]' : 'text-white')}>
-                      {timeStr}
-                    </span>
-                  </motion.div>
-                  <span className={cn('text-[10px] font-bold uppercase tracking-[0.25em] mt-2', urgent ? 'text-[#ff6e84]' : 'text-[#ff6b98]')}>
-                    {urgent ? t('games.truthdare.lastSeconds') : t('games.truthdare.hurryUp')}
-                  </span>
-                </motion.div>
-              )}
-
-              {/* Task card with outer gradient glow */}
-              <div className="relative w-full group">
-                {/* Gradient glow halo */}
-                <motion.div
-                  className="absolute -inset-1 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-1000"
-                  style={{
-                    background: 'linear-gradient(45deg, #ff6b98, #f09a8a, #8dd4d6)',
-                  }}
-                  animate={{ opacity: [0.25, 0.45, 0.25] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                />
-
-                <motion.div
-                  initial={{ rotateY: 80, opacity: 0 }}
-                  animate={{ rotateY: 0, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-                  className="split-prompt relative p-6 sm:p-8 flex flex-col items-center text-center border border-white/5 overflow-hidden"
-                  style={{
-                    background: 'rgba(27, 32, 40, 0.85)',
-                    backdropFilter: 'blur(20px)',
-                    WebkitBackdropFilter: 'blur(20px)',
-                  }}
-                >
-                  {/* Corner-folded type badge */}
-                  <div className="absolute top-0 right-0">
-                    <div
-                      className="font-black px-5 py-1.5 rounded-bl-2xl uppercase tracking-widest text-[11px] shadow-lg"
-                      style={{ background: tone.main, color: tone.onChip }}
-                    >
-                      {isTruth ? t('games.truthdare.truth') : t('games.truthdare.dare')}
-                    </div>
-                  </div>
-
-                  {/* Active player avatar */}
-                  {activePlayer && (
-                    <div className="absolute top-5 left-5 flex items-center gap-2">
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white border-2"
-                        style={{ backgroundColor: activePlayer.color, borderColor: tone.main }}
-                      >
-                        {activePlayer.avatar}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Big type icon + label */}
-                  <div className="mt-10 mb-5">
-                    <motion.div
-                      animate={{ scale: [1, 1.08, 1], y: [0, -3, 0] }}
-                      transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-                      className="flex justify-center mb-3"
-                    >
-                      {isTruth
-                        ? <Heart className="w-14 h-14" style={{ color: tone.main, filter: `drop-shadow(0 0 16px ${tone.glow})` }} />
-                        : <Flame className="w-14 h-14" style={{ color: tone.main, filter: `drop-shadow(0 0 16px ${tone.glow})` }} />
-                      }
-                    </motion.div>
-                    <span className="text-[#8dd4d6] text-[10px] font-black uppercase tracking-[0.3em]">
-                      {t('games.truthdare.yourTask')}
-                    </span>
-                  </div>
-
-                  {/* Task text */}
-                  <p className="font-black text-2xl sm:text-3xl leading-tight text-white tracking-tight px-2 mb-5">
-                    {currentItem.text}
-                  </p>
-
-                  {/* Intensity pips */}
-                  <div className="flex items-center gap-1.5 mb-6">
-                    <span className="text-[9px] text-[#a8abb3] font-bold uppercase tracking-widest mr-1">Level</span>
-                    {[1, 2, 3].map((i) => (
-                      <div
-                        key={i}
-                        className="w-5 h-1.5 rounded-full"
-                        style={{
-                          background: i <= currentItem.intensity ? tone.main : 'rgba(255,255,255,0.1)',
-                          boxShadow: i <= currentItem.intensity ? `0 0 6px ${tone.glow}` : 'none',
-                        }}
-                      />
-                    ))}
-                    <span className="ml-auto text-[9px] text-[#a8abb3]/60 uppercase tracking-widest pl-2">
-                      {currentItem.category}
-                    </span>
-                  </div>
-
-                  {/* Social proof: who's waiting */}
-                  {others.length > 0 && (
-                    <div className="flex items-center gap-2 px-4 py-2.5 bg-[#000000]/40 rounded-full mb-6 border border-[#44484f]/30">
-                      <div className="flex -space-x-2">
-                        {others.slice(0, 3).map((p) => (
-                          <div
-                            key={p.id}
-                            className="w-6 h-6 rounded-full border-2 border-[#1b2028] flex items-center justify-center text-[9px] font-bold text-white"
-                            style={{ backgroundColor: p.color }}
-                          >
-                            {p.avatar}
-                          </div>
-                        ))}
-                      </div>
-                      <span className="text-[#a8abb3] text-[11px] font-medium">
-                        {others.length > 3
-                          ? t('games.truthdare.waitingForYouExtra', { extra: others.length - 3 })
-                          : t('games.truthdare.waitingForYou')}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Action stack */}
-                  <div className="w-full flex flex-col gap-3">
-                    {!isTruth ? (
-                      <motion.button
-                        whileTap={{ scale: 0.97 }}
-                        onClick={() => { haptics.celebrate(); startVote(); }}
-                        className="w-full h-14 rounded-full font-black uppercase tracking-[0.2em] text-sm flex items-center justify-center gap-2 text-white"
-                        style={{
-                          background: `linear-gradient(90deg, ${tone.main}, ${tone.dim})`,
-                          boxShadow: `0 0 24px ${tone.glow}, inset 0 0 12px rgba(255,255,255,0.15)`,
-                        }}
-                      >
-                        <Check className="w-5 h-5" />
-                        {t('games.truthdare.done')}
-                      </motion.button>
-                    ) : (
-                      <motion.button
-                        whileTap={{ scale: 0.97 }}
-                        disabled={!!online && online.myPlayerId !== players[activeIdx]?.id} onClick={() => { haptics.celebrate(); nextRound(); }}
-                        className="w-full h-14 rounded-full font-black uppercase tracking-[0.2em] text-sm flex items-center justify-center gap-2"
-                        style={{
-                          background: `linear-gradient(90deg, ${tone.main}, ${tone.dim})`,
-                          color: tone.onChip,
-                          boxShadow: `0 0 24px ${tone.glow}, inset 0 0 12px rgba(255,255,255,0.15)`,
-                        }}
-                      >
-                        <Check className="w-5 h-5" />
-                        {t('games.truthdare.done')}
-                      </motion.button>
-                    )}
-
-                    <motion.button
-                      whileTap={{ scale: 0.97 }}
-                      disabled={!!online && online.myPlayerId !== players[activeIdx]?.id} onClick={rerollCurrent}
-                      className="w-full h-12 rounded-full flex items-center justify-center gap-2 bg-[#20262f]/50 border border-[#44484f]/30 text-[#a8abb3] font-bold uppercase tracking-[0.2em] text-[11px] hover:bg-[#262c36] transition-colors"
-                    >
-                      <RefreshCw className="w-3.5 h-3.5" />
-                      {t('games.truthdare.reroll')}
-                    </motion.button>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Discrete rules link */}
-              <button
-                type="button"
-                className="mt-8 opacity-40 hover:opacity-100 transition-opacity flex items-center gap-2 text-[#a8abb3] cursor-pointer"
-              >
-                <Info className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-bold uppercase tracking-[0.25em]">{t('games.truthdare.showRules')}</span>
-              </button>
-            </motion.div>
-          );
-        })()}
-
-        {/* VOTE PHASE */}
-        {phase === 'vote' && activePlayer && (
-          <motion.div key="vote" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="split-arena flex-1 flex flex-col items-center justify-center gap-5 px-4">
-            {(() => {
-              const otherPlayers = players.filter((_, i) => i !== activeIdx);
-              const voter = otherPlayers[voterIdx];
-              if (!voter) return null;
-              return (
-                <>
-                  <h2 className="text-xl font-extrabold">
-                    {isDrinkingMode
-                      ? t('games.truthdare.voteTitleDrinking', { name: activePlayer.name })
-                      : t('games.truthdare.voteTitle', { name: activePlayer.name })}
-                  </h2>
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold text-white"
-                    style={{ backgroundColor: voter.color }}>
-                    {voter.avatar}
-                  </div>
-                  <p className="text-white/60">{t('games.truthdare.voting', { name: voter.name })}</p>
-                  <div className="flex gap-4">
-                    <motion.button whileTap={{ scale: 0.9 }} disabled={!!online && online.myPlayerId !== players.filter((_, i) => i !== activeIdx)[voterIdx]?.id} onClick={() => castVote(true)}
-                      className="w-20 h-20 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-                      <ThumbsUp className="w-8 h-8 text-emerald-400" />
-                    </motion.button>
-                    <motion.button whileTap={{ scale: 0.9 }} disabled={!!online && online.myPlayerId !== players.filter((_, i) => i !== activeIdx)[voterIdx]?.id} onClick={() => castVote(false)}
-                      className="w-20 h-20 rounded-2xl bg-red-500/20 border border-red-500/30 flex items-center justify-center">
-                      <ThumbsDown className="w-8 h-8 text-red-400" />
-                    </motion.button>
-                  </div>
-                  <div className="flex gap-1">
-                    {otherPlayers.map((_, i) => (
-                      <div key={i} className={cn("w-2 h-2 rounded-full", i < voterIdx ? 'bg-[#f09a8a]' : i === voterIdx ? 'bg-white' : 'bg-white/10')} />
-                    ))}
-                  </div>
-                </>
-              );
-            })()}
-          </motion.div>
+        {view === 'reveal' && currentItem && activePlayer && (
+          <RevealPanel key="reveal" item={currentItem} choiceType={choiceType} player={activePlayer}
+            others={voters} timeLeft={timer.timeLeft} canAct={mine}
+            onDone={choiceType === 'dare' ? startVote : nextRound} onReroll={rerollCurrent} />
         )}
-
-        {/* GAME OVER */}
-        {phase === 'gameOver' && winner && (
-          <motion.div key="over" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
-            className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full">
-            <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20">
-                <Trophy className="w-8 h-8 text-amber-400" />
-              </div>
-            </motion.div>
-            <h2 className="text-3xl font-extrabold text-[#f09a8a] neon-glow">
-              {t('games.truthdare.gameOver')}
-            </h2>
-            <div className="text-lg font-bold text-[#f09a8a]">{t('games.truthdare.wins', { name: players.filter(p => p.score === winner.score).map(p => p.name).join(' & ') })}</div>
-            <div className="w-full space-y-2 max-h-64 overflow-y-auto">
-              {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
-                <div key={p.id} className="flex items-center gap-3 bg-[#1b2028] border border-[#44484f]/20 rounded-2xl px-4 py-3">
-                  <span className="text-white/30 text-sm font-bold w-5">#{i + 1}</span>
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    style={{ backgroundColor: p.color }}>{p.avatar}</div>
-                  <span className="flex-1 text-white/80 font-semibold truncate">{p.name}</span>
-                  <span className="text-[#f09a8a] font-bold">{t('games.truthdare.points', { count: p.score })}</span>
-                </div>
-              ))}
-            </div>
-            <div className="w-full space-y-3 mt-2">
-              <motion.button whileTap={{ scale: 0.97 }} disabled={!!online && !online.isHost} onClick={playAgain}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#f09a8a] to-[#d779ff] text-[#0a0e14] py-4 rounded-2xl h-14 font-extrabold shadow-[0_0_20px_rgba(150,160,165,0.3)]">
-                <RotateCcw className="w-4 h-4" /> {t('games.truthdare.playAgain')}
-              </motion.button>
-              {!hasShellBackButton() && (
-                <button onClick={() => navigate('/games')}
-                  className="w-full py-3.5 rounded-2xl border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
-                  {t('games.truthdare.otherGame')}
-                </button>
-              )}
-            </div>
-          </motion.div>
+        {view === 'vote' && activePlayer && (
+          <VotePanel key="vote" subject={activePlayer} voters={voters} voterIdx={voterIdx} canVote={mine}
+            isDrinkingMode={isDrinkingMode} onVote={castVote} />
+        )}
+        {view === 'gameOver' && players.length > 0 && (
+          <GameOverPanel key="over" players={players} achievements={newAchievements} onDismissAchievements={clearAchievements}
+            canAgain={!online || online.isHost} onAgain={playAgain} onOtherGame={() => navigate('/games')} />
         )}
       </AnimatePresence>
       <ConfirmExitDialog {...exitGuard.dialogProps} accent="#f09a8a" />

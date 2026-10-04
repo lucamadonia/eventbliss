@@ -65,12 +65,25 @@ export interface TVBroadcastAPI {
   broadcastTV: (event: string, data: Record<string, unknown>) => void;
   /** Set online room code — adds extra channel for online mode */
   setOnlineRoom: (code: string | null) => void;
+  /** Last 'tv-ready' heartbeat from a TV (ms epoch, 0 = never / deactivated) — the host forwards it to the phones. */
+  lastTvReadyAt: number;
 }
 
 export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
-  const [tvCode] = useState(() => sessionCode || getSessionTVCode());
+  /**
+   * Der Code FOLGT der Party. Der Provider haengt an der App-Wurzel und wird
+   * vor der Party montiert; frueher fror hier der Zufallscode ein, waehrend die
+   * Party mit ihrem eigenen Code (session.tvCode) warb — der Fernseher auf
+   * /tv/<Partycode> bekam nie ein Paket und zeigte „Warte auf den Host …“.
+   */
+  const [fallbackCode] = useState(getSessionTVCode);
+  const tvCode = sessionCode || fallbackCode;
+  const tvCodeRef = useRef(tvCode);
+  tvCodeRef.current = tvCode;
+  const fallbackCodeRef = useRef(fallbackCode);
   const [isActive, setIsActive] = useState(false);
   const [onlineCode, setOnlineCode] = useState<string | null>(null);
+  const [lastTvReadyAt, setLastTvReadyAt] = useState(0);
   const channelRef = useRef<RealtimeChannel | null>(null);
   const gameChannelRef = useRef<RealtimeChannel | null>(null);
   const onlineChannelRef = useRef<RealtimeChannel | null>(null);
@@ -85,6 +98,8 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
   // for online rooms that is useGameRoom's channel. We must never remove a
   // channel we don't own, or we'd kill the multiplayer connection.
   const onlineChannelOwnedRef = useRef(false);
+  /** game-room:<Code> gehoert bei einer Controller-Party room-session (Partycode = Raumcode) — nie entfernen. */
+  const gameChannelOwnedRef = useRef(false);
   const senderIdRef = useRef(`${Date.now().toString(36)}-${generateCode(4)}`);
   const messageSeqRef = useRef(0);
   const lastReadyHandledAtRef = useRef(0);
@@ -95,6 +110,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     const now = Date.now();
     if (now - lastReadyHandledAtRef.current < 250) return;
     lastReadyHandledAtRef.current = now;
+    setLastTvReadyAt(now);
     const channels = [channelRef.current, gameChannelRef.current, onlineChannelRef.current];
     if (lastStateRef.current) {
       const syncPayload = { type: "broadcast" as const, event: "tv-state-sync", payload: lastStateRef.current };
@@ -120,28 +136,59 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     }
   }, []);
 
+  /** Kanaele fuer den aktuellen Code: tv-room immer; game-room nur fuer den eigenen Zufallscode oder geteilt. */
+  const attachCodeChannels = useCallback(() => {
+    const code = tvCodeRef.current;
+    const ch = supabase.channel(`tv-room:${code}`);
+    ch.on("broadcast", { event: "tv-ready" }, handleTVReady);
+    ch.subscribe();
+    channelRef.current = ch;
+
+    // Der Fernseher hoert auf beiden Praefixen; tv-room allein erreicht ihn.
+    // game-room:<Partycode> ist bei einer Controller-Party der Raumkanal von
+    // room-session — den nutzen wir hoechstens mit, oeffnen/schliessen ihn nie.
+    const topic = `realtime:game-room:${code}`;
+    const existed = supabase.getChannels().some((c) => (c as unknown as { topic: string }).topic === topic);
+    if (existed || code === fallbackCodeRef.current) {
+      const gameCh = supabase.channel(`game-room:${code}`);
+      gameCh.on("broadcast", { event: "tv-ready" }, handleTVReady);
+      if (!existed) gameCh.subscribe();
+      gameChannelRef.current = gameCh;
+      gameChannelOwnedRef.current = !existed;
+    } else {
+      gameChannelRef.current = null;
+      gameChannelOwnedRef.current = false;
+    }
+  }, [handleTVReady]);
+
+  const detachCodeChannels = useCallback(() => {
+    if (channelRef.current) { supabase.removeChannel(channelRef.current); channelRef.current = null; }
+    if (gameChannelRef.current) {
+      if (gameChannelOwnedRef.current) supabase.removeChannel(gameChannelRef.current);
+      gameChannelRef.current = null;
+      gameChannelOwnedRef.current = false;
+    }
+  }, []);
+
   const activate = useCallback(() => {
     if (activatedRef.current) return;
     activatedRef.current = true;
-
-    const ch = supabase.channel(`tv-room:${tvCode}`);
-    const gameCh = supabase.channel(`game-room:${tvCode}`);
-
-    ch.on("broadcast", { event: "tv-ready" }, handleTVReady);
-    gameCh.on("broadcast", { event: "tv-ready" }, handleTVReady);
-
-    ch.subscribe();
-    gameCh.subscribe();
-    channelRef.current = ch;
-    gameChannelRef.current = gameCh;
+    attachCodeChannels();
     setIsActive(true);
-
     try { sessionStorage.setItem(TV_ACTIVE_KEY, "1"); } catch { /* ok */ }
-  }, [tvCode, handleTVReady]);
+  }, [attachCodeChannels]);
+
+  // Neuer Code (Party gestartet/gewechselt): Kanaele umhaengen. Der Fernseher
+  // meldet sich alle paar Sekunden mit 'tv-ready' — darauf folgt der Abgleich.
+  useEffect(() => {
+    if (!activatedRef.current) return;
+    if ((channelRef.current as unknown as { topic?: string } | null)?.topic === `realtime:tv-room:${tvCode}`) return;
+    detachCodeChannels();
+    attachCodeChannels();
+  }, [tvCode, attachCodeChannels, detachCodeChannels]);
 
   const deactivate = useCallback(() => {
-    if (channelRef.current) { supabase.removeChannel(channelRef.current); channelRef.current = null; }
-    if (gameChannelRef.current) { supabase.removeChannel(gameChannelRef.current); gameChannelRef.current = null; }
+    detachCodeChannels();
     if (onlineChannelRef.current) {
       if (onlineChannelOwnedRef.current) supabase.removeChannel(onlineChannelRef.current);
       onlineChannelRef.current = null;
@@ -152,12 +199,13 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     activatedRef.current = false;
     setOnlineCode(null);
     setIsActive(false);
+    setLastTvReadyAt(0);
     try { sessionStorage.removeItem(TV_ACTIVE_KEY); } catch { /* ok */ }
-  }, []);
+  }, [detachCodeChannels]);
 
   const setOnlineRoom = useCallback((code: string | null) => {
     // Same room already attached — keep the channel (avoids re-subscribe churn).
-    if (code && onlineChannelRef.current && (onlineChannelRef.current as unknown as { topic: string }).topic === `realtime:game-room:${code}`) {
+    if (code && onlineChannelRef.current && (onlineChannelRef.current as unknown as { topic: string }).topic === `realtime:tv-room:${code}`) {
       return;
     }
     // Detach previous online channel (only remove it if we created it)
@@ -170,12 +218,14 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     // /tv/<roomCode>, so broadcasts must flow WITHOUT requiring the user to
     // separately tap the TV button. isActive follows automatically.
     if (code) {
-      // supabase.channel() dedupes by topic: if useGameRoom already holds this
-      // room's channel we get that same (joined) instance back and subscribe()
-      // is a no-op. Track ownership so cleanup never removes a shared channel.
-      const topic = `realtime:game-room:${code}`;
+      // game-room:<code> belongs to room-session alone (it opens, rebuilds and
+      // tears it down). supabase.channel() dedupes by topic, so opening it here
+      // first would hand room-session OUR instance — and our cleanup on leaving
+      // GamesHub would kill the room. The TV listens on tv-room:<code> as well
+      // (useTVConnection subscribes both prefixes), so that is all we need.
+      const topic = `realtime:tv-room:${code}`;
       const existed = supabase.getChannels().some((c) => (c as unknown as { topic: string }).topic === topic);
-      const ch = supabase.channel(`game-room:${code}`);
+      const ch = supabase.channel(`tv-room:${code}`);
       ch.on("broadcast", { event: "tv-ready" }, handleTVReady);
       if (!existed) ch.subscribe();
       onlineChannelRef.current = ch;
@@ -232,10 +282,10 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
   useEffect(() => {
     return () => {
       if (channelRef.current) supabase.removeChannel(channelRef.current);
-      if (gameChannelRef.current) supabase.removeChannel(gameChannelRef.current);
+      if (gameChannelRef.current && gameChannelOwnedRef.current) supabase.removeChannel(gameChannelRef.current);
       if (onlineChannelRef.current && onlineChannelOwnedRef.current) supabase.removeChannel(onlineChannelRef.current);
     };
   }, []);
 
-  return { tvCode, displayCode: onlineCode || tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom };
+  return { tvCode, displayCode: onlineCode || tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom, lastTvReadyAt };
 }

@@ -6368,7 +6368,7 @@
       "sameCategoryHintOn": "Alle spelers beantwoorden dezelfde categorie",
       "sameCategoryHintOff": "Elke speler krijgt een nieuwe categorie",
       "startGame": "SPEL STARTEN",
-      "roundLabel": "RONDE {{round}}/{{total}}",
+      "roundLabel": "Ronde {{round}} van {{total}}",
       "theChallenge": "De Uitdaging",
       "random": "Willekeurig",
       "seconds": "Seconden",
@@ -6376,7 +6376,7 @@
       "noRepeat": "Geen herhalingen toegestaan!",
       "btnDone": "GELUKT!",
       "btnDontKnow": "WEET NIET",
-      "btnSolved": "OPGELOST!",
+      "btnSolved": "Opgelost",
       "drinkingModeMsg": "Proost, jij drinkt!",
       "drinkRound": "Ronde {{count}} · Drink verantwoord",
       "nextRound": "Volgende ronde",
@@ -6396,9 +6396,14 @@
       "tutorialStep4": "Bij wie de bom ontploft = 2 strafpunten",
       "tutorialStep5": "Antwoorden mogen niet herhaald worden!",
       "tutorialDismiss": "BEGREPEN!",
-      "taskAllePrompt": "Noem: {{category}} met \"{{letter}}\"",
-      "taskKategoriePrompt": "Noem een {{category}} met \"{{letter}}\"!",
-      "fewestPenalties": "Minste strafpunten"
+      "taskAllePrompt": "Iedereen om de beurt: ‘{{category}}’ met ‘{{letter}}’",
+      "taskKategoriePrompt": "Noem iets uit ‘{{category}}’ met ‘{{letter}}’!",
+      "fewestPenalties": "Minste strafpunten",
+      "partyHolderWait": "Zo meteen kan hij bij jou belanden.",
+      "partyHolderPass": "Het lontje blijft branden!",
+      "partyRound": "Ronde {{round}} van {{total}}",
+      "hostStartsRound": "De host start zo ronde {{round}} …",
+      "hostDecidesNext": "De host beslist hoe het verdergaat …"
     },
     "headup": {
       "name": "Heads Up",
@@ -6471,7 +6476,14 @@
         "roundLabel": "Ronde {{current}} / {{total}}",
         "explainsSuffix": "legt uit",
         "isUp": "{{team}} is aan de beurt!",
-        "startBtn": "Let's go!"
+        "startBtn": "Let's go!",
+        "explainerHint": "Tik op Start zodra je team klaar is. Je team mag niet op de telefoon kijken.",
+        "refereeHint": "Je leest de kaart mee en drukt op ‘Taboe!’ zodra er een verboden woord valt.",
+        "guesserHint": "{{name}} legt zo uit – luister goed en raad hardop.",
+        "watcherHint": "{{name}} legt zo uit voor {{team}}.",
+        "cardBack": "Je kaart ligt omgekeerd klaar",
+        "waitingFor": "Wachten op {{name}} …",
+        "refereePreview": "Je ziet de kaart zodra {{name}} gaat uitleggen"
       },
       "playing": {
         "currentWord": "Huidig woord",
@@ -6479,7 +6491,12 @@
         "skipCount": "{{count}} Skip",
         "tabooBtn": "TABOE!",
         "skipBtn": "SKIP",
-        "correctBtn": "GOED"
+        "correctBtn": "GOED",
+        "guessTitle": "Raad hardop!",
+        "guessBody": "Je ziet de kaart niet – luister goed naar {{name}}.",
+        "watchTitle": "{{name}} legt uit",
+        "watchBody": "Kijk naar de tv en lach mee.",
+        "refereeHint": "Verboden woord gehoord? Meteen drukken."
       },
       "summary": {
         "roundWord": "RONDE",
@@ -6507,7 +6524,13 @@
         "cheers": "Proost!"
       },
       "refereeRole": "Scheidsrechter: let op verboden woorden.",
-      "voiceHint": "Raad hardop met je team. Gebruik op afstand een spraakoproep."
+      "voiceHint": "Raad hardop met je team. Gebruik op afstand een spraakoproep.",
+      "role": {
+        "explainer": "Jij legt uit",
+        "referee": "Jij bent scheids",
+        "guesser": "Jij raadt mee",
+        "watcher": "{{team}} is aan de beurt"
+      }
     },
     "categoryGame": {
       "name": "Categorie Timer",
@@ -6643,7 +6666,9 @@
         "ball": "Voetbal",
         "plant": "Potplant",
         "umbrella": "Paraplu"
-      }
+      },
+      "watchTurn": "Kijk mee – zo ben jij aan de beurt.",
+      "guessSeat": "{{name}} zet de pin"
     },
     "impostor": {
       "title": "Bedrieger",
@@ -6840,7 +6865,12 @@
       "timeToPlace": "Tijd om te plaatsen",
       "songLoading": "Nummer wordt geladen…",
       "tapToPlayHidden": "Tik om af te spelen — titel blijft geheim",
-      "tapAndGo": "Tik & ga"
+      "tapAndGo": "Tik & ga",
+      "partyCounterLine": "Zet je counter op de tijdlijn.",
+      "partyYourTurnLine": "Luister en plaats het nummer.",
+      "partyListenClose": "Luister goed",
+      "partyYourTimeline": "Jouw tijdlijn",
+      "partyTimelineEmpty": "Nog leeg – je eerste nummer komt zo."
     },
     "splitquiz": {
       "subtitle": "Elk team ziet maar de helft van de antwoorden!",
@@ -6916,7 +6946,23 @@
       "wins": "{{name}} wint!",
       "points": "{{count}} ptn.",
       "playAgain": "Opnieuw spelen",
-      "otherGame": "Ander spel"
+      "otherGame": "Ander spel",
+      "taskOf": "Opdracht voor {{name}}",
+      "level": "Niveau",
+      "doneDare": "Gedaan — stemmen",
+      "hostSpins": "De host draait aan het rad …",
+      "onlyTruth": "Vandaag alleen waarheid",
+      "onlyDare": "Vandaag alleen durven",
+      "votePassed": "Gelukt",
+      "voteFailed": "Niet gelukt",
+      "voteProgress": "{{done}} van {{total}} hebben gestemd",
+      "turnChoose": "kiest waarheid of durven",
+      "turnAnswer": "beantwoordt de vraag",
+      "turnDare": "doet de opdracht",
+      "turnVote": "oordeelt over {{name}}",
+      "turnYou": "Jij bent aan de beurt",
+      "turnOther": "Nu aan de beurt",
+      "watchOther": "{{name}} is aan de beurt — kijk mee of op de tv."
     },
     "whoami": {
       "round": "Ronde {{round}}/{{total}}",
@@ -7009,7 +7055,25 @@
       "sendQuestion": "Vraag stellen",
       "guessNow": "Identiteit raden",
       "voteSummary": "Ja: {{yes}} · Nee: {{no}}",
-      "questionLimit": "Vragen per identiteit"
+      "questionLimit": "Vragen per identiteit",
+      "party": {
+        "isAsking": "stelt een vraag",
+        "theirIdentity": "{{name}} is …",
+        "askAloud": "Stel een ja/nee-vraag over jezelf.",
+        "waitingQuestion": "{{name}} bedenkt een vraag …",
+        "theOthersAre": "Dit zijn de anderen",
+        "notYours": "Je eigen personage blijft geheim — dat moet je uitvragen.",
+        "seenCover": "Gezien – afdekken",
+        "seenPass": "Gezien – telefoon doorgeven",
+        "allSeen": "Iedereen aan de telefoon heeft de kaarten gezien",
+        "startWhenReady": "Start zodra iedereen zijn kaarten heeft gezien.",
+        "holdToSee": "Ingedrukt houden om te zien",
+        "lookAtTv": "Kijk naar de tv of de groep",
+        "askerIs": "{{name}} is",
+        "waitingAnswer": "{{name}} antwoordt …",
+        "waitingGuess": "{{name}} raadt nu …",
+        "notSeenYet": "Nog niet gezien: {{names}}"
+      }
     },
     "bottlespin": {
       "setupTimerLabel": "Opdrachtentimer (sec.)",
@@ -7083,7 +7147,15 @@
       "finalResults": "Einduitslag",
       "playAgain": "Opnieuw spelen",
       "otherGame": "Ander Spel",
-      "quit": "Stoppen"
+      "quit": "Stoppen",
+      "starts": "{{name}} begint",
+      "passingPhone": "{{name}} krijgt nu de telefoon …",
+      "yourTurn": "Jouw beurt – noem een woord!",
+      "othersTurn": "Luister goed – zo meteen kan het jou zijn.",
+      "clockStopped": "De klok staat stil tot {{name}} klaar is.",
+      "waitingAnswer": "{{name}} zoekt een woord …",
+      "hostContinues": "De host start zo de volgende ronde.",
+      "hostDecides": "De host beslist hoe het verdergaat."
     },
     "emojiguess": {
       "title": "Raad de Emoji",
@@ -7106,7 +7178,13 @@
       "nextPlayer": "Hierna: {{name}}",
       "clueLabel": "Beeldraadsel",
       "poolBudget": "{{puzzleCount}} geselecteerde raadsels. Grotere groepen spelen minder rondes: evenveel beurten voor iedereen, zonder herhaling.",
-      "balancedTeamPoints": "Bij ongelijke teams worden de punten gewogen, zodat beide teams per ronde evenveel punten kunnen verdienen."
+      "balancedTeamPoints": "Bij ongelijke teams worden de punten gewogen, zodat beide teams per ronde evenveel punten kunnen verdienen.",
+      "watchTitle": "{{name}} is aan het raden",
+      "watchBody": "Kijk naar de tv en raad stilletjes mee.",
+      "yourTurn": "Jij bent aan de beurt",
+      "nextUp": "is hierna aan de beurt",
+      "solvedBy": "heeft het geraden",
+      "notSolved": "deze keer niet geraden"
     },
     "fakeorfact": {
       "title": "Leugenaar — Fake or Fact",
@@ -7124,7 +7202,19 @@
       "correctPct": "Goed: {{pct}}%",
       "incorrectPct": "Fout: {{pct}}%",
       "continue": "Verder",
-      "noAnswer": "Geen antwoord (tijd verstreken)"
+      "noAnswer": "Geen antwoord (tijd verstreken)",
+      "seatResults": "Resultaten op deze telefoon",
+      "yourTurn": "Jij bent aan de beurt",
+      "playerTurn": "{{name}} is aan de beurt",
+      "onHostPhone": "Op de telefoon van de host",
+      "timeLeft": "Nog {{seconds}} seconden",
+      "progressLabel": "Wie al gekozen heeft",
+      "markDone": "heeft gekozen",
+      "markNow": "is aan de beurt",
+      "markOpen": "komt nog",
+      "waitingFor": "{{name}} is aan het kiezen …",
+      "answerLocked": "Je antwoord is opgeslagen – zo komt de onthulling",
+      "turnSoon": "Jij bent zo aan de beurt"
     },
     "quickdraw": {
       "tagline": "Teken snel — de anderen raden!",
@@ -7152,7 +7242,8 @@
       "penSize": "Pendikte {{size}}",
       "eraser": "Gum",
       "undo": "Ongedaan maken",
-      "clear": "Tekening wissen"
+      "clear": "Tekening wissen",
+      "lookAtTv": "👀 Kijk naar de tv"
     },
     "sharedquiz": {
       "title": "Gedeeld & Gequizt",
@@ -7177,7 +7268,13 @@
       "resultBtn": "Resultaat",
       "modeAnswerTurn": "{{name}} · Antwoord {{n}} van 3",
       "chainRules": "Antwoord om de beurt. Elk goed antwoord levert jullie trio één punt op. Antwoorden blijven verborgen tot alle drie hebben geantwoord.",
-      "allRules": "Alle drie moeten goed antwoorden. Jullie trio krijgt drie punten, anders nul."
+      "allRules": "Alle drie moeten goed antwoorden. Jullie trio krijgt drie punten, anders nul.",
+      "sharedPhoneTitle": "Rollen op deze telefoon",
+      "sharedPhoneHint": "Bekijk alleen je eigen rol – de rest kijkt weg.",
+      "viewMyRole": "Mijn rol bekijken",
+      "viewGuestRole": "{{name}}: rol bekijken",
+      "seenBadge": "bekeken",
+      "coverRole": "Gezien – afdekken"
     },
     "storybuilder": {
       "setupTimerLabel": "Zinnen per speler",
@@ -7194,7 +7291,9 @@
       "playAgain": "Opnieuw spelen",
       "otherGame": "Ander spel",
       "skipTurn": "Beurt overslaan",
-      "emptyStory": "Nog geen zinnen. Begin samen een nieuw verhaal."
+      "emptyStory": "Nog geen zinnen. Begin samen een nieuw verhaal.",
+      "writingNow": "{{name}} is aan het schrijven …",
+      "secondsLeft": "nog {{count}} s"
     },
     "thisorthat": {
       "modeTagPopular": "Populair",
@@ -7277,7 +7376,9 @@
       "waitForPlayer": "Wachten tot {{name}} begint.",
       "exampleCategory": "“{{animal}}”: tikken. “{{object}}”: wachten.",
       "exampleStroop": "“{{red}}” in rood: tikken. “{{red}}” in blauw: wachten.",
-      "exampleForbidden": "“{{word}}”: wachten. Elk ander woord: tikken."
+      "exampleForbidden": "“{{word}}”: wachten. Elk ander woord: tikken.",
+      "partyReadyLine": "Tik op ‘Klaar’, dan loopt de klok.",
+      "partyWatchLine": "Kijk mee – zo ben jij aan de beurt."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
@@ -7337,7 +7438,11 @@
       "playersLabel": "Spelers",
       "groupsLabel": "Teams",
       "teamN": "Team {{n}}",
-      "retryImage": "Afbeelding opnieuw laden"
+      "retryImage": "Afbeelding opnieuw laden",
+      "sayItLoud": "Zeg het antwoord hardop!",
+      "teamHint": "Jullie raden als team – één fout antwoord blokkeert de hele telefoon.",
+      "whoTypes": "Wie typt?",
+      "pointsShort": "{{count}} ptn"
     },
     "closeenough": {
       "title": "Bijna Raak",
@@ -7578,7 +7683,14 @@
         "wingspan_aircraft": "Een Airbus A320 heeft 36 meter spanwijdte.",
         "employees": "Volkswagen heeft ongeveer 680.000 medewerkers.",
         "revenue": "Apple zet ongeveer 390 miljard USD per jaar om."
-      }
+      },
+      "partyYourEstimate": "Je schatting blijft geheim tot de onthulling.",
+      "loadFailedTitle": "Vragen konden niet worden geladen",
+      "loadFailedHint": "Controleer je verbinding en probeer het opnieuw.",
+      "retryLoad": "Opnieuw proberen",
+      "emptySelectionTitle": "Geen vragen voor deze selectie",
+      "emptySelectionHint": "Kies andere categorieën of speel de mix.",
+      "useMix": "Mix spelen"
     },
     "pantomime": {
       "title": "Zonder Woorden",
@@ -7889,7 +8001,8 @@
       "counterLabelBrew": "Voorraadrek",
       "counterLabelBar": "Toonbank",
       "trayNote": "nog niet veilig",
-      "counterNote": "vrij voor iedereen · 1 kaart per beurt"
+      "counterNote": "vrij voor iedereen · 1 kaart per beurt",
+      "partyWatch": "Kijk mee – wat niet in het glas past, belandt op de bar."
     },
     "connectionPaused": "Spel gepauzeerd",
     "connectionPausedHint": "Maak opnieuw verbinding om verder te spelen. De huidige beurt blijft behouden.",
@@ -10087,7 +10200,7 @@
       "leaderLine": "{{name}} leidt met {{points}} punten",
       "tapForMap": "Tik voor de route",
       "gameXofY": "Spel {{current}} van {{total}}",
-      "finaleEyebrow": "De Party Night is voorbij",
+      "finaleEyebrow": "De feestavond zit erop",
       "champion": "Kampioen van de avond",
       "championLine": "{{name}} wint met {{points}} punten",
       "finalTable": "Eindstand",
@@ -10118,7 +10231,9 @@
         }
       },
       "champions": "Gedeelde overwinning",
-      "championsLine": "{{name}} delen de overwinning met elk {{points}} punten"
+      "championsLine": "{{name}} delen de overwinning met elk {{points}} punten",
+      "drumroll": "En de kampioen van de avond is",
+      "recapOnPhones": "Jullie terugblik staat op de telefoons"
     },
     "connectTitle": "TV verbinden",
     "openOnTv": "Open op je tv:",
@@ -10145,9 +10260,9 @@
       "waiting": "Wachten op opdracht..."
     },
     "bottle": {
-      "spinning": "DRAAIT",
-      "card": "KAART",
-      "vote": "STEMMING",
+      "spinning": "Draait",
+      "card": "Kaart",
+      "vote": "Stemming",
       "question": "Vraag",
       "task": "Opdracht",
       "spinningHint": "De fles draait..."
@@ -10187,8 +10302,8 @@
     "leaderboard": "Ranglijst",
     "headup": {
       "correctShort": "{{count}} goed",
-      "gameOver": "EINDE SPEL!",
-      "roundOver": "RONDE VOORBIJ!",
+      "gameOver": "Einde spel!",
+      "roundOver": "Ronde voorbij!",
       "correct": "Goed",
       "skipped": "Overgeslagen",
       "describe": "Beschrijf het!",
@@ -10196,17 +10311,17 @@
       "skip": "Skip"
     },
     "impostor": {
-      "checkPhones": "KIJK OP JE TELEFOON!",
+      "checkPhones": "Kijk op je telefoon!",
       "oneWordOneDifferent": "Eén woord — maar één heeft een ander...",
-      "discussion": "DISCUSSIE",
-      "whoIsImpostor": "WIE IS DE BEDRIEGER?",
-      "voting": "STEMMING",
-      "whoIsSuspected": "WIE WORDT VERDACHT?",
-      "revealIn": "ONTHULLING OVER...",
-      "theImpostorIs": "DE BEDRIEGER IS...",
-      "label": "BEDRIEGER",
-      "canImpostorGuess": "KAN DE BEDRIEGER HET WOORD RADEN?",
-      "results": "RESULTAAT",
+      "discussion": "Discussie",
+      "whoIsImpostor": "Wie is de bedrieger?",
+      "voting": "Stemming",
+      "whoIsSuspected": "Wie wordt verdacht?",
+      "revealIn": "Onthulling over …",
+      "theImpostorIs": "De bedrieger is …",
+      "label": "Bedrieger",
+      "canImpostorGuess": "Kan de bedrieger het woord raden?",
+      "results": "Resultaat",
       "preparing": "Spel wordt voorbereid..."
     },
     "ohrwurm": {
@@ -10252,7 +10367,7 @@
     },
     "truthdare": {
       "wpCount": "{{w}}× W · {{p}}× D",
-      "title": "WAARHEID OF DURF",
+      "title": "Waarheid of durf",
       "isUp": "is aan de beurt",
       "whosNext": "Wie is de volgende?",
       "chooses": "kiest…",
@@ -10261,7 +10376,7 @@
     "whoami": {
       "questionsCount": "{{n}} vragen",
       "questionN": "Vraag {{x}}/{{max}}",
-      "title": "WIE BEN IK?",
+      "title": "Wie ben ik?",
       "assigning": "Rollen worden verdeeld…",
       "asks": "vraagt",
       "askPrompt": "Stel een ja/nee-vraag",
@@ -10285,7 +10400,9 @@
       "game": "Terug naar het spel",
       "rules": "Spelregels",
       "menu": "Menu"
-    }
+    },
+    "winnerLead": "+{{margin}} voor op {{name}}",
+    "winnerTie": "Gelijk met {{name}}"
   },
   "partyControllers": {
     "title": "Controllermodus",
@@ -10326,5 +10443,692 @@
     "players_one": "{{count}} speler",
     "players_other": "{{count}} spelers",
     "players": "{{count}} spelers"
+  },
+  "tvLobby": {
+    "allReady": "Iedereen is klaar ✓",
+    "atHostDevice": "op de telefoon van de host",
+    "fullscreen": "Volledig scherm",
+    "gamesPlanned": "Feestavond · {{count}} spellen",
+    "gamesPlanned_one": "Feestavond · 1 spel",
+    "gamesPlanned_other": "Feestavond · {{count}} spellen",
+    "guestHint": "{{names}}: hebben jullie een telefoon? Scan en doe mee!",
+    "guestHintOne": "{{names}}: heb je een telefoon? Scan en doe mee!",
+    "host": "Host",
+    "hostPlays": "speelt mee",
+    "hostSitsOut": "speelt niet mee",
+    "lateJoin": "{{name}} doet mee vanaf de volgende ronde",
+    "latecomerHint": "Scan – je doet mee vanaf de volgende ronde",
+    "latecomerTitle": "Nog meedoen?",
+    "localHint": "Vanavond gaat de telefoon rond – de tv laat zien wie er aan de beurt is.",
+    "localTitle": "Eén telefoon voor iedereen",
+    "nextUp": "Hierna",
+    "notReady": "nog niet klaar",
+    "offline": "verbinding weg",
+    "orCode": "of voer de code in de app in",
+    "ownPhone": "eigen telefoon",
+    "playerJoined": "{{name}} doet mee",
+    "playerLeft": "{{name}} heeft het feest verlaten",
+    "playerRange": "{{min}}–{{max}} spelers",
+    "playersHeading": "Doen mee",
+    "ready": "klaar",
+    "readyMissing": "Nog {{count}} niet klaar",
+    "scanTitle": "Scan en speel mee",
+    "step1": "Richt je camera op de code",
+    "step2": "De app opent – je doet mee",
+    "yourSeat": "Jouw plek",
+    "waitingForPlayers": "Wachten op spelers …",
+    "waitingForHost": "Wachten op de host …",
+    "waitingForHostHint": "Op de telefoon van de host: open het feest en tik op ‘{{button}}’.",
+    "partyEnded": "Dit feest is voorbij",
+    "partyEndedHint": "Bedankt voor het meespelen! Start voor een nieuwe ronde gewoon een nieuw feest.",
+    "setlist": {
+      "title": "Vanavond spelen we",
+      "played": "Gespeeld",
+      "tooFew": "Vanaf {{count}} spelers",
+      "tooMany": "Maximaal {{count}} spelers",
+      "progress": "{{done}} van {{total}}",
+      "more": "+{{count}} meer",
+      "count": "{{count}} spellen",
+      "count_one": "1 spel",
+      "count_other": "{{count}} spellen"
+    }
+  },
+  "handover": {
+    "announce": "Geef de telefoon aan {{name}}.",
+    "clockPaused": "Klok gepauzeerd",
+    "confirm": "Ik ben {{name}} – daar gaan we",
+    "confirmHost": "Ik ben {{name}} – verder",
+    "confirmHostGeneric": "Ik ben de host – verder",
+    "countdownGo": "Start!",
+    "coverAnnounce": "{{name}} is klaar. Scherm afdekken.",
+    "coverButton": "Afdekken & doorgeven",
+    "coverHint": "Leg de telefoon met het scherm naar beneden voordat je hem doorgeeft.",
+    "coverTitle": "Klaar, {{name}}?",
+    "holdHint": "Ingedrukt houden",
+    "lookAway": "(de rest even niet kijken)",
+    "passOn": "Door naar {{name}}",
+    "passTo": "Geef de telefoon aan {{name}}",
+    "returnTo": "Terug naar {{name}}",
+    "returnToHost": "Terug naar de host"
+  },
+  "partyPlay": {
+    "abortMatch": "Spel afbreken – telt niet",
+    "backToLobby": "Terug naar de lobby",
+    "continueWithout": "Verder zonder {{name}}",
+    "removedFromMatchTitle": "Je slaat deze ronde over",
+    "removedFromMatchHint": "Vanaf het volgende spel doe je weer mee.",
+    "seatToHost": "{{name}} speelt verder op de telefoon van de host",
+    "seatToHostLater": "Kan pas na deze ronde – speel tot dan zonder verder.",
+    "sittingOut": "{{names}} slaan deze ronde over",
+    "stuckTitle": "{{name}} is niet bereikbaar",
+    "tooFewLeft": "– niet meer aanwezig. Voor {{game}} hebben jullie er {{min}} nodig.",
+    "tooFewTitle": "Te weinig spelers voor {{game}}",
+    "tooFewWaiting": "De host beslist hoe het verdergaat.",
+    "waitingFor": "Wachten op {{name}} …",
+    "availability": {
+      "ready_one": "Klaar om te starten · 1 speler",
+      "ready_other": "Klaar om te starten · {{count}} spelers",
+      "waiting_one": "Wacht op nog 1 speler",
+      "waiting_other": "Wacht op nog {{count}} spelers",
+      "guestsSitOut_one": "Gasten slaan over – nog 1 speler met telefoon nodig",
+      "guestsSitOut_other": "Gasten slaan over – nog {{count}} spelers met telefoon nodig",
+      "guestsSitOutNames_one": "{{names}} slaan over – nog 1 speler met telefoon nodig",
+      "guestsSitOutNames_other": "{{names}} slaan over – nog {{count}} spelers met telefoon nodig",
+      "sitout": "{{names}} slaan deze over",
+      "sitout_one": "{{names}} slaat deze over",
+      "sitout_other": "{{names}} slaan deze over",
+      "sitoutCount_one": "1 gast slaat over",
+      "sitoutCount_other": "{{count}} gasten slaan over",
+      "sitoutCount": "{{count}} gasten slaan over",
+      "tooMany": "Maximaal {{max}} spelers",
+      "premium": "Alleen met Premium",
+      "unknown": "Niet beschikbaar"
+    },
+    "cancel": "Annuleren",
+    "close": "Sluiten",
+    "end": {
+      "body": "Het feest stopt voor iedereen. De stand blijft zichtbaar."
+    },
+    "error": {
+      "already_seated": "Je hebt al een plek in dit feest.",
+      "banned": "Je kunt niet meer aan dit feest deelnemen.",
+      "cannot_kick_host": "De host kan niet worden verwijderd.",
+      "cannot_release_host": "De plek van de host blijft op de telefoon van de host.",
+      "controller_taken": "Deze telefoon is al in gebruik in dit feest.",
+      "host_required": "Dat mag alleen de host.",
+      "invalid_avatar": "Dit symbool is niet beschikbaar. Kies een ander.",
+      "invalid_color": "Deze kleur is niet beschikbaar. Kies een andere.",
+      "invalid_controller": "Deze telefoon kon niet worden gekoppeld. Open de app opnieuw.",
+      "invalid_mode": "Dat lukte niet. Probeer het nog eens.",
+      "invalid_name": "Kies een naam van 1–24 tekens.",
+      "locked_in_game": "Er loopt een spel – kan na de ronde.",
+      "not_allowed": "Dat mag alleen de host.",
+      "not_claimed": "Voor deze plek is niets gereserveerd.",
+      "not_guest": "Deze plek hoort al bij een telefoon.",
+      "not_member": "Deze persoon is niet meer in het feest.",
+      "not_playing": "Er loopt nu geen spel.",
+      "party_full": "Het feest is vol (12 spelers). Neem een plek over of vraag het de host.",
+      "recalled": "Je speelt nu op de telefoon van de host.",
+      "removed": "Je zit niet meer in dit feest.",
+      "seat_taken": "Iemand anders heeft deze plek net overgenomen. De lijst is bijgewerkt.",
+      "ended": "Dit feest is voorbij.",
+      "not_found": "Dit feest bestaat niet. Controleer de code."
+    },
+    "kick": {
+      "ban": "Verwijderen en blokkeren",
+      "banHint": "Kan met deze code niet opnieuw meedoen.",
+      "confirm": "Verwijderen",
+      "how": "Hoe verwijderen?",
+      "matchOnly": "Alleen uit dit spel halen",
+      "matchOnlyHint": "Blijft in het feest en doet bij het volgende spel weer mee.",
+      "party": "Uit het feest verwijderen",
+      "partyHint": "Punten blijven in de stand.",
+      "pending": "{{name}} wordt verwijderd",
+      "playingHint": "Het lopende spel gaat zonder pauze door.",
+      "title": "{{name}} verwijderen?"
+    },
+    "leave": {
+      "body": "Je punten blijven in de stand."
+    },
+    "lobby": {
+      "connecting": "Verbinden …",
+      "nextRound": "Vanaf de volgende ronde doe je mee.",
+      "noGame": "Plan eerst een spel.",
+      "notReadyNames": "Nog niet klaar: {{names}}",
+      "nothingFits": "Geen enkel gepland spel past bij jullie groep.",
+      "skipped": "{{game}} past nu niet – door naar {{next}}.",
+      "kickerEmpty": "Feestavond",
+      "tvOn": "Tv verbonden",
+      "soon": "Zo meteen ben jij aan de beurt",
+      "running": "Er loopt een spel",
+      "title": "Zo meteen begint het",
+      "nonePlanned": "Nog geen spel gepland",
+      "notReadyOne": "{{name}} is nog niet klaar",
+      "planned": "{{count}} spellen gepland",
+      "planned_one": "{{count}} spel gepland",
+      "planned_other": "{{count}} spellen gepland",
+      "waitingFor": "Wachten op {{names}}",
+      "waitingMany": "Wachten op {{names}} en nog {{count}}",
+      "runningNow": "Nu bezig: {{game}}"
+    },
+    "onboarding": {
+      "back": "Terug naar de lijst",
+      "claimed": "Welkom terug",
+      "go": "Daar gaan we",
+      "joined": "Je doet mee ✓",
+      "profileTitle": "Hoe wil je dat iedereen je ziet?",
+      "afterRound": "Er loopt een spel – je profiel verschijnt vanaf de volgende ronde."
+    },
+    "pending": {
+      "body": "Er loopt een spel. Vanaf de volgende ronde speel je als {{name}} op je eigen telefoon.",
+      "cancel": "Reservering intrekken",
+      "ok": "Prima",
+      "title": "Gereserveerd"
+    },
+    "profile": {
+      "color": "Kleur",
+      "colorOption": "Kleur {{n}}",
+      "locked": "Er loopt een spel – na de ronde te wijzigen.",
+      "lockedShort": "na de ronde te wijzigen",
+      "name": "Naam",
+      "nameInvalid": "Gebruik 1–24 tekens.",
+      "namePlaceholder": "Jouw naam",
+      "preview": "Zo ziet de tv je",
+      "save": "Opslaan",
+      "symbol": "Symbool",
+      "title": "Profiel"
+    },
+    "recalled": {
+      "body": "Je punten blijven. Je kunt je plek altijd weer naar deze telefoon halen.",
+      "rejoin": "Weer met eigen telefoon",
+      "title": "Je speelt nu op de telefoon van de host"
+    },
+    "remote": {
+      "nobody": "Niemand om te verwijderen.",
+      "players": "Spelers",
+      "playersTitle": "Spelers verwijderen"
+    },
+    "removed": {
+      "banned": "Met de code {{code}} kun je niet opnieuw meedoen.",
+      "body": "Je punten tot nu toe blijven in de stand.",
+      "done": "Naar de spellen",
+      "startOwn": "Zelf een feest starten",
+      "title": "Je zit niet meer in dit feest"
+    },
+    "roster": {
+      "addGuest": "Speler zonder telefoon",
+      "addGuestHint": "Speelt mee op jouw telefoon. Kan later via QR naar een eigen telefoon overstappen.",
+      "addGuestSubmit": "Toevoegen",
+      "addGuestTitle": "Speler zonder telefoon",
+      "afterRound": "kan na de ronde",
+      "banned_one": "Geblokkeerd ({{count}})",
+      "banned_other": "Geblokkeerd ({{count}})",
+      "cancelClaim": "Reservering opheffen",
+      "editProfile": "Naam, symbool & kleur",
+      "notMe": "Dat ben ik niet",
+      "notMeHint": "Plek terug naar de host-telefoon, dan opnieuw kiezen",
+      "release": "Terug naar de host-telefoon halen",
+      "releaseHint": "bijv. batterij leeg – punten blijven",
+      "remove": "Verwijderen …",
+      "unban": "Blokkering opheffen",
+      "you": "Jij",
+      "banned": "Geblokkeerd ({{count}})",
+      "addGuestShort": "Speelt mee op jouw telefoon",
+      "full": "Het feest is vol",
+      "removePlayer": "Verwijderen"
+    },
+    "scene": {
+      "getReady": "Zo meteen begint het"
+    },
+    "seat": {
+      "host": "Host",
+      "hostDevice": "op de telefoon van de host",
+      "pendingClaim": "stapt na de ronde over naar eigen telefoon",
+      "phone": "eigen telefoon",
+      "inGame": "speelt nu",
+      "nextRound": "vanaf de volgende ronde"
+    },
+    "similar": {
+      "no": "Nee, ik ben iemand anders",
+      "noPoints": "Dan neem je deze plek op de telefoon van de host over.",
+      "points_one": "Het {{count}} punt overnemen?",
+      "points_other": "De {{count}} punten overnemen?",
+      "title": "Ben jij {{name}}?",
+      "yes": "Ja, dat ben ik",
+      "points": "De {{count}} punten overnemen?"
+    },
+    "stay": "Blijven",
+    "switch": {
+      "body": "Je verlaat {{from}} en doet mee met {{to}}.",
+      "confirm": "Wisselen",
+      "title": "Van feest wisselen?"
+    },
+    "undo": "Ongedaan maken",
+    "update": {
+      "body": "Dit feest gebruikt nieuwe functies. Met de nieuwste versie doe je meteen mee.",
+      "cta": "Nu bijwerken",
+      "title": "Werk de app bij"
+    },
+    "who": {
+      "alreadyIn": "Doet al mee met eigen telefoon",
+      "createNew": "Ik sta er niet bij – nieuw aanmaken",
+      "noMatch": "Niemand met deze naam op de telefoon van de host.",
+      "partyOf_one": "Feest van {{name}} · {{count}} speler",
+      "partyOf_other": "Feest van {{name}} · {{count}} spelers",
+      "points_one": "{{count}} punt",
+      "points_other": "{{count}} punten",
+      "search": "Zoeken",
+      "subtitle": "Tik op je naam – je punten gaan mee.",
+      "title": "Wie ben jij?",
+      "partyOf": "Feest van {{name}} · {{count}} spelers",
+      "points": "{{count}} punten"
+    },
+    "switchDevice": {
+      "title": "Naar deze telefoon wisselen?",
+      "body": "Je speelt in dit feest al op een andere telefoon. Je punten gaan mee en de andere telefoon geeft zijn plek op.",
+      "confirm": "Hierheen wisselen",
+      "movedTitle": "Je speelt nu op een andere telefoon",
+      "movedBody": "Je punten zijn meegekomen. Wil je hier weer spelen? Doe dan gewoon opnieuw mee.",
+      "back": "Hier verder spelen"
+    },
+    "ended": {
+      "title": "Dit feest is voorbij",
+      "body": "Bedankt voor het meespelen! Start gewoon je eigen feest."
+    },
+    "tv": {
+      "handover": "{{name}} speelt op de telefoon van de host …",
+      "handoverEyebrow": "Geef de telefoon door",
+      "pair": "Tik om te koppelen",
+      "title": "Tv",
+      "stagePassing": "{{name}} krijgt de telefoon",
+      "stageViewing": "{{name}} kijkt …",
+      "short": "Tv",
+      "nextUp": "Hierna: {{name}}"
+    },
+    "closing": {
+      "title": "Het feest is voorbij",
+      "placement": "Je bent {{rank}}e geworden – {{points}} punten",
+      "tv": "De prijsuitreiking is op de tv.",
+      "done": "Klaar",
+      "winner": "Jij hebt de avond gewonnen!",
+      "rankLine": "Plek {{rank}} – {{points}} punten"
+    },
+    "invite": {
+      "copied": "Link gekopieerd",
+      "hint": "Scan of voer de code in",
+      "share": "Uitnodiging delen",
+      "shareText": "Kom naar mijn feest! Code {{code}}",
+      "sheetHint": "Richt je camera op de code – de app opent en je doet mee.",
+      "showQr": "QR-code groot tonen",
+      "title": "Vrienden uitnodigen",
+      "chip": "Uitnodigen"
+    },
+    "ready": {
+      "count": "{{ready}} van {{total}} klaar",
+      "cta": "Ik ben klaar",
+      "done": "Klaar",
+      "undo": "Toch nog niet"
+    },
+    "next": {
+      "host": "Hierna",
+      "player": "Zo meteen spelen jullie"
+    },
+    "start": {
+      "with": "Starten: {{game}}"
+    },
+    "recap": {
+      "title": "Terugblik op de avond",
+      "games": "{{count}} spellen gespeeld",
+      "games_one": "{{count}} spel gespeeld",
+      "games_other": "{{count}} spellen gespeeld",
+      "closest": "Nipste zege: {{name}} in {{game}} (+{{margin}})",
+      "mostWins": "Meeste zeges: {{name}} ({{count}})",
+      "footer": "Gevierd met EventBliss · event-bliss.com",
+      "winners": "Winnaars per spel",
+      "share": "Deel de terugblik als afbeelding"
+    },
+    "turn": {
+      "you": "Jij bent aan de beurt",
+      "passTo": "Geef de telefoon aan {{name}}",
+      "other": "{{name}} is aan de beurt"
+    },
+    "waitingTitle": "Zo begint het",
+    "nextGame": "Hierna: {{game}}",
+    "tvLinked": "Tv verbonden",
+    "tvNotLinked": "Geen tv verbonden",
+    "tooLate": "Te laat – de ronde is al verder",
+    "evening": {
+      "rest": "Daarna",
+      "editOrder": "Volgorde wijzigen",
+      "players": "Spelers · volgorde",
+      "addPlayer": "Speler toevoegen",
+      "moveUp": "Omhoog",
+      "moveDown": "Omlaag",
+      "drag": "Sleep om te ordenen",
+      "needTwo": "Minstens 2 spelers",
+      "title": "Jullie avond",
+      "howTo": "Zo werkt het: {{text}}",
+      "start": "Eerste spel starten",
+      "meta": "{{count}} spellen · ca. {{minutes}} min",
+      "meta_one": "1 spel · ca. {{minutes}} min",
+      "meta_other": "{{count}} spellen · ca. {{minutes}} min"
+    }
+  },
+  "tvCinema": {
+    "round": "Ronde {{round}}",
+    "roundOf": "Ronde {{round}} van {{total}}",
+    "impostor": {
+      "roles": "Rollen verdelen",
+      "rolesSub": "Kijk stiekem op je telefoon",
+      "discussion": "Discussie",
+      "discussionSub": "Eén woord per persoon – verraad niet te veel",
+      "voting": "Stemmen",
+      "votingSub": "Wie is de bedrieger?",
+      "caught": "Betrapt!",
+      "escaped": "Ontsnapt!",
+      "spokenProgress": "{{count}} van {{total}} hebben gesproken",
+      "chip": "Bedrieger",
+      "theImpostorIs": "De bedrieger is …",
+      "revealIn": "Onthulling over …"
+    },
+    "bottle": {
+      "vote": "Stemmen",
+      "voteSub": "Is het {{name}} gelukt?",
+      "voteSubAnon": "Gelukt of niet?",
+      "yourTurn": "De fles wijst naar",
+      "spinning": "Draait",
+      "card": "Kaart",
+      "spinningPill": "De fles draait …"
+    },
+    "thisOrThat": {
+      "voting": "Maak je keuze!",
+      "votingSub": "{{a}} of {{b}}?",
+      "votingNow": "Er wordt gestemd",
+      "debate": "Discussie",
+      "debateSub": "Overtuig de andere kant",
+      "majority": "Meerderheid",
+      "tie": "Gelijkspel",
+      "votedCount": "{{count}}/{{total}} gestemd"
+    },
+    "bomb": {
+      "armed": "De bom tikt!",
+      "armedSub": "Antwoorden en snel doorgeven",
+      "holds": "heeft de bom",
+      "plusOne": "+1 strafpunt",
+      "winners": "{{names}} winnen!",
+      "winner": "{{name}} wint!",
+      "final": "Eindstand",
+      "modeMix": "Bonte mix",
+      "live": "Bom loopt",
+      "roundDone": "Ronde {{round}} overleefd",
+      "gameOver": "Einde spel",
+      "preparing": "De bom wordt op scherp gezet …"
+    },
+    "category": {
+      "newCategory": "Nieuwe categorie",
+      "newCategorySub": "Om de beurt noemen – wie twijfelt, verliest",
+      "category": "Categorie",
+      "yourTurn": "is aan de beurt",
+      "named": "{{count}} genoemd",
+      "noWords": "Nog niets genoemd – wie begint?",
+      "timeUp": "Tijd is op!",
+      "wordsThisRound": "{{count}} woorden deze ronde",
+      "wordsThisRound_one": "{{count}} woord deze ronde",
+      "wordsThisRound_other": "{{count}} woorden deze ronde",
+      "chain": "Woordketting",
+      "roundOver": "Ronde voorbij",
+      "starts": "{{name}} begint",
+      "preparing": "De categorie wordt getrokken …"
+    },
+    "closeenough": {
+      "guessing": "Schatten!",
+      "guessingSub": "Typ jullie getal in de telefoon – wie zit het dichtst bij?",
+      "submitted": "{{count}} van {{total}} hebben getypt",
+      "closest": "Dichtstbij: {{name}}",
+      "bullseye": "Voltreffer",
+      "revealPill": "Onthulling",
+      "guessingPill": "Schatronde",
+      "unit": "Antwoord in: {{unit}}"
+    },
+    "draw": {
+      "cueDrawer": "Nieuwe tekening",
+      "cueDrawerSub": "{{name}} tekent",
+      "cueDrawerSubAnon": "Wie tekent, kijkt op de telefoon",
+      "cueGuess": "Wat is dit?",
+      "cueGuessSub": "Raad om de beurt op de telefoon",
+      "drawerReveal": "Woord bekijken",
+      "drawing": "Tekenen",
+      "guessing": "Raden",
+      "result": "Onthulling",
+      "statusReveal": "bekijkt het woord",
+      "statusDrawing": "tekent",
+      "statusDone": "heeft getekend",
+      "timeLeft": "Seconden",
+      "guessHeadline": "Wat is dit?",
+      "guessHint": "Raad om de beurt op de telefoon",
+      "wordWas": "Het woord was",
+      "getReady": "Zo gaat het beginnen …",
+      "coverTitle": "Zo wordt er getekend",
+      "guessedBy": "Geraden door {{name}}"
+    },
+    "emojiGuess": {
+      "title": "Emoji-raadsel",
+      "upNext": "{{name}} is aan de beurt",
+      "getReady": "Zo verschijnen de emoji's – iedereen raadt mee!",
+      "solution": "De oplossing",
+      "guessing": "{{name}} raadt",
+      "whatIsIt": "Wat zit erachter?",
+      "getSet": "Zo gaat het beginnen",
+      "guessingNow": "Er wordt geraden",
+      "reveal": "Onthulling"
+    },
+    "findIt": {
+      "memorize": "Onthouden",
+      "memorizeSub": "Onthoud wat waar ligt",
+      "whichCity": "Welke stad is dit?",
+      "whereIsIt": "Waar ligt dit?",
+      "spotDiffs": "Zoek de verschillen",
+      "guessAlong": "Raad mee",
+      "itWas": "Het was",
+      "tapOnPhone": "Tik jullie antwoord in op de telefoon",
+      "reveal": "Onthulling",
+      "roundOver": "Ronde voorbij",
+      "setup": "Voorbereiding",
+      "memorizeBoard": "Prent het bord in je hoofd!",
+      "questionOf": "Vraag {{n}} van {{total}}",
+      "lookAtPhone": "Kijk op jullie telefoons",
+      "playerRight": "{{name}} zit goed!",
+      "playerWrong": "{{name}} zit ernaast"
+    },
+    "headup": {
+      "yourTurn": "{{name}} is aan de beurt",
+      "nextTurn": "Volgende beurt",
+      "readySub": "Telefoon op je voorhoofd, de anderen leggen uit",
+      "guessing": "is aan het raden",
+      "explainNow": "Leg het woord uit!",
+      "lookAtPhone": "Het woord staat op de telefoon – alleen {{name}} ziet het niet",
+      "turnOf": "Beurt van",
+      "allDone": "Iedereen is geweest!",
+      "winner": "{{name}} wint!",
+      "correctCount": "{{count}} goed",
+      "category": "Categorie: {{name}}",
+      "title": "HeadUp",
+      "holdUp": "Telefoon op je voorhoofd – zo gaat het beginnen",
+      "roundOver": "Beurt voorbij",
+      "gameOver": "Einde spel"
+    },
+    "ohrwurm": {
+      "turnOf": "{{name}} is aan de beurt",
+      "listen": "Mysterienummer",
+      "listenSub": "Luister goed – wanneer kwam het uit?",
+      "counter": "Counterkans",
+      "counterSub": "Zit {{name}} ernaast? Counter nu!",
+      "counterSubAnon": "Klopt de plaatsing niet? Counter nu!",
+      "counterHint": "Zit {{name}} ernaast? Wie twijfelt, countert nu op de telefoon.",
+      "ready": "Zo gaat het beginnen",
+      "timelineOf": "Tijdlijn van {{name}}",
+      "winner": "{{name}} wint!",
+      "revealPill": "Onthulling",
+      "placing": "Plaatsen",
+      "listenPill": "Luisteren",
+      "target": "Doel: {{count}} kaarten",
+      "target_one": "Doel: {{count}} kaart",
+      "target_other": "Doel: {{count}} kaarten"
+    },
+    "pantomime": {
+      "cueTurn": "Volgende beurt",
+      "cueTurnSub": "{{name}} beeldt uit",
+      "cueTurnSubAnon": "Wie uitbeeldt, kijkt op de telefoon",
+      "turnStart": "Volgende beurt",
+      "fetch": "Pak een rekwisiet",
+      "playing": "Uitbeelden",
+      "summary": "Score",
+      "final": "Eindstand",
+      "forTeam": "voor {{team}}",
+      "extraHeadline": "Dubbele punten?",
+      "extraDecides": "{{name}} beslist"
+    },
+    "pixeljagd": {
+      "playing": "Wat is dit?",
+      "playingSub": "Buzz zodra je het herkent",
+      "buzzed": "{{name}} heeft gebuzzd!",
+      "solvedBy": "{{name}} heeft het geraden",
+      "unsolved": "Niemand heeft het geraden",
+      "credit": "Afbeelding: {{credit}}",
+      "revealPill": "Onthulling",
+      "pointsNow": "Nu waard"
+    },
+    "quiz": {
+      "newQuestion": "Nieuwe vraag",
+      "teamsSub": "Team tegen team",
+      "betting": "Inzetten",
+      "bettingSub": "Hoe zeker zijn jullie?",
+      "factOrFake": "Feit of fake?",
+      "whichIsTrue": "Welke bewering klopt?",
+      "trueOrFalseSub": "Waar of verzonnen?",
+      "teamwork": "Teamwerk",
+      "teamworkSub": "Drie rollen, één antwoord",
+      "guessing": "Nu wordt er geraden",
+      "reveal": "Onthulling",
+      "roundIntro": "Nieuwe ronde",
+      "passPhone": "Telefoon doorgeven",
+      "allVoted": "Iedereen heeft getypt",
+      "readingQuestion": "Vraag wordt voorgelezen",
+      "readingOptions": "Opties worden voorgelezen",
+      "answering": "Antwoordtijd loopt",
+      "gotItRight": "{{pct}} % goed",
+      "gotItWrong": "{{pct}} % fout",
+      "teamCorrect": "{{count}} goed",
+      "roleQuestion": "leest de vraag voor",
+      "roleOptions": "leest de opties voor",
+      "roleGuess": "raadt het antwoord",
+      "preparing": "De quiz wordt klaargezet …",
+      "rolesTitle": "De rollen deze ronde",
+      "votedCount": "{{count}} van {{total}} hebben getypt",
+      "correctPlayers": "Goed geraden",
+      "passPhoneSub": "Zo gaat het verder",
+      "teamAnswering": "Het team beantwoordt de vraag",
+      "onPhones": "De vraag staat op de telefoons",
+      "revealOnTv": "De onthulling zie je hier op de tv",
+      "teamWins": "{{team}} wint!",
+      "teamTie": "Gelijkspel!"
+    },
+    "story": {
+      "cueStart": "Er was eens …",
+      "cueStartSub": "Zin voor zin",
+      "cueReveal": "Het hele verhaal",
+      "cueRevealSub": "Lees mee!",
+      "writing": "Schrijven",
+      "passing": "Doorgeven",
+      "reveal": "Het verhaal",
+      "isWriting": "{{name}} schrijft",
+      "nextUp": "Telefoon naar {{name}}"
+    },
+    "taboo": {
+      "teamTurn": "{{team}} is aan de beurt",
+      "nextTurn": "Volgende beurt",
+      "explains": "{{name}} legt uit",
+      "turnSub": "Uitleggen zonder de verboden woorden",
+      "turnStartSub": "De kaart staat alleen op de telefoon – verboden woorden zijn taboe!",
+      "skipped": "Overgeslagen",
+      "turnPoints": "{{points}} punten voor {{team}}",
+      "tie": "Gelijkspel!",
+      "teamWins": "{{team}} wint!",
+      "against": "tegen {{team}}",
+      "summary": "Beurtoverzicht",
+      "gameOver": "Einde spel",
+      "preparing": "Teams worden gevormd …"
+    },
+    "truthdare": {
+      "cueChoice": "Waarheid of durven?",
+      "cueChoiceSub": "{{name}} is aan de beurt",
+      "cueVote": "Stemming",
+      "cueVoteSub": "Is het {{name}} gelukt?",
+      "cueVoteSubAnon": "Gelukt of niet?",
+      "chooses": "{{name}} kiest …",
+      "or": "of",
+      "voteHeadline": "Gelukt?",
+      "spin": "Wie is er aan de beurt?",
+      "choice": "Keuze",
+      "vote": "Stemming",
+      "final": "Eindstand",
+      "winner": "{{name}} wint!"
+    },
+    "whoami": {
+      "cueAssign": "Personages uitdelen",
+      "cueAssignSub": "Iedereen krijgt een geheim personage",
+      "cueTurn": "Wie ben ik?",
+      "cueTurnSub": "{{name}} stelt ja/nee-vragen",
+      "cueTurnSubAnon": "Ja/nee-vragen stellen",
+      "cueGuess": "Nu wordt er geraden",
+      "cueGuessSub": "{{name}} noemt het personage",
+      "assign": "Personages uitdelen",
+      "asking": "Vragen",
+      "answering": "Antwoorden",
+      "guessing": "Raden",
+      "verdict": "Oordeel",
+      "final": "Eindstand",
+      "assignHeadline": "Iedereen krijgt een geheim personage",
+      "correct": "Goed!",
+      "wrong": "Mis!",
+      "winner": "{{name}} wint!",
+      "preparing": "Zo gaat het beginnen …",
+      "guessingSub": "noemt nu het personage",
+      "askingSub": "stelt ja/nee-vragen",
+      "guessHeadline": "Wie ben ik?",
+      "guessHint": "Het antwoord komt zo …"
+    },
+    "wordpress": {
+      "yourTurn": "{{name}} is aan de beurt",
+      "nextTurn": "Volgende beurt",
+      "turnSub": "Typ de juiste woorden – snel!",
+      "roundDone": "Ronde {{round}} gehaald",
+      "gameOver": "Einde spel",
+      "preparing": "Zo gaat het beginnen …",
+      "combo": "{{count}}× combo",
+      "accuracy": "{{pct}} % raak",
+      "progress": "Woord {{n}} van {{total}}",
+      "bestCombo": "beste combo {{count}}×",
+      "winner": "{{name}} wint!",
+      "points": "{{count}} punten",
+      "points_one": "{{count}} punt",
+      "points_other": "{{count}} punten",
+      "final": "Eindstand"
+    },
+    "finalStandings": "Eindstand",
+    "fallback": {
+      "phase": {
+        "playing": "Bezig",
+        "roundEnd": "Ronde voorbij",
+        "reveal": "Onthulling",
+        "voting": "Stemming",
+        "results": "Uitslag"
+      },
+      "roundOver": "Ronde voorbij!",
+      "team": "Team {{n}}",
+      "isUp": "is aan de beurt",
+      "truth": "💬 Waarheid",
+      "dare": "🎯 Durven"
+    }
   }
 }

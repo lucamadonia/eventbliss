@@ -39,9 +39,12 @@ const STORAGE_KEY = "eventbliss_party_session";
 export interface PartySessionAPI {
   session: PartySession | null;
   isPartyActive: boolean;
-  addPlayer: (name: string) => void;
+  /** Optional symbol/colour from the profile editor ("Euer Abend"). */
+  addPlayer: (name: string, look?: { avatar?: string; color?: string }) => void;
+  /** Turn order: move a player from one position to another. */
+  movePlayer: (from: number, to: number) => void;
   removePlayer: (id: string) => void;
-  updatePlayer: (id: string, updates: Partial<Pick<PartyPlayer, "name" | "avatar">>) => void;
+  updatePlayer: (id: string, updates: Partial<Pick<PartyPlayer, "name" | "avatar" | "color">>) => void;
   startSession: () => void;
   startGame: (gameId: string) => void;
   endGame: (result: GameEndResult) => void;
@@ -183,6 +186,34 @@ function applyGameEnd(session: PartySession, result: GameEndResult): PartySessio
   };
 }
 
+/**
+ * Spieler verlaesst die Party — jederzeit, auch mitten im Spiel (Masterplan
+ * 3.6/6.6). Wer schon Punkte oder Runden hat, wandert ins Archiv und bleibt
+ * in der Gesamtwertung; wer noch nichts gespielt hat, verschwindet einfach.
+ * Das laufende Spiel zaehlt fuer ihn nicht (`applyGameEnd` wertet nur aktive
+ * Spieler). Die Mindestzahl von zwei Spielern gilt nur fuer den Spielstart.
+ */
+export function archivePartyPlayer(session: PartySession, id: string): PartySession {
+  const player = session.players.find((p) => p.id === id);
+  if (!player) return session;
+  const players = session.players.filter((p) => p.id !== id);
+  const keep = player.gamesPlayed > 0 || player.totalScore !== 0;
+  const archivedPlayers = keep
+    ? [...(session.archivedPlayers ?? []).filter((p) => p.id !== id), player]
+    : session.archivedPlayers;
+  return { ...session, players, ...(archivedPlayers ? { archivedPlayers } : {}) };
+}
+
+/** Turn order for the one-phone party ("Euer Abend"): out-of-range moves change nothing. */
+export function movePartyPlayer(session: PartySession, from: number, to: number): PartySession {
+  const n = session.players.length;
+  if (from === to || from < 0 || to < 0 || from >= n || to >= n) return session;
+  const players = [...session.players];
+  const [moved] = players.splice(from, 1);
+  players.splice(to, 0, moved);
+  return { ...session, players };
+}
+
 // ── Playlist ───────────────────────────────────────────────────────
 
 function currentPlaylistGame(session: PartySession | null): string | null {
@@ -211,23 +242,24 @@ export function usePartySession(): PartySessionAPI {
     commit(createPartySession(uuidv4()));
   }, []);
 
-  const addPlayer = useCallback((name: string) => {
+  const addPlayer = useCallback((name: string, look?: { avatar?: string; color?: string }) => {
     mutate((prev) => {
       if (prev.players.length >= MAX_PARTY_PLAYERS) return prev;
-      const player = createPartyPlayer(uuidv4(), name, prev.players.length);
+      const player = createPartyPlayer(uuidv4(), name, prev.players.length, look);
       return { ...prev, players: [...prev.players, player] };
     });
   }, []);
 
+  const movePlayer = useCallback((from: number, to: number) => {
+    mutate((prev) => movePartyPlayer(prev, from, to));
+  }, []);
+
   const removePlayer = useCallback((id: string) => {
-    mutate((prev) => {
-      if (prev.players.length <= 2) return prev;
-      return { ...prev, players: prev.players.filter((p) => p.id !== id) };
-    });
+    mutate((prev) => archivePartyPlayer(prev, id));
   }, []);
 
   const updatePlayer = useCallback(
-    (id: string, updates: Partial<Pick<PartyPlayer, "name" | "avatar">>) => {
+    (id: string, updates: Partial<Pick<PartyPlayer, "name" | "avatar" | "color">>) => {
       mutate((prev) => ({
         ...prev,
         players: prev.players.map((p) => (p.id === id ? { ...p, ...updates } : p)),
@@ -276,6 +308,7 @@ export function usePartySession(): PartySessionAPI {
       session,
       isPartyActive: session?.isActive ?? false,
       addPlayer,
+      movePlayer,
       removePlayer,
       updatePlayer,
       startSession,
@@ -290,7 +323,7 @@ export function usePartySession(): PartySessionAPI {
       endPlaylist,
     }),
     [
-      session, addPlayer, removePlayer, updatePlayer, startSession, startGame, endGame,
+      session, addPlayer, movePlayer, removePlayer, updatePlayer, startSession, startGame, endGame,
       getOverallLeaderboard, resetSession, setPlaylist, advancePlaylist,
       getCurrentPlaylistGame, endPlaylist,
     ]

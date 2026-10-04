@@ -1,4 +1,16 @@
 import type { PartyNightState } from '../party-types';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useMemo, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { partyMotion } from '@/lib/party-motion';
+import { useAmbientMotion } from '@/lib/useAmbientMotion';
+import { tvPanel, tvType } from '../tv-tokens';
+import TVPhaseStage from '../cinema/TVPhaseStage';
+import { lu } from '../components/tv-lobby-scale';
+import TabooTeamPanel from './taboo/TabooTeamPanel';
+import { TabooGameOver, TabooLiveCenter, TabooTurnStart, TabooTurnSummary, type TeamView } from './taboo/TabooScenes';
+import { TB, explainerOf, teamHex, teamMembers, type TabooSeatLike, type TabooTeam } from './taboo/taboo-tv';
+
 interface ViewState {
   partyNight?: PartyNightState;
   phase?: string;
@@ -9,231 +21,129 @@ interface ViewState {
   turnCorrect?: number;
   turnSkipped?: number;
   turnTaboo?: number;
-  teams?:TabooTeam[]; explainer?:string | {name?:string;color?:string};
+  teams?: TabooTeam[];
+  explainer?: string | TabooSeatLike;
+  roster?: TabooSeatLike[];
 }
-interface TabooTeam {name?:string;color?:string;score?:number;players?:(string | {name:string})[]}
-import { motion, AnimatePresence } from 'framer-motion';
-import { useTranslation } from 'react-i18next';
-import { useAmbientMotion } from '@/lib/useAmbientMotion';
-import { tvPanel, tvPanelRaised, tvType, tvActiveRing } from '../tv-tokens';
 
 /**
- * TVTabooView — big-screen view for Taboo (two-team explain-the-word battle).
+ * TVTabooView — Fernseher fuer Tabu (zwei Teams erklaeren um die Wette).
  *
- * The HERO is the two-team scoreboard battle; the active team glows. The TV
- * NEVER shows the current card or its forbidden words — those stay on the
- * explainer's phone. On phase==='turnSummary' it flashes the turn's tally.
+ * Szenen je Phase (TVPhaseStage): Zugbeginn (Team + Erklaerer im
+ * Rampenlicht), Team-Duell waehrend des Zuges (Zeit-Ring + Live-Zaehler in
+ * der Mitte), Zug-Bilanz, Siegerteam. Titelkarten: cinema/cues/taboo.cue.ts.
  *
- * Data via useTVGameBridge('taboo', …): { phase, currentRound, totalRounds,
- * teams[{name,color,score,players}], activeTeamIdx, explainer, timeLeft,
- * turnCorrect, turnTaboo, turnSkipped }.
+ * GEHEIMNIS: Die Karte und ihre verbotenen Woerter erscheinen NIE — die
+ * Bruecke (tabooTvState) zaehlt die Felder ausdruecklich auf, ohne Karte.
  */
-const TB = { purpleHex: '#df8eff', cyanHex: '#8ff5ff', text: '#f1f3fc', dim: '#a8abb3', bg: '#060810', correct: '#10b981', taboo: '#ff6e84', skip: '#a8abb3' };
-
-/** Team colors arrive as tailwind classes ("bg-[#df8eff]"); pull the hex out. */
-function teamHex(team: TabooTeam, fallback: string): string {
-  const raw: string = team?.color || '';
-  const m = raw.match(/#([0-9a-fA-F]{6})/);
-  return m ? `#${m[1]}` : (raw.startsWith('#') ? raw : fallback);
-}
+const EMPTY: never[] = [];
 
 export default function TVTabooView({ gameState }: { gameState: ViewState }) {
   const { t } = useTranslation();
+  const reduced = !!useReducedMotion();
   const ambient = useAmbientMotion();
 
-  const phase: string = (gameState?.phase || 'playing') as string;
-  const currentRound: number = (gameState?.currentRound || 1) as number;
-  const totalRounds = gameState?.totalRounds;
-  const teams = (gameState?.teams || []) as TabooTeam[];
-  const activeTeamIdx: number = (gameState?.activeTeamIdx ?? 0) as number;
-  const explainer = gameState?.explainer;
-  const explainerName = typeof explainer === 'string' ? explainer : explainer?.name || '';
-  const explainerColor = typeof explainer === 'object' ? explainer.color : teams[activeTeamIdx]?.color;
-  const timeLeft = gameState?.timeLeft;
-  const turnCorrect: number = gameState?.turnCorrect ?? 0;
-  const turnTaboo: number = gameState?.turnTaboo ?? 0;
-  const turnSkipped: number = gameState?.turnSkipped ?? 0;
+  const phase: string = gameState?.phase || 'playing';
+  const round: number = gameState?.currentRound || 1;
+  const totalRounds = gameState?.totalRounds || 0;
+  const activeIdx: number = gameState?.activeTeamIdx ?? 0;
+  const explainer = explainerOf(gameState?.explainer);
+  const timeLeft = typeof gameState?.timeLeft === 'number' ? gameState.timeLeft : null;
+  const turnCorrect = gameState?.turnCorrect ?? 0;
+  const turnTaboo = gameState?.turnTaboo ?? 0;
+  const turnSkipped = gameState?.turnSkipped ?? 0;
 
-  return (
-    <div className="h-screen flex flex-col items-center justify-between p-[clamp(1.25rem,2.4vw,3rem)] relative overflow-hidden" style={{ background: TB.bg, color: TB.text }}>
-      {/* Static brand washes (low blur, no animation) */}
-      <div className="absolute -top-24 -left-24 w-[34rem] h-[34rem] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(223,142,255,0.09)' }} />
-      <div className="absolute -bottom-24 -right-24 w-[34rem] h-[34rem] rounded-full blur-[90px] pointer-events-none" style={{ background: 'rgba(143,245,255,0.08)' }} />
+  const rawTeams = gameState?.teams ?? EMPTY;
+  const roster = gameState?.roster ?? EMPTY;
+  const teams: TeamView[] = useMemo(() => rawTeams.slice(0, 2).map((team, i) => ({
+    name: team?.name || (i === 0 ? 'Team A' : 'Team B'),
+    score: team?.score ?? 0,
+    color: teamHex(team, i),
+    members: teamMembers(team, i, roster),
+  })), [rawTeams, roster]);
+  const active = teams[activeIdx] ?? teams[0];
 
-      {/* Top rail: round + timer */}
-      <div className="relative flex items-center gap-4 z-10">
-        <span style={{ fontSize: tvType.label }}>🤐</span>
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentRound}
-            className={`${tvPanel} px-7 py-2.5`}
-            initial={{ scale: 0.7, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: 'spring', damping: 15 }}
-          >
-            <span className="font-bold tracking-[0.18em] tabular-nums" style={{ fontSize: tvType.micro, color: TB.dim }}>
-              {t('tv.round', 'Runde')} {currentRound}{totalRounds ? `/${totalRounds}` : ''}
-            </span>
-          </motion.div>
-        </AnimatePresence>
-        {timeLeft !== undefined && phase === 'playing' && (
-          <motion.div
-            className={`${tvPanel} px-6 py-2 font-mono font-black tabular-nums`}
-            style={{ fontSize: tvType.title, color: Number(timeLeft) <= 10 ? TB.taboo : TB.text }}
-            animate={ambient && Number(timeLeft) <= 5 ? { scale: [1, 1.12, 1] } : { scale: 1 }}
-            transition={ambient && Number(timeLeft) <= 5 ? { repeat: Infinity, duration: 0.4 } : { duration: 0.2 }}
-          >
-            {timeLeft}s
-          </motion.div>
-        )}
-      </div>
-
-      {/* Center: turn summary OR team battle */}
-      <div className="relative flex-1 flex items-center justify-center w-full max-w-6xl gap-6 z-10 min-h-0">
-        <AnimatePresence mode="wait">
-          {phase === 'turnSummary' ? (
-            <motion.div
-              key="summary"
-              className={`${tvPanelRaised} flex flex-col items-center gap-8 px-[clamp(2rem,5vw,5rem)] py-[clamp(1.5rem,4vh,4rem)]`}
-              initial={{ scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: 'spring', damping: 16 }}
-            >
-              <span className="font-black italic" style={{ fontSize: tvType.title, color: TB.purpleHex }}>
-                {teams[activeTeamIdx]?.name || t('tv.taboo.turnOver', 'Zug vorbei')}
-              </span>
-              <div className="flex gap-[clamp(1.5rem,4vw,4rem)]">
-                <SummaryStat value={turnCorrect} label={t('tv.taboo.correct', 'Richtig')} color={TB.correct} delay={0.15} />
-                <SummaryStat value={turnTaboo} label={t('tv.taboo.taboo', 'Tabu')} color={TB.taboo} delay={0.25} />
-                <SummaryStat value={turnSkipped} label={t('tv.taboo.skipped', 'Skip')} color={TB.skip} delay={0.35} />
-              </div>
-              <span className="font-bold tabular-nums" style={{ fontSize: tvType.body, color: TB.dim }}>
-                {t('tv.taboo.points', { points: turnCorrect - turnTaboo, defaultValue: `${turnCorrect - turnTaboo} Punkte` })}
-              </span>
-            </motion.div>
-          ) : teams.length >= 2 ? (
-            <motion.div key="battle" className="flex items-center justify-center w-full gap-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <TeamCard team={teams[0]} isActive={activeTeamIdx === 0} side="left" ambient={ambient} explainerName={activeTeamIdx === 0 ? explainerName : ''} />
-
-              {/* VS divider — rotation gated on ambient */}
-              <motion.div
-                className="flex-shrink-0 flex items-center justify-center"
-                animate={ambient ? { rotateZ: [-3, 3, -3] } : { rotateZ: 0 }}
-                transition={ambient ? { repeat: Infinity, duration: 4, ease: 'easeInOut' } : { duration: 0.3 }}
-              >
-                <span className="font-black italic select-none" style={{ fontSize: tvType.display, background: `linear-gradient(135deg, ${TB.purpleHex}, ${TB.cyanHex})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: `drop-shadow(0 0 20px ${TB.purpleHex}66)` }}>
-                  VS
-                </span>
-              </motion.div>
-
-              <TeamCard team={teams[1]} isActive={activeTeamIdx === 1} side="right" ambient={ambient} explainerName={activeTeamIdx === 1 ? explainerName : ''} />
-            </motion.div>
-          ) : (
-            <span style={{ fontSize: tvType.body, color: TB.dim }}>{t('tv.taboo.waiting', 'Warte auf Teams...')}</span>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Bottom: explainer (name only — never the card) */}
-      <div className="relative pt-2 z-10">
-        <AnimatePresence>
-          {explainerName && phase === 'playing' && (
-            <motion.div
-              className={`${tvPanel} px-10 py-3.5`}
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 50, opacity: 0 }}
-              transition={{ type: 'spring', damping: 18 }}
-            >
-              <span className="font-bold" style={{ fontSize: tvType.body, color: TB.text }}>
-                {'🎤 '}
-                <span style={{ color: teamHex({ color: explainerColor }, TB.purpleHex) }}>{explainerName}</span>
-                {' '}{t('tv.taboo.explains', 'erklärt')}
-              </span>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+  const topBar = (label: string, color: string, showRound = true) => (
+    <div className="absolute left-[5vw] right-[5vw] top-[5vh] z-10 flex items-center justify-between">
+      <motion.div className="flex items-center gap-3 rounded-full px-6 py-2" style={{ background: `${color}1f`, border: `1px solid ${color}4d` }}
+        variants={partyMotion('phaseTitleSweep', reduced)} initial="initial" animate="animate">
+        <span aria-hidden style={{ fontSize: lu(2.4) }}>🤐</span>
+        <span className="font-bold" style={{ fontSize: lu(2.4), color: '#fff' }}>{label}</span>
+      </motion.div>
+      {showRound && (
+        <div className={`${tvPanel} px-5 py-2`}>
+          <span className="font-bold tabular-nums" style={{ fontSize: lu(2.4), color: TB.dim }}>
+            {totalRounds ? t('tvCinema.roundOf', 'Runde {{round}} von {{total}}', { round, total: totalRounds }) : t('tvCinema.round', 'Runde {{round}}', { round })}
+          </span>
+        </div>
+      )}
     </div>
   );
-}
 
-function TeamCard({ team, isActive, side, ambient, explainerName }: { team: TabooTeam; isActive: boolean; side: 'left' | 'right'; ambient: boolean; explainerName: string }) {
-  const { t } = useTranslation();
-  const name = team?.name || 'Team';
-  const score = team?.score ?? 0;
-  const players: NonNullable<TabooTeam['players']> = team?.players || [];
-  const color = teamHex(team, side === 'left' ? '#df8eff' : '#8ff5ff');
+  let content: ReactNode;
+  if (teams.length < 2 || !active) {
+    content = (
+      <motion.span className="font-semibold" style={{ fontSize: tvType.body, color: TB.dim }}
+        animate={ambient ? { opacity: [0.4, 1, 0.4] } : { opacity: 0.8 }} transition={ambient ? { repeat: Infinity, duration: 2 } : { duration: 0.3 }}>
+        {t('tv.taboo.waiting', 'Warte auf Teams...')}
+      </motion.span>
+    );
+  } else if (phase === 'turnStart') {
+    content = (
+      <>
+        {topBar(t('tvCinema.taboo.nextTurn', 'Nächster Zug'), active.color)}
+        <TabooTurnStart team={active} explainer={explainer} />
+      </>
+    );
+  } else if (phase === 'playing') {
+    content = (
+      <>
+        {topBar(explainer.name ? t('tvCinema.taboo.explains', '{{name}} erklärt', { name: explainer.name }) : active.name, active.color)}
+        <div className="absolute inset-x-[5vw] bottom-[6vh] top-[15vh] grid grid-cols-[1fr_auto_1fr] items-center" style={{ gap: lu(3) }}>
+          <TabooTeamPanel {...teams[0]} active={activeIdx === 0} explainerName={explainer.name || ''} side="left" />
+          <div className="flex items-center justify-center">
+            <TabooLiveCenter timeLeft={timeLeft} correct={turnCorrect} taboo={turnTaboo} skipped={turnSkipped} color={active.color} />
+          </div>
+          <TabooTeamPanel {...teams[1]} active={activeIdx === 1} explainerName={explainer.name || ''} side="right" />
+        </div>
+      </>
+    );
+  } else if (phase === 'turnSummary') {
+    content = (
+      <>
+        {topBar(t('tvCinema.taboo.summary', 'Zug-Bilanz'), active.color)}
+        <TabooTurnSummary team={active} explainer={explainer} correct={turnCorrect} taboo={turnTaboo} skipped={turnSkipped} />
+        <div className="absolute bottom-[5vh] left-1/2 flex -translate-x-1/2 items-center font-black tabular-nums" style={{ gap: lu(3), fontSize: tvType.title }}>
+          {teams.map((tm, i) => (
+            <span key={i} className={`${tvPanel} flex items-center gap-3 px-6 py-2`} style={{ color: '#fff' }}>
+              <span aria-hidden className="rounded-full" style={{ width: '0.5em', height: '0.5em', background: tm.color }} />
+              <span className="font-bold" style={{ fontSize: tvType.body }}>{tm.name}</span>{tm.score}
+            </span>
+          ))}
+        </div>
+      </>
+    );
+  } else if (phase === 'gameOver') {
+    content = (
+      <>
+        {topBar(t('tvCinema.taboo.gameOver', 'Spielende'), TB.gold, false)}
+        <TabooGameOver teams={teams} />
+      </>
+    );
+  } else {
+    content = (
+      <motion.span className="font-semibold" style={{ fontSize: tvType.body, color: TB.dim }}
+        animate={ambient ? { opacity: [0.4, 1, 0.4] } : { opacity: 0.8 }} transition={ambient ? { repeat: Infinity, duration: 2 } : { duration: 0.3 }}>
+        {t('tvCinema.taboo.preparing', 'Teams werden gebildet …')}
+      </motion.span>
+    );
+  }
 
   return (
-    <motion.div
-      className={`flex-1 max-w-md ${isActive ? tvPanelRaised : tvPanel} p-8 flex flex-col items-center justify-center gap-4 relative`}
-      style={isActive ? tvActiveRing(color) : undefined}
-      initial={{ x: side === 'left' ? -100 : 100, opacity: 0 }}
-      animate={{ x: 0, opacity: isActive ? 1 : 0.6, scale: isActive ? 1.02 : 1 }}
-      transition={{ x: { type: 'spring', damping: 18, delay: side === 'left' ? 0 : 0.1 }, opacity: { duration: 0.4 }, scale: { duration: 0.4 } }}
-    >
-      {/* Active breathing — scale only, gated */}
-      {isActive && ambient && (
-        <motion.div
-          className="absolute inset-0 rounded-[28px] pointer-events-none"
-          style={{ boxShadow: `0 0 60px -10px ${color}` }}
-          animate={{ opacity: [0.4, 0.9, 0.4] }}
-          transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
-        />
-      )}
-
-      <h2 className="font-black tracking-wide" style={{ fontSize: tvType.title, color: TB.text }}>{name}</h2>
-
-      <motion.span
-        key={score}
-        className="font-black leading-none tabular-nums"
-        style={{ fontSize: tvType.display, color: isActive ? color : TB.text, textShadow: isActive ? `0 0 30px ${color}66` : 'none' }}
-        initial={{ scale: 1.2 }}
-        animate={{ scale: 1 }}
-        transition={{ type: 'spring', damping: 10, stiffness: 300 }}
-      >
-        {score}
-      </motion.span>
-
-      {/* Every team member gets a chip (no truncation) — the current explainer is ringed. */}
-      <div className="flex flex-wrap gap-2 justify-center mt-2 max-w-full">
-        {players.length > 0 ? (
-          players.map((p, i: number) => {
-            const pname = (typeof p === 'string' ? p : p?.name) || '';
-            const isExplainer = isActive && !!explainerName && pname === explainerName;
-            return (
-              <span
-                key={i}
-                className="rounded-full px-3 py-1 font-semibold whitespace-nowrap inline-flex items-center gap-1"
-                style={{
-                  fontSize: tvType.micro,
-                  color: isExplainer ? color : TB.dim,
-                  background: isExplainer ? `${color}1f` : 'rgba(255,255,255,0.04)',
-                  border: `1px solid ${isExplainer ? color + '66' : 'rgba(255,255,255,0.07)'}`,
-                }}
-              >
-                {isExplainer && '🎤'}{pname}
-              </span>
-            );
-          })
-        ) : (
-          <span style={{ fontSize: tvType.micro, color: TB.dim }}>{t('tv.playersCount', { count: players.length })}</span>
-        )}
-      </div>
-    </motion.div>
-  );
-}
-
-function SummaryStat({ value, label, color, delay }: { value: number; label: string; color: string; delay: number }) {
-  return (
-    <motion.div className="flex flex-col items-center" initial={{ y: 24, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay, type: 'spring' }}>
-      <motion.span className="font-black tabular-nums" style={{ fontSize: tvType.display, color, textShadow: `0 0 28px ${color}88` }}
-        initial={{ scale: 0 }} animate={{ scale: [0, 1.2, 1] }} transition={{ delay: delay + 0.1, duration: 0.4 }}>
-        {value}
-      </motion.span>
-      <span className="mt-2 font-bold" style={{ fontSize: tvType.micro, color: '#a8abb3' }}>{label}</span>
-    </motion.div>
+    <div className="relative h-screen overflow-hidden" style={{ background: TB.bg, color: TB.text }}>
+      <TVPhaseStage phase={phase} className="flex flex-col items-center justify-center">
+        {content}
+      </TVPhaseStage>
+    </div>
   );
 }

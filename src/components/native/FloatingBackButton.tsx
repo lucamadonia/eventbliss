@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { runBackGuards } from "@/lib/back-guard";
+import { getActivePartySession } from "@/hooks/usePartySession";
 
 interface Props {
   onClick?: () => void;
@@ -34,7 +35,10 @@ function resolveBackTarget(pathname: string, search: string): string {
   if (pathname === "/games" || pathname.startsWith("/games/")) {
     // Ausnahme Party-Abend: Dort ist das Spiel Teil eines laufenden Abends,
     // die Spieleübersicht wäre ein Bruch im Ablauf.
-    return new URLSearchParams(search).get("party") === "true" ? "/party" : "/games";
+    if (new URLSearchParams(search).get("party") === "true") {
+      return getActivePartySession()?.playMode === "controllers" ? "/party/controllers" : "/party";
+    }
+    return "/games";
   }
   // Der große Bildschirm: aus dem Raum zurück zur Code-Eingabe, von dort
   // dorthin, wo er angeboten wird (GamesHub).

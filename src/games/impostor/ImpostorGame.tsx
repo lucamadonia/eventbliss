@@ -2,6 +2,12 @@ import { GameStage, StageHeader, StageAction } from '../ui/GameStage';
 import './design.css';
 import { uniqueVoteLeader, impostorRoundPoints } from './round-rules';
 import { impostorSnapshotFor, impostorTVPlayers } from './private-state';
+import { pendingLocalReveals, removeFromRound } from './roster-change';
+import { useGuestHandover } from '../ui/useGuestHandover';
+import { localActiveSeats } from '../ui/guest-handover';
+import { serverClock } from '../party/scene-clock';
+import { planPhaseStart } from '../party/phase-gate';
+import { usePhaseGate } from '../party/usePhaseGate';
 import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -294,32 +300,49 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   const [round, setRound] = useState(1);
   const [roleReady, setRoleReady] = useState<string[]>([]);
 
+  // 🔁-Gaeste am Host-Handy (Masterplan 3.5, sharedDevice 'secret'): Rolle
+  // aufdecken und abstimmen nur nach verdeckter Weitergabe mit Halten; vor dem
+  // Weiterreichen zudecken. Keine Spieluhr laeuft in diesen Phasen.
+  const handover = useGuestHandover(online, { secret: true, clockPaused: false });
+  const localSeatIds = useMemo(() => localActiveSeats(online), [online]);
+
+  // Gemeinsamer Start jeder Phase (Serverzeit). Online plant der Host den
+  // Wechsel mit Vorlauf und schickt die Zeit an Handys (Snapshot) und TV
+  // (Bridge); alle wechseln zu diesem Moment. Lokal: der echte Wechsel.
+  const [remotePhaseStartsAt, setRemotePhaseStartsAt] = useState<number | null>(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const plannedPhaseStart = useMemo(() => (online ? planPhaseStart() : serverClock.now()), [phase, round]);
+  const phaseStartsAt = online && !online.isHost ? remotePhaseStartsAt : plannedPhaseStart;
+  const gate = usePhaseGate(phase, online ? phaseStartsAt : null);
+
   // Score/speaker/timer changes within a round must reach the TV too — the
   // deps list is what triggers a re-broadcast, so it carries a score signature.
   useTVGameBridge(
     'impostor',
-    { phase, round, players: impostorTVPlayers(phase, players), currentSpeaker, timeLeft },
-    [phase, round, currentSpeaker, timeLeft, players.map((p) => p.score).join(',')],
+    { phase, phaseStartsAt, round, players: impostorTVPlayers(phase, players), currentSpeaker, timeLeft, handover: handover.tv },
+    [phase, round, currentSpeaker, timeLeft, players.map((p) => p.score).join(','), handover.tv?.playerId ?? '', handover.tv?.progress?.phase ?? ''],
     !online || online.isHost,
   );
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const privateSnapshot = JSON.stringify({ players, phase, currentWordSet, timeLeft, currentSpeaker, votingPlayer, countdownNum, round, hideCategory, order, impostorCount, timerDuration, randomOrder, bonusResult, roleReady });
+  const privateSnapshot = JSON.stringify({ players, phase, phaseStartsAt, currentWordSet, timeLeft, currentSpeaker, votingPlayer, countdownNum, round, hideCategory, order, impostorCount, timerDuration, randomOrder, bonusResult, roleReady });
   useEffect(() => {
     if (!online?.isHost) return;
     const state = JSON.parse(privateSnapshot);
     for (const recipient of online.players) {
-      if (recipient.id === online.myPlayerId) continue;
+      // Eigene Plaetze (Host + 🔁-Gaeste an diesem Handy) haben kein eigenes Geraet.
+      if (recipient.id === online.myPlayerId || localSeatIds.includes(recipient.id)) continue;
       online.broadcastTo?.(recipient.id, "impostor-state", impostorSnapshotFor(state, recipient.id));
     }
-  }, [privateSnapshot, online?.isHost, online?.broadcastTo, online?.players]);
+  }, [privateSnapshot, online?.isHost, online?.broadcastTo, online?.players, localSeatIds]);
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast("impostor-state", data => {
       if (data.__senderId !== (online.hostPlayerId ?? online.players.find(p => p.isHost)?.id)) return;
       setPlayers(data.players as Player[]);
       setPhase(data.phase as Phase);
+      setRemotePhaseStartsAt(typeof data.phaseStartsAt === 'number' ? data.phaseStartsAt : null);
       setCurrentWordSet(data.currentWordSet as WordSet | null);
       setTimeLeft(data.timeLeft as number);
       setCurrentSpeaker(data.currentSpeaker as number);
@@ -391,19 +414,74 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
     readyRole: { allow: (sender, args) => phase === "wordReveal" && Number.isInteger(args[0]) && sender === players[args[0]]?.id && !roleReady.includes(sender), run: (...args) => readyRole(args[0]) },
     markSpoken: { allow: (sender, args) => phase === "discussion" && args[0] === currentSpeaker && sender === players[seat(currentSpeaker)]?.id, run: (...args) => markSpoken(args[0]) },
     skipToVoting: { allow: (sender, args) => phase === "discussion" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => skipToVoting() },
-    castVote: { allow: (sender, args) => phase === "voting" && sender === players[seat(votingPlayer)]?.id && players.some(p => p.id === args[0] && p.id !== sender), run: (...args) => castVote(args[0]) },
-    submitBonusGuess: { allow: (sender, args) => phase === "bonusGuess" && bonusResult === null && players.some(p => p.id === sender && p.isImpostor && p.id !== mostVotedId) && typeof args[0] === "string" && args[0].length <= 100, run: (...args) => submitBonusGuess(args[0]) },
+    castVote: { answer: true, allow: (sender, args) => phase === "voting" && sender === players[seat(votingPlayer)]?.id && players.some(p => p.id === args[0] && p.id !== sender), run: (...args) => castVote(args[0]) },
+    submitBonusGuess: { answer: true, allow: (sender, args) => phase === "bonusGuess" && bonusResult === null && players.some(p => p.id === sender && p.isImpostor && p.id !== mostVotedId) && typeof args[0] === "string" && args[0].length <= 100, run: (...args) => submitBonusGuess(args[0]) },
     proceedFromReveal: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => proceedFromReveal() },
     playAgain: { allow: (sender, args) => phase === "results" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
     resetGame: { allow: (sender, args) => phase === "results" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => resetGame() },
   });
 
   function readyRole(index: number) {
+    // Gast-Plaetze des Hosts erkennt die Online-Wache selbst (actingSeat).
     if (route('readyRole', [index])) return;
+    if (!players[index] || roleReady.includes(players[index].id)) return;
     const ready = [...roleReady, players[index].id];
     setRoleReady(ready);
     if (ready.length === players.length) { setCurrentSpeaker(0); setPhase('discussion'); }
   }
+
+  // --- Neue Rollen mitten im Abend (einziger Hochstapler hat die Runde verlassen) ---
+  const restartRound = (list: Player[]) => {
+    const wordSet = pickRandom(getWordSets());
+    setCurrentWordSet(wordSet);
+    const impostorIndices = new Set(shuffle(list.map((_, i) => i)).slice(0, Math.min(impostorCount, Math.floor((list.length - 1) / 2))));
+    const seats = list.map((_, i) => i);
+    setOrder(randomOrder ? shuffle(seats) : seats);
+    setPlayers(list.map((p, i) => ({ ...p, isImpostor: impostorIndices.has(i), hasSpoken: false, votedFor: null })));
+    setRoleReady([]);
+    setCurrentSpeaker(0);
+    setVotingPlayer(0);
+    setRevealIndex(0);
+    setWordVisible(false);
+    setPhase('wordReveal');
+  };
+
+  // --- Mitspielende entfernt (Host, jederzeit — Masterplan 6.6) ---
+  const removedKey = (online?.removedPlayerIds ?? []).join(',');
+  useEffect(() => {
+    if (!online?.isHost || !removedKey) return;
+    const change = removeFromRound({ players, order, phase, currentSpeaker, votingPlayer, roleReady }, online.removedPlayerIds ?? []);
+    if (!change.changed) return;
+    if (change.restart && !change.tooFew) { restartRound(change.state.players); return; }
+    setPlayers(change.state.players);
+    setOrder(change.state.order);
+    setRoleReady(change.state.roleReady);
+    setCurrentSpeaker(change.state.currentSpeaker);
+    setVotingPlayer(change.state.votingPlayer);
+    setPhase(change.state.phase as Phase);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [removedKey, online?.isHost]);
+
+  // --- Gaeste decken ihre Rolle auf: erst der Host (er haelt das Handy), dann die Gaeste ---
+  useEffect(() => {
+    if (!online || phase !== 'wordReveal' || handover.state.status !== 'idle') return;
+    const pending = pendingLocalReveals(players, localSeatIds, roleReady);
+    if (pending.length && pending[0] !== online.myPlayerId) handover.request(pending.filter(id => id !== online.myPlayerId));
+  }, [online, phase, players, localSeatIds, roleReady, handover.state.status, handover.request]);
+
+  // --- Gast stimmt ab: verdeckt weitergeben, direkt zum naechsten Gast ---
+  const voterId = phase === 'voting' ? players[seat(votingPlayer)]?.id : undefined;
+  useEffect(() => {
+    if (!voterId || !handover.isGuest(voterId)) return;
+    if (handover.activeGuest === voterId || handover.recipient === voterId) return;
+    const st = handover.state;
+    if (st.status === 'idle' || (st.status === 'return' && st.to === null)) handover.request([voterId]);
+  }, [voterId, handover]);
+
+  // Kein Weitergabe-Bild ueber Setup/Endstand haengen lassen.
+  useEffect(() => {
+    if (phase === 'setup') handover.cancel();
+  }, [phase, handover.cancel]);
 
   // --- Start game ---
   const startGame = useCallback(() => {
@@ -485,8 +563,12 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
     if (wordVisible) {
       void haptics.light();
       setWordVisible(false);
+      // Absichtlich der Wert aus diesem Render, nicht `i => i + 1`: Ein schneller
+      // Doppeltipp auf „Verstanden“ feuert zweimal mit demselben Stand — mit
+      // der Funktionsform lief der Zeiger ueber das Ende hinaus (weisser
+      // Bildschirm, „reading 'name'“) bzw. uebersprang jemanden.
       if (revealIndex < players.length - 1) {
-        setRevealIndex((i) => i + 1);
+        setRevealIndex(revealIndex + 1);
       } else {
         setPhase('discussion');
         setCurrentSpeaker(0);
@@ -537,14 +619,15 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   const castVote = (targetId: string) => {
     if (route("castVote", [targetId])) return;
     const voter = players[seat(votingPlayer)];
-    if (targetId === voter.id) return;
+    if (!voter || targetId === voter.id || !players.some(p => p.id === targetId)) return;
 
     setPlayers((prev) =>
       prev.map((p, i) => (i === seat(votingPlayer) ? { ...p, votedFor: targetId } : p))
     );
 
+    // Wie beim Aufdecken: Doppeltipp darf den Zeiger nicht ueber das Ende schieben.
     if (votingPlayer < players.length - 1) {
-      setVotingPlayer((i) => i + 1);
+      setVotingPlayer(votingPlayer + 1);
     } else {
       setPhase('revealCountdown');
     }
@@ -563,6 +646,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   // --- Bonus guess ---
   const submitBonusGuess = (guess = bonusGuess) => {
     if (route("submitBonusGuess", [guess])) return;
+    if (bonusResult !== null) return;
     const correct =
       guess.trim().toLowerCase() === currentWordSet?.word.toLowerCase();
     setBonusResult(correct);
@@ -671,27 +755,41 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   // RENDER
   // =========================================================================
 
+  // Gerendert wird die GEZEIGTE Phase: online haelt usePhaseGate eine neue Phase
+  // bis zum gemeinsamen Start zurueck, damit Host, Handys und TV gleichzeitig wechseln.
+  const view = gate.shown;
+  const renderPhase = () => {
+
   // --- SETUP ---
-  if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
-  if (online && phase === 'wordReveal') {
-    const index = players.findIndex(p => p.id === online.myPlayerId);
+  if (view === 'setup' && online && !online.isHost) return <OnlineWaiting />;
+  // Waehrend das Handy weitergegeben wird, ist NUR der deckende Weitergabe-Bildschirm im DOM.
+  if (handover.overlay) return <>{handover.overlay}{exitDialog}</>;
+  if (online && view === 'wordReveal') {
+    // Wer haelt das Handy? Ein bestaetigter Gast, sonst der eigene Platz.
+    const viewerId = handover.activeGuest ?? online.myPlayerId;
+    const index = players.findIndex(p => p.id === viewerId);
     const me = players[index];
+    const finishReveal = () => {
+      setWordVisible(false);
+      readyRole(index);
+      if (handover.activeGuest === viewerId) handover.done();
+    };
     return <div className="dossier-private min-h-[100dvh] p-4 mx-auto flex flex-col justify-center gap-5">
       <StageHeader eyebrow={t('games.impostor.privateRole')} title={me?.name} progress={{ value: roleReady.length, total: players.length }} />
-      <button className="dossier-file" aria-pressed={wordVisible} onClick={() => setWordVisible(v => !v)}>
+      <button className="dossier-file" data-testid="impostor-role-card" data-player-id={viewerId} aria-pressed={wordVisible} onClick={() => setWordVisible(v => !v)}>
         <span className="dossier-file-number" aria-hidden="true">{String(index + 1).padStart(2, '0')} / {String(players.length).padStart(2, '0')}</span>
         <span className="dossier-file-title">{wordVisible ? me?.isImpostor ? t('native.gameNames.hochstapler') : currentWordSet?.word : t('games.impostor.viewRole')}</span>
         {!hideCategory && <span className="dossier-category">{currentWordSet?.category}</span>}
       </button>
-      <StageAction disabled={index < 0 || roleReady.includes(online.myPlayerId)} onClick={() => readyRole(index)}>
-        {roleReady.includes(online.myPlayerId) ? t('games.impostor.waitPlayers') : t('games.impostor.readyRole')}
+      <StageAction data-testid="impostor-ready" disabled={index < 0 || roleReady.includes(viewerId)} onClick={finishReveal}>
+        {roleReady.includes(viewerId) ? t('games.impostor.waitPlayers') : t('games.impostor.readyRole')}
       </StageAction>
       <StageAction variant="ghost" onClick={exitGuard.request}>{t('games.impostor.exitGame')}</StageAction>
       {exitDialog}
     </div>;
   }
 
-  if (phase === 'setup') {
+  if (view === 'setup') {
     return (
       <div className="min-h-screen bg-[#0a0e14] px-4 py-8">
         <div className="mx-auto max-w-md space-y-6">
@@ -861,8 +959,9 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   }
 
   // --- WORD REVEAL ---
-  if (phase === 'wordReveal') {
-    const currentPlayer = players[seat(revealIndex)];
+  if (view === 'wordReveal') {
+    const currentPlayer = players[seat(Math.min(revealIndex, players.length - 1))];
+    if (!currentPlayer) return <>{exitDialog}</>;
     const phaseNum = String(revealIndex + 1).padStart(2, '0');
     const totalPhases = String(players.length).padStart(2, '0');
     return (
@@ -1304,7 +1403,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   }
 
   // --- DISCUSSION ---
-  if (phase === 'discussion') {
+  if (view === 'discussion') {
     const urgency = timeLeft <= 10;
     const spokenCount = players.filter((p) => p.hasSpoken).length;
     const progress = players.length > 0 ? spokenCount / players.length : 0;
@@ -1390,6 +1489,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
                 return (
                   <motion.button
                     key={player.id}
+                    data-testid={`impostor-speaker-${player.id}`}
                     onClick={() => !player.hasSpoken && markSpoken(i)}
                     disabled={player.hasSpoken}
                     whileTap={{ scale: player.hasSpoken ? 1 : 0.98 }}
@@ -1432,6 +1532,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
 
           {/* CTA to voting */}
           <motion.button
+            data-testid="impostor-to-voting"
             onClick={skipToVoting}
             whileTap={{ scale: 0.97 }}
             className="w-full py-4 rounded-full text-[#0a0e14] font-extrabold text-sm tracking-[0.2em] uppercase shadow-[0_0_25px_rgba(255,107,152,0.35)] flex items-center justify-center gap-2"
@@ -1446,8 +1547,16 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   }
 
   // --- VOTING ---
-  if (phase === 'voting') {
-    const voter = players[seat(votingPlayer)];
+  if (view === 'voting') {
+    const voter = players[seat(Math.min(votingPlayer, players.length - 1))];
+    if (!voter) return <>{exitDialog}</>;
+    // Online stimmt nur ab, wer das Handy hat: der eigene Platz oder der bestaetigte Gast.
+    const canVote = !online || (voter?.id === online.myPlayerId && handover.state.status === 'idle') || voter?.id === handover.activeGuest;
+    const vote = (targetId: string) => {
+      const guestVoting = !!online && voter?.id === handover.activeGuest;
+      castVote(targetId);
+      if (guestVoting) handover.done();
+    };
     return (
       <div className="relative min-h-screen overflow-hidden bg-[#0a0e14] text-[#f1f3fc]">
         {exitDialog}
@@ -1490,8 +1599,9 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
               return (
                 <motion.button
                   key={target.id}
-                  onClick={() => !isSelf && castVote(target.id)}
-                  disabled={isSelf}
+                  data-testid={`impostor-vote-${target.id}`}
+                  onClick={() => !isSelf && canVote && vote(target.id)}
+                  disabled={isSelf || !canVote}
                   whileHover={!isSelf ? { scale: 1.03 } : {}}
                   whileTap={!isSelf ? { scale: 0.95 } : {}}
                   className={cn(
@@ -1528,7 +1638,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   }
 
   // --- REVEAL COUNTDOWN ---
-  if (phase === 'revealCountdown') {
+  if (view === 'revealCountdown') {
     return (
       <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center">
         {exitDialog}
@@ -1549,7 +1659,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   }
 
   // --- REVEAL ---
-  if (phase === 'reveal') {
+  if (view === 'reveal') {
     return (
       <div className="min-h-screen bg-[#0a0e14] px-4 py-8 flex items-center justify-center">
         {exitDialog}
@@ -1650,13 +1760,14 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
           >
             <p className="text-[#a8abb3] text-xs uppercase tracking-wider mb-1">{t('games.impostor.theWordWas')}</p>
             <p className="text-3xl font-black text-white drop-shadow-[0_0_20px_rgba(168,85,247,0.3)]">
-              {phase === 'reveal' && impostors.some(p => p.id !== mostVotedId) ? '???' : online && players.find(p => p.id === online.myPlayerId)?.isImpostor ? '???' : currentWordSet?.word}
+              {view === 'reveal' && impostors.some(p => p.id !== mostVotedId) ? '???' : online && players.find(p => p.id === online.myPlayerId)?.isImpostor ? '???' : currentWordSet?.word}
             </p>
             <p className="text-[#e6b76a] text-xs mt-1">{currentWordSet?.category}</p>
           </motion.div>
 
           {/* Continue */}
           <motion.button
+            data-testid="impostor-proceed"
             onClick={proceedFromReveal}
             className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#e6b76a] via-[#ff6b98] to-[#e6b76a] text-white font-bold flex items-center justify-center gap-2 shadow-[0_0_25px_rgba(168,85,247,0.4)]"
             whileTap={{ scale: 0.97 }}
@@ -1673,7 +1784,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   }
 
   // --- BONUS GUESS ---
-  if (phase === 'bonusGuess') {
+  if (view === 'bonusGuess') {
     return (
       <div className="min-h-screen bg-[#0a0e14] flex items-center justify-center px-4">
         {exitDialog}
@@ -1706,13 +1817,14 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
               <input
                 type="text"
                 value={bonusGuess}
-                disabled={!!online && !players.some(p => p.id === online.myPlayerId && p.isImpostor && p.id !== mostVotedId)}
+                disabled={!!online && !players.some(p => localSeatIds.includes(p.id) && p.isImpostor && p.id !== mostVotedId)}
                 onChange={(e) => setBonusGuess(e.target.value)}
                 placeholder={t('games.impostor.wordPlaceholder')}
                 className="w-full bg-[#151a21]/60 border border-[#44484f] rounded-xl px-4 py-3 text-white text-center text-lg placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500/50"
                 onKeyDown={(e) => e.key === 'Enter' && bonusGuess.trim() && submitBonusGuess()}
               />
               <motion.button
+                data-testid="impostor-bonus-submit"
                 onClick={() => submitBonusGuess()}
                 disabled={!bonusGuess.trim()}
                 className={cn(
@@ -1749,7 +1861,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   }
 
   // --- RESULTS ---
-  if (phase === 'results') {
+  if (view === 'results') {
     const sorted = [...players].sort((a, b) => b.score - a.score);
     return (
       <div className="min-h-screen bg-[#0a0e14] px-4 py-8">
@@ -1847,7 +1959,14 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
     );
   }
 
-  return exitDialog;
+    return exitDialog;
+  };
+
+  return <>
+    {renderPhase()}
+    {/* Einblend-Takt (Design §9): Eingaben erst ab 1200 ms nach dem Wechsel — der Weitergabe-Bildschirm (z-90) bleibt bedienbar. */}
+    {!gate.inputOpen && <div data-testid="phase-input-gate" aria-hidden className="fixed inset-0 z-[80]" />}
+  </>;
 }
 
 export default function ImpostorGame({ online }: { online?: OnlineGameProps } = {}) {

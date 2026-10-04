@@ -12,62 +12,31 @@ import { publicRoundItem } from '../multiplayer/public-round-item';
  * Host besitzt die Wahrheit, Clients spiegeln.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Eye, Zap, Trophy, ChevronRight, X, Check } from 'lucide-react';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useGameTimer } from '../engine/TimerSystem';
-import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
 import { getPlayerColor } from '../ui/PlayerAvatars';
 import { ResultScreen } from '../ui/ResultScreen';
 import { useTVGameBridge } from '@/hooks/useTVGameBridge';
 import { useBackGuard } from '@/lib/back-guard';
-import { GameSetupBackLink } from '../ui/GameSetupBackLink';
-import { hasShellBackButton } from '../ui/shell-back';
 import { saveSnapshot, loadSnapshot, clearSnapshot } from '../ui/useGameSnapshot';
-import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { localSeats, type OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
 import { PixelCanvas } from './PixelCanvas';
 import { stepsFor, pointsAt, FINAL_STEP } from './pixelate';
 import { isCorrectAnswer } from './answer-match';
-import { recoverPixelRound, importPixelPlayers, validPixelAnswerAction } from './recovery';
-import {
-  getPixelPuzzles,
-  PIXEL_CATEGORIES,
-  categoryLabelKey,
-  type PixelCategory,
-  type PixelPuzzle,
-} from './pixeljagd-content';
+import { recoverPixelRound, validPixelAnswerAction } from './recovery';
+import { dropPixelPlayers } from './removal';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { getPixelPuzzles, type PixelCategory, type PixelPuzzle } from './pixeljagd-content';
 import { loadExtraPuzzles } from './pixeljagd-extra';
-import { useInitialRoster } from '@/games/ui/useInitialRoster';
-import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
-import { PIXELJAGD_THEME_ASSETS } from '../ui/premium-game-assets';
-
-// Design-Tokens — eigene Farbwelt, gleiche Struktur wie OW in OhrwurmGame.
-const PJ = {
-  primary: '#38BDF8',
-  secondary: '#A78BFA',
-  accent: '#FDE047',
-  bg: '#0B1120',
-  elevated: '#111C33',
-  surface: '#16233F',
-  text: '#F1F5F9',
-  dim: '#94A3B8',
-  bad: '#FB7185',
-} as const;
-
-type Phase = 'setup' | 'playing' | 'roundEnd' | 'gameOver';
-type AnswerMode = 'buzzer' | 'text';
-type ModeId = 'klassisch' | 'blitz' | 'profi';
-
-interface ModeDef { id: ModeId; duration: number; startPx: number; penalty: number; }
-const MODES: ModeDef[] = [
-  { id: 'klassisch', duration: 30, startPx: 8,  penalty: 25 },
-  { id: 'blitz',     duration: 15, startPx: 10, penalty: 15 },
-  { id: 'profi',     duration: 45, startPx: 6,  penalty: 40 },
-];
-
-interface Player { id: string; name: string; color: string; score: number; locked: boolean; }
+import { PJ, MODES, type Phase, type AnswerMode, type ModeId, type Player } from './pixeljagd-theme';
+import { PixeljagdSetup } from './PixeljagdSetup';
+import { AnswerPad, BuzzedCard, ExitDialog, PixelHeader, RoundReveal, ScoreStrip } from './PixelPlayPanels';
+import { mayActFor, penalizeTeam, sharedPhoneTeams } from './team-buzzer';
+import { usePixelRoomSync } from './usePixelRoomSync';
 
 function shuffle<T>(a: T[]): T[] {
   const r = a.slice();
@@ -106,11 +75,17 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [confirmExit, setConfirmExit] = useState(false);
-  const [guess, setGuess] = useState('');
   const [contentReady, setContentReady] = useState(false);
   // Steht das Motiv schon auf der Zeichenflaeche? Die Runde darf erst dann
   // loslaufen — sonst tickt die Uhr gegen ein Bild, das noch niemand sieht.
   const [imageReady, setImageReady] = useState(false);
+
+  // All devices + TV switch phase together; the reveal clock waits for the beat (design §9).
+  const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, round]);
+  const inputOpen = !blocker;
+  // Seats this phone plays: online the host + its 🔁 guests (one team, team-buzzer.ts).
+  const room = useMemo(() => online?.players ?? [], [online?.players]);
+  const mySeats = useMemo(() => (online ? localSeats(online) : []), [online]);
 
   const modeDef = useMemo(() => MODES.find((m) => m.id === mode) ?? MODES[0], [mode]);
   const steps = useMemo(() => stepsFor(modeDef.startPx, modeDef.duration), [modeDef]);
@@ -141,7 +116,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
 
   const elapsed = Math.max(0, modeDef.duration - roundTimer.timeLeft);
   // In der Auflösung immer scharf zeigen.
-  const step = phase === 'roundEnd'
+  const step = view === 'roundEnd'
     ? FINAL_STEP
     : (steps[Math.min(elapsed, steps.length - 1)] ?? FINAL_STEP);
   const livePoints = frozenPoints ?? pointsAt(elapsed, modeDef.duration);
@@ -153,7 +128,6 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setBuzzedBy(null);
     setFrozenPoints(null);
     setWinnerId(null);
-    setGuess('');
     setSolutionShown(false);
     setPlayers(ps.map((p) => ({ ...p, locked: false })));
     roundTimerRef.current?.reset(duration);
@@ -192,16 +166,17 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   }, [haptics]);
 
   const penalize = useCallback((pid: string) => {
-    setPlayers((prev) => prev.map((p) => (p.id === pid ? { ...p, score: p.score - modeDef.penalty, locked: true } : p)));
+    // A wrong guess locks the whole phone (host + 🔁 guests), only the guesser loses points.
+    const result = penalizeTeam(players, pid, modeDef.penalty, room);
+    setPlayers(result.players);
     setBuzzedBy(null);
     setFrozenPoints(null);
     void haptics.error();
     flash(t('games.pixeljagd.wrongToast', { points: modeDef.penalty }));
     // Enthüllung läuft weiter — die anderen sind noch im Rennen.
-    const remaining = players.filter((p) => p.id !== pid && !p.locked);
-    if (remaining.length === 0) { setPhase('roundEnd'); return; }
+    if (!result.othersLeft) { setPhase('roundEnd'); return; }
     roundTimerRef.current?.start();
-  }, [modeDef.penalty, haptics, flash, t, players]);
+  }, [modeDef.penalty, haptics, flash, t, players, room]);
 
   useEffect(() => { setImageFailed(false); setImageReady(false); }, [puzzle?.id]);
 
@@ -243,66 +218,30 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     if (online?.isConnected === false || data.round !== round || data.puzzleId !== puzzle?.id) return;
     if (data.type === 'again' && phase === 'gameOver' && players.some(p => p.id === data.__senderId)) { rematchRef.current(); return; }
     const sender = data.__senderId;
-    if (typeof sender !== 'string' || !players.some(p => p.id === sender)) return;
-    if (!validPixelAnswerAction(data, answerMode)) return;
-    if (data.type === 'buzz' || data.type === 'text') { if (data.pid !== sender) return; }
-    else return; // Judging and advancing are host controls.
+    if (typeof sender !== 'string' || !validPixelAnswerAction(data, answerMode)) return;
+    // A seat answers from its own phone, a 🔁 guest from the phone that plays it. Judging and advancing are host controls.
+    if (!players.some(p => p.id === data.pid) || !mayActFor(data.pid, sender, room)) return;
     switch (data.type) {
       case 'buzz': doBuzz(data.pid as string); break;
       case 'text': doTextGuess(data.pid as string, data.text as string); break;
       default: break;
     }
-  }, [phase, players, doBuzz, doTextGuess, online?.isConnected, round, puzzle?.id, answerMode]);
+  }, [phase, players, doBuzz, doTextGuess, online?.isConnected, round, puzzle?.id, answerMode, room]);
 
   useEffect(() => {
     if (!online || !isHost) return;
     return online.onBroadcast('pixeljagd-action', (d) => applyAction(d));
   }, [online, isHost, applyAction]);
 
-  // The shared clock also restores the correct remaining time after reconnect.
-  useEffect(() => {
-    if (!online?.isHost) return;
-    online.broadcast('pixeljagd-timer-state', { timeLeft: roundTimer.timeLeft, running: roundTimer.isRunning });
-  }, [online, roundTimer.timeLeft, roundTimer.isRunning]);
-  useEffect(() => {
-    if (!online || online.isHost) return;
-    return online.onBroadcast('pixeljagd-timer-state', data => {
-      if (typeof data.timeLeft !== 'number') return;
-      roundTimerRef.current?.reset(data.timeLeft);
-      if (data.running) roundTimerRef.current?.start();
-    });
-  }, [online]);
+  // Host: kicked/left players leave the round; a released buzz lets the reveal run on (G7).
+  useRemovedPlayers(online, (ids) => {
+    const drop = dropPixelPlayers({ phase, players, buzzedBy }, ids);
+    if (!drop) return;
+    setPlayers(drop.players);
+    if (drop.clearBuzz || drop.endRound) { setBuzzedBy(null); setFrozenPoints(null); setSolutionShown(false); }
+    if (drop.endRound) { roundTimerRef.current?.pause(); setPhase('roundEnd'); }
+  });
 
-  // Host → Snapshot. Ohne timeLeft (sonst 60 Nachrichten pro Runde).
-  useEffect(() => {
-    if (!online || !isHost) return;
-    online.broadcast('pixeljagd-state', {
-      snapshot: JSON.parse(JSON.stringify({
-        phase, players, round, totalRounds,
-        puzzle: publicRoundItem(puzzle, phase === 'roundEnd' || phase === 'gameOver', ['answer', 'aliases', 'credit', 'sourceUrl']),
-        buzzedBy, frozenPoints, winnerId, mode, answerMode, categories,
-      })),
-    });
-  }, [online, isHost, phase, players, round, totalRounds, puzzle, buzzedBy, frozenPoints, winnerId, mode, answerMode, categories, deck]);
-
-  useEffect(() => {
-    if (!online || isHost) return;
-    return online.onBroadcast('pixeljagd-state', (d) => {
-      const s = (d as { snapshot?: Record<string, unknown> }).snapshot;
-      if (!s) return;
-      setPhase(s.phase as Phase);
-      setPlayers(s.players as Player[]);
-      setRound(s.round as number);
-      setTotalRounds(s.totalRounds as number);
-      setPuzzle(s.puzzle as PixelPuzzle | null);
-      setBuzzedBy(s.buzzedBy as string | null);
-      setFrozenPoints(s.frozenPoints as number | null);
-      setWinnerId(s.winnerId as string | null);
-      setMode(s.mode as ModeId);
-      setAnswerMode(s.answerMode as AnswerMode);
-      setCategories(s.categories as PixelCategory[]);
-    });
-  }, [online, isHost]);
 
   /**
    * Startschuss der Runde: erst wenn das Motiv steht.
@@ -315,9 +254,9 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
    */
   useEffect(() => {
     if (isOnline && !isHost) return;
-    if (phase !== 'playing' || !imageReady || buzzedBy) return;
+    if (phase !== 'playing' || !imageReady || buzzedBy || !inputOpen) return;
     roundTimerRef.current?.start();
-  }, [isOnline, isHost, phase, imageReady, buzzedBy]);
+  }, [isOnline, isHost, phase, imageReady, buzzedBy, inputOpen]);
 
   /**
    * Das naechste Motiv im Voraus holen.
@@ -336,17 +275,20 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   // Nicht-Host spiegelt die Uhr über EINEN Boolean (Muster aus OhrwurmGame).
   useEffect(() => {
     if (!isOnline || isHost) return;
-    if (phase === 'playing' && !buzzedBy && imageReady) {
+    if (phase === 'playing' && !buzzedBy && imageReady && inputOpen) {
       roundTimerRef.current?.start();
     } else {
       roundTimerRef.current?.pause();
     }
-  }, [isOnline, isHost, phase, buzzedBy, imageReady]);
+  }, [isOnline, isHost, phase, buzzedBy, imageReady, inputOpen]);
 
   // TV: gleiche Nutzlast offline wie online. Die Antwort erst in der Auflösung.
   const tvPayload = useMemo(() => ({
     phase,
-    players: players.map((p) => ({ id: p.id, name: p.name, color: p.color, score: p.score, locked: p.locked })),
+    phaseStartsAt,
+    players: players.map((p) => ({ id: p.id, name: p.name, color: p.color, score: p.score, locked: p.locked, ...(p.avatar ? { avatar: p.avatar } : {}) })),
+    // Public: who shares the host phone (one buzzer, one try per phone). Never answers.
+    teams: sharedPhoneTeams(room),
     round: round + 1,
     totalRounds,
     image: puzzle?.image ?? '',
@@ -358,14 +300,28 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     reveal: phase === 'roundEnd' && puzzle
       ? { answer: puzzle.answer, credit: puzzle.credit, winner: players.find((p) => p.id === winnerId)?.name ?? null }
       : null,
-  }), [phase, players, round, totalRounds, puzzle, step, roundTimer.timeLeft, modeDef.duration, livePoints, buzzedBy, winnerId]);
+  }), [phase, phaseStartsAt, players, room, round, totalRounds, puzzle, step, roundTimer.timeLeft, modeDef.duration, livePoints, buzzedBy, winnerId]);
 
-  useEffect(() => {
-    if (!online || !isHost) return;
-    online.broadcast('tv-state', { game: 'pixeljagd', ...tvPayload });
-  }, [online, isHost, tvPayload]);
+  usePixelRoomSync(online, {
+    phase, players, round, totalRounds,
+    puzzle: publicRoundItem(puzzle, phase === 'roundEnd' || phase === 'gameOver', ['answer', 'aliases', 'credit', 'sourceUrl']),
+    buzzedBy, frozenPoints, winnerId, mode, answerMode, categories, phaseStartsAt,
+  }, (s) => {
+    setPhase(s.phase as Phase);
+    setPlayers(s.players as Player[]);
+    setRound(s.round as number);
+    setTotalRounds(s.totalRounds as number);
+    setPuzzle(s.puzzle as PixelPuzzle | null);
+    setBuzzedBy(s.buzzedBy as string | null);
+    setFrozenPoints(s.frozenPoints as number | null);
+    setWinnerId(s.winnerId as string | null);
+    setMode(s.mode as ModeId);
+    setAnswerMode(s.answerMode as AnswerMode);
+    setCategories(s.categories as PixelCategory[]);
+    receivePhaseStart(s.phaseStartsAt);
+  }, roundTimer, roundTimerRef, tvPayload);
 
-  useTVGameBridge('pixeljagd', tvPayload, [phase, round, step, roundTimer.timeLeft, buzzedBy, winnerId, players], isHost);
+  useTVGameBridge('pixeljagd', tvPayload, [phase, phaseStartsAt, round, step, roundTimer.timeLeft, buzzedBy, winnerId, players], isHost);
 
   // --- Persistenz (offline) ------------------------------------------------
   const restoredRef = useRef(false);
@@ -417,9 +373,11 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     if (!isHost) return;
     const pool = shuffle(getPixelPuzzles(cfg.categories.length ? cfg.categories : undefined));
     if (pool.length === 0) { flash(t('games.pixeljagd.noImages')); return; }
-    const ps: Player[] = cfg.players.map((p, i) => ({
-      id: p.id, name: p.name, color: getPlayerColor(i), score: 0, locked: false,
-    }));
+    // Party: keep each seat's own colour and symbol (same face on phone and TV).
+    const ps: Player[] = cfg.players.map((p, i) => {
+      const seat = online?.players.find(r => r.id === p.id);
+      return { id: p.id, name: p.name, color: seat?.color || getPlayerColor(i), score: 0, locked: false, ...(seat?.avatar ? { avatar: seat.avatar } : {}) };
+    });
     setMode(cfg.mode);
     setAnswerMode(cfg.answerMode);
     setCategories(cfg.categories);
@@ -427,7 +385,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setDeck(pool);
     restoredRef.current = true;
     beginRound(pool, 0, ps, (MODES.find(m => m.id === cfg.mode) ?? MODES[0]).duration);
-  }, [isHost, beginRound, flash, t]);
+  }, [isHost, beginRound, flash, t, online?.players]);
 
   // =========================================================================
   rematchRef.current = () => handleStart({ players: players.map(p => ({ id: p.id, name: p.name })), mode, answerMode, categories, rounds: totalRounds });
@@ -446,7 +404,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
 
   const sorted = [...players].sort((a, b) => b.score - a.score);
 
-  if (phase === 'gameOver') {
+  if (view === 'gameOver') {
     return (
       <ResultScreen
         players={sorted.map((p) => ({ name: p.name, score: p.score, streak: 0 }))}
@@ -459,31 +417,10 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     );
   }
 
-  const meLocked = !!(myId && players.find((p) => p.id === myId)?.locked);
-
   return (
-    <div className="min-h-[100dvh] relative" style={{ background: PJ.bg, color: PJ.text }}>
-      {/* Kopf: Runde + Punkte */}
-      <div className="relative z-10 px-4 pt-14 pb-3 flex items-center justify-between">
-        {/* In der App löst der FloatingBackButton über den Back-Guard denselben
-            Dialog aus — dort nur unsichtbar schalten, nicht entfernen, damit
-            Runde und Punkte in der Kopfzeile stehen bleiben, wo sie waren. */}
-        <button
-          onClick={() => setConfirmExit(true)}
-          className={`text-xs font-bold${hasShellBackButton() ? ' invisible pointer-events-none' : ''}`}
-          aria-hidden={hasShellBackButton()}
-          tabIndex={hasShellBackButton() ? -1 : undefined}
-          style={{ color: PJ.dim }}
-        >
-          ← {t('games.pixeljagd.leave')}
-        </button>
-        <div className="text-xs font-bold" style={{ color: PJ.dim }}>
-          {t('games.pixeljagd.roundOf', { round: round + 1, total: totalRounds })}
-        </div>
-        <div className="flex items-center gap-1 text-sm font-black" style={{ color: PJ.accent }}>
-          <Zap className="w-4 h-4" /> {livePoints}
-        </div>
-      </div>
+    <div data-phase={view} className="min-h-[100dvh] relative" style={{ background: PJ.bg, color: PJ.text }}>
+      {blocker}
+      <PixelHeader round={round + 1} total={totalRounds} points={livePoints} onLeave={() => setConfirmExit(true)} />
 
       {/* Bild */}
       <div className="relative z-10 px-4">
@@ -523,160 +460,29 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
 
       {/* Auflösung */}
       <AnimatePresence mode="wait">
-        {phase === 'roundEnd' && puzzle && (
-          <motion.div key="reveal" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-            className="relative z-10 px-4 mt-4">
-            <div className="rounded-3xl p-5 text-center" style={{ background: PJ.surface }}>
-              <p className="text-[11px] font-bold uppercase tracking-wide" style={{ color: PJ.dim }}>
-                {t('games.pixeljagd.solution')}
-              </p>
-              <p className="text-2xl font-black mt-1">{puzzle.answer}</p>
-              {winnerId ? (
-                <p className="text-sm mt-2" style={{ color: PJ.primary }}>
-                  <Trophy className="w-4 h-4 inline mr-1" />
-                  {t('games.pixeljagd.roundWinner', { name: players.find((p) => p.id === winnerId)?.name ?? '' })}
-                </p>
-              ) : (
-                <p className="text-sm mt-2" style={{ color: PJ.dim }}>{t('games.pixeljagd.nobody')}</p>
-              )}
-              {/* Bildnachweis — immer sichtbar, sobald das Motiv aufgedeckt ist. */}
-              <p className="text-[11px] mt-3 leading-snug" style={{ color: PJ.dim }}>
-                {t('games.pixeljagd.credit')}:{' '}
-                {puzzle.sourceUrl ? (
-                  <a href={puzzle.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
-                    {puzzle.credit}
-                  </a>
-                ) : puzzle.credit}
-                {/* Aenderungshinweis ist Lizenzpflicht, nicht Hoeflichkeit:
-                    CC-BY verlangt, Bearbeitungen kenntlich zu machen — und die
-                    Verpixelung IST eine Bearbeitung. Ohne diesen Zusatz nutzen
-                    wir die Bilder ausserhalb ihrer Lizenz. */}
-                {' · '}{t('games.pixeljagd.modified')}
-              </p>
-              <button disabled={!isHost} onClick={() => act('next', {}, nextRound)}
-                className="mt-4 w-full h-12 rounded-2xl font-black flex items-center justify-center gap-2"
-                style={{ background: PJ.primary, color: PJ.bg }}>
-                {t('games.pixeljagd.next')} <ChevronRight className="w-4 h-4" />
-              </button>
-            </div>
-          </motion.div>
+        {view === 'roundEnd' && puzzle && (
+          <RoundReveal key="reveal" puzzle={puzzle} winner={players.find((p) => p.id === winnerId)} isHost={isHost}
+            onNext={() => act('next', {}, nextRound)} />
         )}
       </AnimatePresence>
 
       {/* Eingabe */}
-      {phase === 'playing' && (
+      {view === 'playing' && (
         <div className="relative z-10 px-4 mt-4 pb-8">
           {buzzedBy ? (
-            <div className="rounded-3xl p-5 text-center" style={{ background: PJ.surface }}>
-              <p className="text-sm font-bold">
-                {t('games.pixeljagd.buzzedSay', { name: players.find((p) => p.id === buzzedBy)?.name ?? '' })}
-              </p>
-              {/* Zweistufig, und das ist der Kern des Spiels:
-                  Wer gebuzzert hat, sagt die Antwort LAUT. Erst danach deckt
-                  die Gruppe die Loesung auf und vergleicht.
-                  Vorher standen hier sofort "Falsch"/"Richtig" — die Gruppe
-                  sollte also etwas beurteilen, das sie selbst nicht wusste.
-                  Das war unspielbar. */}
-              {!solutionShown ? (
-                <>
-                  <p className="text-[11px] mt-1" style={{ color: PJ.dim }}>
-                    {t('games.pixeljagd.sayThenReveal')}
-                  </p>
-                  <button
-                    disabled={!isHost}
-                    onClick={() => setSolutionShown(true)}
-                    className="w-full h-12 rounded-2xl font-black mt-4 cursor-pointer transition-colors"
-                    style={{ background: PJ.accent, color: PJ.bg }}>
-                    {t('games.pixeljagd.revealSolution')}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="text-[11px] mt-3" style={{ color: PJ.dim }}>
-                    {t('games.pixeljagd.solution')}
-                  </p>
-                  <p className="text-xl font-black mt-1" style={{ color: PJ.accent }}>
-                    {puzzle?.answer}
-                  </p>
-                  <p className="text-[11px] mt-2" style={{ color: PJ.dim }}>
-                    {t('games.pixeljagd.groupDecides')}
-                  </p>
-              <div className="flex gap-2 mt-4">
-                <button disabled={!isHost} onClick={() => act('judge', { correct: false }, () => doJudge(false))}
-                  className="flex-1 h-12 rounded-2xl font-black flex items-center justify-center gap-1"
-                  style={{ background: PJ.bad, color: PJ.bg }}>
-                  <X className="w-4 h-4" /> {t('games.pixeljagd.wrong')}
-                </button>
-                <button disabled={!isHost} onClick={() => act('judge', { correct: true }, () => doJudge(true))}
-                  className="flex-1 h-12 rounded-2xl font-black flex items-center justify-center gap-1"
-                  style={{ background: PJ.primary, color: PJ.bg }}>
-                  <Check className="w-4 h-4" /> {t('games.pixeljagd.correct')}
-                </button>
-              </div>
-                </>
-              )}
-            </div>
-          ) : answerMode === 'text' && isOnline ? (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (myId && guess.trim()) {
-                  const text = guess;
-                  act('text', { pid: myId, text }, () => doTextGuess(myId, text));
-                  setGuess('');
-                }
-              }}
-              className="flex gap-2"
-            >
-              <input
-                value={guess}
-                onChange={(e) => setGuess(e.target.value)}
-                disabled={meLocked || !imageReady}
-                aria-label={t('games.pixeljagd.typeGuess')}
-                maxLength={200}
-                placeholder={meLocked ? t('games.pixeljagd.lockedOut') : t('games.pixeljagd.typeGuess')}
-                className="flex-1 h-12 px-4 rounded-2xl text-sm outline-none"
-                style={{ background: PJ.surface, color: PJ.text }}
-              />
-              <button type="submit" disabled={meLocked || !imageReady || !guess.trim()}
-                className="px-5 h-12 rounded-2xl font-black disabled:opacity-40"
-                style={{ background: PJ.primary, color: PJ.bg }}>
-                {t('games.pixeljagd.send')}
-              </button>
-            </form>
+            <BuzzedCard buzzer={players.find((p) => p.id === buzzedBy)} myId={myId} isOnline={isOnline} isHost={isHost}
+              solutionShown={solutionShown} answer={puzzle?.answer} onShow={() => setSolutionShown(true)}
+              onJudge={(correct) => act('judge', { correct }, () => doJudge(correct))} />
           ) : (
-            <>
-              <p className="text-center text-[11px] mb-2" style={{ color: PJ.dim }}>
-                {t('games.pixeljagd.buzzHint')}
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                {players.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => act('buzz', { pid: p.id }, () => doBuzz(p.id))}
-                    disabled={!imageReady || p.locked || (isOnline && myId !== p.id)}
-                    className="h-16 rounded-2xl font-black text-sm disabled:opacity-35"
-                    style={{ background: p.locked ? PJ.surface : p.color, color: p.locked ? PJ.dim : PJ.bg }}
-                  >
-                    {p.name}
-                    <span className="block text-[11px] font-bold opacity-80">{p.score}</span>
-                  </button>
-                ))}
-              </div>
-            </>
+            <AnswerPad answerMode={answerMode} isOnline={isOnline} players={players} localSeats={mySeats} imageReady={imageReady}
+              onBuzz={(pid) => act('buzz', { pid }, () => doBuzz(pid))}
+              onText={(pid, text) => act('text', { pid, text }, () => doTextGuess(pid, text))} />
           )}
         </div>
       )}
 
-      {/* Punktestand */}
-      <div className="relative z-10 px-4 pb-10 flex flex-wrap gap-2 justify-center">
-        {sorted.map((p) => (
-          <div key={p.id} className="px-3 py-1.5 rounded-full text-[11px] font-bold"
-            style={{ background: PJ.surface, color: p.color }}>
-            {p.name} · {p.score}
-          </div>
-        ))}
-      </div>
+      {/* While buzzers show name + score here, the strip lists only the others. */}
+      <ScoreStrip players={players} hide={view === 'playing' && !buzzedBy ? (isOnline ? mySeats : players.map((p) => p.id)) : []} />
 
       {toast && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 px-4 py-2 rounded-2xl text-sm font-bold"
@@ -686,241 +492,9 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
       )}
 
       {confirmExit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6" style={{ background: 'rgba(11,17,32,0.85)' }}>
-          <div className="w-full max-w-xs rounded-3xl p-5 text-center" style={{ background: PJ.surface }}>
-            <p className="font-black">{t('games.pixeljagd.leaveTitle')}</p>
-            <p className="text-xs mt-1" style={{ color: PJ.dim }}>{t('games.pixeljagd.leaveBody')}</p>
-            <div className="flex gap-2 mt-4">
-              <button onClick={() => setConfirmExit(false)} className="flex-1 h-11 rounded-2xl font-bold"
-                style={{ background: PJ.primary, color: PJ.bg }}>
-                {t('games.pixeljagd.leaveStay')}
-              </button>
-              <button onClick={() => { clearSnapshot('pixeljagd'); setConfirmExit(false); navigate('/games'); }}
-                className="flex-1 h-11 rounded-2xl font-bold" style={{ border: `1px solid ${PJ.dim}`, color: PJ.dim }}>
-                {t('games.pixeljagd.leaveGo')}
-              </button>
-            </div>
-          </div>
-        </div>
+        <ExitDialog onStay={() => setConfirmExit(false)}
+          onLeave={() => { clearSnapshot('pixeljagd'); setConfirmExit(false); navigate('/games'); }} />
       )}
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Setup
-// ---------------------------------------------------------------------------
-function PixeljagdSetup({ onStart, onlinePlayers, contentReady, allowText, toast }: {
-  onStart: (cfg: { players: { id: string; name: string }[]; mode: ModeId; answerMode: AnswerMode; categories: PixelCategory[]; rounds: number }) => void;
-  onlinePlayers?: { id: string; name: string }[];
-  contentReady: boolean;
-  allowText: boolean;
-  toast: string | null;
-}) {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  /**
-   * Party-Besetzung uebernehmen. Dieser eigene Setup-Bildschirm kannte bisher
-   * nur den Online-Raum — eine laufende Party begann hier mit Platzhaltern
-   * statt mit ihren echten Gaesten.
-   */
-  const partyRoster = useInitialRoster({ onlinePlayers, min: 2 });
-
-  const [list, setList] = useState<PlayerSetupPlayer[]>(
-    onlinePlayers?.length
-      ? onlinePlayers.map((p) => ({ id: p.id, name: p.name, readOnly: true }))
-      : partyRoster?.map((p) => ({ id: p.id, name: p.name }))
-        ?? [{ id: 'p1', name: '' }, { id: 'p2', name: '' }],
-  );
-  const [mode, setMode] = useState<ModeId>('klassisch');
-  const [answerMode, setAnswerMode] = useState<AnswerMode>('buzzer');
-  const [cats, setCats] = useState<PixelCategory[]>([]);
-  const [rounds, setRounds] = useState(8);
-  // Einzeln oder in Gruppen. Aendert nur die Beschriftung und die
-  // Vorgabenamen — gespielt wird in beiden Faellen ueber dieselbe Liste,
-  // eine Gruppe ist schlicht ein Spieler mit mehreren Koepfen dahinter.
-  const [teamMode, setTeamMode] = useState<'solo' | 'groups'>('solo');
-
-  const available = useMemo(
-    () => (contentReady ? getPixelPuzzles(cats.length ? cats : undefined).length : 0),
-    [contentReady, cats],
-  );
-
-  const named = list.map((p, i) => ({
-    id: p.id,
-    name: p.name.trim()
-      || (teamMode === 'groups'
-        ? t('games.pixeljagd.teamN', { n: i + 1 })
-        : t('games.pixeljagd.playerN', { n: i + 1 })),
-  }));
-  const canStart = contentReady && available > 0 && named.length >= 2;
-
-  return (
-    <div className="min-h-[100dvh]" style={{ background: PJ.bg, color: PJ.text }}>
-      <main className="relative z-10 pt-14 px-5 max-w-2xl mx-auto pb-16">
-        <GameSetupBackLink onClick={() => navigate('/games')} className="mb-5" style={{ color: PJ.dim }}>
-          ← {t('games.pixeljagd.backToGames')}
-        </GameSetupBackLink>
-
-        <section className="relative min-h-[220px] overflow-hidden rounded-[32px] border border-white/10 shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
-          <img
-            src={PIXELJAGD_THEME_ASSETS[cats[0] ?? 'mix']}
-            alt=""
-            aria-hidden="true"
-            decoding="async"
-            fetchPriority="high"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0b1120] via-[#0b1120]/46 to-black/5" />
-          <div className="relative flex min-h-[220px] flex-col justify-end p-6">
-            <span className="mb-3 grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-black/35 backdrop-blur-md">
-              <Eye className="w-6 h-6" style={{ color: PJ.primary }} />
-            </span>
-            <h1 className="text-3xl font-black text-white">{t('games.pixeljagd.title')}</h1>
-            <p className="mt-1 max-w-md text-sm text-white/70">{t('games.pixeljagd.tagline')}</p>
-          </div>
-        </section>
-
-        {/* Einzeln oder in Gruppen */}
-        <p className="mt-6 mb-2 text-xs font-black uppercase tracking-wide" style={{ color: PJ.dim }}>
-          {t('games.pixeljagd.teamMode')}
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          {(['solo', 'groups'] as const).map((m) => (
-            <button key={m} onClick={() => setTeamMode(m)}
-              aria-pressed={teamMode === m}
-              className="p-3 rounded-2xl text-sm font-black"
-              style={{
-                background: teamMode === m ? PJ.secondary : PJ.surface,
-                color: teamMode === m ? PJ.bg : PJ.text,
-              }}>
-              {m === 'solo'
-                ? t('games.pixeljagd.teamModeSolo')
-                : t('games.pixeljagd.teamModeGroups')}
-            </button>
-          ))}
-        </div>
-
-        <div className="mt-4">
-          <PlayerSetup
-            players={list}
-            onAdd={() => setList((p) => [...p, { id: `p${Date.now()}`, name: '' }])}
-            onRemove={(id) => setList((p) => p.filter((x) => x.id !== id))}
-            onRename={(id, name) => setList((p) => p.map((x) => (x.id === id ? { ...x, name } : x)))}
-            min={2}
-            max={8}
-            accent={PJ.primary}
-            label={teamMode === 'groups'
-              ? t('games.pixeljagd.groupsLabel')
-              : t('games.pixeljagd.playersLabel')}
-            /* Aus dem Event uebernehmen: Wer schon eine Gaesteliste gepflegt
-               hat, soll sie nicht zum zweiten Mal abtippen. */
-            onImportNames={(names) =>
-              setList((prev) => importPixelPlayers(prev, names, index => `ev${Date.now()}-${index}`))
-            }
-          />
-        </div>
-
-        {/* Modus */}
-        <p className="mt-7 mb-2 text-xs font-black uppercase tracking-wide" style={{ color: PJ.dim }}>
-          {t('games.pixeljagd.mode')}
-        </p>
-        <div className="grid grid-cols-3 gap-2">
-          {MODES.map((m) => (
-            <button key={m.id} onClick={() => setMode(m.id)}
-              className="p-3 rounded-2xl text-left"
-              style={{
-                background: mode === m.id ? PJ.primary : PJ.surface,
-                color: mode === m.id ? PJ.bg : PJ.text,
-              }}>
-              <span className="block text-sm font-black">{t(`gameModes.pixeljagd.${m.id}.name`)}</span>
-              <span className="block text-[11px] opacity-80">{t(`gameModes.pixeljagd.${m.id}.desc`)}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Antwortmodus */}
-        <p className="mt-7 mb-2 text-xs font-black uppercase tracking-wide" style={{ color: PJ.dim }}>
-          {t('games.pixeljagd.answerMode')}
-        </p>
-        <div className="grid grid-cols-2 gap-2">
-          <button onClick={() => setAnswerMode('buzzer')}
-            className="p-3 rounded-2xl text-left"
-            style={{ background: answerMode === 'buzzer' ? PJ.secondary : PJ.surface, color: answerMode === 'buzzer' ? PJ.bg : PJ.text }}>
-            <span className="block text-sm font-black">{t('games.pixeljagd.modeBuzzer')}</span>
-            <span className="block text-[11px] opacity-80">{t('games.pixeljagd.modeBuzzerDesc')}</span>
-          </button>
-          <button onClick={() => allowText && setAnswerMode('text')} disabled={!allowText}
-            className="p-3 rounded-2xl text-left disabled:opacity-40"
-            style={{ background: answerMode === 'text' ? PJ.secondary : PJ.surface, color: answerMode === 'text' ? PJ.bg : PJ.text }}>
-            <span className="block text-sm font-black">{t('games.pixeljagd.modeText')}</span>
-            <span className="block text-[11px] opacity-80">
-              {allowText ? t('games.pixeljagd.modeTextDesc') : t('games.pixeljagd.modeTextOnlineOnly')}
-            </span>
-          </button>
-        </div>
-
-        {/* Kategorien */}
-        <section className="mt-8 rounded-[30px] border border-white/10 bg-white/[0.035] p-4 shadow-[0_22px_62px_rgba(0,0,0,0.28)] backdrop-blur-xl sm:p-5">
-          <div className="mb-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.25em]" style={{ color: PJ.primary }}>
-              {t('games.pixeljagd.categoriesLabel')}
-            </p>
-            <p className="mt-1 text-xs" style={{ color: PJ.dim }}>
-              {cats.length === 0 ? t('games.pixeljagd.allCategories') : t('games.pixeljagd.available', { count: available })}
-            </p>
-          </div>
-          <PremiumImageChoiceCard
-            title={t('games.pixeljagd.categories.mix')}
-            image={PIXELJAGD_THEME_ASSETS.mix}
-            selected={cats.length === 0}
-            onClick={() => setCats([])}
-            accent={PJ.primary}
-            layout="wide"
-            priority
-            className="mb-3"
-          />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {PIXEL_CATEGORIES.map((c) => {
-              const on = cats.includes(c);
-              return (
-                <PremiumImageChoiceCard
-                  key={c}
-                  title={t(categoryLabelKey(c))}
-                  image={PIXELJAGD_THEME_ASSETS[c]}
-                  selected={on}
-                  onClick={() => setCats((prev) => (on ? prev.filter((x) => x !== c) : [...prev, c]))}
-                  accent={PJ.accent}
-                />
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Runden */}
-        <p className="mt-7 mb-2 text-xs font-black uppercase tracking-wide" style={{ color: PJ.dim }}>
-          {t('games.pixeljagd.rounds')}: {rounds}
-        </p>
-        <input type="range" min={3} max={20} step={1} value={rounds}
-          onChange={(e) => setRounds(Number(e.target.value))} className="w-full" style={{ accentColor: PJ.primary }} />
-
-        {contentReady && available === 0 && (
-          <div className="mt-6 rounded-2xl p-4 text-sm" style={{ background: PJ.surface, color: PJ.dim }}>
-            {t('games.pixeljagd.noImagesSetup')}
-          </div>
-        )}
-
-        <button
-          disabled={!canStart}
-          onClick={() => onStart({ players: named, mode, answerMode, categories: cats, rounds })}
-          className="mt-6 w-full h-14 rounded-2xl font-black disabled:opacity-40"
-          style={{ background: PJ.primary, color: PJ.bg }}
-        >
-          {t('games.pixeljagd.start')}
-        </button>
-
-        {toast && <p className="mt-3 text-center text-sm" style={{ color: PJ.bad }}>{toast}</p>}
-      </main>
     </div>
   );
 }

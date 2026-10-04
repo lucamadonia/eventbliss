@@ -67,7 +67,7 @@ export default function TVLeaderboard({
         transition={spring}
       >
         <span
-          className="uppercase font-black tracking-[0.3em]"
+          className="font-black"
           style={{ fontSize: tvType.label, color: '#b3a8c9' }}
         >
           {t('tv.standings', 'Zwischenstand')}

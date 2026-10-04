@@ -3,7 +3,7 @@
  * Inactive: small 📺 icon button. Active: persistent mini-pill with code.
  * Expanded: full panel with code + instructions + copy link.
  */
-import { useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { Tv, Copy, Check, X } from "lucide-react";
@@ -31,6 +31,42 @@ export function TVConnectButton({ tvCode, isActive, onActivate, showTrigger = tr
   // Nur waehrend einer Party gibt es Erlebnis-Ansichten zu schalten.
   const party = useSyncExternalStore(subscribePartySession, getActivePartySession, () => null);
 
+  /**
+   * Fokus-Fuehrung wie bei jedem Dialog: Beim Oeffnen springt der Fokus auf
+   * „Schliessen“, beim Schliessen zurueck auf den Ausloeser. Der Ausloeser
+   * wird erst nach der Austrittsanimation wieder eingehaengt — deshalb holt
+   * ihn ein Ref-Callback ab, sobald er da ist.
+   */
+  const restoreFocusRef = useRef(false);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useCallback((node: HTMLButtonElement | null) => {
+    if (node && restoreFocusRef.current) {
+      restoreFocusRef.current = false;
+      node.focus();
+    }
+  }, []);
+  const close = useCallback(() => {
+    restoreFocusRef.current = true;
+    setExpanded(false);
+  }, [setExpanded]);
+
+  // Escape schliesst — egal, wo der Fokus gerade steht (frueher nur, wenn er
+  // zufaellig im Dialog lag).
+  useEffect(() => {
+    if (!expanded) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      // Ein darueber geoeffneter Dialog (z. B. „Spieler entfernen“) schliesst zuerst.
+      const owner = (event.target as Element | null)?.closest?.('[role="dialog"]');
+      if (owner && owner !== dialogRef.current) return;
+      event.preventDefault();
+      close();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [expanded, close]);
+
   const handleTap = () => {
     haptics.light();
     if (!isActive) onActivate();
@@ -56,20 +92,29 @@ export function TVConnectButton({ tvCode, isActive, onActivate, showTrigger = tr
           <motion.div
             key="expanded"
             role="dialog"
+            ref={dialogRef}
+            data-testid="tv-connect-dialog"
             aria-label={t("tv.connectTitle")}
-            onKeyDown={event => { if (event.key === 'Escape') setExpanded(false); }}
+            onAnimationComplete={() => closeButtonRef.current?.focus({ preventScroll: true })}
             initial={{ opacity: 0, scale: 0.8, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.8, y: 10 }}
             transition={spring.snappy}
-            className="bg-[#151a21]/95 backdrop-blur-xl border border-[#df8eff]/30 rounded-2xl p-4 shadow-[0_0_30px_rgba(223,142,255,0.2)] w-[280px] max-h-[70vh] overflow-y-auto"
+            className="bg-[#151a21]/95 backdrop-blur-xl border border-[#df8eff]/30 rounded-2xl p-4 shadow-[0_0_30px_rgba(223,142,255,0.2)] w-[min(300px,calc(100vw-2rem))] max-h-[70vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Tv className="w-4 h-4 text-[#df8eff]" />
                 <span className="text-sm font-semibold text-white">{t("tv.connectTitle")}</span>
               </div>
-              <button aria-label={t('common.close')} className="grid min-h-11 min-w-11 place-items-center" onClick={() => { haptics.light(); setExpanded(false); }}>
+              <button
+                ref={closeButtonRef}
+                type="button"
+                data-testid="tv-connect-close"
+                aria-label={t('common.close', 'Schließen')}
+                className="grid min-h-11 min-w-11 place-items-center rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] focus-visible:ring-offset-2 focus-visible:ring-offset-[#151a21]"
+                onClick={() => { haptics.light(); close(); }}
+              >
                 <X className="w-4 h-4 text-white/40" />
               </button>
             </div>
@@ -111,7 +156,9 @@ export function TVConnectButton({ tvCode, isActive, onActivate, showTrigger = tr
                 <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-white/40">
                   {t("tv.remote.title")}
                 </p>
-                <TVRemote isActive={isActive} />
+                {/* Beschriftungen duerfen umbrechen statt abgeschnitten zu werden
+                    („Welcome screen“, „Écran d'accueil“ …) — zwei Spalten bleiben. */}
+                <TVRemote isActive={isActive} className="[&_span]:!whitespace-normal [&_span]:!overflow-visible [&_span]:text-start [&_span]:leading-tight [&_button]:py-1.5" />
               </div>
             )}
           </motion.div>
@@ -119,6 +166,10 @@ export function TVConnectButton({ tvCode, isActive, onActivate, showTrigger = tr
           /* Active: persistent mini-pill showing TV code */
           <motion.button
             key="active-pill"
+            ref={triggerRef}
+            aria-label={t('tv.connectTitle')}
+            aria-haspopup="dialog"
+            aria-expanded={false}
             onClick={handleTap}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -143,7 +194,10 @@ export function TVConnectButton({ tvCode, isActive, onActivate, showTrigger = tr
           /* Inactive: simple icon button */
           <motion.button
             key="collapsed"
+            ref={triggerRef}
             aria-label={t('tv.connectTitle')}
+            aria-haspopup="dialog"
+            aria-expanded={false}
             onClick={handleTap}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}

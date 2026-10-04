@@ -11,7 +11,7 @@ export interface GameCategory {
 }
 
 const CATEGORY_NAMES = [
-  'Animali', 'Paesi', 'Citta', 'Professioni', 'Sport', 'Film',
+  'Animali', 'Paesi', 'Città', 'Professioni', 'Sport', 'Film',
   'Serie TV', 'Marchi', 'Frutta', 'Verdura', 'Marche automobilistiche',
   'Colori', 'Strumenti musicali', 'Bevande', 'Dolciumi',
   'Materie scolastiche', 'Lingue', 'Fiori', 'Alberi', 'Spezie',
@@ -19,7 +19,7 @@ const CATEGORY_NAMES = [
   'Band musicali', 'Personaggi dei fumetti', 'Supereroi', 'Personaggi Disney',
   'Elettrodomestici', 'Sport con la palla', 'Sport acquatici',
   'Sport invernali', 'Mammiferi', 'Uccelli', 'Pesci',
-  'Insetti', 'Capitali europee', 'Citta italiane',
+  'Insetti', 'Capitali europee', 'Città italiane',
   'Condimenti per pizza', 'Cocktail', 'Tipi di pane', 'Tipi di formaggio',
   'Stili di ballo', 'Giochi di carte', 'Giochi da tavolo', 'Videogiochi',
   'Erbe', 'Noci', 'Minerali', 'Tipi di tessuto',
@@ -48,7 +48,7 @@ export const GAME_CATEGORIES_IT: GameCategory[] = [
   },
   {
     id: 'cat-staedte',
-    name: 'Citta',
+    name: 'Città',
     terms: ['Roma', 'Milano', 'Napoli', 'Firenze', 'Venezia', 'Parigi', 'Londra', 'New York', 'Tokyo', 'Berlino', 'Madrid', 'Barcellona', 'Istanbul', 'Dubai', 'Sydney', 'Vienna', 'Amsterdam', 'Praga', 'Lisbona', 'Torino'],
     difficulty: 'easy',
   },
@@ -109,7 +109,7 @@ export const GAME_CATEGORIES_IT: GameCategory[] = [
   {
     id: 'cat-videospiele',
     name: 'Videogiochi',
-    terms: ['Minecraft', 'Fortnite', 'Mario', 'Zelda', 'FIFA', 'GTA', 'Call of Duty', 'Pokemon', 'Tetris', 'Pac-Man', 'The Sims', 'Overwatch', 'League of Legends', 'Animal Crossing', 'Sonic', 'Roblox', 'Among Us', 'Elden Ring', 'God of War', 'Resident Evil'],
+    terms: ['Minecraft', 'Fortnite', 'Mario', 'Zelda', 'FIFA', 'GTA', 'Call of Duty', 'Pokémon', 'Tetris', 'Pac-Man', 'The Sims', 'Overwatch', 'League of Legends', 'Animal Crossing', 'Sonic', 'Roblox', 'Among Us', 'Elden Ring', 'God of War', 'Resident Evil'],
     difficulty: 'easy',
   },
   {
@@ -157,7 +157,7 @@ export const GAME_CATEGORIES_IT: GameCategory[] = [
   {
     id: 'cat-getraenke',
     name: 'Bevande',
-    terms: ['Acqua', 'Caffe', 'Te', 'Birra', 'Vino', 'Cola', 'Limonata', 'Succo d\'arancia', 'Latte', 'Cioccolata calda', 'Frullato', 'Cocktail', 'Champagne', 'Whisky', 'Vodka', 'Gin', 'Spritz', 'Te freddo', 'Espresso', 'Grappa'],
+    terms: ['Acqua', 'Caffè', 'Tè', 'Birra', 'Vino', 'Cola', 'Limonata', 'Succo d\'arancia', 'Latte', 'Cioccolata calda', 'Frullato', 'Cocktail', 'Champagne', 'Whisky', 'Vodka', 'Gin', 'Spritz', 'Tè freddo', 'Espresso', 'Grappa'],
     difficulty: 'easy',
   },
   {
@@ -205,19 +205,19 @@ export const GAME_CATEGORIES_IT: GameCategory[] = [
   {
     id: 'cat-brettspiele',
     name: 'Giochi da tavolo',
-    terms: ['Scacchi', 'Monopoly', 'Risiko', 'Scarabeo', 'Cluedo', 'Gioco dell\'Oca', 'I Coloni di Catan', 'Dama', 'Backgammon', 'Trivial Pursuit', 'Uno', 'Tria', 'Mulino', 'Pictionary', 'Tabu', 'Jenga', 'Stratego', 'Forza Quattro', 'Memory', 'Tombola'],
+    terms: ['Scacchi', 'Monopoly', 'Risiko', 'Scarabeo', 'Cluedo', 'Gioco dell\'Oca', 'I Coloni di Catan', 'Dama', 'Backgammon', 'Trivial Pursuit', 'Uno', 'Tria', 'Mulino', 'Pictionary', 'Tabù', 'Jenga', 'Stratego', 'Forza Quattro', 'Memory', 'Tombola'],
     difficulty: 'easy',
   },
   {
     id: 'cat-fussballvereine',
     name: 'Squadre di calcio',
-    terms: ['Juventus', 'AC Milan', 'Inter Milano', 'AS Roma', 'SSC Napoli', 'Lazio', 'Fiorentina', 'Atalanta', 'Real Madrid', 'FC Barcelona', 'Manchester United', 'Liverpool', 'Bayern Monaco', 'Paris Saint-Germain', 'Chelsea', 'Arsenal', 'Ajax Amsterdam', 'Borussia Dortmund', 'Benfica', 'Atletico Madrid'],
+    terms: ['Juventus', 'AC Milan', 'Inter Milano', 'AS Roma', 'SSC Napoli', 'Lazio', 'Fiorentina', 'Atalanta', 'Real Madrid', 'FC Barcelona', 'Manchester United', 'Liverpool', 'Bayern Monaco', 'Paris Saint-Germain', 'Chelsea', 'Arsenal', 'Ajax Amsterdam', 'Borussia Dortmund', 'Benfica', 'Atlético Madrid'],
     difficulty: 'medium',
   },
   {
     id: 'cat-desserts',
     name: 'Dolci',
-    terms: ['Torta al cioccolato', 'Tiramisu', 'Creme brulee', 'Gelato', 'Panna Cotta', 'Strudel di mele', 'Brownie', 'Cheesecake', 'Mousse al cioccolato', 'Waffle', 'Crepe', 'Budino', 'Muffin', 'Macaron', 'Ciambella', 'Baklava', 'Cannoli', 'Profiterole', 'Zuppa inglese', 'Crostata'],
+    terms: ['Torta al cioccolato', 'Tiramisù', 'Crème brûlée', 'Gelato', 'Panna Cotta', 'Strudel di mele', 'Brownie', 'Cheesecake', 'Mousse al cioccolato', 'Waffle', 'Crêpe', 'Budino', 'Muffin', 'Macaron', 'Ciambella', 'Baklava', 'Cannoli', 'Profiterole', 'Zuppa inglese', 'Crostata'],
     difficulty: 'easy',
   },
   {
@@ -241,7 +241,7 @@ export const GAME_CATEGORIES_IT: GameCategory[] = [
   {
     id: 'cat-feiertage',
     name: 'Feste e celebrazioni',
-    terms: ['Natale', 'Pasqua', 'Capodanno', 'Carnevale', 'San Valentino', 'Halloween', 'Festa della Mamma', 'Festa del Papa', 'Ferragosto', 'Festa della Repubblica', 'Epifania', 'Liberazione', 'Ognissanti', 'Immacolata', 'Festa del Lavoro', 'Santo Stefano', 'Venerdi Santo', 'Domenica delle Palme', 'Festa di San Giovanni', 'Palio di Siena'],
+    terms: ['Natale', 'Pasqua', 'Capodanno', 'Carnevale', 'San Valentino', 'Halloween', 'Festa della Mamma', 'Festa del Papà', 'Ferragosto', 'Festa della Repubblica', 'Epifania', 'Liberazione', 'Ognissanti', 'Immacolata', 'Festa del Lavoro', 'Santo Stefano', 'Venerdì Santo', 'Domenica delle Palme', 'Festa di San Giovanni', 'Palio di Siena'],
     difficulty: 'easy',
   },
   {
@@ -265,7 +265,7 @@ export const GAME_CATEGORIES_IT: GameCategory[] = [
   {
     id: 'cat-bauwerke',
     name: 'Monumenti famosi',
-    terms: ['Torre Eiffel', 'Colosseo', 'Grande Muraglia Cinese', 'Taj Mahal', 'Statua della Liberta', 'Big Ben', 'Porta di Brandeburgo', 'Piramidi di Giza', 'Acropoli', 'Basilica di San Pietro', 'Burj Khalifa', 'Opera di Sydney', 'Sagrada Familia', 'Tower Bridge', 'Castello di Neuschwanstein', 'Stonehenge', 'Machu Picchu', 'Cristo Redentore', 'Golden Gate Bridge', 'Alhambra'],
+    terms: ['Torre Eiffel', 'Colosseo', 'Grande Muraglia Cinese', 'Taj Mahal', 'Statua della Libertà', 'Big Ben', 'Porta di Brandeburgo', 'Piramidi di Giza', 'Acropoli', 'Basilica di San Pietro', 'Burj Khalifa', 'Opera di Sydney', 'Sagrada Familia', 'Tower Bridge', 'Castello di Neuschwanstein', 'Stonehenge', 'Machu Picchu', 'Cristo Redentore', 'Golden Gate Bridge', 'Alhambra'],
     difficulty: 'medium',
   },
   {
@@ -277,7 +277,7 @@ export const GAME_CATEGORIES_IT: GameCategory[] = [
   {
     id: 'cat-kaesesorten',
     name: 'Tipi di formaggio',
-    terms: ['Parmigiano Reggiano', 'Mozzarella', 'Gorgonzola', 'Pecorino', 'Mascarpone', 'Ricotta', 'Fontina', 'Taleggio', 'Asiago', 'Provolone', 'Brie', 'Camembert', 'Gouda', 'Feta', 'Cheddar', 'Gruyere', 'Emmental', 'Burrata', 'Stracchino', 'Caciocavallo'],
+    terms: ['Parmigiano Reggiano', 'Mozzarella', 'Gorgonzola', 'Pecorino', 'Mascarpone', 'Ricotta', 'Fontina', 'Taleggio', 'Asiago', 'Provolone', 'Brie', 'Camembert', 'Gouda', 'Feta', 'Cheddar', 'Gruyère', 'Emmental', 'Burrata', 'Stracchino', 'Caciocavallo'],
     difficulty: 'hard',
   },
 ];

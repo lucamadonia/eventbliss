@@ -1,11 +1,14 @@
+import TVPlayerAvatar from './cinema/TVPlayerAvatar';
 import { useEffect, useMemo, useState } from 'react';
+import { lu } from './components/tv-lobby-scale';
 import { motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, Trophy } from 'lucide-react';
 
 import { ConfettiBurst } from '@/components/vfx/ConfettiBurst';
-import TVPartyPodium from './components/TVPartyPodium';
+import TVPartyPodium, { MEDAL_COLORS } from './components/TVPartyPodium';
 import { tvType } from './tv-tokens';
+import { playableGames } from '@/lib/playable-games';
 import type { PartyStanding } from './party-types';
 import type { TVScore } from './useTVConnection';
 
@@ -34,6 +37,8 @@ export default function TVGameOver({ scores, gameId }: { scores: TVScore[]; game
   const theme = THEMES[gameId ?? ''] ?? DEFAULT_THEME;
   const sorted = useMemo(() => [...scores].sort((a, b) => b.score - a.score), [scores]);
   const winner = sorted[0];
+  // Neue Information statt Wiederholung: der Abstand zum Zweiten (Name + Punkte stehen schon am Podest).
+  const runnerUp = sorted[1];
 
   const podium = useMemo<PartyStanding[]>(
     () => sorted.map((entry, index) => ({
@@ -95,13 +100,14 @@ export default function TVGameOver({ scores, gameId }: { scores: TVScore[]; game
       >
         <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.055] px-5 py-3 backdrop-blur-xl">
           <Sparkles className="h-[1.15em] w-[1.15em]" style={{ color: theme.secondary }} aria-hidden />
-          <span className="font-black uppercase tracking-[0.27em] text-white/[0.68]" style={{ fontSize: tvType.micro }}>
+          <span className="font-black text-white/[0.68]" style={{ fontSize: lu(1.9) }}>
             {t('games.results.gameOver')}
           </span>
         </div>
         {gameId && (
-          <span className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 font-black uppercase tracking-[.24em] text-white/38" style={{ fontSize: tvType.micro }}>
-            {gameId}
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 font-bold text-white/70" style={{ fontSize: lu(1.9) }}>
+            {/* Spielname in der Fernsehsprache — nie die interne ID („bomb“). */}
+            {(() => { const key = playableGames.find((g) => g.id === gameId)?.nameKey; return key ? t(key) : gameId; })()}
           </span>
         )}
       </motion.header>
@@ -114,17 +120,16 @@ export default function TVGameOver({ scores, gameId }: { scores: TVScore[]; game
             animate={{ opacity: 1, y: 0 }}
             transition={spring}
           >
-            <p className="font-black uppercase tracking-[0.34em]" style={{ color: theme.secondary, fontSize: tvType.micro }}>
-              {t('tv.andTheWinnerIs')}
-            </p>
-            <h1 className="mt-2 font-black leading-[.9] tracking-[-.05em]" style={{ fontSize: 'clamp(4rem,7.3vw,8.4rem)' }}>
-              {winner.name}
+            {/* Der Name steht am Podest unter dem Avatar — die Ueberschrift kuendigt nur an. */}
+            <h1 className="font-black leading-[1.02] tracking-[-.02em]" style={{ fontSize: lu(6.4), color: '#fff' }}>
+              {t('tv.andTheWinnerIs')} …
             </h1>
           </motion.div>
 
           <TVPartyPodium entries={podium} reveal={beat >= 1} variant="finale" className="mt-[-1rem] max-w-[min(58rem,92%)]" />
 
-          <motion.div
+          {runnerUp && <motion.div
+            data-testid="tv-gameover-margin"
             className="-mt-1 inline-flex items-center gap-3 rounded-full border px-6 py-3 font-black"
             style={{ borderColor: `${theme.warm}50`, background: `linear-gradient(90deg,transparent,${theme.warm}16,transparent)`, fontSize: tvType.label }}
             initial={{ opacity: 0, y: reduced ? 0 : 16 }}
@@ -132,8 +137,12 @@ export default function TVGameOver({ scores, gameId }: { scores: TVScore[]; game
             transition={spring}
           >
             <Trophy className="h-[1.1em] w-[1.1em]" style={{ color: theme.warm }} aria-hidden />
-            <span>{winner.score.toLocaleString('de-DE')} {t('tv.points')}</span>
-          </motion.div>
+            <span>
+              {winner.score > runnerUp.score
+                ? t('tv.winnerLead', '+{{margin}} vor {{name}}', { margin: winner.score - runnerUp.score, name: runnerUp.name })
+                : t('tv.winnerTie', 'Gleichstand mit {{name}}', { name: runnerUp.name })}
+            </span>
+          </motion.div>}
         </section>
 
         <motion.aside
@@ -144,7 +153,7 @@ export default function TVGameOver({ scores, gameId }: { scores: TVScore[]; game
         >
           <div aria-hidden className="absolute inset-x-[15%] top-0 h-px" style={{ background: `linear-gradient(90deg,transparent,${theme.accent},${theme.secondary},transparent)` }} />
           <div className="mb-4 flex items-center justify-between gap-4 px-1">
-            <h2 className="font-black uppercase tracking-[0.24em] text-white/48" style={{ fontSize: tvType.micro }}>{t('games.results.leaderboard')}</h2>
+            <h2 className="font-black text-white/48" style={{ fontSize: lu(1.9) }}>{t('games.results.leaderboard')}</h2>
             <span className="font-black tabular-nums text-white/30" style={{ fontSize: tvType.micro }}>{sorted.length}</span>
           </div>
           <div className="min-h-0 space-y-[clamp(.35rem,.7vh,.65rem)] overflow-y-auto">
@@ -158,8 +167,8 @@ export default function TVGameOver({ scores, gameId }: { scores: TVScore[]; game
                 transition={{ ...spring, delay: reduced ? 0 : Math.min(index * 0.055, 0.4) }}
               >
                 {index === 0 && <span aria-hidden className="absolute inset-y-[18%] left-0 w-[3px] rounded-full" style={{ background: entry.color, boxShadow: `0 0 16px ${entry.color}` }} />}
-                <span className="w-[1.8em] shrink-0 text-center font-black tabular-nums" style={{ color: index < 3 ? [theme.warm, '#D9E1F2', '#E99A67'][index] : 'rgba(255,255,255,.3)', fontSize: tvType.label }}>{String(index + 1).padStart(2, '0')}</span>
-                <span className="grid h-[clamp(2.1rem,3vw,3.2rem)] w-[clamp(2.1rem,3vw,3.2rem)] shrink-0 place-items-center rounded-full border font-black" style={{ background: `linear-gradient(145deg,${entry.color},#0b0b16)`, borderColor: `${entry.color}b0`, fontSize: tvType.label }}>{entry.name.slice(0, 1).toUpperCase()}</span>
+                <span className="w-[1.8em] shrink-0 text-center font-black tabular-nums" style={{ color: index < 3 ? MEDAL_COLORS[index] : 'rgba(255,255,255,.45)', fontSize: tvType.label }}>{index + 1}</span>
+                <TVPlayerAvatar name={entry.name} color={entry.color} size="clamp(2.1rem,3vw,3.2rem)" active={index === 0} />
                 <span className="min-w-0 flex-1 truncate font-black" style={{ fontSize: tvType.label }}>{entry.name}</span>
                 <span className="shrink-0 font-black tabular-nums" style={{ color: index === 0 ? theme.warm : 'rgba(255,255,255,.68)', fontSize: tvType.label }}>{entry.score.toLocaleString('de-DE')}</span>
               </motion.div>

@@ -15,3 +15,14 @@
 @media(max-width:849px){.bomb-playing .bomb-workspace{display:flex;flex-direction:column;align-items:stretch}.bomb-playing .bomb-controls{display:contents}.bomb-playing .bomb-task{order:0}.bomb-playing .bomb-instrument{order:1;padding:8px 0}.bomb-playing .bomb-answers,.bomb-playing .bomb-note,.bomb-playing .bomb-action-pair,.bomb-playing .bomb-pass{order:2}}
 @media(min-width:850px){.bomb-playing .bomb-workspace{grid-template-columns:minmax(260px,.9fr) minmax(0,1.1fr);gap:48px;min-height:60dvh;margin:24px auto}.bomb-playing.game-stage{padding-inline:max(28px,calc((100% - 1100px)/2))}}
 @media(orientation:landscape) and (max-height:540px){.bomb-playing .bomb-workspace{display:grid;grid-template-columns:minmax(200px,.8fr) minmax(0,1.2fr);gap:24px}.bomb-playing .bomb-controls{display:flex}.bomb-playing .bomb-instrument{grid-column:1;grid-row:1}.bomb-dial{width:190px}.bomb-digits{font-size:64px}.bomb-object{width:40px;height:40px}.bomb-playing .stage-header{margin-bottom:14px}.bomb-roster{gap:4px}.bomb-task h2{font-size:26px}}
+/* Party §9: sentence case, no tracked microlabels; seat chips carry avatar + glow. */
+.bomb-console .stage-eyebrow,.bomb-dial-face>span,.bomb-task-label,.bomb-mode,.bomb-ledger-row small{text-transform:none;letter-spacing:0}
+.bomb-console .stage-eyebrow,.bomb-dial-face>span,.bomb-task-label,.bomb-mode{font-size:13px}.bomb-ledger-row small{font-size:12px}
+.bomb-roster>span[data-seat=true]{display:inline-flex;align-items:center;gap:8px;padding:4px 12px 4px 4px;min-height:32px;color:#fff;border:0}
+.bomb-roster>span[data-seat=true] small{margin-inline-start:4px;font-variant-numeric:tabular-nums;opacity:.75}
+/* Ledger §9: plain ranks in medal colours, white names with avatar, no box edge behind the action. */
+.bomb-ledger{border-top:0}.bomb-ledger-row{border-bottom-color:#ffffff0d}
+.bomb-ledger-row>span.bomb-rank{font:800 20px/1 inherit;font-variant-numeric:tabular-nums;color:#aaa5be}
+.bomb-ledger-row strong.bomb-ledger-name,.bomb-ledger-row[data-winner=true] strong.bomb-ledger-name{display:flex;align-items:center;gap:12px;color:#fff}
+.bomb-report .stage-footer{position:static;background:transparent;border-top:0;padding-top:8px}
+.bomb-wait-host{flex:1;min-height:54px;display:flex;align-items:center;justify-content:center;border-radius:16px;padding:12px 16px;background:#ffffff08;border:1px solid #ffffff14;color:#ffffffcc;font-size:15px;font-weight:600;text-align:center}

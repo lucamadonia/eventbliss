@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { lu } from './tv-lobby-scale';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import { useAmbientMotion } from '@/lib/useAmbientMotion';
@@ -7,6 +8,7 @@ import { playableGames } from '@/lib/playable-games';
 import { buildRoute } from '../party-map';
 import { tvType } from '../tv-tokens';
 import type { PartyPlaylistItem, PartyStanding } from '../party-types';
+import { avatarFor, useTVRoster } from '../cinema/tv-roster';
 
 /**
  * TVPartyMap — der Abend als Brettspiel-Route.
@@ -69,6 +71,7 @@ export default function TVPartyMap({
 }: Props) {
   const { t } = useTranslation();
   const ambient = useAmbientMotion();
+  const roster = useTVRoster();
   const route = useMemo(() => buildRoute(playlist.length), [playlist.length]);
 
   /**
@@ -240,9 +243,9 @@ export default function TVPartyMap({
               </motion.div>
 
               <div
-                className="mt-2 text-center font-black uppercase tracking-wide"
+                className="mt-2 text-center font-black"
                 style={{
-                  fontSize: tvType.micro,
+                  fontSize: lu(1.9),
                   color: active ? '#ffffff' : 'rgba(255,255,255,0.45)',
                   maxWidth: size + 60,
                 }}
@@ -290,7 +293,7 @@ export default function TVPartyMap({
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 260, damping: 18, delay: i * 0.06 }}
               >
-                {s.avatar || s.name.charAt(0)}
+                {avatarFor(roster, s)}
               </motion.div>
             ))}
           </div>
@@ -313,8 +316,8 @@ export default function TVPartyMap({
           className="text-center"
         >
           <div
-            className="font-black uppercase tracking-[0.3em]"
-            style={{ fontSize: tvType.micro, color: '#b3a8c9' }}
+            className="font-black"
+            style={{ fontSize: lu(1.9), color: '#b3a8c9' }}
           >
             {t('tv.partyNight.upNext')}
           </div>

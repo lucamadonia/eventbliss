@@ -299,7 +299,21 @@ export async function loadQuestions(
   lang: string,
   categories?: CeCategory[],
 ): Promise<CeQuestion[]> {
+  return (await loadQuestionPool(lang, categories)).questions;
+}
+
+/**
+ * Wie `loadQuestions`, meldet aber, ob die Abfrage scheiterte — damit die
+ * Einrichtung „Erneut versuchen“ anbieten kann statt still einen grauen
+ * Startknopf zu zeigen. Teilergebnisse (spaetere Seite scheitert) zaehlen als
+ * Fehler, die bis dahin geladenen Fragen bleiben trotzdem nutzbar.
+ */
+export async function loadQuestionPool(
+  lang: string,
+  categories?: CeCategory[],
+): Promise<{ questions: CeQuestion[]; failed: boolean }> {
   const out: CeQuestion[] = [];
+  let failed = false;
   try {
     for (let from = 0; ; from += PAGE) {
       let q = (await table())
@@ -311,7 +325,7 @@ export async function loadQuestions(
       if (categories?.length) q = q.in('category', categories);
 
       const { data, error } = await q.range(from, from + PAGE - 1);
-      if (error) break;
+      if (error) { failed = true; break; }
       const chunk = (data ?? []) as Row[];
 
       for (const r of chunk) {
@@ -321,9 +335,21 @@ export async function loadQuestions(
       if (chunk.length < PAGE) break;
     }
   } catch {
-    // Ohne Fragen zeigt die Einrichtung den Hinweis „keine Fragen verfügbar".
+    // Netz/DB weg: die Einrichtung zeigt den Fehler mit „Erneut versuchen“.
+    failed = true;
   }
-  return out;
+  return { questions: out, failed };
+}
+
+export type CeContentState = 'loading' | 'error' | 'empty' | 'emptySelection' | 'ready';
+
+/** Was die Einrichtung ueber die Fragen sagt — nie ein stummer grauer Startknopf. */
+export function ceContentState(o: { contentReady: boolean; failed: boolean; poolSize: number; available: number }): CeContentState {
+  if (!o.contentReady) return 'loading';
+  if (o.failed && o.poolSize === 0) return 'error';
+  if (o.poolSize === 0) return 'empty';
+  if (o.available === 0) return 'emptySelection';
+  return 'ready';
 }
 
 /**

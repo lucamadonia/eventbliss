@@ -34,3 +34,6 @@
 .newsroom-game [class*="max-h-64"] { max-height: min(48dvh, 32rem); }
 @media (max-width: 380px) { .newsroom-game [class*="px-6"] { padding-left: 1rem; padding-right: 1rem; } }
 @media (prefers-reduced-motion: reduce) { .newsroom-game *, .newsroom-game *::before, .newsroom-game *::after { animation: none !important; scroll-behavior: auto !important; } }
+.newsroom-game .newsroom-clock.is-urgent { color: #ff6b98; }
+.newsroom-game .fof-stage h2 { font-family: inherit; }
+.newsroom-game .fact-ballot button { min-height: 4.75rem; font-size: 1.125rem; }

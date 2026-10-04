@@ -119,7 +119,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart, locked }: Se
         >
           {/* Spielmodus Card */}
           <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
-            <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider mb-3">{t('games.bomb.labelMode')}</h2>
+            <h2 className="text-white/60 text-[13px] font-semibold mb-3">{t('games.bomb.labelMode')}</h2>
             <div className="grid grid-cols-2 gap-3">
               {modes.map((m) => (
                 <PremiumImageChoiceCard
@@ -140,7 +140,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart, locked }: Se
             {/* Rundenanzahl */}
             <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">{t('games.bomb.labelRounds')}</h2>
+                <h2 className="text-white/60 text-[13px] font-semibold">{t('games.bomb.labelRounds')}</h2>
                 <span className="text-[#cf96ff] text-sm font-bold">{state.totalRounds}</span>
               </div>
               <input
@@ -159,7 +159,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart, locked }: Se
             {/* Timer */}
             <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">{t('games.bomb.labelTimer')}</h2>
+                <h2 className="text-white/60 text-[13px] font-semibold">{t('games.bomb.labelTimer')}</h2>
                 {state.randomTimer ? (
                   <span className="text-[#ff7350] text-sm font-bold">{t('games.bomb.timerRandom')}</span>
                 ) : (
@@ -212,7 +212,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart, locked }: Se
           {(state.mode === 'kategorie' || state.mode === 'alle') && (
             <div className="bg-[#1f1f29] rounded-2xl p-4 border border-white/[0.06]">
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-white/40 text-xs font-semibold uppercase tracking-wider">{t('games.bomb.labelCategory')}</h2>
+                <h2 className="text-white/60 text-[13px] font-semibold">{t('games.bomb.labelCategory')}</h2>
               </div>
               <button
                 onClick={() => onUpdate({ sameCategory: !state.sameCategory })}
@@ -225,7 +225,7 @@ export default function BombSetupScreen({ state, onUpdate, onStart, locked }: Se
                 <Hash className="w-3.5 h-3.5" />
                 {state.sameCategory ? t('games.bomb.sameCategoryOn') : t('games.bomb.sameCategoryOff')}
               </button>
-              <p className="text-white/20 text-[10px] mt-2 text-center">
+              <p className="text-white/60 text-[13px] mt-2 text-center">
                 {state.sameCategory ? t('games.bomb.sameCategoryHintOn') : t('games.bomb.sameCategoryHintOff')}
               </p>
             </div>

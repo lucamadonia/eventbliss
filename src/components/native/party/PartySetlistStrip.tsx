@@ -14,7 +14,9 @@ import { playableGames } from "@/lib/playable-games";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-import { estimateSetlistMinutes, formatSetlistDuration, playerFitFor } from "./setlist";
+import { availabilityChip } from "@/lib/playable-games";
+import { AvailabilityChipView } from "./AvailabilityChipView";
+import { estimateSetlistMinutes, formatSetlistDuration, localGameAvailability, nextFittingIndex } from "./setlist";
 
 export interface PartySetlistStripProps {
   playlist: string[];
@@ -41,6 +43,7 @@ export function PartySetlistStrip({
   if (playlist.length === 0) return null;
 
   const remaining = playlist.slice(playlistIndex);
+  const currentIndex = nextFittingIndex(playlist, playlistIndex, playerCount);
 
   return (
     <section className="px-5 mb-5">
@@ -77,18 +80,20 @@ export function PartySetlistStrip({
            * zurueck, ist das Spiel wieder da. Sichtbar muss es trotzdem sein,
            * sonst zeigt die Lobby etwas als naechstes an, das nie drankommt.
            */
-          const fit = game && !done ? playerFitFor(game, playerCount) : "ok";
-          // `blocked` sperrt, `hint` erklaert nur. Eine zu grosse Runde ist
-          // kein Hindernis — das Maximum begrenzt nur das Hinzufuegen.
-          const blocked = fit === "tooFew";
-          const unfit = blocked;
-          const hint = fit === "tooMany";
-          const current = playlistActive && index === playlistIndex && !unfit;
+          // Die eine Party-Regel: was gerade nicht starten kann, wird markiert und uebersprungen.
+          const availability = game && !done ? localGameAvailability(game.id, playerCount) : null;
+          const unfit = !!availability && !availability.startable;
+          const blocked = unfit && availability!.reason !== "too_many";
+          const hint = unfit && availability!.reason === "too_many";
+          // Der grosse Knopf sitzt am naechsten PASSENDEN Eintrag, nicht stur am faelligen.
+          const current = playlistActive && index === currentIndex;
 
           return (
             <motion.li
               key={`${gameId}-${index}`}
               variants={staggerItem}
+              data-testid={done ? undefined : `setlist-hint-${gameId}`}
+              data-status={blocked ? "too-few" : hint ? "too-many" : "fits"}
               className={cn(
                 "flex items-center gap-3 rounded-2xl border p-2.5 transition-colors",
                 current
@@ -131,10 +136,8 @@ export function PartySetlistStrip({
                 <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">
                   {done
                     ? t("nativeExtra.partyNight.setlistDoneLabel")
-                    : blocked
-                    ? t("nativeExtra.partyNight.setlistTooFewLabel", { n: game!.minPlayers })
-                    : hint
-                    ? t("nativeExtra.partyNight.setlistTooManyLabel", { n: game!.maxPlayers })
+                    : unfit
+                    ? <AvailabilityChipView chip={availabilityChip(availability!)} className="normal-case tracking-normal" />
                     : current
                     ? t("nativeExtra.partyNight.setlistCurrentLabel")
                     : t("nativeExtra.partyNight.setlistUpcomingLabel")}

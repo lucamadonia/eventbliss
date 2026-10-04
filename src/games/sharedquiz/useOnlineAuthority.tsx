@@ -1,8 +1,13 @@
 import { useEffect, useRef } from 'react';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { acceptOnlineAction } from './online-action';
+import { localGuestIds } from '../ui/guest-handover';
+import { hostActor } from './host-actor';
+import { reportLateIntent } from './late-intent';
+import { privateRecipients } from '../multiplayer/private-recipients';
 
-type Action = { allow: (sender: string, args: any[]) => boolean; run: (...args: any[]) => void };
+/** `answer`: a vote/guess/choice that closes with its turn — a late one gets the „zu spät“ notice (F12). */
+type Action = { allow: (sender: string, args: any[]) => boolean; run: (...args: any[]) => void; answer?: boolean };
 
 /** All mutations run on the host; clients submit intent against a turn token. */
 export function useOnlineAuthority(online: OnlineGameProps | undefined, game: string, token: string,
@@ -17,17 +22,21 @@ export function useOnlineAuthority(online: OnlineGameProps | undefined, game: st
   const busy = useRef(false);
   const consumed = useRef(new Set<string>());
   const consumedToken = useRef(token);
-  const claim = (sender: string, action: string) => {
+  const repeatable = (action: string) => ['chooseBet', 'rerollCurrent', 'toggleAnswer'].includes(action);
+  const used = (sender: string, action: string) => {
     if (consumedToken.current !== current.current.token) {
       consumed.current.clear();
       consumedToken.current = current.current.token;
     }
-    if (['chooseBet', 'rerollCurrent', 'toggleAnswer'].includes(action)) return true;
-    const key = `${sender}:${action}`;
-    if (consumed.current.has(key)) return false;
-    consumed.current.add(key);
+    return !repeatable(action) && consumed.current.has(`${sender}:${action}`);
+  };
+  const claim = (sender: string, action: string) => {
+    if (used(sender, action)) return false;
+    if (!repeatable(action)) consumed.current.add(`${sender}:${action}`);
     return true;
   };
+  /** Seat the host device acts for right now (own seat or a 🔁 guest): read it in `run` instead of myPlayerId. */
+  const seat = useRef<string | null>(null);
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast(`${game}-action`, (data) => {
@@ -35,6 +44,8 @@ export function useOnlineAuthority(online: OnlineGameProps | undefined, game: st
       const action = current.current.actions[data.action as string];
       const args = Array.isArray(data.args) ? data.args : [];
       if (current.current.online?.isConnected === false) return;
+      // An intent for an earlier turn (token already moved on) arrived too late: drop it, but visibly (F12).
+      if (action && reportLateIntent(online, data, current.current.token, !!action.answer)) return;
       if (!action || busy.current || !acceptOnlineAction(data, current.current.token,
           [...online.players.map(p => p.id), ...(online.hostPlayerId ? [online.hostPlayerId] : [])], seen.current, (id) => action.allow(id, args))) return;
       if (!claim(sender as string, data.action as string)) return;
@@ -46,15 +57,24 @@ export function useOnlineAuthority(online: OnlineGameProps | undefined, game: st
       }
     });
   }, [online?.isHost, online?.onBroadcast, game, online?.players]);
-  return (action: string, args: any[] = []) => {
+  return Object.assign((action: string, args: any[] = []) => {
     const state = current.current;
     if (!state.online || executing.current) return false;
     if (state.online.isConnected === false) return true;
-    if (!state.actions[action]?.allow(state.online.myPlayerId, args)) return true;
-    if (state.online.isHost) return !claim(state.online.myPlayerId, action);
+    const rule = state.actions[action];
+    if (!rule) return true;
+    // The host device acts for its own seat AND its 🔁 guests (same rule as canAct): the first of them
+    // the rule allows that has not used this action this turn — after the host voted, the next tap
+    // on the shared phone counts for the guest holding it. Phone seats are validated as before.
+    const actor = state.online.isHost
+      ? hostActor([state.online.myPlayerId, ...localGuestIds(state.online)], id => rule.allow(id, args), id => used(id, action))
+      : rule.allow(state.online.myPlayerId, args) ? state.online.myPlayerId : undefined;
+    seat.current = actor ?? null;
+    if (!actor) return true;
+    if (state.online.isHost) return !claim(actor, action);
     state.online.broadcast(`${game}-action`, { action, args, token: state.token, seq: ++sequence.current, instance: instance.current });
     return true;
-  };
+  }, { actingSeat: () => seat.current });
 }
 
 export { default as OnlineWaiting } from '../multiplayer/OnlineWaiting';
@@ -86,9 +106,8 @@ export function usePrivateSnapshot(online: OnlineGameProps | undefined, event: s
   useEffect(() => {
     if (!online?.isHost) return;
     const state = JSON.parse(serialized);
-    for (const recipient of online.players) {
-      if (recipient.id !== online.myPlayerId) online.broadcastTo?.(recipient.id, event, callbacks.current.project(state, recipient.id));
-    }
+    // Own-device seats only: guests' private views stay on this device (handover reveal), never on the wire.
+    for (const recipient of privateRecipients(online.players, online.myPlayerId)) online.broadcastTo?.(recipient.id, event, callbacks.current.project(state, recipient.id));
   }, [serialized, online?.isHost, online?.broadcastTo, online?.players, online?.myPlayerId, event]);
   useEffect(() => {
     if (!online || online.isHost) return;

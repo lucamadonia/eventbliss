@@ -1,134 +1,39 @@
 import { partyChampions } from '@/games/party/standings';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { CloudRain, Target, TrendingUp, Trophy, Zap } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import { useAmbientMotion } from '@/lib/useAmbientMotion';
 import { ConfettiBurst } from '@/components/vfx/ConfettiBurst';
-import { tvGrid, tvType } from './tv-tokens';
+import { confettiBurst, partyEase } from '@/lib/party-motion';
+import { serverClock } from '@/games/party/scene-clock';
+import { tvGrid } from './tv-tokens';
 import { useTVAudio } from './TVAudioManager';
-import TVPartyPodium from './components/TVPartyPodium';
+import TVPartyPodium, { MEDAL_COLORS } from './components/TVPartyPodium';
+import TVFinaleAward from './components/TVFinaleAward';
+import TVPlayerAvatar from './cinema/TVPlayerAvatar';
+import { lu } from './components/tv-lobby-scale';
+import { FINALE_AT, finaleSchedule, type FinaleBeat } from './cinema/finale-timeline';
 import { computePartyAwards } from './partyAwards';
-import type { PartyAward, PartyAwardKey } from './partyAwards';
-import type { PartyNightState, PartyStanding } from './party-types';
+import { finaleHighlight } from './cinema/finale-highlight';
+import { playableGames } from '@/lib/playable-games';
+import type { PartyNightState } from './party-types';
+
+const GOLD = '#FFD23F';
 
 /**
- * TVPartyFinale — the award ceremony that closes a Party Night.
+ * TVPartyFinale — die Siegerehrung am Ende des Party-Abends.
  *
- * The podium alone would only celebrate one person, so beyond it we hand out
- * titles derived from the whole evening (see `partyAwards.ts`): the comeback,
- * the metronome, the record holder, the unlucky one. Awards are guaranteed to
- * land on different people, so as much of the party as possible gets a moment.
+ * Der Ablauf haengt an der gemeinsamen Szenenzeit (`startsAt`): Trommelwirbel,
+ * dann Podest + Konfetti genau in dem Moment, in dem auch die Telefone feiern
+ * (`startsAt + afterDrumrollMs`), danach Auszeichnungen und Endstand. Waehrend
+ * des Wirbels steht nichts Leeres im Bild — die Seitenleisten kommen erst mit
+ * ihrem Beat. Ein spaet verbundener Fernseher zeigt sofort das fertige Bild.
  *
- * Beat timeline: 0 drumroll → 1 podium + confetti → 2 awards → 3 numbers/board.
+ * Neben dem Podest gibt es Titel aus dem ganzen Abend (`partyAwards.ts`), die
+ * auf verschiedene Leute fallen — so bekommen moeglichst viele einen Moment.
  */
-const spring = { type: 'spring' as const, stiffness: 230, damping: 22 };
-const BEATS: [number, number, number] = [1200, 2600, 3600];
-
-interface AwardMeta {
-  icon: LucideIcon;
-  color: string;
-}
-
-const AWARD_META: Record<PartyAwardKey, AwardMeta> = {
-  comeback: { icon: TrendingUp, color: '#26E0C4' },
-  mostWins: { icon: Trophy, color: '#FFD23F' },
-  consistency: { icon: Target, color: '#8ff5ff' },
-  bestGame: { icon: Zap, color: '#df8eff' },
-  unlucky: { icon: CloudRain, color: '#ff6b98' },
-};
-
-const AWARD_TITLE_DE: Record<PartyAwardKey, string> = {
-  comeback: 'Comeback des Abends',
-  mostWins: 'Seriensieger',
-  consistency: 'Konstanz-König',
-  bestGame: 'Bestleistung des Abends',
-  unlucky: 'Pechvogel',
-};
-
-function AwardCard({
-  award,
-  player,
-  index,
-  reveal,
-}: {
-  award: PartyAward;
-  player: PartyStanding;
-  index: number;
-  reveal: boolean;
-}) {
+export default function TVPartyFinale({ party, startsAt = null }: { party: PartyNightState; startsAt?: number | null }) {
   const { t, i18n } = useTranslation();
-  const meta = AWARD_META[award.key];
-  const Icon = meta.icon;
-
-  const detail = (() => {
-    switch (award.key) {
-      case 'comeback':
-        return t('tv.partyNight.award.comeback.detail', 'Von Platz {{from}} auf Platz {{to}}', {
-          from: award.from,
-          to: award.to,
-        });
-      case 'mostWins':
-        return t('tv.partyNight.award.mostWins.detail', '{{n}} Siege', { n: award.value });
-      case 'consistency':
-        return t('tv.partyNight.award.consistency.detail', 'Ø Platz {{value}}', {
-          value: award.value.toLocaleString(i18n.language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
-        });
-      case 'bestGame':
-        return t('tv.partyNight.award.bestGame.detail', 'Rekord: {{value}} Punkte in {{game}}', {
-          value: award.value,
-          game: award.gameName ?? '',
-        });
-      case 'unlucky':
-      default:
-        return t('tv.partyNight.award.unlucky.detail', '{{n}}× Letzter', { n: award.value });
-    }
-  })();
-
-  return (
-    <motion.div
-      className="relative flex items-center gap-[clamp(0.6rem,1.1vw,1.1rem)] overflow-hidden rounded-[clamp(1rem,1.5vw,1.5rem)] border bg-white/[0.038] px-[clamp(0.7rem,1.2vw,1.2rem)] py-[clamp(0.55rem,0.9vh,0.9rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.06)]"
-      style={{ borderColor: `${meta.color}38`, boxShadow: `inset 0 1px 0 rgba(255,255,255,.07), 0 18px 46px -38px ${meta.color}` }}
-      initial={{ opacity: 0, x: 22 }}
-      animate={reveal ? { opacity: 1, x: 0 } : { opacity: 0, x: 22 }}
-      transition={{ ...spring, delay: 0.08 + index * 0.12 }}
-    >
-      <span className="absolute inset-y-[20%] left-0 w-[3px] rounded-full" style={{ background: meta.color, boxShadow: `0 0 14px ${meta.color}` }} aria-hidden />
-      <span
-        className="shrink-0 rounded-2xl flex items-center justify-center"
-        style={{
-          width: 'clamp(2.2rem,3vw,3.2rem)',
-          height: 'clamp(2.2rem,3vw,3.2rem)',
-          background: `${meta.color}1f`,
-          border: `1.5px solid ${meta.color}55`,
-          color: meta.color,
-        }}
-      >
-        <Icon style={{ width: '55%', height: '55%' }} strokeWidth={2.5} />
-      </span>
-      <div className="min-w-0 leading-tight flex flex-col gap-[0.1em]">
-        <span
-          className="uppercase font-black tracking-[0.18em] truncate"
-          style={{ fontSize: tvType.micro, color: meta.color }}
-        >
-          {t(`tv.partyNight.award.${award.key}.title`, AWARD_TITLE_DE[award.key])}
-        </span>
-        <span className="font-black text-white truncate" style={{ fontSize: tvType.label }}>
-          {player.avatar ? `${player.avatar} ` : ''}
-          {player.name}
-        </span>
-        <span className="truncate font-bold" style={{ fontSize: tvType.micro, color: '#b3a8c9' }}>
-          {detail}
-        </span>
-      </div>
-    </motion.div>
-  );
-}
-
-export default function TVPartyFinale({ party }: { party: PartyNightState }) {
-  const { t, i18n } = useTranslation();
-  const ambient = useAmbientMotion();
+  const reduce = !!useReducedMotion();
   const audio = useTVAudio();
   const audioRef = useRef(audio);
   audioRef.current = audio;
@@ -139,201 +44,196 @@ export default function TVPartyFinale({ party }: { party: PartyNightState }) {
   );
   const champions = useMemo(() => partyChampions(standings), [standings]);
   const champion = champions[0];
-  const winnerNames = new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(champions.map(entry => entry.name));
-
   const awards = useMemo(() => {
     if (!champion) return [];
-    return computePartyAwards(
-      party.history ?? [],
-      standings.map((s) => s.id),
-      { excludeIds: champions.map(entry => entry.id), max: 4 },
-    );
+    return computePartyAwards(party.history ?? [], standings.map((s) => s.id), { excludeIds: champions.map((entry) => entry.id), max: 4 });
   }, [party.history, standings, champion, champions]);
-
   const byId = useMemo(() => new Map(standings.map((s) => [s.id, s])), [standings]);
+  const highlight = useMemo(() => finaleHighlight(standings, party.history ?? []), [standings, party.history]);
 
-  const [beat, setBeat] = useState(0);
+  // Einmal beim Einblenden festlegen: Wo im Ablauf steht der Abend gerade?
+  const [schedule] = useState(() => finaleSchedule(startsAt !== null ? serverClock.now() - startsAt : 0));
+  const [beat, setBeat] = useState<FinaleBeat>(schedule.beat);
+  const [confetti, setConfetti] = useState(() => {
+    const elapsed = startsAt !== null ? serverClock.now() - startsAt : 0;
+    return elapsed >= FINALE_AT[1] && elapsed < FINALE_AT[1] + confettiBurst.durationMs;
+  });
+
   useEffect(() => {
-    const stopDrumroll = audioRef.current.playDrumroll();
-    const timers = [
-      setTimeout(() => {
+    const stopDrumroll = schedule.live ? audioRef.current.playDrumroll() : () => {};
+    const timers = schedule.next.map(({ beat: b, inMs }) => setTimeout(() => {
+      if (b === 1) {
         stopDrumroll();
         audioRef.current.playFanfare();
-        setBeat(1);
-      }, BEATS[0]),
-      setTimeout(() => setBeat(2), BEATS[1]),
-      setTimeout(() => setBeat(3), BEATS[2]),
-    ];
+        setConfetti(true);
+      }
+      setBeat(b);
+    }, inMs));
     return () => {
       stopDrumroll();
       timers.forEach(clearTimeout);
     };
-  }, []);
+  }, [schedule]);
 
   if (!champion) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#060810' }}>
-        <span style={{ fontSize: tvType.title, color: '#6b6480' }}>
-          {t('tv.partyNight.noStandings', 'Noch keine Punkte')}
-        </span>
+        <span className="font-bold" style={{ fontSize: lu(3.2), color: '#8a82a0' }}>{t('tv.partyNight.noStandings', 'Noch keine Punkte')}</span>
       </div>
     );
   }
 
   const totalPoints = standings.reduce((sum, s) => sum + s.points, 0);
+  const medal = (rank: number) => (rank <= 3 ? MEDAL_COLORS[rank - 1] : '#e8e2f4');
+  const gameLabel = (id: string, fallback: string) => {
+    const key = playableGames.find((g) => g.id === id)?.nameKey;
+    return key ? t(key, fallback) : fallback;
+  };
+  // Neue Information statt Wiederholung: das Highlight des Abends wie im Handy-Rueckblick.
+  const highlightLine = highlight.kind === 'closest'
+    ? t('partyPlay.recap.closest', 'Knappster Sieg: {{name}} in {{game}} (+{{margin}})', {
+      name: new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(highlight.names),
+      game: gameLabel(highlight.gameId, highlight.gameName),
+      margin: highlight.margin,
+    })
+    : highlight.kind === 'mostWins'
+      ? t('partyPlay.recap.mostWins', 'Meiste Siege: {{name}} ({{count}})', { name: highlight.name, count: highlight.wins })
+      : t('tv.partyNight.recapOnPhones', 'Euer Rückblick ist auf den Handys');
   const gamesPlayed = party.history?.length ?? party.playlist.filter((p) => p.done).length;
+  const revealed = beat >= 1;
+  const rail = (delay = 0) => ({
+    initial: { opacity: 0, y: reduce ? 0 : 18 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.55, ease: partyEase.out, delay },
+  });
 
   return (
     <div
+      data-testid="tv-party-finale"
+      data-beat={beat}
       className={`${tvGrid} relative overflow-hidden`}
       style={{ background: 'radial-gradient(circle at 50% 12%, #21172d 0%, #0a0b15 40%, #05070d 100%)' }}
     >
-      <div
+      <motion.div
         aria-hidden
-        className="absolute inset-0 opacity-30 pointer-events-none"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(255,215,94,.065) 1px,transparent 1px),linear-gradient(90deg,rgba(223,142,255,.055) 1px,transparent 1px)',
-          backgroundSize: '44px 44px',
-          maskImage: 'radial-gradient(circle at 50% 42%,black,transparent 78%)',
-        }}
-      />
-      <div
         className="absolute top-0 left-1/2 -translate-x-1/2 w-[64rem] h-[40rem] rounded-full blur-[120px] pointer-events-none"
-        style={{ background: `${champion.color}32` }}
+        animate={{ background: revealed ? `${champion.color}38` : '#df8eff1c', opacity: revealed ? 1 : 0.7 }}
+        transition={{ duration: 0.8, ease: partyEase.out }}
       />
+      <ConfettiBurst active={confetti && !reduce} count={confettiBurst.particles.tv} onComplete={() => setConfetti(false)} />
 
-      <ConfettiBurst active={beat >= 1 && ambient} count={56} />
-
-      {/* ── Left rail: the evening in numbers + the full board ── */}
-      <div className="relative z-10 flex flex-col gap-[clamp(0.5rem,1vh,1rem)] min-h-0">
-        <motion.div
-          className="grid shrink-0 grid-cols-2 gap-[clamp(0.4rem,0.8vw,0.8rem)] rounded-[28px] border border-[#FFD75E]/18 bg-[#FFD75E]/[0.045] p-[clamp(0.8rem,1.4vw,1.5rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.07)]"
-          initial={{ opacity: 0, x: -18 }}
-          animate={beat >= 3 ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
-          transition={spring}
-        >
-          {[
-            { label: t('tv.partyNight.gamesPlayed', 'Spiele'), value: gamesPlayed },
-            { label: t('tv.partyNight.totalPoints', 'Punkte gesamt'), value: totalPoints },
-          ].map((stat) => (
-            <div key={stat.label} className="flex flex-col items-start gap-[0.1em] min-w-0">
-              <span
-                className="uppercase font-black tracking-[0.2em] truncate"
-                style={{ fontSize: tvType.micro, color: '#b3a8c9' }}
-              >
-                {stat.label}
-              </span>
-              <span className="font-black text-white tabular-nums" style={{ fontSize: tvType.title }}>
-                {stat.value.toLocaleString(i18n.language)}
-              </span>
-            </div>
-          ))}
-        </motion.div>
-
-        <div className="flex min-h-0 flex-col rounded-[28px] border border-white/[0.075] bg-white/[0.034] p-[clamp(0.8rem,1.4vw,1.5rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.065)] backdrop-blur-xl">
-          <span
-            className="uppercase font-black tracking-[0.24em] mb-[clamp(0.4rem,0.8vh,0.8rem)] shrink-0"
-            style={{ fontSize: tvType.micro, color: '#b3a8c9' }}
-          >
-            {t('tv.partyNight.finalTable', 'Endstand')}
-          </span>
-          <div className="flex flex-col gap-[clamp(0.25rem,0.5vh,0.5rem)] min-h-0 overflow-y-auto">
-            {standings.map((entry, i) => (
-              <motion.div
-                key={entry.id}
-                className="relative flex items-center gap-[clamp(0.4rem,0.8vw,0.8rem)] overflow-hidden rounded-xl border border-white/[0.065] bg-white/[0.035] px-[clamp(0.5rem,0.8vw,0.8rem)] py-[clamp(0.35rem,0.5vh,0.55rem)]"
-                initial={{ opacity: 0, x: -14 }}
-                animate={beat >= 3 ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
-                transition={{ ...spring, delay: Math.min(0.1 + i * 0.04, 0.5) }}
-              >
-                <span className="absolute inset-y-[20%] left-0 w-[2px] rounded-full" style={{ background: entry.rank === 1 ? '#FFD75E' : entry.color, opacity: entry.rank <= 3 ? 1 : 0.32 }} aria-hidden />
-                <span
-                  className="shrink-0 font-black tabular-nums text-center"
-                  style={{ fontSize: tvType.label, width: '1.5em', color: '#6b6480' }}
-                >
-                  {entry.rank}
-                </span>
-                <span className="flex-1 min-w-0 truncate font-bold text-white" style={{ fontSize: tvType.label }}>
-                  {entry.avatar ? `${entry.avatar} ` : ''}
-                  {entry.name}
-                </span>
-                <span
-                  className="shrink-0 font-black tabular-nums"
-                  style={{ fontSize: tvType.label, color: entry.color }}
-                >
-                  {entry.points.toLocaleString(i18n.language)}
-                </span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Hero: the ceremony ── */}
-      <div className="relative z-10 flex flex-col items-center justify-center gap-[clamp(0.75rem,1.8vh,2rem)] min-h-0">
-        <motion.div
-          className="text-center flex flex-col items-center gap-[0.25em]"
-          initial={{ opacity: 0, y: -14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={spring}
-        >
-          <span
-            className="inline-flex items-center gap-[.55em] rounded-full border border-[#FFD75E]/22 bg-[#FFD75E]/8 px-[1em] py-[.45em] uppercase font-black tracking-[0.28em]"
-            style={{ fontSize: tvType.micro, color: '#FFD75E' }}
-          >
-            <span className="h-[.55em] w-[.55em] rounded-full bg-[#FFD75E] shadow-[0_0_14px_#FFD75E]" aria-hidden />
-            {t('tv.partyNight.finaleEyebrow', 'Die Party Night ist vorbei')}
-          </span>
-          <span className="font-black text-white" style={{ fontSize: tvType.title, lineHeight: 1.1 }}>
-            {t(champions.length > 1 ? 'tv.partyNight.champions' : 'tv.partyNight.champion', 'Champion des Abends')}
-          </span>
-        </motion.div>
-
-        <TVPartyPodium
-          entries={standings}
-          reveal={beat >= 1}
-          variant="finale"
-          className="max-w-[min(52rem,100%)]"
-        />
-
-        <motion.div
-          className="relative overflow-hidden rounded-full border border-[#FFD75E]/24 bg-[#FFD75E]/8 px-[clamp(1rem,1.8vw,2rem)] py-[clamp(0.55rem,1vh,1rem)] shadow-[inset_0_1px_0_rgba(255,255,255,.08),0_20px_50px_-34px_rgba(255,215,94,.7)]"
-          initial={{ opacity: 0, y: 14 }}
-          animate={beat >= 2 ? { opacity: 1, y: 0 } : { opacity: 0, y: 14 }}
-          transition={spring}
-        >
-          <span className="absolute inset-y-[22%] left-0 w-[3px] rounded-full bg-[#FFD75E] shadow-[0_0_14px_#FFD75E]" aria-hidden />
-          <span className="font-black text-white" style={{ fontSize: tvType.body }}>
-            {t(champions.length > 1 ? 'tv.partyNight.championsLine' : 'tv.partyNight.championLine', '{{name}} gewinnt mit {{points}} Punkten', {
-              name: winnerNames,
-              points: champion.points.toLocaleString(i18n.language),
-            })}
-          </span>
-        </motion.div>
-      </div>
-
-      {/* ── Right rail: the side awards ── */}
-      <div className="relative z-10 flex flex-col min-h-0">
-        <span
-          className="uppercase font-black tracking-[0.24em] mb-[clamp(0.5rem,1vh,1rem)] shrink-0"
-          style={{ fontSize: tvType.micro, color: '#b3a8c9' }}
-        >
-          {t('tv.partyNight.awardsTitle', 'Auszeichnungen')}
-        </span>
-        <div className="flex flex-col gap-[clamp(0.4rem,0.8vh,0.8rem)] min-h-0 overflow-y-auto">
-          {awards.map((award, i) => {
-            const player = byId.get(award.playerId);
-            if (!player) return null;
-            return (
-              <AwardCard key={award.key} award={award} player={player} index={i} reveal={beat >= 2} />
-            );
-          })}
-          {!awards.length && (
-            <span className="font-bold" style={{ fontSize: tvType.label, color: '#6b6480' }}>
-              {t('tv.partyNight.noAwards', 'Zu wenig gespielt für Auszeichnungen')}
-            </span>
+      {/* ── Links: der Abend in Zahlen + Endstand — erst mit seinem Beat, nie als leerer Kasten ── */}
+      <div className="relative z-10 flex flex-col min-h-0" style={{ gap: lu(1.6) }}>
+        <AnimatePresence>
+          {beat >= 3 && (
+            <motion.div key="numbers" className="grid shrink-0 grid-cols-2 rounded-[1.6rem] border border-[#FFD23F]/20 bg-[#FFD23F]/[0.05]" style={{ gap: lu(1.2), padding: lu(2) }} {...rail()}>
+              {[
+                { label: t('tv.partyNight.gamesPlayed', 'Spiele'), value: gamesPlayed },
+                { label: t('tv.partyNight.totalPoints', 'Punkte gesamt'), value: totalPoints },
+              ].map((stat) => (
+                <div key={stat.label} className="flex flex-col min-w-0" style={{ gap: lu(0.3) }}>
+                  <span className="font-bold truncate" style={{ fontSize: lu(1.9), color: '#c9bfdc' }}>{stat.label}</span>
+                  <span className="font-black text-white tabular-nums" style={{ fontSize: lu(4.8), lineHeight: 1 }}>{stat.value.toLocaleString(i18n.language)}</span>
+                </div>
+              ))}
+            </motion.div>
           )}
+          {beat >= 3 && (
+            <motion.div key="board" data-testid="tv-finale-board" className="flex min-h-0 flex-col rounded-[1.6rem] border border-white/[0.08] bg-white/[0.035] backdrop-blur-xl" style={{ padding: lu(2) }} {...rail(0.08)}>
+              <span className="font-extrabold shrink-0" style={{ fontSize: lu(2.2), color: '#c9bfdc', marginBottom: lu(1.2) }}>
+                {t('tv.partyNight.finalTable', 'Endstand')}
+              </span>
+              <div className="flex flex-col min-h-0 overflow-y-auto" style={{ gap: lu(0.8) }}>
+                {standings.map((entry, i) => (
+                  <motion.div
+                    key={entry.id}
+                    className="relative flex items-center rounded-xl border border-white/[0.07] bg-white/[0.035]"
+                    style={{ gap: lu(1.2), padding: `${lu(0.7)} ${lu(1.2)}` }}
+                    initial={{ opacity: 0, x: reduce ? 0 : -14 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.45, ease: partyEase.out, delay: Math.min(0.12 + i * 0.05, 0.6) }}
+                  >
+                    <span className="shrink-0 font-black tabular-nums text-center" style={{ fontSize: lu(2.2), width: '1.4em', color: entry.rank <= 3 ? medal(entry.rank) : '#8a82a0' }}>{entry.rank}</span>
+                    <TVPlayerAvatar id={entry.id} name={entry.name} avatar={entry.avatar} color={entry.color} size={lu(4)} />
+                    <span className="flex-1 min-w-0 truncate font-bold text-white" style={{ fontSize: lu(2.2) }}>{entry.name}</span>
+                    <span className="shrink-0 font-black tabular-nums" style={{ fontSize: lu(2.2), color: medal(entry.rank) }}>{entry.points.toLocaleString(i18n.language)}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── Mitte: die Zeremonie ── */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-0" style={{ gap: lu(2.4) }}>
+        <div className="text-center flex flex-col items-center" style={{ gap: lu(1.2) }}>
+          <motion.span
+            className="inline-flex items-center rounded-full border border-[#FFD23F]/25 bg-[#FFD23F]/[0.08] font-bold"
+            style={{ gap: lu(0.8), padding: `${lu(0.6)} ${lu(1.6)}`, fontSize: lu(2.2), color: GOLD }}
+            initial={{ opacity: 0, y: reduce ? 0 : -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: partyEase.out }}
+          >
+            <span className="rounded-full" style={{ width: lu(0.9), height: lu(0.9), background: GOLD, boxShadow: `0 0 14px ${GOLD}` }} aria-hidden />
+            {t('tv.partyNight.finaleEyebrow', 'Der Party-Abend ist vorbei')}
+          </motion.span>
+          <AnimatePresence mode="wait">
+            {revealed ? (
+              <motion.h1 key="champion" className="font-black text-white" style={{ fontSize: lu(6), lineHeight: 1.05, textShadow: `0 0 48px ${GOLD}55` }}
+                initial={{ opacity: 0, scale: reduce ? 1 : 0.92 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5, ease: partyEase.out }}>
+                {t(champions.length > 1 ? 'tv.partyNight.champions' : 'tv.partyNight.champion', 'Champion des Abends')}
+              </motion.h1>
+            ) : (
+              <motion.h1 key="drumroll" data-testid="tv-finale-drumroll" className="font-black text-white/90 flex flex-col items-center text-center" style={{ fontSize: lu(5), lineHeight: 1.08, gap: lu(2), maxWidth: '22ch', textWrap: 'balance' }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: reduce ? 1 : 1.04 }} transition={{ duration: 0.35, ease: partyEase.out }}>
+                <span>{t('tv.partyNight.drumroll', 'Und der Champion des Abends ist')} …</span>
+                <span className="flex" style={{ gap: lu(0.8) }} aria-hidden>
+                  {[0, 1, 2].map((i) => (
+                    <motion.span key={i} className="rounded-full" style={{ width: lu(1.4), height: lu(1.4), background: GOLD }}
+                      animate={reduce ? { opacity: 0.8 } : { opacity: [0.25, 1, 0.25], scale: [0.8, 1.15, 0.8] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15, ease: 'easeInOut' }} />
+                  ))}
+                </span>
+              </motion.h1>
+            )}
+          </AnimatePresence>
         </div>
+
+        {/* Waehrend des Wirbels stehen die Sockel schon als Silhouette und fuellen sich beim Reveal. */}
+        <TVPartyPodium entries={standings} reveal={revealed} ghost variant="finale" className="max-w-[min(56rem,100%)]" />
+
+        <AnimatePresence>
+          {beat >= 2 && (
+            <motion.div
+              key="line"
+              data-testid="tv-finale-highlight"
+              className="relative overflow-hidden rounded-full border border-[#FFD23F]/25 bg-[#FFD23F]/[0.08]"
+              style={{ padding: `${lu(1)} ${lu(2.4)}`, boxShadow: `inset 0 1px 0 rgba(255,255,255,.08), 0 20px 50px -34px ${GOLD}b0` }}
+              {...rail()}
+            >
+              <span className="font-black text-white" style={{ fontSize: lu(2.6) }}>{highlightLine}</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* ── Rechts: die Auszeichnungen ── */}
+      <div className="relative z-10 flex flex-col min-h-0">
+        <AnimatePresence>
+          {beat >= 2 && (
+            <motion.div key="awards" className="flex flex-col min-h-0" style={{ gap: lu(1.2) }} {...rail()}>
+              <span className="font-extrabold shrink-0" style={{ fontSize: lu(2.2), color: '#c9bfdc' }}>{t('tv.partyNight.awardsTitle', 'Auszeichnungen')}</span>
+              {awards.map((award, i) => {
+                const player = byId.get(award.playerId);
+                return player ? <TVFinaleAward key={award.key} award={award} player={player} index={i} /> : null;
+              })}
+              {!awards.length && (
+                <span className="font-semibold" style={{ fontSize: lu(2), color: '#8a82a0' }}>{t('tv.partyNight.noAwards', 'Zu wenig gespielt für Auszeichnungen')}</span>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

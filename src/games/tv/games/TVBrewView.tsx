@@ -32,56 +32,17 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { FlaskConical, Martini } from 'lucide-react';
-import { Glass } from '@/games/brew/Glass';
 import { IngredientCard } from '@/games/brew/IngredientCard';
 import { BrewAtmosphere } from '@/games/brew/BrewAtmosphere';
 import { BREW_PALETTES, brewRadius } from '@/games/brew/brew-palette';
-import { shapeForRecipe } from '@/games/brew/glass-shapes';
-import {
-  INGREDIENTS,
-  preloadIngredients,
-  recipeKey,
-  type IngredientId,
-  type Skin,
-} from '@/games/brew/brew-content';
+import { BrewPlayerColumn, isKnownIngredient, toStringArray, type BrewPlayerState } from './brew/BrewPlayerColumn';
+import { preloadIngredients, type Skin } from '@/games/brew/brew-content';
 import { tvPanel, tvType } from '../tv-tokens';
+import { lu } from '../components/tv-lobby-scale';
+import TVPlayerAvatar from '../cinema/TVPlayerAvatar';
 
 interface Props {
   gameState: Record<string, unknown>;
-}
-
-interface BrewPlayerState {
-  id: string;
-  name: string;
-  color: string | null;
-  score: number;
-  glass: string[];
-  recipe: string[];
-  recipeId: string;
-  have: number;
-  done: boolean;
-  brewBonus: number;
-}
-
-function toStringArray(v: unknown): string[] {
-  return Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
-}
-
-/** Typ-Wache: nur Kennungen, die `INGREDIENTS` wirklich kennt, duerfen weiter —
- * sonst wirft ein Zugriff auf `undefined` und reisst die ganze Ansicht mit. */
-function isKnownIngredient(id: string): id is IngredientId {
-  return Object.prototype.hasOwnProperty.call(INGREDIENTS, id);
-}
-
-/**
- * `Glass` sortiert selbst nicht — Index 0 in `filled` zeichnet es ganz unten
- * und geht davon aus, dass dort die Basis-Zutat steht. Kommt der tv-state
- * anders sortiert an, wuerde die Basis mitten im Glas schweben.
- */
-function withBaseFirst(ids: IngredientId[]): IngredientId[] {
-  const baseIdx = ids.findIndex((id) => INGREDIENTS[id].isBase);
-  if (baseIdx <= 0) return ids;
-  return [ids[baseIdx], ...ids.slice(0, baseIdx), ...ids.slice(baseIdx + 1)];
 }
 
 function TVBrewView({ gameState }: Props) {
@@ -121,6 +82,9 @@ function TVBrewView({ gameState }: Props) {
         name: String(q.name ?? ''),
         // Kommt seit jeher im Payload an und wurde bisher ignoriert.
         color: typeof q.color === 'string' ? q.color : null,
+        // Symbol aus dem Raum (brewTvPlayers); ein einzelner Buchstabe ist nur
+        // der Rueckfall der Bruecke — dann fragt TVPlayerAvatar die Teilnehmerliste.
+        avatar: typeof q.avatar === 'string' && q.avatar && !/^[A-Za-z]$/.test(q.avatar) ? q.avatar : null,
         score: Number(q.score ?? 0),
         glass,
         recipe,
@@ -213,55 +177,59 @@ function TVBrewView({ gameState }: Props) {
    * Hauptthread, und in schmalen Spalten sieht man den Versatz ohnehin kaum.
    */
   const vieleSpieler = players.length > 6;
+  const activePlayer = (activeId ? players.find((pl) => pl.id === activeId) : undefined)
+    ?? (activeIdx >= 0 ? players[activeIdx] : undefined)
+    ?? players.find((pl) => pl.name === activePlayerName);
 
   return (
-    <div className="relative w-full h-full flex flex-col overflow-hidden" style={{ color: p.text }}>
+    <div className="relative w-full h-screen flex flex-col overflow-hidden" style={{ color: p.text }}>
       <BrewAtmosphere skin={skin} variant="tv" />
 
       {/* ZONE A — Kopfleiste. Vorher loser Fliesstext ohne Flaeche. */}
-      <div className="relative z-10 mx-[3vw] mt-[1.6vh] shrink-0">
+      <div className="relative z-10 mx-[5vw] mt-[5vh] shrink-0">
         <div
           className={`${tvPanel} flex items-center justify-between gap-[2vw] px-[1.6vw] py-[1.1vh]`}
           style={{ background: p.surface }}
         >
-          <div className="flex items-center gap-[1vw] min-w-0">
+          {/* Links: wer dran ist — mit Symbol. Die Mitte bleibt fuer die Uebergabe frei. */}
+          <div className="flex items-center min-w-0" style={{ minHeight: lu(6) }}>
+            <AnimatePresence mode="wait">
+              {activePlayerName && (
+                <motion.div
+                  key={activePlayerName}
+                  className="flex items-center gap-[0.9vw] min-w-0"
+                  initial={reduce ? false : { y: -10, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <TVPlayerAvatar id={activePlayer?.id || activeId || undefined} name={activePlayerName}
+                    avatar={activePlayer?.avatar ?? undefined} color={activePlayer?.color ?? p.accent} size={lu(6)} active />
+                  <span className="font-black truncate" style={{ fontSize: tvType.title, color: p.text }}>
+                    {t('games.brew.turnOf', { name: activePlayerName })}
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="flex items-center gap-[1vw] shrink-0">
             <span
-              className="font-mono tabular-nums shrink-0"
+              className="font-semibold tabular-nums shrink-0"
               style={{
-                fontSize: tvType.micro, color: p.dim, background: p.surfaceRaised,
-                borderRadius: 9999, padding: '0.3vh 0.9vw',
+                fontSize: tvType.label, color: p.text, background: p.surfaceRaised,
+                borderRadius: 9999, padding: '0.5vh 1vw',
               }}
             >
               {deckCount > 0 ? t('games.brew.deckCount', { count: deckCount }) : t('games.brew.deckEmpty')}
             </span>
-            <span className="font-black uppercase tracking-[0.18em]" style={{
-              fontSize: tvType.micro,
+            <span className="inline-block font-bold first-letter:uppercase" style={{
+              fontSize: tvType.label,
               color: riskTier === 'critical' ? p.bad : p.accent,
+              border: `1px solid ${riskTier === 'critical' ? p.bad : p.accent}66`,
+              borderRadius: 9999, padding: '0.5vh 1vw',
             }}>
               {t(`games.brew.risk.${riskTier}`)}
             </span>
-          </div>
-
-          <AnimatePresence mode="wait">
-            {activePlayerName && (
-              <motion.div
-                key={activePlayerName}
-                className="flex items-center gap-[0.8vw] min-w-0"
-                initial={reduce ? false : { y: -10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                <span className="shrink-0" style={{
-                  width: '0.9vw', height: '0.9vw', borderRadius: 9999,
-                  background: p.accent, boxShadow: `0 0 14px -2px ${p.accent}`,
-                }} />
-                <span className="font-black truncate" style={{ fontSize: tvType.title, color: p.accent }}>
-                  {t('games.brew.turnOf', { name: activePlayerName })}
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
           {/* Wortmarke — das eine Neon im Bild. */}
           <div className="flex items-center gap-[0.6vw] shrink-0" style={{ color: p.wordmark }}>
             <Wortmarke style={{ width: '1.6vw', height: '1.6vw' }} />
@@ -275,12 +243,13 @@ function TVBrewView({ gameState }: Props) {
               {t(skin === 'bar' ? 'games.brew.titleBar' : 'games.brew.titleBrew')}
             </span>
           </div>
+          </div>
         </div>
       </div>
 
       {/* ZONE B — Theke, offen und gross. */}
-      <div className="relative z-10 px-[3vw] pt-[1.2vh] shrink-0">
-        <p className="uppercase tracking-[0.28em] font-bold" style={{ fontSize: tvType.micro, color: p.dim }}>
+      <div className="relative z-10 px-[5vw] pt-[1.4vh] shrink-0">
+        <p className="font-semibold first-letter:uppercase" style={{ fontSize: tvType.label, color: p.dim }}>
           {t('games.brew.counterLabel')}
         </p>
         <div
@@ -311,8 +280,8 @@ function TVBrewView({ gameState }: Props) {
       </div>
 
       {/* ZONE C — Tablett. Die Bust-Animation lebt AUSSCHLIESSLICH hier. */}
-      <div className="relative z-10 px-[3vw] pt-[1vh] shrink-0">
-        <p className="uppercase tracking-[0.28em] font-bold" style={{ fontSize: tvType.micro, color: p.dim }}>
+      <div className="relative z-10 px-[5vw] pt-[1.2vh] shrink-0">
+        <p className="font-semibold first-letter:uppercase" style={{ fontSize: tvType.label, color: p.dim }}>
           {t('games.brew.trayLabel')}
         </p>
         <div
@@ -414,7 +383,7 @@ function TVBrewView({ gameState }: Props) {
 
       {/* ZONE D — Spielerreihe. Grid statt Flex-Wrap, damit bei acht Spielern
           niemand aus dem Bild laeuft: jede Spalte bekommt exakt 1/n. */}
-      <div className="relative z-10 flex-1 min-h-0 px-[3vw] pb-[2vh] pt-[1vh]">
+      <div className="relative z-10 flex-1 min-h-0 px-[5vw] pb-[5vh] pt-[1.4vh]">
         <div className="grid h-full gap-[0.8vw]" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}>
           {players.map((pl, i) => {
             /**
@@ -428,107 +397,15 @@ function TVBrewView({ gameState }: Props) {
                 ? i === activeIdx
                 : activePlayerName != null && pl.name === activePlayerName;
             const color = pl.color ?? p.players[i % p.players.length];
-            const knownGlass = pl.glass.filter(isKnownIngredient);
-            const anteil = pl.recipe.length > 0 ? pl.have / pl.recipe.length : 0;
-            const form = shapeForRecipe(pl.recipeId, skin);
 
             return (
-              <div
+              <BrewPlayerColumn
                 key={pl.id || `${pl.name}-${i}`}
-                className={`${tvPanel} flex flex-col items-center gap-[0.5vh] p-[0.9vh] min-w-0 overflow-hidden`}
-                style={{
-                  background: isActive ? p.surfaceRaised : p.surface,
-                  borderRadius: brewRadius.xl,
-                  boxShadow: isActive ? `0 0 0 2px ${color}, 0 0 40px -8px ${color}` : undefined,
-                }}
-              >
-                {/* Kopf: Name links, Punkte rechts. */}
-                <div className="flex items-baseline justify-between w-full gap-[0.4vw] px-[0.2vw]">
-                  <span className="font-bold truncate" style={{ fontSize: tvType.label, color: isActive ? color : p.text }}>
-                    {pl.name}
-                  </span>
-                  <span className="font-mono tabular-nums shrink-0" style={{ fontSize: tvType.micro, color: p.dim }}>
-                    {pl.score}
-                  </span>
-                </div>
-
-                {/* Glasbuehne: Ring HINTER dem Glas, Glas darauf. */}
-                <div className="relative flex-1 min-h-0 w-full flex items-end justify-center">
-                  <motion.div
-                    className="absolute rounded-full pointer-events-none"
-                    style={{
-                      bottom: '6%', left: '50%', width: '88%', aspectRatio: '1 / 1',
-                      x: '-50%',
-                      background: `radial-gradient(circle, ${color}55 0%, ${color}18 42%, transparent 68%)`,
-                    }}
-                    animate={{ opacity: isActive ? 1 : 0 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-                  />
-                  <Glass
-                    recipeNeeds={pl.recipe as IngredientId[]}
-                    filled={withBaseFirst(knownGlass)}
-                    skin={skin}
-                    shape={form}
-                    palette={p}
-                    width={skin === 'brew' ? 'clamp(56px, 7.4vw, 132px)' : undefined}
-                    height={skin === 'bar'
-                      ? (vieleSpieler ? 'min(16vh, 118px)' : 'min(22vh, 176px)')
-                      : undefined}
-                    className="relative"
-                    quality="tv"
-                    active={isActive}
-                    intensity={isActive ? (chainLevel as 0 | 1 | 2 | 3) : 0}
-                    // Nur die giessende Spalte wartet. Bei vielen Spielern
-                    // bekommen die nicht-aktiven keinen Versatz mehr.
-                    arrivalDelay={showPour && pourPlan?.pid === pl.id ? 500 : 0}
-                    layerStagger={vieleSpieler && !isActive ? 0 : 70}
-                  />
-                </div>
-
-                {/* Fortschritt: `scaleX` statt `width` — Hausregel
-                    transform/opacity, sonst rechnet der Browser Layout. */}
-                <div className="w-full px-[0.2vw]">
-                  <div className="flex justify-end">
-                  <span className="font-mono tabular-nums" style={{ fontSize: tvType.micro, color: isActive ? color : p.dim }}>
-                      {pl.have}/{pl.recipe.length}{pl.brewBonus > 0 ? ` · ✦${pl.brewBonus}` : ''}
-                    </span>
-                  </div>
-                  <div style={{ height: 'clamp(6px,0.6vh,10px)', borderRadius: 9999, background: 'rgba(255,255,255,0.08)', overflow: 'hidden' }}>
-                    <motion.div
-                      style={{
-                        height: '100%', width: '100%', transformOrigin: 'left',
-                        background: `linear-gradient(90deg, ${color}, ${p.accent2})`,
-                        boxShadow: `0 0 14px -2px ${color}`,
-                      }}
-                      initial={false}
-                      animate={{ scaleX: anteil }}
-                      transition={reduce ? { duration: 0 } : { type: 'spring', stiffness: 500, damping: 18 }}
-                    />
-                  </div>
-                </div>
-
-                {/* Rezept als echte Karten — vorher rohe Emoji auf Vollfarbe,
-                    auf der bei hellen Zutaten nichts mehr zu erkennen war. */}
-                <div className="flex flex-wrap justify-center gap-[0.25vw]" style={{ maxWidth: '100%' }}>
-                  {pl.recipe.filter(isKnownIngredient).map((id, ri) => (
-                    <IngredientCard
-                      key={`${id}-${ri}`}
-                      id={id}
-                      skin={skin}
-                      variant="chip"
-                      palette={p}
-                      state={pl.glass.includes(id) ? 'owned' : 'muted'}
-                    />
-                  ))}
-                </div>
-
-                {/* Rezeptname — `recipeId` kam schon immer im Payload an und
-                    wurde bisher nicht gelesen. */}
-                <span className="truncate w-full text-center" style={{ fontSize: tvType.micro, color: p.dim }}>
-                  {pl.recipeId ? t(recipeKey(pl.recipeId, skin)) : ''}
-                  {pl.done ? ` · ${t('games.brew.tv.done')}` : ''}
-                </span>
-              </div>
+                pl={pl} color={color} isActive={isActive} skin={skin} palette={p} compact={vieleSpieler}
+                chainLevel={chainLevel} reduce={!!reduce}
+                // Nur die giessende Spalte wartet.
+                arrivalDelay={showPour && pourPlan?.pid === pl.id ? 500 : 0}
+              />
             );
           })}
         </div>
@@ -557,7 +434,7 @@ function TVBrewView({ gameState }: Props) {
               ) : (
                 <span style={{ fontSize: 'clamp(5rem,10vw,11rem)' }}>{skin === 'brew' ? '🌋' : '🔔'}</span>
               )}
-              <span className="font-black uppercase tracking-[0.22em]" style={{
+              <span className="font-black tracking-[0.04em]" style={{
                 fontSize: tvType.title,
                 color: showDraw.outcome === 'hit' ? '#86EFAC' : showDraw.outcome === 'bust' ? p.bad : p.text,
               }}>

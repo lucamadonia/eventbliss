@@ -1,8 +1,11 @@
 import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js';
 import { playableGames } from '@/lib/playable-games';
-import { claimTabIdentity, identityId, verifyRoomSignature, type RoomIdentity, type PublicRoomIdentity } from './room-identity';
-import { rememberRoom, getSavedRoom, type GameRoom, type RoomSnapshot, type RoomData, type RoomListener } from './room-types';
+import { claimTabIdentity, identityId, identityStorage, verifyRoomSignature, type RoomIdentity, type PublicRoomIdentity } from './room-identity';
+import { rememberRoom, getSavedRoom, type GameRoom, type RoomPlayer, type RoomSnapshot, type RoomData, type RoomListener } from './room-types';
 import type { PartyRoomAccess } from './party-access';
+import { dropFromMatch, ownLook, partyRoomUpdate, readGuests, seatPresent, traceParticipants, withGuests } from './party-roster';
+import { localPlayerIdsFor } from './participants';
+import { planMatch } from './match-plan';
 
 interface Presence extends PublicRoomIdentity {
   id: string; name: string; color: string; avatar: string; isReady: boolean;
@@ -52,8 +55,35 @@ export class RoomSession {
   private presenceRevision = 0;
   private partyAccess: PartyRoomAccess | null = null;
   private accountId: string | null = null;
+  /** Verified presence players; guests are layered on top from the signed room. */
+  private live: RoomPlayer[] = [];
+  /** Transport may be gone without the SDK noticing (offline, channel error, explicit retry): rebuild on next connect. */
+  private stale = false;
+  private unknownSenders = new Map<string, number>();
 
-  configureParty = (access: PartyRoomAccess | null): void => { this.partyAccess = access; };
+  configureParty = (access: PartyRoomAccess | null): void => { this.partyAccess = access; this.reconcileParty(); };
+  /** Server membership is authoritative: leave when removed, host mirrors guests/kicks. */
+  private reconcileParty() {
+    const access = this.partyAccess, room = this.snapshot.room;
+    if (!access || !room || access.code !== room.roomCode || !this.identity) return;
+    if (!access.memberIds.includes(this.identity.id)) { this.removeSelf('Du bist nicht mehr in dieser Party.'); return; }
+    const look = this.own && ownLook(access, this.own.id, this.own.color, () => this.own!.color); // profile edited in the lobby
+    if (look && this.own && (look.avatar !== this.own.avatar || look.color !== this.own.color)) { Object.assign(this.own, look); void this.track().catch(error => this.fail(error)); }
+    const next = this.isHost() ? partyRoomUpdate(room, access) : null;
+    if (!next) return;
+    const players = withGuests(this.live, readGuests(next.settings));
+    const updated = { ...next, players: next.status === 'playing' ? next.players : players };
+    this.publish({ room: updated, players, ...(this.pending ? {} : this.health(updated)) });
+    this.send('room-state', this.roomInfo());
+  }
+  /** Connection state for a room: paused while any active seat (or its controlling device) is missing. */
+  private health(room = this.snapshot.room) {
+    const ok = this.available(room);
+    return { connection: ok ? 'connected' : 'reconnecting', error: ok ? null : 'Das Spiel wartet, bis alle Teilnehmer wieder verbunden sind.' } as const;
+  }
+  private removeSelf(message: string) {
+    this.leaveRoom(); this.publish({ connection: 'disconnected', error: message, removed: true });
+  }
   prepareAccountIdentity = async (accountId: string): Promise<string> => {
     if (this.accountId !== accountId) {
       if (this.snapshot.room) this.leaveRoom();
@@ -64,6 +94,7 @@ export class RoomSession {
   };
   createPartyRoom = async (code: string, name: string): Promise<void> => {
     if (!this.partyAccess || this.partyAccess.code !== code) throw new Error('Party membership required');
+    if (this.snapshot.room?.roomCode === code) this.stale = true; // A repeated open is a retry.
     await this.connect(code, name, this.partyAccess.premium, 'bomb');
     this.updatePartySettings({ controllerParty: true, hostPremium: this.partyAccess.premium });
   };
@@ -80,42 +111,36 @@ export class RoomSession {
   };
 
   constructor(private client: Pick<SupabaseClient, 'channel' | 'removeChannel'>) {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('offline', () => {
-        if (this.snapshot.room) this.publish({ connection: 'reconnecting', error: 'Keine Internetverbindung. Das Spiel ist pausiert.' });
-      });
-      window.addEventListener('online', () => {
-        const room = this.snapshot.room, own = this.own;
-        if (room && own) void this.joinRoom(room.roomCode, own.name, own.isPremium).catch(error => this.fail(error));
-      });
-    }
+    if (typeof window === 'undefined') return;
+    window.addEventListener('offline', () => { this.stale = true; if (this.snapshot.room) this.publish({ connection: 'reconnecting', error: 'Keine Internetverbindung. Das Spiel ist pausiert.' }); });
+    window.addEventListener('online', () => { void this.reconnect().catch(error => this.fail(error)); });
   }
+  /** Rebuild the channel of the current room even if it still looks joined (retry buttons, back online). */
+  reconnect = async (): Promise<void> => {
+    const room = this.snapshot.room, own = this.own;
+    if (!room || !own) return;
+    this.stale = true;
+    await this.connect(room.roomCode, own.name, own.isPremium);
+  };
   getSnapshot = (): RoomSnapshot => this.snapshot;
   getServerSnapshot = (): RoomSnapshot => serverSnapshot;
   subscribe = (callback: () => void): (() => void) => { this.subscribers.add(callback); return () => { this.subscribers.delete(callback); }; };
   private publish(update: Partial<RoomSnapshot>) {
+    if ('room' in update) traceParticipants(this.snapshot.room, update.room ?? null);
     this.snapshot = { ...this.snapshot, ...update };
+    this.snapshot.localPlayerIds = localPlayerIdsFor(this.snapshot.players, this.snapshot.myPlayerId);
     if (this.snapshot.room) rememberRoom(this.snapshot.room, this.snapshot.myPlayerId);
     this.subscribers.forEach(callback => callback());
   }
   private async getIdentity() {
-    if (!this.identityPromise) {
-      let storage: Storage | undefined;
-      try {
-        if (this.accountId) {
-          const prefix = `eventbliss_account_${this.accountId}:`;
-          storage = { getItem: key => localStorage.getItem(prefix + key), setItem: (key, value) => localStorage.setItem(prefix + key, value), removeItem: key => localStorage.removeItem(prefix + key) } as Storage;
-        } else storage = sessionStorage;
-      } catch { /* SSR/private browsing */ }
-      this.identityPromise = claimTabIdentity(storage);
-    }
+    if (!this.identityPromise) this.identityPromise = claimTabIdentity(identityStorage(this.accountId));
     this.identity = await this.identityPromise;
     return this.identity;
   }
   private isHost() { return !!this.identity && this.snapshot.room?.hostId === this.identity.id; }
   private available(room = this.snapshot.room) {
     return (typeof navigator === 'undefined' || navigator.onLine !== false) && !!room && this.channel?.state === 'joined' && this.peers.has(room.hostId)
-      && (room.status === 'lobby' || room.participantIds.every(id => this.peers.has(id)));
+      && (room.status === 'lobby' || room.participantIds.every(id => seatPresent(id, this.peers, readGuests(room.settings))));
   }
   private roomInfo() { const { players: _players, ...info } = this.snapshot.room!; return info; }
   private async track() {
@@ -164,6 +189,7 @@ export class RoomSession {
     const access = this.partyAccess ? await this.partyAccess.refresh() : null;
     if (generation !== this.generation || revision !== this.presenceRevision) return;
     this.partyAccess = access;
+    this.reconcileParty();
     const valid = await Promise.all(raw.map(async p => {
       try {
         // Presence adds server fields and may reorder keys. Authenticate the
@@ -176,6 +202,8 @@ export class RoomSession {
     }));
     if (generation !== this.generation || revision !== this.presenceRevision || !this.snapshot.room) return;
     this.peers = new Map(valid.filter((p): p is Presence => !!p).map(p => [p.id, p]));
+    // The server dropped our presence (rejoin without re-track): announce again, else peers wait forever.
+    if (this.own && this.sentTrackSignature && !this.peers.has(this.own.id) && channel.state === 'joined') { this.trackSignature = ''; this.sentTrackSignature = ''; void this.track().catch(error => this.fail(error)); }
     const sorted = [...this.peers.values()].sort((a, b) => a.id.localeCompare(b.id));
     let room = this.snapshot.room;
     if (this.partyAccess && room.hostId !== this.partyAccess.hostId) room = { ...room, hostId: this.partyAccess.hostId };
@@ -183,7 +211,8 @@ export class RoomSession {
       const host = sorted.find(p => p.isCreator && p.roomInfo?.hostId === p.id) ?? sorted.find(p => p.roomInfo?.hostId === p.id);
       if (host?.roomInfo) room = { ...host.roomInfo, roomCode: room.roomCode, players: [] };
     }
-    const players = sorted.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar, isHost: p.id === room.hostId, isReady: !!p.isReady, isPremium: !!p.isPremium }));
+    this.live = sorted.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar, isHost: p.id === room.hostId, isReady: !!p.isReady, isPremium: !!p.isPremium }));
+    const players = withGuests(this.live, readGuests(room.settings));
     // Presence describes connectivity, not the participants of a running match.
     // Keep verified player metadata while a peer reconnects so turn/team indices
     // cannot shift. Late members remain visible only in the connected lobby list.
@@ -192,7 +221,7 @@ export class RoomSession {
           .filter(p => p.id === room.hostId || room.participantIds.includes(p.id)).map(p => [p.id, p])).values()]
       : players;
     this.publish({ room: { ...room, players: matchPlayers }, players,
-      ...(!this.pending && room.hostId ? { connection: this.available(room) ? 'connected' : 'reconnecting', error: this.available(room) ? null : 'Das Spiel wartet, bis alle Teilnehmer wieder verbunden sind.' } as const : {}) });
+      ...(!this.pending && room.hostId ? this.health(room) : {}) });
     if (this.peers.has(room.hostId)) {
       if (this.hostGrace) clearTimeout(this.hostGrace);
       this.hostGrace = null;
@@ -241,7 +270,11 @@ export class RoomSession {
     if (!object(payload) || typeof payload.body !== 'string' || typeof payload.signature !== 'string' || payload.body.length > 1000000) return;
     const packet: Packet = JSON.parse(payload.body);
     if (!packet || typeof packet.sender !== 'string' || typeof packet.event !== 'string' || !Number.isSafeInteger(packet.sequence)) return;
-    if (!this.peers.has(packet.sender)) await this.syncPresence(channel, generation);
+    // Unknown sender: re-check presence at most every 5 s per sender. A removed player's late packets
+    // must not stall this serial queue (and the host's room-state behind them) with membership reads.
+    if (!this.peers.has(packet.sender) && Date.now() - (this.unknownSenders.get(packet.sender) ?? 0) > 5000) {
+      this.unknownSenders.set(packet.sender, Date.now()); await this.syncPresence(channel, generation);
+    }
     const peer = this.peers.get(packet.sender);
     if (!peer || generation !== this.generation || packet.sender === this.identity?.id || !await verifyRoomSignature(payload.body, payload.signature, peer.signingKey)) return;
     if (generation !== this.generation) return;
@@ -269,13 +302,14 @@ export class RoomSession {
     if (packet.event === 'room-state' && fromHost) {
       if (typeof data.gameId !== 'string' || !playableGames.some(g => g.id === data.gameId) || !['lobby', 'playing', 'finished'].includes(String(data.status)) || typeof data.sessionId !== 'string') return;
       if (this.snapshot.room.sessionId !== data.sessionId) this.cache.clear();
-      const room = { ...this.snapshot.room, players: this.snapshot.room.sessionId === data.sessionId && data.status === 'playing' ? this.snapshot.room.players : this.snapshot.players, gameId: data.gameId, sessionId: data.sessionId, status: data.status as GameRoom['status'], settings: object(data.settings) ? data.settings : {}, participantIds: Array.isArray(data.participantIds) ? data.participantIds.filter((p): p is string => typeof p === 'string') : [] };
-      this.publish({ room, connection: this.available(room) ? 'connected' : 'reconnecting', error: this.available(room) ? null : 'Das Spiel wartet, bis alle Teilnehmer wieder verbunden sind.' }); this.finishJoin?.(); return;
+      const settings = object(data.settings) ? data.settings : {}, players = withGuests(this.live, readGuests(settings));
+      const room = { ...this.snapshot.room, players: this.snapshot.room.sessionId === data.sessionId && data.status === 'playing' ? this.snapshot.room.players : players, gameId: data.gameId, sessionId: data.sessionId, status: data.status as GameRoom['status'], settings, participantIds: Array.isArray(data.participantIds) ? data.participantIds.filter((p): p is string => typeof p === 'string') : [] };
+      this.publish({ room, players, ...this.health(room) }); this.finishJoin?.(); return;
     }
     if (packet.sessionId !== this.snapshot.room.sessionId) return;
     if (this.snapshot.room.status !== 'lobby' && !this.snapshot.room.participantIds.includes(packet.sender) && !fromHost) return;
     if (packet.event === 'kick-player' && fromHost && data.playerId === this.identity?.id) {
-      this.leaveRoom(); this.publish({ connection: 'disconnected', error: 'Du wurdest aus dem Raum entfernt.' }); return;
+      this.removeSelf('Du wurdest aus dem Raum entfernt.'); return;
     }
     if (isState(packet.event) && !fromHost) return;
     if (!isState(packet.event) && this.snapshot.room.status !== 'lobby' && !this.available()) return;
@@ -286,14 +320,18 @@ export class RoomSession {
 
   private connect = async (code: string, name: string, premium: boolean, gameId?: string): Promise<void> => {
     if (typeof navigator !== 'undefined' && navigator.onLine === false) { const error = new Error('Keine Internetverbindung. Bitte versuche es erneut.'); this.fail(error); throw error; }
-    if (this.snapshot.room?.roomCode === code && this.channel?.state === 'joined' && this.snapshot.connection === 'connected') return;
+    if (!this.stale && this.snapshot.room?.roomCode === code && this.channel?.state === 'joined' && this.snapshot.connection === 'connected') return;
     if (this.snapshot.room?.roomCode === code && this.pending) return this.pending;
     const attempt = this.generation;
     const identity = await this.getIdentity();
     // Concurrent mounts may both arrive while WebCrypto initializes.
     if (this.snapshot.room?.roomCode === code && this.pending) return this.pending;
-    if (this.snapshot.room?.roomCode === code && this.channel?.state === 'joined' && this.snapshot.connection === 'connected') return;
+    if (!this.stale && this.snapshot.room?.roomCode === code && this.channel?.state === 'joined' && this.snapshot.connection === 'connected') return;
     if (attempt !== this.generation) throw new Error('Verbindung abgebrochen.');
+    // A removed seat must not loop through rejoin attempts (online event, retry button).
+    if (this.partyAccess?.code === code && !this.partyAccess.memberIds.includes(identity.id)) {
+      const error = new Error('Du bist nicht mehr in dieser Party.'); this.publish({ connection: 'disconnected', error: error.message, removed: true }); throw error;
+    }
     const previous = this.snapshot.room?.roomCode === code ? this.snapshot.room : null;
     if (!previous) this.cache.clear();
     // A reloaded host has lost private decks/timers. Recover the room as a new
@@ -304,13 +342,15 @@ export class RoomSession {
     const own = previous ? this.own : null;
     this.disconnect();
     const generation = this.generation;
+    this.stale = false;
     const hostId = this.partyAccess?.hostId || (gameId ? identity.id : previous?.hostId || '');
-    this.own = { id: identity.id, name: name.trim().slice(0, 40), avatar: name.trim().slice(0, 1).toUpperCase(), color: own?.color || COLORS[crypto.getRandomValues(new Uint8Array(1))[0] % COLORS.length], isReady: own?.isReady ?? !!gameId, isPremium: premium, isCreator: own?.isCreator ?? !!gameId, joinedAt: own?.joinedAt || Date.now(), signingKey: identity.signingKey, encryptionKey: identity.encryptionKey };
+    this.own = { id: identity.id, name: name.trim().slice(0, 40), ...ownLook(this.partyAccess, identity.id, own?.color, () => COLORS[crypto.getRandomValues(new Uint8Array(1))[0] % COLORS.length]), isReady: own?.isReady ?? !!gameId, isPremium: premium, isCreator: own?.isCreator ?? !!gameId, joinedAt: own?.joinedAt || Date.now(), signingKey: identity.signingKey, encryptionKey: identity.encryptionKey };
     const room: GameRoom = previous || { roomCode: code, hostId, players: [], gameId: gameId || '', status: 'lobby', settings: recovered ? { recoveredAfterReload: true } : {}, sessionId: gameId ? crypto.randomUUID() : '', participantIds: [] };
-    this.publish({ room, players: [], myPlayerId: identity.id, connection: 'connecting', error: null });
+    this.live = [];
+    this.publish({ room, players: [], myPlayerId: identity.id, connection: 'connecting', error: null, removed: false });
     this.pending = new Promise<void>((resolve, reject) => {
       const clear = () => { if (this.timeout) clearTimeout(this.timeout); this.timeout = null; this.finishJoin = null; this.failJoin = null; this.pending = null; };
-      this.finishJoin = () => { clear(); this.publish({ connection: this.available() ? 'connected' : 'reconnecting', error: this.available() ? null : 'Das Spiel wartet, bis alle Teilnehmer wieder verbunden sind.' }); resolve(); };
+      this.finishJoin = () => { clear(); this.publish(this.health()); resolve(); };
       this.failJoin = error => { clear(); reject(error); };
       const calls = this.presenceCalls.filter(at => Date.now() - at < 30_100);
       const budgetWait = calls.length >= 4 ? Math.max(0, calls[0] + 30_100 - Date.now()) : 0;
@@ -339,7 +379,10 @@ export class RoomSession {
           if (!this.isHost()) this.send('room-request', {});
         } catch (error) { if (generation === this.generation) this.fail(error); }
       } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+        this.stale = true;
         this.publish({ connection: 'reconnecting', error: 'Verbindung unterbrochen. Das Spiel wird erneut verbunden.' });
+        // CLOSED without our own disconnect = someone removed the shared same-topic channel (supabase-js dedupes topics): rebuild.
+        if (status === 'CLOSED') setTimeout(() => { if (generation === this.generation) void this.reconnect().catch(error => this.fail(error)); }, 500);
       }
     });
     this.heartbeat = setInterval(() => {
@@ -376,7 +419,7 @@ export class RoomSession {
       this.channelCleanup = Promise.all([this.channelCleanup, channel.unsubscribe()]).then(() => {});
       void this.channelCleanup.catch(() => {});
     }
-    this.trackSignature = ''; this.sentTrackSignature = ''; this.discoveryInfo = null; this.peers.clear(); this.sequences.clear();
+    this.trackSignature = ''; this.sentTrackSignature = ''; this.discoveryInfo = null; this.peers.clear(); this.sequences.clear(); this.unknownSenders.clear();
   }
   leaveRoom = (): void => {
     this.disconnect(); this.cache.clear(); this.own = null;
@@ -399,15 +442,16 @@ export class RoomSession {
     const generation = this.generation;
     const room = this.snapshot.room, game = playableGames.find(g => g.id === gameId);
     if (!room || room.status !== 'lobby' || !game || !this.isHost() || this.snapshot.connection !== 'connected') return false;
-    if (this.partyAccess) this.partyAccess = await this.partyAccess.refresh();
+    if (this.partyAccess) { this.partyAccess = await this.partyAccess.refresh(); this.reconcileParty(); }
     if (generation !== this.generation || this.snapshot.room?.sessionId !== room.sessionId) return false;
-    const players = this.snapshot.players.filter(p => !this.partyAccess || this.partyAccess.hostPlays || p.id !== room.hostId);
-    if (players.length < Math.max(2, game.minPlayers) || players.length > game.maxPlayers || players.some(p => !p.isReady)) return false;
-    if (this.partyAccess && players.length !== this.partyAccess.memberIds.filter(id => this.partyAccess!.hostPlays || id !== room.hostId).length) return false;
-    const sessionId = this.partyAccess ? await this.partyAccess.start(game.id, players.map(p => p.id)) : crypto.randomUUID();
+    const access = this.partyAccess, base = this.snapshot.room ?? room;
+    const plan = planMatch(this.snapshot.players, room.hostId, access, game);
+    if (!plan) return false;
+    const { participantIds, sittingOut } = plan;
+    const sessionId = access ? await access.start(game.id, participantIds) : crypto.randomUUID();
     if (generation !== this.generation || this.snapshot.room?.sessionId !== room.sessionId) return false;
     this.cache.clear();
-    const next: GameRoom = { ...room, players: this.snapshot.players, settings: { ...room.settings, controllerParty: !!this.partyAccess, hostPremium: this.partyAccess?.premium ?? false, selectedGameIds: Array.isArray(room.settings.selectedGameIds) ? room.settings.selectedGameIds : [game.id] }, gameId: game.id, status: 'playing', sessionId, participantIds: players.map(p => p.id) };
+    const next: GameRoom = { ...base, players: this.snapshot.players, settings: { ...base.settings, controllerParty: !!access, hostPremium: access?.premium ?? false, selectedGameIds: Array.isArray(base.settings.selectedGameIds) ? base.settings.selectedGameIds : [game.id], sittingOut, removedPlayerIds: [] }, gameId: game.id, status: 'playing', sessionId, participantIds };
     const { players: _players, ...info } = next;
     // Announce before React mounts the game and enqueues its initial snapshot.
     this.send('room-state', info);
@@ -427,7 +471,8 @@ export class RoomSession {
     this.send(event, data);
   };
   broadcastTo = (recipient: string, event: string, data: RoomData): void => {
-    if (!this.isHost() || !object(data)) return;
+    // A 🔁 guest has no device: its private view never goes on the wire (or into the replay cache).
+    if (!this.isHost() || !object(data) || this.snapshot.players.some(p => p.id === recipient && p.controlledBy)) return;
     if (isState(event)) this.cache.set(`${recipient}:${event}`, { event, data: JSON.parse(JSON.stringify(data)), recipient });
     if (recipient === this.identity?.id) return;
     this.send(event, data, recipient);
@@ -441,6 +486,14 @@ export class RoomSession {
       this.cache.forEach(cached => { if (cached.event === event && (!cached.recipient || cached.recipient === this.identity?.id)) callback(cached.data); });
     });
     return () => { callbacks.delete(callback); };
+  };
+  /** Host, after a successful server kick ('match_only' etc.): continue the match without this seat. */
+  dropParticipant = (playerId: string): void => {
+    const room = this.snapshot.room;
+    if (!this.isHost() || room?.status !== 'playing' || !room.participantIds.includes(playerId)) return;
+    const next = dropFromMatch(room, [playerId]);
+    this.publish({ room: next, ...(this.pending ? {} : this.health(next)) });
+    this.send('room-state', this.roomInfo());
   };
   kickPlayer = (playerId: string): void => { if (this.isHost() && playerId !== this.identity?.id) this.send('kick-player', { playerId }); };
 }

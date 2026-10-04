@@ -30,40 +30,29 @@ import OnlineWaiting from '../multiplayer/OnlineWaiting';
  * zwei getrennte Zustände statt einem einzigen Stapel.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FlaskConical, Martini, ArrowLeft, Volume2, VolumeX, Sparkles, Flame } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ArrowLeft } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useDrinkingMode } from "@/hooks/useDrinkingMode";
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { useBackGuard } from "@/lib/back-guard";
-import { NativeOverlayPortal } from "@/components/native/NativeOverlayPortal";
-import { PlayerSetup, type PlayerSetupPlayer } from "../ui/PlayerSetup";
 import { useInitialRoster } from "../ui/useInitialRoster";
 import { getPlayerColor } from "../ui/PlayerAvatars";
-import { GameSetupBackLink } from "../ui/GameSetupBackLink";
-import { hasShellBackButton } from "../ui/shell-back";
 import { ResultScreen } from "../ui/ResultScreen";
 import type { OnlineGameProps } from "../multiplayer/OnlineGameTypes";
-import { Glass } from "./Glass";
-import { BrewStageFX } from "./BrewStageFX";
 import { GLASS_SHAPES, glassMouthT, shapeForRecipe } from "./glass-shapes";
 import { BREW_PALETTES } from "./brew-palette";
-import { TrayCards } from "./TrayCards";
-import { ingredientPlate, POUR_BEATS, pourDuration } from "./BrewFX";
+import { POUR_BEATS, pourDuration } from "./BrewFX";
 import { PourFlight, type PourPlan } from "./PourFlight";
 import { DrawReveal, drawRevealDuration, type DrawnCard } from "./DrawReveal";
-import { IngredientIcon } from "./IngredientIcon";
-import { TrayTip } from "./BrewFX";
 import { BrewAtmosphere } from "./BrewAtmosphere";
 import {
   INGREDIENTS,
   preloadIngredients,
   ingredientKey,
-  recipeKey,
   type IngredientId,
   type RecipeLength,
   type Skin,
@@ -72,6 +61,18 @@ import { dealRecipes, buildDeck, insertBusts, drawCard, missingFor, isComplete, 
 import { scoreFor } from "./scoring";
 import { bonusForPour, cappedBrewBonus, chainLevelFor, riskTierFor, type BrewRiskTier } from "./brew-gameplay";
 import { useBrewAudio, type BrewCue } from "./brew-audio";
+import { removeBrewPlayers } from "./removal";
+import { useRemovedPlayers } from "../multiplayer/useRemovedPlayers";
+import { useSyncedPhase } from "../multiplayer/useSyncedPhase";
+import { PartyTurnRibbon } from "../ui/PartyTurnRibbon";
+import { BrewSetup } from "./BrewSetup";
+import { BrewTopBar } from "./BrewTopBar";
+import { BrewHeroStage } from "./BrewHeroStage";
+import { BrewTrayCounter } from "./BrewTrayCounter";
+import { BrewActionBar } from "./BrewActionBar";
+import { BrewLeaveDialog, BrewPenaltyOverlay, type Penalty } from "./BrewOverlays";
+import { useBrewHandover } from "./useBrewHandover";
+import { brewActiveSeat, brewIsMyTurn, brewSenderOwnsTurn, brewTvPlayers, brewViewerId } from "./guest-turns";
 
 type Phase = "setup" | "playing" | "gameOver";
 
@@ -92,15 +93,6 @@ interface PlayerState {
   brewBonus: number;
 }
 
-/**
- * Der Trink-Disclaimer steckt BEWUSST NICHT hier drin: `recordDrink()` zaehlt im
- * localStorage des jeweiligen Geraets. Waere er Teil der Strafe, wuerde der
- * Gastgeber online die Schlucke aller anderen sammeln und "50 Runden!" erschiene
- * auf dem falschen Bildschirm. Die Strafe reist, der Zaehler bleibt zu Hause.
- */
-type Penalty =
-  | { kind: "task"; taskIndex: number }
-  | { kind: "sip" };
 
 /** Basis-Zutat immer zuerst — Glass.tsx zeichnet Index 0 als unterste Schicht. */
 function sortGlassOrder(ids: IngredientId[]): IngredientId[] {
@@ -134,6 +126,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const [activeIdx, setActiveIdx] = useState(0);
   const [turnToken, setTurnToken] = useState('');
   const consumedActions = useRef(new Set<string>());
+  // Alle Geraete + TV wechseln Phase UND Zug im selben Moment; Eingaben erst nach dem Takt (Design §9).
+  const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, turnToken]);
   const [tray, setTray] = useState<IngredientId[]>([]);
   const [counter, setCounter] = useState<IngredientId[]>([]);
   // Zwei getrennte Stapel statt einem: `drawCard` (deck.ts) mischt den
@@ -230,7 +224,9 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
 
   const active = players[activeIdx] as PlayerState | undefined;
   /** Offline immer wahr — online nur, wenn dieses Geraet tatsaechlich dran ist. */
-  const isMyTurn = !isOnline || (!!myId && active?.id === myId);
+  // 🔁-Gaeste spielen ihren Zug am Host-Handy, nach der Weitergabe (guest-turns.ts).
+  const handover = useBrewHandover(online, brewActiveSeat(phase, players, activeIdx), phase === "gameOver");
+  const isMyTurn = brewIsMyTurn(isOnline, active?.id, myId, handover.activeGuest);
   /**
    * Wessen Rezept unter "Dein Rezept" steht.
    *
@@ -239,7 +235,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
    * JEDER Gast das Rezept der aktiven Person, ueberschrieben mit "Dein
    * Rezept" — der Bezugspunkt des ganzen Bildschirms war falsch.
    */
-  const me = ownPlayer(players, isOnline ? myId : null, active) ?? active;
+  const me = ownPlayer(players, isOnline ? brewViewerId(myId, handover.activeGuest) : null, active) ?? active;
+  const roster = useInitialRoster({ onlinePlayers: online?.players }) ?? [];
 
   // Zurück abfangen: der native Zurück-Button liegt über dem Pfeil im Kopf.
   useBackGuard(() => {
@@ -307,17 +304,23 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   }, [localSkin, gameTasks]);
 
   const playAgainLocal = useCallback(() => {
-    if (players.length === 0) return;
-    handleStart({ players: players.map((p) => ({ id: p.id, name: p.name })), length: ingredientCount });
-  }, [players, ingredientCount, handleStart]);
+    // Online nur, wer noch im Raum ist — Gekickte bekommen kein neues Rezept.
+    const stay = online ? players.filter((p) => online.players.some((o) => o.id === p.id)) : players;
+    if (stay.length === 0) return;
+    handleStart({ players: stay.map((p) => ({ id: p.id, name: p.name })), length: ingredientCount });
+  }, [online, players, ingredientCount, handleStart]);
 
   // --- Zug -------------------------------------------------------------
+  // Ueber eine Ref: ein verzoegerter Zugwechsel (nach dem Guss) darf nicht mit
+  // der Spielerzahl von damals rechnen, falls inzwischen jemand entfernt wurde.
+  const playerCountRef = useRef(0);
+  playerCountRef.current = players.length;
   const advanceTurn = useCallback(() => {
     setTurnToken(crypto.randomUUID());
     consumedActions.current.clear();
-    setActiveIdx((i) => (players.length ? (i + 1) % players.length : 0));
+    setActiveIdx((i) => (playerCountRef.current ? (i + 1) % playerCountRef.current : 0));
     setCounterTaken(false);
-  }, [players.length]);
+  }, []);
 
   // Laeuft nur beim Gastgeber. `recordDrink()` steht hier bewusst NICHT — das
   // macht jedes Geraet fuer sich, siehe den Effekt weiter unten.
@@ -503,7 +506,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     // Besitzpruefung: alle sehen dieselbe Theke, also koennte sonst jemand
     // ziehen, waehrend ein anderer dran ist — die Karte landete auf dem fremden
     // Tablett. Die `tray.length === 0`-Wache in doPourIn allein reicht nicht.
-    const ownsTurn = !!pid && players[activeIdx]?.id === pid;
+    // Ein 🔁-Gast handelt ueber das Geraet, das seinen Platz spielt (controlledBy).
+    const ownsTurn = brewSenderOwnsTurn(players[activeIdx]?.id, pid, online?.players ?? []);
     switch (data.type) {
       case "start":
         if (phase === "setup" && pid === online?.myPlayerId) {
@@ -525,6 +529,32 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     return online.onBroadcast("brew-action", (d) => applyAction(d));
   }, [online, isHost, applyAction]);
 
+  // Gastgeber: Gekickte/Gegangene verlassen die Runde (Logik in removal.ts).
+  // War die Person dran, enden ihre offenen Eingaben und Timer, und der Zug
+  // geht sofort weiter. Der Schnappschuss unten verteilt das an alle.
+  useRemovedPlayers(online, (ids) => {
+    if (phase !== "playing") return;
+    const r = removeBrewPlayers({ players, activeIdx, tray, discardPile, winnerId }, ids, online?.players.map((p) => p.id));
+    if (!r) return;
+    if (r.activeRemoved) {
+      gameTasks.clear();
+      pourTimersRef.current = [];
+      setPenalty(null);
+      setSipDisclaimer(null);
+      setDrawnCard(null);
+      setPourPlan(null);
+      setPourFreeze(null);
+      setToast(null);
+      setCounterTaken(false);
+      setTurnToken(crypto.randomUUID());
+      consumedActions.current.clear();
+    }
+    setPlayers(r.players);
+    setActiveIdx(r.activeIdx);
+    setTray(r.tray);
+    setDiscardPile(r.discardPile);
+  });
+
   // Gastgeber spiegelt den Zustand. `drawPile`/`discardPile` sind bewusst NICHT
   // dabei — nur `deckCount`.
   useEffect(() => {
@@ -532,6 +562,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     online.broadcast("brew-state", {
       snapshot: JSON.parse(JSON.stringify({
         phase,
+        phaseStartsAt,
         skin,
         ingredientCount,
         activeIdx,
@@ -557,7 +588,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         })),
       })),
     });
-  }, [online, isHost, phase, skin, ingredientCount, activeIdx, turnToken, counter, tray, counterTaken,
+  }, [online, isHost, phase, phaseStartsAt, skin, ingredientCount, activeIdx, turnToken, counter, tray, counterTaken,
       drawPile, discardPile, penalty, penaltySeq, bustTrayCount, bustSeq, pourPlan, pourSeq,
       drawnCard, audioCue, audioCueSeq, reshuffleSeq, winnerId, players]);
 
@@ -568,6 +599,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       const s = (d as { snapshot?: Record<string, unknown> }).snapshot;
       if (!s) return;
       setPhase(s.phase as Phase);
+      receivePhaseStart(s.phaseStartsAt);
       setRoundSkin((s.skin as Skin) ?? null);
       setIngredientCount(s.ingredientCount as RecipeLength);
       setActiveIdx(s.activeIdx as number);
@@ -596,7 +628,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       setWinnerId((s.winnerId as string | null) ?? null);
       setPlayers(((s.players as PlayerState[]) ?? []).map((p) => ({ ...p, brewBonus: p.brewBonus ?? 0 })));
     });
-  }, [online, isHost]);
+  }, [online, isHost]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // --- Drei Wachposten gegen Nachbeben ------------------------------------
   // Alle drei folgen demselben Muster: beim ERSTEN Schnappschuss wird der Stand
@@ -718,8 +750,12 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   );
 
   // --- TV / Party --------------------------------------------------------
+  const tvHandoverKey = JSON.stringify(handover.tv);
   const tvPayload = useMemo(() => ({
     phase,
+    phaseStartsAt,
+    // Oeffentlich: „Max spielt am Host-Handy“ + Fortschritt — nie Stapel oder Karte.
+    handover: handover.tv,
     skin,
     activeIdx,
     activeName: active?.name ?? "",
@@ -745,11 +781,11 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     audioCue,
     audioCueSeq,
     drawnCard,
-    players: players.map((p) => ({
+    players: brewTvPlayers(players.map((p) => ({
       id: p.id, name: p.name, color: p.color, score: p.score, brewBonus: p.brewBonus,
       glass: p.glass, recipeId: p.recipe.id, recipeNeeds: p.recipe.needs,
-    })),
-  }), [phase, skin, activeIdx, active, winnerId, counter, tray, cardsRemaining, bustSeq,
+    })), roster),
+  }), [phase, phaseStartsAt, tvHandoverKey, roster.length, skin, activeIdx, active, winnerId, counter, tray, cardsRemaining, bustSeq,
     bustTrayCount, pourSeq, pourPlan, riskTier, trayHits, chainLevel, pourPreview.awarded,
     audioCue, audioCueSeq, drawnCard, players]);
 
@@ -759,8 +795,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   useTVGameBridge("brew", tvPayload, [tvPayload], !online || isHost);
 
   // =========================================================================
-  if (phase === "setup" && online && !isHost) return <OnlineWaiting />;
-  if (phase === "setup") {
+  if (view === "setup" && online && !isHost) return <OnlineWaiting />;
+  if (view === "setup") {
     return (
       <BrewSetup
         // Ein Gast darf NICHT lokal starten (er wuerfelte eigene Rezepte) —
@@ -772,7 +808,10 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     );
   }
 
-  if (phase === "gameOver") {
+  // Handy unterwegs zu einem Gast: nur der deckende Weitergabe-Bildschirm.
+  if (handover.overlay) return handover.overlay;
+
+  if (view === "gameOver") {
     // Wer sein Rezept zuerst vollhatte, steht oben — auch bei Punktgleichstand.
     // Ohne das entschiede die Sortierstabilitaet statt des echten Siegers.
     const sorted = [...players].sort((a, b) =>
@@ -802,6 +841,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   }
 
   const accent = theme.accent;
+  const activeSeat = roster.find((p) => p.id === active.id);
   const glassProgress = missingFor(me.recipe, me.glass).length;
 
   /**
@@ -824,306 +864,32 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
 
   return (
     <div className="min-h-[100dvh] relative" style={{ background: theme.bg, color: theme.text }}>
-      <BrewAtmosphere skin={skin} variant="phone" />
-      {/* Kopf */}
-      <div className="relative z-10 px-4 pt-14 pb-3 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
-        <button
-          onClick={() => setConfirmExit(true)}
-          className={cn("flex items-center gap-1 text-xs font-bold", hasShellBackButton() && "invisible pointer-events-none")}
-          aria-hidden={hasShellBackButton()}
-          tabIndex={hasShellBackButton() ? -1 : undefined}
-          style={{ color: theme.dim }}
-        >
-          <ArrowLeft className="w-4 h-4" /> {t("games.brew.leave")}
-        </button>
-        <div className="text-xs font-bold" style={{ color: theme.dim }}>
-          {t("games.brew.turnOf", { name: active.name })}
+      <BrewAtmosphere skin={skin} variant="phone" />{blocker}
+      <BrewTopBar onLeave={() => setConfirmExit(true)} onToggleSound={() => setSoundEnabled(!soundEnabled)} soundEnabled={soundEnabled}
+        theme={theme} accent={accent} activeName={active.name} cardsRemaining={cardsRemaining} players={players} activeIdx={activeIdx} skin={skin} pourPlan={pourPlan} />
+      {isOnline && (
+        <div className="relative z-10 px-4 pt-1 pb-2">
+          <PartyTurnRibbon player={{ id: active.id, name: active.name, avatar: activeSeat?.avatar, color: activeSeat?.color ?? active.color }}
+            kind={isMyTurn ? "me" : "other"}
+            line={isMyTurn ? undefined : t("games.brew.partyWatch", "Schau mit – was nicht ins Glas passt, landet auf der Theke.")} />
         </div>
-        <div className="flex items-center justify-end gap-2">
-          <div className="text-xs font-bold" style={{ color: accent }}>
-            {t("games.brew.deckCount", { count: cardsRemaining })}
-          </div>
-          <button
-            type="button"
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            aria-label={t(soundEnabled ? "games.brew.soundOff" : "games.brew.soundOn")}
-            className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-black/20"
-            style={{ color: theme.dim }}
-          >
-            {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-          </button>
-        </div>
-      </div>
+      )}
+      <BrewHeroStage me={me} skin={skin} theme={theme} accent={accent} reduceMotion={!!reduceMotion} chainLevel={chainLevel} trayHits={trayHits}
+        pourAwarded={pourPreview.awarded} glassProgress={glassProgress} drawnCard={drawnCard} pourSeq={pourSeq} pourPlan={pourPlan} glassBoxRef={glassBoxRef} />
 
-      {/* Mini-Gläser aller Mitspieler:innen */}
-      <div className="relative z-10 px-4 flex gap-3 overflow-x-auto pb-2">
-        {players.map((p, i) => (
-          <div key={p.id} className="flex flex-col items-center shrink-0" style={{ opacity: i === activeIdx ? 1 : 0.55 }}>
-            <div
-              className="rounded-2xl p-1"
-              style={{ border: i === activeIdx ? `2px solid ${p.color}` : "2px solid transparent" }}
-            >
-              <Glass
-                recipeNeeds={p.recipe.needs}
-                filled={p.glass}
-                skin={skin}
-                shape={shapeForRecipe(p.recipe.id, skin)}
-                size="sm"
-                height={skin === "bar" ? 74 : undefined}
-                quality="compact"
-                active={i === activeIdx}
-                // Dieselbe Verzoegerung wie das grosse Glas — sonst fuellt sich
-                // das Miniglas derselben Person 720 ms zu frueh.
-                arrivalDelay={pourPlan?.pid === p.id ? POUR_BEATS.depart + POUR_BEATS.flight : 0}
-                layerStagger={POUR_BEATS.stagger}
-              />
-            </div>
-            <span className="text-[10px] font-bold mt-1 truncate max-w-[64px]" style={{ color: p.color }}>
-              {p.name}
-            </span>
-          </div>
-        ))}
-      </div>
+      <BrewTrayCounter skin={skin} theme={theme} accent={accent} riskTier={riskTier} tray={tray} pourFreeze={pourFreeze} pourPlan={pourPlan}
+        trayMarks={trayMarks} onTrayGeometry={(r) => { trayGeoRef.current = r; }} bustTrayCount={bustTrayCount} bustTrigger={bustTrigger}
+        counter={counter} counterMarks={counterMarks} counterTaken={counterTaken} counterBoxRef={counterBoxRef}
+        onTake={(id, index) => act("take", { id, index }, () => doTakeFromCounter(id, index))} isMyTurn={isMyTurn} drawnCard={drawnCard} />
 
-      {/* Aktive Person: Rezept + Glas */}
-      <motion.div
-        className="relative z-10 mt-2 min-h-[430px] overflow-hidden border-y px-4 pb-5 pt-4"
-        style={{
-          background: `radial-gradient(circle at 50% 42%, ${accent}26 0%, transparent 34%), linear-gradient(180deg, rgba(5,7,16,.22), ${theme.surface} 72%, rgba(3,4,10,.82))`,
-          borderColor: `${accent}42`,
-          boxShadow: `inset 0 1px 0 rgba(255,255,255,.1), inset 0 -30px 70px rgba(0,0,0,.24), 0 30px 80px -52px ${accent}`,
-        }}
-        animate={reduceMotion ? undefined : { boxShadow: chainLevel >= 2
-          ? [`inset 0 1px 0 rgba(255,255,255,.08), 0 18px 48px -34px ${accent}`,
-             `inset 0 1px 0 rgba(255,255,255,.08), 0 26px 70px -25px ${accent}`,
-             `inset 0 1px 0 rgba(255,255,255,.08), 0 18px 48px -34px ${accent}`]
-          : `inset 0 1px 0 rgba(255,255,255,.08), 0 24px 60px -42px ${accent}` }}
-        transition={{ duration: 1.8, repeat: chainLevel >= 2 ? Infinity : 0, ease: "easeInOut" }}
-      >
-        <BrewStageFX
-          drawnCard={drawnCard}
-          pourSeq={pourSeq}
-          pouring={!!pourPlan}
-          accent={accent}
-          danger={theme.bad}
-          reduced={!!reduceMotion}
-        />
-        <div aria-hidden className="absolute inset-0 opacity-60"
-          style={{ backgroundImage: `linear-gradient(${accent}0d 1px, transparent 1px), linear-gradient(90deg, ${accent}0d 1px, transparent 1px)`, backgroundSize: "28px 28px", maskImage: "radial-gradient(circle at 50% 44%, black, transparent 72%)" }} />
-        <div aria-hidden className="absolute left-1/2 top-[44%] h-[290px] w-[290px] -translate-x-1/2 -translate-y-1/2 rounded-full border"
-          style={{ borderColor: `${accent}30`, boxShadow: `inset 0 0 50px ${accent}12, 0 0 70px ${accent}16` }} />
-        <motion.div aria-hidden className="absolute left-1/2 top-[44%] h-[238px] w-[238px] rounded-full border border-dashed"
-          style={{ x: "-50%", y: "-50%", borderColor: `${accent}65` }}
-          animate={reduceMotion ? undefined : { rotate: chainLevel > 0 ? 360 : 90, scale: chainLevel >= 2 ? [1, 1.035, 1] : 1 }}
-          transition={{ rotate: { duration: Math.max(7, 15 - chainLevel * 2), repeat: Infinity, ease: "linear" }, scale: { duration: 1.2, repeat: Infinity, ease: "easeInOut" } }}
-        />
-        {[0, 1, 2, 3].map((i) => (
-          <motion.span key={i} aria-hidden className="absolute left-1/2 top-[44%] h-2 w-2 rounded-full"
-            style={{ background: i < chainLevel ? accent : `${accent}48`, boxShadow: `0 0 16px ${accent}`, x: "-50%", y: "-50%" }}
-            animate={reduceMotion ? undefined : { x: [Math.cos(i * Math.PI / 2) * 132, Math.cos(i * Math.PI / 2 + Math.PI) * 132, Math.cos(i * Math.PI / 2) * 132], y: [Math.sin(i * Math.PI / 2) * 132, Math.sin(i * Math.PI / 2 + Math.PI) * 132, Math.sin(i * Math.PI / 2) * 132], opacity: [0.35, 1, 0.35] }}
-            transition={{ duration: 5.5 + i * 0.4, repeat: Infinity, ease: "linear" }} />
-        ))}
-        <p className="relative text-center text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: accent }}>
-          {t("games.brew.yourRecipe")} · {t(recipeKey(me.recipe.id, skin))}
-        </p>
-        <div className="relative flex flex-col items-center">
-          <div ref={glassBoxRef} className="relative z-10 mt-1 inline-flex h-[300px] items-end justify-center">
-            <motion.div aria-hidden className="absolute bottom-[2%] left-1/2 h-28 w-56 -translate-x-1/2 rounded-full"
-              style={{ background: `radial-gradient(ellipse, ${accent}70, ${accent}18 42%, transparent 72%)` }}
-              animate={reduceMotion ? undefined : { opacity: [0.42, 0.95, 0.42], scale: [0.9, 1.1, 0.9] }}
-              transition={{ duration: Math.max(0.8, 2 - chainLevel * 0.28), repeat: Infinity, ease: "easeInOut" }} />
-            <Glass
-              recipeNeeds={me.recipe.needs}
-              filled={me.glass}
-              skin={skin}
-              shape={shapeForRecipe(me.recipe.id, skin)}
-              bubbles
-              width={skin === "brew" ? "clamp(190px, 56vw, 260px)" : undefined}
-              height={skin === "bar" ? "clamp(230px, 38dvh, 292px)" : undefined}
-              quality="hero"
-              active
-              intensity={chainLevel}
-              arrivalDelay={pourPlan?.pid === me.id ? POUR_BEATS.depart + POUR_BEATS.flight : 0}
-              layerStagger={POUR_BEATS.stagger}
-            />
-          </div>
-          <div className="relative z-10 mt-1 flex w-full justify-center gap-1.5 overflow-x-auto pb-1">
-            {me.recipe.needs.map((id) => {
-              const owned = me.glass.includes(id);
-              return (
-                <div
-                  key={id}
-                  title={t(ingredientKey(id, skin))}
-                  className={cn(
-                    // Gleiche Karte wie auf Tablett und Theke — mit NAMEN.
-                    // Vorher: 44-px-Kachel mit 32-px-Motiv, und wenn die Zutat
-                    // fehlte, ein gestrichelter Umriss. Der liess den ganzen
-                    // Bildschirm wie einen unfertigen Entwurf wirken.
-                    "w-[58px] shrink-0 rounded-xl flex flex-col items-center gap-0.5 pt-1.5 pb-1 px-1 transition-opacity",
-                    // Fehlende Zutat tritt zurueck — ueber Saettigung, nicht
-                    // ueber eine gestrichelte Linie.
-                    !owned && "opacity-45 saturate-[0.35]",
-                  )}
-                  style={ingredientPlate(INGREDIENTS[id].color)}
-                >
-                  <IngredientIcon id={id} skin={skin} className="h-9 w-9" emojiSize="1.55rem" />
-                  <span
-                    className="w-full text-[8px] leading-tight font-bold text-center line-clamp-1 break-words"
-                    style={{ color: "rgba(255,255,255,0.92)" }}
-                  >
-                    {t(ingredientKey(id, skin))}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        {glassProgress > 0 && (
-          <p className="text-[11px] mt-2" style={{ color: theme.dim }}>
-            {t("games.brew.missingCount", { count: glassProgress })}
-          </p>
-        )}
-        {chainLevel > 0 && (
-          <motion.div initial={false} animate={{ opacity: [0, 1], y: [5, 0] }}
-            className="mt-3 flex items-center justify-center gap-2 rounded-full border px-3 py-2 text-[11px] font-black uppercase tracking-[0.16em]"
-            style={{ borderColor: `${accent}45`, color: accent, background: `${accent}12` }}>
-            <Sparkles className="h-3.5 w-3.5" />
-            {t("games.brew.chain", { count: trayHits })}
-            {pourPreview.awarded > 0 && <span>· +{pourPreview.awarded}</span>}
-          </motion.div>
-        )}
-      </motion.div>
-
-      {/* Tablett — bewusst als eigener Behaelter mit warnfarbenem Rand.
-          Vorher sahen Rezept, Tablett und Theke aus wie dreimal dieselbe
-          Kartenreihe, obwohl sie Ziel, Risiko und Angebot bedeuten. */}
-      <div className="relative z-10 px-4 mt-4">
-        <p className="text-[11px] font-black uppercase tracking-wide mb-2 flex items-center gap-2" style={{ color: theme.dim }}>
-          {t("games.brew.trayLabel")}
-          <span className="font-bold normal-case tracking-normal" style={{ color: theme.bad }}>
-            {t("games.brew.trayNote")}
-          </span>
-          <span className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px]"
-            style={{ color: riskTier === "critical" ? theme.bad : accent, background: `${riskTier === "critical" ? theme.bad : accent}12` }}>
-            <Flame className="h-3 w-3" /> {t(`games.brew.risk.${riskTier}`)}
-          </span>
-        </p>
-        <div className="relative rounded-2xl p-2" style={{ border: `1px dashed ${theme.bad}55`, background: "rgba(251,113,133,0.04)" }}>
-          <TrayCards
-            // Waehrend der Sortierphase bleibt die alte Reihe stehen — die
-            // Wahrheit ist bereits gewechselt, nur das Bild wartet.
-            ids={pourFreeze ?? tray}
-            skin={skin}
-            marks={pourFreeze && pourPlan
-              ? pourFreeze.map((_, i) => i < pourPlan.used.length)
-              : trayMarks}
-            onGeometry={(r) => { trayGeoRef.current = r; }}
-            emptyLabel={t("games.brew.trayEmpty")}
-          />
-          {/* Bust: das Tablett kippt sichtbar, bevor die Strafe erscheint. */}
-          <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-4">
-            <TrayTip cards={bustTrayCount} trigger={bustTrigger} skin={skin} size={0.7} />
-          </div>
-
-        </div>
-      </div>
-
-      {/* Theke */}
-      <div className="relative z-10 px-4 mt-4">
-        <p className="text-[11px] font-black uppercase tracking-wide mb-2 flex items-baseline gap-2" style={{ color: theme.dim }}>
-          {skin === "brew" ? t("games.brew.counterLabelBrew") : t("games.brew.counterLabelBar")}
-          <span className="font-bold normal-case tracking-normal" style={{ color: theme.dim }}>
-            {t("games.brew.counterNote")}
-          </span>
-        </p>
-        <div ref={counterBoxRef} className="min-h-[3.5rem]">
-        <TrayCards
-          ids={counter}
-          skin={skin}
-          onTake={(id, index) => act("take", { id, index }, () => doTakeFromCounter(id, index))}
-          disabled={counterTaken || !isMyTurn || !!drawnCard || !!pourPlan}
-          marks={counterMarks}
-          emptyLabel={t("games.brew.counterEmpty")}
-        />
-        </div>
-        {counterTaken && counter.length > 0 && (
-          <p className="text-[11px] mt-1" style={{ color: theme.dim }}>{t("games.brew.counterUsed")}</p>
-        )}
-      </div>
-
-      {/* Aktionen */}
-      <div className="sticky bottom-2 z-30 mx-3 mt-5 rounded-3xl border border-white/10 bg-black/55 px-3 py-3 pb-[max(.75rem,env(safe-area-inset-bottom))] shadow-2xl backdrop-blur-xl">
-        {/* Sagt, was jetzt dran ist — und warum ein Knopf gesperrt ist. */}
-        <p className="text-[12px] mb-2 text-center min-h-[1.2em]" style={{ color: theme.dim }}>{hint}</p>
-        <div className="flex gap-2">
-          {/*
-            Die Rangfolge folgt dem Zustand, nicht der Reihenfolge im Code.
-            Vorher war "Eingiessen" als einziger Knopf farbig gefuellt — und zu
-            Zugbeginn gesperrt, waehrend "Ziehen", der einzige erlaubte Zug, wie
-            ein Nebenknopf aussah. Die Oberflaeche zeigte also am staerksten auf
-            das, was man gerade nicht tun kann.
-          */}
-          <motion.button
-            onClick={() => act("draw", {}, doDraw)}
-            disabled={cardsRemaining === 0 || !isMyTurn || !!penalty || !!drawnCard || !!pourPlan}
-            className="relative flex-1 h-14 rounded-2xl font-black disabled:opacity-40"
-            style={
-              drawLeads
-                ? { background: accent, color: theme.bg }
-                : { background: theme.surface, color: theme.text, border: `1px solid ${accent}55` }
-            }
-            // Der Einsatz wird spuerbar, nicht berechenbar: je voller das
-            // Tablett, desto unruhiger der Knopf. Die Kartenzahl steht daneben,
-            // die Bewegung traegt also keine Information allein.
-            // NUR `scale`. Frueher pulsierte hier zusaetzlich `boxShadow` — eine
-            // Farb-Eigenschaft, die der Browser JEDES BILD neu zeichnet, und das
-            // in einer Endlosschleife ueber die ganze Partie. Der Hauptthread
-            // haengt dadurch sekundenlang: gemessen feuerte ein 60-ms-Zeitgeber
-            // nur noch einmal pro Sekunde, und die Eingiess-Choreografie lief
-            // gar nicht erst an (die Flugkarte trug bei 520 ms noch
-            // `transform: none`). Der Schein liegt jetzt auf einer eigenen
-            // Ebene und wird ueber `opacity` geblendet — beides im Compositor.
-            animate={
-              reduceMotion || tray.length === 0 || !isMyTurn
-                ? { scale: 1 }
-                : { scale: [1, 1 + Math.min(tray.length, 6) * 0.004, 1] }
-            }
-            transition={{ duration: Math.max(0.7, 1.8 - tray.length * 0.16), repeat: Infinity, ease: "easeInOut" }}
-          >
-            {!reduceMotion && tray.length > 0 && isMyTurn && (
-              <motion.span
-                aria-hidden
-                className="absolute inset-0 rounded-2xl pointer-events-none"
-                style={{ boxShadow: `0 0 ${8 + Math.min(tray.length, 6) * 4}px 0 ${accent}` }}
-                animate={{ opacity: [0, tray.length > 3 ? 0.4 : 0.2, 0] }}
-                transition={{ duration: Math.max(0.7, 1.8 - tray.length * 0.16), repeat: Infinity, ease: "easeInOut" }}
-              />
-            )}
-            <span className="relative">
-              {cardsRemaining === 0 ? t("games.brew.deckEmpty") : t("games.brew.drawFromDeck")}
-            </span>
-          </motion.button>
-          <button
-            onClick={() => act("pour", {}, doPourIn)}
-            disabled={tray.length === 0 || !isMyTurn || !!drawnCard || !!pourPlan}
-            className="relative flex-1 h-14 rounded-2xl font-black disabled:opacity-40"
-            style={
-              drawLeads
-                ? { background: theme.surface, color: theme.text, border: `1px solid ${accent}55` }
-                : { background: accent, color: theme.bg }
-            }
-          >
-            {trayHits > 0
-              ? t("games.brew.pourInCount", { count: trayHits })
-              : t("games.brew.pourIn")}
-          </button>
-        </div>
-      </div>
+      <BrewActionBar hint={hint} theme={theme} accent={accent} drawLeads={drawLeads} cardsRemaining={cardsRemaining} isMyTurn={isMyTurn}
+        hasPenalty={!!penalty} blocked={!!drawnCard || !!pourPlan} trayCount={tray.length} trayHits={trayHits} reduceMotion={!!reduceMotion}
+        onDraw={() => act("draw", {}, doDraw)} onPour={() => act("pour", {}, doPourIn)} />
 
       {/* Punktestand */}
       <div className="relative z-10 px-4 pb-10 flex flex-wrap gap-2 justify-center">
         {[...players].sort((a, b) => b.score - a.score).map((p) => (
-          <div key={p.id} className="px-3 py-1.5 rounded-full text-[11px] font-bold" style={{ background: theme.surface, color: p.color }}>
+          <div key={p.id} className="px-3 py-1.5 rounded-full text-[12px] font-bold" style={{ background: theme.surface, color: '#fff', boxShadow: `inset 0 0 0 1px ${p.color}99` }}>
             {p.name} · {p.score}{p.brewBonus > 0 ? ` · ✦${p.brewBonus}` : ""}
           </div>
         ))}
@@ -1174,92 +940,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         Navigation festhalten. Direkt aushaengen statt AnimatePresence, damit
         "Weiter" die klickfangende Flaeche garantiert im selben Render entfernt.
       */}
-      <NativeOverlayPortal>
-        {penalty && (isMyTurn || isHost) && (
-          <motion.div
-            data-testid="brew-penalty-overlay"
-            className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden overscroll-none px-3 pb-[max(.75rem,env(safe-area-inset-bottom))] pt-[max(.75rem,env(safe-area-inset-top))]"
-            style={{ background: "rgba(11,15,26,0.88)" }}
-            initial={reduceMotion ? { opacity: 1 } : { opacity: 0 }}
-            animate={{ opacity: 1 }}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="brew-penalty-title"
-          >
-            <motion.div
-              className="relative flex w-full max-w-xs flex-col overflow-hidden rounded-3xl text-center"
-              style={{
-                background: theme.surface,
-                color: theme.text,
-                maxHeight: "calc(100dvh - max(1.5rem, env(safe-area-inset-top)) - max(1.5rem, env(safe-area-inset-bottom)))",
-              }}
-              initial={reduceMotion ? { scale: 1, opacity: 1 } : { scale: 0.85, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: "spring", stiffness: 260, damping: 20 }}
-            >
-              <button
-                type="button"
-                onClick={() => setConfirmExit(true)}
-                className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full border"
-                style={{ borderColor: `${theme.dim}66`, color: theme.text, background: `${theme.bg}cc` }}
-                aria-label={t("games.brew.leave")}
-              >
-                <ArrowLeft className="h-5 w-5" />
-              </button>
-
-              <div className="min-h-0 overflow-y-auto overscroll-contain px-5 pb-2 pt-5">
-              <p id="brew-penalty-title" className="px-9 text-2xl font-black">
-                {skin === "brew" ? t("games.brew.bustTitleBrew") : t("games.brew.bustTitleBar")}
-              </p>
-              <p className="text-sm mt-1" style={{ color: theme.dim }}>
-                {skin === "brew" ? t("games.brew.bustBodyBrew") : t("games.brew.bustBodyBar")}
-              </p>
-
-              {penalty.kind === "task" ? (
-                <>
-                  <p className="text-[11px] font-bold uppercase tracking-wide mt-4" style={{ color: theme.dim }}>
-                    {t("games.brew.penaltyIntro")}
-                  </p>
-                  <p className="font-bold mt-1">{penaltyTasks[penalty.taskIndex] ?? ""}</p>
-                </>
-              ) : (
-                <>
-                  <p className="font-bold mt-4">{t("games.brew.sipPenalty")}</p>
-                  {sipDisclaimer && (
-                    <p className="text-xs mt-2" style={{ color: theme.dim }}>
-                      {sipDisclaimer.emoji} {sipDisclaimer.message}
-                    </p>
-                  )}
-                </>
-              )}
-
-              {/* Weiter darf nur, wer die Strafe hat — sonst klickt ein Zuschauer
-                  den Zug der anderen weg. */}
-              </div>
-              <div className="shrink-0 border-t border-white/10 bg-black/10 px-5 pb-5 pt-3">
-                <button
-                  type="button"
-                  data-testid="brew-penalty-continue"
-                  onClick={() => act("penalty", {}, confirmPenalty)}
-                  className="h-12 w-full rounded-2xl font-black"
-                  style={{ background: accent, color: theme.bg }}
-                >
-                  {t("games.brew.bustContinue")}
-                </button>
-
-              <button
-                type="button"
-                onClick={() => setConfirmExit(true)}
-                className="mt-2 h-11 w-full rounded-2xl border font-bold"
-                style={{ borderColor: `${theme.dim}80`, color: theme.text }}
-              >
-                {t("games.brew.leave")}
-              </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </NativeOverlayPortal>
+      <BrewPenaltyOverlay penalty={penalty} visible={isMyTurn || isHost} skin={skin} theme={theme} accent={accent} reduceMotion={!!reduceMotion}
+        penaltyTasks={penaltyTasks} sipDisclaimer={sipDisclaimer} onContinue={() => act("penalty", {}, confirmPenalty)} onLeave={() => setConfirmExit(true)} />
 
       {/* "Wird gemischt" — nur wenn drawCard() den Ablagestapel nachmischen musste. */}
       {toast && (
@@ -1270,136 +952,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       )}
 
       {/* Verlassen bestätigen */}
-      <NativeOverlayPortal>
-        {confirmExit && (
-          <div className="fixed inset-0 z-[110] flex items-center justify-center overflow-y-auto px-6 py-4" style={{ background: "rgba(11,15,26,0.85)" }}>
-            <div className="w-full max-w-xs rounded-3xl p-5 text-center" style={{ background: theme.surface }}>
-              <p className="font-black">{t("games.brew.leaveTitle")}</p>
-              <p className="text-xs mt-1" style={{ color: theme.dim }}>{t("games.brew.leaveBody")}</p>
-              <div className="flex gap-2 mt-4">
-                <button onClick={() => setConfirmExit(false)} className="flex-1 h-11 rounded-2xl font-bold" style={{ background: accent, color: theme.bg }}>
-                  {t("games.brew.leaveStay")}
-                </button>
-                <button onClick={() => { setConfirmExit(false); navigate("/games"); }} className="flex-1 h-11 rounded-2xl font-bold" style={{ border: `1px solid ${theme.dim}`, color: theme.dim }}>
-                  {t("games.brew.leaveGo")}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </NativeOverlayPortal>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Setup
-// ---------------------------------------------------------------------------
-function BrewSetup({ onStart, skin, onlinePlayers }: {
-  onStart: (cfg: { players: { id: string; name: string }[]; length: RecipeLength }) => void;
-  skin: Skin;
-  onlinePlayers?: { id: string; name: string }[];
-}) {
-  const { t } = useTranslation();
-  const theme = BREW_PALETTES[skin];
-  const navigate = useNavigate();
-  // Party-Besetzung übernehmen, statt mit zwei leeren Platzhaltern zu starten.
-  const roster = useInitialRoster({ onlinePlayers, min: 2 });
-
-  // Online sind die Namen gesetzt und die IDs muessen die des Raums sein —
-  // nur dann trifft `active.id === myPlayerId` und die Zugerkennung greift.
-  // Der Raum laesst 12 Leute zu, GEBRAEU spielt sich zu acht: abschneiden.
-  const [list, setList] = useState<PlayerSetupPlayer[]>(
-    onlinePlayers?.length
-      ? onlinePlayers.slice(0, 8).map((p) => ({ id: p.id, name: p.name, readOnly: true }))
-      : roster?.map((p) => ({ id: p.id, name: p.name })) ?? [{ id: "p1", name: "" }, { id: "p2", name: "" }],
-  );
-  const [length, setLength] = useState<RecipeLength>(5);
-
-  const isBrew = skin === "brew";
-  const accent = theme.accent;
-
-  const named = list.map((p, i) => ({
-    id: p.id,
-    name: p.name.trim() || t("games.setup.playerN", { n: i + 1 }),
-  }));
-  const canStart = named.length >= 2;
-
-  return (
-    <div className="min-h-[100dvh] relative" style={{ background: theme.bg, color: theme.text }}>
-      <BrewAtmosphere skin={skin} variant="phone" />
-      <main className="relative z-10 pt-14 px-5 max-w-2xl mx-auto pb-16">
-        <GameSetupBackLink onClick={() => navigate("/games")} className="mb-5" style={{ color: theme.dim }}>
-          ← {t("games.brew.backToGames")}
-        </GameSetupBackLink>
-
-        <h1 className="text-3xl font-black flex items-center gap-2">
-          {isBrew
-            ? <FlaskConical className="w-7 h-7" style={{ color: accent }} />
-            : <Martini className="w-7 h-7" style={{ color: accent }} />}
-          {isBrew ? t("games.brew.titleBrew") : t("games.brew.titleBar")}
-        </h1>
-        <p className="text-sm mt-1" style={{ color: theme.dim }}>
-          {isBrew ? t("games.brew.taglineBrew") : t("games.brew.taglineBar")}
-        </p>
-
-        <div className="mt-6">
-          <PlayerSetup
-            players={list}
-            onAdd={() => setList((p) => [...p, { id: `p${Date.now()}`, name: "" }])}
-            onRemove={(id) => setList((p) => p.filter((x) => x.id !== id))}
-            onRename={(id, name) => setList((p) => p.map((x) => (x.id === id ? { ...x, name } : x)))}
-            min={2}
-            max={8}
-            accent={accent}
-            label={t("games.brew.playersLabel")}
-            onImportNames={(names) =>
-              setList((prev) => {
-                const room = Math.max(0, 8 - prev.length);
-                const fresh = names.slice(0, room).map((n, i) => ({ id: `ev${Date.now()}-${i}`, name: n }));
-                const filled = prev.map((p) => p);
-                let take = 0;
-                for (let i = 0; i < filled.length && take < fresh.length; i++) {
-                  if (!filled[i].name.trim() && !filled[i].readOnly) {
-                    filled[i] = { ...filled[i], name: fresh[take].name };
-                    take++;
-                  }
-                }
-                return [...filled, ...fresh.slice(take)].slice(0, 8);
-              })
-            }
-          />
-        </div>
-
-        <p className="mt-7 mb-2 text-xs font-black uppercase tracking-wide" style={{ color: theme.dim }}>
-          {t("games.brew.ingredientCountLabel")}
-        </p>
-        <div className="grid grid-cols-3 gap-2">
-          {([5, 6, 7] as const).map((n) => (
-            <button
-              key={n}
-              onClick={() => setLength(n)}
-              aria-pressed={length === n}
-              className="p-3 rounded-2xl text-sm font-black"
-              style={{
-                background: length === n ? accent : theme.surface,
-                color: length === n ? theme.bg : theme.text,
-              }}
-            >
-              {t("games.brew.ingredientCountOption", { count: n })}
-            </button>
-          ))}
-        </div>
-
-        <button
-          disabled={!canStart}
-          onClick={() => onStart({ players: named, length })}
-          className="mt-8 w-full h-14 rounded-2xl font-black disabled:opacity-40"
-          style={{ background: accent, color: theme.bg }}
-        >
-          {t("games.brew.start")}
-        </button>
-      </main>
+      <BrewLeaveDialog open={confirmExit} theme={theme} accent={accent} onStay={() => setConfirmExit(false)}
+        onLeave={() => { setConfirmExit(false); navigate("/games"); }} />
     </div>
   );
 }

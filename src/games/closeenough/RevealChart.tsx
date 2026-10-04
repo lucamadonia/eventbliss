@@ -14,6 +14,7 @@
  * steht nur, wie sie aussieht.
  */
 import { useMemo } from 'react';
+import { revealLaneHeight } from './reveal-lane';
 import { motion, useReducedMotion } from 'framer-motion';
 import { formatNumber, formatYear } from './number-format';
 import { chooseScale, makeScale, packLanes, toleranceBand } from './reveal-scale';
@@ -112,7 +113,7 @@ export function RevealChart({
   }, [guessed, tv]);
 
   const truthPos = layout.scale.pos(truth);
-  const rowHeight = laneHeight ?? (tv ? 62 : 40);
+  const rowHeight = laneHeight ?? revealLaneHeight({ tv, lanes: layout.laneCount, viewportH: typeof window === 'undefined' ? 1080 : window.innerHeight });
   const marksHeight = layout.laneCount * rowHeight;
   // Die Wahrheit fährt erst hoch, wenn alle Tipps stehen.
   const truthDelay = guessed.length * (tv ? 0.45 : 0.3) + 0.25;

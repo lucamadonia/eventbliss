@@ -112,3 +112,18 @@ export function pointsAt(elapsedSec: number, durationSec: number): number {
 }
 
 export { FINAL_STEP };
+
+/** Hoechstens so hoch (Hochformat) bzw. so flach (Panorama) wird der Rahmen, relativ zur Breite. */
+export const FRAME_RATIO_MIN = 9 / 16;
+export const FRAME_RATIO_MAX = 4 / 3;
+
+/**
+ * Rahmenhoehe passend zum Bild: Der Rahmen uebernimmt das Seitenverhaeltnis
+ * des Motivs (begrenzt), damit `contain` keine leeren Balken laesst, die wie
+ * ein Ladefehler aussehen — und trotzdem nichts vom Motiv abschneidet.
+ */
+export function frameHeightFor(width: number, srcWidth: number, srcHeight: number, fallback: number): number {
+  if (!(width > 0) || !(srcWidth > 0) || !(srcHeight > 0)) return fallback;
+  const ratio = Math.min(FRAME_RATIO_MAX, Math.max(FRAME_RATIO_MIN, srcHeight / srcWidth));
+  return Math.round(width * ratio);
+}

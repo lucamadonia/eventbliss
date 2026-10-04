@@ -53,17 +53,17 @@ try {
     await page.keyboard.press('Escape');await page.waitForSelector('[role=alertdialog]',{hidden:true});await pause(180);
     await gravity(viewport.width>viewport.height?9.81:0,viewport.width>viewport.height?0:9.81,0);
     await page.waitForSelector('.headup-play');
-    await gravity(6.3,0,-7.5);
+    await gravity(6.3,0,7.5);
     assert((await score()).join(',')==='1,0',`Downward nod must score exactly once: ${await score()} / ${await page.$eval('.headup-play',e=>e.innerText)}`);
-    await gravity(6.3,0,-7.5);
+    await gravity(6.3,0,7.5);
     assert((await score()).join(',')==='1,0','Held tilt scored twice');
-    await gravity(9.81,0,0);await gravity(6.3,0,7.5);
+    await gravity(9.81,0,0);await gravity(6.3,0,-7.5);
     assert((await score()).join(',')==='1,1','Upward tilt must skip once');
     await page.click('#qa-back');await page.waitForSelector('[role=alertdialog]');
-    await gravity(9.81,0,0);await gravity(6.3,0,-7.5);
+    await gravity(9.81,0,0);await gravity(6.3,0,7.5);
     assert((await score()).join(',')==='1,1','Sensor scored behind exit dialog');
     await page.keyboard.press('Escape');await page.waitForSelector('[role=alertdialog]',{hidden:true});await pause(180);
-    await gravity(9.81,0,0);await gravity(6.3,0,-7.5);
+    await gravity(9.81,0,0);await gravity(6.3,0,7.5);
     assert((await score()).join(',')==='2,1','Tilt did not resume after exit cancellation');
     assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Horizontal overflow');
     const bounds=await page.$eval('.headup-play',e=>({bottom:e.getBoundingClientRect().bottom,top:e.getBoundingClientRect().top}));
@@ -73,7 +73,7 @@ try {
     results.push({viewport,tilt:true,pauseResume:true,layout:true});
   }
   await setup('denied');await click('^ready');await page.waitForSelector('.headup-play');
-  await gravity(9.81,0,0);await gravity(6.3,0,-7.5);
+  await gravity(9.81,0,0);await gravity(6.3,0,7.5);
   assert((await score()).join(',')==='0,0','Denied motion still scores');
   await click('^correct');assert((await score()).join(',')==='1,0','Denied permission lacks working button fallback');
   await pause(350);await click('^skip');assert((await score()).join(',')==='1,1','Skip fallback failed');

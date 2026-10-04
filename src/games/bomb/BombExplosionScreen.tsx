@@ -144,7 +144,7 @@ export default function BombExplosionScreen({ playerName, onNext }: ExplosionScr
             <p className="text-sm text-amber-200 font-semibold mt-1">
               {disclaimer.message}
             </p>
-            <p className="text-[10px] text-amber-300/50 mt-1">
+            <p className="text-[13px] text-amber-300/80 mt-1">
               {t('games.bomb.drinkRound', { count: drinkingMode.drinkCount })}
             </p>
           </motion.div>

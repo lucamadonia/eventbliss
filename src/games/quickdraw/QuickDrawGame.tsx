@@ -5,19 +5,22 @@ import { normalizeGuess, sealedGuesses, completeDrawingRounds } from './guess-ru
 import { useOnlineActions, useOnlinePrivateSnapshot, OnlineWaiting } from '../bottlespin/online-controller';
 import { useTranslation } from "react-i18next";
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { removeFromQuickDraw } from './roster-change';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Play, Trophy, RotateCcw, ArrowRight,
-  Pencil, Eraser, Trash2, Undo2, Check, X,
-} from 'lucide-react';
+import { RotateCcw, ArrowRight, Pencil, Eraser, Trash2, Undo2 } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { personalResult } from '../social/result';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
-import { PlayerSetup } from '../ui/PlayerSetup';
+import { getPlayerColor } from '../ui/PlayerAvatars';
+import { useSeatHandover } from '../multiplayer/useGuestHandover';
+import { serverClock } from '../party/scene-clock';
+import { planPhaseStart } from '../party/phase-gate';
+import { usePhaseGate } from '../party/usePhaseGate';
+import { quickDrawActiveSeat, quickDrawInputDelay, quickDrawTvPlayers, quickDrawTvWord } from './guest-flow';
+import { GuessList, GuessPanel, SetupScreen, TurnLight, WaitingStage, type QuickDrawMode } from './QuickDrawScreens';
 import { getDRAW_WORDS, type DrawWord } from './quickdraw-words';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
@@ -31,7 +34,7 @@ import { hasShellBackButton } from '@/games/ui/shell-back';
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-type Mode = 'classic' | 'speed' | 'blind';
+type Mode = QuickDrawMode;
 type Phase =
   | 'setup'
   | 'drawerReveal'
@@ -63,14 +66,12 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 const MODE_TIMERS: Record<Mode, number> = { classic: 60, speed: 30, blind: 60 };
-const MODE_IDS: Mode[] = ['classic', 'speed', 'blind'];
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
 export default function QuickDrawGame({ online }: { online?: OnlineGameProps } = {}) {
-  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false);
   const navigate = useNavigate();
   // Zurück mitten in der Runde darf die Partie nicht wegwerfen.
   const exitGuard = useConfirmExit(() => navigate('/games'));
@@ -142,6 +143,20 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const [guessInput, setGuessInput] = useState('');
   const [currentGuesser, setCurrentGuesser] = useState(0);
 
+  /* ---- 🔁-Gaeste am Host-Handy (sharedDevice 'turns') ---- */
+  // Vor jedem Zug eines Gasts verdeckte Weitergabe: Das Wort des Zeichners ist
+  // geheim (Halten + Zudecken), Raten bleiben bis zur Aufloesung versiegelt.
+  const handover = useSeatHandover(online, quickDrawActiveSeat(phase, players, drawerIdx, currentGuesser), { secret: true });
+  // Uhren (Zeichnen, Raten, Auto-Start) stehen, solange das Handy unterwegs ist.
+  const { setTimeout, clearTimeout } = usePausableTasks(online?.isConnected !== false && !handover.isPaused);
+
+  /* ---- Gemeinsamer Phasenwechsel (Design §9) ---- */
+  const [remotePhaseStartsAt, setRemotePhaseStartsAt] = useState<number | null>(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const plannedPhaseStart = useMemo(() => (online ? planPhaseStart() : serverClock.now()), [phase, round, drawerIdx, currentGuesser]);
+  const phaseStartsAt = online && !online.isHost ? remotePhaseStartsAt : plannedPhaseStart;
+  const gate = usePhaseGate(phase, online ? phaseStartsAt : null, { inputDelayMs: quickDrawInputDelay(phase) });
+
   /* ---- Player management ---- */
   const nextId = useRef(3);
   const addPlayer = () => { if (players.length >= 10) return; const i = players.length; setPlayers(p => [...p, { id: `p${nextId.current++}`, name: t('games.quickdraw.defaultPlayer', { n: i + 1 }), color: getPlayerColor(i), score: 0 }]); };
@@ -161,20 +176,24 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   };
   const drawer = players[drawerIdx % players.length];
   const guessers = players.filter((_, i) => i !== drawerIdx % players.length);
+  // Dieses Geraet zeichnet: eigener Platz oder der bestaetigte Gast am Host-Handy.
+  const isDrawer = !online || drawer?.id === online.myPlayerId || (!!drawer && drawer.id === handover.activeGuest);
+  const tvPlayers = quickDrawTvPlayers(players, online?.players);
 
   const tv = useTVGameBridge('quickdraw', {
-    phase, round, totalRounds, drawerIdx, drawer: drawer?.name, drawerColor: drawer?.color,
+    phase, phaseStartsAt, round, totalRounds, drawerIdx, drawerId: drawer?.id, drawer: drawer?.name, drawerColor: drawer?.color,
     timeLeft, maxTime: MODE_TIMERS[mode], drawingDataURL,
-    currentWord: phase === 'roundResult' ? currentWord?.word : undefined, players,
-  }, [phase, round, drawerIdx, timeLeft, drawingDataURL, players], !online || online.isHost);
+    currentWord: quickDrawTvWord(phase, currentWord?.word), players: tvPlayers, handover: handover.tv,
+  }, [phase, phaseStartsAt, round, drawerIdx, timeLeft, drawingDataURL, players, handover.tv?.playerId ?? '', handover.tv?.progress?.phase ?? ''], !online || online.isHost);
   useEffect(() => {
     if (!online?.isHost) return;
     online.broadcast('tv-state', {
-      game: 'quickdraw', phase, round, totalRounds, drawer: drawer?.name, drawerColor: drawer?.color,
+      game: 'quickdraw', phase, phaseStartsAt, round, totalRounds, drawerId: drawer?.id, drawer: drawer?.name, drawerColor: drawer?.color,
       timeLeft, maxTime: MODE_TIMERS[mode], drawingDataURL,
-      currentWord: phase === 'roundResult' ? currentWord?.word : undefined, players,
+      currentWord: quickDrawTvWord(phase, currentWord?.word), players: tvPlayers, handover: handover.tv,
     });
-  }, [online?.isHost, online?.broadcast, phase, round, totalRounds, drawer, timeLeft, mode, drawingDataURL, currentWord, players]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [online?.isHost, online?.broadcast, phase, phaseStartsAt, round, totalRounds, drawer, timeLeft, mode, drawingDataURL, currentWord, players, handover.tv?.playerId, handover.tv?.progress?.phase]);
 
   /* ---- Draw word ---- */
   function drawWord(): DrawWord {
@@ -205,13 +224,13 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
 
   /* ---- Blind mode: hide canvas after 5s ---- */
   useEffect(() => {
-    if (phase === 'drawing' && mode === 'blind' && (!online || drawer?.id === online.myPlayerId)) {
+    if (phase === 'drawing' && mode === 'blind' && isDrawer) {
       setCanvasHidden(false);
       const t = setTimeout(() => setCanvasHidden(true), 5000);
       return () => clearTimeout(t);
     }
     setCanvasHidden(false);
-  }, [phase, mode]);
+  }, [phase, mode, isDrawer]);
 
   /* ---- Canvas helpers ---- */
   const getCtx = () => canvasRef.current?.getContext('2d') ?? null;
@@ -229,7 +248,7 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
     else setDrawingDataURL(image);
   };
   const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    if (online && drawer?.id !== online.myPlayerId) return;
+    if (!isDrawer || !gate.inputOpen) return;
     const c = canvasRef.current; if (!c) return;
     c.setPointerCapture(e.pointerId);
     isDrawing.current = true;
@@ -345,31 +364,45 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
     beginRound((drawerIdx + 1) % players.length);
   }
 
-  const isDrawer = !online || drawer?.id === online.myPlayerId;
+  // Host entfernt jemanden mitten im Spiel (Masterplan 6.6): Zeichner geht →
+  // der Naechste zeichnet neu; Ratender geht → der Naechste ist dran.
+  useRemovedPlayers(online, ids => {
+    const change = removeFromQuickDraw({ players, drawerIdx, currentGuesser, phase, guesses }, ids);
+    if (!change.changed) return;
+    setPlayers(change.state.players);
+    if (change.restartTurn) { stopTimer(); beginRound(change.state.drawerIdx); return; }
+    setGuesses(change.state.guesses);
+    setDrawerIdx(change.state.drawerIdx);
+    setCurrentGuesser(change.state.currentGuesser);
+    setGuessSeconds(30);
+    if (change.state.phase !== phase) setPhase(change.state.phase as Phase);
+  });
+
   const act = useOnlineActions(online, 'quickdraw', `${phase}:${round}:${drawerIdx}:${currentGuesser}`, {
     start: { allowed: phase === 'setup' ? 'host' : false, run: startGame },
     draw: { allowed: phase === 'drawerReveal' ? drawer?.id ?? false : false, run: startDrawing },
     image: { allowed: phase === 'drawing' ? drawer?.id ?? false : false, run: (url: unknown) => { if (typeof url === 'string' && url.startsWith('data:image/png;base64,') && url.length <= 500000) setDrawingDataURL(url); } },
     finish: { allowed: phase === 'drawing' ? drawer?.id ?? false : false, run: (url: unknown) => { if (typeof url === 'string' && url.startsWith('data:image/png;base64,') && url.length <= 500000) setDrawingDataURL(url); stopTimer(); setPhase('guessing'); setCurrentGuesser(0); } },
-    guess: { allowed: phase === 'guessing' ? guessers[currentGuesser]?.id ?? false : false, run: (text: unknown) => { if (typeof text === 'string' && text.length <= 200) submitGuess(text); } },
-    pass: { allowed: phase === 'guessing' ? guessers[currentGuesser]?.id ?? false : false, run: () => submitGuess('', true) },
+    guess: { answer: true, allowed: phase === 'guessing' ? guessers[currentGuesser]?.id ?? false : false, run: (text: unknown) => { if (typeof text === 'string' && text.length <= 200) submitGuess(text); } },
+    pass: { answer: true, allowed: phase === 'guessing' ? guessers[currentGuesser]?.id ?? false : false, run: () => submitGuess('', true) },
     next: { allowed: phase === 'roundResult' ? 'host' : false, run: nextRound },
     again: { allowed: phase === 'gameOver' ? 'host' : false, run: playAgain },
   });
   actionRef.current = act;
-  useOnlinePrivateSnapshot(online, 'quickdraw', { phase, players, mode, totalRounds, round, drawerIdx, currentWord, timeLeft, guessSeconds, drawingDataURL, guesses, currentGuesser }, (state, recipient) => ({ ...state, guesses: sealedGuesses(state.phase, state.guesses), currentWord: recipient === drawer?.id || state.phase === 'roundResult' || state.phase === 'gameOver' ? state.currentWord : null }), state => {
+  useOnlinePrivateSnapshot(online, 'quickdraw', { phase, phaseStartsAt, players, mode, totalRounds, round, drawerIdx, currentWord, timeLeft, guessSeconds, drawingDataURL, guesses, currentGuesser }, (state, recipient) => ({ ...state, guesses: sealedGuesses(state.phase, state.guesses), currentWord: recipient === drawer?.id || state.phase === 'roundResult' || state.phase === 'gameOver' ? state.currentWord : null }), state => {
     setGuessSeconds(state.guessSeconds);
+    setRemotePhaseStartsAt(typeof state.phaseStartsAt === 'number' ? state.phaseStartsAt : null);
     setPhase(state.phase); setPlayers(state.players); setMode(state.mode); setTotalRounds(state.totalRounds); setRound(state.round); setDrawerIdx(state.drawerIdx); setCurrentWord(state.currentWord); setTimeLeft(state.timeLeft); setDrawingDataURL(state.drawingDataURL); setGuesses(state.guesses); setCurrentGuesser(state.currentGuesser);
   });
   useEffect(() => {
-    if (!online || isDrawer || phase !== 'drawing' || !drawingDataURL) return;
+    if (!online || isDrawer || gate.shown !== 'drawing' || !drawingDataURL) return;
     const picture = new Image(); let cancelled = false;
     picture.onload = () => { if (!cancelled) { const ctx = getCtx(); ctx?.clearRect(0, 0, 400, 400); ctx?.drawImage(picture, 0, 0, 400, 400); } };
     picture.src = drawingDataURL;
     return () => { cancelled = true; };
-  }, [online?.isOnline, isDrawer, phase, drawingDataURL]);
+  }, [online?.isOnline, isDrawer, gate.shown, drawingDataURL]);
   useEffect(() => {
-    if (phase !== 'drawing' || !isDrawer) return;
+    if (gate.shown !== 'drawing' || !isDrawer) return;
     let cancelled = false;
     const pending = setTimeout(() => {
       initCanvas();
@@ -383,9 +416,8 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
       }
     }, 50);
     return () => { cancelled = true; clearTimeout(pending); };
-  }, [phase, isDrawer, round]);
+  }, [gate.shown, isDrawer, round]);
   useEffect(() => { setGuessInput(''); }, [currentGuesser, round]);
-
 
   const sorted = useMemo(() => [...players].sort((a, b) => b.score - a.score), [players]);
   const anyCorrect = guesses.some(g => g.correct);
@@ -394,90 +426,36 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   /*  RENDER                                                          */
   /* ================================================================ */
 
-  if (online && !online.isHost && phase === 'setup') return <OnlineWaiting />;
+  // Gerendert wird die GEZEIGTE Phase (usePhaseGate): alle Geraete wechseln gemeinsam.
+  const view = gate.shown;
+  if (online && !online.isHost && view === 'setup') return <OnlineWaiting />;
+  // Waehrend das Handy weitergegeben wird, ist NUR der deckende Weitergabe-Bildschirm im DOM.
+  if (handover.overlay) return <>{handover.overlay}<ConfirmExitDialog {...exitGuard.dialogProps} accent="#77cbbb" /></>;
+  const actor = view === 'guessing' ? guessers[currentGuesser] : view === 'drawerReveal' || view === 'drawing' ? drawer : undefined;
   return (
     <GameStage gameId="quickdraw" className="sketchbook-stage">
-
+      <TurnLight color={actor?.color} />
 
       {/* ---- SETUP ---- */}
-      {phase === 'setup' && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col py-3 max-w-3xl mx-auto w-full">
-          <StageHeader title={t('gameRules.quickdraw.title')} subtitle={t('games.quickdraw.tagline')} />
-
-          {/* Players */}
-          <div className="mb-6">
-            <PlayerSetup locked={!!online}
-              players={players.map((p) => ({ id: p.id, name: p.name, color: p.color }))}
-              onAdd={addPlayer}
-              onRemove={removePlayer}
-              onRename={updateName}
-              onImportNames={isOnlineOrParty ? undefined : handleImportNames}
-              min={2}
-              max={10}
-              accent="#77cbbb"
-              label={t('games.quickdraw.playerLabel')}
-            />
-          </div>
-
-          {/* Mode */}
-          <section className="space-y-3 mb-6">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-white/65">{t('games.quickdraw.modeLabel')}</h2>
-            <div className="space-y-2">
-              {MODE_IDS.map(id => (
-                <button key={id} onClick={() => setMode(id)} aria-pressed={mode === id}
-                  className={cn('w-full flex items-center gap-3 p-4 rounded-[1rem] border-2 transition-colors text-left',
-                    mode === id ? 'border-[#77cbbb] bg-[#77cbbb]/10 text-white' : 'border-gray-700 bg-[#1b2028] text-gray-300 hover:border-gray-600')}>
-                  <Pencil className={cn('w-5 h-5', mode === id ? 'text-[#77cbbb]' : 'text-white/60')} />
-                  <div>
-                    <div className="text-sm font-semibold">{t(`gameModes.quickdraw.${id}.name`)}</div>
-                    <div className="text-xs text-white/65">{t(`gameModes.quickdraw.${id}.desc`)}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </section>
-
-          {/* Rounds */}
-          <section className="mb-6">
-            <div className="bg-[#1b2028] border border-[#44484f]/20 rounded-[1rem] p-4">
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-white/65">{t('games.setup.rounds')}</span><span className="text-white font-bold">{totalRounds}</span>
-              </div>
-              <input aria-label={t('games.setup.rounds')} type="range" min={3} max={20} step={1} value={totalRounds}
-                onChange={e => setTotalRounds(Number(e.target.value))}
-                className="w-full h-2 rounded-full appearance-none bg-gray-700 accent-[#77cbbb] cursor-pointer" />
-            </div>
-          </section>
-
-          <div className="sticky bottom-0 mt-6 border-t border-white/10 bg-[var(--stage-bg)] py-4 z-20">
-            <div className="w-full mx-auto space-y-3">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={() => act('start')}
-                className="w-full py-4 rounded-full bg-[#77cbbb] text-[#14221a] text-base font-extrabold font-sans uppercase tracking-wide  flex items-center justify-center gap-2">
-                <Play className="w-5 h-5" /> {t('games.setup.startGame')}</motion.button>
-              {/* Nur im Web. In der App macht das der FloatingBackButton. */}
-              {!hasShellBackButton() && (
-                <button onClick={() => navigate('/games')} className="w-full py-3 text-white/60 text-sm hover:text-white/50 transition">{t('games.quickdraw.back')}</button>
-              )}
-            </div>
-          </div>
-        </motion.div>
-      )}
+      {view === 'setup' && <SetupScreen players={players} locked={!!online}
+        importNames={isOnlineOrParty ? undefined : handleImportNames}
+        onAdd={addPlayer} onRemove={removePlayer} onRename={updateName}
+        mode={mode} onMode={setMode} totalRounds={totalRounds} onRounds={setTotalRounds} onStart={() => act('start')} />}
 
       {/* ---- DRAWER REVEAL ---- */}
-      {phase === 'drawerReveal' && currentWord && isDrawer && <div className="mx-auto flex min-h-[75dvh] w-full max-w-3xl flex-col justify-center gap-6">
+      {view === 'drawerReveal' && currentWord && isDrawer && <div className="mx-auto flex min-h-[75dvh] w-full max-w-3xl flex-col justify-center gap-6">
         <StageHeader title={drawer.name} eyebrow={t('games.quickdraw.draws')} subtitle={t('games.quickdraw.dontLook')} progress={{ value: round, total: totalRounds }} />
         <StagePanel tone="paper" className="!rounded-sm border-l-8 !border-l-[#cec4ae] min-h-64 flex flex-col justify-center">
           <p className="mb-5 text-xs font-bold uppercase tracking-widest">{t('games.quickdraw.yourWord')}</p>
           <h2 className="text-4xl sm:text-6xl font-black break-words leading-tight">{currentWord.word}</h2>
           <p className="mt-5 text-sm">{currentWord.category}</p>
         </StagePanel>
-        <StageFooter><StageAction disabled={!act.can('draw')} onClick={() => act('draw')}><Pencil className="h-5 w-5" />{t('games.quickdraw.startDrawing')}</StageAction></StageFooter>
+        <StageFooter><StageAction data-testid="quickdraw-start-drawing" disabled={!act.can('draw')} onClick={() => act('draw')}><Pencil className="h-5 w-5" />{t('games.quickdraw.startDrawing')}</StageAction></StageFooter>
       </div>}
 
-      {phase === 'drawerReveal' && !isDrawer && <StageHeader title={drawer?.name} subtitle={t('games.quickdraw.draws')} />}
+      {view === 'drawerReveal' && !isDrawer && drawer && <WaitingStage name={drawer.name} color={drawer.color} line={t('games.quickdraw.draws')} tvHint={!!tv?.isActive} />}
       {/* ---- DRAWING ---- */}
-      {phase === 'drawing' && <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4">
+      {view === 'drawing' && <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-4">
         <StageHeader title={drawer.name} eyebrow={t('games.quickdraw.draws')} trailing={<span className="text-3xl font-semibold tabular-nums">{timeLeft}s</span>} progress={{ value: timeLeft, total: MODE_TIMERS[mode] }} />
         <div className="relative mx-auto w-full max-w-2xl bg-[#f7f2e6] p-3 sm:p-5 shadow-xl border-l-8 border-[#cec4ae]">
           <div className="relative aspect-square w-full overflow-hidden bg-white">
@@ -491,72 +469,29 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
           <button aria-label={t('games.quickdraw.undo', { defaultValue: 'Undo' })} onClick={() => { undoCanvas(); publishCanvas(); }} className="grid h-11 w-11 place-items-center rounded-lg border border-white/20"><Undo2 className="h-5 w-5" /></button>
           <button aria-label={t('games.quickdraw.clear', { defaultValue: 'Clear drawing' })} onClick={() => { clearCanvas(); publishCanvas(); }} className="grid h-11 w-11 place-items-center rounded-lg border border-white/20"><Trash2 className="h-5 w-5" /></button>
         </div>}
-        <StageFooter><StageAction disabled={!act.can('finish')} onClick={() => online ? act('finish', canvasRef.current?.toDataURL()) : finishDrawing()}>{t('games.quickdraw.doneDrawing')}</StageAction></StageFooter>
+        <StageFooter><StageAction data-testid="quickdraw-done-drawing" disabled={!act.can('finish')} onClick={() => online ? act('finish', canvasRef.current?.toDataURL()) : finishDrawing()}>{t('games.quickdraw.doneDrawing')}</StageAction></StageFooter>
       </div>}
 
       {/* ---- GUESSING ---- */}
-      {phase === 'guessing' && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="flex-1 flex flex-col items-center gap-5 px-4 py-6 max-w-3xl mx-auto w-full">
-          <div className="px-4 py-1.5 rounded-full bg-[#1b2028] border border-[#44484f]/20">
-            <span className="text-xs font-bold uppercase tracking-widest text-[#77cbbb]">{t('games.quickdraw.guessingPhase')}</span>
-          </div>
-          {drawingDataURL && (
-            <div className="w-full max-w-2xl aspect-square border-[12px] border-[#f7f2e6] overflow-hidden bg-white shadow-lg">
-              <img src={drawingDataURL} alt={t('games.quickdraw.drawingAlt')} className="w-full h-full object-contain" />
-            </div>
-          )}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs"
-              style={{ backgroundColor: guessers[currentGuesser]?.color }}>{getPlayerInitial(guessers[currentGuesser]?.name ?? '')}</div>
-            <span className="text-white font-bold">{t('games.quickdraw.playerGuesses', { name: guessers[currentGuesser]?.name })}</span>
-          </div>
-          <div className="w-full flex gap-2">
-            <input type="text" value={guessInput} onChange={e => setGuessInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && act('guess', guessInput)}
-              disabled={!act.can('guess')} placeholder={t('games.quickdraw.guessPlaceholder')} className="min-w-0 flex-1 bg-[#1b2028] border border-[#44484f]/20 rounded-xl px-4 py-3 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-[#77cbbb]/50" />
-            <motion.button whileTap={{ scale: 0.95 }} disabled={!act.can('guess') || !guessInput.trim()} onClick={() => act('guess', guessInput)}
-              className="px-5 py-3 rounded-xl bg-[#77cbbb] text-[#14221a] font-bold">OK</motion.button>
-          </div>
-          <div className="flex items-center gap-4"><span aria-live="polite">{guessSeconds}s</span><button className="rounded-xl border border-white/20 px-5 py-3 disabled:opacity-40" disabled={!act.can('pass')} onClick={() => act('pass')}>{t('games.quickdraw.pass', { defaultValue: 'Pass' })}</button></div>
-        </motion.div>
-      )}
+      {view === 'guessing' && <GuessPanel drawingDataURL={drawingDataURL} guesser={guessers[currentGuesser]} value={guessInput} onChange={setGuessInput}
+        canGuess={act.can('guess')} canPass={act.can('pass')} onGuess={() => act('guess', guessInput)} onPass={() => act('pass')} seconds={guessSeconds} />}
 
       {/* ---- ROUND RESULT ---- */}
-      {phase === 'roundResult' && currentWord && <div className="mx-auto w-full max-w-3xl space-y-6">
+      {view === 'roundResult' && currentWord && <div className="mx-auto w-full max-w-3xl space-y-6">
         <StageHeader title={currentWord.word} eyebrow={t('games.quickdraw.theWordWas')} />
         {drawingDataURL && <figure className="mx-auto max-w-xl border-[12px] border-[#f7f2e6] bg-white shadow-lg"><img src={drawingDataURL} alt={t('games.quickdraw.drawingAlt')} className="aspect-square w-full object-contain" /></figure>}
         <GuessList guesses={guesses} players={players} />
-        <StageFooter><StageAction disabled={!act.can('next')} onClick={() => act('next')}>{round >= totalRounds ? t('games.quickdraw.showResults') : t('games.play.next')}<ArrowRight className="h-5 w-5" /></StageAction></StageFooter>
+        <StageFooter><StageAction data-testid="quickdraw-next" disabled={!act.can('next')} onClick={() => act('next')}>{round >= totalRounds ? t('games.quickdraw.showResults') : t('games.play.next')}<ArrowRight className="h-5 w-5" /></StageAction></StageFooter>
       </div>}
-      {phase === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-7">
+      {view === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-7">
         <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
         <StageHeader title={t('games.results.gameOver')} eyebrow={t('games.results.leaderboard')} />
         <ol className="divide-y divide-white/15 border-y border-white/15">{sorted.map((player, index) => <li key={player.id} className="flex items-center gap-4 py-6"><span className="text-sm tabular-nums text-[var(--stage-muted)]">{index + 1}</span><p className="min-w-0 flex-1 break-words text-xl font-semibold">{player.name}</p><strong className={player.score === sorted[0]?.score ? 'text-4xl tabular-nums text-[#77cbbb]' : 'text-4xl tabular-nums'}>{player.score}</strong></li>)}</ol>
         <StageFooter className="flex-wrap"><StageAction disabled={!act.can('again')} onClick={() => act('again')}><RotateCcw className="h-5 w-5" />{t('games.results.playAgain')}</StageAction>{!hasShellBackButton() && <StageAction variant="secondary" onClick={() => navigate('/games')}>{t('games.results.otherGame')}</StageAction>}</StageFooter>
       </div>}
       <ConfirmExitDialog {...exitGuard.dialogProps} accent="#77cbbb" />
+      {/* Einblend-Takt (Design §9): Eingaben erst nach dem Wechsel frei — Weitergabe (z-90) bleibt bedienbar. */}
+      {!gate.inputOpen && <div data-testid="phase-input-gate" aria-hidden className="fixed inset-0 z-[80]" />}
     </GameStage>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/*  Sub-component                                                      */
-/* ------------------------------------------------------------------ */
-
-function GuessList({ guesses, players }: { guesses: { playerId: string; guess: string; correct: boolean }[]; players: Player[] }) {
-  return (
-    <div className="w-full divide-y divide-white/15">
-      {guesses.map((g, i) => {
-        const p = players.find(x => x.id === g.playerId);
-        return (
-          <div key={i} className="flex flex-wrap items-center gap-3 py-4">
-            {g.correct ? <Check className="w-4 h-4 text-emerald-400" /> : <X className="w-4 h-4 text-red-400" />}
-            <span className="text-white/50 text-sm">{p?.name}:</span>
-            <span className={cn('font-semibold text-sm', g.correct ? 'text-emerald-300' : 'text-white/60')}>{g.guess}</span>
-          </div>
-        );
-      })}
-    </div>
   );
 }

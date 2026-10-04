@@ -5,56 +5,27 @@ import { useGameTimer } from '../engine/TimerSystem';
 import { useOnlineAuthority, useOnlineSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
 import { useTranslation } from "react-i18next";
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import {
-  Trophy, RotateCcw, ArrowRight, Check, X, Shield, HelpCircle,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Shield, HelpCircle } from 'lucide-react';
 import { getFACTS, getTHREE_STATEMENTS, type Fact, type ThreeStatements } from './fakeorfact-content';
 import { GameSetup, type GameMode, type SettingsConfig } from '../ui/GameSetup';
 import { getTranslatedModes } from '../ui/getTranslatedModes';
 import { useGameEnd } from '../social/useGameEnd';
-import { GameEndOverlay } from '../social/GameEndOverlay';
-import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { localSeats, type OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { useSeatHandover } from '../multiplayer/useGuestHandover';
+import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
+import { acceptInput, deadline } from '../party/scene-schedule';
+import { serverClock } from '../party/scene-clock';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
-import { hasShellBackButton } from '@/games/ui/shell-back';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-type Phase = 'handoff' | 'setup' | 'statement' | 'voted' | 'reveal' | 'gameOver';
-type Mode = 'classic' | 'three';
-
-interface Player {
-  id: string;
-  name: string;
-  color: string;
-  avatar: string;
-  score: number;
-  streak: number;
-}
-
-const PLAYER_COLORS = [
-  '#06b6d4', '#0ea5e9', '#8b5cf6', '#f59e0b', '#ef4444',
-  '#10b981', '#ec4899', '#f97316', '#6366f1', '#14b8a6',
-];
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { dropQuizPlayers } from './removal';
+import { PLAYER_COLORS, shuffle, type Phase, type Mode, type Player } from './game-model';
+import { answeringSeat, clockHeldForTurn, deviceMayAnswer, localSeatResults, needsDeadlineCheck, recordAnswer, seatColor, turnMarks, tvAnswered } from './turn-order';
+import { TurnStage } from './TurnStage';
+import { GameOverPanel, RevealPanel, StatementPanel } from './FofPanels';
 
 // ---------------------------------------------------------------------------
 // Setup config
@@ -64,6 +35,8 @@ const GAME_MODES: GameMode[] = [
   { id: 'classic', name: 'Klassisch', desc: 'Wahr oder Falsch', icon: <Shield className="w-6 h-6" /> },
   { id: 'three', name: 'Zwei Luegen', desc: 'Finde die Wahrheit', icon: <HelpCircle className="w-6 h-6" /> },
 ];
+
+type Vote = { playerId: string; correct: boolean; answer: boolean | number | null };
 
 // ---------------------------------------------------------------------------
 // Component
@@ -118,7 +91,19 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const [playerThreeVote, setPlayerThreeVote] = useState<number | null>(null);
 
   // Vote tracking for percentage bar
-  const [votes, setVotes] = useState<{ playerId: string; correct: boolean; answer: boolean | number | null }[]>([]);
+  const [votes, setVotes] = useState<Vote[]>([]);
+
+  // ---------------------------------------------------------------------------
+  // Party-Play: 🔁 guests judge their turn on the host phone (guestPolicy 'turns')
+  // ---------------------------------------------------------------------------
+
+  const currentPlayer = players[currentPlayerIdx] ?? null;
+  const turnSeat = answeringSeat(phase, players, currentPlayerIdx);
+  const handover = useSeatHandover(online, turnSeat);
+  // The clock stands while the host phone travels to/from the seat whose turn it is (phones mirror the host value).
+  const hostSeats = online ? localSeats(online) : [];
+  const clocksRun = online?.isConnected !== false && !clockHeldForTurn(handover.isPaused, turnSeat, hostSeats);
+  const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, currentRound]);
 
   // ---------------------------------------------------------------------------
   // Setup handler
@@ -133,7 +118,7 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
       if (online && (!online.isHost || online.isConnected === false)) return;
       const mapped: Player[] = setupPlayers.map((p, i) => ({
         ...p,
-        color: PLAYER_COLORS[i % PLAYER_COLORS.length],
+        color: seatColor(p.color, i, PLAYER_COLORS, !!online),
         score: 0,
         streak: 0,
       }));
@@ -167,14 +152,17 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
   // Game logic
   // ---------------------------------------------------------------------------
 
-  // Share of votes that were correct so far this reveal (for the TV bar).
-  const fofCorrectPct = useMemo(() => {
+  // Share of votes that were correct so far this reveal (phone bar + TV bar).
+  const correctPct = useMemo(() => {
     if (votes.length === 0) return 0;
     return Math.round((votes.filter(v => v.correct).length / votes.length) * 100);
   }, [votes]);
 
   useTVGameBridge('fakeorfact', {
-    phase, currentRound, currentPlayerIdx, players, mode, totalRounds,
+    phase, currentRound, currentPlayerIdx, mode, totalRounds,
+    players: players.map(p => ({ id: p.id, name: p.name, avatar: p.avatar, color: p.color, score: p.score, streak: p.streak })),
+    // Who already judged (identity only — what they chose stays hidden until the reveal).
+    voters: tvAnswered(players, votes),
     statement: phase === 'handoff' ? '' : currentFact?.statement || '',
     statements: phase === 'handoff' ? [] : currentThree?.statements || [],
     category: currentFact?.category || currentThree?.category || '',
@@ -185,22 +173,33 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
           : (currentFact ? (currentFact.isTrue ? 0 : 1) : -1))
       : -1,
     explanation: phase === 'reveal' ? (currentFact?.explanation || '') : '',
-    correctPct: phase === 'reveal' ? fofCorrectPct : -1,
+    correctPct: phase === 'reveal' ? correctPct : -1,
     votesCount: votes.length,
-  }, [phase, currentRound, currentPlayerIdx], !online || online.isHost);
+    phaseStartsAt,
+    handover: handover.tv,
+  }, [phase, currentRound, currentPlayerIdx, votes.length, players, phaseStartsAt, handover.tv?.playerId, handover.tv?.progress?.phase],
+  !online || online.isHost);
 
-  const currentPlayer = players[currentPlayerIdx] ?? null;
+  // Host: remote answers after the visible clock ran out are late (F12); seats on this device never are.
+  const answerDeadline = useRef(Number.POSITIVE_INFINITY);
+  const onTime = (sender: string, token: string) =>
+    !needsDeadlineCheck(sender, hostSeats, clocksRun) || acceptInput({ deadline: answerDeadline.current, playerId: sender, sceneId: token, graceMs: 750 });
+  const turnToken = `${phase}:${currentRound}:${currentPlayerIdx}`;
+  const isTurn = (sender: string) => phase === 'statement' && sender === players[currentPlayerIdx]?.id && onTime(sender, turnToken);
+  const hostId = online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id;
 
-  const route = useOnlineAuthority(online, 'fakeorfact', `${phase}:${currentRound}:${currentPlayerIdx}`, {
-    handleClassicVote: { allow: (sender, args) => phase === "statement" && mode !== "three" && typeof args[0] === "boolean" && sender === players[currentPlayerIdx]?.id, run: (...args) => handleClassicVote(args[0]) },
-    handleThreeVote: { allow: (sender, args) => phase === "statement" && mode === "three" && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 3 && sender === players[currentPlayerIdx]?.id, run: (...args) => handleThreeVote(args[0]) },
-    advanceRound: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => advanceRound() },
-    playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
+  const route = useOnlineAuthority(online, 'fakeorfact', turnToken, {
+    handleClassicVote: { allow: (sender, args) => mode !== "three" && typeof args[0] === "boolean" && isTurn(sender), run: (...args) => handleClassicVote(args[0]), answer: true },
+    handleThreeVote: { allow: (sender, args) => mode === "three" && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 3 && isTurn(sender), run: (...args) => handleThreeVote(args[0]), answer: true },
+    advanceRound: { allow: (sender) => phase === "reveal" && sender === hostId, run: () => advanceRound() },
+    playAgain: { allow: (sender) => phase === "gameOver" && sender === hostId, run: () => playAgain() },
   });
 
   function scoreAndAdvance(correct: boolean, answer: boolean | number | null = null) {
     timer.pause();
-    const nextVotes = [...votes, { playerId: currentPlayer?.id ?? '', correct, answer }];
+    // Credit the seat whose turn it is (validated by the authority: own seat, a 🔁 guest after handover, or the sender).
+    const seat = currentPlayer?.id ?? route.actingSeat() ?? '';
+    const nextVotes = recordAnswer(votes, { playerId: seat, correct, answer });
     setVotes(nextVotes);
     if (currentPlayerIdx + 1 >= players.length) {
       setPlayers(prev => settleQuizRound(prev, nextVotes));
@@ -213,13 +212,25 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
   }
   const expire = useCallback(() => {
     if (phase === 'statement' && (!online || online.isHost)) scoreAndAdvance(false);
-  }, [phase, currentPlayerIdx, votes, online?.isHost]);
-  const timer = useGameTimer(timerSec, expire, online?.isConnected !== false);
+  }, [phase, currentPlayerIdx, votes, players, online?.isHost]);
+  // Each seat (every 🔁 guest too) gets the full time; the clock stands while the phone is passed.
+  const timer = useGameTimer(timerSec, expire, clocksRun);
   useEffect(() => {
     if (online && !online.isHost) return;
     if (phase === 'statement') { timer.reset(timerSec); timer.start(); }
     else timer.pause();
   }, [phase, currentRound, currentPlayerIdx, timerSec, online?.isHost]);
+  useEffect(() => {
+    answerDeadline.current = clocksRun ? deadline(serverClock.now(), timer.timeLeft * 1000 + 1000) : Number.POSITIVE_INFINITY;
+  }, [timer.timeLeft, clocksRun]);
+  // Host: a kicked/left player leaves the queue; if it was their turn it passes on (or the round settles).
+  useRemovedPlayers(online, ids => {
+    const drop = dropQuizPlayers({ phase, players, currentPlayerIdx, votes }, ids);
+    if (!drop) return;
+    setPlayers(drop.players); setVotes(drop.votes); setCurrentPlayerIdx(drop.currentPlayerIdx);
+    if (drop.reveal) { timer.pause(); setPhase('reveal'); }
+    if (drop.restartTurn) { timer.reset(timerSec); timer.start(); setPlayerVote(null); setPlayerThreeVote(null); }
+  });
 
   function handleClassicVote(isTrue: boolean) {
     if (route("handleClassicVote", [isTrue])) return;
@@ -267,13 +278,6 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
     if (phase === 'setup') gameRecordedRef.current = false;
   }, [phase]);
 
-  function resetGame() {
-    setPhase('setup');
-    setPlayers([]);
-    setCurrentRound(1);
-    setCurrentPlayerIdx(0);
-  }
-
   // Rematch: restart gameplay directly, keeping the SAME players and their
   // settings. Reshuffles a fresh deck and resets scoring for the current mode,
   // resets per-match counters/votes, then jumps straight to the first statement.
@@ -301,19 +305,9 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
     setPhase(online ? 'statement' : 'handoff');
   }
 
-  // Percentage correct
-  const correctPct = useMemo(() => {
-    if (votes.length === 0) return 0;
-    return Math.round((votes.filter(v => v.correct).length / votes.length) * 100);
-  }, [votes]);
-
-  const sortedPlayers = useMemo(
-    () => [...players].sort((a, b) => b.score - a.score),
-    [players],
-  );
-
-  useOnlineSnapshot(online, 'game-state', publicQuizRound({ phase, currentRound, totalRounds, currentPlayerIdx, currentFact, currentThree, players, mode, playerVote, playerThreeVote, votes, timerSec, timeLeft: timer.timeLeft }), data => {
+  useOnlineSnapshot(online, 'game-state', publicQuizRound({ phase, currentRound, totalRounds, currentPlayerIdx, currentFact, currentThree, players, mode, playerVote, playerThreeVote, votes, timerSec, timeLeft: timer.timeLeft, phaseStartsAt }), data => {
     setTimerSec(data.timerSec); timer.reset(data.timeLeft);
+    receivePhaseStart(data.phaseStartsAt);
     setPhase(data.phase);
     setCurrentRound(data.currentRound);
     setTotalRounds(data.totalRounds);
@@ -335,8 +329,11 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
   const mine = online ? votes.find(v => v.playerId === online.myPlayerId) : null;
   const displayVote = online ? (typeof mine?.answer === 'boolean' ? mine.answer : null) : playerVote;
   const displayThreeVote = online ? (typeof mine?.answer === 'number' ? mine.answer : null) : playerThreeVote;
-  const canAnswer = !online || online.myPlayerId === currentPlayer?.id;
+  // Online: own seat, or a 🔁 guest only after they took the phone (never during the pass).
+  const canAnswer = !online || deviceMayAnswer(currentPlayer?.id ?? null, online.myPlayerId, handover.activeGuest);
+  const exitDialog = <ConfirmExitDialog {...exitGuard.dialogProps} accent="#78d9db" />;
   if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
+  if (handover.overlay) return <>{handover.overlay}{exitDialog}</>; // phone in transit: only the opaque pass screen
   if (phase === 'setup') {
     return (
       <GameSetup
@@ -350,266 +347,54 @@ function FakeOrFactGameContent({ online }: { online?: OnlineGameProps } = {}) {
     );
   }
 
+  const wasCorrect = mode === 'classic' && !!currentFact
+    && (online ? mine?.correct === true : displayVote === currentFact.isTrue);
+  const threeStatus = online && mode === 'three'
+    ? (displayThreeVote === null ? t('games.fakeorfact.noAnswer') : mine?.correct ? t('games.fakeorfact.correct') : t('games.fakeorfact.wrong'))
+    : null;
+
   return (
-    <div data-phase={phase} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
+    <div data-phase={view} className="relative min-h-[100dvh] bg-[#0a0e14] text-white flex flex-col">
       <style>{`
 .neon-glow { text-shadow: 0 0 20px rgba(150,160,165,0.6), 0 0 40px rgba(150,160,165,0.4); }
 .glass-card { background: rgba(32,38,47,0.4); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
       `}</style>
+      {blocker}
       <div className="absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#78d9db]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#ede9dc]/8 rounded-full blur-[120px] pointer-events-none" />
 
-      {phase === 'handoff' && <div className="m-auto w-full max-w-lg space-y-6 p-6">
+      {view === 'handoff' && <div className="m-auto w-full max-w-lg space-y-6 p-6">
         <StageHeader title={currentPlayer?.name} eyebrow={t('games.findit.mapHandoffTo')} />
         <StagePanel><p>{t('games.fakeorfact.title')}</p></StagePanel>
         <StageAction className="w-full" onClick={() => setPhase('statement')}>{t('games.findit.mapReadyBtn')}</StageAction>
       </div>}
-      {/* ---- STATEMENT (Classic) ---- */}
-      {phase === 'statement' && <StageHeader eyebrow={t('games.fakeorfact.title')} title={currentPlayer?.name}
-        subtitle={t('games.fakeorfact.round', { current: currentRound, total: totalRounds })}
-        trailing={<span className="newsroom-clock" role="timer">{Math.ceil(timer.timeLeft)}<small>s</small></span>} />}
-      {phase === 'statement' && mode === 'classic' && currentFact && (
-        <motion.div
-          key={`classic-${currentRound}-${currentPlayerIdx}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex-1 flex flex-col"
-        >
-          {/* Statement card */}
-          <div className="flex-1 flex items-center justify-center px-4">
-            <motion.div
-              initial={{ rotateY: 90, opacity: 0 }}
-              animate={{ rotateY: 0, opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="fact-sheet"
-            >
-              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-[#78d9db] via-[#ede9dc] to-[#ff6b98]" />
-              <span className="inline-block px-2 py-0.5 rounded-full bg-[#1b2028] text-[10px] font-bold text-[#78d9db] mb-4">
-                {currentFact.category}
-              </span>
-              <p className="fact-headline">
-                {currentFact.statement}
-              </p>
-            </motion.div>
-          </div>
 
-          {/* Vote buttons */}
-          <div className="fact-ballot flex items-center gap-3 px-4 pb-6 pt-3">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              disabled={!canAnswer} onClick={() => handleClassicVote(true)}
-              className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full py-4 font-bold text-base text-white shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-            >
-              <Check className="w-5 h-5" /> {t('games.fakeorfact.btnTrue')}
-            </motion.button>
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              disabled={!canAnswer} onClick={() => handleClassicVote(false)}
-              className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-red-600 rounded-full py-4 font-bold text-base text-white shadow-[0_0_20px_rgba(239,68,68,0.2)]"
-            >
-              <X className="w-5 h-5" /> {t('games.fakeorfact.btnFalse')}
-            </motion.button>
-          </div>
-        </motion.div>
+      {view === 'statement' && (
+        <TurnStage player={currentPlayer} mine={canAnswer} guestHere={!!currentPlayer && handover.activeGuest === currentPlayer.id}
+          round={currentRound} total={totalRounds} timeLeft={timer.timeLeft} timerSec={timerSec}
+          marks={online ? turnMarks(players, votes, currentPlayerIdx, phase) : []} players={players} />
       )}
 
-      {/* ---- STATEMENT (Three) ---- */}
-      {phase === 'statement' && mode === 'three' && currentThree && (
-        <motion.div
-          key={`three-${currentRound}-${currentPlayerIdx}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex-1 flex flex-col"
-        >
-          <div className="text-center px-4 mb-2">
-            <span className="text-xs font-bold text-[#ff6b98] uppercase tracking-widest">
-              {t('games.fakeorfact.whichIsTrue')}
-            </span>
-          </div>
+      <AnimatePresence mode="wait">
+        {view === 'statement' && (
+          <StatementPanel key={`statement-${currentRound}-${currentPlayerIdx}`} mode={mode} fact={currentFact} three={currentThree}
+            turnKey={`${currentRound}-${currentPlayerIdx}`} canAnswer={canAnswer} waitingFor={currentPlayer} answered={!!mine}
+            onClassic={handleClassicVote} onThree={handleThreeVote} />
+        )}
 
-          <div className="flex-1 flex flex-col items-center justify-center gap-3 px-4">
-            {currentThree.statements.map((stmt, idx) => (
-              <motion.button
-                key={idx}
-                whileTap={{ scale: 0.97 }}
-                disabled={!canAnswer} onClick={() => handleThreeVote(idx)}
-                className="fact-option"
-              >
-                <div className="flex items-start gap-3">
-                  <span className="w-7 h-7 rounded-full bg-[#1b2028] border border-[#44484f]/20 flex items-center justify-center text-xs font-bold text-[#78d9db] shrink-0">
-                    {idx + 1}
-                  </span>
-                  <p className="text-sm font-medium text-white/80 leading-relaxed">{stmt}</p>
-                </div>
-              </motion.button>
-            ))}
-          </div>
-          <div className="h-6" />
-        </motion.div>
-      )}
+        {view === 'reveal' && (
+          <RevealPanel key="reveal" mode={mode} fact={currentFact} three={currentThree} wasCorrect={wasCorrect}
+            displayVote={displayVote} threeStatus={threeStatus} correctPct={correctPct}
+            seatRows={online ? localSeatResults(localSeats(online), players, votes) : []}
+            canContinue={!online || online.isHost} onContinue={advanceRound} />
+        )}
 
-      {/* ---- REVEAL ---- */}
-      {phase === 'reveal' && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="fact-reveal flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-lg mx-auto w-full"
-        >
-          {mode === 'classic' && currentFact && (() => {
-            const wasCorrect = online ? votes.find(v => v.playerId === online.myPlayerId)?.correct === true : displayVote === currentFact.isTrue;
-            return (
-              <>
-                {/* Player result — clear feedback */}
-                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}
-                  className={cn('w-20 h-20 rounded-full flex items-center justify-center', wasCorrect ? 'bg-emerald-500/20' : 'bg-red-500/20')}>
-                  {wasCorrect ? <Check className="w-10 h-10 text-emerald-400" /> : <X className="w-10 h-10 text-red-400" />}
-                </motion.div>
-                <h2 className={cn('text-3xl font-extrabold', wasCorrect ? 'text-emerald-400' : 'text-red-400')}>
-                  {wasCorrect ? t('games.fakeorfact.correct') : t('games.fakeorfact.wrong')}
-                </h2>
-
-                {/* What you said vs what it is */}
-                <div className="w-full flex gap-3">
-                  <div className="flex-1 rounded-xl bg-[#1b2028] border border-[#44484f]/20 p-3 text-center">
-                    <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] mb-1">{t('games.fakeorfact.yourAnswer')}</p>
-                    <p className={cn('text-lg font-bold', displayVote ? 'text-emerald-400' : 'text-red-400')}>
-                      {displayVote === null ? t('games.fakeorfact.noAnswer') : displayVote ? t('games.fakeorfact.btnTrue') : t('games.fakeorfact.btnFalse')}
-                    </p>
-                  </div>
-                  <div className="flex-1 rounded-xl bg-[#1b2028] border border-[#44484f]/20 p-3 text-center">
-                    <p className="text-[10px] uppercase tracking-wider text-[#a8abb3] mb-1">{t('games.fakeorfact.actualAnswer')}</p>
-                    <p className={cn('text-lg font-bold', currentFact.isTrue ? 'text-emerald-400' : 'text-red-400')}>
-                      {currentFact.isTrue ? t('games.fakeorfact.btnTrue') : t('games.fakeorfact.btnFalse')}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Explanation */}
-                <div className="w-full rounded-[1rem] bg-[#1b2028] border border-[#44484f]/20 p-5">
-                  <p className="text-sm text-white/70 leading-relaxed">{currentFact.explanation}</p>
-                </div>
-              </>
-            );
-          })()}
-
-          {mode === 'three' && currentThree && (
-            <>
-              <h2 className="text-2xl font-extrabold font-sans text-[#ede9dc]">
-                {t('games.fakeorfact.theTruthIs')}
-              </h2>
-              <div className="w-full space-y-2">
-                {currentThree.statements.map((stmt, idx) => (
-                  <div
-                    key={idx}
-                    className={cn(
-                      'w-full rounded-[1rem] border p-4 flex items-start gap-3',
-                      idx === currentThree.trueIndex
-                        ? 'bg-emerald-500/10 border-emerald-500/30'
-                        : 'bg-[#1b2028] border-[#44484f]/20 opacity-60',
-                    )}
-                  >
-                    {idx === currentThree.trueIndex
-                      ? <Check className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-                      : <X className="w-5 h-5 text-red-400/50 shrink-0 mt-0.5" />
-                    }
-                    <p className="text-sm text-white/80 leading-relaxed">{stmt}</p>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-
-          {online && mode === 'three' && <p role="status">{displayThreeVote === null ? t('games.fakeorfact.noAnswer') : mine?.correct ? t('games.fakeorfact.correct') : t('games.fakeorfact.wrong')}</p>}
-          {/* Vote results bar */}
-          <div className="w-full">
-            <div className="flex justify-between text-xs text-white/40 mb-1.5">
-              <span>{t('games.fakeorfact.correctPct', { pct: correctPct })}</span>
-              <span>{t('games.fakeorfact.incorrectPct', { pct: 100 - correctPct })}</span>
-            </div>
-            <div className="w-full h-3 rounded-full bg-[#1b2028] overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-emerald-500 to-[#ede9dc] rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${correctPct}%` }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-              />
-            </div>
-          </div>
-
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            disabled={!!online && !online.isHost} onClick={advanceRound}
-            className="w-full mt-2 flex items-center justify-center gap-2 bg-gradient-to-r from-[#78d9db] to-[#d779ff] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(150,160,165,0.3)]"
-          >
-            {t('games.fakeorfact.continue')} <ArrowRight className="w-5 h-5" />
-          </motion.button>
-        </motion.div>
-      )}
-
-      {/* ---- GAME OVER ---- */}
-      {phase === 'gameOver' && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex-1 flex flex-col items-center justify-center gap-6 px-4 py-8 max-w-lg mx-auto w-full"
-        >
-          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: 'spring', bounce: 0.5 }}
-          >
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20">
-              <Trophy className="w-8 h-8 text-amber-400" />
-            </div>
-          </motion.div>
-          <h2 className="text-3xl font-extrabold font-sans text-[#78d9db] neon-glow">
-            {t('games.results.gameOver')}
-          </h2>
-
-          <div className="w-full space-y-2">
-            {sortedPlayers.map((p, i) => (
-              <motion.div
-                key={p.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-                className={cn(
-                  'flex items-center gap-3 px-4 py-3 rounded-[1rem] border',
-                  i === 0 ? 'bg-amber-500/10 border-amber-500/20' : 'bg-[#1b2028] border-[#44484f]/20',
-                )}
-              >
-                <span className="text-sm font-bold text-white/40 w-6 text-center">{i + 1}</span>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold" style={{ backgroundColor: p.color }}>
-                  {p.avatar}
-                </div>
-                <span className="flex-1 text-white font-medium text-sm truncate">{p.name}</span>
-                <span className="text-sm font-bold text-white/70">{p.score}</span>
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="w-full space-y-3 mt-2">
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              disabled={!!online && !online.isHost} onClick={playAgain}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#78d9db] to-[#d779ff] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(150,160,165,0.3)]"
-            >
-              <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
-            </motion.button>
-            {/* Nur im Web. In der App macht das der FloatingBackButton. */}
-            {!hasShellBackButton() && (
-              <button
-                onClick={() => navigate('/games')}
-                className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors"
-              >
-                {t('games.results.otherGame')}
-              </button>
-            )}
-          </div>
-        </motion.div>
-      )}
-      <ConfirmExitDialog {...exitGuard.dialogProps} accent="#78d9db" />
+        {view === 'gameOver' && (
+          <GameOverPanel key="gameOver" players={players} achievements={newAchievements} onDismiss={clearAchievements}
+            canAgain={!online || online.isHost} onAgain={playAgain} onOtherGame={() => navigate('/games')} />
+        )}
+      </AnimatePresence>
+      {exitDialog}
     </div>
   );
 }

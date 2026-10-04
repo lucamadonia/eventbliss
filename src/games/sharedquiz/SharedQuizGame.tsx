@@ -1,31 +1,38 @@
 import { KnowledgeStage } from './KnowledgeStage';
-import { GameStage, StageHeader, StagePanel, StageAction } from '../ui/GameStage';
+import { GameStage } from '../ui/GameStage';
 import { sharedRoundPoints } from './rules';
 import { sharedQuizSnapshotFor, sharedQuizTVQuestion } from './private-state';
 import { useOnlineAuthority, usePrivateSnapshot, OnlineWaiting } from '../sharedquiz/useOnlineAuthority';
+import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
+import { removeFromSharedQuiz } from './roster-change';
+import { RoleBadge, PlayerScreen, HandoffScreen } from './LocalScreens';
+import { OnlinePlayStage } from './OnlinePlayStage';
+import { RevealPanel, GameOverPanel } from './ResultScreens';
+import { SetupPanel } from './SetupScreen';
+import { useSharedQuizGuests } from './useSharedQuizGuests';
+import { useGuestHandover } from '../ui/useGuestHandover';
+import { localActiveSeats } from '../ui/guest-handover';
+import { usePhaseGate } from '../party/usePhaseGate';
+import { planPhaseStart } from '../party/phase-gate';
+import { serverClock } from '../party/scene-clock';
 import { useTranslation } from "react-i18next";
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Play, Trophy, RotateCcw, ArrowRight,
-  Users, Eye, MessageCircle, Lightbulb, HelpCircle, Check, X,
-  ChevronRight, Link, Crown,
+  ArrowRight, Users, MessageCircle, Lightbulb, HelpCircle, Link, Crown,
 } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { personalResult } from '../social/result';
-import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { getPlayerColor, getPlayerInitial } from '../ui/PlayerAvatars';
-import { PlayerSetup } from '../ui/PlayerSetup';
 import { getSHARED_QUIZ_QUESTIONS, type SharedQuizQuestion } from './sharedquiz-content';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useInitialRoster } from "@/games/ui/useInitialRoster";
 import { useConfirmExit, ConfirmExitDialog } from '@/games/ui/useConfirmExit';
 import { useBackGuard } from '@/lib/back-guard';
-import { hasShellBackButton } from '@/games/ui/shell-back';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -122,10 +129,31 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [roleIndices, setRoleIndices] = useState<[number, number, number]>([0, 1, 2]);
 
+  // 🔁-Gaeste am Host-Handy: jede Rolle nur verdeckt fuer den, der sie hat (guest-roles.ts).
+  // Das Spiel hat keine Uhr — darum kein „Uhr angehalten“-Hinweis.
+  const handover = useGuestHandover(online, { secret: true, clockPaused: false });
+  const localSeats = useMemo(() => localActiveSeats(online), [online]);
+  const guests = useSharedQuizGuests({
+    handover, active: !!online && phase === 'playerC', mode, round, players, roleIndices,
+    answered: teamAnswers.length, localSeats, ownSeat: online?.myPlayerId,
+  });
+  useEffect(() => { if (phase === 'setup' || phase === 'gameOver') handover.cancel(); }, [phase, handover.cancel]);
+
+  // Gemeinsamer Phasenstart (Design §9): online plant der Host jeden Wechsel mit
+  // Vorlauf; Handys (Schnappschuss) und TV (Bridge) wechseln zur selben Serverzeit.
+  const [remotePhaseStartsAt, setRemotePhaseStartsAt] = useState<number | null>(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const plannedPhaseStart = useMemo(() => (online ? planPhaseStart() : serverClock.now()), [phase, round]);
+  const phaseStartsAt = online && !online.isHost ? remotePhaseStartsAt : plannedPhaseStart;
+  const gate = usePhaseGate(phase, online ? phaseStartsAt : null);
+
   useTVGameBridge('sharedquiz', {
-    phase, round, players, totalRounds, roleIndices,
+    phase, phaseStartsAt, round, totalRounds, roleIndices,
+    // Volle Identitaet fuer den Fernseher — Rollen-Infos erst in der Aufloesung.
+    players: players.map(p => ({ ...p, avatar: online?.players.find(o => o.id === p.id)?.avatar })),
+    handover: handover.tv,
     ...sharedQuizTVQuestion(phase, currentQ),
-  }, [phase, round, selectedAnswer, roleIndices], !online || online.isHost);
+  }, [phase, round, selectedAnswer, roleIndices, phaseStartsAt, handover.tv?.playerId ?? '', handover.tv?.progress?.phase ?? ''], !online || online.isHost);
 
   /* ---- Player management ---- */
   const nextId = useRef(4);
@@ -173,7 +201,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
 
   const route = useOnlineAuthority(online, 'sharedquiz', `${phase}:${round}:${teamAnswers.length}`, {
     startGame: { allow: (sender, args) => phase === "setup" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => startGame() },
-    handleAnswer: { allow: (sender, args) => phase === "playerC" && sender === players[roleIndices[mode === 'trio' ? 2 : teamAnswers.length]]?.id && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 4, run: (...args) => handleAnswer(args[0]) },
+    handleAnswer: { answer: true, allow: (sender, args) => phase === "playerC" && sender === players[roleIndices[mode === 'trio' ? 2 : teamAnswers.length]]?.id && Number.isInteger(args[0]) && args[0] >= 0 && args[0] < 4, run: (...args) => handleAnswer(args[0]) },
     playAgain: { allow: (sender, args) => phase === "gameOver" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => playAgain() },
     nextRound: { allow: (sender, args) => phase === "reveal" && sender === (online?.hostPlayerId ?? online?.players.find(p => p.isHost)?.id), run: (...args) => nextRound() },
     advancePhase: { allow: (sender, args) => sender === players[roleIndices[phase === "playerB" || phase === "handoffAB" ? 1 : phase === "handoffBC" ? 2 : 0]]?.id && ["roundIntro", "playerA", "handoffAB", "playerB", "handoffBC"].includes(phase), run: (...args) => advancePhase() },
@@ -274,8 +302,9 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
 
   const isCorrect = currentQ && selectedAnswer === currentQ.correctIndex;
 
-  usePrivateSnapshot(online, 'sharedquiz-state', { phase, round, totalRounds, roleIndices, currentQ, players, mode, selectedAnswer, teamAnswers }, sharedQuizSnapshotFor, data => {
+  usePrivateSnapshot(online, 'sharedquiz-state', { phase, phaseStartsAt, round, totalRounds, roleIndices, currentQ, players, mode, selectedAnswer, teamAnswers }, sharedQuizSnapshotFor, data => {
     setPhase(data.phase);
+    setRemotePhaseStartsAt(typeof data.phaseStartsAt === 'number' ? data.phaseStartsAt : null);
     setRound(data.round);
     setTotalRounds(data.totalRounds);
     setRoleIndices(data.roleIndices);
@@ -286,35 +315,31 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
     setTeamAnswers(data.teamAnswers ?? []);
   });
 
+  // Host entfernt jemanden mitten im Spiel: Rolle weitergeben statt haengen (Masterplan 6.6).
+  useRemovedPlayers(online, ids => {
+    const change = removeFromSharedQuiz({ players, roleIndices, phase, mode, teamAnswers }, ids);
+    if (!change.changed) return;
+    setPlayers(change.state.players);
+    setRoleIndices(change.state.roleIndices);
+    setTeamAnswers(change.state.teamAnswers);
+  });
+
   /* ================================================================ */
   /*  RENDER                                                          */
   /* ================================================================ */
 
-  if (phase === 'playerC' && currentQ && (online || mode !== 'trio')) {
-    const ownSeat = players.findIndex(p => p.id === online?.myPlayerId);
-    const role = roleIndices.indexOf(ownSeat);
-    const active = mode === 'trio' ? role : teamAnswers.length;
-    const answerer = players[roleIndices[teamAnswers.length]];
-    const canAnswer = mode === 'trio' ? role === 2 : !online || answerer?.id === online.myPlayerId;
-    const roleLabels = [t('games.sharedquiz.roleQuestion'), t('games.sharedquiz.roleAnswers'), t('games.sharedquiz.hintLabel')];
-    return <KnowledgeStage title={t('games.sharedquiz.title')} mode={t(`gameModes.sharedquiz.${mode}.name`)} round={round} total={totalRounds}
-      players={roleIndices.map(i => players[i]?.name ?? '')} labels={roleLabels} active={active} completed={mode === 'trio' ? 0 : teamAnswers.length}>
+  // Gerendert wird die GEZEIGTE Phase (usePhaseGate), damit alle Geraete gleichzeitig wechseln.
+  const view = gate.shown;
+  const renderPhase = () => {
+
+  if (handover.overlay) return <>{handover.overlay}<ConfirmExitDialog {...exitGuard.dialogProps} /></>;
+  if (view === 'playerC' && currentQ && (online || mode !== 'trio')) {
+    return <OnlinePlayStage mode={mode} q={currentQ} players={players} roleIndices={roleIndices} answered={teamAnswers.length}
+      round={round} totalRounds={totalRounds} myId={online?.myPlayerId} handover={handover} guests={guests} onAnswer={handleAnswer}>
       <ConfirmExitDialog {...exitGuard.dialogProps} />
-      {mode !== 'trio' ? <>
-        <p className="knowledge-eyebrow">{t('games.sharedquiz.modeAnswerTurn', { name: answerer?.name, n: teamAnswers.length + 1 })}</p>
-        {canAnswer ? <><h2>{currentQ.question}</h2><div className="knowledge-choices">{currentQ.answers.map((answer,i) => <button key={i} className="knowledge-choice" onClick={() => handleAnswer(i)}><span>{ANSWER_LABELS[i]}</span><span>{answer}</span></button>)}</div></>
-          : <div className="knowledge-wait"><Users size={36}/><h2>{answerer?.name}</h2><p>{t('nativeExtra.gameLobby.waitingForPlayers')}</p></div>}
-        <p className="mt-7 text-sm leading-relaxed">{t(`games.sharedquiz.${mode === 'chain' ? 'chainRules' : 'allRules'}`)}</p>
-      </> : <>
-        <p className="knowledge-eyebrow">{roleLabels[role] ?? t('nativeExtra.gameLobby.waitingForPlayers')}</p>
-        {role === 0 && <><h2>{currentQ.question}</h2><p className="mt-8 text-sm">{t('games.sharedquiz.readQuestion')}</p></>}
-        {role === 1 && <><div className="knowledge-choices">{currentQ.answers.map((answer,i) => <div key={i} className="knowledge-choice"><span>{ANSWER_LABELS[i]}</span><span>{answer}</span></div>)}</div><p className="mt-8 text-sm">{t('games.sharedquiz.readAnswers')}</p></>}
-        {role === 2 && <><h2>{currentQ.hint}</h2><p className="mt-6 text-sm">{t('games.sharedquiz.readHintAndAnswer')}</p><div className="knowledge-choices grid-cols-2">{ANSWER_LABELS.map((label,i) => <button key={label} className="knowledge-choice justify-center" onClick={() => handleAnswer(i)}><span>{label}</span></button>)}</div></>}
-        {role < 0 && <div className="knowledge-wait"><Users size={36}/><p>{t('nativeExtra.gameLobby.waitingForPlayers')}</p></div>}
-      </>}
-    </KnowledgeStage>;
+    </OnlinePlayStage>;
   }
-  if (phase === 'setup' && online && !online.isHost) return <OnlineWaiting />;
+  if (view === 'setup' && online && !online.isHost) return <OnlineWaiting />;
   return (
     <GameStage gameId="geteilt-gequizzt" className="knowledge-stage relative flex flex-col">
       <style>{`
@@ -325,84 +350,14 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
       <div className="hidden absolute -top-1/4 -left-1/4 w-96 h-96 bg-[#df8eff]/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="hidden absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-[#8ff5ff]/8 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* ---- SETUP ---- */}
-      {phase === 'setup' && (
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="flex-1 flex flex-col px-4 py-8 pb-32 max-w-3xl mx-auto w-full">
-          {/* Header */}
-          <div className="text-left mb-8 border-b border-white/15 pb-7">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-[1rem] bg-[#1b2028] border border-[#8ff5ff]/20 mb-4">
-              <Users className="w-8 h-8 text-[#8ff5ff]" />
-            </div>
-            <h1 className="text-3xl font-extrabold font-sans bg-gradient-to-r from-[#8ff5ff] to-[#8ff5ff]/60 bg-clip-text text-transparent">
-              {t('games.sharedquiz.title')}
-            </h1>
-            <p className="text-white/40 text-sm mt-2 max-w-xs mx-auto">
-              {t('games.sharedquiz.subtitle')}
-            </p>
-          </div>
-
-          {/* Players */}
-          <div className="mb-6">
-            <PlayerSetup locked={!!online}
-              players={players.map((p) => ({ id: p.id, name: p.name, color: p.color }))}
-              onAdd={addPlayer}
-              onRemove={removePlayer}
-              onRename={updateName}
-              onImportNames={isOnlineOrParty ? undefined : handleImportNames}
-              min={3}
-              max={10}
-              accent="#8ff5ff"
-              label={t('games.sharedquiz.playerLabel')}
-            />
-          </div>
-
-          {/* Mode */}
-          <section className="space-y-3 mb-6">
-            <h2 className="text-xs font-bold uppercase tracking-widest text-white/40">{t('games.sharedquiz.modeLabel')}</h2>
-            <div className="space-y-2">
-              {modes.map(m => (
-                <button key={m.id} onClick={() => setMode(m.id)}
-                  className={cn('w-full flex items-center gap-3 p-4 rounded-[1rem] border-2 transition-colors text-left',
-                    mode === m.id ? 'border-[#8ff5ff] bg-[#8ff5ff]/10 text-white' : 'border-gray-700 bg-[#1b2028] text-gray-300 hover:border-gray-600')}>
-                  <span className="text-[#8ff5ff]">{m.icon}</span>
-                  <div><div className="text-sm font-semibold">{m.name}</div><div className="text-xs text-white/40">{m.desc}</div></div>
-                </button>
-              ))}
-            </div>
-          </section>
-
-          {/* Rounds */}
-          <section className="mb-6">
-            <div className="bg-[#1b2028] border border-[#44484f]/20 rounded-[1rem] p-4">
-              <div className="flex justify-between text-sm mb-2">
-                <span className="text-white/40">{t('games.setup.rounds')}</span>
-                <span className="text-white font-bold">{totalRounds}</span>
-              </div>
-              <input type="range" min={3} max={20} step={1} value={totalRounds}
-                onChange={e => setTotalRounds(Number(e.target.value))}
-                className="w-full h-2 rounded-full appearance-none bg-gray-700 accent-[#8ff5ff] cursor-pointer" />
-            </div>
-          </section>
-
-          {/* Start */}
-          <div className="fixed bottom-0 left-0 right-0 p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-gradient-to-t from-[#0a0e14] via-[#0a0e14] to-transparent z-20">
-            <div className="max-w-lg mx-auto space-y-3">
-              <motion.button whileTap={{ scale: 0.97 }} onClick={startGame}
-                className="w-full py-4 rounded-full bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] text-base font-extrabold font-sans uppercase tracking-wide shadow-[0_0_20px_rgba(143,245,255,0.3)] flex items-center justify-center gap-2">
-                <Play className="w-5 h-5" /> {t('games.setup.startGame')}
-              </motion.button>
-              {/* Nur im Web. In der App macht das der FloatingBackButton. */}
-              {!hasShellBackButton() && (
-                <button onClick={() => navigate('/games')} className="w-full py-3 text-white/30 text-sm hover:text-white/50 transition">{t('games.sharedquiz.back')}</button>
-              )}
-            </div>
-          </div>
-        </motion.div>
+      {view === 'setup' && (
+        <SetupPanel players={players} locked={!!online} onAdd={addPlayer} onRemove={removePlayer} onRename={updateName}
+          onImportNames={isOnlineOrParty ? undefined : handleImportNames} modes={modes} mode={mode} onMode={setMode}
+          totalRounds={totalRounds} onRounds={setTotalRounds} onStart={startGame} onBack={() => navigate('/games')} />
       )}
 
       {/* ---- ROUND INTRO ---- */}
-      {phase === 'roundIntro' && (
+      {view === 'roundIntro' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
           className="knowledge-handoff flex-1 flex flex-col items-center justify-center gap-6 px-4">
           <div className="px-4 py-1.5 rounded-full bg-[#1b2028] border border-[#44484f]/20">
@@ -422,7 +377,7 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
       )}
 
       {/* ---- PLAYER A: Question ---- */}
-      {phase === 'playerA' && currentQ && (
+      {view === 'playerA' && currentQ && (
         <PlayerScreen name={playerA.name} color={playerA.color} instruction={t('games.sharedquiz.readQuestion')}
           onNext={advancePhase}>
           <div className="text-center">
@@ -433,13 +388,13 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
       )}
 
       {/* ---- HANDOFF A->B ---- */}
-      {phase === 'handoffAB' && (
+      {view === 'handoffAB' && (
         <HandoffScreen from={playerA.name} to={playerB.name} toColor={playerB.color}
           onContinue={advancePhase} />
       )}
 
       {/* ---- PLAYER B: Answers ---- */}
-      {phase === 'playerB' && currentQ && (
+      {view === 'playerB' && currentQ && (
         <PlayerScreen name={playerB.name} color={playerB.color} instruction={t('games.sharedquiz.readAnswers')}
           onNext={advancePhase}>
           <div>
@@ -457,13 +412,13 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
       )}
 
       {/* ---- HANDOFF B->C ---- */}
-      {phase === 'handoffBC' && (
+      {view === 'handoffBC' && (
         <HandoffScreen from={playerB.name} to={playerC.name} toColor={playerC.color}
           onContinue={advancePhase} />
       )}
 
       {/* ---- PLAYER C: Hint + Answer Selection ---- */}
-      {phase === 'playerC' && currentQ && (
+      {view === 'playerC' && currentQ && (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-3xl mx-auto w-full">
           <div className="flex items-center gap-2">
@@ -491,161 +446,22 @@ export default function SharedQuizGame({ online }: { online?: OnlineGameProps } 
         </motion.div>
       )}
 
-      {/* ---- REVEAL ---- */}
-      {phase === 'reveal' && currentQ && (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-          className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-3xl mx-auto w-full">
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
-            <div className={cn('w-16 h-16 rounded-full flex items-center justify-center',
-              isCorrect ? 'bg-emerald-500/20' : 'bg-red-500/20')}>
-              {isCorrect ? <Check className="w-8 h-8 text-emerald-400" /> : <X className="w-8 h-8 text-red-400" />}
-            </div>
-          </motion.div>
-          <h2 className={cn('text-2xl font-extrabold font-sans',
-            isCorrect ? 'text-emerald-400' : 'text-red-400')}>
-            {isCorrect ? t('games.play.correct') : t('games.play.wrong')}
-          </h2>
-
-          {mode !== 'trio' && <div className="w-full rounded-2xl border border-white/10 bg-white/5 p-4 space-y-2">
-            <p className="text-xl font-black text-cyan-200">{t('games.results.winnerPoints', { n: sharedRoundPoints(mode, teamAnswers, currentQ.correctIndex) })}</p>
-            {teamAnswers.map((answer, index) => <div key={index} className="flex justify-between gap-3 text-sm">
-              <span>{players[roleIndices[index]]?.name}</span>
-              <span className={answer === currentQ.correctIndex ? 'text-emerald-300' : 'text-red-300'}>{t(answer === currentQ.correctIndex ? 'games.play.correct' : 'games.play.wrong')}</span>
-            </div>)}
-          </div>}
-
-          <div className="w-full rounded-[1rem] bg-[#151a21]/80 border border-[#44484f]/20 p-5 space-y-4">
-            <div><div className="text-xs text-white/40 uppercase tracking-widest mb-1">{t('games.sharedquiz.roleQuestion')}</div>
-              <div className="text-white font-bold">{currentQ.question}</div></div>
-            <div className="space-y-1.5">
-              {currentQ.answers.map((a, i) => (
-                <div key={i} className={cn('flex items-center gap-3 rounded-[1rem] px-4 py-2.5 border',
-                  i === currentQ.correctIndex ? 'bg-emerald-500/10 border-emerald-500/30' :
-                  i === selectedAnswer ? 'bg-red-500/10 border-red-500/30' : 'bg-white/[0.02] border-white/[0.04]')}>
-                  <span className={cn('w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs',
-                    i === currentQ.correctIndex ? 'bg-emerald-500 text-white' : 'bg-white/10 text-white/40')}>{ANSWER_LABELS[i]}</span>
-                  <span className={cn('font-semibold text-sm', i === currentQ.correctIndex ? 'text-emerald-300' : 'text-white/60')}>{a}</span>
-                  {i === currentQ.correctIndex && <Check className="w-4 h-4 text-emerald-400 ml-auto" />}
-                </div>
-              ))}
-            </div>
-            <div className="flex items-start gap-2 bg-amber-500/10 border border-amber-500/20 rounded-[1rem] px-4 py-3">
-              <Lightbulb className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
-              <span className="text-amber-200/80 text-sm">{currentQ.hint}</span>
-            </div>
-          </div>
-
-          <motion.button whileTap={{ scale: 0.97 }} disabled={!!online && !online.isHost} onClick={nextRound}
-            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] px-8 py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(143,245,255,0.25)]">
-            {round >= totalRounds ? t('games.sharedquiz.resultBtn') : t('games.play.next')} <ArrowRight className="w-5 h-5" />
-          </motion.button>
-        </motion.div>
+      {view === 'reveal' && currentQ && (
+        <RevealPanel currentQ={currentQ} isCorrect={!!isCorrect} mode={mode} teamAnswers={teamAnswers} players={players}
+          roleIndices={roleIndices} selectedAnswer={selectedAnswer} canAdvance={!online || online.isHost} onNext={nextRound} lastRound={round >= totalRounds} />
       )}
-
-      {/* ---- GAME OVER ---- */}
-      {phase === 'gameOver' && (
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-          className="flex-1 flex flex-col items-center justify-center gap-6 px-4 py-8 max-w-3xl mx-auto w-full">
-          <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', bounce: 0.5 }}>
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20">
-              <Trophy className="w-8 h-8 text-amber-400" />
-            </div>
-          </motion.div>
-          <h2 className="text-3xl font-extrabold font-sans text-[#8ff5ff] neon-glow-cyan">
-            {t('games.results.gameOver')}
-          </h2>
-          <div className="w-full space-y-2">
-            {sorted.map((p, i) => (
-              <div key={p.id} className={cn('flex items-center gap-3 rounded-[1rem] px-4 py-3 border',
-                p.score === sorted[0]?.score ? 'bg-amber-500/10 border-amber-500/20' : 'bg-[#1b2028] border-[#44484f]/20')}>
-                <span className={cn('w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm',
-                  p.score === sorted[0]?.score ? 'bg-amber-500 text-[#0a0e14]' : 'bg-white/10 text-white/40')}>{sorted.findIndex(other => other.score === p.score) + 1}</span>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs"
-                  style={{ backgroundColor: p.color }}>{getPlayerInitial(p.name)}</div>
-                <span className="flex-1 font-semibold text-white truncate">{p.name}</span>
-                <span className={cn('font-bold text-lg', p.score === sorted[0]?.score ? 'text-amber-400' : 'text-white/60')}>{p.score}</span>
-              </div>
-            ))}
-          </div>
-          <div className="w-full space-y-3 mt-2">
-            <motion.button whileTap={{ scale: 0.97 }} disabled={!!online && !online.isHost} onClick={playAgain}
-              className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] py-4 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(143,245,255,0.25)]">
-              <RotateCcw className="w-4 h-4" /> {t('games.results.playAgain')}
-            </motion.button>
-            {!hasShellBackButton() && (
-              <button onClick={() => navigate('/games')}
-                className="w-full py-3.5 rounded-full border border-white/10 text-white/50 text-sm font-semibold hover:bg-white/[0.04] transition-colors">
-                {t('games.results.otherGame')}
-              </button>
-            )}
-          </div>
-        </motion.div>
+      {view === 'gameOver' && (
+        <GameOverPanel sorted={sorted} achievements={newAchievements} onDismiss={clearAchievements}
+          canRestart={!online || online.isHost} onPlayAgain={playAgain} onOtherGame={() => navigate('/games')} />
       )}
       <ConfirmExitDialog {...exitGuard.dialogProps} accent="#8ff5ff" />
     </GameStage>
   );
-}
+  };
 
-/* ------------------------------------------------------------------ */
-/*  Sub-components                                                     */
-/* ------------------------------------------------------------------ */
-
-function RoleBadge({ icon, label, player }: { icon: React.ReactNode; label: string; player: Player }) {
-  return (
-    <div className="flex items-center gap-3 bg-[#1b2028] border border-[#44484f]/20 rounded-[1rem] px-4 py-3">
-      <span className="text-[#8ff5ff]">{icon}</span>
-      <div className="flex-1">
-        <div className="text-xs text-white/40 uppercase tracking-widest">{label}</div>
-        <div className="font-bold text-white">{player.name}</div>
-      </div>
-      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs"
-        style={{ backgroundColor: player.color }}>{getPlayerInitial(player.name)}</div>
-    </div>
-  );
-}
-
-function PlayerScreen({ name, color, instruction, onNext, children }: {
-  name: string; color: string; instruction: string; onNext: () => void; children: React.ReactNode;
-}) {
-  const { t } = useTranslation();
-  return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-      className="flex-1 flex flex-col items-center justify-center gap-5 px-4 py-8 max-w-3xl mx-auto w-full">
-      <div className="flex items-center gap-2">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
-          style={{ backgroundColor: color }}>{getPlayerInitial(name)}</div>
-        <span className="text-white font-bold text-lg">{name}</span>
-      </div>
-      <StagePanel tone="paper" className="knowledge-local-document w-full">{children}</StagePanel>
-      <p className="text-[#8ff5ff] text-sm font-semibold">{instruction}</p>
-      <motion.button whileTap={{ scale: 0.97 }} onClick={onNext}
-        className="flex items-center gap-2 bg-gradient-to-r from-[#8ff5ff] to-[#00deec] text-[#0a0e14] px-8 py-3 rounded-full font-extrabold text-base shadow-[0_0_20px_rgba(143,245,255,0.25)]">
-        {t('games.play.next')} <ChevronRight className="w-5 h-5" />
-      </motion.button>
-    </motion.div>
-  );
-}
-
-function HandoffScreen({ from, to, toColor, onContinue }: {
-  from: string; to: string; toColor: string; onContinue: () => void;
-}) {
-  const { t } = useTranslation();
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-      className="knowledge-handoff flex-1 flex flex-col items-center justify-center gap-6 px-4">
-      <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}
-        className="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl"
-        style={{ backgroundColor: toColor }}>{getPlayerInitial(to)}</motion.div>
-      <p className="knowledge-from">{from}<ArrowRight size={18}/></p>
-      <h2 className="text-2xl font-extrabold font-sans text-white text-center">
-        {t('games.sharedquiz.handoffTo', { name: to })}
-      </h2>
-      <p className="text-white/40 text-sm">{t('games.sharedquiz.nopeek')}</p>
-      <motion.button whileTap={{ scale: 0.97 }} onClick={onContinue}
-        className="mt-4 flex items-center gap-2 bg-[#1b2028] border border-[#44484f]/20 text-white px-8 py-3 rounded-full font-bold text-base hover:bg-white/[0.06] transition-colors">
-        <Eye className="w-5 h-5" /> {t('games.sharedquiz.ready')}
-      </motion.button>
-    </motion.div>
-  );
+  return <>
+    {renderPhase()}
+    {/* Einblend-Takt (Design §9): Eingaben erst ab 1200 ms nach dem Wechsel; Weitergabe (z-90) bleibt bedienbar. */}
+    {!gate.inputOpen && <div data-testid="phase-input-gate" aria-hidden className="fixed inset-0 z-[80]" />}
+  </>;
 }

@@ -5,7 +5,7 @@
  * Stufenwechsel löst also keinen Netzwerkzugriff aus.
  */
 import { useEffect, useRef, useState } from 'react';
-import { drawPixelated } from './pixelate';
+import { drawPixelated, frameHeightFor } from './pixelate';
 
 interface Props {
   src: string;
@@ -28,6 +28,8 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
   const readyRef = useRef(onReady);
   readyRef.current = onReady;
   const [ready, setReady] = useState(false);
+  // Rahmen im Seitenverhaeltnis des Bildes (pixelate.ts frameHeightFor) — keine leeren Balken.
+  const [fitHeight, setFitHeight] = useState<number | null>(null);
 
   // Bild laden.
   //
@@ -39,6 +41,7 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
   // schickt. Genau das hätte Bild-URLs ohne Not unmöglich gemacht.
   useEffect(() => {
     setReady(false);
+    setFitHeight(null);
     imgRef.current = null;
     if (!src) { errorRef.current?.(); return; }
     let cancelled = false;
@@ -57,6 +60,7 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
       settled = true;
       window.clearTimeout(timeout);
       imgRef.current = img;
+      setFitHeight(frameHeightFor(width, img.naturalWidth, img.naturalHeight, height));
       setReady(true);
       // Erst jetzt darf die Runde loslaufen: Vorher ist die Zeichenflaeche
       // leer, und die Enthuellung liefe gegen ein Bild, das niemand sieht.
@@ -65,7 +69,7 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
     img.onerror = fail;
     img.src = src;
     return () => { cancelled = true; window.clearTimeout(timeout); img.onload = null; img.onerror = null; };
-  }, [src]);
+  }, [src]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Neu zeichnen, wenn Bild oder Stufe sich ändern.
   useEffect(() => {
@@ -73,13 +77,13 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
     const img = imgRef.current;
     if (!canvas || !img || !ready) return;
     drawPixelated(canvas, img, step, img.naturalWidth, img.naturalHeight);
-  }, [ready, step, width, height]);
+  }, [ready, step, width, height, fitHeight]);
 
   return (
     <canvas
       ref={canvasRef}
       width={width}
-      height={height}
+      height={fitHeight ?? height}
       className={className}
       // Damit auch die Browser-Skalierung auf großen Bildschirmen die Blöcke
       // hart lässt und nicht doch noch weichzeichnet.

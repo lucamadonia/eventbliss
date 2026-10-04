@@ -20,7 +20,7 @@ import { PartyInterstitial } from "./PartyInterstitial";
 import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { setTvView, getRulesIntro } from "@/games/tv/tv-view";
 import { buildPartyNightState } from "@/games/party/standings";
-import { playerFitFor } from "./setlist";
+import { localGameAvailability } from "./setlist";
 import { playableGames } from "@/lib/playable-games";
 import { partyGameName } from "@/hooks/useTVGameBridge";
 import { useTranslation } from "react-i18next";
@@ -121,9 +121,8 @@ export function PartyNightFlow() {
     (gameId: string) => {
       const count = session?.players.length ?? 0;
       const game = playableGames.find((g) => g.id === gameId);
-      // Nur zu wenige Leute sind ein Grund zu ueberspringen — eine zu grosse
-      // Runde spielt einfach mit, das Spiel kuerzt notfalls selbst.
-      return !!game && playerFitFor(game, count) === "ok";
+      // Die eine Party-Regel: nur was JETZT starten kann, kommt dran.
+      return !!game && localGameAvailability(game.id, count).startable;
     },
     [session?.players.length]
   );

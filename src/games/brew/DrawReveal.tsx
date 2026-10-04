@@ -213,7 +213,7 @@ export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, o
                 <motion.span
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="relative z-10 mt-1 rounded-full border border-[#FB7185]/35 bg-[#FB7185]/12 px-4 py-2 text-[10px] font-black uppercase tracking-[0.2em] text-[#fecdd3]"
+                  className="relative z-10 mt-1 rounded-full border border-[#FB7185]/35 bg-[#FB7185]/12 px-4 py-2 text-[13px] font-black text-[#fecdd3]"
                 >
                   {verdictLabel}
                 </motion.span>
@@ -222,7 +222,7 @@ export function DrawReveal({ card, skin, reduced = false, label, verdictLabel, o
                 <motion.span
                   initial={false}
                   animate={{ opacity: [0, 1], y: [5, 0] }}
-                  className="text-[10px] font-black uppercase tracking-[0.2em]"
+                  className="text-[13px] font-black"
                   style={{ color: isHit ? "#A7F3D0" : "rgba(255,255,255,.56)" }}
                 >
                   {isHit ? "✦ " : ""}{verdictLabel}

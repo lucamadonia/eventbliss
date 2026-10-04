@@ -1,5 +1,5 @@
 ﻿import { it, expect } from 'vitest';
-import { awardEmojiPoints, matchesEmojiAnswer, publicEmojiPuzzle, nextEmojiTurn, emojiRoundBudget } from './game-rules';
+import { awardEmojiPoints, emojiTeamOf, emojiTeamSizes, matchesEmojiAnswer, publicEmojiPuzzle, nextEmojiTurn, emojiRoundBudget } from './game-rules';
 import { getEMOJI_PUZZLES } from './emoji-content';
 import { curateEmojiPuzzles } from './curated-puzzles';
 import { EMOJI_PUZZLES as de } from './emoji-content-de';
@@ -63,4 +63,15 @@ it.each([3, 5, 7, 19])('gives both teams equal potential per full roster round f
   for (let actor = 0; actor < roster; actor++) players = awardEmojiPoints(players, actor, 100, true);
   expect(players[0].score).toBe(players[1].score);
   expect(players.every(p => Number.isInteger(p.score))).toBe(true);
+});
+
+it('keeps team membership fixed at start when a player is removed mid-match', () => {
+  // Teams by seat at start: A = p0, p2; B = p1, p3. p1 leaves → p2/p3 must not swap teams.
+  const start = ['p0', 'p1', 'p2', 'p3'].map((id, i) => ({ id, score: 0, streak: 0, team: i % 2 }));
+  const after = start.filter(p => p.id !== 'p1');
+  expect(after.map((p, i) => emojiTeamOf(p, i))).toEqual([0, 0, 1]);
+  expect(emojiTeamSizes(after)).toEqual([2, 1]);
+  // p3 (team B, now seat 2) scores for team B only, weighted so both teams keep equal potential.
+  expect(awardEmojiPoints(after, 2, 50, true).map(p => p.score)).toEqual([0, 0, 100]);
+  expect(awardEmojiPoints(after, 0, 50, true).map(p => p.score)).toEqual([50, 50, 0]);
 });

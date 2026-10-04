@@ -9,3 +9,8 @@ export function publicBombState<T extends { phase: string; currentQuiz: { correc
     ? { ...state, currentQuiz: { ...state.currentQuiz, correctIndex: -1 } }
     : state;
 }
+
+/** Shared ranks for ties: 1, 1, 3 — plain numbers, no leading zeros. */
+export function bombRanks(penalties: readonly number[]): number[] {
+  return penalties.map(p => penalties.filter(other => other < p).length + 1);
+}

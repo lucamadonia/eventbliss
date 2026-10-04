@@ -12,6 +12,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { getBaseUrl } from "@/lib/platform";
 import { playableGames } from "@/lib/playable-games";
 import EventInvite from "./EventInvite";
+import { availabilityLabel, roomGameAvailability } from "./room-availability";
+import RoomGameTile from "./RoomGameTile";
+import { useTVContext } from "@/contexts/TVBroadcastContext";
+import { onlineRoomLobbyState } from "@/games/tv/tv-lobby-state";
 
 const EP = {
   bg: "#0a0e14", surface1: "#151a21", surface2: "#1b2028", surface3: "#20262f",
@@ -197,7 +201,13 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
   const selectedConfig = playableGames.find(g => g.id === selectedGame);
   const minPlayers = Math.max(2, selectedConfig?.minPlayers ?? 2);
   const maxPlayers = selectedConfig?.maxPlayers ?? 30;
-  const allReady = connection === 'connected' && players.length >= minPlayers && players.length <= maxPlayers && players.every((p) => p.isReady);
+  // Ein Spiel, das in dieser Besetzung nicht laufen kann, ist nicht waehlbar und nicht startbar.
+  const availabilityFor = useCallback((id: string) => roomGameAvailability(id, players, room?.hostId ?? '', {
+    controllerParty: !!room?.settings.controllerParty, hostPremium: roomHasPremium,
+  }), [players, room?.hostId, room?.settings.controllerParty, roomHasPremium]);
+  const selectedAvailability = availabilityFor(selectedGame);
+  const selectedUnavailable = availabilityLabel(t, selectedAvailability);
+  const allReady = connection === 'connected' && selectedAvailability.startable && players.length >= minPlayers && players.length <= maxPlayers && players.every((p) => p.isReady);
 
   // Übersetzte Spielnamen, einmal je Sprachwechsel statt je Render.
   const gameList = useMemo(
@@ -270,6 +280,27 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
       broadcastRoomUpdated({ roomCode: room.roomCode, playerCount: players.length });
     }
   }, [isHost, room?.roomCode, room?.status, players.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fernseher-Wartebereich (Host): Spieler, QR auf /games?room=CODE und das
+  // gewaehlte Spiel. Nur im Wartezustand — sobald das Spiel laeuft, sendet
+  // die Spiel-Bruecke.
+  const tv = useTVContext();
+  const tvLobby = useMemo(() => {
+    if (!isHost || !room || room.status !== "lobby") return null;
+    return onlineRoomLobbyState({
+      roomCode: room.roomCode,
+      players,
+      hostId: room.hostId,
+      baseUrl: getBaseUrl(),
+      nextGame: selectedConfig ? { id: selectedConfig.id, name: t(selectedConfig.nameKey), minPlayers, maxPlayers } : null,
+      hostPremium: roomHasPremium,
+    });
+  }, [isHost, room, players, selectedConfig, minPlayers, maxPlayers, roomHasPremium, t]);
+  const tvLobbyJson = tvLobby ? JSON.stringify(tvLobby) : "";
+  useEffect(() => {
+    if (!tvLobby || !tv?.isActive) return;
+    tv.broadcastTV("tv-state", { game: "lobby", phase: "idle", lang: i18n.language, lobby: tvLobby });
+  }, [tvLobbyJson, tv?.isActive, i18n.language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const me = players.find((p) => p.id === myPlayerId);
   const myReady = me?.isReady ?? false;
@@ -558,8 +589,8 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
                         transition={{ type: "spring", stiffness: 300, damping: 28 }} className="overflow-hidden">
                         <div className="px-3 pb-3 grid grid-cols-3 gap-1.5 max-h-48 overflow-y-auto">
                           {gameList.map(g => (
-                            <motion.button key={g.id} whileTap={{ scale: 0.95 }}
-                              onClick={() => {
+                            <RoomGameTile key={g.id} id={g.id} name={g.name} icon={g.icon} chosen={selectedGames.includes(g.id)}
+                              availability={availabilityFor(g.id)} onToggle={() => {
                                 const next = selectedGames.includes(g.id)
                                   ? selectedGames.filter(id => id !== g.id)
                                   : [...selectedGames, g.id];
@@ -567,15 +598,7 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
                                 setSelectedGames(next);
                                 setSelectedGame(g.id);
                                 selectGames(next);
-                              }}
-                              className="flex flex-col items-center gap-1 rounded-xl py-2 px-1 text-center transition-colors"
-                              style={{
-                                backgroundColor: selectedGames.includes(g.id) ? "rgba(223,142,255,0.12)" : EP.surface2,
-                                border: selectedGames.includes(g.id) ? `1px solid ${EP.neonPurple}40` : "1px solid transparent",
-                              }}>
-                              <span className="text-lg">{g.icon}</span>
-                              <span className="text-[9px] font-semibold leading-tight" style={{ color: selectedGames.includes(g.id) ? EP.neonPurple : "rgba(255,255,255,0.5)" }}>{g.name}</span>
-                            </motion.button>
+                              }} />
                           ))}
                         </div>
                       </motion.div>
@@ -622,6 +645,13 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
               }}>
               {myReady ? `✓ ${t("nativeExtra.gameLobby.readyDone")}` : t("nativeExtra.gameLobby.readyUp")}
             </motion.button>
+            {isHost && selectedUnavailable && (
+              <p role="status" data-testid="selected-game-unavailable"
+                className="rounded-xl px-3 py-2 text-center text-xs font-semibold text-white/80"
+                style={{ backgroundColor: EP.surface2, border: `1px solid ${EP.neonPink}40` }}>
+                {gameList.find(g => g.id === selectedGame)?.name || gameName}: {selectedUnavailable}
+              </p>
+            )}
             {isHost && (
               <motion.button whileTap={allReady ? { scale: 0.96 } : {}}
                 disabled={!allReady} onClick={handleStart}
@@ -634,6 +664,8 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
                   <Play className="h-5 w-5" />
                   {allReady
                     ? t("nativeExtra.gameLobby.startGame")
+                    : selectedUnavailable
+                      ? selectedUnavailable
                     : players.length < minPlayers || players.length > maxPlayers
                       ? `${players.length} / ${minPlayers}–${maxPlayers}`
                       : t("nativeExtra.gameLobby.notReadyCount", { players: players.filter((p) => !p.isReady).length })}

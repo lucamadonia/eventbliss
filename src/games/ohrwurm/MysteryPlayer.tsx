@@ -65,7 +65,7 @@ export function MysteryPlayer({
 
       {/* Speed-Bonus-Chip */}
       <div
-        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-black tracking-wide uppercase transition-all"
+        className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[13px] font-black transition-all"
         style={
           speedActive
             ? { background: `${C.accent}22`, color: C.accent, border: `1.5px solid ${C.accent}`, boxShadow: `0 0 22px ${C.accent}55` }
@@ -175,7 +175,7 @@ export function MysteryPlayer({
             <span className="font-mono font-black text-2xl tabular-nums" style={{ color: danger ? C.danger : C.text }}>
               {timeLeft}s
             </span>
-            <p className="text-[11px] font-bold" style={{ color: C.dim }}>
+            <p className="text-[13px] font-bold" style={{ color: C.dim }}>
               {danger ? t('games.ohrwurm.hurryCardExpires') : t('games.ohrwurm.timeToPlace')}
             </p>
           </div>
