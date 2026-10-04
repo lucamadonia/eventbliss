@@ -29,13 +29,19 @@ export async function advanceHandover(host, before) {
 
 /** Host-side setup screen: minimum rounds, then "Start game". Returns false if no setup screen appeared. */
 export async function hostSetup(host, game, timeout = 20000, { rounds = 'min', mode } = {}) {
-  if (game === 'flaschendrehen') { await host.clickText('^questions only', 8000); await host.clickText('^prepare', 8000); }
+  if (game === 'flaschendrehen') {
+    await host.clickText('^(questions only|nur fragen)', 8000);
+    await host.clickText('^(prepare|runde vorbereiten)', 8000);
+  }
   // Generic labels plus the game's own translated start label (e.g. closeenough "Losraten").
   const own = await host.page.evaluate(id => { const k = `games.${id.replace(/-/g, '')}.start`; const v = window.qaT?.(k); return v && v !== k ? v.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : null; }, game).catch(() => null);
   const startRe = `^(start game|start|los geht|spiel starten${own ? `|${own}` : ''})`;
   const ok = await host.page.waitForFunction(re => [...document.querySelectorAll('button')].some(b => new RegExp(re, 'i').test(b.innerText.trim()) && !b.disabled) || document.querySelector('input[type=range]'), { timeout, polling: 200 }, startRe).then(() => true, () => false);
   if (!ok) return false;
   if (mode) await host.clickText(`^${mode}`, 5000); // game mode tile, e.g. this-or-that "Speed" (F12)
+  // Who Am I defaults to twenty questions per seat; five keeps the complete
+  // four-player result inside the guest-run budget while exercising every turn.
+  if (game === 'wer-bin-ich') await host.page.select('select', '5');
   const ranges = await host.page.$$('input[type=range]');
   // Rounds slider is the last range: Home = shortest match, End = longest (kick tests need time).
   if (ranges.length) { await ranges.at(-1).focus(); await host.page.keyboard.press(rounds === 'max' ? 'End' : 'Home'); }
@@ -45,7 +51,27 @@ export async function hostSetup(host, game, timeout = 20000, { rounds = 'min', m
 }
 
 const stateEvent = game => game === 'flaschendrehen' ? 'bottlespin-state' : 'game-state';
-const SPECIFIC = ['this-or-that', 'fake-or-fact', 'flaschendrehen', 'hochstapler'];
+const SPECIFIC = ['this-or-that', 'fake-or-fact', 'flaschendrehen', 'hochstapler', 'wer-bin-ich'];
+
+/** Wer bin ich: finish the covered assignment chain, then make one guess per seat. */
+async function whoamiStep(host, all) {
+  let acted = 0;
+  if (await clickId(host.page, 'whoami-assign-seen')) acted++;
+  if (await clickId(host.page, 'whoami-assign-start')) acted++;
+  for (const d of all) {
+    if (await clickId(d.page, 'whoami-guess-now')) acted++;
+    const filled = await d.page.evaluate(() => {
+      const input = document.querySelector('[data-testid="whoami-guess-input"]');
+      if (!input || input.disabled || !input.getBoundingClientRect().height) return false;
+      const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value')?.set;
+      setter?.call(input, 'Test'); input.dispatchEvent(new Event('input', { bubbles: true }));
+      return true;
+    }).catch(() => false);
+    if (filled && await clickId(d.page, 'whoami-guess-submit')) acted++;
+  }
+  if (await clickId(host.page, 'whoami-result-next')) acted++;
+  return acted;
+}
 
 /** hochstapler (secret roles): one pass over every device using the impostor-* test ids. */
 async function hochstaplerStep(host, all) {
@@ -83,8 +109,12 @@ export async function playMatch(h, host, game, devices, { before, budgetMs = 120
       if (onTick && await onTick(null) === 'stop') return { finished: false, stopped: true, actions };
       actions += await hochstaplerStep(host, all()); await pause(400); continue;
     }
+    if (game === 'wer-bin-ich') {
+      if (onTick && await onTick(null) === 'stop') return { finished: false, stopped: true, actions };
+      actions += await whoamiStep(host, all()); await pause(350); continue;
+    }
     const s = await observer.gameState(stateEvent(game)) ?? await host.gameState(stateEvent(game));
-    if (!s) { await clickRe(host.page, '^(start game|start)'); await pause(200); continue; }
+    if (!s) { await clickRe(host.page, '^(start game|start|spiel starten)'); await pause(200); continue; }
     if (onTick && await onTick(s) === 'stop') return { finished: false, stopped: true, actions };
     seen.add(s.phase);
     const current = (idx) => devices.get(s.players?.[idx]?.id);
@@ -95,8 +125,8 @@ export async function playMatch(h, host, game, devices, { before, budgetMs = 120
       if (s.phase === 'voting') { for (const c of all()) if (await clickRe(c.page, '^A\\b')) actions++; }
       else if (s.phase === 'reveal') await clickRe(host.page, '^(next|game over)');
     } else {
-      if (s.phase === 'spinning' && !s.isSpinning) await clickRe(host.page, '^spin');
-      else if (s.phase === 'card') { const c = current(s.selectedIdx) ?? host; if (await clickRe(c.page, '^accept')) actions++; }
+      if (s.phase === 'spinning' && !s.isSpinning) await clickRe(host.page, '^(spin|drehen)');
+      else if (s.phase === 'card') { const c = current(s.selectedIdx) ?? host; if (await clickRe(c.page, '^(accept|annehmen|done|erledigt)')) actions++; }
       else if (s.phase === 'vote') { for (const c of all()) if (await clickRe(c.page, '^(yes|ja|done|geschafft|👍)')) actions++; }
     }
     await pause(250);

@@ -12,6 +12,9 @@ interface Props {
   readyIds: ReadonlySet<string>;
   hostColor: string;
   gamesPlanned: number;
+  /** Before the first game, the lobby is the editable evening plan. */
+  firstGameReady?: boolean;
+  plannedMinutes?: number;
   tvConnected: boolean;
   /** "What's happening for me right now" — e.g. „Warte auf Tom“. */
   now?: ReactNode;
@@ -27,7 +30,7 @@ const AVATAR = 60;
  * The lobby stage (design §9.1): one message — how many are here, how many
  * are ready, who. The code lives in the invite card, not here.
  */
-export function PartyLobbyHeader({ members, readyIds, hostColor, gamesPlanned, tvConnected, now, runningGame, onBack }: Props) {
+export function PartyLobbyHeader({ members, readyIds, hostColor, gamesPlanned, firstGameReady, plannedMinutes, tvConnected, now, runningGame, onBack }: Props) {
   const { t } = useTranslation();
   const reduced = !!useReducedMotion();
   const shown = members.slice(0, MAX_AVATARS);
@@ -42,8 +45,8 @@ export function PartyLobbyHeader({ members, readyIds, hostColor, gamesPlanned, t
           <ArrowLeft className="h-5 w-5 rtl:rotate-180" aria-hidden />
         </button>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-bold text-white/80">{t('partyPlay.lobby.kickerEmpty', 'Party-Abend')}</p>
-          <p className="text-sm text-white/55">{runningGame ? t('partyPlay.lobby.runningNow', 'Läuft gerade: {{game}}', { game: runningGame }) : gamesPlanned > 0 ? t('partyPlay.lobby.planned', '{{count}} Spiele geplant', { count: gamesPlanned }) : t('partyPlay.lobby.nonePlanned', 'Noch kein Spiel geplant')}</p>
+          <p className="text-lg font-bold text-white/80">{firstGameReady ? t('partyPlay.evening.title', 'Euer Abend') : t('partyPlay.lobby.kickerEmpty', 'Party-Abend')}</p>
+          <p className="text-sm text-white/55">{runningGame ? t('partyPlay.lobby.runningNow', 'Läuft gerade: {{game}}', { game: runningGame }) : firstGameReady ? t('partyPlay.evening.meta', '{{count}} Spiele · ca. {{minutes}} Min.', { count: gamesPlanned, minutes: plannedMinutes ?? 0 }) : gamesPlanned > 0 ? t('partyPlay.lobby.planned', '{{count}} Spiele geplant', { count: gamesPlanned }) : t('partyPlay.lobby.nonePlanned', 'Noch kein Spiel geplant')}</p>
         </div>
         {tvConnected && <span data-testid="lobby-tv-status" className="flex items-center gap-1.5 rounded-full bg-[#8ff5ff]/12 px-3 py-1 text-xs font-semibold text-[#8ff5ff]">
           <span aria-hidden className="h-2 w-2 rounded-full bg-[#8ff5ff] shadow-[0_0_8px_#8ff5ff]" />{t('partyPlay.tv.short', 'TV')}

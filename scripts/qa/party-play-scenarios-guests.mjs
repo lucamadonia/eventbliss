@@ -17,9 +17,20 @@ const games = registry.split('{').filter(e => /id:\s*"/.test(e) && /minPlayers/.
 
 /** Secret-bearing elements: their data-player-id must be a seat this device plays (own + its guests); none on the TV. */
 const SECRET_SEL = '[data-testid*="role-card"],[data-testid*="secret"],[data-testid*="identity"],[data-testid*="impostor-word"],[data-testid*="sharedquiz-role"]';
-async function secrecyViolations(devices, tv) {
+async function secrecyViolations(devices, tv, gameId) {
   const found = [];
   for (const d of devices) {
+    if (gameId === 'wer-bin-ich') {
+      // In this game every player must see the other identities. Only the
+      // current holder's own identity must be absent from the assign screen.
+      const ownCard = await d.page.$eval('[data-testid="whoami-assign"]', stage => {
+        const holder = stage.getAttribute('data-seat-id');
+        return !!holder && [...stage.querySelectorAll('[data-testid="whoami-identity-card"]')]
+          .some(card => card.getAttribute('data-player-id') === holder);
+      }).catch(() => false);
+      if (ownCard) found.push(`${d.name} shows the current holder's own identity`);
+      continue;
+    }
     const local = new Set((await d.snapshot().catch(() => ({}))).localPlayerIds ?? []);
     const owners = await d.page.$$eval(SECRET_SEL, ns => ns.filter(n => n.getBoundingClientRect().height > 0).map(n => n.getAttribute('data-player-id')).filter(Boolean)).catch(() => []);
     for (const o of owners) if (local.size && !local.has(o)) found.push(`${d.name} shows secret of ${o.slice(0, 14)}`);
@@ -39,7 +50,7 @@ function guestRun(game) {
     const res = await playMatch(m.h, m.host, game.id, m.map, { budgetMs: 150000, onHandover: async info => {
       if (info.step !== 'cover') handed.add(info.playerId);
       leaks += await m.host.page.evaluate(() => [...document.querySelectorAll('button')].filter(b => b.getBoundingClientRect().height && !b.closest('[data-testid="handover-screen"]') && !b.closest('[aria-haspopup]') && !b.hasAttribute('aria-haspopup') && !/spieler|players|abort|abbrechen|tv/i.test(b.innerText + (b.getAttribute('aria-label') ?? ''))).length > 2 ? 1 : 0);
-    }, onTick: async () => { if (++ticks % 6 === 0) secrets.push(...await secrecyViolations([m.host, ...m.phones], m.tv)); } });
+    }, onTick: async () => { if (++ticks % 6 === 0) secrets.push(...await secrecyViolations([m.host, ...m.phones], m.tv, game.id)); } });
     // T-1: every planned scene (phase gate) shown on ≥ 2 devices within 250 ms.
     const traces = await Promise.all([m.host, ...m.phones, m.tv].filter(Boolean).map(async c => ({ device: c.name, entries: await c.trace() })));
     const skews = sceneSkew(traces); const worst = skews.length ? Math.max(...skews.map(s => s.skewMs)) : null;
@@ -48,8 +59,12 @@ function guestRun(game) {
     assert(!leaks, `${game.id}: game content visible behind the handover screen ${leaks}×`);
     assert(!secrets.length, `${game.id}: secrecy violated — ${[...new Set(secrets)].slice(0, 2).join('; ')}`);
     if (worst !== null) assert(worst <= 250, `${game.id}: phase-sync skew ${worst} ms > 250 (T-1)`);
-    if (res.finished) { const scores = (await m.host.party()).results.at(-1).scores; assert(guestIds.every(id => id in scores), `${game.id}: guest missing from the result`); }
-    const needsHandover = ['turns', 'sequential', 'secret'].includes(game.mode);
+    // A timeout cannot prove the guests reached the result, even if secrecy and timing looked good.
+    if (!res.finished) throw new Inconclusive(`${game.id}: match did not finish within the driver budget; participation/secrecy/skew checks passed`);
+    const scores = (await m.host.party()).results.at(-1).scores;
+    assert(guestIds.every(id => id in scores), `${game.id}: guest missing from the result`);
+    // Bomb keeps the fuse running and has no private pass screen between players.
+    const needsHandover = game.id !== 'bomb' && ['turns', 'sequential', 'secret'].includes(game.mode);
     if (needsHandover && !handed.size) throw new Inconclusive(`${game.id}: no guest turn reached within the budget (driver), participation/secrecy/skew checks passed`);
   };
 }

@@ -37,7 +37,7 @@ export function PartyStage({ seat, eyebrow, title, subtitle, children, testId, c
   const reduce = !!useReducedMotion();
   const glow = seat?.color ?? '#ef987e';
   return (
-    <motion.div data-testid={testId} variants={partyMotion('phaseStage', reduce)} initial="initial" animate="animate" exit="exit"
+    <motion.div data-testid={testId} data-seat-id={seat?.id} variants={partyMotion('phaseStage', reduce)} initial="initial" animate="animate" exit="exit"
       className="relative flex flex-1 flex-col px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))]" style={{ background: DEPTH.ground }}>
       <div aria-hidden className="pointer-events-none absolute inset-0"
         style={{ background: `radial-gradient(circle at 50% 22%, ${glow}2e 0%, ${glow}0f 34%, transparent 64%)` }} />

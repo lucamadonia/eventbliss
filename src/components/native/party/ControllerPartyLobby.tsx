@@ -37,6 +37,7 @@ import { SeatAvatar } from './PartySheet';
 import { playerGlow } from '@/lib/party-motion';
 import { usePartyScreenTrace } from './ui-trace';
 import { useControllerTvLobby } from './useControllerTvLobby';
+import { estimateSetlistMinutes } from './setlist';
 
 const STORE_URL = 'https://apps.apple.com/app/eventbliss/id6761774268';
 
@@ -158,7 +159,8 @@ export default function ControllerPartyLobby() {
   if (data && controller.onboarding && !isHost && (me || pendingClaim || controller.seatless)) return shell(<ControllerOnboarding data={data} userId={auth.user.id} busy={controller.busy} seatless={controller.seatless} />);
 
   return shell(<>
-    {data ? <PartyLobbyHeader members={roster} readyIds={readyIds} gamesPlanned={playlist.length} tvConnected={!!tv?.isActive}
+    {data ? <PartyLobbyHeader members={roster} readyIds={readyIds} gamesPlanned={playlist.length}
+      firstGameReady={data.party.status === 'lobby' && playlist.length > 0 && nextIndex === 0} plannedMinutes={estimateSetlistMinutes(playlist, roster.length)} tvConnected={!!tv?.isActive}
       hostColor={data.members.find(m => m.is_host)?.color ?? '#df8eff'} onBack={() => setConfirmLeave(true)}
       runningGame={playing ? t(playableGames.find(game => game.id === data.party.current_game_id)?.nameKey ?? data.party.current_game_id ?? '') : null}
       now={waitingFor.length > 0 && <WaitingFor members={waitingFor} />} />
@@ -183,7 +185,7 @@ export default function ControllerPartyLobby() {
       {data.party.status === 'lobby' && <NextGameCard next={next} role={isHost ? 'host' : 'player'}
         sitOutIds={data.members.filter(m => !m.banned && m.controlled_by != null).map(m => m.player_id)} />}
       {/* Progressive disclosure: big invitation while people still join, a chip once everyone is in or a game runs. */}
-      {!ended && <PartyInviteCard code={data.party.code} compact={playing || (notReady.length === 0 && roster.length >= minPlayers)} />}
+      {!ended && <PartyInviteCard code={data.party.code} compact={playing || (nextIndex > 0 && notReady.length === 0 && roster.length >= minPlayers)} />}
       {isHost && !tv?.isActive && <PartyTvTile connected={false} onPair={() => tv?.openConnection()} />}
       <PartyRoster data={data} myUserId={auth.user.id} presence={room.players} participantIds={room.room?.participantIds ?? []} busy={controller.busy} />
 
@@ -195,7 +197,7 @@ export default function ControllerPartyLobby() {
         onClick={() => setConfirmLeave(true)}>{t(isHost ? 'partyControllers.end' : 'partyControllers.leave')}</button>
       {data.party.status === 'lobby' && (isHost || me) && <PartyBottomBarSpacer />}
       {/* NOW-first: the one action for this person, always in the thumb zone. */}
-      {data.party.status === 'lobby' && isHost && <HostStartBar next={next} busy={controller.busy} />}
+      {data.party.status === 'lobby' && isHost && <HostStartBar next={next} busy={controller.busy} firstGame={playlist.length > 0 && nextIndex === 0} />}
       {data.party.status === 'lobby' && !isHost && me && <PartyReadyBar ready={myReady} color={me.color} onToggle={ready => room.setReady(ready)} />}
     </>}
     <PartyConfirmSheet open={confirmLeave} onClose={() => setConfirmLeave(false)} danger={isHost} busy={controller.busy}

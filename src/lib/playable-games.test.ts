@@ -243,8 +243,13 @@ describe("gameAvailability — planbar vs. startklar", () => {
   });
 
   it("Joystick-Party: Gaeste setzen in nicht angepassten Spielen aus", () => {
-    expect(gameAvailability("bomb", ctx({ phonePlayers: 2, guestPlayers: 3 })))
+    expect(gameAvailability("headup", ctx({ phonePlayers: 2, guestPlayers: 3 })))
       .toMatchObject({ startable: true, activePlayers: 3, sittingOut: 3 });
+  });
+
+  it("Bombe: Gaeste am Host-Handy spielen mit", () => {
+    expect(gameAvailability("bomb", ctx({ phonePlayers: 2, guestPlayers: 3 })))
+      .toMatchObject({ startable: true, activePlayers: 6, sittingOut: 0 });
   });
 
   it("zu wenige, WEIL Gaeste aussetzen — eigener Grund, planbar", () => {
@@ -321,7 +326,7 @@ describe("startBlockReason / availabilityChip (Design §4.1)", () => {
   });
 
   it("Gaeste setzen aus: cyan, Users, mit Namen oder Anzahl", () => {
-    const a = gameAvailability("bomb", ctx({ phonePlayers: 2, guestPlayers: 2 }));
+    const a = gameAvailability("headup", ctx({ phonePlayers: 2, guestPlayers: 2 }));
     expect(availabilityChip(a, { sittingOutNames: ["Max", " Gerda "], locale: "de" })).toEqual({
       kind: "ok", variant: "sitout", tone: "cyan", locked: false, icon: "Users",
       key: "partyPlay.availability.sitout", params: { names: "Max und Gerda", count: 2 },
@@ -415,8 +420,8 @@ describe("availabilityChip — jeder Schluessel existiert in allen 10 Sprachen",
   /** Alle Varianten, die der Chip ausgeben kann — mit und ohne Namen. */
   const chips = [
     availabilityChip(gameAvailability("bomb", base)),
-    availabilityChip(gameAvailability("bomb", { ...base, guestPlayers: 2 })),
-    availabilityChip(gameAvailability("bomb", { ...base, guestPlayers: 2 }), { sittingOutNames: ["Max", "Gerda"], locale: "de" }),
+    availabilityChip(gameAvailability("headup", { ...base, guestPlayers: 2 })),
+    availabilityChip(gameAvailability("headup", { ...base, guestPlayers: 2 }), { sittingOutNames: ["Max", "Gerda"], locale: "de" }),
     availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1 })),
     availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1, guestPlayers: 3 })),
     availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1, guestPlayers: 3 }), { sittingOutNames: ["Max"], locale: "de" }),

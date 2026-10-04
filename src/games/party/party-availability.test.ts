@@ -38,10 +38,10 @@ describe('controllerGameAvailability', () => {
   });
 
   it('allows a small game and names who sits out (E03)', () => {
-    const bomb = controllerGameAvailability('bomb', mixed);
-    expect(bomb.startable).toBe(true);
-    expect(sitOutHint(bomb, t, sittingOutNames('bomb', mixed))).toMatch(/^Max .+ Gerda setzen aus$/);
-    expect(availabilityStatus(bomb)).toBe('sitout');
+    const headup = controllerGameAvailability('headup', mixed);
+    expect(headup.startable).toBe(true);
+    expect(sitOutHint(headup, t, sittingOutNames('headup', mixed))).toMatch(/^Max .+ Gerda setzen aus$/);
+    expect(availabilityStatus(headup)).toBe('sitout');
   });
 
   it('blocks premium games without premium, even for planning', () => {

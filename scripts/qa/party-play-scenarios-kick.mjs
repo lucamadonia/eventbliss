@@ -13,7 +13,7 @@ const registry = fs.readFileSync('src/lib/playable-games.ts', 'utf8');
 const games = [...registry.matchAll(/\{\s*id:\s*"([^"]+)"[^}]*?minPlayers:\s*(\d+),\s*maxPlayers:\s*(\d+)[^}]*\}/g)].map(m => ({ id: m[1], min: +m[2], max: +m[3] }));
 const NAMES = ['Lena', 'Tom', 'Uwe', 'Vera', 'Wim'];
 // Matches the driver finishes within ~30 s: kick early (the baseline then cannot judge stalls).
-const FAST_GAMES = ['hochstapler', 'wer-bin-ich', 'story-builder'];
+const FAST_GAMES = ['hochstapler', 'story-builder'];
 
 /** Every broadcast payload a phone saw (room-wire unwrapped to room:<event>), newest first. */
 const broadcasts = c => c.page.evaluate(() => Object.entries(window.__qaBroadcasts ?? {}).map(([event, v]) => ({ event, at: v.at, payload: v.payload })).sort((a, z) => z.at - a.at));
@@ -48,7 +48,7 @@ function kickGame(game, kickActive) {
       return { res, maxStill: Math.max(maxStill, Date.now() - still) }; };
     // Kick-active waits (≤ 25 s) until a kickable phone holds the turn.
     // 30 s baseline: long enough to show whether the generic driver keeps this game moving without any kick.
-    const pre = await progress([m.host, ...m.phones], FAST_GAMES.includes(game.id) ? 4000 : 30000, async () => { before = await gameView(observer); return kickActive ? candidates.includes(before.active) : false; });
+    const pre = await progress([m.host, ...m.phones], FAST_GAMES.includes(game.id) ? 4000 : game.id === 'wer-bin-ich' ? 60000 : 30000, async () => { before = await gameView(observer); return kickActive ? candidates.includes(before.active) : false; });
     before = await gameView(observer); ctx.evidence = { ...ctx.evidence, events: before.events, keys: before.keys, activeBefore: before.active, preStillMs: pre.maxStill };
     if (pre.res.finished || pre.res.returnedToLobby) throw new Inconclusive(`${game.id} ended before the kick (${JSON.stringify(pre.res)})`);
     // Targets: K13 one non-active phone. K14 the active phone; when the game does not expose who is active,
@@ -57,7 +57,7 @@ function kickGame(game, kickActive) {
     if (kickActive) {
       if (before.active && candidates.includes(before.active)) targets = [before.active];
       else if (!before.active) { targets = candidates; proxy = true; ctx.notes.push(`active player not exposed in broadcasts (keys ${(before.keys ?? []).join(',')}); kicked all ${candidates.length} non-observer phones`); }
-      else throw new Inconclusive('the observable active player was the host/observer for 25 s');
+      else throw new Inconclusive('the observable active player was the host/observer throughout the baseline');
     } else targets = [candidates.find(id => id !== before.active) ?? candidates[0]];
     if ((await m.host.snapshot()).room?.status !== 'playing') throw new Inconclusive(`${game.id} match already over before the kick`);
     const victims = m.phones.filter(p => targets.includes(m.ids[p.name]));

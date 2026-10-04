@@ -13,7 +13,8 @@ export async function matchSetup(ctx, { game, guests = [], phones = ['Lena', 'To
   for (const g of guests) gids[g] = await addGuest(ctx, host, code, g);
   const devices = []; for (const p of phones) devices.push(await joinPhone(h, ctx, host, code, p));
   for (const p of devices) await ready(p);
-  await startGame(host, [game, 'this-or-that']); await hostSetup(host, game, 20000, { rounds, mode });
+  await startGame(host, [game, 'this-or-that']);
+  if (!await hostSetup(host, game, 20000, { rounds, mode })) throw new Error(`${game}: setup did not reach an enabled start action`);
   const pid = async p => (await memberBy(host, m => m.user_id === p.account)).player_id;
   const ids = {}; for (const p of devices) ids[p.name] = await pid(p);
   return { h, host, code, tv: tvc, phones: devices, guests: gids, ids, map: await deviceMap(host, devices), participants: async () => (await host.snapshot()).room.participantIds };
