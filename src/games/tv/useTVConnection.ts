@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/i18n';
 import { createTVPacketGate, stripTVMessageId } from './tv-wire';
+import { tvLeaderboardScores } from './tv-leaderboard-scores';
 
 /**
  * Uebernimmt die Sprache des Telefons.
@@ -164,12 +165,13 @@ export function useTVConnection(roomCode: string) {
     const handleLeaderboard = (payload: unknown) => {
       if (!acceptPacket(payload)) return;
       const clean = stripTVMessageId((payload || {}) as Record<string, unknown>);
-      setLeaderboard(((clean as { scores?: unknown }).scores || []) as TVScore[]);
+      setLeaderboard(tvLeaderboardScores((clean as { scores?: unknown }).scores));
     };
     const handleGameStart = (payload: unknown) => {
       if (!acceptPacket(payload)) return;
       markGameStarted();
       setGameEnded(false);
+      setLeaderboard([]);
       if (payload) setGameState(payload as TVState);
     };
     const handleStateSync = (payload: unknown) => {

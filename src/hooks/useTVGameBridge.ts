@@ -33,6 +33,7 @@ import type { PartyNightState } from "@/games/tv/party-types";
 import { recordControllerResult } from '@/games/party/controller-session';
 import { controllerScores } from '@/games/party/controller-result';
 import { gameRoomSession } from '@/games/multiplayer/useGameRoom';
+import { tvLeaderboardScores } from '@/games/tv/tv-leaderboard-scores';
 
 /**
  * Endphasen aus Sicht der Party.
@@ -170,15 +171,10 @@ export function useTVGameBridge(
       endedRef.current = true;
       tv.broadcastTV("game-end", { game: gameId, ...publicState });
 
-      // Also broadcast leaderboard data if players with scores are available
-      const players = state.players as { name: string; score: number; color: string }[] | undefined;
-      if (players) {
-        tv.broadcastTV("tv-leaderboard", {
-          scores: players
-            .map((p) => ({ name: p.name, score: p.score, color: p.color }))
-            .sort((a, b) => b.score - a.score),
-        });
-      }
+      // Bombe carries penalties rather than `score`; the party score map is
+      // already calculated by player ID. Never send an incomplete scoreboard.
+      const scores = tvLeaderboardScores(state.players, partyScoresById);
+      if (scores.length) tv.broadcastTV("tv-leaderboard", { scores });
     }
   }, [tv, gameId, state.phase, broadcastEnabled]); // eslint-disable-line react-hooks/exhaustive-deps
 
