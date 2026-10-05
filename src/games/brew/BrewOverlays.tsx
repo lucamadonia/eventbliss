@@ -20,11 +20,12 @@ export type Penalty =
   | { kind: "task"; taskIndex: number }
   | { kind: "sip" };
 
-export function BrewPenaltyOverlay({ penalty, visible, skin, theme, accent, reduceMotion, penaltyTasks, sipDisclaimer, onContinue, onLeave }: {
+export function BrewPenaltyOverlay({ penalty, visible, skin, withTray, theme, accent, reduceMotion, penaltyTasks, sipDisclaimer, onContinue, onLeave }: {
   penalty: Penalty | null;
   /** Nur wer die Strafe hat (und der Gastgeber) sieht sie. */
   visible: boolean;
   skin: Skin;
+  withTray: boolean;
   theme: BrewPalette;
   accent: string;
   reduceMotion: boolean;
@@ -73,7 +74,7 @@ export function BrewPenaltyOverlay({ penalty, visible, skin, theme, accent, redu
               {skin === "brew" ? t("games.brew.bustTitleBrew") : t("games.brew.bustTitleBar")}
             </p>
             <p className="text-sm mt-1" style={{ color: theme.dim }}>
-              {skin === "brew" ? t("games.brew.bustBodyBrew") : t("games.brew.bustBodyBar")}
+              {withTray ? t(skin === "brew" ? "games.brew.bustBodyBrew" : "games.brew.bustBodyBar") : t("games.brew.directBustBody")}
             </p>
 
             {penalty.kind === "task" ? (

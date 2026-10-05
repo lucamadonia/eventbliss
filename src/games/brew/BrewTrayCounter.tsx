@@ -17,6 +17,7 @@ export interface BrewTrayCounterProps {
   theme: BrewPalette;
   accent: string;
   riskTier: BrewRiskTier;
+  withTray: boolean;
   tray: IngredientId[];
   pourFreeze: IngredientId[] | null;
   pourPlan: PourPlan | null;
@@ -33,7 +34,7 @@ export interface BrewTrayCounterProps {
   drawnCard: unknown;
 }
 
-export function BrewTrayCounter({ skin, theme, accent, riskTier, tray, pourFreeze, pourPlan, trayMarks, onTrayGeometry, bustTrayCount, bustTrigger,
+export function BrewTrayCounter({ skin, theme, accent, riskTier, withTray, tray, pourFreeze, pourPlan, trayMarks, onTrayGeometry, bustTrayCount, bustTrigger,
   counter, counterMarks, counterTaken, counterBoxRef, onTake, isMyTurn, drawnCard }: BrewTrayCounterProps) {
   const { t } = useTranslation();
   return (
@@ -43,16 +44,16 @@ export function BrewTrayCounter({ skin, theme, accent, riskTier, tray, pourFreez
         Kartenreihe, obwohl sie Ziel, Risiko und Angebot bedeuten. */}
     <div className="relative z-10 px-4 mt-4">
       <p className="text-[13px] font-black mb-2 flex items-center gap-2" style={{ color: theme.dim }}>
-        {t("games.brew.trayLabel")}
-        <span className="font-bold normal-case tracking-normal" style={{ color: theme.bad }}>
-          {t("games.brew.trayNote")}
+        {t(withTray ? "games.brew.trayLabel" : "games.brew.directCardLabel")}
+        <span className="font-bold normal-case tracking-normal" style={{ color: withTray ? theme.bad : theme.dim }}>
+          {t(withTray ? "games.brew.trayNote" : "games.brew.directCardHint")}
         </span>
-        <span className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px]"
+        {withTray && <span className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px]"
           style={{ color: riskTier === "critical" ? theme.bad : accent, background: `${riskTier === "critical" ? theme.bad : accent}12` }}>
           <Flame className="h-3 w-3" /> {t(`games.brew.risk.${riskTier}`)}
-        </span>
+        </span>}
       </p>
-      <div className="relative rounded-2xl p-2" style={{ border: `1px dashed ${theme.bad}55`, background: "rgba(251,113,133,0.04)" }}>
+      <div className="relative rounded-2xl p-2" style={{ border: `1px ${withTray ? 'dashed' : 'solid'} ${withTray ? theme.bad : accent}55`, background: withTray ? "rgba(251,113,133,0.04)" : `${accent}0a` }}>
         <TrayCards
           // Waehrend der Sortierphase bleibt die alte Reihe stehen — die
           // Wahrheit ist bereits gewechselt, nur das Bild wartet.
@@ -62,12 +63,12 @@ export function BrewTrayCounter({ skin, theme, accent, riskTier, tray, pourFreez
             ? pourFreeze.map((_, i) => i < pourPlan.used.length)
             : trayMarks}
           onGeometry={onTrayGeometry}
-          emptyLabel={t("games.brew.trayEmpty")}
+          emptyLabel={t(withTray ? "games.brew.trayEmpty" : "games.brew.directCardEmpty")}
         />
         {/* Bust: das Tablett kippt sichtbar, bevor die Strafe erscheint. */}
-        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-4">
+        {withTray && <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 -top-4">
           <TrayTip cards={bustTrayCount} trigger={bustTrigger} skin={skin} size={0.7} />
-        </div>
+        </div>}
 
       </div>
     </div>
@@ -86,6 +87,7 @@ export function BrewTrayCounter({ skin, theme, accent, riskTier, tray, pourFreez
         skin={skin}
         onTake={onTake}
         disabled={counterTaken || !isMyTurn || !!drawnCard || !!pourPlan}
+        disabledIndices={withTray ? undefined : counterMarks.map(mark => !mark)}
         marks={counterMarks}
         emptyLabel={t("games.brew.counterEmpty")}
       />

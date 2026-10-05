@@ -29,6 +29,10 @@ export async function advanceHandover(host, before) {
 
 /** Host-side setup screen: minimum rounds, then "Start game". Returns false if no setup screen appeared. */
 export async function hostSetup(host, game, timeout = 20000, { rounds = 'min', mode } = {}) {
+  if (game === 'headup') {
+    await host.page.waitForFunction(() => !!document.querySelector('button[aria-pressed]'), { timeout: 8000 });
+    await host.page.evaluate(() => document.querySelector('button[aria-pressed]')?.click());
+  }
   if (game === 'flaschendrehen') {
     await host.clickText('^(questions only|nur fragen)', 8000);
     await host.clickText('^(prepare|runde vorbereiten)', 8000);
@@ -45,6 +49,10 @@ export async function hostSetup(host, game, timeout = 20000, { rounds = 'min', m
   const ranges = await host.page.$$('input[type=range]');
   // Rounds slider is the last range: Home = shortest match, End = longest (kick tests need time).
   if (ranges.length) { await ranges.at(-1).focus(); await host.page.keyboard.press(rounds === 'max' ? 'End' : 'Home'); }
+  // Category's first slider is the answer clock. Its default 30-second turns
+  // make the four-seat guest flow exceed the scenario budget without adding
+  // coverage; five seconds still exercises timeout and the final result.
+  if (game === 'category' && ranges.length > 1) { await ranges[0].focus(); await host.page.keyboard.press('Home'); }
   if (game === 'fake-or-fact' && ranges.length > 1) { await ranges[0].focus(); await host.page.keyboard.press('End'); }
   await host.clickText(startRe, 8000);
   return true;
@@ -98,7 +106,7 @@ export async function playMatch(h, host, game, devices, { before, budgetMs = 120
   const all = () => [...new Set([host, ...devices.values()])].filter(d => !d.page.isClosed());
   const handover = () => advanceHandover(host, onHandover);
   if (!SPECIFIC.includes(game)) {
-    return driveGame(all(), host, { budgetMs, before, isDone, tick: async () => { await handover(); return onTick?.(null); } });
+    return driveGame(all(), host, { game, budgetMs, before, isDone, tick: async () => { await handover(); return onTick?.(null); } });
   }
   const end = Date.now() + budgetMs; let actions = 0; const seen = new Set();
   while (Date.now() < end) {
@@ -119,11 +127,11 @@ export async function playMatch(h, host, game, devices, { before, budgetMs = 120
     seen.add(s.phase);
     const current = (idx) => devices.get(s.players?.[idx]?.id);
     if (game === 'fake-or-fact') {
-      if (s.phase === 'statement') { const c = current(s.currentPlayerIdx); if (c && await clickRe(c.page, '^true$')) actions++; }
-      else if (s.phase === 'reveal') await clickRe(host.page, '^continue');
+      if (s.phase === 'statement') { const c = current(s.currentPlayerIdx); if (c && await clickRe(c.page, '^(true|wahr)$')) actions++; }
+      else if (s.phase === 'reveal') await clickRe(host.page, '^(continue|weiter)');
     } else if (game === 'this-or-that') {
       if (s.phase === 'voting') { for (const c of all()) if (await clickRe(c.page, '^A\\b')) actions++; }
-      else if (s.phase === 'reveal') await clickRe(host.page, '^(next|game over)');
+      else if (s.phase === 'reveal') await clickRe(host.page, '^(next|weiter|game over|spiel beenden|spiel vorbei)');
     } else {
       if (s.phase === 'spinning' && !s.isSpinning) await clickRe(host.page, '^(spin|drehen)');
       else if (s.phase === 'card') { const c = current(s.selectedIdx) ?? host; if (await clickRe(c.page, '^(accept|annehmen|done|erledigt)')) actions++; }
@@ -131,7 +139,14 @@ export async function playMatch(h, host, game, devices, { before, budgetMs = 120
     }
     await pause(250);
   }
-  return { finished: false, timedOut: true, actions, phases: [...seen] };
+  const controls = await Promise.all(all().map(async d => ({
+    device: d.name,
+    buttons: await d.page.evaluate(() => [...document.querySelectorAll('button')]
+      .filter(b => !b.disabled && b.getBoundingClientRect().height)
+      .map(b => ({ text: b.innerText.trim().slice(0, 55), testId: b.getAttribute('data-testid'), aria: b.getAttribute('aria-label') }))
+      .slice(0, 12)).catch(() => []),
+  })));
+  return { finished: false, timedOut: true, actions, phases: [...seen], controls };
 }
 
 /** player_id -> client map for the current room (guests and the host's own seat map to the host). */

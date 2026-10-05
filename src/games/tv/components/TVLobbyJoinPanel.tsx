@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
-import { Smartphone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { getBaseUrl } from '@/lib/platform';
 import { LOBBY_ACCENTS, lu } from './tv-lobby-scale';
 
 /**
@@ -18,21 +18,30 @@ export default function TVLobbyJoinPanel({ joinUrl, code }: { joinUrl: string | 
   const reduced = useReducedMotion();
 
   if (!joinUrl) {
+    const switchUrl = `${getBaseUrl()}/party/controllers?source=tv`;
     return (
       <motion.section
         className="flex h-full flex-col justify-center rounded-[28px] border border-white/[0.07] bg-[#0d0915] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
-        style={{ padding: lu(5), gap: lu(2.5), width: lu(60) }}
+        style={{ padding: lu(4), gap: lu(1.8), width: lu(60) }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="grid place-items-center rounded-full" style={{ width: lu(11), height: lu(11), background: 'radial-gradient(circle, rgba(223,142,255,0.28), rgba(143,245,255,0.08) 70%)' }}>
-          <Smartphone style={{ width: lu(5), height: lu(5), color: LOBBY_ACCENTS.purple }} />
+        <div data-testid="tv-lobby-joystick-qr" data-join-url={switchUrl} className="w-fit rounded-[22px] bg-white" style={{ padding: lu(0.8) }}>
+          <QRCodeSVG value={switchUrl} level="M" marginSize={4} bgColor="#ffffff" fgColor="#060810"
+            title={t('tvLobby.switchToJoysticks', 'Joystick-Modus starten')}
+            style={{ display: 'block', width: lu(25), height: lu(25) }} />
         </div>
-        <h2 className="font-black leading-[1.05] tracking-tight text-white" style={{ fontSize: lu(5.6) }}>
+        <p className="font-black leading-tight text-white" style={{ fontSize: lu(3.2) }}>
+          {t('tvLobby.switchToJoysticks', 'Joystick-Modus starten')}
+        </p>
+        <p className="font-medium leading-snug text-white/70" style={{ fontSize: lu(2), maxWidth: '30ch' }}>
+          {t('tvLobby.switchHostHint', 'Host: QR scannen, Party starten. Danach erscheint hier der Beitrittscode für alle.')}
+        </p>
+        <h2 className="font-semibold leading-tight text-white/75" style={{ fontSize: lu(2.4) }}>
           {t('tvLobby.localTitle', 'Ein Handy für alle')}
         </h2>
-        <p className="font-medium leading-snug text-white/70" style={{ fontSize: lu(2.6), maxWidth: '28ch' }}>
+        <p className="font-medium leading-snug text-white/60" style={{ fontSize: lu(1.8), maxWidth: '28ch' }}>
           {t('tvLobby.localHint', 'Heute wird das Handy herumgereicht – der Fernseher zeigt, wer dran ist.')}
         </p>
       </motion.section>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { ArrowLeft, Play, Tv } from 'lucide-react';
+import { ArrowLeft, Gamepad2, Play, Tv } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { NativeOverlayPortal } from '@/components/native/NativeOverlayPortal';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -26,6 +26,7 @@ interface Props {
   gameIds: string[];
   tvActive: boolean;
   onConnectTv: () => void;
+  onStartJoysticks: () => void;
   onAddPlayer: (profile: PlayerProfile) => void;
   onUpdatePlayer: (id: string, profile: PlayerProfile) => void;
   onRemovePlayer: (id: string) => void;
@@ -121,6 +122,11 @@ export function PartyEveningScreen(props: Props) {
               )}
               {tvActive && <p data-testid="evening-tv" data-connected="true" className="flex items-center gap-2 text-sm text-[#8ff5ff]">
                 <span aria-hidden className="h-2 w-2 rounded-full bg-[#8ff5ff] shadow-[0_0_8px_#8ff5ff]" />{t('partyPlay.lobby.tvOn', 'Fernseher verbunden')}</p>}
+              <button type="button" data-testid="evening-joystick-mode" onClick={props.onStartJoysticks}
+                className={cn('flex min-h-14 w-full items-center gap-3 rounded-3xl border border-[#df8eff]/30 bg-[#df8eff]/10 px-4 text-start font-semibold', focus)}>
+                <Gamepad2 className="h-5 w-5 text-[#df8eff]" aria-hidden />
+                {t('partyControllers.importLocalAction', 'Joystick-Modus mit diesen Spielern starten')}
+              </button>
 
               <LocalEveningRoster players={players} onAdd={props.onAddPlayer} onUpdate={props.onUpdatePlayer} onRemove={props.onRemovePlayer} onMove={props.onMovePlayer} />
               <EveningSetlistRow gameIds={gameIds.slice(1)} chipFor={chipOf} onRemove={props.onRemoveGame} onEdit={props.onEditSetlist} />

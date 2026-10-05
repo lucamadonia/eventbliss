@@ -43,18 +43,42 @@ function guestRun(game) {
   return async ctx => {
     const phones = ['Lena', 'Tom', 'Uwe', 'Vera'].slice(0, Math.max(1, game.min - 3));
     const m = await matchSetup(ctx, { game: game.id, guests: ['ALEXANDRA-MARIE', 'Gerda'], phones, forceShared: [game.id] });
+    if (game.id === 'pixeljagd') {
+      // A route-only assertion missed the reported failure: the second phone
+      // entered the game while its canvas remained blank.
+      const visual = async d => d.page.evaluate(() => {
+        const canvas = document.querySelector('[data-phase="playing"] canvas');
+        if (!(canvas instanceof HTMLCanvasElement) || !canvas.width || !canvas.height) return 'missing';
+        try {
+          const pixels = canvas.getContext('2d')?.getImageData(0, 0, canvas.width, canvas.height).data;
+          if (!pixels) return 'missing-context';
+          for (let i = 3; i < pixels.length; i += 4) if (pixels[i] > 0) return 'drawn';
+          return 'blank';
+        } catch (error) {
+          return error?.name === 'SecurityError' ? 'drawn' : `error:${error?.name}`;
+        }
+      });
+      for (const device of [m.host, ...m.phones]) {
+        await device.until(async () => await visual(device) === 'drawn', `${device.name} never drew the first pixeljagd image`, 16000);
+      }
+      ctx.evidence.firstImage = await Promise.all([m.host, ...m.phones].map(async d => ({ device: d.name, state: await visual(d) })));
+      await m.h.shotAll('pixeljagd-first-image');
+    }
     const guestIds = Object.values(m.guests); const parts = await m.participants();
-    ctx.evidence = { mode: game.mode, released: game.released, guestsParticipating: guestIds.filter(id => parts.includes(id)).length };
+    Object.assign(ctx.evidence, { mode: game.mode, released: game.released, guestsParticipating: guestIds.filter(id => parts.includes(id)).length });
     assert(guestIds.every(id => parts.includes(id)), `${game.id} (${game.mode}): guests not in participantIds even with guest play forced`);
     const handed = new Set(); const secrets = []; let leaks = 0, ticks = 0;
-    const res = await playMatch(m.h, m.host, game.id, m.map, { budgetMs: 150000, onHandover: async info => {
+    // Taboo has four mandatory 60-second team turns; the other two timed
+    // games can also exceed the generic 150-second allowance with four seats.
+    const budgetMs = game.id === 'taboo' ? 320000 : ['headup', 'category'].includes(game.id) ? 240000 : 150000;
+    const res = await playMatch(m.h, m.host, game.id, m.map, { budgetMs, onHandover: async info => {
       if (info.step !== 'cover') handed.add(info.playerId);
       leaks += await m.host.page.evaluate(() => [...document.querySelectorAll('button')].filter(b => b.getBoundingClientRect().height && !b.closest('[data-testid="handover-screen"]') && !b.closest('[aria-haspopup]') && !b.hasAttribute('aria-haspopup') && !/spieler|players|abort|abbrechen|tv/i.test(b.innerText + (b.getAttribute('aria-label') ?? ''))).length > 2 ? 1 : 0);
     }, onTick: async () => { if (++ticks % 6 === 0) secrets.push(...await secrecyViolations([m.host, ...m.phones], m.tv, game.id)); } });
     // T-1: every planned scene (phase gate) shown on ≥ 2 devices within 250 ms.
     const traces = await Promise.all([m.host, ...m.phones, m.tv].filter(Boolean).map(async c => ({ device: c.name, entries: await c.trace() })));
     const skews = sceneSkew(traces); const worst = skews.length ? Math.max(...skews.map(s => s.skewMs)) : null;
-    Object.assign(ctx.evidence, { handed: [...handed].filter(id => guestIds.includes(id)).length, leaks, secrecy: [...new Set(secrets)].slice(0, 5), scenes: skews.length, worstSkewMs: worst, res });
+    Object.assign(ctx.evidence, { handed: [...handed].filter(id => guestIds.includes(id)).length, leaks, secrecy: [...new Set(secrets)].slice(0, 5), scenes: skews.length, worstSkewMs: worst, skews: skews.slice(0, 8), res });
     await m.h.shotAll(`${game.id}-end`);
     assert(!leaks, `${game.id}: game content visible behind the handover screen ${leaks}×`);
     assert(!secrets.length, `${game.id}: secrecy violated — ${[...new Set(secrets)].slice(0, 2).join('; ')}`);

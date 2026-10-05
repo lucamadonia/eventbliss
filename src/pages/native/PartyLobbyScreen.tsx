@@ -15,7 +15,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Minus, Trophy, Users, Tv, Crown, Gamepad2,
-  X, ChevronRight, RotateCcw, CalendarPlus, ListPlus, Play,
+  X, ChevronRight, RotateCcw, CalendarPlus, ListPlus, Play, Pencil,
 } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePartySession } from "@/hooks/usePartySession";
@@ -33,6 +33,8 @@ import { useTVContext } from "@/contexts/TVBroadcastContext";
 import { localLobbyState } from "@/games/tv/tv-lobby-state";
 import { partyTvLinkCode } from "@/games/party/tv-link";
 import { PartyStandingsList } from "@/components/native/party/PartyStandingsList";
+import { PartySheet } from "@/components/native/party/PartySheet";
+import { PlayerProfileEditor } from "@/components/native/party/PlayerProfileEditor";
 import { EventParticipantPicker } from "@/games/ui/EventParticipantPicker";
 import { buildPartyNightState, derivePartyStandings } from "@/games/party/standings";
 import { playableGames } from "@/lib/playable-games";
@@ -59,6 +61,7 @@ export default function PartyLobbyScreen() {
   const tvView = useSyncExternalStore(subscribeTvView, getTvView, tvViewServerSnapshot);
   const [searchParams, setSearchParams] = useSearchParams();
   const [newName, setNewName] = useState("");
+  const [editingPlayerId, setEditingPlayerId] = useState<string | null>(null);
   const [showPicker, setShowPicker] = useState(false);
   const [pickerMode, setPickerMode] = useState<PartyPickerMode>("setlist");
   const [showEventPicker, setShowEventPicker] = useState(false);
@@ -98,6 +101,7 @@ export default function PartyLobbyScreen() {
 
   const session = party.session;
   const players = useMemo(() => session?.players ?? [], [session]);
+  const editingPlayer = players.find(player => player.id === editingPlayerId);
   const history = useMemo(() => session?.gameHistory ?? [], [session]);
   const standings = useMemo(
     // Entfernte Spieler behalten ihre Punkte in der Wertung (Masterplan 3.6).
@@ -365,7 +369,7 @@ export default function PartyLobbyScreen() {
           </div>
         </div>
 
-        <button className="mx-5 mb-5 flex min-h-16 w-[calc(100%-40px)] items-center gap-3 rounded-2xl border border-[#df8eff]/30 bg-[#df8eff]/10 p-4 text-start" onClick={() => navigate('/party/controllers')}>
+        <button data-testid="party-switch-joystick" className="mx-5 mb-5 flex min-h-16 w-[calc(100%-40px)] items-center gap-3 rounded-2xl border border-[#df8eff]/30 bg-[#df8eff]/10 p-4 text-start" onClick={() => navigate('/party/controllers?source=local')}>
           <Gamepad2 className="h-7 w-7 shrink-0 text-[#df8eff]" /><span><strong className="block">{t('partyControllers.title')}</strong><span className="text-sm text-muted-foreground">{t('partyControllers.subtitle')}</span></span><ChevronRight className="ms-auto shrink-0" />
         </button>
         {/* Spieler */}
@@ -389,20 +393,18 @@ export default function PartyLobbyScreen() {
                   exit={{ opacity: 0, x: 20, height: 0 }}
                   className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border"
                 >
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-lg shrink-0"
-                    style={{ backgroundColor: player.color + "30", borderColor: player.color, borderWidth: 2 }}
-                  >
-                    {player.avatar}
-                  </div>
-                  <div className="flex-1 min-w-0 text-start">
-                    <p className="text-sm font-semibold text-foreground truncate">{player.name}</p>
-                    {player.gamesPlayed > 0 && (
-                      <p className="text-[11px] text-muted-foreground">
-                        {t('nativeExtra.partyLobby.playerRowStats', { points: player.totalScore, wins: player.gamesWon })}
-                      </p>
-                    )}
-                  </div>
+                  <button type="button" data-testid={`party-edit-player-${player.id}`} onClick={() => setEditingPlayerId(player.id)}
+                    aria-label={`${t('partyPlay.roster.editProfile', 'Name, Symbol & Farbe')}: ${player.name}`}
+                    className="flex min-h-11 flex-1 items-center gap-3 text-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff]">
+                    <span className="w-10 h-10 rounded-full flex items-center justify-center text-lg shrink-0"
+                      style={{ backgroundColor: player.color + "30", borderColor: player.color, borderWidth: 2 }}>{player.avatar}</span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-sm font-semibold text-foreground truncate">{player.name}</span>
+                      {player.gamesPlayed > 0 && <span className="block text-[11px] text-muted-foreground">
+                        {t('nativeExtra.partyLobby.playerRowStats', { points: player.totalScore, wins: player.gamesWon })}</span>}
+                    </span>
+                    <Pencil className="h-4 w-4 shrink-0 text-[#df8eff]" aria-hidden />
+                  </button>
                   <motion.button
                     type="button"
                     whileTap={{ scale: 0.9 }}
@@ -702,6 +704,13 @@ export default function PartyLobbyScreen() {
         </div>
       </div>
 
+      <PartySheet open={!!editingPlayer} onClose={() => setEditingPlayerId(null)}
+        testId="party-player-profile" title={t('partyPlay.profile.title', 'Profil')}>
+        {editingPlayer && <PlayerProfileEditor key={editingPlayer.id} initial={editingPlayer} hostDevice
+          submitLabel={t('partyPlay.profile.save', 'Speichern')}
+          onSubmit={profile => { party.updatePlayer(editingPlayer.id, profile); setEditingPlayerId(null); }} />}
+      </PartySheet>
+
       <PartyGamePicker
         open={showPicker}
         onClose={() => setShowPicker(false)}
@@ -719,6 +728,7 @@ export default function PartyLobbyScreen() {
         gameIds={eveningGames}
         tvActive={!!tv?.isActive}
         onConnectTv={() => tv?.openConnection()}
+        onStartJoysticks={() => navigate('/party/controllers?source=local', { state: { plannedGames: eveningGames } })}
         onAddPlayer={profile => { haptics.success(); party.addPlayer(profile.name, { avatar: profile.avatar, color: profile.color }); }}
         onUpdatePlayer={(id, profile) => party.updatePlayer(id, profile)}
         onRemovePlayer={id => { haptics.light(); party.removePlayer(id); }}

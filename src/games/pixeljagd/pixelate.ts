@@ -28,13 +28,13 @@ export function drawPixelated(
   step: number,
   srcWidth: number,
   srcHeight: number,
-): void {
+): boolean {
   const ctx = canvas.getContext("2d");
-  if (!ctx || srcWidth <= 0 || srcHeight <= 0) return;
+  if (!ctx || srcWidth <= 0 || srcHeight <= 0) return false;
 
   const w = canvas.width;
   const h = canvas.height;
-  if (w === 0 || h === 0) return;
+  if (w === 0 || h === 0) return false;
 
   const blocks = Math.max(2, Math.round(step));
   if (blocks >= FINAL_STEP) {
@@ -42,7 +42,7 @@ export function drawPixelated(
     ctx.imageSmoothingEnabled = true;
     ctx.clearRect(0, 0, w, h);
     drawContain(ctx, source, srcWidth, srcHeight, w, h);
-    return;
+    return true;
   }
 
   // Zwischenfläche im Seitenverhältnis des Ziels, damit die Blöcke quadratisch
@@ -51,7 +51,7 @@ export function drawPixelated(
   tmp.width = blocks;
   tmp.height = Math.max(2, Math.round((blocks * h) / w));
   const tctx = tmp.getContext("2d");
-  if (!tctx) return;
+  if (!tctx) return false;
 
   tctx.imageSmoothingEnabled = true; // beim Verkleinern mitteln — sonst Aliasing
   drawContain(tctx, source, srcWidth, srcHeight, tmp.width, tmp.height);
@@ -59,6 +59,7 @@ export function drawPixelated(
   ctx.imageSmoothingEnabled = false; // beim Vergrößern NICHT interpolieren
   ctx.clearRect(0, 0, w, h);
   ctx.drawImage(tmp, 0, 0, tmp.width, tmp.height, 0, 0, w, h);
+  return true;
 }
 
 /**

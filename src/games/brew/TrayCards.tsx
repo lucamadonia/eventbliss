@@ -24,6 +24,8 @@ export interface TrayCardsProps {
   onTake?: (id: IngredientId, index: number) => void;
   /** Theke ist pro Zug nur einmal nutzbar — dann bleiben die Karten sichtbar, aber tot. */
   disabled?: boolean;
+  /** Optional per-card lock, used when direct sorting makes irrelevant counter cards unusable. */
+  disabledIndices?: boolean[];
   /**
    * Welche Karte gebraucht wird — eine Angabe pro Karte, in Reihenfolge.
    *
@@ -51,7 +53,7 @@ export interface TrayCardsProps {
   onGeometry?: (rects: DOMRect[]) => void;
 }
 
-export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, className, onGeometry }: TrayCardsProps) {
+export function TrayCards({ ids, skin, onTake, disabled, disabledIndices, marks, emptyLabel, className, onGeometry }: TrayCardsProps) {
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
   useLayoutEffect(() => {
     if (!onGeometry) return;
@@ -82,6 +84,7 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
         {ids.map((id, i) => {
           const name = t(ingredientKey(id, skin));
           const wanted = marks?.[i] ?? false;
+          const cardDisabled = !!disabled || !!disabledIndices?.[i];
           // Die Platte ist das EINE geteilte Stueck zwischen Telefon und
           // Fernseher. Den Container teilen sie bewusst nicht: hier haengt die
           // Ref fuer `onGeometry` dran (PourFlight misst daran, wohin die
@@ -99,7 +102,7 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
               {...cardMotion}
               layout={!reduce}
               onClick={onTake ? () => onTake(id, i) : undefined}
-              disabled={onTake ? disabled : undefined}
+              disabled={onTake ? cardDisabled : undefined}
               title={name}
               className={cn(
                 // 72 statt 48 Pixel breit, und der NAME steht darunter.
@@ -107,8 +110,8 @@ export function TrayCards({ ids, skin, onTake, disabled, marks, emptyLabel, clas
                 // aria-label. Auf dem Telefon war jede Zutat damit ein
                 // Farbfleck — "man weiss nicht was es ist".
                 "relative w-[72px] flex flex-col items-center gap-1 pt-2 pb-1.5 px-1 shrink-0",
-                onTake && !disabled && "cursor-pointer active:scale-90 transition-transform",
-                onTake && disabled && "opacity-40 cursor-not-allowed",
+                onTake && !cardDisabled && "cursor-pointer active:scale-90 transition-transform",
+                onTake && cardDisabled && "opacity-40 cursor-not-allowed",
                 // Ballast tritt zurueck, sobald ueberhaupt markiert wird.
                 marks && !wanted && "opacity-55 saturate-50",
               )}

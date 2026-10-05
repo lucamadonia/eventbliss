@@ -51,6 +51,7 @@ function TVBrewView({ gameState }: Props) {
   const s = (gameState ?? {}) as Record<string, unknown>;
 
   const skin: Skin = s.skin === 'bar' ? 'bar' : 'brew';
+  const withTray = s.withTray !== false;
   const p = BREW_PALETTES[skin];
 
   // Die Feldnamen kommen aus `tvPayload` in BrewGame.tsx — wer hier umbenennt,
@@ -222,14 +223,14 @@ function TVBrewView({ gameState }: Props) {
             >
               {deckCount > 0 ? t('games.brew.deckCount', { count: deckCount }) : t('games.brew.deckEmpty')}
             </span>
-            <span className="inline-block font-bold first-letter:uppercase" style={{
+            {withTray && <span className="inline-block font-bold first-letter:uppercase" style={{
               fontSize: tvType.label,
               color: riskTier === 'critical' ? p.bad : p.accent,
               border: `1px solid ${riskTier === 'critical' ? p.bad : p.accent}66`,
               borderRadius: 9999, padding: '0.5vh 1vw',
             }}>
               {t(`games.brew.risk.${riskTier}`)}
-            </span>
+            </span>}
           {/* Wortmarke — das eine Neon im Bild. */}
           <div className="flex items-center gap-[0.6vw] shrink-0" style={{ color: p.wordmark }}>
             <Wortmarke style={{ width: '1.6vw', height: '1.6vw' }} />
@@ -282,13 +283,13 @@ function TVBrewView({ gameState }: Props) {
       {/* ZONE C — Tablett. Die Bust-Animation lebt AUSSCHLIESSLICH hier. */}
       <div className="relative z-10 px-[5vw] pt-[1.2vh] shrink-0">
         <p className="font-semibold first-letter:uppercase" style={{ fontSize: tvType.label, color: p.dim }}>
-          {t('games.brew.trayLabel')}
+          {t(withTray ? 'games.brew.trayLabel' : 'games.brew.directCardLabel')}
         </p>
         <div
           className={`${tvPanel} mt-[0.6vh] flex items-center px-[1.2vw]`}
           style={{
             minHeight: '11vh', background: p.surface, borderRadius: brewRadius.xl,
-            boxShadow: `inset 0 0 0 1px ${p.bad}38`,
+            boxShadow: `inset 0 0 0 1px ${withTray ? p.bad : p.accent}38`,
           }}
         >
           <AnimatePresence mode="wait">
@@ -357,6 +358,7 @@ function TVBrewView({ gameState }: Props) {
                 <span className="font-black" style={{ fontSize: tvType.title, color: p.bad }}>
                   {t(skin === 'bar' ? 'games.brew.bustTitleBar' : 'games.brew.bustTitleBrew')}
                 </span>
+                {!withTray && <span style={{ fontSize: tvType.body, color: p.dim }}>{t('games.brew.directBustBody')}</span>}
               </motion.div>
             ) : tray.length > 0 ? (
               <motion.div key="tray" layout className="flex items-center gap-[0.7vw]">
@@ -374,7 +376,7 @@ function TVBrewView({ gameState }: Props) {
               </motion.div>
             ) : (
               <motion.span key="empty" style={{ fontSize: tvType.body, color: p.dim }}>
-                {t('games.brew.trayEmpty')}
+                {t(withTray ? 'games.brew.trayEmpty' : 'games.brew.directCardEmpty')}
               </motion.span>
             )}
           </AnimatePresence>

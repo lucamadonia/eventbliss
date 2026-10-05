@@ -10,6 +10,7 @@ export interface BrewActionBarProps {
   theme: BrewPalette;
   accent: string;
   drawLeads: boolean;
+  withTray: boolean;
   cardsRemaining: number;
   isMyTurn: boolean;
   hasPenalty: boolean;
@@ -22,7 +23,7 @@ export interface BrewActionBarProps {
   onPour: () => void;
 }
 
-export function BrewActionBar({ hint, theme, accent, drawLeads, cardsRemaining, isMyTurn, hasPenalty, blocked, trayCount, trayHits, reduceMotion, onDraw, onPour }: BrewActionBarProps) {
+export function BrewActionBar({ hint, theme, accent, drawLeads, withTray, cardsRemaining, isMyTurn, hasPenalty, blocked, trayCount, trayHits, reduceMotion, onDraw, onPour }: BrewActionBarProps) {
   const { t } = useTranslation();
   return (
     <div className="sticky bottom-2 z-30 mx-3 mt-5 rounded-3xl border border-white/10 bg-black/55 px-3 py-3 pb-[max(.75rem,env(safe-area-inset-bottom))] shadow-2xl backdrop-blur-xl">
@@ -37,6 +38,7 @@ export function BrewActionBar({ hint, theme, accent, drawLeads, cardsRemaining, 
           das, was man gerade nicht tun kann.
         */}
         <motion.button
+          data-testid="brew-draw"
           onClick={onDraw}
           disabled={cardsRemaining === 0 || !isMyTurn || hasPenalty || blocked}
           className="relative flex-1 h-14 rounded-2xl font-black disabled:opacity-40"
@@ -77,8 +79,9 @@ export function BrewActionBar({ hint, theme, accent, drawLeads, cardsRemaining, 
           </span>
         </motion.button>
         <button
+          data-testid={withTray ? "brew-pour" : "brew-end-turn"}
           onClick={onPour}
-          disabled={trayCount === 0 || !isMyTurn || blocked}
+          disabled={(withTray && trayCount === 0) || !isMyTurn || hasPenalty || blocked}
           className="relative flex-1 h-14 rounded-2xl font-black disabled:opacity-40"
           style={
             drawLeads
@@ -86,7 +89,7 @@ export function BrewActionBar({ hint, theme, accent, drawLeads, cardsRemaining, 
               : { background: accent, color: theme.bg }
           }
         >
-          {trayHits > 0
+          {!withTray ? t("games.brew.endTurn") : trayHits > 0
             ? t("games.brew.pourInCount", { count: trayHits })
             : t("games.brew.pourIn")}
         </button>

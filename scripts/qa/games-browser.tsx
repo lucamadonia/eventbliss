@@ -77,8 +77,8 @@ function TVFixture({ View, initial }: { View: React.ComponentType<any>; initial:
   updateTV = setGameState;
   return <View gameState={gameState} />;
 }
-async function mountTV(game: 'findit' | 'wordpress' | 'draw' | 'impostor' | 'category', gameState: Record<string, unknown>) {
-  const View = (game === 'impostor' ? await import('@/games/tv/games/TVImpostorView') : game === 'category' ? await import('@/games/tv/games/TVCategoryView') : game === 'findit' ? await import('@/games/tv/games/TVFindItView') : game === 'draw' ? await import('@/games/tv/games/TVDrawView') : await import('@/games/tv/games/TVWordPressView')).default;
+async function mountTV(game: 'findit' | 'wordpress' | 'draw' | 'impostor' | 'category' | 'brew', gameState: Record<string, unknown>) {
+  const View = (game === 'brew' ? await import('@/games/tv/games/TVBrewView') : game === 'impostor' ? await import('@/games/tv/games/TVImpostorView') : game === 'category' ? await import('@/games/tv/games/TVCategoryView') : game === 'findit' ? await import('@/games/tv/games/TVFindItView') : game === 'draw' ? await import('@/games/tv/games/TVDrawView') : await import('@/games/tv/games/TVWordPressView')).default;
   await render(<TVFixture View={View} initial={gameState} />, '/qa/tv');
 }
 async function mountFinale() {
