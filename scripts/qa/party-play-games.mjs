@@ -49,6 +49,10 @@ export async function hostSetup(host, game, timeout = 20000, { rounds = 'min', m
   const ranges = await host.page.$$('input[type=range]');
   // Rounds slider is the last range: Home = shortest match, End = longest (kick tests need time).
   if (ranges.length) { await ranges.at(-1).focus(); await host.page.keyboard.press(rounds === 'max' ? 'End' : 'Home'); }
+  // Category's first slider is the answer clock. Its default 30-second turns
+  // make the four-seat guest flow exceed the scenario budget without adding
+  // coverage; five seconds still exercises timeout and the final result.
+  if (game === 'category' && ranges.length > 1) { await ranges[0].focus(); await host.page.keyboard.press('Home'); }
   if (game === 'fake-or-fact' && ranges.length > 1) { await ranges[0].focus(); await host.page.keyboard.press('End'); }
   await host.clickText(startRe, 8000);
   return true;

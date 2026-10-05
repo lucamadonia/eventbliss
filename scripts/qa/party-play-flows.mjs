@@ -167,12 +167,16 @@ export async function driveGame(devices, host, { game, budgetMs = 90000, stallMs
     if (tick && await tick() === 'stop') return { finished: false, stopped: true, clicks, stalls };
     // Category is hot potato: every valid word resets the clock. After both
     // host-phone guests have had a turn, stop answering so the round can end.
-    const categoryWords = game === 'category'
-      ? (await host.gameState('category').catch(() => null))?.roundWords?.length ?? 0
-      : 0;
+    // The host publishes category-state; a second phone receives it. The QA
+    // broadcast recorder observes incoming packets, not the host's own send.
+    const categoryObserver = devices.find(d => d !== host) ?? host;
+    const categoryState = game === 'category'
+      ? await categoryObserver.gameState('category-state').catch(() => null)
+      : null;
+    const categoryWords = categoryState?.roundWords?.length ?? 0;
     for (const d of devices) {
       if (d.page.isClosed()) continue;
-      if (game === 'category' && categoryWords >= 3 && !await d.exists('handover-screen')) continue;
+      if (categoryState?.phase === 'playing' && categoryWords >= 3 && !await d.exists('handover-screen')) continue;
       await d.page.evaluate(() => { for (const input of document.querySelectorAll('input[type=text],input:not([type]),textarea')) if (!input.value && !input.disabled && input.getBoundingClientRect().height) { const set = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set; set.call(input, 'Test'); input.dispatchEvent(new Event('input', { bubbles: true })); } }).catch(() => {});
       // Party-level controls (players sheet, abort, leave) are never part of playing a game.
       if (await d.page.evaluate(v => { const b = [...document.querySelectorAll('button')].find(b => !b.disabled && b.getBoundingClientRect().height && !b.hasAttribute('aria-haspopup') && !/leave|verlassen|abort|abbrechen|remove|entfernen/i.test(b.innerText) && !/^(players|spieler)$/i.test(b.innerText.trim()) && new RegExp(v, 'i').test(b.innerText.trim())); if (b) { b.click(); return true; } return false; }, verbs).catch(() => false)) clicks++;
