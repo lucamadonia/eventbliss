@@ -79,6 +79,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   // Steht das Motiv schon auf der Zeichenflaeche? Die Runde darf erst dann
   // loslaufen — sonst tickt die Uhr gegen ein Bild, das noch niemand sieht.
   const [imageReady, setImageReady] = useState(false);
+  const [readyDevices, setReadyDevices] = useState<string[]>([]);
 
   // All devices + TV switch phase together; the reveal clock waits for the beat (design §9).
   const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, round]);
@@ -86,6 +87,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   // Seats this phone plays: online the host + its 🔁 guests (one team, team-buzzer.ts).
   const room = useMemo(() => online?.players ?? [], [online?.players]);
   const mySeats = useMemo(() => (online ? localSeats(online) : []), [online]);
+  const requiredDevices = useMemo(() => [...new Set(room.map(p => p.controlledBy || p.id).concat(myId ?? []))], [room, myId]);
 
   const modeDef = useMemo(() => MODES.find((m) => m.id === mode) ?? MODES[0], [mode]);
   const steps = useMemo(() => stepsFor(modeDef.startPx, modeDef.duration), [modeDef]);
@@ -132,6 +134,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setPlayers(ps.map((p) => ({ ...p, locked: false })));
     roundTimerRef.current?.reset(duration);
     setImageReady(false);
+    setReadyDevices([]);
     setPhase('playing');
     // Kein start() hier: das uebernimmt der Effekt, sobald PixelCanvas
     // meldet, dass das Motiv geladen und gezeichnet ist.
@@ -216,8 +219,18 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   // Host wendet Client-Aktionen an.
   const applyAction = useCallback((data: Record<string, unknown>) => {
     if (online?.isConnected === false || data.round !== round || data.puzzleId !== puzzle?.id) return;
-    if (data.type === 'again' && phase === 'gameOver' && players.some(p => p.id === data.__senderId)) { rematchRef.current(); return; }
     const sender = data.__senderId;
+    const device = typeof sender === 'string' && requiredDevices.includes(sender);
+    if (data.type === 'image-ready' && device) {
+      setReadyDevices(prev => prev.includes(sender) ? prev : [...prev, sender]);
+      return;
+    }
+    if (data.type === 'image-error' && device && phase === 'playing') {
+      flash(t('games.pixeljagd.imageFailed'));
+      nextRound();
+      return;
+    }
+    if (data.type === 'again' && phase === 'gameOver' && players.some(p => p.id === data.__senderId)) { rematchRef.current(); return; }
     if (typeof sender !== 'string' || !validPixelAnswerAction(data, answerMode)) return;
     // A seat answers from its own phone, a 🔁 guest from the phone that plays it. Judging and advancing are host controls.
     if (!players.some(p => p.id === data.pid) || !mayActFor(data.pid, sender, room)) return;
@@ -226,7 +239,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
       case 'text': doTextGuess(data.pid as string, data.text as string); break;
       default: break;
     }
-  }, [phase, players, doBuzz, doTextGuess, online?.isConnected, round, puzzle?.id, answerMode, room]);
+  }, [phase, players, doBuzz, doTextGuess, online?.isConnected, round, puzzle?.id, answerMode, room, requiredDevices, nextRound, flash, t]);
 
   useEffect(() => {
     if (!online || !isHost) return;
@@ -254,9 +267,9 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
    */
   useEffect(() => {
     if (isOnline && !isHost) return;
-    if (phase !== 'playing' || !imageReady || buzzedBy || !inputOpen) return;
+    if (phase !== 'playing' || !imageReady || buzzedBy || !inputOpen || (isOnline && !requiredDevices.every(id => readyDevices.includes(id)))) return;
     roundTimerRef.current?.start();
-  }, [isOnline, isHost, phase, imageReady, buzzedBy, inputOpen]);
+  }, [isOnline, isHost, phase, imageReady, buzzedBy, inputOpen, requiredDevices, readyDevices]);
 
   /**
    * Das naechste Motiv im Voraus holen.
@@ -273,14 +286,8 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   }, [deck, round]);
 
   // Nicht-Host spiegelt die Uhr über EINEN Boolean (Muster aus OhrwurmGame).
-  useEffect(() => {
-    if (!isOnline || isHost) return;
-    if (phase === 'playing' && !buzzedBy && imageReady && inputOpen) {
-      roundTimerRef.current?.start();
-    } else {
-      roundTimerRef.current?.pause();
-    }
-  }, [isOnline, isHost, phase, buzzedBy, imageReady, inputOpen]);
+  // The host sends the authoritative timer state after every phone has drawn
+  // the image. A local start here can reveal a still blank canvas.
 
   // TV: gleiche Nutzlast offline wie online. Die Antwort erst in der Auflösung.
   const tvPayload = useMemo(() => ({
@@ -432,8 +439,19 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
                 src={puzzle.image}
                 step={step}
                 className="w-full h-auto block"
-                onError={() => { flash(t('games.pixeljagd.imageFailed')); if (isHost) nextRound(); else setImageFailed(true); }}
-                onReady={() => setImageReady(true)}
+                onError={() => {
+                  flash(t('games.pixeljagd.imageFailed'));
+                  if (isHost) nextRound();
+                  else {
+                    setImageFailed(true);
+                    online?.broadcast('pixeljagd-action', { type: 'image-error', round, puzzleId: puzzle.id });
+                  }
+                }}
+                onReady={() => {
+                  setImageReady(true);
+                  if (isOnline && !isHost) online?.broadcast('pixeljagd-action', { type: 'image-ready', round, puzzleId: puzzle.id });
+                  else if (myId) setReadyDevices(prev => prev.includes(myId) ? prev : [...prev, myId]);
+                }}
               />
               {!imageReady && (
                 <div className="absolute inset-0 flex items-center justify-center"

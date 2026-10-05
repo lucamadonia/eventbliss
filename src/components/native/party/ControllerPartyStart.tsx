@@ -34,10 +34,12 @@ interface StartProps {
   initialCode: string;
   onCreate: (name: string, hostPlays: boolean) => void;
   onJoin: (name: string, code: string) => void;
+  localPlayerCount?: number;
+  onImportLocal?: (name: string) => void;
 }
 
 /** No party yet: create one as Host or join with a code. */
-export function ControllerPartyStart({ busy, defaultName, initialCode, onCreate, onJoin }: StartProps) {
+export function ControllerPartyStart({ busy, defaultName, initialCode, onCreate, onJoin, localPlayerCount = 0, onImportLocal }: StartProps) {
   const { t } = useTranslation();
   const [name, setName] = useState('');
   const [code, setCode] = useState(initialCode);
@@ -45,6 +47,13 @@ export function ControllerPartyStart({ busy, defaultName, initialCode, onCreate,
   const displayName = name.trim() || defaultName;
   return <section className="space-y-5 rounded-3xl border border-white/10 bg-white/5 p-5">
     <label className="block space-y-2"><span>{t('partyControllers.name')}</span><input className="min-h-12 w-full rounded-xl bg-black/30 px-4" value={name} maxLength={24} onChange={event => setName(event.target.value)} placeholder={defaultName} /></label>
+    {localPlayerCount > 0 && onImportLocal && <div className="space-y-2 rounded-2xl border border-[#8ff5ff]/30 bg-[#8ff5ff]/10 p-4">
+      <p className="font-bold">{t('partyControllers.importLocalTitle', 'Mit euren Spielern weiterspielen')}</p>
+      <p className="text-sm text-white/70">{t('partyControllers.importLocalHint', '{{count}} Profile und der Spielplan kommen mit. Jeder kann danach den TV-Code scannen und seinen Platz am eigenen Handy übernehmen. Die bisherige Wertung wird gesichert; die Joystick-Wertung beginnt neu.', { count: localPlayerCount })}</p>
+      <button type="button" disabled={busy} data-testid="import-local-party" className={`${lobbyButton} w-full bg-[#8ff5ff] text-[#0a0e14]`} onClick={() => onImportLocal(displayName)}>
+        {t('partyControllers.importLocalAction', 'Joystick-Modus mit diesen Spielern starten')}
+      </button>
+    </div>}
     <label className="flex min-h-11 items-center gap-3"><input type="checkbox" checked={hostPlays} onChange={event => setHostPlays(event.target.checked)} />{t('partyControllers.hostPlays')}</label>
     <button disabled={busy} className={`${lobbyButton} w-full bg-[#df8eff] text-[#0a0e14]`} onClick={() => onCreate(displayName, hostPlays)}>{t('partyControllers.create')}</button>
     <div className="border-t border-white/10 pt-5"><label className="block space-y-2"><span>{t('partyControllers.roomCode')}</span><input className="min-h-12 w-full rounded-xl bg-black/30 px-4 font-mono uppercase tracking-widest" autoCapitalize="characters" maxLength={6} value={code} onChange={event => setCode(event.target.value.toUpperCase().replace(/[^A-Z2-9]/g, ''))} /></label>

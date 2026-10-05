@@ -154,8 +154,8 @@ export const fingerprint = c => c.page.evaluate(() => (document.body.innerText.s
  * host's result count grows or `budgetMs` passes. Reports stalls > stallMs (no fingerprint change anywhere).
  */
 /** isDone(): optional completion check → 'finished' | 'lobby' | null (online rooms, local party). */
-export async function driveGame(devices, host, { budgetMs = 90000, stallMs = 10000, before = 0, tick, isDone } = {}) {
-  const verbs = '^(start game|start|los|play|let.?s go|begin|ready|bereit|weiter|continue|next|n.chste|runde \\d+ starten|start round|accept|done|fertig|submit|senden|ok|reveal|aufdecken|view|ansehen|show|zeigen|spin|drehen|truth|dare|true|wahr|a\\b|yes|ja|confirm|skip|game over|results?|ergebnis|ich bin|i.m |got it|verstanden|close|gel.st|solved)';
+export async function driveGame(devices, host, { game, budgetMs = 90000, stallMs = 10000, before = 0, tick, isDone } = {}) {
+  const verbs = '^(start game|start|los|play|let.?s go|begin|ready|bereit|weiter|continue|next|n.chste|n.chster spieler|runde \\d+ starten|start round|accept|done|erledigt|fertig|submit|senden|abschicken|gesagt|ok|reveal|aufdecken|antwort anzeigen|view|ansehen|show|zeigen|spin|drehen|truth|dare|true|wahr|a\\b|yes|ja|confirm|skip|überspringen|richtig|correct|game over|spiel vorbei|results?|ergebnis|ich bin|i.m |got it|verstanden|close|gel.st|solved)';
   const end = Date.now() + budgetMs; let last = '', lastChange = Date.now(), stalls = 0, clicks = 0;
   while (Date.now() < end) {
     if (isDone) { const d = await isDone().catch(() => null); if (d === 'finished') return { finished: true, clicks, stalls }; if (d === 'lobby') return { finished: false, returnedToLobby: true, clicks, stalls }; }
@@ -165,15 +165,28 @@ export async function driveGame(devices, host, { budgetMs = 90000, stallMs = 100
       if (data && data.party.status === 'lobby' && (await host.route()).startsWith('/party')) return { finished: false, returnedToLobby: true, clicks, stalls };
     }
     if (tick && await tick() === 'stop') return { finished: false, stopped: true, clicks, stalls };
+    // Category is hot potato: every valid word resets the clock. After both
+    // host-phone guests have had a turn, stop answering so the round can end.
+    const categoryWords = game === 'category'
+      ? (await host.gameState('category').catch(() => null))?.roundWords?.length ?? 0
+      : 0;
     for (const d of devices) {
       if (d.page.isClosed()) continue;
+      if (game === 'category' && categoryWords >= 3 && !await d.exists('handover-screen')) continue;
       await d.page.evaluate(() => { for (const input of document.querySelectorAll('input[type=text],input:not([type]),textarea')) if (!input.value && !input.disabled && input.getBoundingClientRect().height) { const set = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set; set.call(input, 'Test'); input.dispatchEvent(new Event('input', { bubbles: true })); } }).catch(() => {});
       // Party-level controls (players sheet, abort, leave) are never part of playing a game.
-      if (await d.page.evaluate(v => { const b = [...document.querySelectorAll('button')].find(b => !b.disabled && b.getBoundingClientRect().height && !b.hasAttribute('aria-haspopup') && !/leave|verlassen|abort|abbrechen|remove|entfernen|players|spieler/i.test(b.innerText) && new RegExp(v, 'i').test(b.innerText.trim())); if (b) { b.click(); return true; } return false; }, verbs).catch(() => false)) clicks++;
+      if (await d.page.evaluate(v => { const b = [...document.querySelectorAll('button')].find(b => !b.disabled && b.getBoundingClientRect().height && !b.hasAttribute('aria-haspopup') && !/leave|verlassen|abort|abbrechen|remove|entfernen/i.test(b.innerText) && !/^(players|spieler)$/i.test(b.innerText.trim()) && new RegExp(v, 'i').test(b.innerText.trim())); if (b) { b.click(); return true; } return false; }, verbs).catch(() => false)) clicks++;
     }
     const fp = (await Promise.all(devices.map(d => fingerprint(d).catch(() => '')))).join('|');
     if (fp !== last) { last = fp; lastChange = Date.now(); } else if (Date.now() - lastChange > stallMs) { stalls++; lastChange = Date.now(); }
     await pause(350);
   }
-  return { finished: false, timedOut: true, clicks, stalls };
+  const controls = await Promise.all(devices.map(async d => ({
+    device: d.name,
+    buttons: await d.page.evaluate(() => [...document.querySelectorAll('button')]
+      .filter(b => !b.disabled && b.getBoundingClientRect().height)
+      .map(b => ({ text: b.innerText.trim().slice(0, 55), testId: b.getAttribute('data-testid'), aria: b.getAttribute('aria-label') }))
+      .slice(0, 12)).catch(() => []),
+  })));
+  return { finished: false, timedOut: true, clicks, stalls, controls };
 }

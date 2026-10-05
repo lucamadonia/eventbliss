@@ -229,6 +229,7 @@ function GlassImpl({
   const generatedAsset = skin === "bar"
     ? BAR_GLASS_ASSETS[form.id as keyof typeof BAR_GLASS_ASSETS]
     : undefined;
+  const softTvLiquid = !!generatedAsset && quality === "tv";
   const generatedFrame = skin === "bar"
     ? BAR_GLASS_ASSET_FRAMES[form.id as keyof typeof BAR_GLASS_ASSET_FRAMES]
     : undefined;
@@ -396,6 +397,13 @@ function GlassImpl({
               </radialGradient>
             );
           })}
+          {softTvLiquid && layers.map(l => (
+            <radialGradient key={`soft-${l.id}`} id={`soft-${uid}-${l.id}`} cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor={l.color} stopOpacity="0.85" />
+              <stop offset="55%" stopColor={l.color} stopOpacity="0.55" />
+              <stop offset="100%" stopColor={l.color} stopOpacity="0" />
+            </radialGradient>
+          ))}
           {/* Glaskoerper: oben heller, unten dunkler, damit das Gefaess Tiefe
               bekommt statt eine flache Flaeche zu sein. */}
           <linearGradient id={`body-${uid}`} x1="0" y1="0" x2="1" y2="1">
@@ -511,6 +519,13 @@ function GlassImpl({
         <g clipPath={`url(#clip-${uid})`}>
           {layers.map((l, i) => {
             const ziel = bandPath(form, H, l.yTop, l.yBottom);
+            if (softTvLiquid) {
+              const middle = (l.yTop + l.yBottom) / 2;
+              return <ellipse key={l.id} data-liquid-layer={l.id} cx="50" cy={middle}
+                rx={Math.max(8, hwInnerAt(form, middle / H) * 1.15)}
+                ry={Math.max(10, (l.yBottom - l.yTop) * 1.5)}
+                fill={`url(#soft-${uid}-${l.id})`} />;
+            }
             // Schluessel NUR die Zutatenkennung: `sortGlassOrder` zieht die
             // Basiszutat nach vorn. Mit `id + y` mounteten sonst ALLE
             // Schichten neu und liefen von unten wieder hoch.
@@ -593,8 +608,9 @@ function GlassImpl({
 
         {/* 7. Meniskus: die Ellipse auf der Oberflaeche. Ohne sie sieht die
             Fuellung aus wie ein Balken, nicht wie Fluessigkeit. */}
-        {topColor && fillCount > 0 && (
+        {topColor && fillCount > 0 && !(generatedAsset && quality === "tv") && (
           <motion.ellipse
+            clipPath={`url(#clip-${uid})`}
             cx="50" rx={hwInnerAt(form, pegel / H)} ry={Math.max(1.2, hwInnerAt(form, pegel / H) * 0.16)}
             fill={mixtureColor ?? topColor} stroke="rgba(255,255,255,0.45)" strokeWidth="0.7"
             initial={false}

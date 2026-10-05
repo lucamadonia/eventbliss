@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
@@ -106,6 +106,7 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
 
 export default function TVScreen() {
   const { roomCode } = useParams<{ roomCode: string }>();
+  const navigate = useNavigate();
   const code = roomCode || '';
   /**
    * Sprache aus dem Link, noch bevor das Telefon zum ersten Mal sendet —
@@ -177,6 +178,15 @@ export default function TVScreen() {
    * Fernseher einen Ersatz aus der Anwesenheit ab.
    */
   const wireLobby = useMemo(() => parseTVLobbyState(gameState?.lobby), [gameState?.lobby]);
+  // Switching a one-phone evening to a controller party creates a new room
+  // code. The TV still listens on the old local code when the first controller
+  // lobby packet arrives; follow that announced room so later roster updates
+  // and game images reach this screen as well.
+  useEffect(() => {
+    const nextCode = wireLobby?.mode === 'controller-party' ? wireLobby.code : null;
+    if (!nextCode || nextCode === code || !/^[A-HJ-NP-Z2-9]{6}$/.test(nextCode)) return;
+    navigate(`/tv/${nextCode}${window.location.search}`, { replace: true });
+  }, [wireLobby?.mode, wireLobby?.code, code, navigate]);
   const legacyJoinCode = typeof gameState?.controllerJoinCode === 'string' && /^[A-HJ-NP-Z2-9]{6}$/.test(gameState.controllerJoinCode)
     ? gameState.controllerJoinCode : null;
   /**

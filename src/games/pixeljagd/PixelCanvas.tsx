@@ -27,6 +27,13 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
   errorRef.current = onError;
   const readyRef = useRef(onReady);
   readyRef.current = onReady;
+  const reportedReadyRef = useRef(false);
+  const reportedErrorRef = useRef(false);
+  const reportError = () => {
+    if (reportedErrorRef.current) return;
+    reportedErrorRef.current = true;
+    errorRef.current?.();
+  };
   const [ready, setReady] = useState(false);
   // Rahmen im Seitenverhaeltnis des Bildes (pixelate.ts frameHeightFor) — keine leeren Balken.
   const [fitHeight, setFitHeight] = useState<number | null>(null);
@@ -43,7 +50,9 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
     setReady(false);
     setFitHeight(null);
     imgRef.current = null;
-    if (!src) { errorRef.current?.(); return; }
+    reportedReadyRef.current = false;
+    reportedErrorRef.current = false;
+    if (!src) { reportError(); return; }
     let cancelled = false;
     let settled = false;
     const img = new Image();
@@ -51,20 +60,21 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
       if (cancelled || settled) return;
       settled = true;
       window.clearTimeout(timeout);
-      errorRef.current?.();
+      reportError();
     };
     const timeout = window.setTimeout(fail, 12_000);
     img.decoding = 'async';
-    img.onload = () => {
+    img.onload = async () => {
+      if (cancelled || settled) return;
+      // On iOS, load can fire before the asynchronous decode is drawable.
+      // Keep the loading cover and the round clock stopped until drawing succeeds.
+      try { await img.decode(); } catch { /* drawPixelated reports an actual failure below */ }
       if (cancelled || settled) return;
       settled = true;
       window.clearTimeout(timeout);
       imgRef.current = img;
       setFitHeight(frameHeightFor(width, img.naturalWidth, img.naturalHeight, height));
       setReady(true);
-      // Erst jetzt darf die Runde loslaufen: Vorher ist die Zeichenflaeche
-      // leer, und die Enthuellung liefe gegen ein Bild, das niemand sieht.
-      readyRef.current?.();
     };
     img.onerror = fail;
     img.src = src;
@@ -76,7 +86,15 @@ export function PixelCanvas({ src, step, width = 960, height = 720, className, o
     const canvas = canvasRef.current;
     const img = imgRef.current;
     if (!canvas || !img || !ready) return;
-    drawPixelated(canvas, img, step, img.naturalWidth, img.naturalHeight);
+    try {
+      if (!drawPixelated(canvas, img, step, img.naturalWidth, img.naturalHeight)) throw new Error('canvas unavailable');
+      if (!reportedReadyRef.current) {
+        reportedReadyRef.current = true;
+        readyRef.current?.();
+      }
+    } catch {
+      reportError();
+    }
   }, [ready, step, width, height, fitHeight]);
 
   return (

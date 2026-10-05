@@ -32,6 +32,7 @@ export function usePixelRoomSync(
       if (typeof data.timeLeft !== 'number') return;
       timerRef.current?.reset(data.timeLeft);
       if (data.running) timerRef.current?.start();
+      else timerRef.current?.pause();
     });
   }, [online, timerRef]);
 
