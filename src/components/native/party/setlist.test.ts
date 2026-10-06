@@ -226,8 +226,9 @@ describe("localGameAvailability", () => {
     expect(localGameAvailability("taboo", 4)).toMatchObject({ plannable: true, startable: true });
   });
 
-  it("sperrt eine zu grosse Runde auch fuers Planen", () => {
-    expect(localGameAvailability("ohrwurm", 8)).toMatchObject({ plannable: false, reason: "too_many" });
+  it("allows Ohrwurm teams with more than eight players", () => {
+    expect(localGameAvailability("ohrwurm", 9)).toMatchObject({ plannable: true, startable: true });
+    expect(localGameAvailability("ohrwurm", 21)).toMatchObject({ plannable: false, reason: "too_many" });
   });
 
   it("kennt im lokalen Abend kein Premium-Hindernis (das regelt das Gratis-Kontingent)", () => {
@@ -240,8 +241,9 @@ describe("findUnfitSetlistEntries", () => {
     expect(findUnfitSetlistEntries(["taboo", "hochstapler", "pantomime", "bomb"], 2)).toEqual([]);
   });
 
-  it("sperrt, wenn die Runde zu gross ist", () => {
-    expect(findUnfitSetlistEntries(["taboo", "ohrwurm"], 8)).toEqual(["ohrwurm"]);
+  it("keeps Ohrwurm in a large setlist", () => {
+    expect(findUnfitSetlistEntries(["taboo", "ohrwurm"], 9)).toEqual([]);
+    expect(findUnfitSetlistEntries(["taboo", "ohrwurm"], 21)).toEqual(["taboo", "ohrwurm"]);
   });
 
   it("ignoriert unbekannte Kennungen statt zu werfen", () => {
@@ -256,7 +258,7 @@ describe("findUnfitSetlistEntries", () => {
  */
 describe("nextFittingIndex", () => {
   // Echte Kennungen, damit der Test die Registry mitprueft und nicht nur sich
-  // selbst: hochstapler = ab 4, ohrwurm = bis 4, bomb = 2-x.
+  // selbst: hochstapler = ab 4, ohrwurm = bis 20, bomb = 2-x.
   const LIST = ["bomb", "hochstapler", "taboo", "ohrwurm"];
 
   it("nimmt den faelligen Eintrag, wenn er passt", () => {
@@ -268,9 +270,8 @@ describe("nextFittingIndex", () => {
     expect(nextFittingIndex(LIST, 1, 2)).toBe(3);
   });
 
-  it("ueberspringt auch ein zu grosses Spiel", () => {
-    // Acht Personen, ohrwurm (bis 4) an Position 3: passt nicht mehr.
-    expect(nextFittingIndex(LIST, 3, 8)).toBe(-1);
+  it("lets a large group start Ohrwurm", () => {
+    expect(nextFittingIndex(LIST, 3, 8)).toBe(3);
     expect(nextFittingIndex(LIST, 0, 8)).toBe(0);
   });
 

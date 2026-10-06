@@ -16,7 +16,7 @@ export async function createDB() {
   `);
   const social = await readFile(new URL('../../supabase/migrations/20260401000000_game_social.sql', import.meta.url), 'utf8');
   await db.exec(social.slice(social.indexOf('CREATE TABLE IF NOT EXISTS public.game_stats'), social.indexOf('-- Achievements definitions')));
-  for (const migration of ['20260922235000_controller_parties.sql', '20261001120000_party_play_guests.sql']) {
+  for (const migration of ['20260922235000_controller_parties.sql', '20261001120000_party_play_guests.sql', '20261006160000_ohrwurm_team_capacity.sql']) {
     await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), 'utf8'));
   }
   return {

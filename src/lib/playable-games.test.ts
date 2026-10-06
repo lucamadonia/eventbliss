@@ -236,9 +236,10 @@ describe("gameAvailability — planbar vs. startklar", () => {
     });
   });
 
-  it("zu viele: gesperrt (OHRWURM max. 4)", () => {
-    expect(gameAvailability("ohrwurm", ctx({ phonePlayers: 4 }))).toMatchObject({
-      plannable: false, startable: false, reason: "too_many", missingPlayers: 0, reasonParams: { max: 4, count: 5 },
+  it("Ohrwurm accepts large groups, while capped games still reject excess players", () => {
+    expect(gameAvailability("ohrwurm", ctx({ phonePlayers: 8 }))).toMatchObject({ startable: true, activePlayers: 9 });
+    expect(gameAvailability("closeenough", ctx({ phonePlayers: 8 }))).toMatchObject({
+      plannable: false, startable: false, reason: "too_many", missingPlayers: 0, reasonParams: { max: 8, count: 9 },
     });
   });
 
@@ -368,9 +369,9 @@ describe("startBlockReason / availabilityChip (Design §4.1)", () => {
   });
 
   it("zu viele: pink, Ban, gesperrt", () => {
-    expect(availabilityChip(gameAvailability("ohrwurm", ctx({ phonePlayers: 4 })))).toEqual({
+    expect(availabilityChip(gameAvailability("closeenough", ctx({ phonePlayers: 8 })))).toEqual({
       kind: "locked", variant: "too_many", tone: "pink", locked: true, icon: "Ban",
-      key: "partyPlay.availability.tooMany", params: { max: 4, count: 5 },
+      key: "partyPlay.availability.tooMany", params: { max: 8, count: 9 },
     });
   });
 
@@ -443,7 +444,7 @@ describe("availabilityChip — jeder Schluessel existiert in allen 10 Sprachen",
     availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1 })),
     withDisabledGuestSupport("taboo", () => availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1, guestPlayers: 3 }))),
     withDisabledGuestSupport("taboo", () => availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1, guestPlayers: 3 }), { sittingOutNames: ["Max"], locale: "de" })),
-    availabilityChip(gameAvailability("ohrwurm", { ...base, phonePlayers: 4 })),
+    availabilityChip(gameAvailability("closeenough", { ...base, phonePlayers: 8 })),
     availabilityChip(gameAvailability("hochstapler", { ...base, hostPremium: false })),
     availabilityChip(gameAvailability("gibt-es-nicht", base)),
   ];

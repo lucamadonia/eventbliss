@@ -32,6 +32,12 @@ export interface OhrwurmConfig {
   winTarget: number;
   genre: string | null;
   playback: PlaybackMode;
+  teams?: OhrwurmTeam[];
 }
 
 export interface SetupPlayer { id: string; name: string; color: string; avatar: string; }
+
+export interface OhrwurmTeam extends SetupPlayer {
+  memberIds: string[];
+  memberNames: string[];
+}

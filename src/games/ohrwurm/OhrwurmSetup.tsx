@@ -1,8 +1,8 @@
 // OHRWURM — Setup (Teilnehmer, Modus, Ziel, Genre, Wiedergabe) und Warteraum.
 import { avatarOrFallback } from '../multiplayer/seat-avatar';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Crown, Loader2, Music2, User, Users } from 'lucide-react';
+import { ArrowLeft, Crown, Loader2, Music2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { useHaptics } from '@/hooks/useHaptics';
@@ -13,6 +13,7 @@ import { OHRWURM_GENRE_ASSETS, OHRWURM_MODE_ASSETS } from '../ui/premium-game-as
 import { OHRWURM_GENRES } from './ohrwurm-content';
 import { type PlaybackMode, spotifyModePossible } from './playback';
 import { OW, OW_STYLE, PLAYER_COLORS, type OhrwurmConfig, type SetupPlayer } from './ohrwurm-theme';
+import { buildOhrwurmTeams, MAX_OHRWURM_PEOPLE, MAX_OHRWURM_TEAMS } from './teams';
 
 // ===========================================================================
 // Setup-Screen
@@ -28,7 +29,7 @@ interface SetupProps {
 export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = false }: SetupProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [mode, setMode] = useState<'solo' | 'group'>('solo');
+  const [mode, setMode] = useState<'solo' | 'group'>(initialPlayers && initialPlayers.length > 4 ? 'group' : 'solo');
   const [winTarget, setWinTarget] = useState(10);
   const [genre, setGenre] = useState<string | null>(null);
   const [playback, setPlayback] = useState<PlaybackMode>('preview');
@@ -40,6 +41,18 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
           { id: 'p-2', name: t('games.ohrwurm.defaultPlayer', { n: 2 }), color: PLAYER_COLORS[1], avatar: avatarOrFallback(undefined, 1) },
         ],
   );
+  const [teamCount, setTeamCount] = useState(2);
+  const [teamNames, setTeamNames] = useState<string[]>(() => [1, 2, 3, 4].map((n) => t('games.ohrwurm.teamName', { n })));
+  const [assignments, setAssignments] = useState<Record<string, number>>({});
+  const lastOnlineRoster = useRef('');
+  useEffect(() => {
+    if (!lockRoster || !initialPlayers) return;
+    const signature = JSON.stringify(initialPlayers);
+    if (signature === lastOnlineRoster.current) return;
+    lastOnlineRoster.current = signature;
+    setPlayers(initialPlayers);
+    if (initialPlayers.length > 4) setMode('group');
+  }, [lockRoster, initialPlayers]);
   // Tastatur-Sichtbarkeit (Native): fixe Start-CTA ausblenden, damit das
   // fokussierte Namensfeld nicht verdeckt wird — gleicher Event wie NativeShell.
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -49,40 +62,68 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
     return () => window.removeEventListener('capacitor:keyboard', h);
   }, []);
 
-  const MIN = 2, MAX = 4; // Spec §2.1: 2–4 Teilnehmer
+  const MIN = 2, SOLO_MAX = 4;
+  const MAX = mode === 'group' ? MAX_OHRWURM_PEOPLE : SOLO_MAX;
   const addPlayer = () => {
     if (players.length >= MAX) return;
     const idx = players.length;
     void haptics.select();
     const id = `p-${idx + 1}-${Date.now()}`;
-    setPlayers((prev) => [...prev, { id, name: `${mode === 'group' ? t('games.ohrwurm.group') : t('games.ohrwurm.player')} ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: avatarOrFallback(undefined, idx) }]);
+    setAssignments((prev) => ({ ...prev, [id]: idx % teamCount }));
+    setPlayers((prev) => [...prev, { id, name: `${t('games.ohrwurm.player')} ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: avatarOrFallback(undefined, idx) }]);
   };
-  const removePlayer = (id: string) => setPlayers((prev) => (prev.length > MIN ? prev.filter((p) => p.id !== id) : prev));
+  const removePlayer = (id: string) => {
+    if (players.length <= MIN) return;
+    setAssignments(Object.fromEntries(players.map((p, index) => [p.id, assignments[p.id] ?? index % teamCount])));
+    setPlayers((prev) => prev.filter((p) => p.id !== id));
+  };
   const renamePlayer = (id: string, name: string) =>
     setPlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
 
   const importNames = (names: string[]) => {
-    setPlayers((prev) => {
-      const kept = prev.filter((p) => p.name.trim() && !/^(Spieler|Gruppe|Player|Group) \d+$/.test(p.name.trim()) && p.name.trim() !== 'Du' && p.name.trim() !== 'You');
-      const merged = [...kept];
-      for (const n of names) {
-        if (merged.length >= MAX) break;
-        const idx = merged.length;
-        merged.push({ id: `imp-${idx}-${n}`, name: n, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: avatarOrFallback(undefined, idx) });
-      }
-      while (merged.length < MIN) {
-        const idx = merged.length;
-        merged.push({ id: `p-${idx + 1}`, name: `${t('games.ohrwurm.player')} ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: avatarOrFallback(undefined, idx) });
-      }
-      return merged;
-    });
+    const kept = players.filter((p) => p.name.trim() && !/^(Spieler|Gruppe|Player|Group) \d+$/.test(p.name.trim()) && p.name.trim() !== 'Du' && p.name.trim() !== 'You');
+    const merged = [...kept];
+    for (const name of names) {
+      if (merged.length >= MAX) break;
+      const idx = merged.length;
+      merged.push({ id: `imp-${Date.now()}-${idx}`, name, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: avatarOrFallback(undefined, idx) });
+    }
+    while (merged.length < MIN) {
+      const idx = merged.length;
+      merged.push({ id: `p-${idx + 1}`, name: `${t('games.ohrwurm.player')} ${idx + 1}`, color: PLAYER_COLORS[idx % PLAYER_COLORS.length], avatar: avatarOrFallback(undefined, idx) });
+    }
+    setAssignments(Object.fromEntries(merged.map((p, index) => [p.id, assignments[p.id] ?? index % teamCount])));
+    setPlayers(merged);
   };
 
-  const canStart = players.length >= MIN && players.every((p) => p.name.trim().length > 0);
+  const teams = buildOhrwurmTeams(players, teamCount, assignments, teamNames);
+  const canStart = players.length >= MIN && players.every((p) => p.name.trim().length > 0)
+    && (mode === 'group'
+      ? teams.every((team) => team.name && team.memberIds.length > 0)
+      : players.length <= SOLO_MAX);
   const start = () => {
     if (!canStart) return;
     void haptics.celebrate();
-    onStart({ mode, winTarget, genre, playback }, players);
+    onStart({ mode, winTarget, genre, playback, teams: mode === 'group' ? teams : undefined }, players);
+  };
+
+  const addTeam = () => {
+    if (teamCount >= MAX_OHRWURM_TEAMS || teamCount >= players.length) return;
+    const largest = teams.reduce((best, team, index) => team.memberIds.length > teams[best].memberIds.length ? index : best, 0);
+    const movingId = teams[largest].memberIds.at(-1);
+    const current = Object.fromEntries(players.map((p, index) => [p.id, assignments[p.id] ?? index % teamCount]));
+    if (movingId) setAssignments({ ...current, [movingId]: teamCount });
+    setTeamCount((count) => count + 1);
+  };
+
+  const removeLastTeam = () => {
+    if (teamCount <= MIN) return;
+    const removedIndex = teamCount - 1;
+    const current = Object.fromEntries(players.map((p, index) => [p.id, assignments[p.id] ?? index % teamCount]));
+    const moved = players.filter((p) => current[p.id] === removedIndex);
+    moved.forEach((p, index) => { current[p.id] = index % removedIndex; });
+    setAssignments(current);
+    setTeamCount(removedIndex);
   };
 
   const TARGETS = [
@@ -136,7 +177,7 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
             min={lockRoster ? players.length : MIN}
             max={lockRoster ? players.length : MAX}
             accent={OW.primary}
-            label={lockRoster ? t('games.ohrwurm.inRoom') : (mode === 'group' ? t('games.ohrwurm.groups') : t('games.ohrwurm.players'))}
+            label={lockRoster ? t('games.ohrwurm.inRoom') : t('games.ohrwurm.players')}
             maxNameLength={16}
           />
         </section>
@@ -146,24 +187,66 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
           <h3 className="text-sm font-bold mb-3" style={{ color: OW.dim }}>{t('games.ohrwurm.sectionMode')}</h3>
           <div className="grid grid-cols-2 gap-3">
             {([
-              { id: 'solo', label: t('games.ohrwurm.modeSoloLabel'), desc: t('games.ohrwurm.modeSoloDesc'), icon: <User className="w-5 h-5" /> },
-              { id: 'group', label: t('games.ohrwurm.modeGroupLabel'), desc: t('games.ohrwurm.modeGroupDesc'), icon: <Users className="w-5 h-5" /> },
-            ] as const).map((m) => {
-              const activeMode = mode === m.id;
-              return (
-                <PremiumImageChoiceCard
-                  key={m.id}
-                  title={m.label}
-                  subtitle={m.desc}
-                  image={OHRWURM_MODE_ASSETS[m.id]}
-                  selected={activeMode}
-                  onClick={() => { void haptics.select(); setMode(m.id); }}
-                  accent={OW.primary}
-                />
-              );
-            })}
+              { id: 'solo', label: t('games.ohrwurm.modeSoloLabel'), desc: t('games.ohrwurm.modeSoloDesc') },
+              { id: 'group', label: t('games.ohrwurm.modeGroupLabel'), desc: t('games.ohrwurm.modeGroupDesc') },
+            ] as const).map((m) => (
+              <PremiumImageChoiceCard key={m.id} title={m.label} subtitle={m.desc}
+                image={OHRWURM_MODE_ASSETS[m.id]} selected={mode === m.id}
+                onClick={() => { void haptics.select(); setMode(m.id); }} accent={OW.primary} />
+            ))}
           </div>
+          {mode === 'solo' && players.length > SOLO_MAX && (
+            <p className="mt-3 text-sm font-semibold" style={{ color: OW.accent }}>{t('games.ohrwurm.soloLimit', { count: SOLO_MAX })}</p>
+          )}
         </section>
+
+        {mode === 'group' && (
+          <section className="mb-8 space-y-4" data-testid="ohrwurm-team-setup">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold" style={{ color: OW.text }}>{t('games.ohrwurm.formTeams')}</h3>
+                <p className="mt-1 text-xs" style={{ color: OW.dim }}>{t('games.ohrwurm.sharedTimeline')}</p>
+              </div>
+              <button type="button" onClick={addTeam} disabled={teamCount >= MAX_OHRWURM_TEAMS || teamCount >= players.length}
+                className="min-h-11 shrink-0 rounded-xl border px-3 text-xs font-bold disabled:opacity-40"
+                style={{ borderColor: `${OW.secondary}66`, color: OW.secondary }}>
+                + {t('games.ohrwurm.addTeam')}
+              </button>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {teams.map((team, index) => (
+                <div key={team.id} data-testid={`ohrwurm-team-${index}`} className="rounded-2xl border p-3" style={{ borderColor: `${team.color}66`, background: OW.surface }}>
+                  <div className="flex items-center gap-2">
+                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-black"
+                      style={{ color: team.color, background: `${team.color}22` }}>{team.avatar}</span>
+                    <input value={teamNames[index] ?? ''} onChange={(event) => setTeamNames((prev) => prev.map((name, i) => i === index ? event.target.value : name))}
+                      maxLength={20} aria-label={t('games.ohrwurm.nameTeam', { n: index + 1 })}
+                      className="min-w-0 flex-1 rounded-lg border border-white/10 bg-transparent px-2 py-2 text-sm font-bold text-white focus:outline-none focus:ring-2"
+                      style={{ ['--tw-ring-color' as string]: team.color }} />
+                    <span className="text-xs font-bold" style={{ color: OW.dim }}>{team.memberIds.length}</span>
+                  </div>
+                  <p className="mt-2 min-h-8 text-xs leading-relaxed" style={{ color: team.memberIds.length ? OW.dim : OW.accent }}>
+                    {team.memberNames.length ? team.memberNames.join(' · ') : t('games.ohrwurm.emptyTeam')}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <div className="space-y-2">
+              {players.map((player, index) => (
+                <div key={player.id} className="flex min-h-12 items-center gap-3 rounded-xl bg-white/[0.04] px-3">
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">{player.name || `${t('games.ohrwurm.player')} ${index + 1}`}</span>
+                  <select value={assignments[player.id] ?? index % teamCount}
+                    onChange={(event) => setAssignments((prev) => ({ ...prev, [player.id]: Number(event.target.value) }))}
+                    aria-label={t('games.ohrwurm.assignTeam', { name: player.name || `${index + 1}` })}
+                    className="min-h-11 max-w-[50%] rounded-lg border border-white/20 bg-[#241a39] px-2 text-sm font-semibold text-white">
+                    {teams.map((team, teamIndex) => <option key={team.id} value={teamIndex}>{team.name || t('games.ohrwurm.teamName', { n: teamIndex + 1 })}</option>)}
+                  </select>
+                </div>
+              ))}
+            </div>
+            {teamCount > MIN && <button type="button" onClick={removeLastTeam} className="min-h-11 text-xs font-bold" style={{ color: OW.dim }}>{t('games.ohrwurm.removeLastTeam')}</button>}
+          </section>
+        )}
 
         {/* Spielziel */}
         <section className="mb-8">
@@ -251,7 +334,7 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
             style={canStart
               ? { background: `linear-gradient(135deg, ${OW.primary}, ${OW.secondary})`, color: OW.bg, boxShadow: `0 20px 40px ${OW.primary}40` }
               : { background: OW.surface, color: OW.dim }}>
-            {canStart ? <>{t('games.ohrwurm.startGame')} <Crown className="w-5 h-5" /></> : t('games.ohrwurm.minPlayers', { count: MIN, label: mode === 'group' ? t('games.ohrwurm.groups') : t('games.ohrwurm.players') })}
+            {t('games.ohrwurm.startGame')} <Crown className="w-5 h-5" />
           </motion.button>
         </div>
       )}

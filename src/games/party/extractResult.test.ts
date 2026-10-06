@@ -36,6 +36,14 @@ describe("extractGameResult — Spieler mit eigener Punktzahl", () => {
     expect(result.scores).toEqual({ Anna: 8, Ben: 5 });
   });
 
+  it("credits every Ohrwurm team member with the shared timeline score", () => {
+    const result = extractGameResult("ohrwurm", {
+      players: [{ id: "team-a", name: "Team A", score: 7 }, { id: "team-b", name: "Team B", score: 4 }],
+      teams: [{ score: 7, players: ["Anna", "Ben"] }, { score: 4, players: ["Cem", "Dora"] }],
+    });
+    expect(result).toEqual({ scored: true, scores: { Anna: 7, Ben: 7, Cem: 4, Dora: 4 } });
+  });
+
   it("wertet eine 0 als echte Punktzahl, nicht als fehlend", () => {
     const result = extractGameResult("wer-bin-ich", {
       phase: "gameOver",

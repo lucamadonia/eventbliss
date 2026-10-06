@@ -20,6 +20,12 @@ export interface Participant {
   avatar: string;
   timeline: Song[]; // chronologisch sortiert nach year
   hooks: number;
+  /** Group mode: room seats sharing this timeline and its hooks. */
+  memberIds?: string[];
+  memberNames?: string[];
+  /** The member holding this team's current turn. */
+  activeMemberId?: string;
+  nextMemberIndex?: number;
 }
 
 export const START_HOOKS = 3;
@@ -31,8 +37,10 @@ export function createFreshMatch(
 ): { participants: Participant[]; deck: Song[] } {
   if (cards.length <= roster.length) throw new Error('Ohrwurm needs a start card per participant and a draw card');
   const deck = [...cards];
-  const participants = roster.map(({ id, name, type, color, avatar }) => ({
-    id, name, type, color, avatar, timeline: [deck.pop()!], hooks: START_HOOKS,
+  const participants = roster.map((seat) => ({
+    ...seat,
+    ...(seat.memberIds?.length ? { activeMemberId: seat.memberIds[0], nextMemberIndex: 0 } : {}),
+    timeline: [deck.pop()!], hooks: START_HOOKS,
   }));
   return { participants, deck };
 }

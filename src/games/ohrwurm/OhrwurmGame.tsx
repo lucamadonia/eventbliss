@@ -35,6 +35,7 @@ import { PartyTurnRibbon } from '../ui/PartyTurnRibbon';
 import { OhrwurmWaitStage } from './OhrwurmWaitStage';
 import { OhrwurmSetup, OhrwurmWaiting } from './OhrwurmSetup';
 import { authorizeOhrwurmAction, canCounterAs, ohrwurmActingSeat, ohrwurmAudioHere, ohrwurmBeatPhase, ohrwurmTvPlayers } from './guest-turns';
+import { advanceOhrwurmTeamTurn, ohrwurmSeat } from './teams';
 
 // ===========================================================================
 // Haupt-Komponente
@@ -53,12 +54,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   // send their inputs back as actions.
   const isOnline = !!online;
   const isHost = !online || online.isHost;
-  /**
-   * Party-Besetzung uebernehmen. Bisher kannte dieser Bildschirm nur den
-   * Online-Raum, weshalb eine laufende Party hier mit zwei Platzhaltern statt
-   * ihren echten Gaesten begann. OHRWURM ist auf hoechstens vier Personen
-   * ausgelegt (Spec 2.1) — eine groessere Party wird gekappt statt abgelehnt.
-   */
+  /** Party roster can be split into teams without dropping anyone. */
   const partyRoster = useInitialRoster({ min: 2 });
   const myId = online?.myPlayerId ?? null;
   const gameTasks = usePausableTasks(online?.isConnected !== false);
@@ -115,13 +111,18 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   const [qrOpen, setQrOpen] = useState(false);
 
   const active = participants[turn] ?? null;
+  const activeSeatId = ohrwurmSeat(active);
+  const counteringParticipant = participants.find((p) => p.id === counteringId);
+  const counteringSeatId = ohrwurmSeat(counteringParticipant);
   // 🔁 guests on the host phone play their turn (and their counter) after an opaque handover (guest-turns.ts).
   const seats = useMemo(() => (online ? localSeats(online) : []), [online]);
-  const handover = useSeatHandover(online, ohrwurmActingSeat(phase, active?.id, counteringId));
+  const handover = useSeatHandover(online, ohrwurmActingSeat(phase, activeSeatId, counteringSeatId));
   // All devices + TV switch together; listening → placing stays on one beat (the clock keeps running).
   const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [ohrwurmBeatPhase(phase), active?.id, !!winner]);
   const actionCtx = useMemo(() => ({
-    phase, activeId: active?.id, counteringId, participantIds: participants.map((p) => p.id), room: online?.players ?? [],
+    phase, activeId: active?.id, counteringId, participantIds: participants.map((p) => p.id),
+    seatByParticipant: Object.fromEntries(participants.map((p) => [p.id, ohrwurmSeat(p) ?? p.id])),
+    room: online?.players ?? [],
   }), [phase, active?.id, counteringId, participants, online?.players]);
   const ownedIds = useMemo(
     () => new Set(participants.flatMap((p) => p.timeline.map((s) => s.id))),
@@ -193,9 +194,10 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
   // --- Neue Runde starten -------------------------------------------------
   const beginTurn = useCallback((parts: Participant[], d: Song[], idx: number) => {
-    const owned = new Set(parts.flatMap((p) => p.timeline.map((s) => s.id)));
+    const nextParts = advanceOhrwurmTeamTurn(parts, idx);
+    const owned = new Set(nextParts.flatMap((p) => p.timeline.map((s) => s.id)));
     const { card, rest } = takeCard(d, owned);
-    setParticipants(parts);
+    setParticipants(nextParts);
     setDeck(rest);
     setTurn(idx);
     setPlacement(null);
@@ -222,9 +224,10 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   // --- Spielstart ---------------------------------------------------------
   const handleStart = useCallback((cfg: OhrwurmConfig, players: SetupPlayer[]) => {
     if (!isHost) return;
-    const roster: Omit<Participant, 'timeline' | 'hooks'>[] = players.map(p => ({
+    const roster: Omit<Participant, 'timeline' | 'hooks'>[] = (cfg.mode === 'group' ? cfg.teams ?? [] : players).map(p => ({
       ...p, type: cfg.mode === 'group' ? 'group' : 'player',
     }));
+    if (roster.length < 2) return;
     setWinTarget(cfg.winTarget);
     setGenre(cfg.genre);
     // Spotify-Premium-Modus gewählt? Bridge nur zum AUTORISIEREN holen (Token für
@@ -431,7 +434,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   useEffect(() => {
     if (phase === 'gameOver' && winner && !recordedRef.current) {
       recordedRef.current = true;
-      const participant = isOnline ? participants.find(p => p.id === myId) : winner;
+      const participant = isOnline ? participants.find(p => p.id === myId || p.memberIds?.includes(myId ?? '')) : winner;
       if (participant) recordEnd('ohrwurm', participant.timeline.length, participant.id === winner.id);
     }
     if (phase === 'setup') recordedRef.current = false;
@@ -472,10 +475,10 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   // =========================================================================
   // Online sync (host-authority) + TV bridge
   // =========================================================================
-  const iAmActive = !isOnline || (!!active && seats.includes(active.id));
+  const iAmActive = !isOnline || (!!activeSeatId && seats.includes(activeSeatId));
   // Which device makes sound: offline → this one; online → the TV if connected,
   // otherwise the active player's own phone.
-  const audioDevice = ohrwurmAudioHere(isOnline, tvConnected, active?.id, seats);
+  const audioDevice = ohrwurmAudioHere(isOnline, tvConnected, activeSeatId, seats);
 
   // Authoritative timer start (host owns the 60s clock).
   const beginListening = useCallback(() => {
@@ -629,6 +632,9 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   const tvPayload = {
     phase, phaseStartsAt, handover: handover.tv,
     players: ohrwurmTvPlayers(participants),
+    teams: participants.some((p) => p.type === 'group')
+      ? participants.map((p) => ({ name: p.name, score: p.timeline.length, players: p.memberNames ?? [p.name] }))
+      : undefined,
     activeId: active?.id ?? null,
     activeName: active?.name ?? '',
     timeline: active ? active.timeline.map((s) => ({ id: s.id, year: s.year })) : [],
@@ -750,7 +756,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
           color: p.color || PLAYER_COLORS[i % PLAYER_COLORS.length],
           avatar: p.avatar || (p.name?.trim().slice(0, 1) || '?').toUpperCase(),
         }))
-      : partyRoster?.slice(0, 4).map((p, i) => ({
+      : partyRoster?.map((p, i) => ({
           id: p.id,
           name: p.name,
           color: PLAYER_COLORS[i % PLAYER_COLORS.length],
@@ -767,9 +773,9 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
   const bonusForfeited = phase === 'reveal' && bonusClaimed && !resolution?.bonusEligible;
 
   // Online: who holds the turn right now, and may this device act? (counter: every device for its own seats)
-  const actingSeat = participants.find((p) => p.id === ohrwurmActingSeat(view, active?.id, counteringId)) ?? null;
+  const actingSeat = view === 'counterPlace' ? counteringParticipant ?? null : active;
   const canInteract = !isOnline || view === 'counter' || view === 'gameOver'
-    || (view === 'counterPlace' ? !!counteringId && seats.includes(counteringId) : iAmActive);
+    || (view === 'counterPlace' ? !!counteringSeatId && seats.includes(counteringSeatId) : iAmActive);
   const ribbonLine = view === 'counterPlace'
     ? t('games.ohrwurm.partyCounterLine', 'Setz deinen Konter auf den Zeitstrahl.')
     : view === 'reveal' ? undefined : t('games.ohrwurm.partyYourTurnLine', 'Hör rein und ordne den Song ein.');
@@ -842,7 +848,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
         {isOnline && !canInteract && (
           <div className="absolute inset-0 z-30 flex items-start justify-center px-4 pb-6 pt-2" style={{ background: OW.bg }}>
             {actingSeat ? (
-              <OhrwurmWaitStage acting={actingSeat} mine={participants.find((p) => p.id === myId)}
+              <OhrwurmWaitStage acting={actingSeat} mine={participants.find((p) => p.id === myId || p.memberIds?.includes(myId ?? ''))}
                 line={tvConnected ? t('games.ohrwurm.watchTV') : t('games.ohrwurm.yourTurnSoon')} />
             ) : (
               <p className="px-5 py-3 rounded-2xl text-sm font-bold" style={{ background: OW.surface }}>{t('games.ohrwurm.waiting')}</p>
@@ -873,7 +879,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
           {/* ---- COUNTER: Konter-Fenster ---- */}
           {view === 'counter' && active && (
             <CounterPanel key="counter" active={active} participants={participants} turn={turn}
-              mayCounter={(id) => canCounterAs(id, active.id, isOnline ? seats : null)}
+              mayCounter={(id) => canCounterAs(ohrwurmSeat(participants.find((p) => p.id === id)) ?? id, activeSeatId, isOnline ? seats : null) && id !== active.id}
               onChoose={(pid) => act('chooseCounter', { pid }, () => handleChooseCounter(pid))}
               onNoCounter={() => act('noCounter', {}, handleNoCounter)} />
           )}
