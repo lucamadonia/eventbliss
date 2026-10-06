@@ -50,12 +50,11 @@ describe('controllerGameAvailability', () => {
     expect(availabilityText(impostor, t)).toBe('Premium');
   });
 
-  it('blocks a game that is too small for the party', () => {
-    const big = party(Array.from({ length: 6 }, (_, i) => seat({ player_id: `p${i}`, user_id: `u${i}`, is_host: i === 0 })));
+  it('allows large Ohrwurm teams up to the controller-party limit', () => {
+    const big = party(Array.from({ length: 9 }, (_, i) => seat({ player_id: `p${i}`, user_id: `u${i}`, is_host: i === 0 })));
     const ohrwurm = controllerGameAvailability('ohrwurm', big);
-    expect(ohrwurm).toMatchObject({ plannable: false, reason: 'too_many' });
-    expect(availabilityText(ohrwurm, t)).toBe('max. 4 Spieler');
-    expect(availabilityStatus(ohrwurm)).toBe('too-many');
+    expect(ohrwurm).toMatchObject({ plannable: true, startable: true, activePlayers: 9 });
+    expect(availabilityText(ohrwurm, t)).toBeNull();
   });
 
   it('says how many are still missing when there are simply too few', () => {

@@ -89,10 +89,9 @@ await test('party caps exclude a moderator but never silently exclude participan
   await asUser(17); await reject(() => rpc('join',moderated.party.code,{player_id:player(17),name:'Full'}),/Party is full/);
   await asUser(4);
   const ids = Array.from({length:12},(_,i)=>player(i+5));
-  await reject(() => rpc('start',moderated.party.code,{game_id:'ohrwurm',participant_ids:ids}),/compatible/);
-  moderated=await rpc('start',moderated.party.code,{game_id:'bomb',participant_ids:ids});
+  moderated=await rpc('start',moderated.party.code,{game_id:'ohrwurm',participant_ids:ids});
   assert.equal(moderated.members.length,13);
-  moderated=await rpc('finish',moderated.party.code,{match_id:moderated.party.current_match_id,game_id:'bomb',scored:true,scores:Object.fromEntries(ids.map(playerId=>[playerId,10]))});
+  moderated=await rpc('finish',moderated.party.code,{match_id:moderated.party.current_match_id,game_id:'ohrwurm',scored:true,scores:Object.fromEntries(ids.map(playerId=>[playerId,10]))});
   const played=await db.query('SELECT count(*)::integer AS count FROM public.game_stats WHERE user_id=ANY($1::uuid[])',[Array.from({length:12},(_,i)=>id(i+5))]);
   assert.equal(played.rows[0].count,12);
   await rpc('end',moderated.party.code);

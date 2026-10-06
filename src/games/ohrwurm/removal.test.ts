@@ -7,6 +7,10 @@ const p = (id: string, cards = 1, hooks = 3): Participant => ({
   id, name: id, type: 'player', color: '#000', avatar: id,
   timeline: Array.from({ length: cards }, (_, i) => card(`${id}-${i}`, 1980 + i)), hooks,
 });
+const group = (id: string, members: string[], activeMemberId = members[0]): Participant => ({
+  ...p(id), type: 'group', memberIds: members, memberNames: members,
+  activeMemberId, nextMemberIndex: 1,
+});
 const state = (over: Partial<RemovalState> = {}): RemovalState => ({
   participants: [p('a'), p('b'), p('c'), p('d')], turn: 1, phase: 'place', counteringId: null, winTarget: 10, ...over,
 });
@@ -64,5 +68,27 @@ describe('dropOhrwurmPlayers', () => {
     const r = dropOhrwurmPlayers(state({ phase: 'gameOver' }), ['b'])!;
     expect(r.kind).toBe('keep');
     expect(r.participants.map((x) => x.id)).toEqual(['a', 'c', 'd']);
+  });
+
+  it('keeps a team and its timeline when a non-acting member leaves', () => {
+    const teams = [group('team-a', ['a1', 'a2']), group('team-b', ['b1', 'b2'])];
+    const result = dropOhrwurmPlayers(state({ participants: teams, turn: 0 }), ['a2'])!;
+    expect(result.kind).toBe('keep');
+    expect(result.participants[0].memberIds).toEqual(['a1']);
+    expect(result.participants[0].timeline).toBe(teams[0].timeline);
+  });
+
+  it('restarts the same team when its acting member leaves mid-turn', () => {
+    const result = dropOhrwurmPlayers(state({ participants: [group('team-a', ['a1', 'a2']), group('team-b', ['b1'])], turn: 0 }), ['a1'])!;
+    expect(result).toMatchObject({ kind: 'restartTurn', returnSong: true, turn: 0 });
+    expect(result.participants[0].activeMemberId).toBe('a2');
+  });
+
+  it('removes an empty team and reopens a counter held by a departed member', () => {
+    const teams = [group('team-a', ['a1']), group('team-b', ['b1', 'b2'])];
+    expect(dropOhrwurmPlayers(state({ participants: teams, turn: 0 }), ['a1'])!.participants.map((x) => x.id)).toEqual(['team-b']);
+    const counter = dropOhrwurmPlayers(state({ participants: teams, turn: 0, phase: 'counterPlace', counteringId: 'team-b' }), ['b1'])!;
+    expect(counter.kind).toBe('reopenCounter');
+    expect(counter.participants[1].memberIds).toEqual(['b2']);
   });
 });
