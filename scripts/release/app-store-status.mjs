@@ -49,6 +49,11 @@ const report = {
   checkedAt: new Date().toISOString(),
   app: { bundleId, name: app.attributes?.name, primaryLocale: app.attributes?.primaryLocale },
   build: { number: buildNumber, version: targetVersion, processingState: build.attributes?.processingState },
+  listedVersions: (versions.data ?? []).map(({ attributes }) => ({
+    platform: attributes?.platform,
+    version: attributes?.versionString,
+    state: attributes?.appVersionState ?? attributes?.appStoreState,
+  })),
   versions: [],
 };
 for (const version of iosVersions) {
