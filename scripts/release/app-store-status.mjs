@@ -61,17 +61,25 @@ for (const version of iosVersions) {
   if (versionString !== targetVersion && versionString !== '1.5.11' && !['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'PENDING_DEVELOPER_RELEASE', 'PENDING_APPLE_RELEASE'].includes(appVersionState ?? appStoreState)) continue;
   const attached = await api(`appStoreVersions/${version.id}/build`);
   const localizations = await api(`appStoreVersions/${version.id}/appStoreVersionLocalizations?limit=200`);
-  report.versions.push({
-    version: versionString,
-    state: appVersionState ?? appStoreState,
-    attachedBuild: attached.data?.attributes?.version ?? null,
-    localizations: (localizations.data ?? []).map(({ attributes }) => ({
+  const localeReport = [];
+  for (const { id, attributes } of localizations.data ?? []) {
+    const screenshotSets = versionString === targetVersion
+      ? await api(`appStoreVersionLocalizations/${id}/appScreenshotSets?limit=200`)
+      : null;
+    localeReport.push({
       locale: attributes?.locale,
       hasWhatsNew: Boolean(attributes?.whatsNew?.trim()),
       hasDescription: Boolean(attributes?.description?.trim()),
       hasSupportUrl: Boolean(attributes?.supportUrl?.trim()),
       hasMarketingUrl: Boolean(attributes?.marketingUrl?.trim()),
-    })).sort((a, b) => a.locale.localeCompare(b.locale)),
+      ...(screenshotSets ? { screenshotTypes: (screenshotSets.data ?? []).map((set) => set.attributes?.screenshotDisplayType).sort() } : {}),
+    });
+  }
+  report.versions.push({
+    version: versionString,
+    state: appVersionState ?? appStoreState,
+    attachedBuild: attached.data?.attributes?.version ?? null,
+    localizations: localeReport.sort((a, b) => a.locale.localeCompare(b.locale)),
   });
 }
 mkdirSync('artifacts/app-store', { recursive: true });
