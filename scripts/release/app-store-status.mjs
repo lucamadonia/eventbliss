@@ -58,7 +58,7 @@ const report = {
 };
 for (const version of iosVersions) {
   const { versionString, appVersionState, appStoreState } = version.attributes ?? {};
-  if (versionString !== targetVersion && !['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'PENDING_DEVELOPER_RELEASE', 'PENDING_APPLE_RELEASE'].includes(appVersionState ?? appStoreState)) continue;
+  if (versionString !== targetVersion && versionString !== '1.5.11' && !['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'PENDING_DEVELOPER_RELEASE', 'PENDING_APPLE_RELEASE'].includes(appVersionState ?? appStoreState)) continue;
   const attached = await api(`appStoreVersions/${version.id}/build`);
   const localizations = await api(`appStoreVersions/${version.id}/appStoreVersionLocalizations?limit=200`);
   report.versions.push({
