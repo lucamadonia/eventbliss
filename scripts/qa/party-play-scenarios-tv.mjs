@@ -34,6 +34,14 @@ async function measureSkew(ctx, { phones = 5, tweak = () => {}, openOpts = () =>
 }
 
 export const tvScenarios = [
+  { id: 'T-quickdraw-start', title: 'Schnellzeichner start reaches host, phone and TV within 250 ms', timeoutMs: 120000, async run(ctx) {
+    const m = await matchSetup(ctx, { game: 'schnellzeichner', guests: ['ALEXANDRA-MARIE', 'Gerda'], phones: ['Lena'], forceShared: ['schnellzeichner'] });
+    const traces = await Promise.all([m.host, ...m.phones, m.tv].map(async device => ({ device: device.name, entries: await device.trace() })));
+    const start = sceneSkew(traces).find(scene => scene.scene === 'game-start');
+    ctx.evidence.start = start;
+    assert(start && ['Host', 'Lena', 'TV'].every(name => name in start.lagMs), 'Schnellzeichner start missing a host, phone or TV trace');
+    assert(start.skewMs <= 250, `Schnellzeichner TV start skew ${start.skewMs} ms > 250`);
+  } },
   { id: 'G01', title: 'Pair TV by QR ≤ 10 s, phone language', async run() { need('tv-pair-qr'); } },
   { id: 'G02', title: 'Pairing code expired → TV renews; old link → "neu scannen"', async run() { need('tv-pair-qr', 'tv-pair-expired'); } },
   { id: 'G03', title: 'TV reloads → reconnects by itself', async run(ctx) {

@@ -20,6 +20,13 @@ import { AVAILABILITY_TONE_HEX, availabilityChip, gameAvailability, joinNames, q
 
 const GAMES_DIR = path.resolve(__dirname, "../games");
 
+const withDisabledGuestSupport = <T,>(id: string, run: () => T): T => {
+  const game = playableGames.find((candidate) => candidate.id === id)!;
+  const previous = game.sharedDeviceSupported;
+  game.sharedDeviceSupported = false;
+  try { return run(); } finally { game.sharedDeviceSupported = previous; }
+};
+
 /**
  * Kennung → Spielordner. Gelesen werden ALLE Quellen des Ordners (ohne Tests):
  * Setup-Bildschirme wandern beim Aufraeumen in eigene Dateien (CategorySetup,
@@ -164,6 +171,11 @@ describe("playable-games — geteiltes Handy (Party-Play 7)", () => {
     expect(missing, "Neues Spiel ohne gueltiges sharedDevice").toEqual([]);
   });
 
+  it("alle 22 Party-Spiele fuehren Gaeste am geteilten Handy", () => {
+    expect(playableGames).toHaveLength(22);
+    expect(playableGames.filter((g) => !g.sharedDeviceSupported || g.sharedDevice === "sitout").map((g) => g.id)).toEqual([]);
+  });
+
   it("nicht angepasste und unbekannte Spiele → Gaeste setzen aus", () => {
     for (const game of playableGames) {
       expect(guestPolicy(game.id)).toBe(game.sharedDeviceSupported ? game.sharedDevice : "sitout");
@@ -242,9 +254,9 @@ describe("gameAvailability — planbar vs. startklar", () => {
       .toMatchObject({ startable: true, activePlayers: 4, sittingOut: 0 });
   });
 
-  it("Joystick-Party: Gaeste setzen in nicht angepassten Spielen aus", () => {
+  it("Joystick-Party: freigegebene Gaeste spielen auch bei Headup mit", () => {
     expect(gameAvailability("headup", ctx({ phonePlayers: 2, guestPlayers: 3 })))
-      .toMatchObject({ startable: true, activePlayers: 3, sittingOut: 3 });
+      .toMatchObject({ startable: true, activePlayers: 6, sittingOut: 0 });
   });
 
   it("Bombe: Gaeste am Host-Handy spielen mit", () => {
@@ -252,13 +264,15 @@ describe("gameAvailability — planbar vs. startklar", () => {
       .toMatchObject({ startable: true, activePlayers: 6, sittingOut: 0 });
   });
 
-  it("zu wenige, WEIL Gaeste aussetzen — eigener Grund, planbar", () => {
-    expect(gameAvailability("taboo", ctx({ phonePlayers: 1, guestPlayers: 3 }))).toEqual({
-      plannable: true, startable: false, selectable: false, activePlayers: 2, sittingOut: 3,
-      reason: "guests_sit_out_too_few", missingPlayers: 2, reasonParams: { min: 4, count: 2, sittingOut: 3 },
+  it("zu wenige, WEIL Gaeste aussetzen — Rueckfall fuer nicht freigegebene Spiele", () => {
+    withDisabledGuestSupport("taboo", () => {
+      expect(gameAvailability("taboo", ctx({ phonePlayers: 1, guestPlayers: 3 }))).toEqual({
+        plannable: true, startable: false, selectable: false, activePlayers: 2, sittingOut: 3,
+        reason: "guests_sit_out_too_few", missingPlayers: 2, reasonParams: { min: 4, count: 2, sittingOut: 3 },
+      });
+      // Auch mit allen Gaesten zu wenige → schlicht too_few
+      expect(gameAvailability("taboo", ctx({ phonePlayers: 0, guestPlayers: 1 }))).toMatchObject({ reason: "too_few", missingPlayers: 3 });
     });
-    // Auch mit allen Gaesten zu wenige → schlicht too_few
-    expect(gameAvailability("taboo", ctx({ phonePlayers: 0, guestPlayers: 1 }))).toMatchObject({ reason: "too_few", missingPlayers: 3 });
   });
 
   it("angepasstes Spiel: Gaeste spielen mit und zaehlen", () => {
@@ -326,13 +340,15 @@ describe("startBlockReason / availabilityChip (Design §4.1)", () => {
   });
 
   it("Gaeste setzen aus: cyan, Users, mit Namen oder Anzahl", () => {
-    const a = gameAvailability("headup", ctx({ phonePlayers: 2, guestPlayers: 2 }));
-    expect(availabilityChip(a, { sittingOutNames: ["Max", " Gerda "], locale: "de" })).toEqual({
-      kind: "ok", variant: "sitout", tone: "cyan", locked: false, icon: "Users",
-      key: "partyPlay.availability.sitout", params: { names: "Max und Gerda", count: 2 },
+    withDisabledGuestSupport("headup", () => {
+      const a = gameAvailability("headup", ctx({ phonePlayers: 2, guestPlayers: 2 }));
+      expect(availabilityChip(a, { sittingOutNames: ["Max", " Gerda "], locale: "de" })).toEqual({
+        kind: "ok", variant: "sitout", tone: "cyan", locked: false, icon: "Users",
+        key: "partyPlay.availability.sitout", params: { names: "Max und Gerda", count: 2 },
+      });
+      expect(availabilityChip(a, { sittingOutNames: ["Max", "Gerda", "Ute"], locale: "de" }).params.names).toBe("Max, Gerda und Ute");
+      expect(availabilityChip(a)).toMatchObject({ variant: "sitout", key: "partyPlay.availability.sitoutCount", params: { count: 2 } });
     });
-    expect(availabilityChip(a, { sittingOutNames: ["Max", "Gerda", "Ute"], locale: "de" }).params.names).toBe("Max, Gerda und Ute");
-    expect(availabilityChip(a)).toMatchObject({ variant: "sitout", key: "partyPlay.availability.sitoutCount", params: { count: 2 } });
   });
 
   it("zu wenige: amber, Hourglass, nicht gesperrt (nur Start)", () => {
@@ -340,12 +356,14 @@ describe("startBlockReason / availabilityChip (Design §4.1)", () => {
       kind: "waiting", variant: "waiting", tone: "amber", locked: false, icon: "Hourglass",
       key: "partyPlay.availability.waiting", params: { count: 2, min: 4 },
     });
-    const sit = gameAvailability("taboo", ctx({ phonePlayers: 1, guestPlayers: 3 }));
-    expect(availabilityChip(sit)).toMatchObject({
-      variant: "waiting", tone: "amber", key: "partyPlay.availability.guestsSitOut", params: { count: 2, sittingOut: 3, min: 4 },
-    });
-    expect(availabilityChip(sit, { sittingOutNames: ["Max", "Gerda", "Ute"], locale: "en" })).toMatchObject({
-      key: "partyPlay.availability.guestsSitOutNames", params: { names: "Max, Gerda, and Ute", count: 2 },
+    withDisabledGuestSupport("taboo", () => {
+      const sit = gameAvailability("taboo", ctx({ phonePlayers: 1, guestPlayers: 3 }));
+      expect(availabilityChip(sit)).toMatchObject({
+        variant: "waiting", tone: "amber", key: "partyPlay.availability.guestsSitOut", params: { count: 2, sittingOut: 3, min: 4 },
+      });
+      expect(availabilityChip(sit, { sittingOutNames: ["Max", "Gerda", "Ute"], locale: "en" })).toMatchObject({
+        key: "partyPlay.availability.guestsSitOutNames", params: { names: "Max, Gerda, and Ute", count: 2 },
+      });
     });
   });
 
@@ -420,11 +438,11 @@ describe("availabilityChip — jeder Schluessel existiert in allen 10 Sprachen",
   /** Alle Varianten, die der Chip ausgeben kann — mit und ohne Namen. */
   const chips = [
     availabilityChip(gameAvailability("bomb", base)),
-    availabilityChip(gameAvailability("headup", { ...base, guestPlayers: 2 })),
-    availabilityChip(gameAvailability("headup", { ...base, guestPlayers: 2 }), { sittingOutNames: ["Max", "Gerda"], locale: "de" }),
+    withDisabledGuestSupport("headup", () => availabilityChip(gameAvailability("headup", { ...base, guestPlayers: 2 }))),
+    withDisabledGuestSupport("headup", () => availabilityChip(gameAvailability("headup", { ...base, guestPlayers: 2 }), { sittingOutNames: ["Max", "Gerda"], locale: "de" })),
     availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1 })),
-    availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1, guestPlayers: 3 })),
-    availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1, guestPlayers: 3 }), { sittingOutNames: ["Max"], locale: "de" }),
+    withDisabledGuestSupport("taboo", () => availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1, guestPlayers: 3 }))),
+    withDisabledGuestSupport("taboo", () => availabilityChip(gameAvailability("taboo", { ...base, phonePlayers: 1, guestPlayers: 3 }), { sittingOutNames: ["Max"], locale: "de" })),
     availabilityChip(gameAvailability("ohrwurm", { ...base, phonePlayers: 4 })),
     availabilityChip(gameAvailability("hochstapler", { ...base, hostPremium: false })),
     availabilityChip(gameAvailability("gibt-es-nicht", base)),
@@ -459,15 +477,18 @@ describe("availabilityChip — jeder Schluessel existiert in allen 10 Sprachen",
 describe("guestPolicy — QA-Schalter fuer noch nicht freigegebene Spiele", () => {
   it("nur mit gesetztem Schalter, nur fuer genannte Spiele", () => {
     const g = globalThis as { __partyPlayForceShared?: unknown };
-    const unsupported = playableGames.find((x) => !x.sharedDeviceSupported && x.sharedDevice !== "sitout")!;
-    expect(guestPolicy(unsupported.id)).toBe("sitout");
+    const unsupported = playableGames.find((x) => x.sharedDevice !== "sitout")!;
+    const previous = unsupported.sharedDeviceSupported;
+    unsupported.sharedDeviceSupported = false;
     try {
+      expect(guestPolicy(unsupported.id)).toBe("sitout");
       g.__partyPlayForceShared = [unsupported.id];
       expect(guestPolicy(unsupported.id)).toBe(unsupported.sharedDevice);
       expect(guestPolicy("gibt-es-nicht")).toBe("sitout");
       g.__partyPlayForceShared = "kein-array";
       expect(guestPolicy(unsupported.id)).toBe("sitout");
     } finally {
+      unsupported.sharedDeviceSupported = previous;
       delete g.__partyPlayForceShared;
     }
   });

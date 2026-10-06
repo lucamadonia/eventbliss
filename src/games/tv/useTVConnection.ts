@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import i18n from '@/i18n';
+import { parsePartySceneMessage, sceneGoAt, type PartyScene } from '@/games/party/party-scene';
+import { serverClock } from '@/games/party/scene-clock';
 import { createTVPacketGate, stripTVMessageId } from './tv-wire';
 import { tvLeaderboardScores } from './tv-leaderboard-scores';
 
@@ -47,7 +49,17 @@ function applyPhoneLanguage(payload: unknown): void {
  * Broadcast zu warten: zwischen zwei Spielen kann Minuten lang keiner kommen.
  */
 const lastStateByRoom = new Map<string, TVState>();
+const lastPartySceneByRoom = new Map<string, PartyScene>();
 const startedRooms = new Set<string>();
+
+function currentPartyScene(roomCode: string): PartyScene | undefined {
+  const scene = lastPartySceneByRoom.get(roomCode);
+  if (scene && sceneGoAt(scene) + 900 < serverClock.now()) {
+    lastPartySceneByRoom.delete(roomCode);
+    return undefined;
+  }
+  return scene;
+}
 
 /** Takt, in dem der TV seine Anwesenheit erneut meldet (siehe Heartbeat unten). */
 export const TV_HEARTBEAT_MS = 15_000;
@@ -65,6 +77,8 @@ export function useTVConnection(roomCode: string) {
   const [gameState, setGameStateRaw] = useState<TVState | null>(
     () => lastStateByRoom.get(roomCode) ?? null
   );
+  const [partyScene, setPartyScene] = useState<PartyScene | undefined>(() => currentPartyScene(roomCode));
+  useEffect(() => setPartyScene(currentPartyScene(roomCode)), [roomCode]);
   const initialSignature = gameState ? JSON.stringify(gameState) : '';
   const committedStateSignatureRef = useRef(initialSignature);
   const pendingStateRef = useRef<TVState | null>(null);
@@ -156,6 +170,7 @@ export function useTVConnection(roomCode: string) {
 
     const handleTVState = (payload: unknown) => {
       if (!acceptPacket(payload)) return;
+      capturePartyScene(payload);
       const accepted = setGameState(payload as TVState);
       if (accepted) applyPhoneLanguage(payload);
       // Auto-set gameStarted if we receive any tv-state — handles case where
@@ -169,6 +184,7 @@ export function useTVConnection(roomCode: string) {
     };
     const handleGameStart = (payload: unknown) => {
       if (!acceptPacket(payload)) return;
+      capturePartyScene(payload);
       markGameStarted();
       setGameEnded(false);
       setLeaderboard([]);
@@ -181,6 +197,15 @@ export function useTVConnection(roomCode: string) {
       markGameStarted();
       setGameEnded(false);
     };
+
+    // The Host sends this before starting the database match. Keep it separate
+    // from tv-state: the room's generic game-start packet has no scene.
+    function capturePartyScene(payload: unknown) {
+      const message = parsePartySceneMessage(payload, serverClock.now());
+      if (!message || 'cancel' in message) return;
+      lastPartySceneByRoom.set(roomCode, message.scene);
+      setPartyScene(message.scene);
+    }
 
     channel.on('broadcast', { event: 'tv-state' }, ({ payload }) => handleTVState(payload));
     channel.on('broadcast', { event: 'tv-leaderboard' }, ({ payload }) => handleLeaderboard(payload));
@@ -244,5 +269,5 @@ export function useTVConnection(roomCode: string) {
     };
   }, [roomCode, setGameState]);
 
-  return { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded, error };
+  return { isConnected, players, gameState, partyScene, leaderboard, drawing, gameStarted, gameEnded, error };
 }

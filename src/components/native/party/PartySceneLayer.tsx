@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ConfettiBurst } from '@/components/vfx/ConfettiBurst';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,7 @@ import { gameRoomSession } from '@/games/multiplayer/useGameRoom';
 import { serverClock } from '@/games/party/scene-clock';
 import { sceneLocalTime } from '@/games/party/scene-schedule';
 import { useScene } from '@/games/party/useScene';
-import { applyPartySceneMessage, parsePartySceneMessage, sceneGoAt, usePartyScene, type PartyScene } from '@/games/party/party-scene';
+import { applyPartySceneMessage, getPartyScene, parsePartySceneMessage, sceneGoAt, subscribePartyScene, usePartyScene, type PartyScene } from '@/games/party/party-scene';
 import { SceneCountdown } from '@/games/ui/SceneCountdown';
 import { confettiBurst, partyMotion } from '@/lib/party-motion';
 import { playableGames } from '@/lib/playable-games';
@@ -35,6 +35,15 @@ export function PartySceneLayer({ isHost, onGo }: Props) {
     return () => clearTimeout(id);
   }, [celebrate]);
   const tv = useTVContext();
+  const tvReadyRef = useRef({ isHost, tv });
+  tvReadyRef.current = { isHost, tv };
+  const sentStartRef = useRef<string | null>(null);
+  const sendStartToTv = useCallback((next: PartyScene | null) => {
+    const { isHost: host, tv: broadcast } = tvReadyRef.current;
+    if (!host || !broadcast?.isActive || next?.scene !== 'game-start' || sentStartRef.current === next.sceneId) return;
+    sentStartRef.current = next.sceneId;
+    broadcast.broadcastTV('game-start', { scene: next, serverNow: new Date(serverClock.now()).toISOString() });
+  }, []);
   const onGoRef = useRef(onGo);
   onGoRef.current = onGo;
 
@@ -43,10 +52,10 @@ export function PartySceneLayer({ isHost, onGo }: Props) {
     if (message) applyPartySceneMessage(message);
   }), []);
 
-  useEffect(() => {
-    if (!isHost || !tv?.isActive || !scene || scene.scene !== 'game-start') return;
-    tv.broadcastTV('game-start', { scene, serverNow: new Date(serverClock.now()).toISOString() });
-  }, [isHost, tv, scene]);
+  // Send while announceScene() emits, before startGame() runs its database work.
+  // The render effect remains a fallback if the TV becomes active mid-countdown.
+  useEffect(() => subscribePartyScene(() => sendStartToTv(getPartyScene())), [sendStartToTv]);
+  useEffect(() => sendStartToTv(scene), [isHost, tv, scene, sendStartToTv]);
 
   // Round end has no countdown: just switch at the shared moment.
   useScene(scene?.scene === 'round-end' ? scene : null);

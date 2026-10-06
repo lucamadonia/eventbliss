@@ -155,7 +155,7 @@ export const fingerprint = c => c.page.evaluate(() => (document.body.innerText.s
  */
 /** isDone(): optional completion check → 'finished' | 'lobby' | null (online rooms, local party). */
 export async function driveGame(devices, host, { game, budgetMs = 90000, stallMs = 10000, before = 0, tick, isDone } = {}) {
-  const verbs = '^(start game|start|los|play|let.?s go|begin|ready|bereit|weiter|continue|next|n.chste|n.chster spieler|runde \\d+ starten|start round|accept|done|erledigt|fertig|submit|senden|abschicken|gesagt|ok|reveal|aufdecken|antwort anzeigen|view|ansehen|show|zeigen|spin|drehen|truth|dare|true|wahr|a\\b|yes|ja|confirm|skip|überspringen|richtig|correct|game over|spiel vorbei|results?|ergebnis|ich bin|i.m |got it|verstanden|close|gel.st|solved)';
+  const verbs = '^(start game|start|los|play|let.?s go|begin|ready|bereit|weiter|continue|next|n.chste|n.chster spieler|runde \\d+ starten|start round|accept|done|erledigt|fertig|submit|senden|abschicken|gesagt|ok|reveal|aufdecken|antwort anzeigen|view|ansehen|show|zeigen|spin|drehen|truth|dare|true|wahr|a\\b|yes|ja|confirm|skip|überspringen|richtig|correct|game over|spiel vorbei|results?|ergebnis|endstand|ich bin|i.m |got it|verstanden|close|gel.st|solved)';
   const end = Date.now() + budgetMs; let last = '', lastChange = Date.now(), stalls = 0, clicks = 0;
   while (Date.now() < end) {
     if (isDone) { const d = await isDone().catch(() => null); if (d === 'finished') return { finished: true, clicks, stalls }; if (d === 'lobby') return { finished: false, returnedToLobby: true, clicks, stalls }; }
@@ -174,12 +174,67 @@ export async function driveGame(devices, host, { game, budgetMs = 90000, stallMs
       ? await categoryObserver.gameState('category-state').catch(() => null)
       : null;
     const categoryWords = categoryState?.roundWords?.length ?? 0;
+    const ohrwurmState = game === 'ohrwurm'
+      ? await categoryObserver.gameState('ohrwurm-state').catch(() => null)
+      : null;
+    const ohrwurmActorId = ohrwurmState?.snapshot?.participants?.[ohrwurmState.snapshot.turn]?.id;
     for (const d of devices) {
       if (d.page.isClosed()) continue;
       if (categoryState?.phase === 'playing' && categoryWords >= 3 && !await d.exists('handover-screen')) continue;
+      if (game === 'ohrwurm' && ohrwurmState) {
+        const phase = ohrwurmState.snapshot?.phase;
+        if (['draw', 'place'].includes(phase) && ohrwurmActorId &&
+          !(await d.snapshot().catch(() => ({}))).localPlayerIds?.includes(ohrwurmActorId)) continue;
+        if (['counter', 'counterPlace', 'reveal'].includes(phase) && d !== host) continue;
+      }
       await d.page.evaluate(() => { for (const input of document.querySelectorAll('input[type=text],input:not([type]),textarea')) if (!input.value && !input.disabled && input.getBoundingClientRect().height) { const set = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), 'value').set; set.call(input, 'Test'); input.dispatchEvent(new Event('input', { bubbles: true })); } }).catch(() => {});
       // Party-level controls (players sheet, abort, leave) are never part of playing a game.
-      if (await d.page.evaluate(v => { const b = [...document.querySelectorAll('button')].find(b => !b.disabled && b.getBoundingClientRect().height && !b.hasAttribute('aria-haspopup') && !/leave|verlassen|abort|abbrechen|remove|entfernen/i.test(b.innerText) && !/^(players|spieler)$/i.test(b.innerText.trim()) && new RegExp(v, 'i').test(b.innerText.trim())); if (b) { b.click(); return true; } return false; }, verbs).catch(() => false)) clicks++;
+      // These games also have meaningful controls without a generic action verb.
+      if (await d.page.evaluate(({ game, verbs }) => {
+        const visible = b => b && !b.disabled && b.getBoundingClientRect().height > 0;
+        let button = null;
+        if (game === 'geteilt-gequizzt') {
+          button = [...document.querySelectorAll('[data-testid^="sharedquiz-answer-"]')].find(visible)
+            ?? (visible(document.querySelector('[data-testid="sharedquiz-cover"]')) ? document.querySelector('[data-testid="sharedquiz-cover"]') : null)
+            ?? [...document.querySelectorAll('[data-testid^="sharedquiz-view-"]')].find(b => visible(b) && !b.querySelector('[aria-label="angesehen"], [aria-label="seen"]'));
+        } else if (game === 'split-quiz') {
+          button = [...document.querySelectorAll('button')].find(b => visible(b) && /^(confirm bet|wette best.tigen)$/i.test(b.innerText.trim()))
+            ?? [...document.querySelectorAll('button.arena-answer')].find(visible);
+        } else if (game === 'brew') {
+          const stage = document.querySelector('[data-testid="brew-playing"]');
+          if (!stage) return false;
+          const penalty = document.querySelector('[data-testid="brew-penalty-continue"]');
+          if (visible(penalty)) {
+            penalty.click();
+            return true;
+          }
+          const draw = document.querySelector('[data-testid="brew-draw"]');
+          const pour = document.querySelector('[data-testid="brew-pour"], [data-testid="brew-end-turn"]');
+          const tray = Number(stage.getAttribute('data-tray-count'));
+          const counter = stage.getAttribute('data-with-tray') === 'false'
+            ? [...document.querySelectorAll('[data-testid="brew-counter"] button')].find(visible)
+            : null;
+          button = counter ?? (tray >= 3 && visible(pour) ? pour : visible(draw) ? draw : visible(pour) ? pour : null);
+          if (!button) return false;
+        } else if (game === 'wo-ist-was') {
+          button = [...document.querySelectorAll('.findit-answer-option')].find(visible);
+        } else if (game === 'closeenough') {
+          button = visible(document.querySelector('[data-testid="ce-submit"]'))
+            ? document.querySelector('[data-testid="ce-submit"]')
+            : [...document.querySelectorAll('[data-testid="ce-key-1"]')].find(visible);
+        } else if (game === 'ohrwurm') {
+          button = ['ohrwurm-start-silent', 'ohrwurm-to-place', 'ohrwurm-play-preview', 'ohrwurm-no-counter', 'ohrwurm-continue']
+            .map(id => document.querySelector(`[data-testid="${id}"]`)).find(visible)
+            ?? [...document.querySelectorAll('[data-testid^="ohrwurm-slot-"]')].find(visible);
+          if (!button) return false;
+        } else if (game === 'pantomime') {
+          button = [...document.querySelectorAll('.theater-actions button')].find(visible)
+            ?? [...document.querySelectorAll('button')].find(b => visible(b) && /^(annehmen|lieber normal|ich bin bereit)/i.test(b.innerText.trim()));
+        }
+        button ??= [...document.querySelectorAll('button')].find(b => visible(b) && !b.hasAttribute('aria-haspopup') && !/leave|verlassen|abort|abbrechen|remove|entfernen/i.test(b.innerText) && !/^(players|spieler)$/i.test(b.innerText.trim()) && new RegExp(verbs, 'i').test(b.innerText.trim()));
+        if (!button) return false;
+        button.click(); return true;
+      }, { game, verbs }).catch(() => false)) clicks++;
     }
     const fp = (await Promise.all(devices.map(d => fingerprint(d).catch(() => '')))).join('|');
     if (fp !== last) { last = fp; lastChange = Date.now(); } else if (Date.now() - lastChange > stallMs) { stalls++; lastChange = Date.now(); }

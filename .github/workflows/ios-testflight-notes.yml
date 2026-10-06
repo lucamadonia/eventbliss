@@ -1,0 +1,29 @@
+name: iOS TestFlight What's New
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: 'Run number of the iOS Build & TestFlight upload workflow'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Upload and verify localized TestFlight notes
+        env:
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+          TESTFLIGHT_BUILD_NUMBER: ${{ inputs.build_number }}
+        run: node scripts/release/testflight-whats-new.mjs --build "$TESTFLIGHT_BUILD_NUMBER"

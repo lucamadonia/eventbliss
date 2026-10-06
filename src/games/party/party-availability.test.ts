@@ -14,7 +14,7 @@ const party = (members: ControllerMember[], over: Partial<ControllerPartyData['p
     status: 'lobby', playlist: [], current_match_id: null, current_game_id: null, ...over },
   members, results: [],
 });
-// Host + Lena (📱) + Max & Gerda (🔁) → 4 seats, but only 2 active in sit-out games.
+// Host + Lena (📱) + Max & Gerda (🔁) → 4 active seats in released games.
 const mixed = party([
   seat({ player_id: 'h', user_id: 'h', is_host: true, name: 'Luca' }),
   seat({ player_id: 'l', user_id: 'l', name: 'Lena' }),
@@ -30,18 +30,18 @@ describe('controllerAvailabilityContext', () => {
 });
 
 describe('controllerGameAvailability', () => {
-  it('keeps a game plannable but not startable when guests sitting out leave too few', () => {
+  it('counts guests for a four-player game', () => {
     const taboo = controllerGameAvailability('taboo', mixed);
-    expect(taboo).toMatchObject({ plannable: true, startable: false, reason: 'guests_sit_out_too_few', sittingOut: 2 });
-    expect(availabilityText(taboo, t, sittingOutNames('taboo', mixed))).toMatch(/^Max .+ Gerda setzen aus – wartet auf 2 Spieler$/);
-    expect(availabilityStatus(taboo)).toBe('too-few');
+    expect(taboo).toMatchObject({ plannable: true, startable: true, reason: null, activePlayers: 4, sittingOut: 0 });
+    expect(availabilityText(taboo, t, sittingOutNames('taboo', mixed))).toBeNull();
+    expect(availabilityStatus(taboo)).toBe('fits');
   });
 
-  it('allows a small game and names who sits out (E03)', () => {
+  it('includes guests in a small game without a sit-out hint', () => {
     const headup = controllerGameAvailability('headup', mixed);
-    expect(headup.startable).toBe(true);
-    expect(sitOutHint(headup, t, sittingOutNames('headup', mixed))).toMatch(/^Max .+ Gerda setzen aus$/);
-    expect(availabilityStatus(headup)).toBe('sitout');
+    expect(headup).toMatchObject({ startable: true, activePlayers: 4, sittingOut: 0 });
+    expect(sitOutHint(headup, t, sittingOutNames('headup', mixed))).toBeNull();
+    expect(availabilityStatus(headup)).toBe('fits');
   });
 
   it('blocks premium games without premium, even for planning', () => {

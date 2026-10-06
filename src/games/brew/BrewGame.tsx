@@ -665,7 +665,11 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       const incomingDraw = (s.drawnCard as DrawnCard | null) ?? null;
       const incomingDrawSeq = incomingDraw?.seq ?? 0;
       if (lastDrawRef.current === null) lastDrawRef.current = incomingDrawSeq;
-      else if (incomingDraw && incomingDrawSeq > lastDrawRef.current) {
+      // The host clears a bust card after its penalty animation. Peers must
+      // honor that clear too: DrawReveal intentionally does not clear busts
+      // locally, and a stale card otherwise disables both turn actions forever.
+      if (!incomingDraw) setDrawnCard(null);
+      else if (incomingDrawSeq > lastDrawRef.current) {
         lastDrawRef.current = incomingDrawSeq;
         setDrawnCard(incomingDraw);
       }

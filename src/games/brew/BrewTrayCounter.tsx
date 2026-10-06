@@ -81,7 +81,7 @@ export function BrewTrayCounter({ skin, theme, accent, riskTier, withTray, tray,
           {t("games.brew.counterNote")}
         </span>
       </p>
-      <div ref={counterBoxRef} className="min-h-[3.5rem]">
+      <div ref={counterBoxRef} data-testid="brew-counter" className="min-h-[3.5rem]">
       <TrayCards
         ids={counter}
         skin={skin}
