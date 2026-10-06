@@ -5,12 +5,13 @@
       {
         "appIDs": ["WU8U8HD73G.app.eventbliss"],
         "appID": "WU8U8HD73G.app.eventbliss",
-        "paths": ["/e/*", "/join", "/join/*", "/party/join/*", "/games*"],
+        "paths": ["/e/*", "/join", "/join/*", "/party/join/*", "/party/controllers*", "/games*"],
         "components": [
           { "/": "/e/*" },
           { "/": "/join" },
           { "/": "/join/*" }
           ,{ "/": "/party/join/*" }
+          ,{ "/": "/party/controllers*" }
           ,{ "/": "/games*" }
         ]
       }

@@ -37,6 +37,18 @@ describe('ohrwurm guest turns', () => {
     expect(authorizeOhrwurmAction({ type: 'listen' }, 'stranger', ctx())).toBe(false);
   });
 
+  it('authorizes the current team member instead of a synthetic team id', () => {
+    const teams = ctx({
+      phase: 'draw', activeId: 'team-a', participantIds: ['team-a', 'team-b'],
+      seatByParticipant: { 'team-a': 'max', 'team-b': 'lena' },
+    });
+    expect(authorizeOhrwurmAction({ type: 'listen' }, 'host', teams)).toBe(true);
+    expect(authorizeOhrwurmAction({ type: 'listen' }, 'lena', teams)).toBe(false);
+    expect(authorizeOhrwurmAction({ type: 'listen' }, 'team-a', teams)).toBe(false);
+    expect(authorizeOhrwurmAction({ type: 'chooseCounter', pid: 'team-b' }, 'lena', { ...teams, phase: 'counter' })).toBe(true);
+    expect(authorizeOhrwurmAction({ type: 'chooseCounter', pid: 'team-a' }, 'host', { ...teams, phase: 'counter' })).toBe(false);
+  });
+
   it('lets each device counter only for its own seats', () => {
     const c = ctx({ phase: 'counter', activeId: 'lena' });
     expect(authorizeOhrwurmAction({ type: 'chooseCounter', pid: 'max' }, 'host', c)).toBe(true);

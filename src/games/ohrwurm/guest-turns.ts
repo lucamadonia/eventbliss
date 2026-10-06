@@ -40,6 +40,8 @@ export interface OhrwurmActionContext {
   activeId: string | null | undefined;
   counteringId: string | null;
   participantIds: readonly string[];
+  /** Group IDs resolve to the member whose turn it currently is. */
+  seatByParticipant?: Readonly<Record<string, string>>;
   room: readonly OhrwurmRoomSeat[];
 }
 
@@ -53,21 +55,24 @@ const EXPECTED: Record<string, readonly Phase[]> = {
 export function authorizeOhrwurmAction(data: Record<string, unknown>, sender: unknown, ctx: OhrwurmActionContext): boolean {
   const { phase, activeId, counteringId, participantIds, room } = ctx;
   if (typeof sender !== 'string') return false;
+  const seatOf = (id: string | null | undefined) => id ? ctx.seatByParticipant?.[id] ?? id : null;
   // Nur Mitspielende — oder das Geraet, das einen Mitspieler-Platz spielt.
-  if (!participantIds.some((id) => mayActFor(id, sender, room))) return false;
+  if (!participantIds.some((id) => mayActFor(seatOf(id), sender, room))) {
+    if (data.type !== 'again' || !room.some((r) => r.id === sender || r.controlledBy === sender)) return false;
+  }
   const type = String(data.type);
   if (!EXPECTED[type]?.includes(phase)) return false;
   if (type === 'again') return true;
   if (type === 'back') {
     const seat = phase === 'counterPlace' ? counteringId : activeId;
-    return canNavigateBack(phase, data.to, mayActFor(seat, sender, room) ? seat : sender, activeId ?? undefined, counteringId);
+    return canNavigateBack(phase, data.to, mayActFor(seatOf(seat), sender, room) ? seat : sender, activeId ?? undefined, counteringId);
   }
   if (type === 'chooseCounter') {
     const pid = data.pid;
-    return typeof pid === 'string' && pid !== activeId && participantIds.includes(pid) && mayActFor(pid, sender, room);
+    return typeof pid === 'string' && pid !== activeId && participantIds.includes(pid) && mayActFor(seatOf(pid), sender, room);
   }
-  if (type === 'commitCounter') return mayActFor(counteringId, sender, room);
-  return mayActFor(activeId, sender, room);
+  if (type === 'commitCounter') return mayActFor(seatOf(counteringId), sender, room);
+  return mayActFor(seatOf(activeId), sender, room);
 }
 
 /** Welche Konter-Zeilen dieses Geraet antippen darf (offline: alle). */
