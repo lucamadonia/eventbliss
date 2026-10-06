@@ -7,6 +7,11 @@ on:
         description: 'Run number of the iOS Build & TestFlight upload workflow'
         required: true
         type: string
+      prepare_store:
+        description: 'Create/update the App Store 1.6.0 draft, attach build 302, and write all release notes'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -27,6 +32,13 @@ jobs:
           APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
           TESTFLIGHT_BUILD_NUMBER: ${{ inputs.build_number }}
         run: node scripts/release/testflight-whats-new.mjs --build "$TESTFLIGHT_BUILD_NUMBER"
+      - name: Prepare App Store release draft
+        if: ${{ inputs.prepare_store == true }}
+        env:
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: node scripts/release/app-store-prepare.mjs
       - name: Audit App Store version readiness
         env:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
