@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
+import { localActiveSeats } from '../ui/guest-handover';
 import { OBJECT_ATLAS } from './visual-content';
 
 /** Competitive time starts only once every participating device has decoded the object atlas. */
@@ -9,8 +10,11 @@ export function useFindItAssets(online: OnlineGameProps | undefined, players: re
   const [imageAttempt, setImageAttempt] = useState(0);
   const [readyPeers, setReadyPeers] = useState<string[]>([]);
   const [hostImagesAvailable, setHostImagesAvailable] = useState(false);
+  // Guest seats share the host's decoded atlas. Only seats on another device
+  // need to send their own readiness packet before the competitive timer starts.
+  const locallyReady = new Set(localActiveSeats(online));
   const imagesAvailable = imageReady && (!online || (online.isHost
-    ? players.every(p => p.id === online.myPlayerId || readyPeers.includes(p.id))
+    ? players.every(p => locallyReady.has(p.id) || readyPeers.includes(p.id))
     : hostImagesAvailable));
   useEffect(() => {
     let active = true;

@@ -29,6 +29,8 @@ import { useTVCinema } from './cinema/useTVCinema';
 import { useTVPhaseGate } from './cinema/useTVPhaseGate';
 import { TVCueContext } from './cinema/tv-cue-context';
 import TVSceneCountdown, { parseWireScene } from './components/TVSceneCountdown';
+import { sceneGoAt } from '@/games/party/party-scene';
+import { serverClock } from '@/games/party/scene-clock';
 import { useTVServerClock } from './useTVServerClock';
 import { legacyLobbyState, parseTVLobbyState, type TVLobbyPlayer, type TVLobbyState } from './tv-lobby-state';
 
@@ -121,7 +123,7 @@ export default function TVScreen() {
     if (lang.split('-')[0] === i18n.language?.split('-')[0]) return;
     void i18n.changeLanguage(lang);
   }, []);
-  const { isConnected, players, gameState, leaderboard, drawing, gameStarted, gameEnded, error } = useTVConnection(code);
+  const { isConnected, players, gameState, partyScene, leaderboard, drawing, gameStarted, gameEnded, error } = useTVConnection(code);
   const { t } = useTranslation();
   /**
    * Manuelle Einblendung der Nacht-Route. Rein oertlich auf dem Fernseher —
@@ -262,7 +264,10 @@ export default function TVScreen() {
 
   // Gemeinsame Uhr (T-1): echte Serverzeit, der Stempel vom Telefon nur als Notbehelf.
   useTVServerClock(typeof gameState?.serverNow === 'string' ? gameState.serverNow : null);
-  const wireScene = useMemo(() => parseWireScene(gameState?.scene), [gameState?.scene]);
+  const wireScene = useMemo(() => {
+    const direct = partyScene && sceneGoAt(partyScene) + 900 > serverClock.now() ? partyScene : null;
+    return parseWireScene(direct ?? gameState?.scene);
+  }, [partyScene, gameState?.scene]);
   // Gemeinsamer Start der Siegerehrung — Podest und Konfetti im selben Moment wie die Telefone.
   const finaleStartsRef = useRef<number | null>(null);
   if (wireScene?.scene === 'finale') finaleStartsRef.current = wireScene.startsAt;

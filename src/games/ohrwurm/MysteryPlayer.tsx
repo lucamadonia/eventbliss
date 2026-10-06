@@ -108,6 +108,7 @@ export function MysteryPlayer({
         {/* Vinyl */}
         <motion.button
           type="button"
+          data-testid="ohrwurm-play-preview"
           onClick={onPlay}
           disabled={loading}
           aria-label={isPlaying ? t('games.ohrwurm.pause') : t('games.ohrwurm.playSong')}

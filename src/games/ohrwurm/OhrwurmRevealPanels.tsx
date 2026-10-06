@@ -109,7 +109,7 @@ export function RevealPanel({ song, flipped, resolution, active, counter, partic
               {t('games.ohrwurm.bonusForfeited')}
             </p>
           )}
-          <motion.button whileTap={{ scale: 0.97 }} onClick={onContinue}
+          <motion.button data-testid="ohrwurm-continue" whileTap={{ scale: 0.97 }} onClick={onContinue}
             className="w-full max-w-sm h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
             style={{ background: OW.primary, color: OW.bg, boxShadow: `0 10px 30px ${OW.primary}40` }}>
             {t('games.ohrwurm.next')} <ArrowRight className="w-5 h-5" />

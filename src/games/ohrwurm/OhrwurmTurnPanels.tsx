@@ -52,7 +52,7 @@ export function DrawPanel({ active, previewLoading, previewUrl, isAudioPlaying, 
               <p className="text-sm max-w-xs" style={{ color: OW.dim }}>
                 {t('games.ohrwurm.noClipAvailable')}
               </p>
-              <button onClick={onStartSilent}
+              <button data-testid="ohrwurm-start-silent" onClick={onStartSilent}
                 className="px-6 h-12 rounded-2xl font-black flex items-center gap-2"
                 style={{ background: OW.primary, color: OW.bg }}>
                 {t('games.ohrwurm.start60s')}
@@ -91,7 +91,7 @@ export function DrawPanel({ active, previewLoading, previewUrl, isAudioPlaying, 
             />
           </div>
           {/* Ein großer Primär-Button */}
-          <motion.button whileTap={{ scale: 0.97 }} onClick={onToPlace}
+          <motion.button data-testid="ohrwurm-to-place" whileTap={{ scale: 0.97 }} onClick={onToPlace}
             className="w-full h-14 rounded-2xl font-black text-base flex items-center justify-center gap-2"
             style={{ background: OW.primary, color: OW.bg, boxShadow: `0 10px 30px ${OW.primary}40` }}>
             {t('games.ohrwurm.placeInTimeline')} <ChevronRight className="w-5 h-5" />
@@ -154,7 +154,7 @@ export function CounterPanel({ active, participants, turn, mayCounter, onChoose,
           );
         })}
       </div>
-      <button onClick={onNoCounter}
+      <button data-testid="ohrwurm-no-counter" onClick={onNoCounter}
         className="mx-auto mt-2 min-h-[48px] px-8 py-3 rounded-2xl font-bold text-sm"
         style={{ background: 'rgba(255,255,255,0.06)', color: OW.dim }}>
         {t('games.ohrwurm.noCounterReveal')}

@@ -1,0 +1,8 @@
+{
+  "version": "1.6.0",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Neu in dieser TestFlight-Version: Im Party-Code-Modus können Gäste ohne eigenes Handy bei allen 22 Spielen über das Host-Handy mitspielen. Der Spielstart auf Host, Mitspieler-Handy und TV ist synchronisiert. Pixeljagd und Wo ist was zeigen den Spielinhalt auf den beteiligten Geräten; Gebräu setzt nach einer Sperrstunde den Kartenzug fort. Die Kartenreserve bei Gebräu bleibt vor Spielbeginn wählbar: mit oder ohne Tablett.\n\nBitte testen: TV-QR-Code anzeigen, mit zwei Handys beitreten, einen Gast auf dem Host-Handy hinzufügen, Pixeljagd auf beiden Handys starten und Gebräu in beiden Reserve-Modi bis zum Ergebnis spielen. Bei Fehlern bitte Spielname, Geräte und Rollen angeben.",
+    "en-US": "New in this TestFlight build: Guests without their own phone can join all 22 games through the host phone in Party Code mode. Game start is synchronized across the host, another player's phone, and the TV. Pixeljagd and Wo ist was show game content on participating devices; Gebräu continues drawing cards after a bust. Before Gebräu starts, choose the card reserve mode: with or without the tray.\n\nPlease test: show the TV join QR code, join with two phones, add a guest on the host phone, start Pixeljagd on both phones, and play Gebräu to the result in both reserve modes. For issues, include the game, devices, and player roles."
+  }
+}

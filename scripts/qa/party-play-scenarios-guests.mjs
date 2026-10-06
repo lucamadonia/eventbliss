@@ -42,7 +42,12 @@ async function secrecyViolations(devices, tv, gameId) {
 function guestRun(game) {
   return async ctx => {
     const phones = ['Lena', 'Tom', 'Uwe', 'Vera'].slice(0, Math.max(1, game.min - 3));
-    const m = await matchSetup(ctx, { game: game.id, guests: ['ALEXANDRA-MARIE', 'Gerda'], phones, forceShared: [game.id] });
+    const m = await matchSetup(ctx, { game: game.id, guests: ['ALEXANDRA-MARIE', 'Gerda'], phones,
+      mode: game.id === 'pantomime' ? 'Blitz' : game.id === 'brew' ? 'Ohne Tablett' : undefined,
+      forceShared: game.released ? [] : [game.id] });
+    if (game.id === 'brew') {
+      assert(await m.host.attr('brew-playing', 'data-with-tray') === 'false', 'brew direct mode was not selected');
+    }
     if (game.id === 'pixeljagd') {
       // A route-only assertion missed the reported failure: the second phone
       // entered the game while its canvas remained blank.
@@ -68,9 +73,14 @@ function guestRun(game) {
     Object.assign(ctx.evidence, { mode: game.mode, released: game.released, guestsParticipating: guestIds.filter(id => parts.includes(id)).length });
     assert(guestIds.every(id => parts.includes(id)), `${game.id} (${game.mode}): guests not in participantIds even with guest play forced`);
     const handed = new Set(); const secrets = []; let leaks = 0, ticks = 0;
-    // Taboo has four mandatory 60-second team turns; the other two timed
-    // games can also exceed the generic 150-second allowance with four seats.
-    const budgetMs = game.id === 'taboo' ? 320000 : ['headup', 'category'].includes(game.id) ? 240000 : 150000;
+    // Multi-round games need time for each team/role while the driver still
+    // requires an actual result to pass the scenario.
+    const budgetMs = game.id === 'taboo' ? 320000
+      : game.id === 'closeenough' ? 400000
+      : game.id === 'brew' ? 360000
+      : ['schnellzeichner', 'split-quiz', 'geteilt-gequizzt', 'wo-ist-was', 'drueck-das-wort', 'pantomime'].includes(game.id) ? 320000
+      : game.id === 'ohrwurm' ? 360000
+      : ['headup', 'category'].includes(game.id) ? 240000 : 150000;
     const res = await playMatch(m.h, m.host, game.id, m.map, { budgetMs, onHandover: async info => {
       if (info.step !== 'cover') handed.add(info.playerId);
       leaks += await m.host.page.evaluate(() => [...document.querySelectorAll('button')].filter(b => b.getBoundingClientRect().height && !b.closest('[data-testid="handover-screen"]') && !b.closest('[aria-haspopup]') && !b.hasAttribute('aria-haspopup') && !/spieler|players|abort|abbrechen|tv/i.test(b.innerText + (b.getAttribute('aria-label') ?? ''))).length > 2 ? 1 : 0);
@@ -82,15 +92,19 @@ function guestRun(game) {
     await m.h.shotAll(`${game.id}-end`);
     assert(!leaks, `${game.id}: game content visible behind the handover screen ${leaks}×`);
     assert(!secrets.length, `${game.id}: secrecy violated — ${[...new Set(secrets)].slice(0, 2).join('; ')}`);
+    const start = skews.find(s => s.scene === 'game-start');
+    assert(start && 'Host' in start.lagMs && 'TV' in start.lagMs && m.phones.some(phone => phone.name in start.lagMs), `${game.id}: game-start trace missing Host, phone or TV`);
     if (worst !== null) assert(worst <= 250, `${game.id}: phase-sync skew ${worst} ms > 250 (T-1)`);
     // A timeout cannot prove the guests reached the result, even if secrecy and timing looked good.
     if (!res.finished) throw new Inconclusive(`${game.id}: match did not finish within the driver budget; participation/secrecy/skew checks passed`);
     const scores = (await m.host.party()).results.at(-1).scores;
     assert(guestIds.every(id => id in scores), `${game.id}: guest missing from the result`);
-    // Bomb keeps the fuse running and has no private pass screen between players.
-    const needsHandover = game.id !== 'bomb' && ['turns', 'sequential', 'secret'].includes(game.mode);
+    // Bomb has no private pass screen. Split Quiz deliberately places all host-phone
+    // seats in one team when possible, so the host can act for that whole team.
+    const needsHandover = !['bomb', 'split-quiz'].includes(game.id)
+      && ['turns', 'sequential', 'secret'].includes(game.mode);
     if (needsHandover && !handed.size) throw new Inconclusive(`${game.id}: no guest turn reached within the budget (driver), participation/secrecy/skew checks passed`);
   };
 }
 
-export const guestScenarios = games.map(g => ({ id: `P-${g.id}`, title: `Guests on the host phone (${g.mode}): ${g.id} — F01–F04, secrecy, T-1`, timeoutMs: 420000, run: guestRun(g) }));
+export const guestScenarios = games.map(g => ({ id: `P-${g.id}`, title: `Guests on the host phone (${g.mode}): ${g.id} — F01–F04, secrecy, T-1`, timeoutMs: 480000, run: guestRun(g) }));

@@ -243,7 +243,7 @@ export function TimelinePlacer({ timeline, onSelect, accent }: { timeline: Song[
   let pos = 0;
 
   const slot = (i: number, label: string) => (
-    <motion.button key={`slot-${i}`} onClick={() => onSelect(i)}
+    <motion.button key={`slot-${i}`} data-testid={`ohrwurm-slot-${i}`} onClick={() => onSelect(i)}
       custom={pos++} variants={itemVar}
       whileHover={reduce ? undefined : { scale: 1.08, y: -4 }}
       whileTap={{ scale: 0.9 }}

@@ -291,6 +291,7 @@ export function NumberEntry({
         {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((d) => (
           <button
             key={d}
+            data-testid={`ce-key-${d}`}
             type="button"
             onClick={() => push(d)}
             disabled={disabled}
@@ -352,6 +353,7 @@ export function NumberEntry({
       <div className="pt-3 pb-[max(12px,env(safe-area-inset-bottom))]" style={{background:theme.bg}}>
       <button
         type="button"
+        data-testid="ce-submit"
         onClick={onSubmit}
         disabled={!canSubmit}
         className="w-full min-h-14 px-4 py-3 rounded-2xl font-black text-base leading-snug disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"

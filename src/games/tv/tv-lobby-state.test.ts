@@ -218,17 +218,17 @@ describe('nextGame availability (gameAvailability)', () => {
   };
   const pixel = { id: 'pixeljagd', name: 'PIXELJAGD', minPlayers: 2, maxPlayers: 8 };
 
-  it('names sitting-out guests and says when that leaves too few', () => {
+  it('shows host-device guests as playable on TV', () => {
     const state = controllerLobbyState({ data: guestsOnly(), presence: [], baseUrl: 'https://x.test', nextGame: pixel, gamesPlanned: 1 });
-    expect(state.nextGame?.availability).toMatchObject({ startable: false, plannable: true, reason: 'guests_sit_out_too_few', sittingOut: 2, missingPlayers: 1, sittingOutNames: ['Max', 'Gerda'] });
-    expect(availabilityChip(nextGameAvailability(state)!)).toMatchObject({ kind: 'waiting', key: 'partyPlay.availability.guestsSitOut', params: { count: 1 } });
+    expect(state.nextGame?.availability).toMatchObject({ startable: true, plannable: true, reason: null, activePlayers: 3, sittingOut: 0, sittingOutNames: [] });
+    expect(availabilityChip(nextGameAvailability(state)!)).toMatchObject({ kind: 'ok', variant: 'fits' });
   });
 
-  it('fits with a phone player, but still announces who sits out', () => {
+  it('counts a phone player and both host-device guests', () => {
     const data = guestsOnly();
     data.members.push({ user_id: 'u1', player_id: 'lena', name: 'Lena', is_host: false, controlled_by: null } as unknown as ControllerPartyData['members'][number]);
     const state = controllerLobbyState({ data, presence: [{ id: 'lena', isReady: true }], baseUrl: 'https://x.test', nextGame: pixel, gamesPlanned: 1 });
-    expect(nextGameAvailability(state)).toMatchObject({ startable: true, activePlayers: 2, sittingOutNames: ['Max', 'Gerda'] });
+    expect(nextGameAvailability(state)).toMatchObject({ startable: true, activePlayers: 4, sittingOut: 0, sittingOutNames: [] });
     expect(availabilityChip(nextGameAvailability(state)!).kind).toBe('ok');
   });
 

@@ -42,6 +42,10 @@ export async function hostSetup(host, game, timeout = 20000, { rounds = 'min', m
   const startRe = `^(start game|start|los geht|spiel starten${own ? `|${own}` : ''})`;
   const ok = await host.page.waitForFunction(re => [...document.querySelectorAll('button')].some(b => new RegExp(re, 'i').test(b.innerText.trim()) && !b.disabled) || document.querySelector('input[type=range]'), { timeout, polling: 200 }, startRe).then(() => true, () => false);
   if (!ok) return false;
+  if (game === 'ohrwurm') {
+    await host.page.evaluate(() => [...document.querySelectorAll('button')]
+      .find(b => /^6\b/.test(b.innerText.trim()))?.click());
+  }
   if (mode) await host.clickText(`^${mode}`, 5000); // game mode tile, e.g. this-or-that "Speed" (F12)
   // Who Am I defaults to twenty questions per seat; five keeps the complete
   // four-player result inside the guest-run budget while exercising every turn.
@@ -55,6 +59,10 @@ export async function hostSetup(host, game, timeout = 20000, { rounds = 'min', m
   if (game === 'category' && ranges.length > 1) { await ranges[0].focus(); await host.page.keyboard.press('Home'); }
   if (game === 'fake-or-fact' && ranges.length > 1) { await ranges[0].focus(); await host.page.keyboard.press('End'); }
   await host.clickText(startRe, 8000);
+  if (game === 'brew') {
+    // Repeated setup clicks re-deal the deck before the first phase paints.
+    await host.page.waitForSelector('[data-testid="brew-playing"]', { timeout: 15000 });
+  }
   return true;
 }
 
