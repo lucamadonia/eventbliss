@@ -27,3 +27,16 @@ jobs:
           APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
           TESTFLIGHT_BUILD_NUMBER: ${{ inputs.build_number }}
         run: node scripts/release/testflight-whats-new.mjs --build "$TESTFLIGHT_BUILD_NUMBER"
+      - name: Audit App Store version readiness
+        env:
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+        run: node scripts/release/app-store-status.mjs
+      - name: Upload App Store status report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-status
+          path: artifacts/app-store/status.json
+          if-no-files-found: warn
