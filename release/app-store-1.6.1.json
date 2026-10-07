@@ -1,0 +1,18 @@
+{
+  "version": "1.6.1",
+  "bundleId": "app.eventbliss",
+  "previousVersion": "1.6.0",
+  "buildNumber": "303",
+  "whatsNew": {
+    "ar-SA": "تدعم لعبة Ohrwurm الآن من فريقين إلى أربعة فرق يمكن توزيع اللاعبين عليها بحرية. العب مع 2 إلى 20 شخصًا محليًا أو حتى 12 شخصًا في غرفة الحفلة. يتناوب أعضاء الفريق وتُحتسب النقاط للفريق بأكمله. تفتح دعوات الحفلة التطبيق مباشرة على الأجهزة المدعومة.",
+    "de-DE": "Ohrwurm unterstützt jetzt 2–4 frei zuweisbare Teams. Spiele mit 2–20 Personen vor Ort oder mit bis zu 12 im Party-Raum. Teammitglieder wechseln sich ab, und Punkte zählen für das ganze Team. Party-Einladungen öffnen EventBliss auf unterstützten Geräten direkt in der App.",
+    "en-GB": "Ohrwurm now supports 2–4 teams with flexible player assignments. Play with 2–20 people locally or up to 12 in a Party Room. Team members take turns, and points count for the whole team. Party invitations open EventBliss directly in the app on supported devices.",
+    "es-ES": "Ohrwurm ahora admite de 2 a 4 equipos con jugadores asignados libremente. Juega con 2 a 20 personas en local o hasta 12 en una sala de fiesta. Los miembros del equipo se turnan y los puntos cuentan para todo el equipo. Las invitaciones abren EventBliss directamente en la app en dispositivos compatibles.",
+    "fr-FR": "Ohrwurm prend désormais en charge 2 à 4 équipes dont les membres sont librement répartis. Jouez à 2–20 personnes en local ou jusqu’à 12 dans une salle Party. Les membres jouent à tour de rôle et les points comptent pour toute l’équipe. Les invitations ouvrent directement EventBliss dans l’app sur les appareils compatibles.",
+    "it": "Ohrwurm ora supporta da 2 a 4 squadre con assegnazione libera dei giocatori. Gioca con 2–20 persone in locale o fino a 12 in una stanza Party. I membri si alternano e i punti valgono per tutta la squadra. Gli inviti aprono EventBliss direttamente nell’app sui dispositivi compatibili.",
+    "nl-NL": "Ohrwurm ondersteunt nu 2–4 teams waarin je spelers vrij kunt indelen. Speel lokaal met 2–20 personen of met maximaal 12 in een Party Room. Teamleden spelen om de beurt en punten tellen voor het hele team. Uitnodigingen openen EventBliss rechtstreeks in de app op ondersteunde apparaten.",
+    "pl": "Ohrwurm obsługuje teraz 2–4 drużyny z dowolnym przypisaniem graczy. Graj lokalnie w grupie 2–20 osób lub z maksymalnie 12 osobami w pokoju Party. Członkowie drużyny grają na zmianę, a punkty liczą się dla całej drużyny. Zaproszenia otwierają EventBliss bezpośrednio w aplikacji na obsługiwanych urządzeniach.",
+    "pt-PT": "O Ohrwurm permite agora criar 2 a 4 equipas e distribuir livremente os jogadores. Joga com 2–20 pessoas localmente ou até 12 numa sala Party. Os membros jogam à vez e os pontos contam para toda a equipa. Os convites abrem o EventBliss diretamente na app em dispositivos compatíveis.",
+    "tr": "Ohrwurm artık oyuncuları serbestçe atayabileceğiniz 2–4 takımı destekliyor. Yerel olarak 2–20 kişiyle veya Party odasında en fazla 12 kişiyle oynayın. Takım üyeleri sırayla oynar ve puanlar tüm takıma yazılır. Davetler, desteklenen cihazlarda EventBliss uygulamasını doğrudan açar."
+  }
+}

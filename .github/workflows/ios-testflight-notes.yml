@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       prepare_store:
-        description: 'Create/update the App Store 1.6.0 draft, attach build 302, and write all release notes'
+        description: 'Create/update the App Store 1.6.1 draft, attach build 303, and write all release notes'
         required: false
         type: boolean
         default: false

@@ -1,9 +1,10 @@
 import { createPrivateKey, sign } from 'node:crypto';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 
-const bundleId = 'app.eventbliss';
-const targetVersion = '1.6.0';
-const buildNumber = '302';
+const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.1.json', import.meta.url), 'utf8'));
+const { bundleId, previousVersion } = release;
+const targetVersion = release.version;
+const buildNumber = release.buildNumber;
 const issuer = process.env.APP_STORE_CONNECT_ISSUER_ID;
 const keyId = process.env.APP_STORE_CONNECT_KEY_ID;
 const secret = process.env.APP_STORE_CONNECT_PRIVATE_KEY;
@@ -58,7 +59,7 @@ const report = {
 };
 for (const version of iosVersions) {
   const { versionString, appVersionState, appStoreState } = version.attributes ?? {};
-  if (versionString !== targetVersion && versionString !== '1.5.11' && !['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'PENDING_DEVELOPER_RELEASE', 'PENDING_APPLE_RELEASE'].includes(appVersionState ?? appStoreState)) continue;
+  if (versionString !== targetVersion && versionString !== previousVersion && !['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'PENDING_DEVELOPER_RELEASE', 'PENDING_APPLE_RELEASE'].includes(appVersionState ?? appStoreState)) continue;
   const attached = await api(`appStoreVersions/${version.id}/build`);
   const localizations = await api(`appStoreVersions/${version.id}/appStoreVersionLocalizations?limit=200`);
   const localeReport = [];
