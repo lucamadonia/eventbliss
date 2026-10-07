@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
@@ -7,6 +7,17 @@ import { VitePWA } from "vite-plugin-pwa";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isCapacitorBuild = process.env.CAPACITOR_BUILD === 'true';
+
+  // A native bundle cannot recover missing build-time API settings at runtime.
+  // Fail the release build before packaging an app that opens to a blank screen.
+  if (isCapacitorBuild) {
+    const env = loadEnv(mode, process.cwd(), 'VITE_');
+    const required = ['VITE_SUPABASE_URL', 'VITE_SUPABASE_PUBLISHABLE_KEY'];
+    const missing = required.filter((name) => !env[name]?.trim());
+    if (missing.length > 0) {
+      throw new Error(`Native build is missing required public settings: ${missing.join(', ')}`);
+    }
+  }
 
   return ({
   server: {
