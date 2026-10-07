@@ -86,14 +86,15 @@ export class RoomSession {
   /** Repair a missed start packet from the authenticated party snapshot. */
   private recoverPartyMatch(room: GameRoom, access: PartyRoomAccess): GameRoom | null {
     const { matchId, matchGameId, matchParticipantIds } = access;
-    if (!matchId || !matchGameId || !Array.isArray(matchParticipantIds)
-      || !playableGames.some(game => game.id === matchGameId)) return null;
+    if (!matchId || !Array.isArray(matchParticipantIds)) return null;
     const active = new Set(matchParticipantIds);
     const participantIds = access.memberIds.filter(id => active.has(id));
-    if (room.status === 'playing' && room.sessionId === matchId && room.gameId === matchGameId) {
+    if (room.status === 'playing' && room.sessionId === matchId
+      && (!matchGameId || room.gameId === matchGameId)) {
       const removed = room.participantIds.filter(id => !active.has(id));
       return removed.length ? dropFromMatch(room, removed) : null;
     }
+    if (!matchGameId || !playableGames.some(game => game.id === matchGameId)) return null;
     this.cache.clear();
     const known = new Map([...room.players, ...this.snapshot.players, ...this.live].map(player => [player.id, player]));
     const profiles = new Map(access.memberProfiles?.map(profile => [profile.id, profile]) ?? []);
@@ -348,7 +349,7 @@ export class RoomSession {
       if (typeof data.gameId !== 'string' || !playableGames.some(g => g.id === data.gameId) || !['lobby', 'playing', 'finished'].includes(String(data.status)) || typeof data.sessionId !== 'string') return;
       // An older lobby packet must not undo a match already confirmed by the server.
       if (this.partyAccess?.matchId && (data.status !== 'playing' || data.sessionId !== this.partyAccess.matchId
-        || data.gameId !== this.partyAccess.matchGameId)) return;
+        || (this.partyAccess.matchGameId && data.gameId !== this.partyAccess.matchGameId))) return;
       if (this.snapshot.room.sessionId !== data.sessionId) this.cache.clear();
       const settings = object(data.settings) ? data.settings : {}, players = withGuests(this.live, readGuests(settings));
       const room = { ...this.snapshot.room, players: this.snapshot.room.sessionId === data.sessionId && data.status === 'playing' ? this.snapshot.room.players : players, gameId: data.gameId, sessionId: data.sessionId, status: data.status as GameRoom['status'], settings, participantIds: Array.isArray(data.participantIds) ? data.participantIds.filter((p): p is string => typeof p === 'string') : [] };
