@@ -4,7 +4,10 @@
     "target": {
       "namespace": "android_app",
       "package_name": "app.eventbliss",
-      "sha256_cert_fingerprints": ["92:AA:C1:04:E9:9B:5E:6E:74:E5:73:C1:6C:5B:31:81:C9:D2:FD:B7:18:5C:D4:5B:66:07:C5:38:FC:6F:87:8F"]
+      "sha256_cert_fingerprints": [
+        "66:F2:7F:BF:A1:93:0E:37:0A:0B:70:40:E8:D7:72:1E:76:6C:B4:4B:E4:B5:A2:50:62:CB:EC:DE:19:A8:89:07",
+        "92:AA:C1:04:E9:9B:5E:6E:74:E5:73:C1:6C:5B:31:81:C9:D2:FD:B7:18:5C:D4:5B:66:07:C5:38:FC:6F:87:8F"
+      ]
     }
   }
 ]
