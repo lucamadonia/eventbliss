@@ -150,7 +150,12 @@ function accessFor(data: ControllerPartyData): PartyRoomAccess {
     guests: data.members.filter(m => !m.banned && m.controlled_by != null)
       .map(m => ({ id: m.player_id, name: m.name, avatar: m.avatar, color: m.color, controlledBy: m.controlled_by! })),
     matchId: data.party.current_match_id,
+    matchGameId: data.party.current_game_id,
     matchParticipantIds: Array.isArray(data.party.participant_ids) ? data.party.participant_ids : null,
+    memberProfiles: data.members.filter(m => !m.banned).map(m => ({
+      id: m.player_id, name: m.name, avatar: m.avatar, color: m.color,
+      ...(m.controlled_by ? { controlledBy: m.controlled_by } : {}),
+    })),
     // Each seat's own symbol and colour for its room presence (no initials, no random colours).
     looks: Object.fromEntries(data.members.filter(m => !m.banned).map(m => [m.player_id, { avatar: m.avatar, color: m.color }])),
     refresh: async () => accessFor(await refresh()),

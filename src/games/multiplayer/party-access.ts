@@ -20,10 +20,14 @@ export interface PartyRoomAccess {
   guests?: PartyGuestSeat[];
   /** Server's current match (party.current_match_id); scopes matchParticipantIds. */
   matchId?: string | null;
+  /** Server-verified game for matchId, used to recover a missed room-state. */
+  matchGameId?: string | null;
   /** Party profile per member (avatar/colour from controller_party_members): presence and TV use it, never initials. */
   looks?: Record<string, { avatar?: string | null; color?: string | null }>;
   /** Participants of that match per server; shrinks on kick 'match_only'. Null/absent = unknown. */
   matchParticipantIds?: string[] | null;
+  /** Public seat profiles for reconstructing the active roster after reconnect. */
+  memberProfiles?: { id: string; name: string; avatar: string; color: string; controlledBy?: string }[];
   refresh: () => Promise<PartyRoomAccess>;
   start: (gameId: string, participantIds: string[]) => Promise<string>;
 }

@@ -23,7 +23,10 @@ window.controllerDeliver = (packet:any) => {
   channel.handlers.filter(h=>h.type===type&&(h.event===event||h.event==='*')).forEach(h=>h.callback({event,payload:packet.message?.payload}));
 };
 const session=()=>({user:window.controllerIdentity,access_token:'synthetic-local-only'});
-const query=()=>{const builder:any={then:(resolve:any)=>Promise.resolve({data:null,error:null}).then(resolve)};for(const name of ['select','eq','in','order','limit','maybeSingle','single','update','insert','upsert'])builder[name]=()=>builder;return builder;};
+const query=(table?:string)=>{const result=table==='pixel_images'
+  ? {data:[{id:'qa-pixel',image_path:'/images/form-templates/tropical-paradise.webp',answers:{de:'Tropen',en:'Tropics'},aliases:[],category:'orte',difficulty:1,credit:'EventBliss QA',source_url:null}],error:null}
+  : {data:null,error:null};
+  const builder:any={then:(resolve:any)=>Promise.resolve(result).then(resolve)};for(const name of ['select','eq','in','order','limit','maybeSingle','single','update','insert','upsert'])builder[name]=()=>builder;return builder;};
 export const supabase:any = {
   channel:(topic:string)=>new LocalChannel(topic),
   removeChannel:(channel:LocalChannel)=>channel.unsubscribe(),
