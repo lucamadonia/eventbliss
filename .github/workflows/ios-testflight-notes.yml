@@ -40,7 +40,7 @@ jobs:
           TESTFLIGHT_BUILD_NUMBER: ${{ github.event_name == 'workflow_dispatch' && inputs.build_number || '303' }}
         run: node scripts/release/testflight-whats-new.mjs --build "$TESTFLIGHT_BUILD_NUMBER"
       - name: Prepare App Store release draft
-        if: ${{ inputs.prepare_store == true }}
+        if: ${{ inputs.prepare_store == true || (github.event_name == 'push' && contains(github.event.head_commit.message, '[store-draft-1.6.1]')) }}
         env:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
