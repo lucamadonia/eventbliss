@@ -67,14 +67,14 @@ if (testflightBuildNumber) {
   if (testflightPrerelease.data?.attributes?.version !== targetVersion || testflightPrerelease.data?.attributes?.platform !== 'IOS') {
     throw new Error(`TestFlight build ${testflightBuildNumber} does not belong to iOS ${targetVersion}.`);
   }
-  const betaGroups = await api(`builds/${testflightBuild.id}/betaGroups?limit=200`);
+  const betaGroups = await api(`betaGroups?filter[builds]=${testflightBuild.id}&limit=200`);
   report.testflight = {
     number: testflightBuildNumber,
     processingState: testflightBuild.attributes?.processingState,
     groups: (betaGroups.data ?? []).map(({ attributes }) => ({
       name: attributes?.name,
       isInternalGroup: attributes?.isInternalGroup,
-      hasAccess: true,
+      hasAccessToAllBuilds: attributes?.hasAccessToAllBuilds,
     })),
   };
 }
