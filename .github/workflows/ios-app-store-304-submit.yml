@@ -1,0 +1,29 @@
+name: Replace approved iOS build 303 with 304 and resubmit
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Remove approved 303 from pending release
+        run: node scripts/release/app-store-replace-approved.mjs
+      - name: Attach 304 and update localized release notes
+        run: node scripts/release/app-store-prepare.mjs
+      - name: Submit 304 for App Review
+        run: node scripts/release/app-store-submit.mjs
+      - name: Audit final version state
+        run: node scripts/release/app-store-status.mjs

@@ -50,7 +50,7 @@ if (['WAITING_FOR_REVIEW', 'IN_REVIEW', 'PENDING_DEVELOPER_RELEASE', 'PENDING_AP
   console.log(`iOS ${targetVersion} is already ${versionState}; no duplicate submission created.`);
   process.exit(0);
 }
-if (versionState !== 'PREPARE_FOR_SUBMISSION' && versionState !== 'READY_FOR_REVIEW') {
+if (!['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED', 'READY_FOR_REVIEW'].includes(versionState)) {
   throw new Error(`iOS ${targetVersion} is not ready to submit: ${versionState}.`);
 }
 const builds = await api(`builds?filter[app]=${appId}&filter[version]=${buildNumber}&limit=20`);

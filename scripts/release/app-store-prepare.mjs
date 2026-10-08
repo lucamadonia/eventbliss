@@ -78,7 +78,7 @@ if (!version) {
   version = created.data;
   console.log(`Created iOS App Store version ${release.version}.`);
 }
-if (version.attributes?.appVersionState !== 'PREPARE_FOR_SUBMISSION' && version.attributes?.appStoreState !== 'PREPARE_FOR_SUBMISSION') {
+if (!['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED'].includes(version.attributes?.appVersionState ?? version.attributes?.appStoreState)) {
   throw new Error(`iOS ${release.version} is not editable: ${version.attributes?.appVersionState ?? version.attributes?.appStoreState}.`);
 }
 
