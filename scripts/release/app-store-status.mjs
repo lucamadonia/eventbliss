@@ -57,6 +57,27 @@ const report = {
   })),
   versions: [],
 };
+const testflightBuildNumber = process.env.TESTFLIGHT_BUILD_NUMBER;
+if (testflightBuildNumber) {
+  if (!/^\d+$/.test(testflightBuildNumber)) throw new Error('Invalid TestFlight build number.');
+  const testflightBuilds = await api(`builds?filter[app]=${app.id}&filter[version]=${testflightBuildNumber}&limit=20`);
+  const testflightBuild = testflightBuilds.data?.find((entry) => entry.attributes?.version === testflightBuildNumber);
+  if (!testflightBuild) throw new Error(`TestFlight build ${testflightBuildNumber} is not listed for ${bundleId}.`);
+  const testflightPrerelease = await api(`builds/${testflightBuild.id}/preReleaseVersion`);
+  if (testflightPrerelease.data?.attributes?.version !== targetVersion || testflightPrerelease.data?.attributes?.platform !== 'IOS') {
+    throw new Error(`TestFlight build ${testflightBuildNumber} does not belong to iOS ${targetVersion}.`);
+  }
+  const betaGroups = await api(`builds/${testflightBuild.id}/betaGroups?limit=200`);
+  report.testflight = {
+    number: testflightBuildNumber,
+    processingState: testflightBuild.attributes?.processingState,
+    groups: (betaGroups.data ?? []).map(({ attributes }) => ({
+      name: attributes?.name,
+      isInternalGroup: attributes?.isInternalGroup,
+      hasAccess: true,
+    })),
+  };
+}
 for (const version of iosVersions) {
   const { versionString, appVersionState, appStoreState } = version.attributes ?? {};
   if (versionString !== targetVersion && versionString !== previousVersion && !['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'PENDING_DEVELOPER_RELEASE', 'PENDING_APPLE_RELEASE'].includes(appVersionState ?? appStoreState)) continue;
