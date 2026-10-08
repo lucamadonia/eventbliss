@@ -21,9 +21,9 @@ vi.mock('@/components/auth/AuthProvider', () => ({ useAuthContext: () => ({ isLo
 vi.mock('@/games/party/controller-session', () => ({
   openControllerParty: state.open, stopControllerParty: state.stop, refreshControllerParty: async () => {},
   ownMember: (data: { members: { user_id: string }[] } | null, userId: string) => data?.members.find(m => m.user_id === userId) ?? null,
-  useControllerParty: () => ({ data: state.restored ? { party: { code: state.code, host_user_id: 'host', status: (state.serverPlaying ?? state.playing) ? 'playing' : 'lobby', current_match_id: null }, members: [{ user_id: 'guest' }] } : null }),
+  useControllerParty: () => ({ data: state.restored ? { party: { code: state.code, host_user_id: 'host', status: (state.serverPlaying ?? state.playing) ? 'playing' : 'lobby', current_match_id: 'active-match', current_game_id: 'bomb' }, members: [{ user_id: 'guest' }] } : null }),
 }));
-vi.mock('@/games/multiplayer/useGameRoom', () => ({ useGameRoom: () => ({ myPlayerId: 'guest-player', room: state.restored ? { roomCode: state.code, gameId: 'bomb', participantIds: ['guest-player'], status: state.playing ? 'playing' : 'lobby' } : null }) }));
+vi.mock('@/games/multiplayer/useGameRoom', () => ({ useGameRoom: () => ({ myPlayerId: 'guest-player', room: state.restored ? { roomCode: state.code, gameId: 'bomb', sessionId: 'active-match', participantIds: ['guest-player'], status: state.playing ? 'playing' : 'lobby' } : null }) }));
 import { ControllerPartyCoordinator } from '@/components/native/party/ControllerPartyCoordinator';
 
 function renderAndRunEffects() {

@@ -76,6 +76,10 @@ export default function ControllerPartyLobby() {
   const me = ownMember(data, auth.user?.id);
   const pendingClaim = data ? myPendingClaim(data) : null;
   const inMatch = !!room.room?.participantIds.includes(room.myPlayerId);
+  const currentGameRoute = playing && room.room?.status === 'playing'
+    && data?.party.current_match_id === room.room.sessionId
+    && data.party.current_game_id === room.room.gameId && (inMatch || isHost)
+    ? `/games/${room.room.gameId}?room=${data.party.code}&party=true` : null;
   const myReady = !!room.players.find(p => p.id === room.myPlayerId)?.isReady;
   const next = useNextGame(data, notReady, room.connection === 'connected');
   const minPlayers = Math.max(2, next.game?.minPlayers ?? 2);
@@ -206,7 +210,12 @@ export default function ControllerPartyLobby() {
         {me && <span className="rounded-full" style={{ boxShadow: playerGlow(me.color) }}><SeatAvatar avatar={me.avatar} color={me.color} size={48} /></span>}
         <div className="min-w-0 flex-1">
           <p className="font-bold">{!inMatch && !isHost ? t('partyPlay.lobby.soon', 'Gleich bist du dran') : t('partyPlay.lobby.running', 'Gerade läuft ein Spiel')}</p>
-          <p className="text-sm text-white/60">{!inMatch && !isHost ? t('partyPlay.lobby.nextRound', 'Ab der nächsten Runde bist du dabei.') : t('partyControllers.waitNext')}</p>
+          {!currentGameRoute && <p className="text-sm text-white/60">{!inMatch && !isHost ? t('partyPlay.lobby.nextRound', 'Ab der nächsten Runde bist du dabei.') : t('partyControllers.waitNext')}</p>}
+          {currentGameRoute && <button data-testid="resume-current-game" type="button"
+            className="mt-3 min-h-11 rounded-full bg-[#8ff5ff] px-5 text-sm font-bold text-[#061018]"
+            onClick={() => navigate(currentGameRoute, { replace: true })}>
+            {t('partyPlay.switchDevice.back', 'Hier weiterspielen')}
+          </button>}
           {isHost && <button className="mt-2 min-h-11 rounded-full px-4 text-sm font-semibold text-rose-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] active:bg-white/5" onClick={() => act(abortControllerGame())}>{t('partyControllers.abort')}</button>}
         </div>
       </section>}
