@@ -1,13 +1,6 @@
 name: iOS TestFlight What's New
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/ios-testflight-notes.yml'
-      - 'release/testflight-1.6.1.json'
-      - 'release/app-store-1.6.1.json'
   workflow_dispatch:
     inputs:
       build_number:
@@ -37,10 +30,10 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
-          TESTFLIGHT_BUILD_NUMBER: ${{ github.event_name == 'workflow_dispatch' && inputs.build_number || '303' }}
+          TESTFLIGHT_BUILD_NUMBER: ${{ inputs.build_number }}
         run: node scripts/release/testflight-whats-new.mjs --build "$TESTFLIGHT_BUILD_NUMBER"
       - name: Prepare App Store release draft
-        if: ${{ inputs.prepare_store == true || (github.event_name == 'push' && contains(github.event.head_commit.message, '[store-draft-1.6.1]')) }}
+        if: ${{ inputs.prepare_store == true }}
         env:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}

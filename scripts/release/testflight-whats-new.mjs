@@ -1,10 +1,10 @@
 import { createPrivateKey, sign } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-const notes = JSON.parse(readFileSync(new URL('../../release/testflight-1.6.1.json', import.meta.url), 'utf8'));
 const buildNumber = process.argv[process.argv.indexOf('--build') + 1];
 const dryRun = process.argv.includes('--dry-run');
 if (!/^\d+$/.test(buildNumber ?? '')) throw new Error('Pass the iOS workflow run number with --build NUMBER.');
+const notes = JSON.parse(readFileSync(new URL(`../../release/testflight-1.6.1-build${buildNumber}.json`, import.meta.url), 'utf8'));
 if (!/^\d+\.\d+\.\d+$/.test(notes.version) || !notes.bundleId || !Object.keys(notes.localizations).length) {
   throw new Error('Invalid TestFlight release notes.');
 }
