@@ -1,27 +1,38 @@
 import { PushNotifications } from '@capacitor/push-notifications';
-import { isNative } from './platform';
+import { registerPlugin } from '@capacitor/core';
+import { isAndroid, isNative } from './platform';
+
+const FirebaseStatus = registerPlugin<{ isConfigured(): Promise<{ configured: boolean }> }>('FirebaseStatus');
 
 export async function initPushNotifications(): Promise<void> {
   if (!isNative()) return;
 
-  const permResult = await PushNotifications.requestPermissions();
-  if (permResult.receive !== 'granted') return;
+  try {
+    // Android's push plugin crashes the whole process if no default Firebase app exists.
+    // Keep the rest of the app usable until google-services.json is configured.
+    if (isAndroid() && !(await FirebaseStatus.isConfigured()).configured) return;
 
-  await PushNotifications.register();
+    const permResult = await PushNotifications.requestPermissions();
+    if (permResult.receive !== 'granted') return;
 
-  PushNotifications.addListener('registration', (token) => {
-    console.log('Push token:', token.value);
-  });
+    await PushNotifications.addListener('registration', () => {
+      console.info('Push registration succeeded');
+    });
 
-  PushNotifications.addListener('registrationError', (err) => {
-    console.error('Push registration error:', err);
-  });
+    await PushNotifications.addListener('registrationError', (err) => {
+      console.error('Push registration error:', err);
+    });
 
-  PushNotifications.addListener('pushNotificationReceived', (notification) => {
-    console.log('Push received:', notification);
-  });
+    await PushNotifications.addListener('pushNotificationReceived', (notification) => {
+      console.log('Push received:', notification);
+    });
 
-  PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
-    console.log('Push action:', notification);
-  });
+    await PushNotifications.addListener('pushNotificationActionPerformed', (notification) => {
+      console.log('Push action:', notification);
+    });
+
+    await PushNotifications.register();
+  } catch (error) {
+    console.error('Push notifications are unavailable:', error);
+  }
 }
