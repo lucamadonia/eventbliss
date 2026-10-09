@@ -13,6 +13,8 @@
  * absprechen.
  */
 
+import { randomTeamAssignments } from '../ui/random-teams';
+
 export type TeamIndex = 0 | 1;
 export type TeamMap = Record<string, TeamIndex>;
 
@@ -48,18 +50,8 @@ export function assignTeams(ids: string[], previous: TeamMap = {}): TeamMap {
 }
 
 /** Alles neu auswuerfeln, aber gleichmaessig. */
-export function shuffleTeams(ids: string[], rng: () => number = Math.random): TeamMap {
-  const order = ids.slice();
-  for (let i = order.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [order[i], order[j]] = [order[j], order[i]];
-  }
-  const half = Math.ceil(order.length / 2);
-  const map: TeamMap = {};
-  order.forEach((id, i) => {
-    map[id] = i < half ? 0 : 1;
-  });
-  return map;
+export function shuffleTeams(ids: string[], rng: () => number = Math.random, previous: TeamMap = {}): TeamMap {
+  return randomTeamAssignments(ids, 2, previous, rng) as TeamMap;
 }
 
 /** Einen Spieler ins andere Team schieben. */

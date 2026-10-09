@@ -2,7 +2,7 @@
 import { avatarOrFallback } from '../multiplayer/seat-avatar';
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Crown, Loader2, Music2 } from 'lucide-react';
+import { ArrowLeft, Crown, Loader2, Music2, Shuffle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { useHaptics } from '@/hooks/useHaptics';
@@ -14,6 +14,7 @@ import { OHRWURM_GENRES } from './ohrwurm-content';
 import { type PlaybackMode, spotifyModePossible } from './playback';
 import { OW, OW_STYLE, PLAYER_COLORS, type OhrwurmConfig, type SetupPlayer } from './ohrwurm-theme';
 import { buildOhrwurmTeams, MAX_OHRWURM_PEOPLE, MAX_OHRWURM_TEAMS } from './teams';
+import { randomTeamAssignments } from '../ui/random-teams';
 
 // ===========================================================================
 // Setup-Screen
@@ -126,6 +127,12 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
     setTeamCount(removedIndex);
   };
 
+  const shuffleTeams = () => {
+    const current = Object.fromEntries(players.map((player, index) => [player.id, assignments[player.id] ?? index % teamCount]));
+    setAssignments(randomTeamAssignments(players.map((player) => player.id), teamCount, current));
+    void haptics.select();
+  };
+
   const TARGETS = [
     { v: 6, label: t('games.ohrwurm.targetFast'), desc: t('games.ohrwurm.targetHits', { count: 6 }) },
     { v: 10, label: t('games.ohrwurm.targetClassic'), desc: t('games.ohrwurm.targetHits', { count: 10 }) },
@@ -207,11 +214,18 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
                 <h3 className="text-sm font-bold" style={{ color: OW.text }}>{t('games.ohrwurm.formTeams')}</h3>
                 <p className="mt-1 text-xs" style={{ color: OW.dim }}>{t('games.ohrwurm.sharedTimeline')}</p>
               </div>
-              <button type="button" onClick={addTeam} disabled={teamCount >= MAX_OHRWURM_TEAMS || teamCount >= players.length}
-                className="min-h-11 shrink-0 rounded-xl border px-3 text-xs font-bold disabled:opacity-40"
-                style={{ borderColor: `${OW.secondary}66`, color: OW.secondary }}>
-                + {t('games.ohrwurm.addTeam')}
-              </button>
+              <div className="flex flex-wrap justify-end gap-2">
+                <button type="button" onClick={shuffleTeams} data-testid="ohrwurm-shuffle-teams"
+                  className="flex min-h-11 items-center gap-1.5 rounded-xl border px-3 text-xs font-bold"
+                  style={{ borderColor: `${OW.primary}66`, color: OW.primary }}>
+                  <Shuffle className="h-4 w-4" /> {t('games.splitquiz.reshuffleTeams')}
+                </button>
+                <button type="button" onClick={addTeam} disabled={teamCount >= MAX_OHRWURM_TEAMS || teamCount >= players.length}
+                  className="min-h-11 shrink-0 rounded-xl border px-3 text-xs font-bold disabled:opacity-40"
+                  style={{ borderColor: `${OW.secondary}66`, color: OW.secondary }}>
+                  + {t('games.ohrwurm.addTeam')}
+                </button>
+              </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {teams.map((team, index) => (

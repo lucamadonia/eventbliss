@@ -63,6 +63,14 @@ describe('shuffleTeams', () => {
     const map = shuffleTeams(ids);
     expect(Object.keys(map).sort()).toEqual(ids);
   });
+
+  it('mischt bei einem erneuten Zug auch dann neu, wenn der Zufall dasselbe Ergebnis liefert', () => {
+    const ids = ['a', 'b', 'c', 'd'];
+    const first = shuffleTeams(ids, () => 0);
+    const second = shuffleTeams(ids, () => 0, first);
+    expect(second).not.toEqual(first);
+    expect(teamSizes(second)).toEqual([2, 2]);
+  });
 });
 
 describe('flipTeam', () => {
