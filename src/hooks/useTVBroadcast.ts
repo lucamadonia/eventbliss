@@ -287,5 +287,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     };
   }, []);
 
-  return { tvCode, displayCode: onlineCode || tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom, lastTvReadyAt };
+  // A controller room may use a second join code, while the TV remains paired
+  // to the original PartySession code throughout the evening.
+  return { tvCode, displayCode: sessionCode || onlineCode || tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom, lastTvReadyAt };
 }

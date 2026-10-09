@@ -16,7 +16,7 @@ export async function createDB() {
   `);
   const social = await readFile(new URL('../../supabase/migrations/20260401000000_game_social.sql', import.meta.url), 'utf8');
   await db.exec(social.slice(social.indexOf('CREATE TABLE IF NOT EXISTS public.game_stats'), social.indexOf('-- Achievements definitions')));
-  for (const migration of ['20260922235000_controller_parties.sql', '20261001120000_party_play_guests.sql', '20261006160000_ohrwurm_team_capacity.sql']) {
+  for (const migration of ['20260922235000_controller_parties.sql', '20261001120000_party_play_guests.sql', '20261006160000_ohrwurm_team_capacity.sql', '20261008120000_controller_party_upgrade.sql']) {
     await db.exec(await readFile(new URL(`../../supabase/migrations/${migration}`, import.meta.url), 'utf8'));
   }
   return {
@@ -31,6 +31,14 @@ export async function createDB() {
         await tx.query("SELECT set_config('test.uid',$1,true),set_config('test.anonymous','false',true)", [userId || '']);
         await tx.exec('SET LOCAL ROLE authenticated');
         const result = await tx.query('SELECT public.controller_party_request($1,$2,$3::jsonb) AS data', [action, code, JSON.stringify(payload)]);
+        return result.rows[0].data;
+      });
+    },
+    async upgrade(userId, payload) {
+      return db.transaction(async tx => {
+        await tx.query("SELECT set_config('test.uid',$1,true),set_config('test.anonymous','false',true)", [userId || '']);
+        await tx.exec('SET LOCAL ROLE authenticated');
+        const result = await tx.query('SELECT public.controller_party_upgrade($1::jsonb) AS data', [JSON.stringify(payload)]);
         return result.rows[0].data;
       });
     },

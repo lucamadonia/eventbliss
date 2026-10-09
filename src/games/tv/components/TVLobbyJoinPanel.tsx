@@ -18,7 +18,7 @@ export default function TVLobbyJoinPanel({ joinUrl, code }: { joinUrl: string | 
   const reduced = useReducedMotion();
 
   if (!joinUrl) {
-    const switchUrl = `${getBaseUrl()}/party/controllers?source=tv`;
+    const switchUrl = `${getBaseUrl()}/party/controllers?source=tv&tv=${encodeURIComponent(code)}`;
     return (
       <motion.section
         className="flex h-full flex-col justify-center rounded-[28px] border border-white/[0.07] bg-[#0d0915] shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
@@ -36,7 +36,7 @@ export default function TVLobbyJoinPanel({ joinUrl, code }: { joinUrl: string | 
           {t('tvLobby.switchToJoysticks', 'Joystick-Modus starten')}
         </p>
         <p className="font-medium leading-snug text-white/70" style={{ fontSize: lu(2), maxWidth: '30ch' }}>
-          {t('tvLobby.switchHostHint', 'Host: QR scannen, Party starten. Danach erscheint hier der Beitrittscode für alle.')}
+          {t('tvLobby.switchHostHint', 'Host: QR mit der EventBliss-App scannen und Handys für diesen Abend aktivieren. Danach können alle hier beitreten.')}
         </p>
         <h2 className="font-semibold leading-tight text-white/75" style={{ fontSize: lu(2.4) }}>
           {t('tvLobby.localTitle', 'Ein Handy für alle')}

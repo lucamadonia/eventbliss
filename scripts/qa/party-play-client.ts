@@ -53,7 +53,8 @@ export const supabase:any = {
   removeAllChannels:async()=>{await Promise.all([...channels.values()].map(c=>c.unsubscribe()));},
   getChannels:()=>[...channels.values()],
   realtime:{connectionState:()=>'open',isDisconnecting:()=>false,setAuth:()=>{}},
-  rpc:async(name:string,args:any)=>name==='controller_party_request'?window.controllerRPC(args):{data:null,error:null},
+  rpc:async(name:string,args:any)=>name==='controller_party_request'||name==='controller_party_upgrade'
+    ? window.controllerRPC({...args,name}):{data:null,error:null},
   from:query, storage:{from:query}, functions:{invoke:async()=>({data:{isPremium:true},error:null})},
   auth:{
     getSession:async()=>({data:{session:session()},error:null}),

@@ -79,6 +79,7 @@ const DrinkTrackerScreen = lazy(() => import("@/pages/native/DrinkTrackerScreen"
 const PartyLobbyScreen = lazy(() => import("@/pages/native/PartyLobbyScreen"));
 const NativeEventDashboard = lazy(() => import("@/pages/native/NativeEventDashboard"));
 const JoinRoomScreen = lazy(() => import("@/pages/native/JoinRoomScreen"));
+const QrScanScreen = lazy(() => import("@/pages/native/QrScanScreen"));
 const NativeMarketplaceScreen = lazy(() => import("@/pages/native/NativeMarketplaceScreen"));
 const NativeServiceDetailScreen = lazy(() => import("@/pages/native/NativeServiceDetailScreen"));
 
@@ -268,6 +269,9 @@ export function NativeApp() {
 
               <Route path="/join-room" element={
                 <Suspense fallback={<PageLoader />}><JoinRoomScreen /></Suspense>
+              } />
+              <Route path="/scan-qr" element={
+                <Suspense fallback={<PageLoader />}><QrScanScreen /></Suspense>
               } />
 
               {/* Existing pages wrapped in NativeStackPage */}

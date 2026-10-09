@@ -610,6 +610,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     });
   }, [online]);
 
+  const latestOnlineSnapshot = useRef<Record<string, unknown> | null>(null);
   // Host → FULL authoritative snapshot, ONLY on real game-state changes.
   // (Deliberately NOT depending on roundTimer.timeLeft: re-sending the whole
   // snapshot every second would spam ~60 msgs/round and trigger a re-render
@@ -623,9 +624,20 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre, winner,
       previewUrl, spotifyUri: phase === 'reveal' || phase === 'gameOver' ? spotifyUri : null, listening, placeElapsedMs, tvConnected, phaseStartsAt,
     };
-    online.broadcast('ohrwurm-state', { snapshot: JSON.parse(JSON.stringify(snapshot)) });
+    latestOnlineSnapshot.current = JSON.parse(JSON.stringify(snapshot)) as Record<string, unknown>;
+    online.broadcast('ohrwurm-state', { snapshot: latestOnlineSnapshot.current });
      
   }, [online, isHost, phase, participants, turn, song, placement, counter, counteringId, resolution, flipped, swapUsed, bonusClaimed, bonusDecided, winTarget, genre, winner, previewUrl, spotifyUri, listening, placeElapsedMs, tvConnected, phaseStartsAt]);
+  // A phone that enters after the Host's first broadcast needs the current
+  // state immediately; otherwise it stays on the setup/wait screen forever.
+  useEffect(() => {
+    if (!online || !isHost) return;
+    return online.onBroadcast('ohrwurm-state-request', () => {
+      if (latestOnlineSnapshot.current) online.broadcast('ohrwurm-state', { snapshot: latestOnlineSnapshot.current });
+      online.broadcast('ohrwurm-timer-state', { timeLeft: roundTimerRef.current?.timeLeft ?? ROUND_SECONDS,
+        running: roundTimerRef.current?.isRunning ?? false });
+    });
+  }, [online, isHost]);
 
   // Public TV payload (spoiler-free): phase + shared start, avatars/colours, guest on the host phone.
   // The title stays hidden until the reveal; the TV is the speaker when connected.
@@ -703,6 +715,13 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
       applySnapshot(s);
     });
   }, [online, isHost, applySnapshot]);
+  useEffect(() => {
+    if (!online || isHost || phase !== 'setup' || online.isConnected === false) return;
+    const request = () => online.broadcast('ohrwurm-state-request', { match: online.roomCode });
+    request();
+    const retry = window.setInterval(request, 2000);
+    return () => window.clearInterval(retry);
+  }, [online, isHost, phase, online?.isConnected]);
 
   // --- Spielstand über Navigation hinweg retten --------------------------
   // Nur offline: online besitzt der Host die Wahrheit, ein lokal gespeicherter

@@ -12,6 +12,7 @@ import { lazy, Suspense } from "react";
 // TV Screen (lazy loaded)
 const TVScreen = lazy(() => import("./games/tv/TVScreen"));
 const ControllerPartyLobby = lazy(() => import('./components/native/party/ControllerPartyLobby'));
+const QrScanScreen = lazy(() => import('./pages/native/QrScanScreen'));
 const TVCodeEntryPage = lazy(() => import("./games/tv/TVScreen").then(m => ({ default: m.TVCodeEntry })));
 const GameProfilePage = lazy(() => import("./games/social/GameProfilePage").then(m => ({ default: m.GameProfilePage })));
 const AdminGames = lazy(() => import("./pages/AdminGames"));
@@ -140,6 +141,7 @@ const AppContent = () => {
         <Routes>
           <Route path="/party/join/:code" element={<Suspense fallback={<PageLoader />}><ControllerPartyLobby /></Suspense>} />
           <Route path="/party/controllers" element={<Suspense fallback={<PageLoader />}><ControllerPartyLobby /></Suspense>} />
+          <Route path="/scan-qr" element={<Suspense fallback={<PageLoader />}><QrScanScreen /></Suspense>} />
           <Route path="/" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Landing /></Suspense></ErrorBoundary>} />
           <Route path="/create" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><CreateEvent /></Suspense></ErrorBoundary>} />
           <Route path="/join" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><JoinEvent /></Suspense></ErrorBoundary>} />

@@ -105,6 +105,13 @@ describe('useTVBroadcast', () => {
     expect(sentOn('tv-room:PARTY1')).toContain('tv-state');
   });
 
+  it('keeps showing the paired TV code while a different controller room is running', () => {
+    render('TVOLD1').setOnlineRoom('ROOM42');
+    const tv = render('TVOLD1');
+    expect(tv.tvCode).toBe('TVOLD1');
+    expect(tv.displayCode).toBe('TVOLD1');
+  });
+
   it('never tears down a room channel it does not own (controller party: party code = room code)', () => {
     // room-session already holds game-room:PARTY1
     harness.channels.push({ topic: 'realtime:game-room:PARTY1', sent: [], removed: false });

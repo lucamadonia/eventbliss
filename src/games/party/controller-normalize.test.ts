@@ -59,11 +59,14 @@ describe('normalizePartyData (old schema)', () => {
   });
 
   it('keeps new fields when present and lowercases colours', () => {
-    const fresh = normalizePartyData({ ...OLD, server_now: '2026-10-01T10:00:00Z', party: { ...OLD.party, min_client: 2 },
+    const fresh = normalizePartyData({ ...OLD, server_now: '2026-10-01T10:00:00Z', party: { ...OLD.party, min_client: 2,
+      tv_code: 'TVX247', local_started_at: '2026-09-30T20:00:00Z' },
       members: [{ ...OLD.members[0], avatar: '👑', color: '#FF6B98' }, { user_id: null, player_id: 'g', name: 'Max', is_host: false, controlled_by: 'hp', pending_claim: true, avatar: 'nope' }] })!;
     expect(fresh.members[0]).toMatchObject({ avatar: '👑', color: '#ff6b98' });
     expect(fresh.members[1]).toMatchObject({ user_id: null, controlled_by: 'hp', pending_claim: true, avatar: PLAYER_AVATARS[1] });
     expect(fresh.server_now).toBe('2026-10-01T10:00:00Z');
     expect(fresh.party.min_client).toBe(2);
+    expect(controllerPartySession(fresh).tvCode).toBe('TVX247');
+    expect(controllerPartySession(fresh).createdAt).toBe(Date.parse('2026-09-30T20:00:00Z'));
   });
 });

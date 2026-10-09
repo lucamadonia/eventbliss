@@ -180,13 +180,11 @@ export default function TVScreen() {
    * Fernseher einen Ersatz aus der Anwesenheit ab.
    */
   const wireLobby = useMemo(() => parseTVLobbyState(gameState?.lobby), [gameState?.lobby]);
-  // Switching a one-phone evening to a controller party creates a new room
-  // code. The TV still listens on the old local code when the first controller
-  // lobby packet arrives; follow that announced room so later roster updates
-  // and game images reach this screen as well.
+  // Older controller parties used their join code for TV pairing. An upgraded
+  // local evening retains its original TV channel instead.
   useEffect(() => {
     const nextCode = wireLobby?.mode === 'controller-party' ? wireLobby.code : null;
-    if (!nextCode || nextCode === code || !/^[A-HJ-NP-Z2-9]{6}$/.test(nextCode)) return;
+    if (!nextCode || nextCode === code || (wireLobby?.tvCode && wireLobby.tvCode !== nextCode) || !/^[A-HJ-NP-Z2-9]{6}$/.test(nextCode)) return;
     navigate(`/tv/${nextCode}${window.location.search}`, { replace: true });
   }, [wireLobby?.mode, wireLobby?.code, code, navigate]);
   const legacyJoinCode = typeof gameState?.controllerJoinCode === 'string' && /^[A-HJ-NP-Z2-9]{6}$/.test(gameState.controllerJoinCode)

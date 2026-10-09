@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/components/auth/AuthProvider';
 import { useGameRoom } from '@/games/multiplayer/useGameRoom';
 import { openControllerParty, ownMember, refreshControllerParty, stopControllerParty, useControllerParty } from '@/games/party/controller-session';
+import { getActivePartySession, replaceControllerPartySession } from '@/hooks/usePartySession';
 import { clearPartyScene, getPartyScene, sceneGoAt, usePartyScene, type PartyScene } from '@/games/party/party-scene';
 import { sceneLocalTime } from '@/games/party/scene-schedule';
 import { controllerInvitationCode, takeInvitation } from './controller-invitation';
@@ -25,11 +26,22 @@ export function ControllerPartyCoordinator() {
   const endedMatch = useRef<string | null>(null);
   const [goTick, setGoTick] = useState(0);
   useEffect(() => {
+    const local = getActivePartySession();
+    if (local?.playMode !== 'local' || !controller.data || controller.busy || location.pathname === '/party/controllers') return;
+    // A previously opened controller room must not poll over a newly started
+    // local evening. Disconnect it on this device and restore that evening.
+    stopControllerParty();
+    replaceControllerPartySession(local);
+  }, [controller.data, controller.busy, location.pathname]);
+  useEffect(() => {
     if (auth.isLoading) return;
     if (!auth.user) { if (controller.data) stopControllerParty(); return; }
     // Another account signed in on this device. Kicks are handled by the session itself.
     if (controller.data && !controller.seatless && !ownMember(controller.data, auth.user.id) && !controller.data.members.some(m => m.pending_claim_mine)) { stopControllerParty(); return; }
     if (controller.data || resumed.current === auth.user.id || location.pathname.startsWith('/party/join/')) return;
+    // A remembered controller room must not replace an evening already running
+    // on this phone. Explicit activation handles that evening instead.
+    if (getActivePartySession()?.playMode === 'local') return;
     resumed.current = auth.user.id;
     // An invitation parked before a login detour wins over resuming an old party.
     const invite = takeInvitation();
@@ -67,6 +79,7 @@ export function ControllerPartyCoordinator() {
   useEffect(() => {
     const data = controller.data;
     if (!data) { routedPhase.current = null; return; }
+    if (getActivePartySession()?.playMode === 'local') return;
     if (auth.isLoading || !auth.user || room.room?.roomCode !== data.party.code) return;
     const invitation = controllerInvitationCode(location.pathname);
     if (invitation && invitation !== data.party.code.toUpperCase()) return;
