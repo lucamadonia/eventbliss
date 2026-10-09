@@ -9590,11 +9590,27 @@
     "accountDeleteRequested": "تم طلب حذف الحساب."
   },
   "nativeFab": {
+    "scanQr": "مسح رمز QR",
     "createEvent": "إنشاء فعالية",
     "joinEvent": "الانضمام إلى فعالية",
     "createRoom": "إنشاء غرفة",
     "joinRoom": "الانضمام إلى غرفة",
     "quickGame": "لعبة سريعة"
+  },
+  "qrScanner": {
+    "title": "مسح رمز QR",
+    "hint": "امسح دعوة حفلة أو غرفة لعب أو أي دعوة أخرى من EventBliss.",
+    "invalid": "رمز QR هذا ليس دعوة من EventBliss.",
+    "cameraUnavailable": "الكاميرا غير متاحة. اختر صورة QR أو أدخل الرابط.",
+    "noCodeInImage": "لم يتم العثور على رمز QR في هذه الصورة.",
+    "codeFound": "تم العثور على الرمز {{code}}. ماذا تريد أن تفتح؟",
+    "joinParty": "الانضمام إلى الحفلة",
+    "joinRoom": "الانضمام إلى غرفة عبر الإنترنت",
+    "scanAgain": "المسح مرة أخرى",
+    "chooseImage": "اختيار صورة QR",
+    "retryCamera": "إعادة تشغيل الكاميرا",
+    "enterLink": "إدخال رابط أو رمز",
+    "open": "فتح"
   },
   "agencyPortal": {
     "loginRequired": "تسجيل الدخول مطلوب",
@@ -10473,6 +10489,10 @@
     "winnerTie": "تعادل مع {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "تفعيل الهواتف لهذه الحفلة",
+    "activateProgress": "سيبقى اللاعبون والألعاب والنقاط كما هي. سيظهر رمز QR لجميع الهواتف قريبًا.",
+    "activateHostRequired": "افتح الحفلة الحالية على هاتف المضيف وفعّل التحكم بالهواتف من هناك.",
+    "activateOnHost": "افتح هذا الرمز على هاتف المضيف في EventBliss لتفعيل الهواتف للحفلة الحالية.",
     "title": "وضع التحكم",
     "subtitle": "يلعب كل شخص على هاتفه الخاص.",
     "appRequired": "تحتاج إلى تطبيق EventBliss وحساب للمشاركة.",

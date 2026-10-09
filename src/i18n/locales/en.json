@@ -10367,6 +10367,10 @@
     "winnerTie": "Tied with {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Enable phones for this party",
+    "activateProgress": "Your players, games and points are kept. A QR code for every phone will appear shortly.",
+    "activateHostRequired": "Open the current party on the host phone and enable phone controls there.",
+    "activateOnHost": "Open this code on the host phone in EventBliss to enable phones for your current party.",
     "title": "Joystick mode",
     "subtitle": "Everyone plays on their own phone.",
     "appRequired": "You need the EventBliss app and an account to play.",

@@ -10367,6 +10367,10 @@
     "winnerTie": "Gleichstand mit {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Handys für diesen Abend aktivieren",
+    "activateProgress": "Eure Spieler, Spiele und Punkte bleiben erhalten. Gleich erscheint der QR-Code für alle Handys.",
+    "activateHostRequired": "Öffne die laufende Party auf dem Host-Handy und aktiviere dort die Handy-Steuerung.",
+    "activateOnHost": "Öffne diesen Code auf dem Host-Handy in EventBliss. Dort werden die Handys für euren laufenden Abend aktiviert.",
     "title": "Joystick-Modus",
     "subtitle": "Jeder spielt auf seinem eigenen Handy.",
     "appRequired": "Zum Mitspielen brauchst du die EventBliss-App und ein Konto.",

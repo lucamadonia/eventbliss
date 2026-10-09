@@ -8924,11 +8924,27 @@
     "invalidCode": "El código debe tener 6 caracteres."
   },
   "nativeFab": {
+    "scanQr": "Escanear código QR",
     "createEvent": "Crear evento",
     "joinEvent": "Unirse",
     "createRoom": "Crear sala",
     "joinRoom": "Unirse a sala",
     "quickGame": "Juego rápido"
+  },
+  "qrScanner": {
+    "title": "Escanear código QR",
+    "hint": "Escanea una invitación de fiesta, sala de juego u otra invitación de EventBliss.",
+    "invalid": "Este código QR no es una invitación de EventBliss.",
+    "cameraUnavailable": "La cámara no está disponible. Elige una imagen QR o introduce el enlace.",
+    "noCodeInImage": "No se encontró ningún código QR en esta imagen.",
+    "codeFound": "Código {{code}} detectado. ¿Qué quieres abrir?",
+    "joinParty": "Unirse a la fiesta",
+    "joinRoom": "Unirse a una sala en línea",
+    "scanAgain": "Escanear de nuevo",
+    "chooseImage": "Elegir imagen QR",
+    "retryCamera": "Reiniciar cámara",
+    "enterLink": "Introducir enlace o código",
+    "open": "Abrir"
   },
   "nativeTabs": {
     "home": "Inicio",
@@ -10553,6 +10569,10 @@
     "winnerTie": "Empate con {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Activar móviles para esta fiesta",
+    "activateProgress": "Se conservan los jugadores, juegos y puntos. Pronto aparecerá un código QR para todos los móviles.",
+    "activateHostRequired": "Abre la fiesta actual en el móvil del anfitrión y activa allí los controles móviles.",
+    "activateOnHost": "Abre este código en el móvil del anfitrión con EventBliss para activar los móviles de la fiesta.",
     "title": "Modo mando",
     "subtitle": "Cada persona juega desde su propio móvil.",
     "appRequired": "Para jugar necesitas la aplicación EventBliss y una cuenta.",
