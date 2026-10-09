@@ -8941,11 +8941,27 @@
     "invalidCode": "El código debe tener 6 caracteres."
   },
   "nativeFab": {
+    "scanQr": "Ler código QR",
     "createEvent": "Crear evento",
     "joinEvent": "Unirse",
     "createRoom": "Crear sala",
     "joinRoom": "Unirse a sala",
     "quickGame": "Juego rápido"
+  },
+  "qrScanner": {
+    "title": "Ler código QR",
+    "hint": "Lê um convite para festa, sala de jogo ou outro convite EventBliss.",
+    "invalid": "Este código QR não é um convite EventBliss.",
+    "cameraUnavailable": "Câmara indisponível. Escolhe uma imagem QR ou introduz o link.",
+    "noCodeInImage": "Não foi encontrado nenhum código QR nesta imagem.",
+    "codeFound": "Código {{code}} encontrado. O que queres abrir?",
+    "joinParty": "Entrar na festa",
+    "joinRoom": "Entrar numa sala online",
+    "scanAgain": "Ler novamente",
+    "chooseImage": "Escolher imagem QR",
+    "retryCamera": "Reiniciar câmara",
+    "enterLink": "Introduzir link ou código",
+    "open": "Abrir"
   },
   "nativeTabs": {
     "home": "Início",
@@ -10425,6 +10441,10 @@
     "winnerTie": "Empate com {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Ativar telemóveis para esta festa",
+    "activateProgress": "Os jogadores, jogos e pontos são mantidos. O código QR para todos os telemóveis aparecerá em breve.",
+    "activateHostRequired": "Abre a festa em curso no telemóvel do anfitrião e ativa aí os controlos por telemóvel.",
+    "activateOnHost": "Abre este código no telemóvel do anfitrião no EventBliss para ativar os telemóveis desta festa.",
     "title": "Modo comando",
     "subtitle": "Cada pessoa joga no seu próprio telemóvel.",
     "appRequired": "Para jogar, precisas da aplicação EventBliss e de uma conta.",

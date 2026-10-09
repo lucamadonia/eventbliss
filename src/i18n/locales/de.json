@@ -8867,11 +8867,27 @@
     "invalidCode": "Der Code muss 6 Zeichen lang sein."
   },
   "nativeFab": {
+    "scanQr": "QR-Code scannen",
     "createEvent": "Event erstellen",
     "joinEvent": "Event beitreten",
     "createRoom": "Raum erstellen",
     "joinRoom": "Raum beitreten",
     "quickGame": "Quick Game"
+  },
+  "qrScanner": {
+    "title": "QR-Code scannen",
+    "hint": "Scanne eine Party-, Spielraum- oder andere EventBliss-Einladung.",
+    "invalid": "Dieser QR-Code gehört nicht zu EventBliss.",
+    "cameraUnavailable": "Kamera nicht verfügbar. Du kannst ein QR-Bild wählen oder den Link eingeben.",
+    "noCodeInImage": "In diesem Bild wurde kein QR-Code gefunden.",
+    "codeFound": "Code {{code}} erkannt. Was möchtest du öffnen?",
+    "joinParty": "Party beitreten",
+    "joinRoom": "Online-Raum beitreten",
+    "scanAgain": "Erneut scannen",
+    "chooseImage": "QR-Bild wählen",
+    "retryCamera": "Kamera neu starten",
+    "enterLink": "Link oder Code eingeben",
+    "open": "Öffnen"
   },
   "nativeTabs": {
     "home": "Home",
@@ -10351,6 +10367,10 @@
     "winnerTie": "Gleichstand mit {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Handys für diesen Abend aktivieren",
+    "activateProgress": "Eure Spieler, Spiele und Punkte bleiben erhalten. Gleich erscheint der QR-Code für alle Handys.",
+    "activateHostRequired": "Öffne die laufende Party auf dem Host-Handy und aktiviere dort die Handy-Steuerung.",
+    "activateOnHost": "Öffne diesen Code auf dem Host-Handy in EventBliss. Dort werden die Handys für euren laufenden Abend aktiviert.",
     "title": "Joystick-Modus",
     "subtitle": "Jeder spielt auf seinem eigenen Handy.",
     "appRequired": "Zum Mitspielen brauchst du die EventBliss-App und ein Konto.",
@@ -10413,7 +10433,7 @@
     "localHint": "Heute wird das Handy herumgereicht – der Fernseher zeigt, wer dran ist.",
     "localTitle": "Ein Handy für alle",
     "switchToJoysticks": "Joystick-Modus starten",
-    "switchHostHint": "Host: QR scannen, Party starten. Danach erscheint hier der Beitrittscode für alle.",
+    "switchHostHint": "Host: QR mit der EventBliss-App scannen und Handys für diesen Abend aktivieren. Danach können alle hier beitreten.",
     "nextUp": "Als Nächstes",
     "notReady": "noch nicht bereit",
     "offline": "getrennt",

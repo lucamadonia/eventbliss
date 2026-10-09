@@ -8891,11 +8891,27 @@
     "invalidCode": "El código debe tener 6 caracteres."
   },
   "nativeFab": {
+    "scanQr": "Scansiona codice QR",
     "createEvent": "Crear evento",
     "joinEvent": "Unirse",
     "createRoom": "Crear sala",
     "joinRoom": "Unirse a sala",
     "quickGame": "Juego rápido"
+  },
+  "qrScanner": {
+    "title": "Scansiona codice QR",
+    "hint": "Scansiona un invito a una festa, a una stanza di gioco o un altro invito EventBliss.",
+    "invalid": "Questo codice QR non è un invito EventBliss.",
+    "cameraUnavailable": "Fotocamera non disponibile. Scegli un’immagine QR o inserisci il link.",
+    "noCodeInImage": "Nessun codice QR trovato in questa immagine.",
+    "codeFound": "Codice {{code}} rilevato. Cosa vuoi aprire?",
+    "joinParty": "Unisciti alla festa",
+    "joinRoom": "Unisciti a una stanza online",
+    "scanAgain": "Scansiona di nuovo",
+    "chooseImage": "Scegli immagine QR",
+    "retryCamera": "Riavvia fotocamera",
+    "enterLink": "Inserisci link o codice",
+    "open": "Apri"
   },
   "nativeTabs": {
     "home": "Home",
@@ -10375,6 +10391,10 @@
     "winnerTie": "Pari con {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Attiva i telefoni per questa serata",
+    "activateProgress": "Giocatori, giochi e punti restano invariati. Tra poco apparirà un codice QR per tutti i telefoni.",
+    "activateHostRequired": "Apri la festa in corso sul telefono dell’host e attiva lì i comandi da telefono.",
+    "activateOnHost": "Apri questo codice sul telefono dell’host in EventBliss per attivare i telefoni della festa.",
     "title": "Modalità controller",
     "subtitle": "Ognuno gioca dal proprio telefono.",
     "appRequired": "Per giocare servono l’app EventBliss e un account.",

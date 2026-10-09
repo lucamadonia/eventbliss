@@ -8965,11 +8965,27 @@
     "invalidCode": "El código debe tener 6 caracteres."
   },
   "nativeFab": {
+    "scanQr": "Skanuj kod QR",
     "createEvent": "Crear evento",
     "joinEvent": "Unirse",
     "createRoom": "Crear sala",
     "joinRoom": "Unirse a sala",
     "quickGame": "Juego rápido"
+  },
+  "qrScanner": {
+    "title": "Skanuj kod QR",
+    "hint": "Zeskanuj zaproszenie na imprezę, do pokoju gry lub inne zaproszenie EventBliss.",
+    "invalid": "Ten kod QR nie jest zaproszeniem EventBliss.",
+    "cameraUnavailable": "Aparat jest niedostępny. Wybierz obraz QR lub wpisz link.",
+    "noCodeInImage": "Nie znaleziono kodu QR na tym obrazie.",
+    "codeFound": "Wykryto kod {{code}}. Co chcesz otworzyć?",
+    "joinParty": "Dołącz do imprezy",
+    "joinRoom": "Dołącz do pokoju online",
+    "scanAgain": "Skanuj ponownie",
+    "chooseImage": "Wybierz obraz QR",
+    "retryCamera": "Uruchom aparat ponownie",
+    "enterLink": "Wpisz link lub kod",
+    "open": "Otwórz"
   },
   "nativeTabs": {
     "home": "Start",
@@ -10449,6 +10465,10 @@
     "winnerTie": "Remis z {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Włącz telefony na tę imprezę",
+    "activateProgress": "Gracze, gry i punkty zostają zachowane. Za chwilę pojawi się kod QR dla wszystkich telefonów.",
+    "activateHostRequired": "Otwórz trwającą imprezę na telefonie gospodarza i włącz tam sterowanie telefonami.",
+    "activateOnHost": "Otwórz ten kod na telefonie gospodarza w EventBliss, aby włączyć telefony na trwającą imprezę.",
     "title": "Tryb kontrolera",
     "subtitle": "Każdy gra na własnym telefonie.",
     "appRequired": "Do gry potrzebujesz aplikacji EventBliss i konta.",

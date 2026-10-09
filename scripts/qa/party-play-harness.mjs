@@ -102,7 +102,9 @@ export async function createHarness({ real = false, out, base, chaos = null, lan
         if (client.net.offline) return { data: null, error: { message: 'Failed to fetch' } };
         if (cfg.delay) await pause(rand(cfg.delay) / 2);
         try {
-          const data = await db.request(client.account, args.action, args.code, args.payload);
+          const data = args.name === 'controller_party_upgrade'
+            ? await db.upgrade(client.account, args.payload)
+            : await db.request(client.account, args.action, args.code, args.payload);
           if (args.action !== 'read') stats.rpc.push({ who: name, action: args.action, revision: data?.party?.revision, at: Date.now() });
           if (cfg.delay) await pause(rand(cfg.delay) / 2);
           return { data, error: null };

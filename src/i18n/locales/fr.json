@@ -8891,11 +8891,27 @@
     "invalidCode": "El código debe tener 6 caracteres."
   },
   "nativeFab": {
+    "scanQr": "Scanner un QR code",
     "createEvent": "Crear evento",
     "joinEvent": "Unirse",
     "createRoom": "Crear sala",
     "joinRoom": "Unirse a sala",
     "quickGame": "Juego rápido"
+  },
+  "qrScanner": {
+    "title": "Scanner un QR code",
+    "hint": "Scannez une invitation de soirée, de salon de jeu ou une autre invitation EventBliss.",
+    "invalid": "Ce QR code ne correspond pas à une invitation EventBliss.",
+    "cameraUnavailable": "Caméra indisponible. Choisissez une image QR ou saisissez le lien.",
+    "noCodeInImage": "Aucun QR code trouvé dans cette image.",
+    "codeFound": "Code {{code}} détecté. Que souhaitez-vous ouvrir ?",
+    "joinParty": "Rejoindre la soirée",
+    "joinRoom": "Rejoindre un salon en ligne",
+    "scanAgain": "Scanner à nouveau",
+    "chooseImage": "Choisir une image QR",
+    "retryCamera": "Redémarrer la caméra",
+    "enterLink": "Saisir un lien ou un code",
+    "open": "Ouvrir"
   },
   "nativeTabs": {
     "home": "Accueil",
@@ -10375,6 +10391,10 @@
     "winnerTie": "Égalité avec {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Activer les téléphones pour cette soirée",
+    "activateProgress": "Vos joueurs, jeux et points sont conservés. Un QR code pour tous les téléphones va apparaître.",
+    "activateHostRequired": "Ouvrez la soirée en cours sur le téléphone de l’hôte et activez-y les commandes mobiles.",
+    "activateOnHost": "Ouvrez ce code sur le téléphone de l’hôte dans EventBliss pour activer les téléphones de votre soirée.",
     "title": "Mode manette",
     "subtitle": "Chacun joue sur son propre téléphone.",
     "appRequired": "Pour jouer, il te faut l’application EventBliss et un compte.",

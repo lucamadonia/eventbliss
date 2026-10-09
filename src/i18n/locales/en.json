@@ -8867,11 +8867,27 @@
     "invalidCode": "The code must be 6 characters long."
   },
   "nativeFab": {
+    "scanQr": "Scan QR code",
     "createEvent": "Create Event",
     "joinEvent": "Join Event",
     "createRoom": "Create Room",
     "joinRoom": "Join Room",
     "quickGame": "Quick Game"
+  },
+  "qrScanner": {
+    "title": "Scan QR code",
+    "hint": "Scan a party, game room, or other EventBliss invitation.",
+    "invalid": "This QR code is not an EventBliss invitation.",
+    "cameraUnavailable": "Camera unavailable. Choose a QR image or enter the link instead.",
+    "noCodeInImage": "No QR code was found in this image.",
+    "codeFound": "Code {{code}} found. What would you like to open?",
+    "joinParty": "Join party",
+    "joinRoom": "Join online room",
+    "scanAgain": "Scan again",
+    "chooseImage": "Choose QR image",
+    "retryCamera": "Restart camera",
+    "enterLink": "Enter link or code",
+    "open": "Open"
   },
   "nativeTabs": {
     "home": "Home",
@@ -10351,6 +10367,10 @@
     "winnerTie": "Tied with {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Enable phones for this party",
+    "activateProgress": "Your players, games and points are kept. A QR code for every phone will appear shortly.",
+    "activateHostRequired": "Open the current party on the host phone and enable phone controls there.",
+    "activateOnHost": "Open this code on the host phone in EventBliss to enable phones for your current party.",
     "title": "Joystick mode",
     "subtitle": "Everyone plays on their own phone.",
     "appRequired": "You need the EventBliss app and an account to play.",
@@ -10413,7 +10433,7 @@
     "localHint": "Tonight the phone gets passed around – the TV shows whose turn it is.",
     "localTitle": "One phone for everyone",
     "switchToJoysticks": "Start joystick mode",
-    "switchHostHint": "Host: scan the QR code and start the party. The join code for everyone will appear here next.",
+    "switchHostHint": "Host: scan this QR code in the EventBliss app to add phone controllers to this party. Everyone can then join here.",
     "nextUp": "Up next",
     "notReady": "not ready yet",
     "offline": "disconnected",

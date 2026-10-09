@@ -22,7 +22,7 @@
     "cap:dev:ios": "cross-env CAPACITOR_BUILD=true vite --host & npx cap run ios --livereload --external",
     "cap:dev:android": "cross-env CAPACITOR_BUILD=true vite --host & npx cap run android --livereload --external",
     "test": "vitest run",
-    "test:db": "node --test tests/database/controller-party-rpc.test.mjs",
+    "test:db": "node --test tests/database/controller-party-rpc.test.mjs tests/database/controller-party-upgrade.test.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "test:watch": "vitest"
   },
@@ -99,6 +99,7 @@
     "mapbox-gl": "^3.17.0",
     "next-themes": "^0.3.0",
     "ohrwurm-spotify": "file:./native-plugins/ohrwurm-spotify",
+    "qr-scanner": "^1.4.2",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",

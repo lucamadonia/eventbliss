@@ -4,7 +4,7 @@ import type { PartyRoomAccess } from '@/games/multiplayer/party-access';
 import { replaceControllerPartySession } from '@/hooks/usePartySession';
 import { createPartySession, createPartyPlayer, type PartySession } from './session-schema';
 import { placementPoints } from './scoring';
-import { controllerRequest, type ControllerMember, type ControllerPartyData, type KickMode } from './controller-api';
+import { controllerRequest, controllerUpgradeRequest, type ControllerMember, type ControllerPartyData, type KickMode } from './controller-api';
 import { controllerErrorCode } from './controller-errors';
 import { serverClock } from './scene-clock';
 import { setPartyTraceDevice } from './party-trace';
@@ -48,9 +48,9 @@ export function useControllerParty() { return useSyncExternalStore(subscribeCont
 /** Derive standings from unique server results, never from names or guest reports. */
 export function controllerPartySession(data: ControllerPartyData): PartySession {
   const session = createPartySession(data.party.id);
-  const createdAt = Date.parse(data.party.created_at ?? '');
+  const createdAt = Date.parse(data.party.local_started_at || data.party.created_at || '');
   session.createdAt = Number.isFinite(createdAt) ? createdAt : 0;
-  session.playMode = 'controllers'; session.roomCode = data.party.code; session.tvCode = data.party.code;
+  session.playMode = 'controllers'; session.roomCode = data.party.code; session.tvCode = data.party.tv_code || data.party.code;
   session.playlist = data.party.playlist;
   session.playlistIndex = Math.min(data.results.length, session.playlist.length);
   session.playlistActive = session.playlistIndex < session.playlist.length;
@@ -249,6 +249,31 @@ export async function openControllerParty(userId: string, name: string, code?: s
     }
     publish({ onboarding: !!code && !options.resume && data.party.host_user_id !== userId });
     await connect(data, ownMember(data, userId)?.name ?? name, current);
+  });
+}
+
+/** One action for the Host: keep the current evening while enabling phone seats. */
+export async function upgradeControllerParty(userId: string, name: string, source: PartySession, upcomingGames: string[], tvCode: string) {
+  if (state.busy) return;
+  const current = ++generation;
+  publish({ removed: null, onboarding: false });
+  await run(async () => {
+    accountId = userId;
+    const playerId = await gameRoomSession.prepareAccountIdentity(userId);
+    devicePlayerId = playerId;
+    if (current !== generation) return;
+    const data = await controllerUpgradeRequest({
+      player_id: playerId, name, tv_code: tvCode,
+      players: source.players.map(p => ({ id: p.id, name: p.name, avatar: p.avatar, color: p.color })),
+      archived_players: (source.archivedPlayers ?? []).map(p => ({ id: p.id, name: p.name, avatar: p.avatar, color: p.color })),
+      playlist: [...source.gameHistory.map(entry => entry.gameId), ...upcomingGames],
+      local_started_at: source.createdAt,
+      history: source.gameHistory.map(entry => ({
+        game_id: entry.gameId, scores: entry.scores, scored: entry.scored, played_at: entry.playedAt,
+      })),
+    });
+    if (current !== generation) return;
+    await connect(data, name, current);
   });
 }
 /**

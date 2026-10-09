@@ -22,6 +22,9 @@ export interface ControllerPartyData {
   party: {
     created_at?: string;
     id: string; code: string; revision: number; host_user_id: string; host_player_id: string;
+    /** Existing TV pairing code when a local evening enables phone controllers. */
+    tv_code?: string | null;
+    local_started_at?: string | null;
     host_plays: boolean; premium: boolean; status: 'lobby' | 'playing' | 'finished';
     playlist: string[]; current_match_id: string | null; current_game_id: string | null;
     /** Oldest party protocol a client must speak (2 once guests exist). */
@@ -52,6 +55,17 @@ export async function controllerRequest(action: ControllerAction, code: string |
   } as never);
   if (error) throw new Error(error.message);
   // Old servers omit the party-play fields: normalize once at the boundary.
+  const result = normalizePartyData(data);
+  if (!result) throw new Error('Invalid party response');
+  if (typeof result.server_now === 'string') serverClock.sample(result.server_now, sentAt, Date.now());
+  return result;
+}
+
+/** Atomically brings a one-phone evening, including its score, into a phone-controller party. */
+export async function controllerUpgradeRequest(payload: Record<string, unknown>): Promise<ControllerPartyData> {
+  const sentAt = Date.now();
+  const { data, error } = await supabase.rpc('controller_party_upgrade' as never, { payload } as never);
+  if (error) throw new Error(error.message);
   const result = normalizePartyData(data);
   if (!result) throw new Error('Invalid party response');
   if (typeof result.server_now === 'string') serverClock.sample(result.server_now, sentAt, Date.now());

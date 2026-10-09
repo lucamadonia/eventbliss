@@ -8941,11 +8941,27 @@
     "invalidCode": "El código debe tener 6 caracteres."
   },
   "nativeFab": {
+    "scanQr": "QR-code scannen",
     "createEvent": "Crear evento",
     "joinEvent": "Unirse",
     "createRoom": "Crear sala",
     "joinRoom": "Unirse a sala",
     "quickGame": "Juego rápido"
+  },
+  "qrScanner": {
+    "title": "QR-code scannen",
+    "hint": "Scan een uitnodiging voor een feest, spelruimte of andere EventBliss-uitnodiging.",
+    "invalid": "Deze QR-code is geen EventBliss-uitnodiging.",
+    "cameraUnavailable": "Camera niet beschikbaar. Kies een QR-afbeelding of voer de link in.",
+    "noCodeInImage": "Geen QR-code gevonden in deze afbeelding.",
+    "codeFound": "Code {{code}} herkend. Wat wil je openen?",
+    "joinParty": "Deelnemen aan feest",
+    "joinRoom": "Deelnemen aan online ruimte",
+    "scanAgain": "Opnieuw scannen",
+    "chooseImage": "QR-afbeelding kiezen",
+    "retryCamera": "Camera opnieuw starten",
+    "enterLink": "Link of code invoeren",
+    "open": "Openen"
   },
   "nativeTabs": {
     "home": "Start",
@@ -10425,6 +10441,10 @@
     "winnerTie": "Gelijk met {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Telefoons voor dit feest inschakelen",
+    "activateProgress": "Spelers, spellen en punten blijven behouden. De QR-code voor alle telefoons verschijnt zo.",
+    "activateHostRequired": "Open het lopende feest op de telefoon van de host en schakel daar de telefoonbediening in.",
+    "activateOnHost": "Open deze code op de telefoon van de host in EventBliss om telefoons voor het lopende feest in te schakelen.",
     "title": "Controllermodus",
     "subtitle": "Iedereen speelt op zijn eigen telefoon.",
     "appRequired": "Om mee te spelen heb je de EventBliss-app en een account nodig.",

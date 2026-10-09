@@ -8941,11 +8941,27 @@
     "invalidCode": "El código debe tener 6 caracteres."
   },
   "nativeFab": {
+    "scanQr": "QR kodu tara",
     "createEvent": "Crear evento",
     "joinEvent": "Unirse",
     "createRoom": "Crear sala",
     "joinRoom": "Unirse a sala",
     "quickGame": "Juego rápido"
+  },
+  "qrScanner": {
+    "title": "QR kodu tara",
+    "hint": "Parti, oyun odası veya başka bir EventBliss davetini tara.",
+    "invalid": "Bu QR kodu bir EventBliss daveti değil.",
+    "cameraUnavailable": "Kamera kullanılamıyor. Bir QR görseli seç veya bağlantıyı gir.",
+    "noCodeInImage": "Bu görselde QR kodu bulunamadı.",
+    "codeFound": "{{code}} kodu bulundu. Neyi açmak istersin?",
+    "joinParty": "Partiye katıl",
+    "joinRoom": "Çevrimiçi odaya katıl",
+    "scanAgain": "Tekrar tara",
+    "chooseImage": "QR görseli seç",
+    "retryCamera": "Kamerayı yeniden başlat",
+    "enterLink": "Bağlantı veya kod gir",
+    "open": "Aç"
   },
   "nativeTabs": {
     "home": "Ana sayfa",
@@ -10425,6 +10441,10 @@
     "winnerTie": "{{name}} ile berabere"
   },
   "partyControllers": {
+    "activateTitle": "Bu parti için telefonları etkinleştir",
+    "activateProgress": "Oyuncular, oyunlar ve puanlar korunur. Tüm telefonlar için QR kodu birazdan görünecek.",
+    "activateHostRequired": "Devam eden partiyi ev sahibinin telefonunda aç ve telefon kontrollerini oradan etkinleştir.",
+    "activateOnHost": "Bu kodu ev sahibinin telefonunda EventBliss ile açarak mevcut parti için telefonları etkinleştir.",
     "title": "Kontrolcü modu",
     "subtitle": "Herkes kendi telefonundan oynar.",
     "appRequired": "Oynamak için EventBliss uygulaması ve bir hesap gerekir.",
