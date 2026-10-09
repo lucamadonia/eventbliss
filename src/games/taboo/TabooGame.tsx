@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { useGameTimer } from '../engine/TimerSystem';
 import { getTabooCards, type TabooCard } from '../content/taboo-words';
-import { Play, RotateCcw, ArrowRight } from 'lucide-react';
+import { Play, RotateCcw, ArrowRight, Shuffle } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
 import { useDrinkingMode } from '@/hooks/useDrinkingMode';
@@ -27,6 +27,7 @@ import { localActiveSeats, localGuestIds } from '../ui/guest-handover';
 import { mayHolderSeeCard, phoneHolder, tabooHandoverSeat, tabooRoles, tabooSeat, tabooSeatRole, tabooSnapshotFor, tabooTvPlayers, tabooTvState, turnClosed } from './taboo-seats';
 import { useTabooSync } from './useTabooSync';
 import { PlayingScreen, TurnStartScreen } from './TabooScreens';
+import { randomTeamAssignments } from '../ui/random-teams';
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -111,7 +112,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedRef = useRef(false);
   const [playerNames, setPlayerNames] = useState<string[]>(initialPlayers);
-  const [teams, setTeams] = useState<[Team, Team]>(buildTeams(initialPlayers));
+  const [teams, setTeams] = useState<[Team, Team]>(() => buildTeams(initialPlayers, online?.players.length === initialPlayers.length ? online.players.map(p => p.id) : undefined));
   const [activeTeamIdx, setActiveTeamIdx] = useState(0);
   const [explainerIdx, setExplainerIdx] = useState<[number, number]>([0, 0]);
   const [currentRound, setCurrentRound] = useState(1);
@@ -152,13 +153,33 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   }, [phase, currentRound, activeTeamIdx, timer.timeLeft, turnResults.length, teams[0].score, teams[1].score, phaseStartsAt, handover.tv?.playerId ?? '', handover.tv?.progress?.phase ?? ''], !online || online.isHost);
   useEffect(() => { if (online && view !== 'setup') haptics.light(); }, [view]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // `ids` (online only, never shuffled) keep each seat tied to its room player when players are removed mid-match.
-  function buildTeams(pls: string[], ids?: string[]): [Team, Team] {
-    const s = online ? pls : shuffle(pls); const mid = Math.ceil(s.length / 2);
-    return [
-      { name: 'Team A', color: 'bg-[#ff8572]', textColor: 'text-[#ff8572]', borderColor: 'border-[#ff8572]', players: s.slice(0, mid), score: 0, ...(ids && { ids: ids.slice(0, mid) }) },
-      { name: 'Team B', color: 'bg-[#e6ce81]', textColor: 'text-[#e6ce81]', borderColor: 'border-[#e6ce81]', players: s.slice(mid), score: 0, ...(ids && { ids: ids.slice(mid) }) },
-    ];
+  // Player IDs stay paired with names, including after a shuffle in an online room.
+  function teamsFor(pls: string[], ids: string[], assignments: Readonly<Record<string, number>>): [Team, Team] {
+    const roster = pls.map((name, index) => ({ name, id: ids[index] }));
+    return ([0, 1] as const).map(index => {
+      const members = roster.filter(player => assignments[player.id] === index);
+      return {
+        name: index === 0 ? 'Team A' : 'Team B',
+        color: index === 0 ? 'bg-[#ff8572]' : 'bg-[#e6ce81]',
+        textColor: index === 0 ? 'text-[#ff8572]' : 'text-[#e6ce81]',
+        borderColor: index === 0 ? 'border-[#ff8572]' : 'border-[#e6ce81]',
+        players: members.map(player => player.name), ids: members.map(player => player.id), score: 0,
+      };
+    }) as [Team, Team];
+  }
+
+  function buildTeams(pls: string[], ids = pls.map((_, index) => String(index))): [Team, Team] {
+    const assignments = online
+      ? Object.fromEntries(ids.map((id, index) => [id, index < Math.ceil(ids.length / 2) ? 0 : 1]))
+      : randomTeamAssignments(ids, 2);
+    return teamsFor(pls, ids, assignments);
+  }
+
+  function shuffleTeams() {
+    const names = online ? online.players.map(player => player.name) : playerNames;
+    const ids = online ? online.players.map(player => player.id) : names.map((_, index) => String(index));
+    const previous = Object.fromEntries(teams.flatMap((team, index) => (team.ids ?? []).map(id => [id, index])));
+    setTeams(teamsFor(names, ids, randomTeamAssignments(ids, 2, previous)));
   }
 
   function addPlayer() {
@@ -176,7 +197,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   function renamePlayer(idx: number, name: string) {
     const next = playerNames.map((n, i) => (i === idx ? name : n));
     setPlayerNames(next);
-    setTeams(buildTeams(next));
+    setTeams(prev => prev.map(team => ({ ...team, players: (team.ids ?? []).map(id => next[Number(id)] ?? '') })) as [Team, Team]);
   }
 
   const isOnlineOrParty = onlinePlayerNames.length >= 2 || partyPlayerNames.length >= 2;
@@ -270,7 +291,9 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   // Return to setup (lets players/teams/settings be changed). Rebuilds teams
   // from the current roster, which resets scores to 0.
   function resetGame() {
-    setTeams(buildTeams(playerNames)); setActiveTeamIdx(0); setExplainerIdx([0, 0]); setCurrentRound(1);
+    const names = online ? online.players.map(player => player.name) : playerNames;
+    setPlayerNames(names);
+    setTeams(buildTeams(names, online?.players.map(player => player.id))); setActiveTeamIdx(0); setExplainerIdx([0, 0]); setCurrentRound(1);
     setTurnResults([]); setCurrentCard(null); deck.current = shuffle(getTabooCards()); deckPos.current = 0; timer.reset(timerOption); setPhase('setup');
   }
 
@@ -296,7 +319,7 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const actorId = roles.explainerId ?? false;
   const refereeId = roles.refereeId ?? false;
   const act = useOnlineActions(online, 'taboo', `${phase}:${currentRound}:${activeTeamIdx}:${explainerIdx.join(',')}:${cardKey}:${countdown}`, {
-    start: { allowed: phase === 'setup' ? 'host' : false, run: () => { const names = online ? online.players.map(p => p.name) : playerNames; if (names.length < 4 || names.some(name => !name.trim())) return; setPlayerNames(names); setTeams(buildTeams(names, online?.players.map(p => p.id))); const cycle = Math.ceil(names.length / 2); setTotalRounds(Math.ceil(totalRounds / cycle) * cycle); setPhase('turnStart'); } },
+    start: { allowed: phase === 'setup' ? 'host' : false, run: () => { const names = online ? online.players.map(p => p.name) : playerNames; if (names.length < 4 || names.some(name => !name.trim())) return; const ids = online ? online.players.map(p => p.id) : names.map((_, index) => String(index)); const chosen = Object.fromEntries(teams.flatMap((team, index) => (team.ids ?? []).map(id => [id, index]))); setPlayerNames(names); setTeams(ids.every(id => chosen[id] !== undefined) ? teamsFor(names, ids, chosen) : buildTeams(names, ids)); const cycle = Math.ceil(names.length / 2); setTotalRounds(Math.ceil(totalRounds / cycle) * cycle); setPhase('turnStart'); } },
     begin: { allowed: phase === 'turnStart' && countdown === null ? actorId : false, run: startTurn },
     correct: { allowed: phase === 'playing' ? actorId : false, run: handleCorrect, answer: turnClosed },
     skip: { allowed: phase === 'playing' ? actorId : false, run: handleSkip, answer: turnClosed },
@@ -337,7 +360,10 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
         <PlayerSetup locked={!!online} players={playerNames.map((name, index) => ({ id: String(index), name }))}
           onAdd={addPlayer} onRemove={id => removePlayer(Number(id))} onRename={(id, name) => renamePlayer(Number(id), name)}
           onImportNames={isOnlineOrParty ? undefined : handleImportNames} min={4} max={20} accent="#ff8572" label={t('games.setup.players')} />
-        <div className="grid grid-cols-2 gap-4">{teams.map((team, index) => <StagePanel key={team.name} tone="quiet" className="!rounded-xl !p-4 border-t-4" style={{ borderTopColor: index === 0 ? '#ff8572' : '#e6ce81' }}><p className="mb-3 text-sm font-bold">{team.name}</p><p className="text-sm leading-relaxed text-[var(--stage-muted)] break-words">{team.players.filter(Boolean).join(', ')}</p></StagePanel>)}</div>
+        <div className="grid grid-cols-2 gap-4">{teams.map((team, index) => <StagePanel key={team.name} data-testid={`taboo-team-${index}`} tone="quiet" className="!rounded-xl !p-4 border-t-4" style={{ borderTopColor: index === 0 ? '#ff8572' : '#e6ce81' }}><p className="mb-3 text-sm font-bold">{team.name}</p><p className="text-sm leading-relaxed text-[var(--stage-muted)] break-words">{team.players.filter(Boolean).join(', ')}</p></StagePanel>)}</div>
+        <button type="button" onClick={shuffleTeams} data-testid="taboo-shuffle-teams" className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#ff8572]/50 px-4 text-sm font-bold text-[#ffb1a2]">
+          <Shuffle className="h-4 w-4" /> {t('games.splitquiz.reshuffleTeams')}
+        </button>
         <section className="grid gap-5 sm:grid-cols-2">
           <label className="space-y-4 rounded-xl border border-white/15 p-5"><span className="flex justify-between gap-3 text-sm">{t('games.taboo.setup.timerLabel')}<strong>{timerOption}s</strong></span><input type="range" min={60} max={120} step={30} value={timerOption} onChange={event => setTimerOption(Number(event.target.value))} className="h-11 w-full accent-[#ff8572]" /></label>
           <label className="space-y-4 rounded-xl border border-white/15 p-5"><span className="flex justify-between gap-3 text-sm">{t('games.taboo.setup.roundsLabel')}<strong>{totalRounds}</strong></span><input type="range" min={1} max={4} value={totalRounds} onChange={event => setTotalRounds(Number(event.target.value))} className="h-11 w-full accent-[#ff8572]" /></label>
