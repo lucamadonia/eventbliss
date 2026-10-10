@@ -62,6 +62,11 @@ export function useCeTv({ online, isHost, phase, phaseStartsAt, handoverTv, play
       phaseStartsAt,
       handover: handoverTv,
       players: ceTvPlayers(players, online?.players ?? [], submittedSet),
+      teams: players.some((player) => player.memberIds?.length)
+        ? players.map((player) => ({ name: player.name, score: player.score, players: player.memberNames ?? [] }))
+        : undefined,
+      partyScoresById: Object.fromEntries(players.flatMap((player) =>
+        (player.memberIds?.length ? player.memberIds : [player.id]).map((id) => [id, player.score]))),
       round: round + 1,
       totalRounds,
       question: question ? questionText(question, t) : '',
@@ -103,7 +108,8 @@ export function useCeTv({ online, isHost, phase, phaseStartsAt, handoverTv, play
 
   useEffect(() => {
     if (!online || !isHost) return;
-    online.broadcast('tv-state', { game: 'closeenough', ...tvPayload });
+    const { partyScoresById: _internal, ...publicPayload } = tvPayload;
+    online.broadcast('tv-state', { game: 'closeenough', ...publicPayload });
   }, [online, isHost, tvPayload]);
 
   useTVGameBridge('closeenough', tvPayload, [

@@ -48,10 +48,10 @@ export function BrewTrayCounter({ skin, theme, accent, riskTier, withTray, tray,
         <span className="font-bold normal-case tracking-normal" style={{ color: withTray ? theme.bad : theme.dim }}>
           {t(withTray ? "games.brew.trayNote" : "games.brew.directCardHint")}
         </span>
-        {withTray && <span className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px]"
+        <span className="ml-auto inline-flex items-center gap-1 rounded-full px-2 py-1 text-[12px]"
           style={{ color: riskTier === "critical" ? theme.bad : accent, background: `${riskTier === "critical" ? theme.bad : accent}12` }}>
           <Flame className="h-3 w-3" /> {t(`games.brew.risk.${riskTier}`)}
-        </span>}
+        </span>
       </p>
       <div className="relative rounded-2xl p-2" style={{ border: `1px ${withTray ? 'dashed' : 'solid'} ${withTray ? theme.bad : accent}55`, background: withTray ? "rgba(251,113,133,0.04)" : `${accent}0a` }}>
         <TrayCards

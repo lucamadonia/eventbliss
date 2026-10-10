@@ -286,7 +286,7 @@ export function CeIntro({ show, round }: { show: boolean; round: number }) {
   return (
     <AnimatePresence>
       {show && (
-        <motion.div key="intro" className="fixed inset-0 z-40 flex flex-col items-center justify-center" style={{ background: CE.bg }}
+        <motion.div key="intro" data-testid="ce-intro" className="fixed inset-0 z-40 flex flex-col items-center justify-center" style={{ background: CE.bg }}
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.45 } }}>
           <CloseEnoughAtmosphere warm={CE.accent} cool={CE.truth} intense />
           <motion.div initial={{ scale: 0.7, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 260, damping: 18 }} className="relative z-10 text-center">

@@ -375,10 +375,9 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       void haptics.light();
       setDrawPile(nextDraw);
       setDiscardPile(nextDiscard);
-      const directSplit = active ? splitTray(active.recipe, active.glass, [card.id]) : { used: [], leftover: [card.id] };
       const beforeHits = active ? splitTray(active.recipe, active.glass, tray).used.length : 0;
       const afterHits = active ? splitTray(active.recipe, active.glass, [...tray, card.id]).used.length : beforeHits;
-      const hit = withTray ? afterHits > beforeHits : directSplit.used.length > 0;
+      const hit = afterHits > beforeHits;
       const drawSeq = Date.now();
       setDrawnCard({ id: card.id, seq: drawSeq, outcome: hit ? "hit" : "miss" });
       // Der Gastgeber kann waehrend eines Gastzugs den Uebergabe-Bildschirm
@@ -388,24 +387,10 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         emitCue(hit ? "hit" : "miss");
         if (hit) void haptics.medium();
       }, reduceMotion ? 80 : 360);
-      if (withTray) {
-        setTray((prev) => [...prev, card.id]);
-      } else if (active) {
-        // Ohne Reserve ist jede Karte unmittelbar sicher oder geht offen auf
-        // die Theke. Der Zug laeuft weiter, bis jemand stoppt oder ein Bust kommt.
-        const newGlass = sortGlassOrder([...active.glass, ...directSplit.used]);
-        const { score } = scoreFor({ name: active.name, recipe: active.recipe, glass: newGlass, brewBonus: active.brewBonus });
-        setPlayers((prev) => prev.map((p, i) => i === activeIdx ? { ...p, glass: newGlass, score } : p));
-        if (directSplit.leftover.length) setCounter((prev) => [...prev, ...directSplit.leftover]);
-        if (isComplete(active.recipe, newGlass)) {
-          setWinnerId(active.id);
-          finishTimerRef.current = gameTasks.setTimeout(() => {
-            emitCue("finish");
-            void haptics.celebrate();
-            setPhase("gameOver");
-          }, drawRevealDuration(false, !!reduceMotion) + FINISH_HOLD_MS);
-        }
-      }
+      // In beiden Modi bleiben gezogene Karten bis zum bewussten Zugende
+      // ungesichert. Sonst waere "Ohne Tablett" bei Sperrstunde risikolos:
+      // jede passende Zutat laege bereits dauerhaft im Glas.
+      setTray((prev) => [...prev, card.id]);
     }
 
     if (reshuffled) {
@@ -414,7 +399,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       gameTasks.setTimeout(() => setToast((cur) => (cur === msg ? null : cur)), 1600);
       setReshuffleSeq((n) => n + 1);
     }
-  }, [phase, penalty, winnerId, pourPlan, drawnCard, drawPile, discardPile, tray, active, activeIdx, withTray, reduceMotion, haptics, triggerPenalty, emitCue, t]);
+  }, [phase, penalty, winnerId, pourPlan, drawnCard, drawPile, discardPile, tray, active, reduceMotion, haptics, triggerPenalty, emitCue, t]);
 
   const doTakeFromCounter = useCallback((id: IngredientId, index: number) => {
     if (phase !== "playing" || penalty || counterTaken || winnerId || pourPlan || drawnCard) return;
@@ -447,17 +432,14 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     setCounterTaken(true);
   }, [phase, penalty, winnerId, pourPlan, drawnCard, counterTaken, counter, withTray, active, activeIdx, gameTasks, emitCue, haptics]);
 
-  const doEndTurn = useCallback(() => {
-    if (withTray || phase !== "playing" || penalty || winnerId || drawnCard || pourPlan) return;
-    advanceTurn();
-  }, [withTray, phase, penalty, winnerId, drawnCard, pourPlan, advanceTurn]);
-
   const doPourIn = useCallback(() => {
     if (phase !== "playing" || penalty || tray.length === 0 || !active || winnerId || pourPlan || drawnCard) return;
     const { used, leftover } = splitTray(active.recipe, active.glass, tray);
     const newGlass = sortGlassOrder([...active.glass, ...used]);
     const done = isComplete(active.recipe, newGlass);
-    const bonus = bonusForPour(used, leftover);
+    // Der Tablett-Modus hat den Mehrfachguss-Bonus. Ohne Tablett gab es
+    // bisher keinen Bonus; das bleibt beim sicheren Zugende so.
+    const bonus = withTray ? bonusForPour(used, leftover) : { awarded: 0, perfect: false, multi: false };
     const nextBonus = cappedBrewBonus(active.brewBonus ?? 0, bonus.awarded);
     const { score } = scoreFor({ name: active.name, recipe: active.recipe, glass: newGlass, brewBonus: nextBonus });
     const updated = players.map((p, i) =>
@@ -502,7 +484,15 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         pourDuration(used.length, leftover.length, !!reduceMotion),
       ));
     }
-  }, [phase, penalty, winnerId, pourPlan, drawnCard, tray, active, players, activeIdx, advanceTurn, haptics, reduceMotion, emitCue]);
+  }, [phase, penalty, winnerId, pourPlan, drawnCard, tray, active, players, activeIdx, withTray, advanceTurn, haptics, reduceMotion, emitCue]);
+
+  const doEndTurn = useCallback(() => {
+    if (withTray || phase !== "playing" || penalty || winnerId || drawnCard || pourPlan) return;
+    // Ohne sichtbares Tablett sichert erst das Zugende die gezogenen Karten.
+    // Bei Sperrstunde davor leert doDraw dieselbe Reserve ersatzlos.
+    if (tray.length > 0) doPourIn();
+    else advanceTurn();
+  }, [withTray, phase, penalty, winnerId, drawnCard, pourPlan, tray.length, doPourIn, advanceTurn]);
 
   const confirmPenalty = useCallback(() => {
     setPenalty(null);
@@ -790,8 +780,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const pourPreview = useMemo(() => {
     if (!active) return { multi: false, perfect: false, awarded: 0 };
     const split = splitTray(active.recipe, active.glass, tray);
-    return bonusForPour(split.used, split.leftover);
-  }, [active, tray]);
+    return withTray ? bonusForPour(split.used, split.leftover) : { multi: false, perfect: false, awarded: 0 };
+  }, [active, tray, withTray]);
   /**
    * Theke: jede Karte fuer sich beurteilen. Man nimmt nur EINE, sie
    * konkurrieren also nicht — anders als auf dem Tablett.
@@ -907,13 +897,17 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const drawLeads = !withTray || trayHits === 0;
   const hint = !isMyTurn
     ? t("games.brew.hintWait", { name: active.name })
-    : tray.length === 0
-      ? (counter.length > 0 && !counterTaken
+    : !withTray
+      ? (counter.length > 0 && !counterTaken && tray.length === 0
           ? t("games.brew.hintCounter")
-          : t(withTray ? "games.brew.hintDraw" : "games.brew.directDrawHint"))
-      : trayHits > 0
-        ? t("games.brew.hintPour", { count: trayHits })
-        : t("games.brew.hintNoHit");
+          : t("games.brew.directDrawHint"))
+      : tray.length === 0
+        ? (counter.length > 0 && !counterTaken
+            ? t("games.brew.hintCounter")
+            : t("games.brew.hintDraw"))
+        : trayHits > 0
+          ? t("games.brew.hintPour", { count: trayHits })
+          : t("games.brew.hintNoHit");
 
   return (
     <div className="min-h-[100dvh] relative" data-testid="brew-playing" data-with-tray={String(withTray)}
@@ -983,7 +977,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
           : (skin === "brew" ? t("games.brew.bustTitleBrew") : t("games.brew.bustTitleBar"))}
         verdictLabel={drawnCard?.outcome === "hit"
           ? t("games.brew.drawHit")
-          : drawnCard?.outcome === "miss" ? t("games.brew.drawMiss") : undefined}
+          : drawnCard?.outcome === "miss" ? t(withTray ? "games.brew.drawMiss" : "games.brew.directCardLabel") : undefined}
         onDone={() => {
           if (drawnCard?.outcome !== "bust") setDrawnCard(null);
         }}

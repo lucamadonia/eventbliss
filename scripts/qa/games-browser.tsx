@@ -10,6 +10,7 @@ import { normalizeGameId } from '@/games/ui/game-rules';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { createPartySession, createPartyPlayer } from '@/games/party/session-schema';
 import { __resetPartySessionCache } from '@/hooks/usePartySession';
+import type { PartyNightState } from '@/games/tv/party-types';
 
 // Isolated local-only fixture. No room creation, transport or cloud writes.
 const registry = {
@@ -77,8 +78,8 @@ function TVFixture({ View, initial }: { View: React.ComponentType<any>; initial:
   updateTV = setGameState;
   return <View gameState={gameState} />;
 }
-async function mountTV(game: 'findit' | 'wordpress' | 'draw' | 'impostor' | 'category' | 'brew', gameState: Record<string, unknown>) {
-  const View = (game === 'brew' ? await import('@/games/tv/games/TVBrewView') : game === 'impostor' ? await import('@/games/tv/games/TVImpostorView') : game === 'category' ? await import('@/games/tv/games/TVCategoryView') : game === 'findit' ? await import('@/games/tv/games/TVFindItView') : game === 'draw' ? await import('@/games/tv/games/TVDrawView') : await import('@/games/tv/games/TVWordPressView')).default;
+async function mountTV(game: 'findit' | 'wordpress' | 'draw' | 'impostor' | 'category' | 'brew' | 'closeenough' | 'ohrwurm', gameState: Record<string, unknown>) {
+  const View = (game === 'ohrwurm' ? await import('@/games/tv/games/TVOhrwurmView') : game === 'closeenough' ? await import('@/games/tv/games/TVCloseEnoughView') : game === 'brew' ? await import('@/games/tv/games/TVBrewView') : game === 'impostor' ? await import('@/games/tv/games/TVImpostorView') : game === 'category' ? await import('@/games/tv/games/TVCategoryView') : game === 'findit' ? await import('@/games/tv/games/TVFindItView') : game === 'draw' ? await import('@/games/tv/games/TVDrawView') : await import('@/games/tv/games/TVWordPressView')).default;
   await render(<TVFixture View={View} initial={gameState} />, '/qa/tv');
 }
 async function mountFinale() {
@@ -86,7 +87,29 @@ async function mountFinale() {
   const standings = ['Anna', 'Ben', 'Clara', 'David'].map((name, index) => ({id:name,name,color:'#df8eff',points:40,rank:1,prevRank:1,gamesWon:4,streak:4}));
   await render(<PartyFinaleOverlay open standings={standings} history={[]} gamesPlayed={4} playerCount={4} onDone={() => {}} />);
 }
-window.qa = { mountFinale,
+async function mountTVFinale(elapsedMs = 5500) {
+  const TVPartyFinale = (await import('@/games/tv/TVPartyFinale')).default;
+  const party: PartyNightState = {
+    active: true,
+    phase: 'finale',
+    playlist: ['bomb', 'ohrwurm', 'brew'].map((gameId) => ({ gameId, name: gameId, done: true })),
+    index: 3,
+    finishedThrough: 3,
+    standings: [
+      { id: 'anna', name: 'Anna', color: '#df8eff', avatar: '👑', points: 47, rank: 1, prevRank: 2, gamesWon: 2, streak: 2 },
+      { id: 'ben', name: 'Ben', color: '#8ff5ff', avatar: '🦊', points: 39, rank: 2, prevRank: 1, gamesWon: 1, streak: 0 },
+      { id: 'clara', name: 'Clara', color: '#ff6b98', avatar: '⭐', points: 31, rank: 3, prevRank: 3, gamesWon: 0, streak: 0 },
+      { id: 'david', name: 'David', color: '#f9ca24', avatar: '🎉', points: 22, rank: 4, prevRank: 4, gamesWon: 0, streak: 0 },
+    ],
+    history: [
+      { gameId: 'bomb', gameName: 'Bomb', winnerId: 'ben', scores: { anna: 7, ben: 10, clara: 5, david: 4 } },
+      { gameId: 'ohrwurm', gameName: 'Ohrwurm', winnerId: 'anna', scores: { anna: 10, ben: 9, clara: 5, david: 4 } },
+      { gameId: 'brew', gameName: 'Gebräu', winnerId: 'anna', scores: { anna: 10, ben: 7, clara: 4, david: 3 } },
+    ],
+  };
+  await render(<TVPartyFinale party={party} startsAt={Date.now() - elapsedMs} />, '/qa/tv');
+}
+window.qa = { mountFinale, mountTVFinale,
   mountLocal, mountTV, requestBack: runBackGuards, updateTV: (state: Record<string, unknown>) => updateTV(state),
   async setLanguage(language: string) { await i18nInitPromise; await loadLocale(language); await i18n.changeLanguage(language); document.documentElement.lang = language; document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr'; },
   translate: (key: string) => i18n.t(key), games: Object.keys(registry),

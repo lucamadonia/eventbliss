@@ -59,6 +59,7 @@ export default function TVCloseEnoughView({ gameState }: Props) {
         name: String(q.name ?? ''),
         color: String(q.color ?? CE.accent),
         score: Number(q.score ?? 0),
+        ...(Array.isArray(q.members) ? { members: q.members.filter((name): name is string => typeof name === 'string') } : {}),
         ...(typeof q.avatar === 'string' && q.avatar ? { avatar: q.avatar } : {}),
         // 'done' heißt hier ausdrücklich „hat abgegeben", nicht „ist raus".
         status: phase === 'guessing' && status === 'done' ? 'done' : 'waiting',

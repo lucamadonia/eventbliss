@@ -189,7 +189,8 @@ function applyGameEnd(session: PartySession, result: GameEndResult): PartySessio
 /**
  * Spieler verlaesst die Party — jederzeit, auch mitten im Spiel (Masterplan
  * 3.6/6.6). Wer schon Punkte oder Runden hat, wandert ins Archiv und bleibt
- * in der Gesamtwertung; wer noch nichts gespielt hat, verschwindet einfach.
+ * in der Historie; aus der aktuellen Gesamtwertung verschwindet er. Wer noch
+ * nichts gespielt hat, verschwindet einfach.
  * Das laufende Spiel zaehlt fuer ihn nicht (`applyGameEnd` wertet nur aktive
  * Spieler). Die Mindestzahl von zwei Spielern gilt nur fuer den Spielstart.
  */

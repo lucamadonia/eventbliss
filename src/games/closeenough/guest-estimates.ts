@@ -13,7 +13,7 @@
  */
 export type CeGuessBook = Readonly<Record<string, number | null>>;
 
-interface Seat { id: string }
+interface Seat { id: string; memberIds?: readonly string[]; memberNames?: readonly string[] }
 interface RoomSeat { id: string; name: string; avatar?: string; color?: string; controlledBy?: string }
 
 const has = (done: CeGuessBook | ReadonlySet<string>, id: string) =>
@@ -21,12 +21,14 @@ const has = (done: CeGuessBook | ReadonlySet<string>, id: string) =>
 
 /** Naechster Platz dieses Geraets, der noch schaetzen muss (eigener zuerst) — null, wenn alle durch sind. */
 export function nextLocalGuesser(localSeats: readonly string[], players: readonly Seat[], done: CeGuessBook | ReadonlySet<string>): string | null {
-  return localSeats.find((id) => players.some((p) => p.id === id) && !has(done, id)) ?? null;
+  return localSeats.find((id) => players.some((p) => (p.id === id || p.memberIds?.includes(id)) && !has(done, p.id))) ?? null;
 }
 
 /** Gaeste dieses Geraets, die noch gar nicht dran waren (alle offenen ausser dem aktuellen). */
 export function queuedLocalGuessers(localSeats: readonly string[], players: readonly Seat[], done: CeGuessBook): string[] {
-  return localSeats.filter((id) => players.some((p) => p.id === id) && !(id in done)).slice(1);
+  const outstanding = localSeats.map((id) => players.find((p) => p.id === id || p.memberIds?.includes(id))?.id)
+    .filter((id): id is string => !!id && !(id in done));
+  return [...new Set(outstanding)].slice(1);
 }
 
 /**
@@ -41,14 +43,16 @@ export function ceExpiry(players: readonly Seat[], guesses: CeGuessBook, queued:
 }
 
 /** Darf `sender` fuer Platz `pid` tippen? Er selbst, oder das Geraet, das diesen 🔁-Platz spielt. */
-export function ceSenderMayGuess(pid: unknown, sender: unknown, room: readonly RoomSeat[]): boolean {
+export function ceSenderMayGuess(pid: unknown, sender: unknown, room: readonly RoomSeat[], players: readonly Seat[] = []): boolean {
   if (typeof pid !== 'string' || typeof sender !== 'string') return false;
-  if (pid === sender) return true;
-  return room.some((seat) => seat.id === pid && seat.controlledBy === sender);
+  const player = players.find((entry) => entry.id === pid);
+  const members = player?.memberIds?.length ? player.memberIds : [pid];
+  if (members.includes(sender)) return true;
+  return room.some((seat) => members.includes(seat.id) && seat.controlledBy === sender);
 }
 
 /** Oeffentliche Spielerliste fuer TV und Kino: Symbol/Farbe aus dem Raum, Status ohne Zahl. */
-export function ceTvPlayers<P extends { id: string; name: string; color: string; score: number }>(
+export function ceTvPlayers<P extends { id: string; name: string; color: string; score: number; memberNames?: readonly string[] }>(
   players: readonly P[], room: readonly RoomSeat[], submitted: ReadonlySet<string>,
 ) {
   return players.map((p) => {
@@ -56,6 +60,7 @@ export function ceTvPlayers<P extends { id: string; name: string; color: string;
     return {
       id: p.id,
       name: p.name,
+      ...(p.memberNames?.length ? { members: p.memberNames } : {}),
       color: seat?.color || p.color,
       ...(seat?.avatar ? { avatar: seat.avatar } : {}),
       score: p.score,

@@ -16,6 +16,7 @@ interface TVPlayer { id: string; name: string; color: string; avatar?: string; s
 interface ViewState {
   partyNight?: PartyNightState;
   players?: TVPlayer[];
+  teams?: { id: string; name: string; players: string[] }[];
   activeName?: string;
   activeId?: string;
   phase?: string;
@@ -104,7 +105,8 @@ export default function TVOhrwurmView({ gameState }: { gameState: ViewState }) {
 
   const scorePlayers = useMemo(() => players.map((p) => ({
     id: p.id, name: p.name, color: p.color, avatar: p.avatar, score: p.score, subtitle: `${p.hooks} 🎣`,
-  })), [players]);
+    members: gameState?.teams?.find((team) => team.id === p.id)?.players,
+  })), [players, gameState?.teams]);
 
   if (phase === 'gameOver') {
     const winner = players.find((p) => p.name === winnerName);

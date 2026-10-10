@@ -40,6 +40,13 @@ try {
   async function view() {
     return page.evaluate(() => ({ text: document.body.innerText.slice(0, 3200), errors: [...qaErrors], width: innerWidth, scrollWidth: document.documentElement.scrollWidth,
       overflow: document.documentElement.scrollWidth > innerWidth + 2, direction: document.documentElement.dir,
+      overflowNodes: [...document.querySelectorAll('body *')].filter(node => {
+        const box = node.getBoundingClientRect();
+        return box.width > 0 && box.height > 0 && (box.right > innerWidth + 2 || box.left < -2);
+      }).slice(0, 16).map(node => {
+        const box = node.getBoundingClientRect();
+        return { tag: node.tagName, classes: String(node.className).slice(0, 120), text: node.textContent?.trim().slice(0, 80), x: Math.round(box.x), width: Math.round(box.width) };
+      }),
       geometry: [...document.querySelectorAll('#root, [data-game-stage], [data-game-stage] > div, .stage-header, .stage-action')].slice(0, 18).map(node => {
         const box = node.getBoundingClientRect(), css = getComputedStyle(node);
         return { tag: node.tagName, classes: node.className, x: box.x, width: box.width, transform: css.transform, minWidth: css.minWidth };
