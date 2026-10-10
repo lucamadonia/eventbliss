@@ -8,6 +8,7 @@ const harness = vi.hoisted(() => ({
   index: 0,
   effectIndex: 0,
   handlers: [] as { topic: string; fn: () => void }[],
+  subscriptions: [] as { topic: string; fn: (status: string) => void }[],
   channels: [] as { topic: string; sent: { event: string }[]; removed: boolean }[],
 }));
 vi.mock('react', async (original) => ({
@@ -43,7 +44,7 @@ vi.mock('@/integrations/supabase/client', () => {
         if (filter.event === 'tv-ready') harness.handlers.push({ topic, fn });
         return api;
       },
-      subscribe: () => api,
+      subscribe: (fn?: (status: string) => void) => { if (fn) harness.subscriptions.push({ topic, fn }); return api; },
       send: (msg: { event: string }) => { record.sent.push(msg); return Promise.resolve('ok'); },
       record,
     };
@@ -60,6 +61,8 @@ vi.mock('@/integrations/supabase/client', () => {
 
 import { useTVBroadcast } from './useTVBroadcast';
 
+// This harness intentionally invokes the hook with mocked React primitives.
+// eslint-disable-next-line react-hooks/rules-of-hooks
 const render = (code?: string) => { harness.index = 0; harness.effectIndex = 0; return useTVBroadcast(code); };
 const sentOn = (topic: string) => harness.channels.filter((c) => c.topic === `realtime:${topic}`).flatMap((c) => c.sent.map((m) => m.event));
 
@@ -68,6 +71,7 @@ describe('useTVBroadcast', () => {
     harness.slots = [];
     harness.effectDeps = [];
     harness.handlers = [];
+    harness.subscriptions = [];
     harness.channels = [];
     try { sessionStorage.clear(); } catch { /* node */ }
     vi.useFakeTimers();
@@ -103,6 +107,24 @@ describe('useTVBroadcast', () => {
     expect(tv.tvCode).toBe('PARTY1');
     tv.broadcastTV('tv-state', { game: 'impostor', phase: 'discussion' });
     expect(sentOn('tv-room:PARTY1')).toContain('tv-state');
+  });
+
+  it('replays the first lobby picture once the TV channel is subscribed', () => {
+    const tv = render('PARTY1');
+    tv.activate();
+    tv.broadcastTV('tv-state', { game: 'lobby', phase: 'idle', lobby: { code: 'PARTY1' } });
+    harness.subscriptions.find((entry) => entry.topic === 'realtime:tv-room:PARTY1')?.fn('SUBSCRIBED');
+    expect(sentOn('tv-room:PARTY1')).toContain('tv-state-sync');
+  });
+
+  it('keeps the lobby as the replay picture during a scene-only countdown', () => {
+    const tv = render('PARTY1');
+    tv.activate();
+    tv.broadcastTV('tv-state', { game: 'lobby', phase: 'idle', lobby: { code: 'PARTY1' } });
+    tv.broadcastTV('game-start', { scene: { scene: 'countdown' } });
+    harness.subscriptions.find((entry) => entry.topic === 'realtime:tv-room:PARTY1')?.fn('SUBSCRIBED');
+    const replay = harness.channels.find((entry) => entry.topic === 'realtime:tv-room:PARTY1')?.sent.find((entry) => entry.event === 'tv-state-sync') as { payload?: { game?: string } } | undefined;
+    expect(replay?.payload?.game).toBe('lobby');
   });
 
   it('keeps showing the paired TV code while a different controller room is running', () => {

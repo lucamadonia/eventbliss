@@ -198,7 +198,7 @@ export default function ControllerPartyLobby() {
   // D04/T16: the party is over — every device shows the closing screen; the TV runs the finale.
   if (data && ended) return shell(<PartyClosingScreen myPlayerId={me?.player_id ?? null}
     history={party.session?.gameHistory ?? []} partyDateMs={party.session?.createdAt || Date.now()}
-    standings={party.session ? derivePartyStandings([...party.session.players, ...(party.session.archivedPlayers ?? [])], party.session.gameHistory) : []}
+    standings={party.session ? derivePartyStandings(party.session.players, party.session.gameHistory) : []}
     onStartOwn={() => { closeControllerParty(); navigate('/party/controllers', { replace: true }); }}
     onDone={() => { closeControllerParty(); navigate('/games', { replace: true }); }} />);
   if (data && controller.onboarding && !isHost && (me || pendingClaim || controller.seatless)) return shell(<ControllerOnboarding data={data} userId={auth.user.id} busy={controller.busy} seatless={controller.seatless} />);
@@ -249,8 +249,8 @@ export default function ControllerPartyLobby() {
       <PartyRoster data={data} myUserId={auth.user.id} presence={room.players} participantIds={room.room?.participantIds ?? []} busy={controller.busy} />
 
       {isHost && data.party.status === 'lobby' && <ControllerPlaylistPanel data={data} busy={controller.busy} />}
-      {party.session && data.results.length > 0 && <details className="rounded-2xl border border-white/10 p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.partyLobby.overallScore')}</summary><PartyStandingsList standings={derivePartyStandings([...party.session.players, ...(party.session.archivedPlayers ?? [])], party.session.gameHistory)} /></details>}
-      {party.session && nextIndex > finaleSeen && playlist.length > 0 && nextIndex >= playlist.length && <PartyFinaleOverlay open standings={derivePartyStandings([...party.session.players, ...(party.session.archivedPlayers ?? [])], party.session.gameHistory)} history={party.session.gameHistory.map(entry => ({ ...entry, gameName: t(playableGames.find(game => game.id === entry.gameId)?.nameKey ?? entry.gameName) }))} gamesPlayed={nextIndex} playerCount={roster.length} onDone={() => setFinaleSeen(nextIndex)} />}
+      {party.session && data.results.length > 0 && <details className="rounded-2xl border border-white/10 p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.partyLobby.overallScore')}</summary><PartyStandingsList standings={derivePartyStandings(party.session.players, party.session.gameHistory)} /></details>}
+      {party.session && nextIndex > finaleSeen && playlist.length > 0 && nextIndex >= playlist.length && <PartyFinaleOverlay open standings={derivePartyStandings(party.session.players, party.session.gameHistory)} history={party.session.gameHistory.map(entry => ({ ...entry, gameName: t(playableGames.find(game => game.id === entry.gameId)?.nameKey ?? entry.gameName) }))} gamesPlayed={nextIndex} playerCount={roster.length} onDone={() => setFinaleSeen(nextIndex)} />}
       <button data-testid={isHost ? 'end-party' : 'leave-party'} disabled={controller.busy}
         className="mx-auto block min-h-11 rounded-full px-4 text-sm font-semibold text-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] active:bg-white/5 disabled:opacity-40"
         onClick={() => setConfirmLeave(true)}>{t(isHost ? 'partyControllers.end' : 'partyControllers.leave')}</button>

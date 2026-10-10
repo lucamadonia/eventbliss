@@ -44,6 +44,14 @@ describe("extractGameResult — Spieler mit eigener Punktzahl", () => {
     expect(result).toEqual({ scored: true, scores: { Anna: 7, Ben: 7, Cem: 4, Dora: 4 } });
   });
 
+  it("credits every Nah dran team member instead of the synthetic team name", () => {
+    const result = extractGameResult("closeenough", {
+      players: [{ id: "team-a", name: "Zahlenfüchse", score: 11 }, { id: "team-b", name: "Team 2", score: 6 }],
+      teams: [{ score: 11, players: ["Anna", "Ben"] }, { score: 6, players: ["Cem", "Dora"] }],
+    });
+    expect(result).toEqual({ scored: true, scores: { Anna: 11, Ben: 11, Cem: 6, Dora: 6 } });
+  });
+
   it("wertet eine 0 als echte Punktzahl, nicht als fehlend", () => {
     const result = extractGameResult("wer-bin-ich", {
       phase: "gameOver",

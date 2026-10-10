@@ -47,6 +47,23 @@ describe('closeenough guest estimates', () => {
     expect(tv[0]).toEqual({ id: 'max', name: 'Max', color: '#00ff00', avatar: '🎸', score: 3, status: 'done' });
     expect(tv[1]).toEqual({ id: 'zoe', name: 'Zoe', color: '#222222', score: 0, status: 'thinking' });
   });
+
+  it('treats every member as part of the same estimate and keeps the roster on TV', () => {
+    const teams = [
+      { id: 'team-1', name: 'Hitparade', color: '#ff0000', score: 3, memberIds: ['host', 'max'], memberNames: ['Luca', 'Max'] },
+      { id: 'team-2', name: 'Zahlenfüchse', color: '#00ff00', score: 0, memberIds: ['lena', 'gerda'], memberNames: ['Lena', 'Gerda'] },
+    ];
+    expect(nextLocalGuesser(local, teams, {})).toBe('host');
+    expect(queuedLocalGuessers(local, teams, {})).toEqual(['team-2']);
+    expect(nextLocalGuesser(local, teams, { 'team-1': 42 })).toBe('gerda');
+    expect(ceSenderMayGuess('team-1', 'max', room, teams)).toBe(true);
+    expect(ceSenderMayGuess('team-1', 'host', room, teams)).toBe(true);
+    expect(ceSenderMayGuess('team-1', 'lena', room, teams)).toBe(false);
+    expect(ceSenderMayGuess('team-2', 'host', room, teams)).toBe(false);
+    const tv = ceTvPlayers(teams, room, new Set(['team-1']));
+    expect(tv[0]).toMatchObject({ name: 'Hitparade', members: ['Luca', 'Max'], status: 'done' });
+    expect(tv[0]).not.toHaveProperty('value');
+  });
 });
 
 describe('closeenough public snapshot', () => {

@@ -51,6 +51,7 @@ import { useCeOnlineSync } from './useCeOnlineSync';
 import { useCeOfflineSave } from './useCeOfflineSave';
 import { CeEntry, CeExitConfirm, CeHeader, CeIntro, CePass, CeReveal } from './CloseEnoughPanels';
 import { ceExpiry, ceSenderMayGuess, nextLocalGuesser, queuedLocalGuessers } from './guest-estimates';
+import { TeamRosterDisclosure } from '../ui/TeamRosterDisclosure';
 
 export default function CloseEnoughGame({ online }: { online?: OnlineGameProps } = {}) {
   const { t, i18n } = useTranslation();
@@ -261,8 +262,8 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   // Host wendet Client-Aktionen an.
   const applyAction = useCallback(
     (data: Record<string, unknown>) => {
-      if (data.type === 'again' && phase === 'gameOver' && players.some(p => p.id === data.__senderId)) { rematchRef.current(); return; }
-      if (online?.isConnected === false || phase !== 'guessing' || data.roundToken !== roundToken || data.type !== 'guess' || !ceSenderMayGuess(data.pid, data.__senderId, online?.players ?? [])) return;
+      if (data.type === 'again' && phase === 'gameOver' && players.some(p => p.id === data.__senderId || p.memberIds?.includes(String(data.__senderId)))) { rematchRef.current(); return; }
+      if (online?.isConnected === false || phase !== 'guessing' || data.roundToken !== roundToken || data.type !== 'guess' || !ceSenderMayGuess(data.pid, data.__senderId, online?.players ?? [], players)) return;
       switch (data.type) {
         case 'guess':
           doGuess(data.pid as string, Number(data.value));
@@ -361,7 +362,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   // --- Start ---------------------------------------------------------------
   const handleStart = useCallback(
     (cfg: {
-      players: { id: string; name: string }[];
+      players: { id: string; name: string; memberIds?: string[]; memberNames?: string[] }[];
       mode: ModeId;
       categories: CeCategory[];
       rounds: number;
@@ -380,6 +381,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
         name: p.name,
         color: getPlayerColor(i),
         score: 0,
+        ...(p.memberIds ? { memberIds: p.memberIds, memberNames: p.memberNames } : {}),
       }));
       setMode(cfg.mode);
       setCategories(cfg.categories);
@@ -392,7 +394,7 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
   );
 
   // =========================================================================
-  rematchRef.current = () => handleStart({ players: players.map(p => ({ id: p.id, name: p.name })), mode, categories, rounds: totalRounds });
+  rematchRef.current = () => handleStart({ players: players.map(p => ({ id: p.id, name: p.name, memberIds: p.memberIds, memberNames: p.memberNames })), mode, categories, rounds: totalRounds });
   if (phase === 'setup' && online && !isHost) return <OnlineWaiting />;
   if (handover.overlay) return handover.overlay; // phone in transit: only the opaque pass screen
   if (phase === 'setup') {
@@ -429,11 +431,11 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
 
   // Wer tippt gerade auf diesem Gerät? Online: der eigene Platz oder der 🔁-Gast, der das Handy hält.
   const activePlayer = isOnline
-    ? (players.find((p) => p.id === (localGuesser ?? myId)) ?? null)
+    ? (players.find((p) => p.id === (localGuesser ?? myId) || p.memberIds?.includes(localGuesser ?? myId ?? '')) ?? null)
     : (players[entryIndex] ?? null);
   const alreadySubmitted = !!activePlayer && submittedSet.has(activePlayer.id);
   const seatOf = (id: string) => online?.players.find((p) => p.id === id);
-  const activeSeat = activePlayer ? seatOf(activePlayer.id) : undefined;
+  const activeSeat = activePlayer ? seatOf(localGuesser ?? myId ?? activePlayer.id) : undefined;
 
   const anchorKey = question ? anchorKeyFor(question.frameKey, question.nameDe) : null;
   const hint = anchorKey ? t(anchorKey) : null;
@@ -469,6 +471,14 @@ export default function CloseEnoughGame({ online }: { online?: OnlineGameProps }
 
       <CeHeader round={round} totalRounds={totalRounds} timeLeft={roundTimer.timeLeft} duration={modeDef.duration}
         guessing={view === 'guessing'} question={shownReveal?.question ?? question} onLeave={() => setConfirmExit(true)} />
+
+      <TeamRosterDisclosure
+        teams={players.filter((player) => player.memberIds?.length).map((player) => ({
+          id: player.id, name: player.name, color: player.color, score: player.score,
+          memberNames: player.memberNames ?? [],
+        }))}
+        surface={CE.surface} text={CE.text} muted={CE.dim} pointsLabel={t('games.closeenough.points')}
+      />
 
       <AnimatePresence mode="wait">
         {shownReveal?.question && shownReveal.results && (

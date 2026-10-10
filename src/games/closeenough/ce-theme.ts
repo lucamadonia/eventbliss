@@ -53,6 +53,9 @@ export interface Player {
   name: string;
   color: string;
   score: number;
+  /** In group mode one estimate and one score belong to all these room seats. */
+  memberIds?: string[];
+  memberNames?: string[];
 }
 
 export function shuffle<T>(a: T[]): T[] {

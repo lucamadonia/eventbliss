@@ -1,6 +1,6 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy } from 'lucide-react';
+import { Trophy, Users, X } from 'lucide-react';
 import { tvType, tvActiveRing } from '../tv-tokens';
 import { lu } from './tv-lobby-scale';
 
@@ -32,6 +32,8 @@ export interface TVScorePlayer {
   /** drives the visual treatment; defaults to 'active' for the activeId player */
   status?: 'active' | 'done' | 'out' | 'waiting';
   avatar?: string;
+  /** Team members, shown on the shared TV so the name has an owner. */
+  members?: readonly string[];
   /**
    * Party Night context — the player's rank and point total for the WHOLE
    * evening, shown as a compact inline chip next to the in-game score.
@@ -68,6 +70,7 @@ interface Props {
 }
 
 function TVScoreboardImpl({ players: rawPlayers, activeId, target, layout = 'strip', sort = 'score', party, className }: Props) {
+  const [openTeamId, setOpenTeamId] = useState<string | null>(null);
   // Memoised so an active party night does not defeat the memo() below and
   // re-render the whole roster on the TV's per-second tick.
   const players = useMemo(() => withPartyContext(rawPlayers, party), [rawPlayers, party]);
@@ -79,8 +82,10 @@ function TVScoreboardImpl({ players: rawPlayers, activeId, target, layout = 'str
   const leaderScore = Math.max(0, ...players.map((p) => p.score ?? 0));
 
   const isRail = layout === 'rail';
+  const openTeam = players.find((player) => player.id === openTeamId && player.members?.length);
 
   return (
+    <>
     <div className={`flex ${isRail ? 'flex-col' : 'flex-wrap justify-center'} gap-2.5 ${className ?? ''}`}>
       {ordered.map((p, i) => {
         const status = p.status ?? (p.id === activeId ? 'active' : 'waiting');
@@ -158,11 +163,39 @@ function TVScoreboardImpl({ players: rawPlayers, activeId, target, layout = 'str
                   </span>
                 )}
               </div>
+              {!!p.members?.length && (
+                <button type="button" data-testid={`tv-team-members-${p.id}`}
+                  aria-label={`${p.name}: ${p.members.join(', ')}`} aria-expanded={openTeamId === p.id}
+                  onClick={() => setOpenTeamId(p.id)}
+                  dir="auto" className="mt-1 flex max-w-full items-start gap-1 text-left hover:text-white focus-visible:outline focus-visible:outline-2"
+                  style={{ fontSize: tvType.micro, color: '#b3a8c9', lineHeight: 1.2 }}>
+                  <Users className="mt-px h-[1em] w-[1em] shrink-0" />
+                  <span className="line-clamp-2 break-words">{p.members.join(' · ')}</span>
+                </button>
+              )}
             </div>
           </motion.div>
         );
       })}
     </div>
+    {openTeam && (
+      <div data-testid="tv-team-members-overlay" className="fixed inset-0 z-[100] flex items-center justify-center px-[6vw] py-[7vh]">
+        <button type="button" onClick={() => setOpenTeamId(null)} aria-label="Close" className="absolute inset-0 bg-black/80" />
+        <div role="dialog" aria-modal="true" aria-label={openTeam.name}
+          className="relative z-10 flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-[28px] border border-white/15 bg-[#140e24] p-[3vw] shadow-2xl">
+          <div className="flex items-start justify-between gap-4">
+            <h2 dir="auto" className="font-black" style={{ color: openTeam.color, fontSize: tvType.title }}>{openTeam.name}</h2>
+            <button type="button" onClick={() => setOpenTeamId(null)} aria-label="Close" className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white/10 text-white"><X /></button>
+          </div>
+          <div className="mt-5 grid max-h-full grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3">
+            {openTeam.members?.map((name, index) => (
+              <div key={`${name}-${index}`} dir="auto" className="rounded-xl bg-white/10 px-4 py-3 font-bold text-white" style={{ fontSize: tvType.body }}>{name}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
 

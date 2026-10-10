@@ -184,9 +184,9 @@ export function extractGameResult(
   const teams = readTeams(state);
   const objectPlayers = readObjectPlayers(state);
 
-  // Ohrwurm's group display shows teams as scored players on TV. Party totals
+  // Ohrwurm and Nah dran group displays show teams as scored players on TV. Party totals
   // must credit each actual member of that team, not a synthetic team name.
-  if (gameId === 'ohrwurm' && teams) {
+  if ((gameId === 'ohrwurm' || gameId === 'closeenough') && teams) {
     return { scored: true, scores: toScores(teams.flatMap((team) => team.members.map((name) => [name, team.score] as [string, number]))) };
   }
 

@@ -31,14 +31,14 @@ const COLORS = [
   "#F43F5E", // rose
 ];
 
-function generateParticles(count: number): Particle[] {
+function generateParticles(count: number, spread: number): Particle[] {
   return Array.from({ length: count }, (_, i) => {
     const angle = (Math.random() - 0.5) * Math.PI; // -90° to +90° upward
     const speed = 200 + Math.random() * 300;
     return {
       id: i,
-      x: Math.sin(angle) * speed,
-      y: -Math.cos(angle) * speed + Math.random() * 200, // gravity falloff
+      x: Math.sin(angle) * speed * spread,
+      y: (-Math.cos(angle) * speed + Math.random() * 200) * spread, // gravity falloff
       rotation: (Math.random() - 0.5) * 720,
       scale: 0.5 + Math.random() * 0.8,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
@@ -52,11 +52,13 @@ function generateParticles(count: number): Particle[] {
 interface ConfettiBurstProps {
   active: boolean;
   count?: number;
+  /** Wider travel for large displays; phones retain the default burst. */
+  spread?: number;
   onComplete?: () => void;
 }
 
-export function ConfettiBurst({ active, count = 30, onComplete }: ConfettiBurstProps) {
-  const particles = useMemo(() => generateParticles(count), [count, active]);
+export function ConfettiBurst({ active, count = 30, spread = 1, onComplete }: ConfettiBurstProps) {
+  const particles = useMemo(() => generateParticles(count, spread), [count, spread, active]);
 
   return (
     <AnimatePresence onExitComplete={onComplete}>

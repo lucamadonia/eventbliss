@@ -2,7 +2,7 @@
 import { avatarOrFallback } from '../multiplayer/seat-avatar';
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Crown, Loader2, Music2, Shuffle } from 'lucide-react';
+import { ArrowLeft, Crown, Loader2, Music2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { useHaptics } from '@/hooks/useHaptics';
@@ -15,6 +15,7 @@ import { type PlaybackMode, spotifyModePossible } from './playback';
 import { OW, OW_STYLE, PLAYER_COLORS, type OhrwurmConfig, type SetupPlayer } from './ohrwurm-theme';
 import { buildOhrwurmTeams, MAX_OHRWURM_PEOPLE, MAX_OHRWURM_TEAMS } from './teams';
 import { randomTeamAssignments } from '../ui/random-teams';
+import { TeamFormation } from '../ui/TeamFormation';
 
 // ===========================================================================
 // Setup-Screen
@@ -132,6 +133,12 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
     setAssignments(randomTeamAssignments(players.map((player) => player.id), teamCount, current));
     void haptics.select();
   };
+  const moveMember = (id: string) => {
+    const index = players.findIndex((player) => player.id === id);
+    if (index < 0) return;
+    setAssignments((previous) => ({ ...previous, [id]: ((previous[id] ?? index % teamCount) + 1) % teamCount }));
+    void haptics.select();
+  };
 
   const TARGETS = [
     { v: 6, label: t('games.ohrwurm.targetFast'), desc: t('games.ohrwurm.targetHits', { count: 6 }) },
@@ -208,57 +215,27 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
         </section>
 
         {mode === 'group' && (
-          <section className="mb-8 space-y-4" data-testid="ohrwurm-team-setup">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <h3 className="text-sm font-bold" style={{ color: OW.text }}>{t('games.ohrwurm.formTeams')}</h3>
-                <p className="mt-1 text-xs" style={{ color: OW.dim }}>{t('games.ohrwurm.sharedTimeline')}</p>
-              </div>
-              <div className="flex flex-wrap justify-end gap-2">
-                <button type="button" onClick={shuffleTeams} data-testid="ohrwurm-shuffle-teams"
-                  className="flex min-h-11 items-center gap-1.5 rounded-xl border px-3 text-xs font-bold"
-                  style={{ borderColor: `${OW.primary}66`, color: OW.primary }}>
-                  <Shuffle className="h-4 w-4" /> {t('games.splitquiz.reshuffleTeams')}
-                </button>
-                <button type="button" onClick={addTeam} disabled={teamCount >= MAX_OHRWURM_TEAMS || teamCount >= players.length}
-                  className="min-h-11 shrink-0 rounded-xl border px-3 text-xs font-bold disabled:opacity-40"
-                  style={{ borderColor: `${OW.secondary}66`, color: OW.secondary }}>
-                  + {t('games.ohrwurm.addTeam')}
-                </button>
-              </div>
+          <section className="mb-8 space-y-3" data-testid="ohrwurm-team-setup">
+            <TeamFormation
+              teams={teams.map((team) => ({ ...team, members: team.memberIds.map((id, index) => ({ id, name: team.memberNames[index] })) }))}
+              title={t('games.ohrwurm.formTeams')}
+              hint={t('games.pantomime.tapToSwap')}
+              shuffleLabel={t('games.splitquiz.reshuffleTeams')}
+              emptyLabel={t('games.ohrwurm.emptyTeam')}
+              renameLabel={(index) => t('games.ohrwurm.nameTeam', { n: index + 1 })}
+              onShuffle={shuffleTeams} onMove={moveMember}
+              onRename={(index, name) => setTeamNames((previous) => previous.map((old, i) => i === index ? name : old))}
+              surface={OW.surface} elevated={OW.elevated} text={OW.text} muted={OW.dim}
+            />
+            <p className="text-xs" style={{ color: OW.dim }}>{t('games.ohrwurm.sharedTimeline')}</p>
+            <div className="flex flex-wrap gap-3">
+              <button type="button" onClick={addTeam} disabled={teamCount >= MAX_OHRWURM_TEAMS || teamCount >= players.length}
+                className="min-h-11 rounded-xl border px-3 text-xs font-bold disabled:opacity-40"
+                style={{ borderColor: `${OW.secondary}66`, color: OW.secondary }}>
+                + {t('games.ohrwurm.addTeam')}
+              </button>
+              {teamCount > MIN && <button type="button" onClick={removeLastTeam} className="min-h-11 text-xs font-bold" style={{ color: OW.dim }}>{t('games.ohrwurm.removeLastTeam')}</button>}
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {teams.map((team, index) => (
-                <div key={team.id} data-testid={`ohrwurm-team-${index}`} className="rounded-2xl border p-3" style={{ borderColor: `${team.color}66`, background: OW.surface }}>
-                  <div className="flex items-center gap-2">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-black"
-                      style={{ color: team.color, background: `${team.color}22` }}>{team.avatar}</span>
-                    <input value={teamNames[index] ?? ''} onChange={(event) => setTeamNames((prev) => prev.map((name, i) => i === index ? event.target.value : name))}
-                      maxLength={20} aria-label={t('games.ohrwurm.nameTeam', { n: index + 1 })}
-                      className="min-w-0 flex-1 rounded-lg border border-white/10 bg-transparent px-2 py-2 text-sm font-bold text-white focus:outline-none focus:ring-2"
-                      style={{ ['--tw-ring-color' as string]: team.color }} />
-                    <span className="text-xs font-bold" style={{ color: OW.dim }}>{team.memberIds.length}</span>
-                  </div>
-                  <p className="mt-2 min-h-8 text-xs leading-relaxed" style={{ color: team.memberIds.length ? OW.dim : OW.accent }}>
-                    {team.memberNames.length ? team.memberNames.join(' · ') : t('games.ohrwurm.emptyTeam')}
-                  </p>
-                </div>
-              ))}
-            </div>
-            <div className="space-y-2">
-              {players.map((player, index) => (
-                <div key={player.id} className="flex min-h-12 items-center gap-3 rounded-xl bg-white/[0.04] px-3">
-                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">{player.name || `${t('games.ohrwurm.player')} ${index + 1}`}</span>
-                  <select value={assignments[player.id] ?? index % teamCount}
-                    onChange={(event) => setAssignments((prev) => ({ ...prev, [player.id]: Number(event.target.value) }))}
-                    aria-label={t('games.ohrwurm.assignTeam', { name: player.name || `${index + 1}` })}
-                    className="min-h-11 max-w-[50%] rounded-lg border border-white/20 bg-[#241a39] px-2 text-sm font-semibold text-white">
-                    {teams.map((team, teamIndex) => <option key={team.id} value={teamIndex}>{team.name || t('games.ohrwurm.teamName', { n: teamIndex + 1 })}</option>)}
-                  </select>
-                </div>
-              ))}
-            </div>
-            {teamCount > MIN && <button type="button" onClick={removeLastTeam} className="min-h-11 text-xs font-bold" style={{ color: OW.dim }}>{t('games.ohrwurm.removeLastTeam')}</button>}
           </section>
         )}
 

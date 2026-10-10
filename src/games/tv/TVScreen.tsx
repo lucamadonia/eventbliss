@@ -165,6 +165,7 @@ export default function TVScreen() {
   const partyEnded = gameState?.game === 'lobby' && gameState?.controllerJoinCode === null;
   const lastPartyNightRef = useRef<PartyNightState | undefined>(undefined);
   if (wirePartyNight?.active && (wirePartyNight.history?.length ?? 0) > 0) lastPartyNightRef.current = wirePartyNight;
+  else if (wirePartyNight?.active && (wirePartyNight.history?.length ?? 0) === 0) lastPartyNightRef.current = undefined;
   // Ein Finale ohne Stand (Sitzung schon zu) faellt ebenfalls auf den letzten Abend zurueck.
   const wireFinaleEmpty = wirePartyNight?.phase === 'finale' && !(wirePartyNight.standings?.length);
   const partyNight: PartyNightState | undefined = (wireFinaleEmpty ? undefined : wirePartyNight)
@@ -269,6 +270,7 @@ export default function TVScreen() {
   // Gemeinsamer Start der Siegerehrung — Podest und Konfetti im selben Moment wie die Telefone.
   const finaleStartsRef = useRef<number | null>(null);
   if (wireScene?.scene === 'finale') finaleStartsRef.current = wireScene.startsAt;
+  if (wirePartyNight?.active && (wirePartyNight.history?.length ?? 0) === 0) finaleStartsRef.current = null;
 
   // Audio
   const audio = useTVAudio();
@@ -403,7 +405,9 @@ export default function TVScreen() {
           code={latecomerJoin.code}
           expandKey={showGame ? `game:${String(gameState?.game ?? '')}:${String(gameState?.round ?? '')}` : `scene:${effectiveView}:${showLeaderboard}`}
           // Nur Listen vom Telefon — die Anwesenheit im Spiel kennt andere Kennungen.
-          players={latecomerJoin.players}
+          players={partyNight?.active
+            ? latecomerJoin.players.filter(player => partyNight.standings.some(entry => entry.id === player.id))
+            : latecomerJoin.players}
           onLateJoin={audio.playTick}
         />
       )}
@@ -418,29 +422,6 @@ export default function TVScreen() {
         <TVPartyProgressStrip playlist={partyNight!.playlist} index={partyNight!.index} />
       )}
 
-      {/*
-        Die manuell gerufene Karte liegt UEBER allem anderen, aber unter der
-        Klickflaeche (z-[200]) — der naechste Klick blendet sie wieder aus.
-        `travel={false}`: Wer sie selbst aufruft, will den Stand sehen, nicht
-        die Reise noch einmal vorgefuehrt bekommen.
-      */}
-      {showPartyMap && (
-        <div className="fixed inset-0 z-[150]">
-          <Suspense fallback={TVFallback}>
-            <TVPartyMap
-              playlist={partyNight!.playlist}
-              index={partyNight!.index}
-              standings={partyNight!.standings}
-              /* Die Reise mitspielen lassen, auch wenn die Karte gerufen wird:
-                 Der Sprung der Figuren IST der Moment, fuer den die Karte
-                 gebaut ist. Sie danach nur als Standbild zu zeigen, waere die
-                 halbe Wirkung. */
-              travel
-            />
-          </Suspense>
-        </div>
-      )}
-
       {/* Replace the previous scene synchronously. Keeping an exiting lobby
           mounted can leave the live game below its full-height layout while
           nested animations finish. The keyed scene still fades in. */}
@@ -451,6 +432,7 @@ export default function TVScreen() {
           key={
             showPartyFinale ? 'partyFinale'
             : showPartyStandings ? 'partyStandings'
+            : showPartyMap ? 'partyMap'
             : showPartyReady ? 'partyReady'
             // Vom Gastgeber gerufenes Startbild — dieselbe Lobby wie am Anfang
             // des Abends, damit ein Nachzuegler den Raumcode wiederfindet.
@@ -470,9 +452,11 @@ export default function TVScreen() {
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         >
           {showPartyFinale ? (
-            <Suspense fallback={TVFallback}><TVPartyFinale party={partyNight!} startsAt={finaleStartsRef.current} /></Suspense>
+            <Suspense fallback={TVFallback}><TVPartyFinale key={finaleStartsRef.current ?? 'local'} party={partyNight!} startsAt={finaleStartsRef.current} /></Suspense>
           ) : showPartyStandings ? (
             <Suspense fallback={TVFallback}><TVPartyStandings party={partyNight!} /></Suspense>
+          ) : showPartyMap ? (
+            <Suspense fallback={TVFallback}><TVPartyMap playlist={partyNight!.playlist} index={partyNight!.index} standings={partyNight!.standings} travel /></Suspense>
           ) : showPartyReady ? (
             <Suspense fallback={TVFallback}><TVPartyReady party={partyNight!} /></Suspense>
           ) : showPartyRules ? (

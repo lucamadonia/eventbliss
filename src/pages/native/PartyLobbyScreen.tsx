@@ -104,9 +104,8 @@ export default function PartyLobbyScreen() {
   const editingPlayer = players.find(player => player.id === editingPlayerId);
   const history = useMemo(() => session?.gameHistory ?? [], [session]);
   const standings = useMemo(
-    // Entfernte Spieler behalten ihre Punkte in der Wertung (Masterplan 3.6).
-    () => derivePartyStandings([...players, ...(session?.archivedPlayers ?? [])], history),
-    [players, history, session?.archivedPlayers]
+    () => derivePartyStandings(players, history),
+    [players, history]
   );
   const canStartGame = players.length >= 2;
 

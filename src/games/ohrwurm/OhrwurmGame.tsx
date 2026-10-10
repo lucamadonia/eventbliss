@@ -645,7 +645,7 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     phase, phaseStartsAt, handover: handover.tv,
     players: ohrwurmTvPlayers(participants),
     teams: participants.some((p) => p.type === 'group')
-      ? participants.map((p) => ({ name: p.name, score: p.timeline.length, players: p.memberNames ?? [p.name] }))
+      ? participants.map((p) => ({ id: p.id, name: p.name, score: p.timeline.length, players: p.memberNames ?? [p.name] }))
       : undefined,
     activeId: active?.id ?? null,
     activeName: active?.name ?? '',
@@ -757,7 +757,11 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
 
   // Offline TV bridge (party mode / TV-room channel). Online TV uses the
   // 'tv-state' broadcast above on the game-room channel.
-  useTVGameBridge('ohrwurm', tvPayload,
+  useTVGameBridge('ohrwurm', {
+    ...tvPayload,
+    partyScoresById: Object.fromEntries(participants.flatMap((participant) =>
+      (participant.memberIds?.length ? participant.memberIds : [participant.id]).map((id) => [id, participant.timeline.length]))),
+  },
     [phase, phaseStartsAt, turn, listening, roundTimer.timeLeft, participants, resolution, bonusClaimed, bonusDecided, tvKey], isHost);
 
   // =========================================================================

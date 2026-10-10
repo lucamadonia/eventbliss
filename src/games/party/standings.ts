@@ -179,7 +179,9 @@ export function buildPartyNightState(
     playlist: derivePartyPlaylist(session.playlist, finishedThrough, nameFor),
     index: session.playlistIndex,
     finishedThrough,
-    standings: derivePartyStandings([...session.players, ...(session.archivedPlayers ?? [])], session.gameHistory),
+    // Archivierte Spieler bleiben in der Spielhistorie, nehmen aber nicht mehr
+    // an der aktuellen Party-Wertung auf Handy und TV teil.
+    standings: derivePartyStandings(session.players, session.gameHistory),
     // `GameHistoryEntry` enthaelt alle Felder von `PartyGameResult` — die
     // Historie geht ohne Umformung auf die Leitung.
     history: session.gameHistory.map(entry => ({ ...entry, gameName: nameFor(entry.gameId) })) as PartyGameResult[],

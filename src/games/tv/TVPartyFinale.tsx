@@ -2,6 +2,7 @@ import { partyChampions } from '@/games/party/standings';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { Crown } from 'lucide-react';
 import { ConfettiBurst } from '@/components/vfx/ConfettiBurst';
 import { confettiBurst, partyEase } from '@/lib/party-motion';
 import { serverClock } from '@/games/party/scene-clock';
@@ -44,9 +45,10 @@ export default function TVPartyFinale({ party, startsAt = null }: { party: Party
   );
   const champions = useMemo(() => partyChampions(standings), [standings]);
   const champion = champions[0];
+  const winnerNames = new Intl.ListFormat(i18n.language, { type: 'conjunction' }).format(champions.map(entry => entry.name));
   const awards = useMemo(() => {
     if (!champion) return [];
-    return computePartyAwards(party.history ?? [], standings.map((s) => s.id), { excludeIds: champions.map((entry) => entry.id), max: 4 });
+    return computePartyAwards(party.history ?? [], standings.map((s) => s.id), { excludeIds: champions.map((entry) => entry.id), max: 3 });
   }, [party.history, standings, champion, champions]);
   const byId = useMemo(() => new Map(standings.map((s) => [s.id, s])), [standings]);
   const highlight = useMemo(() => finaleHighlight(standings, party.history ?? []), [standings, party.history]);
@@ -74,6 +76,15 @@ export default function TVPartyFinale({ party, startsAt = null }: { party: Party
       timers.forEach(clearTimeout);
     };
   }, [schedule]);
+
+  useEffect(() => {
+    if (!confetti) return;
+    const remaining = startsAt !== null
+      ? Math.max(0, startsAt + FINALE_AT[1] + confettiBurst.durationMs - serverClock.now())
+      : confettiBurst.durationMs;
+    const stop = setTimeout(() => setConfetti(false), remaining);
+    return () => clearTimeout(stop);
+  }, [confetti, startsAt]);
 
   if (!champion) {
     return (
@@ -120,7 +131,7 @@ export default function TVPartyFinale({ party, startsAt = null }: { party: Party
         animate={{ background: revealed ? `${champion.color}38` : '#df8eff1c', opacity: revealed ? 1 : 0.7 }}
         transition={{ duration: 0.8, ease: partyEase.out }}
       />
-      <ConfettiBurst active={confetti && !reduce} count={confettiBurst.particles.tv} onComplete={() => setConfetti(false)} />
+      <ConfettiBurst active={confetti && !reduce} count={confettiBurst.particles.tv} spread={1.9} />
 
       {/* ── Links: der Abend in Zahlen + Endstand — erst mit seinem Beat, nie als leerer Kasten ── */}
       <div className="relative z-10 flex flex-col min-h-0" style={{ gap: lu(1.6) }}>
@@ -201,7 +212,18 @@ export default function TVPartyFinale({ party, startsAt = null }: { party: Party
         </div>
 
         {/* Waehrend des Wirbels stehen die Sockel schon als Silhouette und fuellen sich beim Reveal. */}
-        <TVPartyPodium entries={standings} reveal={revealed} ghost variant="finale" className="max-w-[min(56rem,100%)]" />
+        <TVPartyPodium entries={standings} reveal={revealed} ghost instantPoints variant="finale" className="max-w-[min(56rem,100%)]" />
+
+        {revealed && (
+          <motion.div data-testid="tv-finale-winner" className="flex max-w-full items-center justify-center rounded-full border border-[#FFD23F]/40 bg-[#FFD23F]/[0.12] text-center"
+            style={{ gap: lu(1), padding: `${lu(0.9)} ${lu(2.4)}`, boxShadow: `0 0 48px -14px ${GOLD}99, inset 0 1px 0 ${GOLD}70` }}
+            initial={{ opacity: 0, scale: reduce ? 1 : 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.65, ease: partyEase.out }}>
+            <Crown aria-hidden className="shrink-0" style={{ width: lu(3.2), height: lu(3.2), color: GOLD }} />
+            <span className="min-w-0 font-black text-white" style={{ fontSize: lu(2.8), lineHeight: 1.15, textWrap: 'balance' }}>
+              {t(champions.length > 1 ? 'tv.partyNight.championsLine' : 'tv.partyNight.championLine', { name: winnerNames, points: champion.points.toLocaleString(i18n.language) })}
+            </span>
+          </motion.div>
+        )}
 
         <AnimatePresence>
           {beat >= 2 && (
