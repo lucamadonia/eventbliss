@@ -2,8 +2,9 @@ import { createPrivateKey, sign } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
 const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.1.json', import.meta.url), 'utf8'));
-if (release.bundleId !== 'app.eventbliss' || release.version !== '1.6.1' || release.buildNumber !== '304') {
-  throw new Error('Expected EventBliss iOS 1.6.1 build 304.');
+const supersededBuildNumber = '304';
+if (release.bundleId !== 'app.eventbliss' || release.version !== '1.6.1' || release.buildNumber !== '308') {
+  throw new Error('Expected EventBliss iOS 1.6.1 build 308.');
 }
 const issuer = process.env.APP_STORE_CONNECT_ISSUER_ID;
 const keyId = process.env.APP_STORE_CONNECT_KEY_ID;
@@ -41,19 +42,19 @@ const version = matches[0];
 const state = version.attributes?.appVersionState ?? version.attributes?.appStoreState;
 const attached = await api(`appStoreVersions/${version.id}/build`);
 const attachedBuild = attached.data?.attributes?.version;
-const builds = await api(`builds?filter[app]=${appId}&filter[version]=304&limit=20`);
-const target = builds.data?.find(({ attributes }) => attributes?.version === '304');
-if (!target || target.attributes?.processingState !== 'VALID') throw new Error('Build 304 is not VALID.');
+const builds = await api(`builds?filter[app]=${appId}&filter[version]=${release.buildNumber}&limit=20`);
+const target = builds.data?.find(({ attributes }) => attributes?.version === release.buildNumber);
+if (!target || target.attributes?.processingState !== 'VALID') throw new Error(`Build ${release.buildNumber} is not VALID.`);
 const prerelease = await api(`builds/${target.id}/preReleaseVersion`);
 if (prerelease.data?.attributes?.version !== release.version || prerelease.data?.attributes?.platform !== 'IOS') {
-  throw new Error('Build 304 is not iOS 1.6.1.');
+  throw new Error(`Build ${release.buildNumber} is not iOS 1.6.1.`);
 }
 
-if (state === 'DEVELOPER_REJECTED' && ['303', '304'].includes(attachedBuild)) {
-  console.log(`iOS 1.6.1 is already DEVELOPER_REJECTED with build ${attachedBuild}; continue with build 304 preparation.`);
+if (state === 'DEVELOPER_REJECTED' && [supersededBuildNumber, release.buildNumber].includes(attachedBuild)) {
+  console.log(`iOS 1.6.1 is already DEVELOPER_REJECTED with build ${attachedBuild}; continue with build ${release.buildNumber} preparation.`);
   process.exit(0);
 }
-if (state !== 'PENDING_DEVELOPER_RELEASE' || attachedBuild !== '303') {
+if (state !== 'PENDING_DEVELOPER_RELEASE' || attachedBuild !== supersededBuildNumber) {
   throw new Error(`Refusing to replace unexpected iOS state ${state} with build ${attachedBuild ?? 'none'}.`);
 }
 const legacySubmission = await api(`appStoreVersions/${version.id}/relationships/appStoreVersionSubmission`);
@@ -65,14 +66,17 @@ const matching = [];
 for (const review of reviews.data ?? []) {
   const items = await api(`reviewSubmissions/${review.id}/items?limit=200&include=appStoreVersion`);
   const item = items.data?.find(({ relationships }) => relationships?.appStoreVersion?.data?.id === version.id);
-  if (item) matching.push({ review, item });
+  if (item) {
+    if (items.data?.length !== 1) throw new Error('Review submission contains unrelated items.');
+    matching.push({ review, item });
+  }
 }
-if (matching.length !== 1 || matching[0].review.attributes?.state !== 'COMPLETE' || matching[0].item.attributes?.state !== 'APPROVED') {
-  throw new Error('Expected exactly one completed, approved iOS 1.6.1 review submission.');
+if (!matching.some(({ review, item }) => review.attributes?.state === 'COMPLETE' && item.attributes?.state === 'APPROVED')) {
+  throw new Error('Expected a completed, approved iOS 1.6.1 review submission.');
 }
 
 await api(`appStoreVersionSubmissions/${legacySubmission.data.id}`, 'DELETE');
-console.log('Removed approved iOS 1.6.1 build 303 from the release process so build 304 can be reviewed.');
+console.log(`Removed approved iOS 1.6.1 build ${supersededBuildNumber} from the release process so build ${release.buildNumber} can be reviewed.`);
 for (let attempt = 0; attempt < 12; attempt += 1) {
   const refreshed = await api(`appStoreVersions/${version.id}`);
   const current = refreshed.data?.attributes?.appVersionState ?? refreshed.data?.attributes?.appStoreState;

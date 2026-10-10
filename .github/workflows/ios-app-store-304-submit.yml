@@ -1,4 +1,4 @@
-name: Replace approved iOS build 303 with 304 and resubmit
+name: Replace approved iOS build 304 with 308 and resubmit
 
 on:
   workflow_dispatch:
@@ -19,11 +19,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Remove approved 303 from pending release
+      - name: Remove approved 304 from pending release
         run: node scripts/release/app-store-replace-approved.mjs
-      - name: Attach 304 and update localized release notes
+      - name: Attach 308 and update localized release notes
         run: node scripts/release/app-store-prepare.mjs
-      - name: Submit 304 for App Review
+      - name: Submit 308 for App Review
         run: node scripts/release/app-store-submit.mjs
       - name: Audit final version state
         run: node scripts/release/app-store-status.mjs
