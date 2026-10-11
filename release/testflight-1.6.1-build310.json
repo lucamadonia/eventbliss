@@ -1,0 +1,8 @@
+{
+  "version": "1.6.1",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Party-Abend: Hochstapler startet jetzt auch zu dritt und wird als letztes geplantes Spiel nicht mehr übersprungen. Pixeljagd zeigt die Rundenauflösung wieder auf dem TV. Bei Wo ist was? bleiben Ortsnamen auf der Ratekarte verborgen; Street View lädt Panoramen gezielt und bietet bei Fehlern einen neuen Versuch. Schnellzeichner kann mit zwei Teams gespielt werden: Spieler zufällig mischen oder verschieben, Teams umbenennen und die Teamwertung auf Handy und TV sehen.\n\nBitte testet besonders einen Party-Abend mit drei Personen und Hochstapler als viertem Spiel, Pixeljagd mit TV, beide Kartenmodi sowie Schnellzeichner im Teammodus. Meldet Buildnummer, Geräte und genaue Schritte bei Problemen.",
+    "en-US": "Party night: Hochstapler now starts with three players and is no longer skipped as the final planned game. Pixeljagd shows the round reveal on TV again. In Find It, place labels stay hidden on the guessing map; Street View looks up a nearby panorama and offers retry when loading fails. Quick Draw now supports two teams: shuffle or move players, rename teams, and see team scores on phone and TV.\n\nPlease test a three-player party with Hochstapler as game four, Pixeljagd on TV, both map modes, and Quick Draw in team mode. Include the build number, devices and exact steps when reporting an issue."
+  }
+}
