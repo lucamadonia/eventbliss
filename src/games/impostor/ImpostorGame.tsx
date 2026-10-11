@@ -219,20 +219,19 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
   // genau einmal beim Mount und verpassten jede spaetere Aenderung.
   const partyRoster = useInitialRoster() ?? [];
   const partyPlayerNames = partyRoster.map((p) => p.name);
-  const resolvedNames = onlinePlayerNames.length >= 4
+  const resolvedNames = onlinePlayerNames.length >= 3
     ? onlinePlayerNames
-    : partyPlayerNames.length >= 4
+    : partyPlayerNames.length >= 3
       ? partyPlayerNames
       : [];
   // --- Setup state ---
   const [players, setPlayers] = useState<Player[]>(() =>
-    resolvedNames.length >= 4
+    resolvedNames.length >= 3
       ? resolvedNames.map((name, i) => { const player = createPlayer(name); return { ...player, id: online?.players[i]?.id ?? partyRoster[i]?.id ?? player.id }; })
       : [
           createPlayer(`${t('games.impostor.playerLabel')} 1`),
           createPlayer(`${t('games.impostor.playerLabel')} 2`),
           createPlayer(`${t('games.impostor.playerLabel')} 3`),
-          createPlayer(`${t('games.impostor.playerLabel')} 4`),
         ]
   );
   const [impostorCount, setImpostorCount] = useState(1);
@@ -386,7 +385,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
 
   const removePlayer = useCallback((id: string) => {
     setPlayers((prev) => {
-      if (prev.length <= 4) return prev;
+      if (prev.length <= 3) return prev;
       return prev.filter((p) => p.id !== id);
     });
   }, []);
@@ -395,7 +394,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
     setPlayers((prev) => prev.map((p) => (p.id === id ? { ...p, name } : p)));
   }, []);
 
-  const isOnlineOrParty = resolvedNames.length >= 4;
+  const isOnlineOrParty = resolvedNames.length >= 3;
   const handleImportNames = useCallback((names: string[]) => {
     const playerLabel = t('games.impostor.playerLabel');
     setPlayers((prev) => {
@@ -405,7 +404,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
         if (merged.length >= 15) break;
         merged.push(createPlayer(n));
       }
-      while (merged.length < 4) merged.push(createPlayer(`${playerLabel} ${merged.length + 1}`));
+      while (merged.length < 3) merged.push(createPlayer(`${playerLabel} ${merged.length + 1}`));
       return merged;
     });
   }, [t]);
@@ -738,7 +737,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
     setBonusResult(null);
   };
 
-  const canStart = players.length >= 4 && players.every((p) => p.name.trim());
+  const canStart = players.length >= 3 && players.every((p) => p.name.trim());
 
   // --- Format timer ---
   const formatTime = (s: number) => {
@@ -809,7 +808,7 @@ function ImpostorGameContent({ online }: { online?: OnlineGameProps }) {
             onRemove={removePlayer}
             onRename={updateName}
             onImportNames={isOnlineOrParty ? undefined : handleImportNames}
-            min={4}
+            min={3}
             max={15}
             accent="#e6b76a"
             label={t('games.impostor.playerLabel')}
