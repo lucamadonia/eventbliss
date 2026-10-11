@@ -3,12 +3,12 @@ import OnlineWaiting from '../multiplayer/OnlineWaiting';
 /**
  * GEBRÄU — Push-your-luck-Sammelspiel um ein offen liegendes Rezept.
  *
- * Wer dran ist, nimmt sich pro Zug HÖCHSTENS eine Karte risikofrei von der
- * offenen "Theke" und darf beliebig oft vom verdeckten Stapel ziehen. Jede
+ * Mit aktivierter Theke nimmt sich die Person am Zug HÖCHSTENS eine offene
+ * Karte risikofrei; außerdem darf sie vom verdeckten Stapel ziehen. Jede
  * gezogene Zutat landet auf dem "Tablett" — kommt die BUST-Karte, ist das
  * Tablett futsch und es gibt eine Strafe. "Eingießen" sichert alle Zutaten,
  * die das eigene Rezept noch braucht, für immer im Glas und beendet den Zug;
- * der Rest landet offen auf der Theke für die nächste Person. Wer zuerst
+ * der Rest landet je nach Einstellung auf der Theke oder Ablage. Wer zuerst
  * sein Rezept voll hat, gewinnt die Runde.
  *
  * ZWEI GEWÄNDER, EINE MECHANIK (siehe brew-content.ts): Ohne Trinkmodus ist
@@ -59,7 +59,7 @@ import {
 } from "./brew-content";
 import { dealRecipes, buildDeck, insertBusts, drawCard, missingFor, isComplete, splitTray, ownPlayer, type DeckCard, type DealtRecipe } from "./deck";
 import { scoreFor } from "./scoring";
-import { bonusForPour, cappedBrewBonus, chainLevelFor, riskTierFor, type BrewRiskTier } from "./brew-gameplay";
+import { bonusForPour, cappedBrewBonus, chainLevelFor, riskTierFor, routeLeftovers, type BrewRiskTier } from "./brew-gameplay";
 import { useBrewAudio, type BrewCue } from "./brew-audio";
 import { removeBrewPlayers } from "./removal";
 import { useRemovedPlayers } from "../multiplayer/useRemovedPlayers";
@@ -124,6 +124,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const [players, setPlayers] = useState<PlayerState[]>([]);
   const [ingredientCount, setIngredientCount] = useState<RecipeLength>(5);
   const [withTray, setWithTray] = useState(true);
+  const [withCounter, setWithCounter] = useState(false);
   const [activeIdx, setActiveIdx] = useState(0);
   const [turnToken, setTurnToken] = useState('');
   const consumedActions = useRef(new Set<string>());
@@ -248,7 +249,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   });
 
   // --- Rundenstart -----------------------------------------------------
-  const handleStart = useCallback((cfg: { players: { id: string; name: string }[]; length: RecipeLength; withTray: boolean }) => {
+  const handleStart = useCallback((cfg: { players: { id: string; name: string }[]; length: RecipeLength; withTray: boolean; withCounter: boolean }) => {
     gameTasks.clear();
     pourTimersRef.current = [];
     const recipes = dealRecipes(cfg.players.length, cfg.length);
@@ -264,6 +265,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     setPlayers(ps);
     setIngredientCount(cfg.length);
     setWithTray(cfg.withTray);
+    setWithCounter(cfg.withCounter);
     // buildDeck mischt bereits — insertBusts verteilt die Bust-Karten gezielt
     // gleichmäßig hinein, ein erneutes Mischen würde das wieder zunichtemachen.
     setDrawPile(insertBusts(buildDeck(recipes)));
@@ -309,8 +311,8 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     // Online nur, wer noch im Raum ist — Gekickte bekommen kein neues Rezept.
     const stay = online ? players.filter((p) => online.players.some((o) => o.id === p.id)) : players;
     if (stay.length === 0) return;
-    handleStart({ players: stay.map((p) => ({ id: p.id, name: p.name })), length: ingredientCount, withTray });
-  }, [online, players, ingredientCount, withTray, handleStart]);
+    handleStart({ players: stay.map((p) => ({ id: p.id, name: p.name })), length: ingredientCount, withTray, withCounter });
+  }, [online, players, ingredientCount, withTray, withCounter, handleStart]);
 
   // --- Zug -------------------------------------------------------------
   // Ueber eine Ref: ein verzoegerter Zugwechsel (nach dem Guss) darf nicht mit
@@ -402,7 +404,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   }, [phase, penalty, winnerId, pourPlan, drawnCard, drawPile, discardPile, tray, active, reduceMotion, haptics, triggerPenalty, emitCue, t]);
 
   const doTakeFromCounter = useCallback((id: IngredientId, index: number) => {
-    if (phase !== "playing" || penalty || counterTaken || winnerId || pourPlan || drawnCard) return;
+    if (!withCounter || phase !== "playing" || penalty || counterTaken || winnerId || pourPlan || drawnCard) return;
     // Der Index kommt online aus dem LETZTEN Schnappschuss des Gastes. Hat
     // zwischenzeitlich jemand eingegossen, haengt `leftover` an der Theke und
     // der Index zeigt auf eine andere Karte. Deshalb gegen die Kennung pruefen
@@ -430,7 +432,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       }
     }
     setCounterTaken(true);
-  }, [phase, penalty, winnerId, pourPlan, drawnCard, counterTaken, counter, withTray, active, activeIdx, gameTasks, emitCue, haptics]);
+  }, [phase, penalty, winnerId, pourPlan, drawnCard, counterTaken, counter, withTray, withCounter, active, activeIdx, gameTasks, emitCue, haptics]);
 
   const doPourIn = useCallback(() => {
     if (phase !== "playing" || penalty || tray.length === 0 || !active || winnerId || pourPlan || drawnCard) return;
@@ -446,7 +448,9 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       i === activeIdx ? { ...p, glass: newGlass, score, brewBonus: nextBonus } : p
     );
     setPlayers(updated);
-    setCounter((prev) => [...prev, ...leftover]);
+    const routed = routeLeftovers(leftover, withCounter);
+    if (routed.counter.length) setCounter((prev) => [...prev, ...routed.counter]);
+    if (routed.discard.length) setDiscardPile((prev) => [...prev, ...routed.discard]);
     setTray([]);
     // Das Tablett bleibt fuer die Sortierphase sichtbar stehen — genau hier
     // liest man ab, WAS ins Glas geht und was auf die Theke.
@@ -484,7 +488,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         pourDuration(used.length, leftover.length, !!reduceMotion),
       ));
     }
-  }, [phase, penalty, winnerId, pourPlan, drawnCard, tray, active, players, activeIdx, withTray, advanceTurn, haptics, reduceMotion, emitCue]);
+  }, [phase, penalty, winnerId, pourPlan, drawnCard, tray, active, players, activeIdx, withTray, withCounter, advanceTurn, haptics, reduceMotion, emitCue]);
 
   const doEndTurn = useCallback(() => {
     if (withTray || phase !== "playing" || penalty || winnerId || drawnCard || pourPlan) return;
@@ -547,7 +551,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       case "start":
         if (phase === "setup" && pid === online?.myPlayerId) {
           const raw = Array.isArray(data.players) ? (data.players as { id: string; name: string }[]) : [];
-          if (raw.length >= 2) handleStart({ players: raw, length: data.length as RecipeLength, withTray: data.withTray !== false });
+          if (raw.length >= 2) handleStart({ players: raw, length: data.length as RecipeLength, withTray: data.withTray !== false, withCounter: data.withCounter === true });
         }
         break;
       case "draw": if (ownsTurn) doDraw(); break;
@@ -602,6 +606,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         skin,
         ingredientCount,
         withTray,
+        withCounter,
         activeIdx,
         turnToken,
         counter,
@@ -625,7 +630,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         })),
       })),
     });
-  }, [online, isHost, phase, phaseStartsAt, skin, ingredientCount, withTray, activeIdx, turnToken, counter, tray, counterTaken,
+  }, [online, isHost, phase, phaseStartsAt, skin, ingredientCount, withTray, withCounter, activeIdx, turnToken, counter, tray, counterTaken,
       drawPile, discardPile, penalty, penaltySeq, bustTrayCount, bustSeq, pourPlan, pourSeq,
       drawnCard, audioCue, audioCueSeq, reshuffleSeq, winnerId, players]);
 
@@ -640,6 +645,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       setRoundSkin((s.skin as Skin) ?? null);
       setIngredientCount(s.ingredientCount as RecipeLength);
       setWithTray(s.withTray !== false);
+      setWithCounter(s.withCounter !== false);
       setActiveIdx(s.activeIdx as number);
       setTurnToken(s.turnToken as string);
       setCounter((s.counter as IngredientId[]) ?? []);
@@ -800,6 +806,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
     handover: handover.tv,
     skin,
     withTray,
+    withCounter,
     activeIdx,
     activeName: active?.name ?? "",
     // ADDITIV: Der Fernseher erkannte den aktiven Spieler bisher am NAMEN.
@@ -828,7 +835,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       id: p.id, name: p.name, color: p.color, score: p.score, brewBonus: p.brewBonus,
       glass: p.glass, recipeId: p.recipe.id, recipeNeeds: p.recipe.needs,
     })), roster),
-  }), [phase, phaseStartsAt, tvHandoverKey, roster.length, skin, withTray, activeIdx, active, winnerId, counter, tray, cardsRemaining, bustSeq,
+  }), [phase, phaseStartsAt, tvHandoverKey, roster.length, skin, withTray, withCounter, activeIdx, active, winnerId, counter, tray, cardsRemaining, bustSeq,
     bustTrayCount, pourSeq, pourPlan, riskTier, trayHits, chainLevel, pourPreview.awarded,
     audioCue, audioCueSeq, drawnCard, players]);
 
@@ -844,7 +851,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
       <BrewSetup
         // Ein Gast darf NICHT lokal starten (er wuerfelte eigene Rezepte) —
         // act() schickt die Bitte an den Gastgeber und wartet auf dessen Runde.
-        onStart={(cfg) => act("start", { players: cfg.players, length: cfg.length, withTray: cfg.withTray }, () => handleStart(cfg))}
+        onStart={(cfg) => act("start", { players: cfg.players, length: cfg.length, withTray: cfg.withTray, withCounter: cfg.withCounter }, () => handleStart(cfg))}
         skin={skin}
         onlinePlayers={online?.players}
       />
@@ -898,11 +905,11 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
   const hint = !isMyTurn
     ? t("games.brew.hintWait", { name: active.name })
     : !withTray
-      ? (counter.length > 0 && !counterTaken && tray.length === 0
+      ? (withCounter && counter.length > 0 && !counterTaken && tray.length === 0
           ? t("games.brew.hintCounter")
           : t("games.brew.directDrawHint"))
       : tray.length === 0
-        ? (counter.length > 0 && !counterTaken
+        ? (withCounter && counter.length > 0 && !counterTaken
             ? t("games.brew.hintCounter")
             : t("games.brew.hintDraw"))
         : trayHits > 0
@@ -910,7 +917,7 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
           : t("games.brew.hintNoHit");
 
   return (
-    <div className="min-h-[100dvh] relative" data-testid="brew-playing" data-with-tray={String(withTray)}
+    <div className="min-h-[100dvh] relative" data-testid="brew-playing" data-with-tray={String(withTray)} data-with-counter={String(withCounter)}
       data-tray-count={tray.length} data-counter-count={counter.length} data-glass-count={active.glass.length}
       data-active-id={active.id} style={{ background: theme.bg, color: theme.text }}>
       <BrewAtmosphere skin={skin} variant="phone" />{blocker}
@@ -920,13 +927,15 @@ export default function BrewGame({ online }: { online?: OnlineGameProps } = {}) 
         <div className="relative z-10 px-4 pt-1 pb-2">
           <PartyTurnRibbon player={{ id: active.id, name: active.name, avatar: activeSeat?.avatar, color: activeSeat?.color ?? active.color }}
             kind={isMyTurn ? "me" : "other"}
-            line={isMyTurn ? undefined : t("games.brew.partyWatch", "Schau mit – was nicht ins Glas passt, landet auf der Theke.")} />
+            line={isMyTurn ? undefined : withCounter
+              ? t("games.brew.partyWatch", "Schau mit – was nicht ins Glas passt, landet auf der Theke.")
+              : t("games.brew.partyWatchNoCounter", "Schau mit – übrige Zutaten gehen auf den Ablagestapel.")} />
         </div>
       )}
       <BrewHeroStage me={me} skin={skin} theme={theme} accent={accent} reduceMotion={!!reduceMotion} chainLevel={chainLevel} trayHits={trayHits}
         pourAwarded={pourPreview.awarded} glassProgress={glassProgress} drawnCard={drawnCard} pourSeq={pourSeq} pourPlan={pourPlan} glassBoxRef={glassBoxRef} />
 
-      <BrewTrayCounter skin={skin} theme={theme} accent={accent} riskTier={riskTier} withTray={withTray} tray={tray} pourFreeze={pourFreeze} pourPlan={pourPlan}
+      <BrewTrayCounter skin={skin} theme={theme} accent={accent} riskTier={riskTier} withTray={withTray} withCounter={withCounter} tray={tray} pourFreeze={pourFreeze} pourPlan={pourPlan}
         trayMarks={trayMarks} onTrayGeometry={(r) => { trayGeoRef.current = r; }} bustTrayCount={bustTrayCount} bustTrigger={bustTrigger}
         counter={counter} counterMarks={counterMarks} counterTaken={counterTaken} counterBoxRef={counterBoxRef}
         onTake={(id, index) => act("take", { id, index }, () => doTakeFromCounter(id, index))} isMyTurn={isMyTurn} drawnCard={drawnCard} />

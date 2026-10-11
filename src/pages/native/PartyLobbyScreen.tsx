@@ -100,6 +100,11 @@ export default function PartyLobbyScreen() {
   }, []);
 
   const session = party.session;
+  // A local party already owns a TV code. Start its channel before anyone
+  // opens the TV URL, so the first ready heartbeat can receive the lobby.
+  useEffect(() => {
+    if (session) tv?.activate();
+  }, [session, tv]);
   const players = useMemo(() => session?.players ?? [], [session]);
   const editingPlayer = players.find(player => player.id === editingPlayerId);
   const history = useMemo(() => session?.gameHistory ?? [], [session]);
@@ -143,13 +148,13 @@ export default function PartyLobbyScreen() {
    * Party-Szenen. Vor Spiel eins existiert noch keine Game-Bridge; genau
    * deshalb kam der fruehere Karten-Impuls nie verlaesslich am TV an.
    */
-  useEffect(() => {
+  const broadcastLobby = useCallback((view = tvView) => {
     if (!tv?.isActive || !session) return;
     const nameFor = (id: string) => {
       const game = playableGames.find((entry) => entry.id === id);
       return t(game?.nameKey ?? id);
     };
-    const partyNight = buildPartyNightState(session, nameFor, tvView);
+    const partyNight = buildPartyNightState(session, nameFor, view);
     // Wartebereich fuer den Fernseher: Spieler am Host-Handy + naechstes Spiel.
     const next = currentPlaylistGame ? playableGames.find((g) => g.id === currentPlaylistGame) : undefined;
     const lobby = localLobbyState({
@@ -171,7 +176,8 @@ export default function PartyLobbyScreen() {
       partyNight,
       lobby,
     });
-  }, [tv, session, tvView, i18n.language, t, currentPlaylistGame]);
+  }, [tv, session, tvView, tvLinkCode, i18n.language, t, currentPlaylistGame]);
+  useEffect(() => { broadcastLobby(); }, [broadcastLobby]);
 
   const handleAddPlayer = useCallback(() => {
     const trimmed = newName.trim();
@@ -224,13 +230,13 @@ export default function PartyLobbyScreen() {
   }, [playlist, playlistIndex, party, launchGame]);
 
   const handleSelectGame = useCallback((gameId: string) => {
-    // Picking a game never starts it: like the set list, it opens the ready
-    // step with an explicit Start (and the TV shows the "ready" scene).
+    // Picking a game never starts it: the phone opens the ready step, while
+    // the TV keeps the roster, code and QR visible until the actual start.
     haptics.medium();
     setShowPicker(false);
     setSinglePick(true);
     setReadyGameId(gameId);
-    setTvView("ready");
+    setTvView("intro");
   }, [haptics, launchGame]);
 
   /** Set-Liste uebernehmen und vor Spiel eins bewusst im Ready Room halten. */
@@ -243,7 +249,7 @@ export default function PartyLobbyScreen() {
     const first = nextFittingIndex(gameIds, 0, party.session?.players.length ?? 0);
     if (first < 0) return;
     setReadyGameId(gameIds[first]);
-    setTvView("ready");
+    setTvView("intro");
   }, [party, haptics]);
 
   const handleReadyStart = useCallback(() => {
@@ -726,7 +732,10 @@ export default function PartyLobbyScreen() {
         players={players}
         gameIds={eveningGames}
         tvActive={!!tv?.isActive}
-        onConnectTv={() => tv?.openConnection()}
+        tvConnected={!!tv?.lastTvReadyAt && Date.now() - tv.lastTvReadyAt < 30_000}
+        tvCode={tvLinkCode}
+        onConnectTv={() => tv?.activate()}
+        onShowTvLobby={() => { tv?.activate(); setTvView('intro'); broadcastLobby('intro'); }}
         onStartJoysticks={() => navigate('/party/controllers?source=local', { state: { plannedGames: eveningGames } })}
         onAddPlayer={profile => { haptics.success(); party.addPlayer(profile.name, { avatar: profile.avatar, color: profile.color }); }}
         onUpdatePlayer={(id, profile) => party.updatePlayer(id, profile)}

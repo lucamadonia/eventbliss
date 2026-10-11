@@ -38,6 +38,10 @@ export default function TVLobbyJoinPanel({ joinUrl, code }: { joinUrl: string | 
         <p className="font-medium leading-snug text-white/70" style={{ fontSize: lu(2), maxWidth: '30ch' }}>
           {t('tvLobby.switchHostHint', 'Host: QR mit der EventBliss-App scannen und Handys für diesen Abend aktivieren. Danach können alle hier beitreten.')}
         </p>
+        <div className="flex flex-wrap items-baseline" style={{ gap: lu(1.2) }}>
+          <span className="font-bold text-white/60" style={{ fontSize: lu(1.8) }}>{t('nativeExtra.connectTV', 'Fernseher verbinden')}</span>
+          <span data-testid="tv-lobby-code" dir="ltr" className="font-mono font-black tabular-nums text-[#8ff5ff]" style={{ fontSize: lu(3.6), letterSpacing: '0.16em' }}>{code}</span>
+        </div>
         <h2 className="font-semibold leading-tight text-white/75" style={{ fontSize: lu(2.4) }}>
           {t('tvLobby.localTitle', 'Ein Handy für alle')}
         </h2>

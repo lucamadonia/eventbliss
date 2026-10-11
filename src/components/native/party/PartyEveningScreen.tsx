@@ -18,6 +18,7 @@ import { GameArt } from './NextGameCard';
 import { PartyBottomBar, PartyBottomBarSpacer } from './PartyBottomBar';
 import { SeatAvatar } from './PartySheet';
 import { estimateSetlistMinutes, localGameAvailability } from './setlist';
+import { getBaseUrl } from '@/lib/platform';
 
 interface Props {
   open: boolean;
@@ -25,7 +26,10 @@ interface Props {
   /** The planned games from the first one on. */
   gameIds: string[];
   tvActive: boolean;
+  tvConnected: boolean;
+  tvCode: string | null;
   onConnectTv: () => void;
+  onShowTvLobby: () => void;
   onStartJoysticks: () => void;
   onAddPlayer: (profile: PlayerProfile) => void;
   onUpdatePlayer: (id: string, profile: PlayerProfile) => void;
@@ -49,7 +53,7 @@ const focus = 'focus-visible:outline-none focus-visible:ring-2 focus-visible:rin
  * and only „Erstes Spiel starten“ runs the 3-2-1 into the first game.
  */
 export function PartyEveningScreen(props: Props) {
-  const { open, players, gameIds, tvActive, onConnectTv, onBack } = props;
+  const { open, players, gameIds, tvActive, tvConnected, tvCode, onConnectTv, onBack } = props;
   const { t } = useTranslation();
   const haptics = useHaptics();
   const reduced = !!useReducedMotion();
@@ -113,15 +117,30 @@ export function PartyEveningScreen(props: Props) {
                 </div>
               </motion.article>
 
-              {/* TV status (only when it needs something) */}
-              {!tvActive && (
-                <motion.button variants={partyMotion('cardEnter', reduced)} type="button" data-testid="evening-tv" onClick={onConnectTv}
-                  className={cn('flex min-h-14 w-full items-center gap-3 rounded-3xl border border-white/10 bg-white/[.04] px-4 text-start active:bg-white/10', focus)}>
-                  <Tv className="h-5 w-5 text-[#8ff5ff]" aria-hidden /><span className="flex-1 font-semibold">{t('partyControllers.tv')}</span>
-                </motion.button>
-              )}
-              {tvActive && <p data-testid="evening-tv" data-connected="true" className="flex items-center gap-2 text-sm text-[#8ff5ff]">
-                <span aria-hidden className="h-2 w-2 rounded-full bg-[#8ff5ff] shadow-[0_0_8px_#8ff5ff]" />{t('partyPlay.lobby.tvOn', 'Fernseher verbunden')}</p>}
+              {/* The planning overlay covers the lobby's TV card: keep its actual pairing code here. */}
+              <motion.section variants={partyMotion('cardEnter', reduced)} data-testid="evening-tv" data-connected={tvConnected}
+                className="rounded-3xl border border-[#8ff5ff]/25 bg-[#8ff5ff]/[.06] p-4">
+                <div className="flex items-center gap-3">
+                  <Tv className="h-5 w-5 shrink-0 text-[#8ff5ff]" aria-hidden />
+                  <p className="flex-1 font-semibold">{tvConnected
+                    ? t('partyPlay.lobby.tvOn', 'Fernseher verbunden')
+                    : t('nativeExtra.connectTV', 'Fernseher verbinden')}</p>
+                  {tvConnected && <span aria-hidden className="h-2 w-2 rounded-full bg-[#8ff5ff] shadow-[0_0_8px_#8ff5ff]" />}
+                </div>
+                {tvCode && <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-black/25 px-4 py-3">
+                  <p className="min-w-0 break-all text-sm text-white/65">{getBaseUrl()}/tv/{tvCode}</p>
+                  <code data-testid="evening-tv-code" dir="ltr" className="font-game text-xl font-black tracking-[.15em] text-[#8ff5ff]">{tvCode}</code>
+                </div>}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {!tvActive && <button type="button" onClick={onConnectTv} className={cn('min-h-11 rounded-xl border border-[#8ff5ff]/30 px-4 text-sm font-semibold text-[#8ff5ff]', focus)}>
+                    {t('nativeExtra.connectTV', 'Fernseher verbinden')}
+                  </button>}
+                  <button type="button" data-testid="evening-show-tv-lobby" onClick={props.onShowTvLobby}
+                    className={cn('min-h-11 rounded-xl border border-[#8ff5ff]/30 px-4 text-sm font-semibold text-[#8ff5ff]', focus)}>
+                    {t('tv.remote.intro', 'Startbild am TV anzeigen')}
+                  </button>
+                </div>
+              </motion.section>
               <button type="button" data-testid="evening-joystick-mode" onClick={props.onStartJoysticks}
                 className={cn('flex min-h-14 w-full items-center gap-3 rounded-3xl border border-[#df8eff]/30 bg-[#df8eff]/10 px-4 text-start font-semibold', focus)}>
                 <Gamepad2 className="h-5 w-5 text-[#df8eff]" aria-hidden />
