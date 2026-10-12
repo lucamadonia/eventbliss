@@ -98,6 +98,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   const [panoReady, setPanoReady] = useState(false);
   const [panoError, setPanoError] = useState(false);
   const [panoAttempt, setPanoAttempt] = useState(0);
+  const [guessMapReady, setGuessMapReady] = useState(false);
   const [readyIds, setReadyIds] = useState<string[]>([]);
   const panoStatus = useCallback((ready: boolean) => { setPanoReady(ready); setPanoError(!ready); }, []);
   useEffect(() => {
@@ -303,20 +304,20 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     setPinPos(null);
     const nextIdx = playerIdxRef.current + 1;
     if (nextIdx >= players.length) { setPhase('result'); }
-    else { setPlayerIdx(nextIdx); setPhase('explore'); setExploreTime(20); }
+    else { setPlayerIdx(nextIdx); setGuessMapReady(false); setPhase('explore'); setExploreTime(20); }
   }, [location, players.length, online, receiveGuess, roundNumber, timerSeconds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Guess countdown
   useEffect(() => {
     // Stands while the host phone travels and until input opens.
-    if (online?.isConnected === false || phase !== 'guess' || paused || (online && !inputOpen)) return;
+    if (online?.isConnected === false || phase !== 'guess' || !guessMapReady || paused || (online && !inputOpen)) return;
     // In online mode, skip timer if already guessed
     if (online && myGuessPlaced) return;
     timerRef.current = setInterval(() => {
       setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
     }, 1000);
     return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
-  }, [phase, playerIdx, confirmGuess, online, myGuessPlaced, paused, inputOpen, handover?.activeGuest]);
+  }, [phase, playerIdx, confirmGuess, online, myGuessPlaced, guessMapReady, paused, inputOpen, handover?.activeGuest]);
 
   // Preserve the deadline across disconnects, even after this host submitted.
   usePausableTimeout(() => {
@@ -331,7 +332,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     online?.broadcast('findit-sv-results', { results: filled, roundNumber, location });
 
     setPhase('result');
-  }, online?.isHost && phase === 'guess' ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
+  }, online?.isHost && phase === 'guess' && guessMapReady ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     if (online && (myGuessPlaced || paused || !inputOpen)) return; // can't change after confirming
@@ -385,10 +386,12 @@ export default function StreetViewRound({ location: promptLocation, players, rou
             <Map defaultCenter={{ lat: 20, lng: 10 }} defaultZoom={2}
               style={{ width: '100%', height: '100%' }} gestureHandling="greedy"
               renderingType={'RASTER' as google.maps.RenderingType} styles={GUESS_MAP_STYLE}
+              onTilesLoaded={() => setGuessMapReady(true)}
               disableDefaultUI fullscreenControl={false} mapTypeControl={false} streetViewControl={false}>
               <ClickHandler onClick={handleMapClick} />
               {pinPos && <Marker position={pinPos} label={{ text: currentPlayer.name.charAt(0), color: 'white', fontWeight: 'bold' }} />}
             </Map>
+            {!guessMapReady && <div className="absolute inset-0 z-[5] flex items-center justify-center bg-[#14281f] text-white">{t('common.loading')}</div>}
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-10">
               <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced} guest={!!online && currentPlayer.id !== online.myPlayerId} />

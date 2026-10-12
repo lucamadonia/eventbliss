@@ -60,6 +60,7 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
   const [guesses, setGuesses] = useState<PlayerGuess[]>([]);
   const [pinPos, setPinPos] = useState<{ lat: number; lng: number } | null>(null);
   const [countdown, setCountdown] = useState(timerSeconds);
+  const [guessMapReady, setGuessMapReady] = useState(false);
   const [allDoneGuesses, setAllDoneGuesses] = useState<PlayerGuess[]>([]);
   const [myGuessPlaced, setMyGuessPlaced] = useState(false);
   const [waitingForResults, setWaitingForResults] = useState(false);
@@ -210,13 +211,13 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
   // Countdown (skip if online and already guessed)
   useEffect(() => {
     // Stands while the host phone travels and until input opens.
-    if (online?.isConnected === false || phase !== 'guessing' || paused || (online && !inputOpen)) return;
+    if (online?.isConnected === false || phase !== 'guessing' || !guessMapReady || paused || (online && !inputOpen)) return;
     if (online && myGuessPlaced) return;
     timerRef.current = setInterval(() => {
       setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
     }, 1000);
     return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
-  }, [phase, guessingPlayerIdx, confirmGuess, online, myGuessPlaced, paused, inputOpen, handover?.activeGuest]);
+  }, [phase, guessingPlayerIdx, confirmGuess, online, myGuessPlaced, guessMapReady, paused, inputOpen, handover?.activeGuest]);
 
   // Preserve the deadline across disconnects, even after this host submitted.
   usePausableTimeout(() => {
@@ -231,13 +232,13 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
     online?.broadcast('findit-map-results', { results: filled, roundNumber, location });
     setAllDoneGuesses(filled);
     setPhase('result');
-  }, online?.isHost && phase === 'guessing' ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
+  }, online?.isHost && phase === 'guessing' && guessMapReady ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     if (online && (myGuessPlaced || paused || !inputOpen)) return;
     setPinPos({ lat, lng });
   }, [online, myGuessPlaced, roundNumber, paused, inputOpen]);
-  const handleHandoffReady = () => { setPhase('guessing'); setCountdown(timerSeconds); };
+  const handleHandoffReady = () => { setGuessMapReady(false); setPhase('guessing'); setCountdown(timerSeconds); };
   const handleNextRound = () => { onRoundComplete((allDoneGuesses.length ? allDoneGuesses : guesses).map(g => ({ playerId: g.playerId, distanceKm: g.distanceKm }))); };
   const sortedGuesses = [...allDoneGuesses].sort((a, b) => a.distanceKm - b.distanceKm);
   const winner = sortedGuesses[0];
@@ -272,12 +273,14 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
           <div className="absolute inset-0">
             <Map defaultCenter={{ lat: 20, lng: 10 }} defaultZoom={2} style={{ width: '100%', height: '100%' }} gestureHandling="greedy"
               renderingType={'RASTER' as google.maps.RenderingType} styles={GUESS_MAP_STYLE}
+              onTilesLoaded={() => setGuessMapReady(true)}
               disableDefaultUI fullscreenControl={false} mapTypeControl={false} streetViewControl={false}>
               <MapClickHandler onMapClick={handleMapClick} />
               {pinPos && (
                 <Marker position={pinPos} label={{ text: currentPlayer.name.charAt(0), color: 'white', fontWeight: 'bold' }} />
               )}
             </Map>
+            {!guessMapReady && <div className="absolute inset-0 z-[5] flex items-center justify-center bg-[#14281f] text-white">{t('common.loading')}</div>}
 
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-[10]">
