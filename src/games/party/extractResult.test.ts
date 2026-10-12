@@ -102,6 +102,22 @@ describe("extractGameResult — BOMBE zaehlt Strafen, nicht Punkte", () => {
 });
 
 describe("extractGameResult — Teams", () => {
+  it("schreibt Schnellzeichner-Teamwertungen allen Mitgliedern gut", () => {
+    const result = extractGameResult("schnellzeichner", {
+      phase: "gameOver",
+      teamMode: "groups",
+      players: [
+        { name: "Anna", score: 2 }, { name: "Ben", score: 1 },
+        { name: "Cem", score: 5 }, { name: "Dora", score: 1 },
+      ],
+      teams: [
+        { name: "Füchse", score: 3, players: ["Anna", "Ben"] },
+        { name: "Eulen", score: 6, players: ["Cem", "Dora"] },
+      ],
+    });
+    expect(result).toEqual({ scored: true, scores: { Anna: 3, Ben: 3, Cem: 6, Dora: 6 } });
+  });
+
   it("gibt jedem Mitglied die Teampunktzahl (TABU/PANTOMIME)", () => {
     const result = extractGameResult("taboo", {
       phase: "gameOver",

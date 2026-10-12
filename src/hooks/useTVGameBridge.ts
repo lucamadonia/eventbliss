@@ -34,6 +34,7 @@ import { recordControllerResult } from '@/games/party/controller-session';
 import { controllerScores } from '@/games/party/controller-result';
 import { gameRoomSession } from '@/games/multiplayer/useGameRoom';
 import { tvLeaderboardScores } from '@/games/tv/tv-leaderboard-scores';
+import { localLobbyState } from '@/games/tv/tv-lobby-state';
 
 /**
  * Endphasen aus Sicht der Party.
@@ -107,6 +108,15 @@ export function useTVGameBridge(
     () => (partyNight ? JSON.stringify(partyNight) : ""),
     [partyNight]
   );
+  // Keep the local party roster and TV code in every game packet. A TV that
+  // joins after the first game starts has never seen the initial lobby.
+  const localLobby = useMemo(
+    () => partySession && partySession.playMode !== 'controllers'
+      ? localLobbyState({ session: partySession, code: partySession.tvCode, nextGame: null })
+      : null,
+    [partySession],
+  );
+  const localLobbyJson = useMemo(() => localLobby ? JSON.stringify(localLobby) : '', [localLobby]);
 
   useEffect(() => {
     if (!broadcastEnabled || !tv?.isActive) return;
@@ -115,9 +125,9 @@ export function useTVGameBridge(
     const serialized = JSON.stringify(state);
     // Ohne Party ist `partyNightJson` immer "" — dann ist diese Bedingung
     // Zeichen fuer Zeichen die alte, und der Fernseher verhaelt sich identisch.
-    if (serialized === prevStateRef.current && partyNightJson === prevPartyRef.current) return;
+    if (serialized === prevStateRef.current && `${partyNightJson}|${localLobbyJson}` === prevPartyRef.current) return;
     prevStateRef.current = serialized;
-    prevPartyRef.current = partyNightJson;
+    prevPartyRef.current = `${partyNightJson}|${localLobbyJson}`;
 
     // Broadcast to TV
     tv.broadcastTV("tv-state", {
@@ -130,8 +140,9 @@ export function useTVGameBridge(
       // Fehlt die Party, fehlt auch der Schluessel — der Vertrag sieht ein
       // `tv-state` ohne `partyNight` ausdruecklich als unveraendert vor.
       ...(partyNight ? { partyNight } : {}),
+      ...(localLobby ? { lobby: localLobby } : {}),
     });
-  }, [tv, gameId, partyNightJson, broadcastEnabled, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tv, gameId, partyNightJson, localLobbyJson, broadcastEnabled, ...deps]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Broadcast game-start when the game first enters a playing phase.
   // Both refs reset when the game returns to setup/lobby ("Play again"

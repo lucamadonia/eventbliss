@@ -33,6 +33,7 @@ import { sceneGoAt } from '@/games/party/party-scene';
 import { serverClock } from '@/games/party/scene-clock';
 import { useTVServerClock } from './useTVServerClock';
 import { legacyLobbyState, parseTVLobbyState, type TVLobbyPlayer, type TVLobbyState } from './tv-lobby-state';
+import { showsGenericLeaderboard } from './tv-game-phase';
 
 // Lazy load game-specific TV views
 const TVBombView = lazy(() => import('./games/TVBombView'));
@@ -140,6 +141,12 @@ export default function TVScreen() {
   const [localView, setLocalView] = useState<PartyNightState['phase'] | null>(null);
 
   const scores = useMemo(() => {
+    if (gameState?.game === 'quickdraw' && gameState?.teamMode === 'groups' && Array.isArray(gameState?.teams)) {
+      return (gameState.teams as { name?: string; score?: number; color?: string }[])
+        .filter(team => team && typeof team.name === 'string')
+        .map(team => ({ name: team.name as string, score: typeof team.score === 'number' ? team.score : 0, color: team.color || '#77cbbb' }))
+        .sort((a, b) => b.score - a.score);
+    }
     if (leaderboard.length > 0) return leaderboard;
     // Offline TV mode has no presence roster — fall back to the players
     // carried inside the broadcast game state (they include live scores).
@@ -151,7 +158,7 @@ export default function TVScreen() {
         .sort((a, b) => b.score - a.score);
     }
     return players.map(p => ({ name: p.name, score: 0, color: p.color }));
-  }, [leaderboard, players, gameState?.players]);
+  }, [leaderboard, players, gameState?.game, gameState?.teamMode, gameState?.teams, gameState?.players]);
 
   // Party Night context, if the phone is running a playlist evening. Absent for
   // single games, in which case everything below behaves exactly as before.
@@ -171,7 +178,7 @@ export default function TVScreen() {
   const partyNight: PartyNightState | undefined = (wireFinaleEmpty ? undefined : wirePartyNight)
     ?? ((partyEnded || wireFinaleEmpty) && lastPartyNightRef.current ? { ...lastPartyNightRef.current, phase: 'finale' } : wirePartyNight);
   const partyActive = !!partyNight?.active && (partyNight.standings?.length ?? 0) > 0;
-  const showLeaderboard = gameState?.phase === 'leaderboard' || gameState?.phase === 'roundEnd';
+  const showLeaderboard = showsGenericLeaderboard(gameState?.game, gameState?.phase);
   const showGameOver = gameEnded || gameState?.phase === 'gameOver';
   // Explicit host intent wins over the derived per-game phases below.
   const wirePhase = partyNight?.phase ?? 'ingame';

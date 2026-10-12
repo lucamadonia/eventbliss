@@ -109,6 +109,14 @@ describe('useTVBroadcast', () => {
     expect(sentOn('tv-room:PARTY1')).toContain('tv-state');
   });
 
+  it('clears the connected indicator when the party switches to a new TV code', () => {
+    render().activate();
+    harness.handlers[0].fn();
+    expect(render().lastTvReadyAt).toBeGreaterThan(0);
+    render('PARTY1');
+    expect(render('PARTY1').lastTvReadyAt).toBe(0);
+  });
+
   it('replays the first lobby picture once the TV channel is subscribed', () => {
     const tv = render('PARTY1');
     tv.activate();
@@ -125,6 +133,18 @@ describe('useTVBroadcast', () => {
     harness.subscriptions.find((entry) => entry.topic === 'realtime:tv-room:PARTY1')?.fn('SUBSCRIBED');
     const replay = harness.channels.find((entry) => entry.topic === 'realtime:tv-room:PARTY1')?.sent.find((entry) => entry.event === 'tv-state-sync') as { payload?: { game?: string } } | undefined;
     expect(replay?.payload?.game).toBe('lobby');
+  });
+
+  it('does not replace the complete TV picture with a partial game-start cue', () => {
+    const tv = render('PARTY1');
+    tv.activate();
+    tv.broadcastTV('tv-state', { game: 'lobby', lobby: { code: 'PARTY1', players: [{ name: 'Anna' }] } });
+    tv.broadcastTV('game-start', { game: 'brew', phase: 'playing' });
+    harness.handlers.find((entry) => entry.topic === 'realtime:tv-room:PARTY1')?.fn();
+    const replay = harness.channels.find((entry) => entry.topic === 'realtime:tv-room:PARTY1')?.sent
+      .filter((entry) => entry.event === 'tv-state-sync').pop() as { payload?: { game?: string; lobby?: { players?: unknown[] } } } | undefined;
+    expect(replay?.payload?.game).toBe('lobby');
+    expect(replay?.payload?.lobby?.players).toHaveLength(1);
   });
 
   it('keeps showing the paired TV code while a different controller room is running', () => {

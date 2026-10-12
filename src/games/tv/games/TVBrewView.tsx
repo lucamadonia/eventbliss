@@ -52,6 +52,7 @@ function TVBrewView({ gameState }: Props) {
 
   const skin: Skin = s.skin === 'bar' ? 'bar' : 'brew';
   const withTray = s.withTray !== false;
+  const withCounter = s.withCounter !== false;
   const p = BREW_PALETTES[skin];
 
   // Die Feldnamen kommen aus `tvPayload` in BrewGame.tsx — wer hier umbenennt,
@@ -249,7 +250,7 @@ function TVBrewView({ gameState }: Props) {
       </div>
 
       {/* ZONE B — Theke, offen und gross. */}
-      <div className="relative z-10 px-[5vw] pt-[1.4vh] shrink-0">
+      {withCounter && <div className="relative z-10 px-[5vw] pt-[1.4vh] shrink-0">
         <p className="font-semibold first-letter:uppercase" style={{ fontSize: tvType.label, color: p.dim }}>
           {t('games.brew.counterLabel')}
         </p>
@@ -278,7 +279,7 @@ function TVBrewView({ gameState }: Props) {
             );
           })}
         </div>
-      </div>
+      </div>}
 
       {/* ZONE C — Tablett. Die Bust-Animation lebt AUSSCHLIESSLICH hier. */}
       <div className="relative z-10 px-[5vw] pt-[1.2vh] shrink-0">

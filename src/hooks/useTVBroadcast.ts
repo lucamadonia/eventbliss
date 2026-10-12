@@ -113,7 +113,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     lastReadyHandledAtRef.current = now;
     setLastTvReadyAt(now);
     const channels = [channelRef.current, gameChannelRef.current, onlineChannelRef.current];
-    if (lastStateRef.current) {
+    if (lastStateRef.current && lastStateCodeRef.current === tvCodeRef.current) {
       const syncPayload = { type: "broadcast" as const, event: "tv-state-sync", payload: lastStateRef.current };
       sendToDistinctChannels(channels, syncPayload);
     }
@@ -195,6 +195,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     if (!activatedRef.current) return;
     if ((channelRef.current as unknown as { topic?: string } | null)?.topic === `realtime:tv-room:${tvCode}`) return;
     detachCodeChannels();
+    setLastTvReadyAt(0);
     attachCodeChannels();
   }, [tvCode, attachCodeChannels, detachCodeChannels]);
 
@@ -262,14 +263,14 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
       [channelRef.current, gameChannelRef.current, onlineChannelRef.current],
       msg,
     );
-    if (event === "tv-state" || (event === "game-start" && typeof data.game === 'string')) {
+    if (event === "tv-state") {
       lastStateRef.current = wireData;
       lastStateCodeRef.current = tvCodeRef.current;
-      if (event === 'tv-state' && data.game === 'lobby') lastLeaderboardRef.current = null;
-      if (event === "game-start") drawingBufferRef.current = [];
+      if (data.game === 'lobby') lastLeaderboardRef.current = null;
     } else if (event === 'game-start') {
-      // A countdown-only event has no picture and must not replace the lobby
-      // snapshot replayed to a TV that joins during the countdown.
+      // Game-start is a cue, even when it carries a partial game picture.
+      // The last complete tv-state keeps the roster/QR for a late TV join.
+      if (typeof data.game === 'string') drawingBufferRef.current = [];
       lastLeaderboardRef.current = null;
     } else if (event === "tv-leaderboard") {
       lastLeaderboardRef.current = wireData;

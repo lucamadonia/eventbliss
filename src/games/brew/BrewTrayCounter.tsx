@@ -18,6 +18,7 @@ export interface BrewTrayCounterProps {
   accent: string;
   riskTier: BrewRiskTier;
   withTray: boolean;
+  withCounter: boolean;
   tray: IngredientId[];
   pourFreeze: IngredientId[] | null;
   pourPlan: PourPlan | null;
@@ -34,7 +35,7 @@ export interface BrewTrayCounterProps {
   drawnCard: unknown;
 }
 
-export function BrewTrayCounter({ skin, theme, accent, riskTier, withTray, tray, pourFreeze, pourPlan, trayMarks, onTrayGeometry, bustTrayCount, bustTrigger,
+export function BrewTrayCounter({ skin, theme, accent, riskTier, withTray, withCounter, tray, pourFreeze, pourPlan, trayMarks, onTrayGeometry, bustTrayCount, bustTrigger,
   counter, counterMarks, counterTaken, counterBoxRef, onTake, isMyTurn, drawnCard }: BrewTrayCounterProps) {
   const { t } = useTranslation();
   return (
@@ -74,7 +75,7 @@ export function BrewTrayCounter({ skin, theme, accent, riskTier, withTray, tray,
     </div>
 
     {/* Theke */}
-    <div className="relative z-10 px-4 mt-4">
+    {withCounter && <div className="relative z-10 px-4 mt-4">
       <p className="text-[13px] font-black mb-2 flex items-baseline gap-2" style={{ color: theme.dim }}>
         {skin === "brew" ? t("games.brew.counterLabelBrew") : t("games.brew.counterLabelBar")}
         <span className="font-bold normal-case tracking-normal" style={{ color: theme.dim }}>
@@ -95,7 +96,7 @@ export function BrewTrayCounter({ skin, theme, accent, riskTier, withTray, tray,
       {counterTaken && counter.length > 0 && (
         <p className="text-[13px] mt-1" style={{ color: theme.dim }}>{t("games.brew.counterUsed")}</p>
       )}
-    </div>
+    </div>}
 
     </>
   );

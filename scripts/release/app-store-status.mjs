@@ -1,10 +1,19 @@
 import { createPrivateKey, sign } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 
 const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.1.json', import.meta.url), 'utf8'));
-const { bundleId, previousVersion } = release;
-const targetVersion = release.version;
-const buildNumber = release.buildNumber;
+const testflightBuildNumber = process.env.TESTFLIGHT_BUILD_NUMBER;
+if (testflightBuildNumber && !/^\d+$/.test(testflightBuildNumber)) throw new Error('Invalid TestFlight build number.');
+const releaseDir = new URL('../../release/', import.meta.url);
+const noteFiles = testflightBuildNumber
+  ? readdirSync(releaseDir).filter((name) => new RegExp(`^testflight-\\d+\\.\\d+\\.\\d+-build${testflightBuildNumber}\\.json$`).test(name))
+  : [];
+if (testflightBuildNumber && noteFiles.length !== 1) throw new Error(`Expected exactly one TestFlight notes file for build ${testflightBuildNumber}.`);
+const testflightNotes = noteFiles.length ? JSON.parse(readFileSync(new URL(noteFiles[0], releaseDir), 'utf8')) : null;
+const bundleId = testflightNotes?.bundleId ?? release.bundleId;
+const targetVersion = testflightNotes?.version ?? release.version;
+const buildNumber = testflightBuildNumber ?? release.buildNumber;
+const previousVersion = targetVersion === release.version ? release.previousVersion : release.version;
 const issuer = process.env.APP_STORE_CONNECT_ISSUER_ID;
 const keyId = process.env.APP_STORE_CONNECT_KEY_ID;
 const secret = process.env.APP_STORE_CONNECT_PRIVATE_KEY;
@@ -57,9 +66,7 @@ const report = {
   })),
   versions: [],
 };
-const testflightBuildNumber = process.env.TESTFLIGHT_BUILD_NUMBER;
 if (testflightBuildNumber) {
-  if (!/^\d+$/.test(testflightBuildNumber)) throw new Error('Invalid TestFlight build number.');
   const testflightBuilds = await api(`builds?filter[app]=${app.id}&filter[version]=${testflightBuildNumber}&limit=20`);
   const testflightBuild = testflightBuilds.data?.find((entry) => entry.attributes?.version === testflightBuildNumber);
   if (!testflightBuild) throw new Error(`TestFlight build ${testflightBuildNumber} is not listed for ${bundleId}.`);

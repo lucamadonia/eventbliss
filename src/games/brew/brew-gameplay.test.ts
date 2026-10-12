@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bonusForPour, cappedBrewBonus, chainLevelFor, riskTierFor } from "./brew-gameplay";
+import { bonusForPour, cappedBrewBonus, chainLevelFor, riskTierFor, routeLeftovers } from "./brew-gameplay";
 
 describe("Gebräu-Spielvertiefung", () => {
   it("stuft ausschließlich den gefährdeten Tablett-Einsatz ein", () => {
@@ -21,5 +21,12 @@ describe("Gebräu-Spielvertiefung", () => {
 
   it("begrenzt die visuelle Braukette auf drei Stufen", () => {
     expect([0, 1, 2, 3, 7].map(chainLevelFor)).toEqual([0, 1, 2, 3, 3]);
+  });
+
+  it("legt uebrige Zutaten nur bei aktivierter Theke offen aus", () => {
+    expect(routeLeftovers(['base1', 'sour'], true)).toEqual({ counter: ['base1', 'sour'], discard: [] });
+    expect(routeLeftovers(['base1', 'sour'], false)).toEqual({ counter: [], discard: [
+      { kind: 'ingredient', id: 'base1' }, { kind: 'ingredient', id: 'sour' },
+    ] });
   });
 });
