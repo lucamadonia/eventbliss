@@ -1,7 +1,7 @@
 import { createPrivateKey, sign } from 'node:crypto';
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 
-const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.1.json', import.meta.url), 'utf8'));
+const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.2.json', import.meta.url), 'utf8'));
 const testflightBuildNumber = process.env.TESTFLIGHT_BUILD_NUMBER;
 if (testflightBuildNumber && !/^\d+$/.test(testflightBuildNumber)) throw new Error('Invalid TestFlight build number.');
 const releaseDir = new URL('../../release/', import.meta.url);
