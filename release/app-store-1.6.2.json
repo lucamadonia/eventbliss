@@ -1,0 +1,18 @@
+{
+  "version": "1.6.2",
+  "bundleId": "app.eventbliss",
+  "previousVersion": "1.6.1",
+  "buildNumber": "313",
+  "whatsNew": {
+    "ar-SA": "يبدأ Hochstapler الآن بثلاثة لاعبين ولا يُتخطى عندما يكون آخر لعبة في السهرة. تظهر نتيجة جولة Pixeljagd مجددًا على التلفاز. تخفي خرائط التخمين أسماء الأماكن، ويمكن إعادة محاولة تحميل Street View. يدعم Schnellzeichner الآن فريقين مع خلط اللاعبين ونقلهم وتسمية الفرق وعرض نقاطها.",
+    "de-DE": "Party Play: Hochstapler startet jetzt auch zu dritt und wird als letztes Spiel nicht übersprungen. Pixeljagd zeigt die Auflösung wieder auf dem TV. Bei Wo ist was? bleiben Ortsnamen auf Ratekarten verborgen; Street View bietet bei Ladefehlern einen neuen Versuch. Schnellzeichner unterstützt zwei Teams mit Mischen, Verschieben, Umbenennen und Teamwertung.",
+    "en-GB": "Party Play: Hochstapler now starts with three players and is no longer skipped as the final game. Pixeljagd shows its reveal on TV again. Find It hides place names on guessing maps and lets you retry Street View if loading fails. Quick Draw supports two teams with shuffle, player moves, custom names and team scores.",
+    "es-ES": "Party Play: Hochstapler ya comienza con tres jugadores y no se salta si es el último juego. Pixeljagd vuelve a mostrar la solución en el televisor. Los mapas para adivinar ocultan los nombres de lugares y Street View permite reintentar la carga. Schnellzeichner admite dos equipos, mezcla de jugadores, cambios de equipo, nombres propios y puntuaciones por equipo.",
+    "fr-FR": "Party Play : Hochstapler démarre désormais à trois joueurs et n'est plus ignoré en dernier jeu. Pixeljagd affiche à nouveau la réponse sur le téléviseur. Les cartes de devinette masquent les noms de lieux et Street View permet de réessayer le chargement. Schnellzeichner propose deux équipes, le mélange des joueurs, leur déplacement, des noms personnalisés et un score par équipe.",
+    "it": "Party Play: Hochstapler ora parte con tre giocatori e non viene più saltato come ultimo gioco. Pixeljagd mostra di nuovo la soluzione sulla TV. Le mappe per indovinare nascondono i nomi dei luoghi e Street View consente di riprovare il caricamento. Schnellzeichner supporta due squadre, mescolamento e spostamento dei giocatori, nomi personalizzati e punteggi di squadra.",
+    "nl-NL": "Party Play: Hochstapler start nu met drie spelers en wordt als laatste spel niet meer overgeslagen. Pixeljagd toont de oplossing weer op tv. Raad-kaarten verbergen plaatsnamen en Street View kan opnieuw worden geladen. Schnellzeichner ondersteunt twee teams met spelers husselen of verplaatsen, eigen teamnamen en teamscores.",
+    "pl-PL": "Party Play: Hochstapler uruchamia się teraz przy trzech graczach i nie jest pomijany jako ostatnia gra. Pixeljagd ponownie pokazuje rozwiązanie na telewizorze. Mapy do zgadywania ukrywają nazwy miejsc, a Street View można załadować ponownie. Schnellzeichner obsługuje dwie drużyny, losowanie i przenoszenie graczy, własne nazwy oraz wyniki drużyn.",
+    "pt-PT": "Party Play: Hochstapler começa agora com três jogadores e já não é ignorado como último jogo. Pixeljagd volta a mostrar a resposta na TV. Os mapas de adivinhação ocultam os nomes dos locais e Street View permite tentar carregar novamente. Schnellzeichner suporta duas equipas, mistura e transferência de jogadores, nomes personalizados e pontuações por equipa.",
+    "tr": "Party Play: Hochstapler artık üç oyuncuyla başlıyor ve son oyun olduğunda atlanmıyor. Pixeljagd çözümü yeniden TV'de gösteriyor. Tahmin haritaları yer adlarını gizliyor; Street View yüklenmezse yeniden denenebiliyor. Schnellzeichner iki takımı, oyuncuları karıştırmayı veya taşımayı, özel takım adlarını ve takım puanlarını destekliyor."
+  }
+}

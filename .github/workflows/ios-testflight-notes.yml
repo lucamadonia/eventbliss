@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       prepare_store:
-        description: 'Prepare App Store 1.6.1 with the build configured in release/app-store-1.6.1.json'
+        description: 'Prepare App Store 1.6.2 with build 313 from release/app-store-1.6.2.json'
         required: false
         type: boolean
         default: false
