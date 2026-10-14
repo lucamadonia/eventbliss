@@ -26,7 +26,7 @@ export function GuessSeatChip({ player, lit, host = false, status = 'guess' }: {
         style={{ backgroundColor: player.color, color: readableOn(player.color), boxShadow: lit ? playerGlow(player.color, 'active') : undefined }}>{avatar}</span>
       <span dir="auto" className="flex min-w-0 flex-col leading-tight">
         <span className="text-xs font-semibold text-white/60">
-          {host ? t('partyControllers.host', 'Host') : t('games.findit.playerTurn', '{{name}} ist dran', { name: player.name })}
+          {host ? t('tvLobby.host') : t('games.findit.playerTurn', '{{name}} ist dran', { name: player.name })}
         </span>
         <span className="max-w-[55vw] truncate text-sm font-bold">
           {status === 'waiting' ? t('games.findit.mapWaitingPlayers')
