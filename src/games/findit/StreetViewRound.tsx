@@ -139,6 +139,24 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     online.isHost ? guesses.map(guess => guess.playerId) : submittedIds) : null;
   const turnPlayer = online ? players.find(player => player.id === turnId) ?? null : currentPlayer;
   const canGuess = !online || (!!turnId && localSeats(online).includes(turnId) && !myGuessPlaced);
+  const previousTurnIdRef = useRef<string | null>(turnId);
+  const restartingTurnIdRef = useRef<string | null>(null);
+  // A removed active player gives the next phone a fresh panorama and a full turn.
+  useEffect(() => {
+    const previousTurnId = previousTurnIdRef.current;
+    previousTurnIdRef.current = turnId;
+    if (!online?.isHost || phase === 'result' || !previousTurnId || players.some(player => player.id === previousTurnId)) return;
+    restartingTurnIdRef.current = turnId;
+    setPanoReady(false);
+    setPanoError(false);
+    setReadyIds([]);
+    setReadySeatId(null);
+    setGuessMapReady(false);
+    setPinPos(null);
+    setExploreTime(20);
+    setCountdown(timerSeconds);
+    setPhase('explore');
+  }, [online?.isHost, phase, players, timerSeconds, turnId]);
   useEffect(() => {
     if (!online || online.isHost || phase !== 'explore' || !canGuess || !panoReady) return;
     const announce = () => online.broadcast('findit-sv-ready', { roundNumber, turnId });
@@ -191,13 +209,12 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   }, [online, phase, players, hostId, location, roundNumber, timerSeconds]);
   // Host: a kicked/left player no longer holds the round open (G7).
   useEffect(() => {
-    if (!online?.isHost || phase !== 'guess') return;
+    if (!online?.isHost || phase === 'result') return;
     const settled = settleGuessesAfterRemoval(guessesRef.current, players);
     if (!settled) return;
     guessesRef.current = settled.guesses;
     setGuesses(settled.guesses);
-    setCountdown(timerSeconds);
-    if (!settled.complete) { setPhase('explore'); setExploreTime(20); return; }
+    if (!settled.complete) return;
     online.broadcast('findit-sv-results', { results: settled.guesses, roundNumber, location });
     setWaitingForResults(false);
     setPhase('result');
@@ -373,7 +390,9 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   }, [phase, playerIdx, online, turnId, guessMapReady, readySeatId, paused, inputOpen, handover?.activeGuest]);
 
   useEffect(() => {
+    if (countdown > 0) restartingTurnIdRef.current = null;
     if (phase !== 'guess' || countdown !== 0) return;
+    if (online?.isHost && restartingTurnIdRef.current === turnId) return;
     if (online?.isHost && turnId) receiveGuess(turnId, 0, 0, false);
     else if (!online) confirmGuess();
   }, [phase, countdown, online, turnId, receiveGuess, confirmGuess]);

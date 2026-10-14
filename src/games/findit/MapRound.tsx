@@ -87,7 +87,20 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
     online.isHost ? guesses.map(guess => guess.playerId) : submittedIds) : null;
   const turnPlayer = online ? players.find(player => player.id === turnId) ?? null : currentPlayer;
   const canGuess = !online || (!!turnId && localSeats(online).includes(turnId) && !myGuessPlaced);
+  const previousTurnIdRef = useRef<string | null>(turnId);
+  const restartingTurnIdRef = useRef<string | null>(null);
   const currentPlayerRef = useRef(currentPlayer);
+
+  // A removed active player must not pass their remaining clock to the next phone.
+  useEffect(() => {
+    const previousTurnId = previousTurnIdRef.current;
+    previousTurnIdRef.current = turnId;
+    if (!online?.isHost || phase !== 'guessing' || !previousTurnId || players.some(player => player.id === previousTurnId)) return;
+    restartingTurnIdRef.current = turnId;
+    setCountdown(timerSeconds);
+    setReadySeatId(null);
+    setPinPos(null);
+  }, [online?.isHost, phase, players, timerSeconds, turnId]);
 
   useEffect(() => { guessesRef.current = guesses; }, [guesses]);
   useEffect(() => { guessingIdxRef.current = guessingPlayerIdx; }, [guessingPlayerIdx]);
@@ -120,7 +133,6 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
     if (!settled) return;
     guessesRef.current = settled.guesses;
     setGuesses(settled.guesses);
-    setCountdown(timerSeconds);
     if (!settled.complete) return;
     online.broadcast('findit-map-results', { results: settled.guesses, roundNumber, location });
     setAllDoneGuesses(settled.guesses);
@@ -247,7 +259,9 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
   }, [phase, guessingPlayerIdx, online, turnId, guessMapReady, readySeatId, paused, inputOpen, handover?.activeGuest]);
 
   useEffect(() => {
+    if (countdown > 0) restartingTurnIdRef.current = null;
     if (phase !== 'guessing' || countdown !== 0) return;
+    if (online?.isHost && restartingTurnIdRef.current === turnId) return;
     if (online?.isHost && turnId) receiveGuess(turnId, 0, 0, false);
     else if (!online) confirmGuess();
   }, [phase, countdown, online, turnId, receiveGuess, confirmGuess]);
