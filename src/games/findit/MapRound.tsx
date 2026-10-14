@@ -284,7 +284,9 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
 
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-[10]">
-              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced} guest={!!online && currentPlayer.id !== online.myPlayerId} />
+              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced}
+                host={!!online?.isHost && currentPlayer.id === online.myPlayerId}
+                status={myGuessPlaced ? 'waiting' : 'guess'} />
             </div>
             <div className="absolute top-4 right-4 z-[10]">
               <div className="glass-panel px-3 py-2 rounded-full border border-white/5">

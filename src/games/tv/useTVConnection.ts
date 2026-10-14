@@ -178,6 +178,9 @@ export function useTVConnection(roomCode: string) {
         setDrawing([]);
       } else {
         markGameStarted();
+        // A TV may miss the separate game-start event between two matches.
+        // The first active picture must replace the previous game's end screen.
+        if (!['gameOver', 'result', 'results', 'finished', 'ended'].includes(state.phase)) setGameEnded(false);
       }
     };
 
@@ -218,6 +221,11 @@ export function useTVConnection(roomCode: string) {
       acceptSceneState(payload);
       setGameEnded(false);
     };
+    const handleGameEnd = (payload: unknown) => {
+      const game = (payload as TVState | null)?.game;
+      // Delayed end packets from the previous game must not cover the next one.
+      if (latestGame !== 'lobby' && (!game || game === latestGame)) setGameEnded(true);
+    };
 
     // The Host sends this before starting the database match. Keep it separate
     // from tv-state: the room's generic game-start packet has no scene.
@@ -244,7 +252,7 @@ export function useTVConnection(roomCode: string) {
       if (Array.isArray(segments)) setDrawing(segments);
     });
     channel.on('broadcast', { event: 'game-start' }, ({ payload }) => handleGameStart(payload));
-    channel.on('broadcast', { event: 'game-end' }, () => { if (latestGame !== 'lobby') setGameEnded(true); });
+    channel.on('broadcast', { event: 'game-end' }, ({ payload }) => handleGameEnd(payload));
     channel.on('broadcast', { event: 'bomb-state' }, ({ payload }) => {
       const s = (payload as { state?: TVState }).state;
       if (s) setGameState({ game: 'bomb', phase: s.phase, ...s });
@@ -256,7 +264,7 @@ export function useTVConnection(roomCode: string) {
     tvChannel.on('broadcast', { event: 'tv-state' }, ({ payload }) => handleTVState(payload));
     tvChannel.on('broadcast', { event: 'tv-leaderboard' }, ({ payload }) => handleLeaderboard(payload));
     tvChannel.on('broadcast', { event: 'game-start' }, ({ payload }) => handleGameStart(payload));
-    tvChannel.on('broadcast', { event: 'game-end' }, () => { if (latestGame !== 'lobby') setGameEnded(true); });
+    tvChannel.on('broadcast', { event: 'game-end' }, ({ payload }) => handleGameEnd(payload));
     // Listen for state-sync on tv-room channel too
     tvChannel.on('broadcast', { event: 'tv-state-sync' }, ({ payload }) => handleStateSync(payload));
 

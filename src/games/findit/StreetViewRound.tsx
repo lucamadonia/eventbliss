@@ -353,7 +353,8 @@ export default function StreetViewRound({ location: promptLocation, players, rou
             {!panoReady && <div className="absolute inset-0 z-20 bg-black/70 flex flex-col items-center justify-center gap-4 p-6 text-white text-center"><p>{t(panoError ? 'games.findit.panoramaError' : 'games.findit.panoramaLoading')}</p>{panoError && <><button onClick={retryPanorama} className="min-h-12 px-6 rounded-xl bg-[#df8eff] text-[#4f006d] font-bold">{t('partyControllers.retry', 'Erneut versuchen')}</button><button onClick={onExit} className="min-h-12 px-6 rounded-xl bg-white/15">{t('games.results.otherGame')}</button></>}</div>}
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-10">
-              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced} guest={!!online && currentPlayer.id !== online.myPlayerId} />
+              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced}
+                host={!!online?.isHost && currentPlayer.id === online.myPlayerId} status="explore" />
             </div>
             <div className="absolute top-4 right-4 z-10">
               <div className="glass-panel px-3 py-2 rounded-full border border-white/5">
@@ -367,7 +368,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
                 <span className="text-lg font-black text-white tabular-nums">{exploreTime}s</span>
               </div>
             </div>
-            <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center">
+            {(!online || online.isHost) && <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center">
               <motion.button onClick={() => { setPhase('guess'); setCountdown(timerSeconds); }}
                 className="px-10 py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)]"
                 whileTap={{ scale: 0.95 }}>
@@ -376,7 +377,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
                   <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{t('games.findit.svGuessBtn')}</span>
                 </span>
               </motion.button>
-            </div>
+            </div>}
           </div>
         )}
 
@@ -394,7 +395,9 @@ export default function StreetViewRound({ location: promptLocation, players, rou
             {!guessMapReady && <div className="absolute inset-0 z-[5] flex items-center justify-center bg-[#14281f] text-white">{t('common.loading')}</div>}
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-10">
-              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced} guest={!!online && currentPlayer.id !== online.myPlayerId} />
+              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced}
+                host={!!online?.isHost && currentPlayer.id === online.myPlayerId}
+                status={myGuessPlaced ? 'waiting' : 'guess'} />
             </div>
             <div className="absolute top-16 left-0 right-0 z-10 px-4 mt-2">
               <div className="max-w-2xl mx-auto bg-[#151a21]/80 backdrop-blur-2xl p-1 rounded-full shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] border border-white/5">

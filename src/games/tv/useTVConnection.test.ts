@@ -105,4 +105,22 @@ describe('TV room transitions', () => {
     expect(render().gameStarted).toBe(true);
     expect(render().gameState?.game).toBe('ohrwurm');
   });
+
+  it('shows Ohrwurm after the previous game ends even when game-start is missed', () => {
+    render();
+    send('tv-state', { game: 'bomb', phase: 'playing' });
+    send('game-end', { game: 'bomb', phase: 'gameOver' });
+    expect(render().gameEnded).toBe(true);
+
+    send('tv-state', { game: 'ohrwurm', phase: 'draw' });
+    expect(render()).toMatchObject({ gameStarted: true, gameEnded: false });
+    expect(render().gameState?.game).toBe('ohrwurm');
+
+    send('game-end', { game: 'bomb', phase: 'gameOver' });
+    expect(render().gameEnded).toBe(false);
+
+    send('game-end', { game: 'ohrwurm', phase: 'gameOver' });
+    send('tv-state', { game: 'ohrwurm', phase: 'gameOver' });
+    expect(render().gameEnded).toBe(true);
+  });
 });
