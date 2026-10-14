@@ -105,6 +105,26 @@ export function stepsFor(startPx: number, durationSec: number): number[] {
   return out;
 }
 
+/** A new puzzle must never inherit the previous round's sharp reveal frame. */
+export function visibleStepForRound({
+  phase, view, imageReady, timeLeft, duration, steps,
+}: {
+  phase: string;
+  view: string;
+  imageReady: boolean;
+  timeLeft: number;
+  duration: number;
+  steps: number[];
+}): number {
+  const first = Math.min(FINAL_STEP - 1, steps[0] ?? 8);
+  if (phase === 'roundEnd' && view === 'roundEnd') return FINAL_STEP;
+  if ((phase !== 'playing' && phase !== 'roundEnd') || !imageReady) return first;
+  if (phase === 'playing' && (view !== 'playing' || timeLeft <= 0)) return first;
+  const elapsed = Math.max(0, duration - timeLeft);
+  const lastPlayingIndex = Math.max(0, steps.length - 2);
+  return Math.min(FINAL_STEP - 1, steps[Math.min(elapsed, lastPlayingIndex)] ?? first);
+}
+
 /** Wie viele Punkte gibt es beim aktuellen Fortschritt? 100 → 10, wie EmojiGuess. */
 export function pointsAt(elapsedSec: number, durationSec: number): number {
   if (durationSec <= 0) return 10;

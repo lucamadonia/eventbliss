@@ -18,6 +18,8 @@ try {
   report.guestRoute = await guest.route();
   report.hostRoute = await m.host.route();
   report.tvGame = (await m.tv.tvMessages()).filter(message => message?.game === 'ohrwurm').at(-1)?.game ?? null;
+  await m.tv.page.waitForSelector('[data-testid="tv-ohrwurm-view"]', { timeout: 20000 });
+  report.tvViewVisible = await m.tv.exists('tv-ohrwurm-view');
   await h.shotAll('01-running');
 
   await guest.reload();
@@ -29,6 +31,7 @@ try {
   report.hostErrors = m.host.errors;
   await h.shotAll('02-rejoined');
   assert(report.rejoinedGuestRoute.startsWith('/games/ohrwurm'), 'guest returned to the waiting lobby');
+  assert(report.tvViewVisible, 'Ohrwurm state reached the TV but its game screen did not render');
   assert(report.guestErrors.length === 0 && report.hostErrors.length === 0, 'browser errors occurred');
   report.passed = true;
   console.log(JSON.stringify(report));
