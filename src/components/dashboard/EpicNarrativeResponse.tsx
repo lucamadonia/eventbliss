@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { useContextualServices, type ContextualService } from "@/hooks/useContextualServices";
 import { useServiceAdTracker } from "@/hooks/useServiceAdTracker";
 import BudgetVisualizer from "./BudgetVisualizer";
-import ConfettiBurst from "./motion/ConfettiBurst";
+import { parseActivitiesExtended, parseDayPlan, parseTripIdeas, type ParsedActivity, type ParsedTimeBlock } from "@/lib/ai-response-parser";
 
 // ---------------------------------------------------------------------------
 // Section parsing
@@ -30,6 +30,7 @@ interface NarrativeSection {
   body: string;
   kind: SectionKind;
   dayNumber?: number;
+  activity?: ParsedActivity;
 }
 
 const DAY_PATTERN = /\b(?:day|tag|dia|día|giorno|dag|dzień|gün|يوم)\s*(\d+)\b/i;
@@ -47,8 +48,8 @@ function classifySection(title: string, emoji: string): { kind: SectionKind; day
   const lower = title.toLowerCase();
   const dayMatch = lower.match(DAY_PATTERN);
   if (dayMatch) return { kind: "day", dayNumber: parseInt(dayMatch[1], 10) };
-  if (BUDGET_PATTERN.test(lower) || emoji === "💰") return { kind: "budget" };
   if (TIPS_PATTERN.test(lower) || emoji === "💡" || emoji === "🔥") return { kind: "tips" };
+  if (BUDGET_PATTERN.test(lower) || emoji === "💰") return { kind: "budget" };
   if (THEME_PATTERN.test(lower) || emoji === "🎉" || emoji === "✨") return { kind: "theme" };
   return { kind: "other" };
 }
@@ -130,7 +131,7 @@ function parseNarrative(text: string): {
 
   return {
     intro: introLines.join("\n").trim(),
-    sections,
+    sections: sections.filter((section) => section.body && section.body.replace(/[*#\s]/g, "").length > 0),
   };
 }
 
@@ -164,8 +165,10 @@ function cleanBodyMarkdown(text: string): string {
     .replace(/([.!?])\s+\*\*([^*]+?)\*\*/g, "$1\n\n**$2**")
     // Ensure "**HH:MM Uhr – Title**" blocks sit on their own line
     .replace(/([^\n])\s+\*\*(\d{1,2}[:.]?\d{0,2}\s*Uhr)/g, "$1\n\n**$2")
-    // Strip trailing orphan ** markers
-    .replace(/\*\*\s*$/gm, "")
+    // If the model emits unmatched emphasis, show clean text instead of raw markers.
+    .split("\n")
+    .map((line) => ((line.match(/\*\*/g) || []).length % 2 ? line.replace(/\*\*/g, "") : line))
+    .join("\n")
     // Remove any remaining "lonely" ** with nothing between
     .replace(/\*\*\s*\*\*/g, "")
     // Collapse blank lines
@@ -211,20 +214,16 @@ interface SectionCardProps {
   participantCount?: number;
   city?: string;
   onBookService: (slug: string) => void;
+  timeBlocks?: ParsedTimeBlock[];
+  dayName?: string;
+  onAddTimeBlock?: (block: ParsedTimeBlock, dayName: string) => void;
+  onAddToPlanner?: (activity: ParsedActivity) => void;
 }
 
-function SectionCard({ section, index, services, participantCount, city, onBookService }: SectionCardProps) {
+function SectionCard({ section, index, services, participantCount, city, onBookService, timeBlocks, dayName, onAddTimeBlock, onAddToPlanner }: SectionCardProps) {
   const { t } = useTranslation();
   const style = SECTION_STYLES[section.kind];
-  const [mouse, setMouse] = useState({ x: 50, y: 50, active: false });
   const cleaned = useMemo(() => cleanBodyMarkdown(section.body), [section.body]);
-
-  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMouse({ x, y, active: true });
-  };
 
   return (
     <motion.div
@@ -235,62 +234,47 @@ function SectionCard({ section, index, services, participantCount, city, onBookS
     >
       {section.kind === "day" && (
         <div className="absolute -left-3 sm:-left-4 top-6 z-10 hidden sm:flex items-center justify-center">
-          <div className={cn("w-8 h-8 rounded-full bg-gradient-to-br flex items-center justify-center text-white font-black text-xs shadow-lg ai-pulse-ring", style.iconBg, style.glow)}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[#baa8ef]/30 bg-[#251e3b] text-xs font-semibold text-[#d7c7ff]">
             {section.dayNumber ?? "•"}
           </div>
         </div>
       )}
 
-      <GlassCard
-        className={cn(
-          "relative overflow-hidden p-0 border-border hover:border-foreground/20 transition-all shadow-xl",
-          style.glow,
-        )}
-        onMouseMove={handleMove as any}
-        onMouseLeave={() => setMouse((m) => ({ ...m, active: false }))}
-      >
-        <div className={cn("absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r", style.accent)} />
-
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none transition-opacity duration-300"
-          style={{
-            opacity: mouse.active ? 1 : 0,
-            background: `radial-gradient(400px circle at ${mouse.x}% ${mouse.y}%, rgba(${style.spotlightRgb}, 0.12), transparent 60%)`,
-          }}
-        />
-
-        <div className={cn(
-          "absolute -top-12 -right-12 w-56 h-56 rounded-full opacity-20 blur-3xl pointer-events-none bg-gradient-to-br",
-          style.accent,
-        )} />
-
+      <GlassCard className="relative overflow-hidden rounded-[24px] border border-border/70 bg-card/80 p-0 shadow-none">
         <div className="relative p-5 md:p-6">
           <div className="flex items-start gap-4 mb-4">
-            <div className={cn(
-              "flex-shrink-0 w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br flex items-center justify-center text-3xl md:text-4xl shadow-lg",
-              style.iconBg,
-              style.glow,
-            )}>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted/50 text-2xl">
               {section.emoji}
             </div>
             <div className="flex-1 min-w-0 pt-0.5">
               {style.label && (
-                <Badge className={cn(
-                  "mb-1.5 text-[10px] font-bold uppercase tracking-widest border-0 text-white bg-gradient-to-r",
-                  style.accent,
-                )}>
-                  {style.label}{section.kind === "day" && section.dayNumber ? ` ${section.dayNumber}` : ""}
+                <Badge variant="outline" className="mb-1.5 border-border bg-muted/40 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  {section.kind === "day" ? t("dashboard.ai.dayLabel", "Tag") : section.kind === "tips" ? t("dashboard.ai.tipsLabel", "Tipps") : style.label}{section.kind === "day" && section.dayNumber ? ` ${section.dayNumber}` : ""}
                 </Badge>
               )}
-              <h3 className="text-xl md:text-2xl font-black leading-tight text-foreground">
+              <h3 className="text-lg font-semibold leading-tight text-foreground md:text-xl">
                 {section.title}
               </h3>
             </div>
           </div>
 
           {/* Body — budget gets visualizer, everything else markdown */}
-          {section.kind === "budget" ? (
+          {timeBlocks && timeBlocks.length > 0 ? (
+            <div className="space-y-2 border-l border-primary/25 pl-4">
+              {timeBlocks.map((block, blockIndex) => (
+                <div key={`${block.time}-${blockIndex}`} className="rounded-xl border border-border bg-background/60 p-3">
+                  <div className="flex items-start gap-3">
+                    <span className="min-w-12 pt-0.5 text-xs font-semibold tabular-nums text-primary">{block.time}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-foreground">{block.title}</p>
+                      {block.description && <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{block.description}</p>}
+                    </div>
+                    {onAddTimeBlock && <button type="button" onClick={() => onAddTimeBlock(block, dayName || section.title)} className="shrink-0 rounded-full border border-primary/25 bg-primary/10 p-2 text-primary" aria-label={t("dashboard.ai.addToPlanner", "Zum Zeitplan hinzufügen")}><Calendar className="h-4 w-4" /></button>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : section.kind === "budget" ? (
             <>
               <BudgetVisualizer body={section.body} participantCount={participantCount} />
               {/* Still show any free-form tail below the visualizer */}
@@ -302,6 +286,16 @@ function SectionCard({ section, index, services, participantCount, city, onBookS
               </ReactMarkdown>
             </div>
           ) : null}
+
+          {onAddToPlanner && section.kind === "other" && cleaned && (
+            <button
+              type="button"
+              onClick={() => onAddToPlanner(section.activity ?? { emoji: section.emoji, title: section.title, category: "activity", duration: "", cost: "", fitness: "normal", description: cleaned, rawSection: `${section.title}\n${section.body}` })}
+              className="mt-3 inline-flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary"
+            >
+              <Calendar className="h-4 w-4" />{t("dashboard.ai.addToPlanner", "Zum Zeitplan hinzufügen")}
+            </button>
+          )}
 
           {/* Inline services */}
           {services.length > 0 && section.kind !== "budget" && (
@@ -316,7 +310,7 @@ function SectionCard({ section, index, services, participantCount, city, onBookS
                     : t("dashboard.ai.bookableHere", "Direkt buchbar")}
                 </span>
               </div>
-              <div className="grid sm:grid-cols-2 gap-2.5">
+              <div className="grid gap-2.5 sm:grid-cols-2">
                 {services.map((svc, i) => {
                   const Icon = svc.icon;
                   return (
@@ -326,35 +320,23 @@ function SectionCard({ section, index, services, participantCount, city, onBookS
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.2 + i * 0.08 }}
                       onClick={() => onBookService(svc.slug)}
-                      className="group/svc relative text-left rounded-xl border border-border bg-card hover:bg-muted hover:border-foreground/25 transition-all overflow-hidden"
+                      className="group/svc relative min-w-0 overflow-hidden rounded-2xl border border-border bg-card text-left transition-colors hover:border-foreground/25 hover:bg-muted"
                     >
                       <div className={cn(
                         "absolute inset-0 opacity-0 group-hover/svc:opacity-[0.08] transition-opacity bg-gradient-to-br",
                         svc.gradient,
                       )} />
-                      <div className="relative p-3 flex items-center gap-3">
-                        <div className={cn(
-                          "flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center shadow-md",
-                          svc.gradient,
-                        )}>
-                          <Icon className="w-5 h-5 text-white" />
+                      <div className="relative flex min-w-0 items-center gap-3 p-3">
+                        <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted">
+                          {svc.coverUrl ? <img src={svc.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" /> : <Icon className="h-6 w-6 text-primary" />}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-bold text-sm text-foreground truncate">{svc.title}</div>
+                          <div className="truncate text-sm font-semibold text-foreground">{svc.title}</div>
                           <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
                             <span className="truncate">{svc.agency}</span>
-                            <span className="w-0.5 h-0.5 rounded-full bg-muted-foreground/40" />
-                            <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400 flex-shrink-0" />
-                            <span>{svc.rating.toFixed(1)}</span>
+                            {svc.reviewCount > 0 && svc.rating > 0 && <><span className="w-0.5 h-0.5 rounded-full bg-muted-foreground/40" /><Star className="h-2.5 w-2.5 flex-shrink-0 fill-amber-400 text-amber-400" /><span>{svc.rating.toFixed(1)}</span></>}
                           </div>
-                        </div>
-                        <div className="text-right">
-                          <div className="font-black text-sm text-foreground">{svc.pricePerPerson}€</div>
-                          <div className="text-[10px] text-muted-foreground -mt-0.5">
-                            {svc.priceType === "per_person"
-                              ? t("dashboard.ai.perPerson", "pro Person")
-                              : ""}
-                          </div>
+                          <div className="mt-1 text-xs font-semibold text-primary">{svc.pricePerPerson > 0 ? `${svc.pricePerPerson} €${svc.priceType === "per_person" ? ` ${t("dashboard.ai.perPerson", "pro Person")}` : ""}` : t("dashboard.ai.priceOnRequest", "Preis auf Anfrage")}</div>
                         </div>
                         <ArrowRight className="w-4 h-4 text-muted-foreground/50 group-hover/svc:text-foreground group-hover/svc:translate-x-0.5 transition-all flex-shrink-0" />
                       </div>
@@ -384,6 +366,8 @@ interface EpicNarrativeResponseProps {
   city?: string;
   eventType?: string;
   onAddAllToPlanner?: () => void;
+  onAddTimeBlock?: (block: ParsedTimeBlock, dayName: string) => void;
+  onAddToPlanner?: (activity: ParsedActivity) => void;
 }
 
 export const EpicNarrativeResponse = ({
@@ -396,18 +380,59 @@ export const EpicNarrativeResponse = ({
   city,
   eventType,
   onAddAllToPlanner,
+  onAddTimeBlock,
+  onAddToPlanner,
 }: EpicNarrativeResponseProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { trackImpressions, trackClick } = useServiceAdTracker();
   const [copiedAll, setCopiedAll] = useState(false);
-  const [heroBurst, setHeroBurst] = useState(true);
-  const [ctaBurst, setCtaBurst] = useState(false);
 
   // Clean the city label before anything else — "de_city" → null, "de_berlin" → "Berlin"
   const displayCity = useMemo(() => cleanDestinationLabel(city), [city]);
 
-  const { intro, sections } = useMemo(() => parseNarrative(response), [response]);
+  const parsedDays = useMemo(() => requestType === "day_plan" ? parseDayPlan(response).days : [], [requestType, response]);
+  const { intro, sections } = useMemo(() => {
+    if (requestType === "day_plan" && parsedDays.length > 0) {
+      const plan = parseDayPlan(response);
+      return {
+        intro: plan.intro,
+        sections: parsedDays.map((day, index): NarrativeSection => ({
+          emoji: day.emoji || "📅",
+          title: day.title || day.dayName,
+          body: day.timeBlocks.map((block) => `${block.time} ${block.title} ${block.description} ${block.location}`).join("\n"),
+          kind: "day",
+          dayNumber: index + 1,
+        })),
+      };
+    }
+    if (requestType === "activities" || requestType === "recommend_services") {
+      const parsed = parseActivitiesExtended(response);
+      if (parsed.activities.length > 0) return {
+        intro: parsed.intro,
+        sections: parsed.activities.map((activity): NarrativeSection => ({
+          emoji: activity.emoji || "✨",
+          title: activity.title,
+          body: [activity.description, activity.duration && `Dauer: ${activity.duration}`, activity.cost && `Kosten: ${activity.cost}`, activity.location && `Ort: ${activity.location}`].filter(Boolean).join("\n"),
+          kind: "other",
+          activity,
+        })),
+      };
+    }
+    if (requestType === "trip_ideas") {
+      const parsed = parseTripIdeas(response);
+      if (parsed.ideas.length > 0) return {
+        intro: parsed.intro,
+        sections: parsed.ideas.map((idea): NarrativeSection => ({
+          emoji: idea.emoji || "📍",
+          title: idea.title,
+          body: [idea.destination, idea.description, idea.cost, ...idea.highlights].filter(Boolean).join("\n\n"),
+          kind: "other",
+        })),
+      };
+    }
+    return parseNarrative(response);
+  }, [requestType, response, parsedDays]);
 
   // Real services per section + an aggregate query across the full text.
   // Also scan the raw response text for city mentions (Freiburg, Berlin, etc.)
@@ -556,23 +581,8 @@ export const EpicNarrativeResponse = ({
   };
 
   const handleAddAll = () => {
-    if (!onAddAllToPlanner) {
-      navigate("/marketplace");
-      return;
-    }
-    onAddAllToPlanner();
-    setCtaBurst(false);
-    setTimeout(() => setCtaBurst(true), 40);
-    toast.success(t("dashboard.ai.batchAddSuccess", "Alle Aktivitäten wurden deinem Event-Planer hinzugefügt"));
+    onAddAllToPlanner?.();
   };
-
-  // Fire hero confetti only once when the response first loads
-  useEffect(() => {
-    setHeroBurst(false);
-    const t = setTimeout(() => setHeroBurst(true), 100);
-    return () => clearTimeout(t);
-     
-  }, [response]);
 
   return (
     <div className="relative space-y-5">
@@ -580,32 +590,20 @@ export const EpicNarrativeResponse = ({
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-2xl border border-white/15"
+        className="relative overflow-hidden rounded-[24px] border border-border bg-card"
       >
-        <ConfettiBurst trigger={heroBurst} origin="top-right" />
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 via-pink-600/20 to-amber-500/20" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(236,72,153,0.35),transparent_60%)]" />
-        <div
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, rgba(168,85,247,0.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(168,85,247,0.08) 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
-          }}
-        />
         <div className="relative p-5 md:p-7">
           <div className="flex items-center gap-3 mb-4">
             <div className="relative">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-purple-600 via-pink-600 to-amber-500 flex items-center justify-center shadow-lg shadow-pink-500/40">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/25 bg-primary/10">
+                <Sparkles className="h-5 w-5 text-primary" />
               </div>
-              <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-br from-purple-600 via-pink-600 to-amber-500 opacity-50 blur-md -z-10" />
             </div>
             <div className="flex-1">
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-pink-300 mb-0.5">
+              <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
                 {t("dashboard.ai.recommendations", "AI-Empfehlungen")}
               </div>
-              <h2 className="text-xl md:text-2xl font-black text-white leading-tight">
+              <h2 className="text-xl font-semibold leading-tight text-foreground md:text-2xl">
                 {eventName || t("dashboard.ai.yourEvent", "Dein Event-Plan")}
               </h2>
             </div>
@@ -613,24 +611,24 @@ export const EpicNarrativeResponse = ({
 
           <div className="flex flex-wrap gap-2 mb-4">
             {displayCity && (
-              <Badge variant="outline" className="border-white/20 bg-white/5 text-white/90 text-xs">
+              <Badge variant="outline" className="border-border bg-muted/40 text-xs text-foreground">
                 <MapPin className="w-3 h-3 mr-1" />
                 {displayCity}
               </Badge>
             )}
             {participantCount ? (
-              <Badge variant="outline" className="border-white/20 bg-white/5 text-white/90 text-xs">
+              <Badge variant="outline" className="border-border bg-muted/40 text-xs text-foreground">
                 👥 {participantCount} {t("dashboard.overview.participants", "Teilnehmer")}
               </Badge>
             ) : null}
             {budget && (
-              <Badge variant="outline" className="border-white/20 bg-white/5 text-white/90 text-xs">
+              <Badge variant="outline" className="border-border bg-muted/40 text-xs text-foreground">
                 <Wallet className="w-3 h-3 mr-1" />
                 {budget}
               </Badge>
             )}
             {sections.length > 0 && (
-              <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 border-0 text-white text-xs">
+              <Badge variant="outline" className="border-border bg-muted/40 text-xs text-foreground">
                 {sections.length} {t("dashboard.ai.sections", "Abschnitte")}
               </Badge>
             )}
@@ -663,6 +661,10 @@ export const EpicNarrativeResponse = ({
             participantCount={participantCount}
             city={displayCity || serviceCity || undefined}
             onBookService={handleBookService}
+            timeBlocks={section.kind === "day" ? parsedDays[sections.slice(0, i + 1).filter((item) => item.kind === "day").length - 1]?.timeBlocks : undefined}
+            dayName={section.title}
+            onAddTimeBlock={onAddTimeBlock}
+            onAddToPlanner={requestType === "activities" || requestType === "recommend_services" ? onAddToPlanner : undefined}
           />
         ))}
       </div>
@@ -673,13 +675,12 @@ export const EpicNarrativeResponse = ({
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="relative overflow-hidden rounded-2xl border border-white/15"
+          className="relative overflow-hidden rounded-[24px] border border-border bg-card"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/20 via-teal-500/15 to-cyan-500/20" />
           <div className="relative p-5 md:p-6">
             <div className="flex items-start gap-3 mb-4">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                <ShoppingBag className="w-5 h-5 text-white" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/25 bg-primary/10">
+                <ShoppingBag className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <h3 className="text-lg md:text-xl font-black text-foreground">
@@ -700,32 +701,29 @@ export const EpicNarrativeResponse = ({
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.35 + i * 0.05 }}
                     onClick={() => handleBookService(svc.slug)}
-                    className="group relative text-left rounded-xl border border-border bg-card hover:bg-muted hover:border-foreground/30 hover:-translate-y-0.5 transition-all overflow-hidden p-4"
+                    className="group relative min-w-0 overflow-hidden rounded-2xl border border-border bg-background p-4 text-left transition-colors hover:border-foreground/30 hover:bg-muted"
                   >
                     <div className={cn(
                       "absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity bg-gradient-to-br",
                       svc.gradient,
                     )} />
                     <div className="relative flex items-center justify-between mb-3">
-                      <div className={cn(
-                        "w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center shadow-md",
-                        svc.gradient,
-                      )}>
-                        <Icon className="w-5 h-5 text-white" />
+                      <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-xl bg-muted">
+                        {svc.coverUrl ? <img src={svc.coverUrl} alt="" className="h-full w-full object-cover" loading="lazy" /> : <Icon className="h-5 w-5 text-primary" />}
                       </div>
-                      <Badge className="bg-muted text-muted-foreground text-[10px] border-0">
+                      {svc.reviewCount > 0 && svc.rating > 0 && <Badge className="bg-muted text-muted-foreground text-[10px] border-0">
                         <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400 mr-1" />
                         {svc.rating.toFixed(1)}
-                      </Badge>
+                      </Badge>}
                     </div>
                     <div className="relative">
                       <div className="font-black text-foreground text-base mb-0.5 truncate">{svc.title}</div>
                       <div className="text-xs text-muted-foreground mb-3 truncate">{svc.agency}</div>
                       <div className="flex items-center justify-between pt-2 border-t border-border">
                         <div>
-                          <span className="text-xl font-black text-foreground">{svc.pricePerPerson}€</span>
+                          <span className="text-base font-semibold text-foreground">{svc.pricePerPerson > 0 ? `${svc.pricePerPerson} €` : t("dashboard.ai.priceOnRequest", "Preis auf Anfrage")}</span>
                           <span className="text-xs text-muted-foreground ml-1">
-                            {svc.priceType === "per_person"
+                            {svc.pricePerPerson > 0 && svc.priceType === "per_person"
                               ? `/${t("dashboard.ai.perPerson", "pro Person").replace(/^pro\s*/i, "")}`
                               : ""}
                           </span>
@@ -744,9 +742,19 @@ export const EpicNarrativeResponse = ({
         </motion.div>
       )}
 
+      {!aggregate.isLoading && aggregate.services.length === 0 && (
+        <div className="flex items-start gap-3 rounded-[24px] border border-border bg-card p-5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><ShoppingBag className="h-5 w-5" /></div>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-sm font-semibold text-foreground">{t("dashboard.ai.noMatchingServices", "Noch keine passenden buchbaren Angebote")}</h3>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{t("dashboard.ai.noMatchingServicesDesc", "Entdecke weitere Erlebnisse im Marketplace oder verfeinere deinen Entwurf.")}</p>
+            <button type="button" onClick={() => navigate("/marketplace")} className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-primary">{t("dashboard.ai.exploreMore", "Alle Services entdecken")} <ArrowRight className="h-3.5 w-3.5" /></button>
+          </div>
+        </div>
+      )}
+
       {/* ───── Footer actions ───── */}
       <div className="relative flex flex-wrap items-center gap-2 justify-end pt-2">
-        <ConfettiBurst trigger={ctaBurst} origin="center" />
         <Button variant="outline" size="sm" onClick={handleShare} className="gap-1.5">
           <Share2 className="w-3.5 h-3.5" />
           {t("common.share", "Teilen")}
@@ -755,13 +763,13 @@ export const EpicNarrativeResponse = ({
           {copiedAll ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
           {t("dashboard.ai.copyAll", "Alles kopieren")}
         </Button>
-        {onAddAllToPlanner && (
-          <Button size="sm" onClick={handleAddAll} className="gap-1.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white border-0 font-bold shadow-lg shadow-emerald-500/30 hover:scale-[1.02] transition-transform">
+        {onAddAllToPlanner && requestType === "day_plan" && parsedDays.some((day) => day.timeBlocks.length > 0) && (
+          <Button size="sm" onClick={handleAddAll} className="gap-1.5 font-semibold">
             <Calendar className="w-3.5 h-3.5" />
-            {t("dashboard.ai.addAllToPlanner", "Alle zum Planer")}
+            {t("dashboard.ai.addAllToPlanner", "Plan in Zeitplan übernehmen")}
           </Button>
         )}
-        <Button size="sm" onClick={() => navigate("/marketplace")} className="gap-1.5 bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white border-0 font-bold shadow-lg shadow-pink-500/30 hover:scale-[1.02] transition-transform liquid-shimmer">
+        <Button size="sm" onClick={() => navigate("/marketplace")} className="gap-1.5 font-semibold">
           <Flame className="w-3.5 h-3.5" />
           {t("dashboard.ai.exploreMore", "Alle Services entdecken")}
           <ArrowRight className="w-3.5 h-3.5" />

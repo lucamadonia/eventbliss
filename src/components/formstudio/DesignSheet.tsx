@@ -6,6 +6,7 @@
 import { useTranslation } from "react-i18next";
 import { StudioSheet } from "./StudioSheet";
 import { DesignTemplateSelector } from "@/components/dashboard/DesignTemplateSelector";
+import { FormPresentationSelector } from "@/components/dashboard/FormPresentationSelector";
 import { BrandingEditor } from "@/components/dashboard/BrandingEditor";
 import type { FormStudioAction } from "./formStudioReducer";
 import { type EventSettings, type BrandingConfig, DEFAULT_BRANDING } from "@/lib/survey-config";
@@ -54,6 +55,10 @@ export function DesignSheet({
           selectedTemplateId={selectedTemplate?.id ?? null}
           onSelect={onTemplate}
           eventType={eventType}
+        />
+        <FormPresentationSelector
+          value={branding.presentation}
+          onChange={(presentation) => setBranding({ ...branding, presentation })}
         />
         <BrandingEditor
           branding={branding}

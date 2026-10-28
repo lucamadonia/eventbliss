@@ -718,7 +718,7 @@ function NativeServicesTab({ eventId, eventSlug }: { eventId: string; eventSlug:
 export default function NativeEventDashboard() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const haptics = useHaptics();
   const [activeTab, setActiveTab] = useState<TabId>("uebersicht");
   // Keep-alive: once a tab has been visited it stays mounted (display:none),
@@ -815,7 +815,7 @@ export default function NativeEventDashboard() {
       case "nachrichten":
         return event ? <MessagesTab event={event} slug={slug!} participants={participants} responseCount={responseCount} /> : null;
       case "ki":
-        return event ? <AIAssistantTab event={event} stats={stats} /> : null;
+        return event ? <AIAssistantTab event={event} stats={stats} participantCount={participants.length} responseCount={responseCount} /> : null;
       case "einstellungen":
         return event ? <SettingsTab event={event} participants={participants} onUpdate={refetch} /> : null;
       default:
@@ -905,7 +905,7 @@ export default function NativeEventDashboard() {
                 )}
                 <span className="relative z-10 flex items-center gap-1.5">
                   <Icon className="w-3.5 h-3.5" />
-                  {t(tab.labelKey)}
+                  {tab.id === "ki" ? (i18n.language.startsWith("de") ? "Planung" : "Planning") : t(tab.labelKey)}
                 </span>
               </motion.button>
             );

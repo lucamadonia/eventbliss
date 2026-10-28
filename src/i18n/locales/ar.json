@@ -158,6 +158,10 @@
     "forHonoree": "لـ"
   },
   "guestForm": {
+    "guidedHeading": "طريقك إلى المناسبة",
+    "guidedStep": "الخطوة {{step}} من {{total}}",
+    "back": "رجوع",
+    "next": "التالي",
     "heading": "إجابتك",
     "subheading": "تستغرق دقيقتين فقط. يمكنك إعادة الإرسال لاحقًا للتحديث.",
     "participantLabel": "من أنت؟",
@@ -317,6 +321,7 @@
     "roseDesc": "أنيق وراقي"
   },
   "common": {
+    "retry": "حاول مجددًا",
     "clear": "مسح",
     "save": "حفظ",
     "cancel": "إلغاء",
@@ -2158,6 +2163,11 @@
       "publicVisibilityNote": "يحتاج الزوار إلى التسجيل لإجراء التغييرات (إضافة مصروفات، تعديل الردود، إلخ)."
     },
     "ai": {
+      "dayLabel": "اليوم",
+      "tipsLabel": "نصائح",
+      "priceOnRequest": "السعر عند الطلب",
+      "noMatchingServices": "لا توجد عروض مناسبة قابلة للحجز بعد",
+      "noMatchingServicesDesc": "اكتشف تجارب أخرى في السوق أو حسّن خطتك.",
       "title": "مساعد الذكاء الاصطناعي",
       "subtitle": "احصل على مساعدة في التخطيط",
       "basedOn": "بناءً على {{count}} رد لفعالية {{name}}",
@@ -2614,6 +2624,9 @@
         "openLabel": "غير مسدَّد"
       },
       "add": {
+        "stepProgress": "الخطوة {{step}} من 4",
+        "back": "رجوع",
+        "next": "التالي",
         "srTitle": "إضافة مصروف",
         "title": "مصروف جديد",
         "listening": "يستمع …",
@@ -9767,9 +9780,11 @@
     "host": "المضيف"
   },
   "nativeSchedule": {
+    "saveFailed": "تعذّر حفظ النشاط",
     "noActivities": "لم يتم تخطيط أي أنشطة بعد",
     "addActivity": "إضافة نشاط",
     "form": {
+      "endAfterStart": "يجب أن يكون وقت الانتهاء بعد وقت البدء.",
       "title": "العنوان",
       "time": "الوقت",
       "category": "الفئة",
@@ -9925,6 +9940,9 @@
       "receiptAlt": "إيصال"
     },
     "expenses": {
+      "stepProgress": "الخطوة {{step}} من 3",
+      "back": "رجوع",
+      "next": "التالي",
       "totalSpent": "إجمالي المصروفات",
       "perPerson": "/ للفرد",
       "categories": "الفئات",
@@ -10190,6 +10208,20 @@
     "flaschendrehen": "لفّ الزجاجة"
   },
   "formStudio": {
+    "chooseEmoji": "اختر رمزًا تعبيريًا",
+    "removeEmoji": "بدون رمز تعبيري",
+    "presentationTitle": "طريقة عرض النموذج",
+    "presentationHint": "اختر كيف ينتقل الضيوف بين الأسئلة.",
+    "presentation": {
+      "classic": "كل الأسئلة",
+      "wizard": "المعالج",
+      "slides": "البطاقات"
+    },
+    "presentationDescription": {
+      "classic": "الكل في صفحة واحدة",
+      "wizard": "خطوة بخطوة",
+      "slides": "سؤال واحد لكل بطاقة"
+    },
     "title": "استوديو النماذج",
     "edit": "تحرير",
     "preview": "معاينة",

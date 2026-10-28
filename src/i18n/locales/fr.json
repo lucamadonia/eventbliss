@@ -158,6 +158,10 @@
     "forHonoree": "pour"
   },
   "guestForm": {
+    "guidedHeading": "Votre parcours vers l’événement",
+    "guidedStep": "Étape {{step}} sur {{total}}",
+    "back": "Retour",
+    "next": "Suivant",
     "heading": "Ta réponse",
     "subheading": "Ça ne prend que 2 minutes. Tu peux renvoyer plus tard pour mettre à jour.",
     "participantLabel": "Qui es-tu ?",
@@ -1442,6 +1446,7 @@
     "roseDesc": "Élégant & raffiné"
   },
   "common": {
+    "retry": "Réessayer",
     "clear": "Effacer",
     "save": "Enregistrer",
     "cancel": "Annuler",
@@ -3244,6 +3249,11 @@
       }
     },
     "ai": {
+      "dayLabel": "Jour",
+      "tipsLabel": "Conseils",
+      "priceOnRequest": "Prix sur demande",
+      "noMatchingServices": "Aucune offre réservable adaptée pour le moment",
+      "noMatchingServicesDesc": "Découvrez d’autres expériences sur la marketplace ou affinez votre programme.",
       "title": "Assistant IA",
       "subtitle": "Obtenez de l'aide pour votre planification",
       "basedOn": "Basé sur {{count}} réponses pour l'événement de {{name}}",
@@ -3689,6 +3699,9 @@
         "openLabel": "en attente"
       },
       "add": {
+        "stepProgress": "Étape {{step}} sur 4",
+        "back": "Retour",
+        "next": "Suivant",
         "srTitle": "Ajouter une dépense",
         "title": "Nouvelle dépense",
         "listening": "À l'écoute …",
@@ -8862,6 +8875,7 @@
     "host": "Hôte"
   },
   "nativeSchedule": {
+    "saveFailed": "Impossible d’enregistrer l’activité",
     "categories": {
       "food": "Manger et boire",
       "activity": "Activité",
@@ -8877,6 +8891,7 @@
     "addActivity": "Ajouter une activité",
     "day": "Jour {{num}}",
     "form": {
+      "endAfterStart": "L’heure de fin doit suivre l’heure de début.",
       "title": "Titre",
       "time": "Heure",
       "category": "Catégorie",
@@ -9938,6 +9953,9 @@
       "receiptAlt": "Reçu"
     },
     "expenses": {
+      "stepProgress": "Étape {{step}} sur 3",
+      "back": "Retour",
+      "next": "Suivant",
       "totalSpent": "Dépenses totales",
       "perPerson": "/ personne",
       "categories": "Catégories",
@@ -10092,6 +10110,20 @@
     "flaschendrehen": "Tourne-bouteille"
   },
   "formStudio": {
+    "chooseEmoji": "Choisir un emoji",
+    "removeEmoji": "Sans emoji",
+    "presentationTitle": "Présentation du formulaire",
+    "presentationHint": "Choisissez comment les invités parcourent les questions.",
+    "presentation": {
+      "classic": "Toutes les questions",
+      "wizard": "Assistant",
+      "slides": "Diapositives"
+    },
+    "presentationDescription": {
+      "classic": "Tout sur une seule page",
+      "wizard": "Étape par étape",
+      "slides": "Une question par carte"
+    },
     "title": "Form Studio",
     "edit": "Modifier",
     "preview": "Aperçu",

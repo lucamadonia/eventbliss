@@ -20,6 +20,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, staggerItem, duration, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -42,6 +43,7 @@ type ActivityCategory =
 interface Activity {
   id: string;
   time: string;
+  endTime: string | null;
   title: string;
   description?: string;
   category: ActivityCategory;
@@ -200,6 +202,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
   // Form state
   const [formTitle, setFormTitle] = useState("");
   const [formTime, setFormTime] = useState("12:00");
+  const [formEndTime, setFormEndTime] = useState("13:00");
   const [formCategory, setFormCategory] = useState<ActivityCategory>("activity");
   const [formNotes, setFormNotes] = useState("");
 
@@ -214,7 +217,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
         .single();
 
       if (!eventData) {
-        return { eventId: null as string | null, activities: [] as Activity[] };
+        return { eventId: null as string | null, eventDate: null as string | null, activities: [] as Activity[] };
       }
 
       const { data } = await supabase
@@ -227,6 +230,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
       const activities: Activity[] = (data || []).map((a) => ({
         id: a.id,
         time: a.start_time?.slice(0, 5) || "00:00",
+        endTime: a.end_time?.slice(0, 5) || null,
         title: a.title,
         category: (a.category as ActivityCategory) || "other",
         duration: computeDuration(a.start_time, a.end_time),
@@ -239,7 +243,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
         dayDate: a.day_date,
       }));
 
-      return { eventId: eventData.id as string | null, activities };
+      return { eventId: eventData.id as string | null, eventDate: eventData.event_date as string | null, activities };
     },
   });
 
@@ -284,26 +288,33 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
   const handleAddActivity = useCallback(async () => {
     haptics.medium();
     if (!eventId || !formTitle.trim()) return;
+    if (formTime && formEndTime && formEndTime <= formTime) return;
 
-    const targetDay = days[selectedDay]?.date || new Date().toISOString().slice(0, 10);
+    const targetDay = days[selectedDay]?.date || scheduleData?.eventDate || new Date().toISOString().slice(0, 10);
 
-    await supabase.from("schedule_activities").insert({
+    const { error } = await supabase.from("schedule_activities").insert({
       event_id: eventId,
       title: formTitle.trim(),
       start_time: formTime || null,
+      end_time: formEndTime || null,
       category: formCategory,
       notes: formNotes || null,
       day_date: targetDay,
     });
+    if (error) {
+      toast.error(t("nativeSchedule.saveFailed", "Aktivität konnte nicht gespeichert werden"));
+      return;
+    }
 
     setShowForm(false);
     setFormTitle("");
     setFormTime("12:00");
+    setFormEndTime("13:00");
     setFormCategory("activity");
     setFormNotes("");
     // Refetch to show the new activity
     queryClient.invalidateQueries({ queryKey: ["native-schedule", eventSlug] });
-  }, [haptics, eventId, formTitle, formTime, formCategory, formNotes, days, selectedDay, queryClient, eventSlug]);
+  }, [haptics, eventId, formTitle, formTime, formEndTime, formCategory, formNotes, days, selectedDay, scheduleData?.eventDate, queryClient, eventSlug, t]);
 
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
@@ -494,6 +505,12 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
 
                         {/* Badges row */}
                         <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                          {act.endTime && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-300 text-[11px] font-medium">
+                            <Clock className="w-3 h-3" />
+                            {act.time}–{act.endTime}
+                          </span>
+                          )}
                           {act.duration && (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-300 text-[11px] font-medium">
                             <Clock className="w-3 h-3" />
@@ -624,17 +641,44 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                   />
                 </div>
 
-                {/* Time */}
-                <div>
-                  <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    {t("nativeSchedule.form.time")}
-                  </label>
-                  <input
-                    type="time"
-                    value={formTime}
-                    onChange={(e) => setFormTime(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-muted/40 border border-border/50 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/40 transition-all"
-                  />
+                {/* Time range. Single column on narrow devices avoids the native
+                    WebKit time control overflowing its grid cell. */}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="min-w-0">
+                    <label htmlFor="native-activity-start" className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+                      {t("planner.form.startTime", "Von")}
+                    </label>
+                    <input
+                      id="native-activity-start"
+                      type="time"
+                      value={formTime}
+                      onChange={(e) => {
+                        const start = e.target.value;
+                        setFormTime(start);
+                        if (start && formEndTime <= start) {
+                          const [hour, minute] = start.split(":").map(Number);
+                          setFormEndTime(`${String(Math.min(hour + 1, 23)).padStart(2, "0")}:${String(minute).padStart(2, "0")}`);
+                        }
+                      }}
+                      className="block h-11 w-full min-w-0 max-w-full appearance-none rounded-xl border border-border/50 bg-muted/40 px-3 py-0 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <label htmlFor="native-activity-end" className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
+                      {t("planner.form.endTime", "Bis")}
+                    </label>
+                    <input
+                      id="native-activity-end"
+                      type="time"
+                      min={formTime || undefined}
+                      value={formEndTime}
+                      onChange={(e) => setFormEndTime(e.target.value)}
+                      className="block h-11 w-full min-w-0 max-w-full appearance-none rounded-xl border border-border/50 bg-muted/40 px-3 py-0 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                    />
+                  </div>
+                  {formTime && formEndTime && formEndTime <= formTime && (
+                    <p className="text-xs text-destructive sm:col-span-2">{t("nativeSchedule.form.endAfterStart", "Die Endzeit muss nach der Startzeit liegen.")}</p>
+                  )}
                 </div>
 
                 {/* Category */}
@@ -642,7 +686,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                   <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
                     {t("nativeSchedule.form.category")}
                   </label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2.5">
                     {CATEGORY_OPTIONS.map((opt) => {
                       const active = formCategory === opt.value;
                       const meta = CATEGORY_META[opt.value];
@@ -652,14 +696,15 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                           type="button"
                           onClick={() => { haptics.light(); setFormCategory(opt.value); }}
                           className={cn(
-                            "flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium transition-all",
+                            "flex min-h-[68px] min-w-0 items-center gap-2.5 rounded-2xl border px-3 py-3 text-left text-sm font-medium transition-all",
                             active
-                              ? "border-violet-500/40 bg-violet-500/10 text-violet-300"
-                              : "border-border/50 bg-muted/30 text-muted-foreground hover:border-border",
+                              ? "border-violet-400/60 bg-violet-500/15 text-foreground shadow-[inset_0_0_0_1px_rgba(167,139,250,0.18)]"
+                              : "border-border/50 bg-muted/20 text-muted-foreground hover:border-violet-400/30 hover:bg-muted/40",
                           )}
+                          aria-pressed={active}
                         >
-                          <span>{meta.icon}</span>
-                          <span>{t(opt.labelKey)}</span>
+                          <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-lg", meta.color)}>{meta.icon}</span>
+                          <span className="min-w-0 leading-tight">{t(opt.labelKey)}</span>
                         </button>
                       );
                     })}
@@ -683,10 +728,10 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                 {/* Submit */}
                 <button
                   onClick={handleAddActivity}
-                  disabled={!formTitle.trim()}
+                  disabled={!formTitle.trim() || (!!formTime && !!formEndTime && formEndTime <= formTime)}
                   className={cn(
                     "w-full py-3 rounded-2xl text-sm font-bold transition-all",
-                    formTitle.trim()
+                    formTitle.trim() && (!formTime || !formEndTime || formEndTime > formTime)
                       ? "bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-lg shadow-violet-500/30 active:scale-[0.98]"
                       : "bg-muted/50 text-muted-foreground cursor-not-allowed",
                   )}

@@ -34,7 +34,7 @@ export interface ContextualService {
   matchedKeywords: string[];
 }
 
-export type ServiceSource = "db" | "mock" | "mixed";
+export type ServiceSource = "db" | "none";
 
 export interface UseContextualServicesOptions {
   /** AI response text (will be scanned for keywords) */
@@ -402,31 +402,10 @@ export function useContextualServices({
     },
   });
 
-  const fallbackServices = useMemo<ContextualService[]>(() => {
-    if (categories.length === 0) return [];
-    const hits: ContextualService[] = [];
-    for (const cat of categories) {
-      const catKeywords = matchedKeywordsForCategory(cat);
-      const catScore = categoryScoreMap.get(cat) ?? 0;
-      for (const svc of MOCK_CATALOG) {
-        if (svc.category === cat && !hits.find((h) => h.slug === svc.slug)) {
-          hits.push({
-            ...svc,
-            matchScore: catScore,
-            matchPosition: hits.length + 1,
-            matchedKeywords: catKeywords,
-          });
-        }
-      }
-    }
-    return hits.slice(0, limit);
-  }, [categories, limit, categoryScoreMap, text]);
-
-  const dbServices = query.data ?? [];
-  const services = dbServices.length > 0 ? dbServices : fallbackServices;
-  const source: ServiceSource = dbServices.length > 0
-    ? (dbServices.length < fallbackServices.length ? "mixed" : "db")
-    : "mock";
+  // Only verified, approved marketplace entries may be presented as bookable.
+  // The demo catalog remains exported for previews, but is never used here.
+  const services = query.data ?? [];
+  const source: ServiceSource = services.length > 0 ? "db" : "none";
 
   return {
     services,

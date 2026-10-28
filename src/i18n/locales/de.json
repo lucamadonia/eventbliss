@@ -158,6 +158,10 @@
     "forHonoree": "für"
   },
   "guestForm": {
+    "guidedHeading": "Dein Weg zum Event",
+    "guidedStep": "Schritt {{step}} von {{total}}",
+    "back": "Zurück",
+    "next": "Weiter",
     "heading": "Deine Antwort",
     "subheading": "Dauert nur 2 Minuten. Du kannst später erneut absenden, um zu aktualisieren.",
     "participantLabel": "Wer bist du?",
@@ -1442,6 +1446,7 @@
     "roseDesc": "Elegant & stilvoll"
   },
   "common": {
+    "retry": "Erneut versuchen",
     "clear": "Löschen",
     "save": "Speichern",
     "cancel": "Abbrechen",
@@ -3224,8 +3229,13 @@
       }
     },
     "ai": {
-      "title": "KI-Assistent",
-      "subtitle": "Lass dir bei der Planung helfen",
+      "title": "Planungsstudio",
+      "dayLabel": "Tag",
+      "tipsLabel": "Tipps",
+      "priceOnRequest": "Preis auf Anfrage",
+      "noMatchingServices": "Noch keine passenden buchbaren Angebote",
+      "noMatchingServicesDesc": "Entdecke weitere Erlebnisse im Marketplace oder verfeinere deinen Plan.",
+      "subtitle": "Aus euren Antworten entsteht euer Plan",
       "basedOn": "Basierend auf {{count}} Antworten für {{name}}s Event",
       "tripIdeas": "Reise-Ideen",
       "tripIdeasDesc": "Reiseziele vorschlagen",
@@ -3239,10 +3249,10 @@
       "ask": "Fragen",
       "response": "Antwort",
       "regenerate": "Neu generieren",
-      "noData": "Noch keine Daten",
-      "noDataDesc": "Der KI-Assistent funktioniert am besten, wenn bereits Umfrage-Antworten vorhanden sind.",
+      "noData": "Dein Plan startet hier",
+      "noDataDesc": "Teile das Formular. Mit den Antworten wird dein Plan persönlicher.",
       "tooManyRequests": "Zu viele Anfragen. Bitte warte einen Moment.",
-      "requestFailed": "KI-Anfrage fehlgeschlagen. Bitte versuche es erneut.",
+      "requestFailed": "Der Plan konnte nicht erstellt werden. Bitte versuche es erneut.",
       "ideaLabel": "IDEE",
       "activityLabel": "AKTIVITÄT",
       "topPick": "Top Pick",
@@ -3266,7 +3276,7 @@
       "fitnessEasy": "Leicht",
       "fitnessNormal": "Normal",
       "fitnessChallenging": "Anspruchsvoll",
-      "recommendations": "KI-Empfehlungen",
+      "recommendations": "Dein Planentwurf",
       "dayAdded": "Tag zum Planer hinzugefügt",
       "tag": "TAG",
       "days": "Tage",
@@ -3284,7 +3294,7 @@
       "selectDate": "Datum wählen",
       "pickDate": "Datum auswählen",
       "activityAdded": "Aktivität zum Planer hinzugefügt",
-      "addedFromAI": "Hinzugefügt von KI-Assistent",
+      "addedFromAI": "Aus dem Planungsstudio hinzugefügt",
       "costPerPerson": "Kosten pro Person",
       "recommendServices": "Services empfehlen",
       "recommendServicesDesc": "Passende Anbieter vorschlagen",
@@ -3309,7 +3319,7 @@
       "quickPrompts": {
         "label": "Quick-Ideen",
         "weekend": "Plane mir ein episches Wochenende",
-        "budget": "Budgetfreundlich für 8 Personen",
+        "budget": "Im Budget bleiben",
         "outdoor": "Action & Outdoor-Abenteuer",
         "culinary": "Kulinarische Highlights",
         "luxury": "Luxuriös mit Wow-Effekt"
@@ -3671,6 +3681,9 @@
       "add": {
         "srTitle": "Ausgabe hinzufügen",
         "title": "Neue Ausgabe",
+        "stepProgress": "Schritt {{step}} von 4",
+        "back": "Zurück",
+        "next": "Weiter",
         "listening": "Hört zu …",
         "descriptionPlaceholder": "Wofür? z. B. Pizza, Tankstelle, Airbnb",
         "voiceStart": "Spracheingabe starten",
@@ -8838,6 +8851,7 @@
     "host": "Host"
   },
   "nativeSchedule": {
+    "saveFailed": "Aktivität konnte nicht gespeichert werden",
     "categories": {
       "food": "Essen & Trinken",
       "activity": "Aktivität",
@@ -8855,6 +8869,7 @@
     "form": {
       "title": "Titel",
       "time": "Uhrzeit",
+      "endAfterStart": "Die Endzeit muss nach der Startzeit liegen.",
       "category": "Kategorie",
       "notes": "Notizen",
       "location": "Ort",
@@ -9915,6 +9930,9 @@
     },
     "expenses": {
       "totalSpent": "Gesamtausgaben",
+      "stepProgress": "Schritt {{step}} von 3",
+      "back": "Zurück",
+      "next": "Weiter",
       "perPerson": "/ Person",
       "categories": "Kategorien",
       "noneYet": "Noch keine Ausgaben.",
@@ -10069,6 +10087,20 @@
   },
   "formStudio": {
     "title": "Form Studio",
+    "chooseEmoji": "Emoji auswählen",
+    "removeEmoji": "Ohne Emoji",
+    "presentationTitle": "Formular-Darstellung",
+    "presentationHint": "So erleben Gäste die Fragen. Farben und Bild bleiben separat wählbar.",
+    "presentation": {
+      "classic": "Alle Fragen",
+      "wizard": "Wizard",
+      "slides": "Slides"
+    },
+    "presentationDescription": {
+      "classic": "Alles auf einer Seite",
+      "wizard": "Schritt für Schritt",
+      "slides": "Eine Frage pro Karte"
+    },
     "edit": "Bearbeiten",
     "preview": "Vorschau",
     "saved": "Gespeichert",

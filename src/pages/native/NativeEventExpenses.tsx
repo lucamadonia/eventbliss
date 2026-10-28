@@ -792,6 +792,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
   const [paidBy, setPaidBy] = useState(participants[0]?.id || "");
   const [split, setSplit] = useState<"equal" | "custom">("equal");
   const [saving, setSaving] = useState(false);
+  const [step, setStep] = useState(0);
 
   // Receipt scanner state
   const receiptUpload = useReceiptUpload();
@@ -964,6 +965,13 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
             </button>
           </div>
 
+          <div className="flex items-center gap-2" aria-label={t("nativeExtra.expenses.stepProgress", "Schritt {{step}} von 3", { step: step + 1 })}>
+            {[0, 1, 2].map((index) => (
+              <span key={index} className={cn("h-1.5 flex-1 rounded-full", index <= step ? "bg-violet-500" : "bg-muted")} />
+            ))}
+          </div>
+
+          {step === 0 && <>
           {/* Receipt scanner */}
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -995,6 +1003,9 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
             )}
           </div>
 
+          </>}
+
+          {step === 1 && <>
           {/* Title */}
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -1009,6 +1020,9 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
             />
           </label>
 
+          </>}
+
+          {step === 0 && <>
           {/* Amount */}
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -1029,6 +1043,9 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
             </div>
           </label>
 
+          </>}
+
+          {step === 1 && <>
           {/* Category */}
           <div className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -1053,6 +1070,9 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
             </div>
           </div>
 
+          </>}
+
+          {step === 2 && <>
           {/* Paid by */}
           <label className="flex flex-col gap-1.5">
             <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
@@ -1136,6 +1156,28 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
             </AnimatePresence>
           </div>
 
+          </>}
+
+          <div className="flex gap-2 pt-2">
+            {step > 0 && (
+              <button type="button" onClick={() => setStep(step - 1)} className="h-12 rounded-2xl border border-border px-5 text-sm font-semibold text-foreground">
+                {t("nativeExtra.expenses.back", "Zurück")}
+              </button>
+            )}
+            {step < 2 && (
+              <button
+                type="button"
+                onClick={() => setStep(step + 1)}
+                disabled={step === 0 && !(parseFloat(amount.replace(",", ".")) > 0) || step === 1 && !title.trim()}
+                className="h-12 flex-1 rounded-2xl bg-gradient-to-r from-violet-600 to-fuchsia-500 text-sm font-bold text-white disabled:opacity-40"
+              >
+                {t("nativeExtra.expenses.next", "Weiter")}
+                <ArrowRight className="ml-2 inline h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {step === 2 && <>
           {/* Submit */}
           <motion.button
             {...liquidTap}
@@ -1149,6 +1191,7 @@ function AddExpenseModal({ onClose, haptics, eventId, participants, onSaved }: A
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             {saving ? t("nativeExtra.expenses.saving", "Wird gespeichert...") : t("nativeExtra.expenses.save", "Ausgabe speichern")}
           </motion.button>
+          </>}
         </div>
       </motion.div>
     </>

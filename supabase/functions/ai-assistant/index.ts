@@ -1561,17 +1561,23 @@ function buildContextInfo(context: RequestBody['context'], language: string): st
     `${template.labels.event_name}: ${context.event_name || 'Event'}`,
     `Event-Typ: ${eventTypeName}`,
     `${template.labels.honoree}: ${context.honoree_name}`,
-    `${template.labels.participants}: ${context.participant_count}`,
   ];
+  if (context.participant_count > 0) {
+    contextLines.push(`${template.labels.participants}: ${context.participant_count}`);
+  }
+  contextLines.push('Use only the supplied survey facts. If group size, budget, destination or preferences are missing, label them as open instead of inventing values.');
 
   if (context.event_description) {
     contextLines.push(`${template.labels.description}: ${context.event_description}`);
   }
   if (context.avg_budget) {
-    contextLines.push(`${template.labels.budget}: €${context.avg_budget}`);
+    contextLines.push(`${template.labels.budget}: ${context.avg_budget}`);
   }
   if (context.destination_pref) {
     contextLines.push(`${template.labels.destination}: ${context.destination_pref}`);
+  }
+  if (context.date_info) {
+    contextLines.push(`Event date and preferred date blocks: ${context.date_info}`);
   }
   if (context.top_activities && context.top_activities.length > 0) {
     contextLines.push(`${template.labels.activities}: ${context.top_activities.join(', ')}`);

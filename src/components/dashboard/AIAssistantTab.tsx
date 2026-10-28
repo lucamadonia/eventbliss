@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { MapPin, Calendar, DollarSign, Lightbulb, RefreshCw, AlertTriangle, Store, Sparkles } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -9,30 +10,37 @@ import { useAICredits } from "@/hooks/useAICredits";
 import { PaywallOverlay } from "@/components/premium/PaywallOverlay";
 import { AIResponseCard } from "@/components/dashboard/AIResponseCard";
 import { AddToPlannerDialog } from "@/components/dashboard/AddToPlannerDialog";
-import { MarketplaceRecommendationCard } from "@/components/dashboard/MarketplaceRecommendationCard";
 import { DayPlanDurationSelector } from "@/components/ai/DayPlanDurationSelector";
 import AIHeroHeader from "@/components/dashboard/AIHeroHeader";
 import { AIRequestCard } from "@/components/dashboard/AIRequestCard";
 import AIChatInput from "@/components/dashboard/AIChatInput";
 import AISpectacleSkeleton from "@/components/dashboard/AISpectacleSkeleton";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { EventData } from "@/hooks/useEvent";
 import { mergeWithDefaults } from "@/lib/survey-config";
 import { makeOptionLabelResolver } from "@/components/native/responses/responseHelpers";
-import type { ParsedActivity, ParsedTimeBlock, ParsedDay } from "@/lib/ai-response-parser";
+import { edgeHeaders } from "@/lib/edge";
+import { parseDayPlan, type ParsedActivity, type ParsedTimeBlock, type ParsedDay } from "@/lib/ai-response-parser";
 
 interface AIAssistantTabProps {
   event: EventData;
+  participantCount?: number;
+  responseCount?: number;
   stats: {
     attendance: { yes: number; maybe: number; no: number };
     budgets: Record<string, number>;
     destinations: Record<string, number>;
     activities: Record<string, number>;
     fitness_levels: Record<string, number>;
+    date_blocks?: Record<string, { yes: number; maybe: number; total: number }>;
+    total_responses?: number;
   } | null;
 }
 
 type RequestType = "trip_ideas" | "activities" | "day_plan" | "budget_estimate" | "chat" | "recommend_services";
+type PlanningDraft = { response: string; type: RequestType };
 
 interface AIRequest {
   type: RequestType;
@@ -90,19 +98,40 @@ const AI_REQUESTS: AIRequest[] = [
   },
 ];
 
-export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
+export const AIAssistantTab = ({ event, stats, participantCount: invitedCount, responseCount: knownResponseCount }: AIAssistantTabProps) => {
   const { t, i18n } = useTranslation();
+  const queryClient = useQueryClient();
   const { isPremium, loading: premiumLoading } = usePremium();
   const { used, limit, remaining, resetDate, loading: creditsLoading, refetch: refetchCredits } = useAICredits();
   const [isLoading, setIsLoading] = useState(false);
-  const [response, setResponse] = useState<string | null>(null);
-  const [suggestedCategories, setSuggestedCategories] = useState<string[]>([]);
-  const [currentType, setCurrentType] = useState<RequestType | null>(null);
+  const [response, setResponse] = useState<string | null>(() => queryClient.getQueryData<PlanningDraft>(["planning-draft", event.id])?.response ?? null);
+  const [currentType, setCurrentType] = useState<RequestType | null>(() => queryClient.getQueryData<PlanningDraft>(["planning-draft", event.id])?.type ?? null);
   const [chatMessage, setChatMessage] = useState("");
+  const [lastChatMessage, setLastChatMessage] = useState("");
   const [selectedActivity, setSelectedActivity] = useState<ParsedActivity | null>(null);
   const [showPlannerDialog, setShowPlannerDialog] = useState(false);
   const [showDurationSelector, setShowDurationSelector] = useState(false);
+  const [showPlanImport, setShowPlanImport] = useState(false);
+  const [planStartDate, setPlanStartDate] = useState(event.event_date?.slice(0, 10) || "");
+  const [importingPlan, setImportingPlan] = useState(false);
   const [creditAnimation, setCreditAnimation] = useState(false);
+
+  const { data: fetchedStats, isLoading: statsLoading, isError: statsError, refetch: refetchStats } = useQuery({
+    queryKey: ["planning-survey-stats", event.id],
+    enabled: !stats,
+    staleTime: 60_000,
+    queryFn: async () => {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-responses?event_id=${event.id}`, {
+        headers: await edgeHeaders(),
+      });
+      if (!res.ok) throw new Error(`Survey stats: ${res.status}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || "Survey stats unavailable");
+      return data.stats as NonNullable<AIAssistantTabProps["stats"]> & { total_responses?: number };
+    },
+  });
+  const surveyStats = stats ?? fetchedStats ?? null;
+  const planningUnavailable = statsLoading || (statsError && (knownResponseCount ?? 0) > 0);
 
   // Show paywall if not premium
   if (!premiumLoading && !isPremium) {
@@ -112,45 +141,56 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
   const creditsExhausted = limit > 0 && remaining <= 0;
 
   const getContext = (targetDays?: number) => {
-    const participantCount = (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0);
+    const participantCount = surveyStats
+      ? surveyStats.attendance.yes + surveyStats.attendance.maybe
+      : 0;
     // Resolve raw option slugs (incl. AI-generated ones) to their labels so
     // the model reasons over "80–150 €" instead of "budget_small".
-    const resolve = makeOptionLabelResolver(mergeWithDefaults(event.settings), t);
+    const config = mergeWithDefaults(event.settings);
+    const resolve = makeOptionLabelResolver(config, t);
 
     // Get top budget
-    const budgetEntries = Object.entries(stats?.budgets || {});
+    const budgetEntries = Object.entries(surveyStats?.budgets || {});
     const topBudget = budgetEntries.length > 0
       ? resolve("budget", budgetEntries.sort((a, b) => b[1] - a[1])[0][0])
-      : "150-250";
+      : undefined;
 
     // Get top destination
-    const destEntries = Object.entries(stats?.destinations || {});
+    const destEntries = Object.entries(surveyStats?.destinations || {});
     const topDestination = destEntries.length > 0
       ? resolve("destination", destEntries.sort((a, b) => b[1] - a[1])[0][0])
-      : "either";
+      : undefined;
 
     // Get top activities
-    const activityEntries = Object.entries(stats?.activities || {});
+    const activityEntries = Object.entries(surveyStats?.activities || {});
     const topActivities = activityEntries
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
       .map(([key]) => resolve("preferences", key));
 
     // Get fitness level
-    const fitnessEntries = Object.entries(stats?.fitness_levels || {});
+    const fitnessEntries = Object.entries(surveyStats?.fitness_levels || {});
     const topFitness = fitnessEntries.length > 0
       ? fitnessEntries.sort((a, b) => b[1] - a[1])[0][0]
-      : "normal";
+      : undefined;
+
+    const preferredDates = Object.entries(surveyStats?.date_blocks || {})
+      .filter(([, votes]) => votes.yes > 0)
+      .sort((a, b) => b[1].yes - a[1].yes)
+      .slice(0, 2)
+      .map(([key, votes]) => `${config.date_blocks[key] || key} (${votes.yes} ${i18n.language.startsWith("de") ? "Zusagen" : "yes"})`);
+    const dateInfo = [event.event_date, ...preferredDates].filter(Boolean).join("; ") || undefined;
 
     return {
       event_type: event.event_type,
       honoree_name: event.honoree_name,
-      participant_count: participantCount || 8,
+      participant_count: participantCount,
       avg_budget: topBudget,
       destination_pref: topDestination,
+      date_info: dateInfo,
       top_activities: topActivities,
       fitness_level: topFitness,
-      duration: "weekend",
+      duration: undefined,
       language: (i18n.language || event.locale || 'en').toLowerCase().split(/[-_]/)[0],
       event_name: event.name,
       event_description: event.description || undefined,
@@ -160,11 +200,19 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
   };
 
   const handleRequest = async (type: RequestType, message?: string, options?: { targetDays?: number }) => {
+    if (planningUnavailable) return;
     if (creditsExhausted) {
       toast.error(t('aiCredits.noCreditsLeft'));
       return;
     }
 
+    const previousDraft = queryClient.getQueryData<PlanningDraft>(["planning-draft", event.id]);
+    const restorePreviousDraft = () => {
+      if (previousDraft) {
+        setResponse(previousDraft.response);
+        setCurrentType(previousDraft.type);
+      }
+    };
     setIsLoading(true);
     setCurrentType(type);
     setResponse(null);
@@ -194,6 +242,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
         } else {
           throw new Error(error.message || "AI request failed");
         }
+        restorePreviousDraft();
         return;
       }
 
@@ -202,19 +251,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
       }
 
       setResponse(result.response);
-
-      // Extract marketplace categories from AI response for matching
-      const categories: string[] = [];
-      const responseText = (result.response || "").toLowerCase();
-      if (responseText.includes("cocktail") || responseText.includes("workshop") || responseText.includes("kurs")) categories.push("workshop");
-      if (responseText.includes("escape") || responseText.includes("unterhaltung") || responseText.includes("show") || responseText.includes("krimi")) categories.push("entertainment");
-      if (responseText.includes("essen") || responseText.includes("dinner") || responseText.includes("tasting") || responseText.includes("koch") || responseText.includes("wein")) categories.push("catering");
-      if (responseText.includes("dj") || responseText.includes("musik") || responseText.includes("band") || responseText.includes("karaoke")) categories.push("music");
-      if (responseText.includes("foto") || responseText.includes("shooting") || responseText.includes("kamera")) categories.push("photography");
-      if (responseText.includes("yoga") || responseText.includes("wellness") || responseText.includes("spa") || responseText.includes("massage")) categories.push("wellness");
-      if (responseText.includes("sport") || responseText.includes("kart") || responseText.includes("kletter") || responseText.includes("bowling")) categories.push("sport");
-      if (responseText.includes("location") || responseText.includes("venue") || responseText.includes("raum")) categories.push("venue");
-      setSuggestedCategories([...new Set(categories)]);
+      queryClient.setQueryData<PlanningDraft>(["planning-draft", event.id], { response: result.response, type });
 
       // Refetch credits and show animation
       await refetchCredits();
@@ -226,18 +263,22 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
     } catch (error) {
       console.error("AI error:", error);
       toast.error(t('dashboard.ai.requestFailed'));
+      restorePreviousDraft();
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleChat = async () => {
-    if (!chatMessage.trim()) return;
-    await handleRequest("chat", chatMessage);
+  const handleChat = async (prompt?: string) => {
+    const message = (prompt ?? chatMessage).trim();
+    if (!message) return;
+    setLastChatMessage(message);
+    await handleRequest("chat", message);
     setChatMessage("");
   };
 
   const handleDayPlanClick = () => {
+    if (planningUnavailable) return;
     if (creditsExhausted) {
       toast.error(t('aiCredits.noCreditsLeft'));
       return;
@@ -255,7 +296,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
     if (currentType === "day_plan") {
       await handleRequest("day_plan", undefined, { targetDays });
     } else if (currentType) {
-      await handleRequest(currentType);
+      await handleRequest(currentType, currentType === "chat" ? lastChatMessage : undefined);
     }
   };
 
@@ -272,6 +313,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
     const activity: ParsedActivity = {
       emoji: timeBlock.emoji,
       title: timeBlock.title,
+      startTime: /^\d{1,2}:\d{2}$/.test(timeBlock.time) ? timeBlock.time : undefined,
       category: timeBlock.category,
       duration: timeBlock.duration,
       cost: timeBlock.cost,
@@ -293,12 +335,52 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
     toast.success(t('dashboard.ai.dayAdded', 'Tag zum Planer hinzugefügt'));
   };
 
+  const planDays = currentType === "day_plan" && response ? parseDayPlan(response).days : [];
+  const planBlockCount = planDays.reduce((count, day) => count + day.timeBlocks.length, 0);
+  const importFullPlan = async () => {
+    if (!planStartDate || planBlockCount === 0) return;
+    const categoryMap: Record<string, string> = { action: "activity", outdoor: "activity", drinks: "food", chill: "relaxation", wellness: "relaxation" };
+    const allowed = new Set(["activity", "food", "transport", "accommodation", "party", "sightseeing", "relaxation", "other"]);
+    const rows = planDays.flatMap((day, dayIndex) => {
+      const date = new Date(`${planStartDate}T00:00:00Z`);
+      date.setUTCDate(date.getUTCDate() + dayIndex);
+      return day.timeBlocks.map((block) => {
+        const mappedCategory = categoryMap[block.category] || block.category;
+        return {
+          event_id: event.id,
+          day_date: date.toISOString().slice(0, 10),
+          title: block.title,
+          description: block.description || null,
+          start_time: /^\d{1,2}:\d{2}$/.test(block.time) ? block.time : null,
+          end_time: null,
+          category: allowed.has(mappedCategory) ? mappedCategory : "activity",
+          location: block.location || null,
+          notes: [block.transport, ...block.tips].filter(Boolean).join("\n") || null,
+        };
+      });
+    });
+    setImportingPlan(true);
+    try {
+      const { error } = await supabase.from("schedule_activities").insert(rows);
+      if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: ["native-schedule", event.slug] });
+      await queryClient.invalidateQueries({ queryKey: ["schedule-activities", event.id] });
+      setShowPlanImport(false);
+      toast.success(i18n.language.startsWith("de") ? `${rows.length} Programmpunkte zum Zeitplan hinzugefügt` : `${rows.length} activities added to the schedule`);
+    } catch (error) {
+      console.error("Plan import failed:", error);
+      toast.error(i18n.language.startsWith("de") ? "Der Plan konnte nicht übernommen werden" : "Could not add the plan to the schedule");
+    } finally {
+      setImportingPlan(false);
+    }
+  };
+
   // Get context for response card
-  const participantCount = (stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0);
-  const budgetEntries = Object.entries(stats?.budgets || {});
-  const topBudget = budgetEntries.length > 0 
-    ? budgetEntries.sort((a, b) => b[1] - a[1])[0][0]
-    : undefined;
+  const participantCount = (surveyStats?.attendance.yes || 0) + (surveyStats?.attendance.maybe || 0);
+  const actualResponseCount = surveyStats && "total_responses" in surveyStats
+    ? Number(surveyStats.total_responses || 0)
+    : knownResponseCount ?? 0;
+  const topBudget = getContext().avg_budget;
 
   return (
     <div className="space-y-6">
@@ -330,9 +412,12 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
         eventName={event.name}
         eventType={event.event_type}
         honoreeName={event.honoree_name}
-        city={getContext().destination_pref !== "either" ? getContext().destination_pref : undefined}
-        participantCount={(stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0)}
-        surveyResponses={(stats?.attendance.yes || 0) + (stats?.attendance.maybe || 0)}
+        city={getContext().destination_pref}
+        participantCount={invitedCount}
+        surveyResponses={actualResponseCount}
+        isLoadingResponses={statsLoading && !stats}
+        onGeneratePlan={handleDayPlanClick}
+        disabled={creditsExhausted || isLoading || planningUnavailable}
         credits={{
           used,
           limit,
@@ -343,9 +428,20 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
         creditsAnimating={creditAnimation}
       />
 
-      {/* Spectacle action cards: 5 cards with per-kind gradient, spotlight, icon bounce */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
-        {AI_REQUESTS.map((req, i) => {
+      {statsError && !stats && (knownResponseCount ?? 0) > 0 && (
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-amber-400/30 bg-amber-400/10 p-4 text-sm">
+          <span>{i18n.language.startsWith("de") ? "Die Antworten konnten nicht geladen werden. Bitte versuche es erneut." : "Survey answers could not be loaded. Please try again."}</span>
+          <button type="button" onClick={() => void refetchStats()} className="shrink-0 font-semibold underline">{t("common.retry", "Erneut")}</button>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        <div>
+          <h3 className="text-lg font-semibold tracking-tight">{i18n.language.startsWith("de") ? "Den Plan verfeinern" : "Refine your plan"}</h3>
+          <p className="text-sm text-muted-foreground">{i18n.language.startsWith("de") ? "Vertiefe einzelne Bausteine, wenn der erste Entwurf steht." : "Explore individual parts after creating your first draft."}</p>
+        </div>
+        <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
+        {AI_REQUESTS.filter((req) => req.type !== "day_plan").map((req, i) => {
           const isActive = currentType === req.type && isLoading;
           const isDayPlan = req.type === "day_plan";
           return (
@@ -357,7 +453,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
               gradient={req.gradient}
               accentColor={req.accent}
               isLoading={isActive}
-              disabled={creditsExhausted}
+              disabled={creditsExhausted || planningUnavailable}
               lockedLabel={creditsExhausted ? t("aiCredits.exhausted", "Leer") : undefined}
               badge={req.badge}
               index={i}
@@ -369,6 +465,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             />
           );
         })}
+        </div>
       </div>
 
       {/* Duration Selector for Day Plan */}
@@ -387,7 +484,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
         onChange={setChatMessage}
         onSubmit={handleChat}
         isLoading={isLoading && currentType === 'chat'}
-        disabled={creditsExhausted}
+        disabled={creditsExhausted || planningUnavailable}
       />
 
       {/* Loading Skeleton — spectacle variant */}
@@ -405,7 +502,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             <div className="flex items-center justify-end">
               <motion.button
                 type="button"
-                onClick={() => currentType && handleRequest(currentType)}
+                onClick={() => currentType && handleRequest(currentType, currentType === "chat" ? lastChatMessage : undefined)}
                 disabled={isLoading || creditsExhausted}
                 whileHover={isLoading || creditsExhausted ? undefined : { scale: 1.03 }}
                 whileTap={isLoading || creditsExhausted ? undefined : { scale: 0.97 }}
@@ -429,29 +526,18 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             eventType={event.event_type}
             participantCount={participantCount || undefined}
             budget={topBudget}
-            city={getContext().destination_pref !== "either" ? getContext().destination_pref : undefined}
+            city={getContext().destination_pref}
             requestType={currentType || undefined}
             onAddToPlanner={handleAddToPlanner}
             onAddTimeBlock={handleAddTimeBlock}
             onAddDay={handleAddDay}
+            onAddAllToPlanner={() => setShowPlanImport(true)}
             onRegenerate={currentType === 'day_plan' ? handleRegenerate : undefined}
             onExpand={currentType === 'day_plan' ? handleExpand : undefined}
             isLoading={isLoading}
             remainingCredits={remaining}
           />
 
-          {/* Marketplace Recommendations — hidden for trip_ideas since the
-              Epic narrative renderer already embeds contextual services inline. */}
-          {response && suggestedCategories.length > 0 && currentType !== 'trip_ideas' && (
-            <MarketplaceRecommendationCard
-              suggestedCategories={suggestedCategories}
-              responseText={response}
-              city={getContext().destination_pref !== "either" ? getContext().destination_pref : undefined}
-              eventType={event.event_type}
-              requestType={currentType || undefined}
-              eventId={event.id}
-            />
-          )}
         </div>
       )}
 
@@ -466,8 +552,20 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
         }}
       />
 
+      <Dialog open={showPlanImport} onOpenChange={setShowPlanImport}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader><DialogTitle>{i18n.language.startsWith("de") ? "Plan in Zeitplan übernehmen" : "Add plan to schedule"}</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">{i18n.language.startsWith("de") ? `${planBlockCount} Programmpunkte an ${planDays.length} Tagen. Wähle den ersten Tag des Plans.` : `${planBlockCount} activities across ${planDays.length} days. Choose the first day.`}</p>
+          <label className="space-y-2 text-sm font-medium">
+            <span>{i18n.language.startsWith("de") ? "Erster Tag" : "First day"}</span>
+            <input type="date" value={planStartDate} onChange={(event) => setPlanStartDate(event.target.value)} className="native-event-date block h-12 w-full rounded-xl border border-border bg-background px-3" />
+          </label>
+          <Button onClick={() => void importFullPlan()} disabled={!planStartDate || importingPlan || planBlockCount === 0}>{importingPlan ? (i18n.language.startsWith("de") ? "Wird übernommen…" : "Adding…") : (i18n.language.startsWith("de") ? "Alle Programmpunkte übernehmen" : "Add all activities")}</Button>
+        </DialogContent>
+      </Dialog>
+
       {/* No Stats Warning — gradient glass */}
-      {!stats && (
+      {!statsLoading && actualResponseCount === 0 && !response && (
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -481,7 +579,7 @@ export const AIAssistantTab = ({ event, stats }: AIAssistantTabProps) => {
             <div>
               <h4 className="font-black text-foreground mb-0.5">{t('dashboard.ai.noData', 'Noch keine Umfragedaten')}</h4>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                {t('dashboard.ai.noDataDesc', 'Teile deine Umfrage — sobald Antworten reinkommen, personalisiert die KI ihre Vorschläge.')}
+                {t('dashboard.ai.noDataDesc', 'Teile deine Umfrage — sobald Antworten reinkommen, wird dein Plan persönlicher.')}
               </p>
             </div>
           </div>

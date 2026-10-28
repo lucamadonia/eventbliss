@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { BoardPin } from "@/hooks/useIdeaBoard";
 import { CATEGORY_META } from "./categories";
+import { IdeaCategoryIcon } from "./IdeaCategoryIcon";
 import { LinkPreviewCard } from "./LinkPreviewCard";
 
 interface PinComment {
@@ -99,7 +100,7 @@ export function PinDetailSheet({
           <>
             <SheetHeader className="text-left">
               <SheetTitle className="flex items-center gap-2 text-white">
-                <img src={cat.icon} alt="" className="h-6 w-6 object-contain" />
+                <IdeaCategoryIcon category={cat.key} className="h-6 w-6" />
                 {pin.title || t(`ideaBoard.categories.${pin.category}`, cat.label)}
               </SheetTitle>
             </SheetHeader>

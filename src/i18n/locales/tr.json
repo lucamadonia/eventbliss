@@ -158,6 +158,10 @@
     "forHonoree": "için"
   },
   "guestForm": {
+    "guidedHeading": "Etkinliğe giden yolun",
+    "guidedStep": "{{total}} adımdan {{step}}.",
+    "back": "Geri",
+    "next": "İleri",
     "heading": "Cevabın",
     "subheading": "Sadece 2 dakika sürer. Güncellemek için daha sonra tekrar gönderebilirsin.",
     "participantLabel": "Sen kimsin?",
@@ -1442,6 +1446,7 @@
     "roseDesc": "Zarif ve şık"
   },
   "common": {
+    "retry": "Tekrar dene",
     "clear": "Temizle",
     "save": "Kaydet",
     "cancel": "İptal",
@@ -3294,6 +3299,11 @@
       }
     },
     "ai": {
+      "dayLabel": "Gün",
+      "tipsLabel": "İpuçları",
+      "priceOnRequest": "Fiyat için iletişime geçin",
+      "noMatchingServices": "Henüz uygun rezervasyon seçeneği yok",
+      "noMatchingServicesDesc": "Pazaryerindeki diğer deneyimleri keşfet veya planını geliştir.",
       "title": "AI Asistan",
       "subtitle": "Planlamanızda yardım alın",
       "basedOn": "{{name}}'ın etkinliği için {{count}} cevaba dayalı",
@@ -3739,6 +3749,9 @@
         "openLabel": "açık"
       },
       "add": {
+        "stepProgress": "4 adımdan {{step}}.",
+        "back": "Geri",
+        "next": "İleri",
         "srTitle": "Harcama ekle",
         "title": "Yeni harcama",
         "listening": "Dinliyor …",
@@ -8912,6 +8925,7 @@
     "host": "Ev sahibi"
   },
   "nativeSchedule": {
+    "saveFailed": "Etkinlik kaydedilemedi",
     "categories": {
       "food": "Yeme ve içme",
       "activity": "Aktivite",
@@ -8927,6 +8941,7 @@
     "addActivity": "Aktivite ekle",
     "day": "{{num}}. gün",
     "form": {
+      "endAfterStart": "Bitiş saati başlangıç saatinden sonra olmalı.",
       "title": "Başlık",
       "time": "Saat",
       "category": "Kategori",
@@ -9988,6 +10003,9 @@
       "receiptAlt": "Fiş"
     },
     "expenses": {
+      "stepProgress": "3 adımdan {{step}}.",
+      "back": "Geri",
+      "next": "İleri",
       "totalSpent": "Toplam harcama",
       "perPerson": "/ kişi",
       "categories": "Kategoriler",
@@ -10142,6 +10160,20 @@
     "flaschendrehen": "Şişe Çevirmece"
   },
   "formStudio": {
+    "chooseEmoji": "Emoji seç",
+    "removeEmoji": "Emoji yok",
+    "presentationTitle": "Form düzeni",
+    "presentationHint": "Konukların sorular arasında nasıl ilerleyeceğini seç.",
+    "presentation": {
+      "classic": "Tüm sorular",
+      "wizard": "Sihirbaz",
+      "slides": "Kartlar"
+    },
+    "presentationDescription": {
+      "classic": "Hepsi tek sayfada",
+      "wizard": "Adım adım",
+      "slides": "Kart başına bir soru"
+    },
     "title": "Form Studio",
     "edit": "Düzenle",
     "preview": "Önizleme",
