@@ -358,7 +358,7 @@ export function AddExpenseSheet({
               <div className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 {t("expenses.amount")}
               </div>
-              <div className="flex min-h-48 w-full items-center gap-3 rounded-[2rem] border border-violet-400/35 bg-gradient-to-br from-violet-500/15 via-background to-cyan-500/10 px-5 shadow-[0_18px_48px_-32px_rgba(139,92,246,0.75)] transition-colors focus-within:border-violet-400/80 focus-within:ring-2 focus-within:ring-violet-400/20 sm:min-h-56 sm:px-8">
+              <div className="relative flex min-h-48 w-full items-center rounded-[2rem] border border-violet-400/35 bg-gradient-to-br from-violet-500/15 via-background to-cyan-500/10 px-5 shadow-[0_18px_48px_-32px_rgba(139,92,246,0.75)] transition-colors focus-within:border-violet-400/80 focus-within:ring-2 focus-within:ring-violet-400/20 sm:min-h-56 sm:px-8">
                 <input
                   type="text"
                   inputMode="decimal"
@@ -366,10 +366,11 @@ export function AddExpenseSheet({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
                   placeholder={fmt.amountPlaceholder}
-                  className="min-w-0 flex-1 bg-transparent text-center text-[clamp(3.25rem,11vw,5.25rem)] font-black tracking-tight text-foreground outline-none placeholder:text-muted-foreground/55 tabular-nums"
+                  className="expense-amount-input h-32 min-w-0 w-full bg-transparent text-center font-black leading-none tracking-tight text-foreground outline-none placeholder:text-muted-foreground/55 tabular-nums"
+                  style={{ fontSize: amount.replace(/\D/g, "").length > 7 ? "clamp(2.75rem, 11vw, 3.5rem)" : amount.replace(/\D/g, "").length > 4 ? "clamp(3.5rem, 15vw, 4.5rem)" : "clamp(5rem, 20vw, 6rem)" }}
                   aria-label={t("expenses.amount")}
                 />
-                <span className="shrink-0 text-3xl font-bold text-muted-foreground sm:text-4xl">
+                <span className="pointer-events-none absolute right-5 top-4 text-xl font-bold text-muted-foreground sm:right-8 sm:text-2xl">
                   {fmt.currencySymbol()}
                 </span>
               </div>

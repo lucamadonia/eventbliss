@@ -626,7 +626,7 @@ html.capacitor-native [contenteditable="true"] {
 }
 
 /* Prevent iOS auto-zoom on input focus — iOS zooms when font-size < 16px */
-html.capacitor-native input[type="text"],
+html.capacitor-native input[type="text"]:not(.expense-amount-input),
 html.capacitor-native input[type="search"],
 html.capacitor-native input[type="email"],
 html.capacitor-native input[type="url"],
