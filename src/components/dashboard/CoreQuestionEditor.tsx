@@ -23,6 +23,7 @@ import {
   tEditableOptionLabel,
 } from "@/lib/survey-config";
 import { cn } from "@/lib/utils";
+import { EmojiPickerButton } from "./EmojiPickerButton";
 
 interface CoreQuestionEditorProps {
   title: string;
@@ -249,12 +250,9 @@ export const CoreQuestionEditor = ({
               <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing opacity-50 group-hover:opacity-100 transition-opacity" />
               
               {showEmoji && (
-                <Input
-                  value={option.emoji || ""}
-                  onChange={(e) => updateOption(option.value, { emoji: e.target.value })}
-                  className="w-12 text-center px-1"
-                  maxLength={4}
-                  placeholder="😀"
+                <EmojiPickerButton
+                  value={option.emoji}
+                  onChange={(emoji) => updateOption(option.value, { emoji })}
                 />
               )}
               
@@ -294,13 +292,7 @@ export const CoreQuestionEditor = ({
       {allowAddRemove && options.length < maxOptions && (
         <div className="flex gap-2">
           {showEmoji && (
-            <Input
-              placeholder="😀"
-              value={newEmoji}
-              onChange={(e) => setNewEmoji(e.target.value)}
-              className="w-12 text-center px-1"
-              maxLength={4}
-            />
+            <EmojiPickerButton value={newEmoji} onChange={(emoji) => setNewEmoji(emoji || "")} />
           )}
           <Input
             placeholder={placeholder}

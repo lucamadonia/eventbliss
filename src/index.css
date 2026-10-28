@@ -1053,3 +1053,44 @@ html.capacitor-native ::-webkit-scrollbar {
 input.date-input-left::-webkit-date-and-time-value {
   text-align: left;
 }
+
+/* WebKit places the selected date at the top of appearance-none inputs unless
+   its inner value is given the same height as the visible control. */
+input.native-event-date::-webkit-date-and-time-value {
+  display: flex;
+  align-items: center;
+  min-height: 100%;
+  text-align: left;
+}
+
+input.native-event-date::-webkit-datetime-edit {
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+}
+
+[data-presentation="wizard"] .survey-card {
+  border-radius: 1.25rem;
+  border-color: color-mix(in srgb, var(--template-primary, #8b5cf6) 28%, transparent);
+}
+
+[data-presentation="slides"] [data-question-key]:not(.hidden) .survey-card {
+  border-radius: 2rem;
+  border-color: color-mix(in srgb, var(--template-primary, #8b5cf6) 38%, transparent);
+  box-shadow: 0 24px 60px -35px color-mix(in srgb, var(--template-primary, #8b5cf6) 35%, transparent);
+}
+
+@keyframes survey-slide-in {
+  from { opacity: 0; transform: translateX(28px) scale(.98); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+[data-presentation="slides"] [data-question-key]:not(.hidden) {
+  animation: survey-slide-in .35s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-presentation="slides"] [data-question-key]:not(.hidden) {
+    animation: none;
+  }
+}

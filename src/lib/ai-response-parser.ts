@@ -9,6 +9,8 @@ export interface ParsedActivity {
   fitness: 'easy' | 'normal' | 'challenging';
   description: string;
   rawSection: string;
+  startTime?: string;
+  endTime?: string;
 }
 
 export interface ParsedAIResponse {

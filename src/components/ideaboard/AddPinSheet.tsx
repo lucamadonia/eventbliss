@@ -28,7 +28,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { AddPinInput, PinCategory, PinKind } from "@/hooks/useIdeaBoard";
-import { CATEGORY_LIST, CATEGORY_META } from "./categories";
+import { CATEGORY_LIST } from "./categories";
+import { IdeaCategoryIcon } from "./IdeaCategoryIcon";
 
 interface AddPinSheetProps {
   open: boolean;
@@ -225,7 +226,7 @@ export function AddPinSheet({
                 <SelectContent>
                   {CATEGORY_LIST.map((c) => (
                     <SelectItem key={c.key} value={c.key}>
-                      <img src={c.icon} alt="" className="mr-1.5 inline-block h-4 w-4 object-contain align-[-3px]" />
+                      <IdeaCategoryIcon category={c.key} className="mr-1.5 inline-block h-4 w-4 align-[-3px]" />
                       {t(`ideaBoard.categories.${c.key}`, c.label)}
                     </SelectItem>
                   ))}
@@ -330,7 +331,7 @@ export function AddPinSheet({
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  <img src={CATEGORY_META[category].icon} alt="" className="h-5 w-5 object-contain" />
+                  <IdeaCategoryIcon category={category} className="h-5 w-5" />
                   {t("ideaBoard.save", "Idee speichern")}
                 </>
               )}

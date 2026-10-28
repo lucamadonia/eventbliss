@@ -63,6 +63,7 @@ export interface BrandingConfig {
   key_date_label?: string;
   key_date?: string;
   template_id?: string;
+  presentation?: 'classic' | 'wizard' | 'slides';
 }
 
 export interface SurveyConfig {
@@ -344,6 +345,7 @@ export const DEFAULT_BRANDING: BrandingConfig = {
   primary_color: "#8B5CF6",
   accent_color: "#06B6D4",
   background_style: "gradient",
+  presentation: "classic",
 };
 
 // Helper to merge user settings with defaults

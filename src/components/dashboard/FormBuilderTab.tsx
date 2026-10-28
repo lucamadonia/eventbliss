@@ -55,6 +55,7 @@ import {
 import { DateRangeBlockEditor, DateRangeBlock } from "./DateRangeBlockEditor";
 import { AdvancedActivitySelector } from "./AdvancedActivitySelector";
 import { DesignTemplateSelector } from "./DesignTemplateSelector";
+import { FormPresentationSelector } from "./FormPresentationSelector";
 import { BrandingEditor } from "./BrandingEditor";
 import { CustomQuestionBuilder } from "./CustomQuestionBuilder";
 import { CustomQuestionPreview } from "./CustomQuestionPreview";
@@ -837,6 +838,12 @@ export const FormBuilderTab = ({ event, onUpdate }: FormBuilderTabProps) => {
               onSelect={handleTemplateSelect}
               eventType={eventType}
             />
+            <div className="mt-6 border-t border-border pt-5">
+              <FormPresentationSelector
+                value={branding.presentation}
+                onChange={(presentation) => setBranding({ ...branding, presentation })}
+              />
+            </div>
           </GlassCard>
 
           {/* Branding Editor */}

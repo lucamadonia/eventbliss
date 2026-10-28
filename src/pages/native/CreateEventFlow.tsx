@@ -578,7 +578,7 @@ function StepDetails({
             type="date"
             value={form.event_date}
             onChange={(e) => update("event_date", e.target.value)}
-            className="appearance-none block w-full min-w-0 h-12 px-4 rounded-2xl bg-foreground/5 border border-border text-foreground text-base text-left focus:outline-none focus:border-primary/50 [color-scheme:light] dark:[color-scheme:dark]"
+            className="native-event-date appearance-none block w-full min-w-0 h-12 px-4 py-0 rounded-2xl bg-foreground/5 border border-border text-foreground text-base leading-normal text-left focus:outline-none focus:border-primary/50 [color-scheme:light] dark:[color-scheme:dark]"
           />
         </div>
 

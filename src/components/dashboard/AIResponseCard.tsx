@@ -49,6 +49,7 @@ interface AIResponseCardProps {
   requestType?: 'trip_ideas' | 'activities' | 'day_plan' | 'budget_estimate' | 'chat' | 'recommend_services';
   onAddToPlanner?: (activity: ParsedActivity | ParsedActivityExtended) => void;
   onAddTimeBlock?: (timeBlock: ParsedTimeBlock, dayName: string) => void;
+  onAddAllToPlanner?: () => void;
   onAddDay?: (day: ParsedDay) => void;
   onSetDestination?: (tripIdea: ParsedTripIdea) => void;
   onRegenerate?: (targetDays?: number) => void;
@@ -68,6 +69,7 @@ export const AIResponseCard = ({
   requestType,
   onAddToPlanner,
   onAddTimeBlock,
+  onAddAllToPlanner,
   onAddDay,
   onSetDestination,
   onRegenerate,
@@ -136,7 +138,7 @@ export const AIResponseCard = ({
   // DayPlanCard paths are kept for back-compat but only fire when the parser
   // REALLY finds structured data — the Epic renderer is the default.
   // ──────────────────────────────────────────────────────────────────────────
-  const EPIC_TYPES = ['trip_ideas', 'activities', 'day_plan', 'budget_estimate', 'recommend_services'] as const;
+  const EPIC_TYPES = ['trip_ideas', 'activities', 'day_plan', 'budget_estimate', 'recommend_services', 'chat'] as const;
   if (requestType && (EPIC_TYPES as readonly string[]).includes(requestType)) {
     // Force epic renderer for EVERY AI request type — consistent spectacle,
     // budget visualizer, inline services, mouse-spotlights, confetti. The
@@ -151,6 +153,9 @@ export const AIResponseCard = ({
         budget={budget}
         city={city}
         eventType={eventType}
+        onAddTimeBlock={onAddTimeBlock}
+        onAddToPlanner={onAddToPlanner}
+        onAddAllToPlanner={onAddAllToPlanner}
       />
     );
   }

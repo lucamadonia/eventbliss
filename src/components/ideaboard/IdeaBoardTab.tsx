@@ -15,6 +15,7 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { useIdeaBoard, type BoardPin, type PinCategory } from "@/hooks/useIdeaBoard";
 import { Button } from "@/components/ui/button";
 import { CATEGORY_LIST } from "./categories";
+import { IdeaCategoryIcon } from "./IdeaCategoryIcon";
 import { PinCard } from "./PinCard";
 import { AddPinSheet } from "./AddPinSheet";
 import { PinDetailSheet } from "./PinDetailSheet";
@@ -122,9 +123,9 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
         initial={reduce ? { opacity: 0 } : { opacity: 0, y: 14 }}
         animate={{ opacity: 1, y: 0 }}
         transition={spring.soft}
-        className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-violet-600/25 via-fuchsia-500/15 to-cyan-500/20 px-4 py-4 backdrop-blur-xl"
+        className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#1b1b27] px-5 py-5"
       >
-        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-fuchsia-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full border border-white/10 bg-white/[0.03]" />
         <div className="relative flex items-start justify-between gap-3">
           <div className="min-w-0">
             <h1 className="truncate text-xl font-bold text-white">{boardTitle}</h1>
@@ -155,7 +156,7 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
               haptics.medium();
               setAddOpen(true);
             }}
-            className="flex-1 bg-gradient-to-r from-violet-600 to-fuchsia-500 font-semibold text-white hover:opacity-90"
+            className="flex-1 bg-violet-500 font-semibold text-white hover:bg-violet-400"
           >
             <Plus className="h-4 w-4" />
             {t("ideaBoard.addIdea", "Idee hinzufügen")}
@@ -181,12 +182,12 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
         </div>
       </motion.div>
 
-      {/* ---- Category filter chips ---- */}
-      <div className="flex gap-2 overflow-x-auto px-1 pb-1 scrollbar-none -mx-1">
+      {/* Category tiles make the whole board visible without a horizontal hunt. */}
+      <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
         <FilterChip
           active={filter === "all"}
-          emoji="🗂️"
           label={t("ideaBoard.filterAll", "Alle")}
+          count={b.pins.length}
           onClick={() => {
             haptics.light();
             setFilter("all");
@@ -196,9 +197,9 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
           <FilterChip
             key={c.key}
             active={filter === c.key}
-            emoji={c.emoji}
-            icon={c.icon}
+            category={c.key}
             label={t(`ideaBoard.categories.${c.key}`, c.label)}
+            count={b.pins.filter((pin) => pin.category === c.key).length}
             onClick={() => {
               haptics.light();
               setFilter(c.key);
@@ -327,15 +328,15 @@ export function IdeaBoardTab({ event }: IdeaBoardTabProps) {
 
 function FilterChip({
   active,
-  emoji,
-  icon,
+  category,
   label,
+  count,
   onClick,
 }: {
   active: boolean;
-  emoji: string;
-  icon?: string;
+  category?: PinCategory;
   label: string;
+  count: number;
   onClick: () => void;
 }) {
   return (
@@ -343,18 +344,20 @@ function FilterChip({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-semibold transition-all",
+        "flex min-h-24 min-w-0 flex-col items-start justify-between rounded-2xl border p-3 text-left transition-colors",
         active
-          ? "bg-gradient-to-r from-violet-600 to-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/25"
-          : "bg-white/8 text-white/60 hover:bg-white/15",
+          ? "border-violet-400/70 bg-violet-500/15 text-white"
+          : "border-white/10 bg-white/[0.035] text-white/70 hover:border-white/25 hover:bg-white/[0.07]",
       )}
+      aria-pressed={active}
     >
-      {icon ? (
-        <img src={icon} alt="" className="h-4 w-4 shrink-0 object-contain" />
-      ) : (
-        <span>{emoji}</span>
-      )}
-      {label}
+      <span className="flex w-full items-start justify-between gap-1">
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/[0.07]">
+          {category ? <IdeaCategoryIcon category={category} className="h-5 w-5" /> : <LayoutGrid className="h-5 w-5 text-violet-300" />}
+        </span>
+        <span className="text-[11px] tabular-nums text-white/50">{count}</span>
+      </span>
+      <span className="w-full truncate text-xs font-semibold">{label}</span>
     </button>
   );
 }

@@ -67,6 +67,16 @@ describe("getDateBlocks", () => {
 });
 
 describe("sanitizeSettingsForSave", () => {
+  it("keeps the selected form presentation across merge and save", () => {
+    for (const presentation of ["classic", "wizard", "slides"] as const) {
+      const current = settings();
+      current.branding = { ...current.branding!, presentation };
+      const merged = mergeWithDefaults(current);
+      expect(merged.branding?.presentation).toBe(presentation);
+      expect(sanitizeSettingsForSave(merged).branding?.presentation).toBe(presentation);
+    }
+  });
+
   it("clamps CHECK-constrained option values but keeps edited labels", () => {
     const s = settings();
     s.travel_options = [

@@ -59,6 +59,7 @@ export default function EventExpensesV2({ event: eventProp, participants: partic
   // Only fetch when the parent didn't already provide the event (deep-link route).
   const fetched = useEvent(eventProp ? undefined : slug);
   const event = eventProp ?? fetched.event;
+  const embedded = !!eventProp;
   const participants = participantsProp ?? fetched.participants;
   const eventLoading = eventProp ? false : fetched.isLoading;
 
@@ -189,12 +190,13 @@ export default function EventExpensesV2({ event: eventProp, participants: partic
   };
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground">
+    <div className={cn("relative bg-background text-foreground", !embedded && "min-h-screen")}>
       <AmbientBg tone={tone} />
       <Confetti fire={confettiFire} onDone={() => setConfettiFire(false)} />
 
       {/* Header — static blur (scroll-driven blur was janky on mobile) */}
-      <header className="sticky top-0 z-20 bg-background/90 backdrop-blur-md border-b border-border">
+      <header className={cn(embedded ? "relative z-10" : "sticky top-0 z-20 border-b border-border bg-background/90 backdrop-blur-md")}>
+        {!embedded && (
         <div
           className="max-w-2xl mx-auto px-4 py-3 flex items-center gap-3"
           style={{ paddingTop: "calc(0.75rem + env(safe-area-inset-top))" }}
@@ -225,9 +227,10 @@ export default function EventExpensesV2({ event: eventProp, participants: partic
             </div>
           </div>
         </div>
+        )}
 
         {/* Tabs */}
-        <div className="max-w-2xl mx-auto px-4 pb-3 flex gap-1.5 overflow-x-auto scrollbar-none">
+        <div className={cn("max-w-2xl mx-auto px-4 flex gap-1.5 overflow-x-auto scrollbar-none", embedded ? "pt-4 pb-1" : "pb-3")}>
           {(
             [
               { id: "list", label: "Ledger", count: data?.summary.count ?? 0 },

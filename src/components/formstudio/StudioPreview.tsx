@@ -26,6 +26,7 @@ type PreviewFormProps = {
   participants: never[];
   previewMode?: boolean;
   previewSettings?: EventSettings;
+  previewQuestionKey?: string;
 };
 const PreviewForm = DynamicSurveyForm as unknown as React.ComponentType<PreviewFormProps>;
 
@@ -110,6 +111,7 @@ export function StudioPreview({ eventId, draft, eventName, honoreeName, eventTyp
           participants={[]}
           previewMode
           previewSettings={draft}
+          previewQuestionKey={scrollToKey}
         />
       </div>
 

@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 interface AIChatInputProps {
   value: string;
   onChange: (next: string) => void;
-  onSubmit: () => void;
+  onSubmit: (prompt?: string) => void;
   isLoading?: boolean;
   disabled?: boolean;
   placeholder?: string;
@@ -16,7 +16,7 @@ interface AIChatInputProps {
 // Curated quick-prompt ideas that adapt by locale (fallback to German if missing)
 const QUICK_PROMPTS: Array<{ key: string; fallback: string; emoji: string }> = [
   { key: "dashboard.ai.quickPrompts.weekend",   fallback: "Plane mir ein episches Wochenende",            emoji: "🎉" },
-  { key: "dashboard.ai.quickPrompts.budget",    fallback: "Budgetfreundlich für 8 Personen",              emoji: "💰" },
+  { key: "dashboard.ai.quickPrompts.budget",    fallback: "Plane innerhalb unseres Budgets",              emoji: "💰" },
   { key: "dashboard.ai.quickPrompts.outdoor",   fallback: "Action & Outdoor-Abenteuer",                   emoji: "🏔️" },
   { key: "dashboard.ai.quickPrompts.culinary",  fallback: "Kulinarische Highlights",                      emoji: "🍷" },
   { key: "dashboard.ai.quickPrompts.luxury",    fallback: "Luxuriös mit Wow-Effekt",                      emoji: "✨" },
@@ -51,8 +51,7 @@ export default function AIChatInput({
 
   const handlePromptClick = (prompt: string) => {
     onChange(prompt);
-    // Trigger submit after a tick so state is settled
-    setTimeout(() => onSubmit(), 40);
+    onSubmit(prompt);
   };
 
   const canSubmit = !disabled && !isLoading && value.trim().length > 0;
@@ -138,7 +137,7 @@ export default function AIChatInput({
 
             <motion.button
               type="button"
-              onClick={onSubmit}
+              onClick={() => onSubmit()}
               disabled={!canSubmit}
               whileHover={canSubmit ? { scale: 1.05 } : undefined}
               whileTap={canSubmit ? { scale: 0.96 } : undefined}

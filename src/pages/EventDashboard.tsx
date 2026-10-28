@@ -99,7 +99,7 @@ interface Response {
 const EventDashboard = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { event, participants, responseCount, isLoading, error, refetch } = useEvent(slug);
   const { user } = useAuthContext();
   const { allowedTabs } = useParticipantPermissions(event, participants);
@@ -221,7 +221,7 @@ const EventDashboard = () => {
       case "agencies":
         return <AgenciesTab event={event} participants={participants} />;
       case "ai":
-        return <AIAssistantTab event={event} stats={stats} />;
+        return <AIAssistantTab event={event} stats={stats} participantCount={participants.length} responseCount={responseCount} />;
       case "messages":
         return <MessagesTab event={event} slug={slug!} participants={participants} responseCount={responseCount} />;
       case "settings":
@@ -274,7 +274,7 @@ const EventDashboard = () => {
                     }`}
                   >
                     <Icon className="w-4 h-4" />
-                    <span className="hidden sm:inline">{t(tab.labelKey)}</span>
+                    <span className="hidden sm:inline">{tab.id === "ai" ? (i18n.language.startsWith("de") ? "Planungsstudio" : "Planning Studio") : t(tab.labelKey)}</span>
                   </button>
                 );
               })}

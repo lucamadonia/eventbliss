@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X, Save, Loader2, Calendar, StickyNote, Receipt as ReceiptIcon,
-  Mic, Sparkles,
+  Mic, Sparkles, ArrowLeft, ArrowRight,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,7 @@ export function AddExpenseSheet({
   const [excludedIds, setExcludedIds] = useState<string[]>([]);
   const [shares, setShares] = useState<Array<{ participant_id: string; amount: number }>>([]);
   const [weights, setWeights] = useState<Record<string, number>>({});
-  const [step, setStep] = useState<"quick" | "detail" | "split">("quick");
+  const [step, setStep] = useState<"amount" | "category" | "payer" | "split">("amount");
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptPreview, setReceiptPreview] = useState<string | null>(null);
   const [receiptOcr, setReceiptOcr] = useState<ReceiptOcrResult | null>(null);
@@ -128,7 +128,7 @@ export function AddExpenseSheet({
     setSplitMode(recent?.mode ?? "equal");
     setExcludedIds(validExcludes);
     setWeights({});
-    setStep("quick");
+    setStep("amount");
     setShares([]);
     setReceiptFile(null);
     setReceiptPreview(null);
@@ -250,6 +250,13 @@ export function AddExpenseSheet({
   const canSave = amountNum > 0 && description.trim().length > 0 && payersValid;
   const sumShares = shares.reduce((s, x) => s + x.amount, 0);
   const splitValid = Math.abs(sumShares - amountNum) < 0.01;
+  const steps = ["amount", "category", "payer", "split"] as const;
+  const stepIndex = steps.indexOf(step);
+  const goToStep = (next: typeof step) => {
+    setStep(next);
+    scrollBodyRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    void haptics.light();
+  };
 
   const handleSave = async () => {
     if (!canSave || !splitValid) return;
@@ -310,7 +317,7 @@ export function AddExpenseSheet({
           <div className="flex-1 text-center">
             <h2 className="text-base font-bold text-foreground">{t("expenses.v2.add.title")}</h2>
           </div>
-          <Button
+          {step === "split" ? <Button
             onClick={handleSave}
             disabled={!canSave || !splitValid || addExpense.isPending}
             size="sm"
@@ -324,7 +331,13 @@ export function AddExpenseSheet({
                 {t("expenses.v2.common.save")}
               </>
             )}
-          </Button>
+          </Button> : <span className="w-9" />}
+        </div>
+
+        <div className="flex gap-1.5 px-5 pt-3" aria-label={t("expenses.v2.add.stepProgress", "Schritt {{step}} von 4", { step: stepIndex + 1 })}>
+          {steps.map((item, index) => (
+            <span key={item} className={cn("h-1.5 flex-1 rounded-full", index <= stepIndex ? "bg-violet-500" : "bg-muted")} />
+          ))}
         </div>
 
         {/* Scrollable content — padded by the keyboard height so focused
@@ -339,6 +352,7 @@ export function AddExpenseSheet({
         >
           {/* 1) Quick — amount + title */}
           <div className="px-5 py-6">
+            {step === "amount" && <>
             {/* Big amount input */}
             <div className="text-center mb-6">
               <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-semibold mb-2">
@@ -361,6 +375,9 @@ export function AddExpenseSheet({
               </div>
             </div>
 
+            </>}
+
+            {step === "category" && <>
             {/* Description with optional voice input */}
             <div className="relative">
               <input
@@ -476,6 +493,9 @@ export function AddExpenseSheet({
               </div>
             </div>
 
+            </>}
+
+            {step === "payer" && <>
             {/* Payer selector (single / multi) */}
             <div className="mt-4">
               <PayerSelector
@@ -488,17 +508,23 @@ export function AddExpenseSheet({
                 onMultiChange={setMultiPayer}
               />
             </div>
+            </>}
           </div>
 
           {/* 2) Detail — expand */}
           <AnimatePresence initial={false}>
-            {step !== "quick" && (
+            {step === "split" && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="px-5 pb-4 space-y-4"
               >
+                <details className="rounded-2xl border border-border bg-muted/30 p-4">
+                  <summary className="cursor-pointer text-sm font-semibold text-foreground">
+                    {t("expenses.v2.add.showDetails", "Weitere Angaben (optional)")}
+                  </summary>
+                  <div className="mt-4 space-y-4">
                 {/* Date */}
                 <div>
                   <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
@@ -540,6 +566,8 @@ export function AddExpenseSheet({
                     compact
                   />
                 </div>
+                  </div>
+                </details>
               </motion.div>
             )}
           </AnimatePresence>
@@ -571,27 +599,31 @@ export function AddExpenseSheet({
             )}
           </AnimatePresence>
 
-          {/* Expand toggles */}
-          <div className="px-5 pb-5 space-y-2">
-            <button
+        </div>
+
+        <div className="flex shrink-0 gap-2 border-t border-border bg-background px-5 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+          {stepIndex > 0 && (
+            <Button type="button" variant="outline" className="h-11" onClick={() => goToStep(steps[stepIndex - 1])}>
+              <ArrowLeft className="h-4 w-4" />
+              {t("expenses.v2.add.back", "Zurück")}
+            </Button>
+          )}
+          {step !== "split" ? (
+            <Button
               type="button"
-              onClick={() => setStep(step === "quick" ? "detail" : "quick")}
-              className="w-full h-11 rounded-xl bg-muted border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.05] cursor-pointer transition-colors flex items-center justify-center gap-2"
+              className="h-11 flex-1"
+              disabled={step === "amount" ? amountNum <= 0 : step === "category" ? !description.trim() || (categories.length > 0 && !categoryId) : !payersValid}
+              onClick={() => goToStep(steps[stepIndex + 1])}
             >
-              {step === "quick"
-                ? t("expenses.v2.add.showDetails")
-                : t("expenses.v2.add.hideDetails")}
-            </button>
-            <button
-              type="button"
-              onClick={() => setStep(step === "split" ? "detail" : "split")}
-              className="w-full h-11 rounded-xl bg-muted border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-white/[0.05] cursor-pointer transition-colors flex items-center justify-center gap-2"
-            >
-              {step === "split"
-                ? t("expenses.v2.add.hideSplit")
-                : t("expenses.v2.add.adjustSplit", { amount: fmt.money(sumShares) })}
-            </button>
-          </div>
+              {t("expenses.v2.add.next", "Weiter")}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          ) : (
+            <Button type="button" className="h-11 flex-1" onClick={handleSave} disabled={!canSave || !splitValid || addExpense.isPending}>
+              {addExpense.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              {t("expenses.v2.common.save")}
+            </Button>
+          )}
         </div>
       </SheetContent>
     </Sheet>
