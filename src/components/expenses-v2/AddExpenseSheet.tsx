@@ -354,11 +354,11 @@ export function AddExpenseSheet({
           <div className="px-5 py-6">
             {step === "amount" && <>
             {/* Big amount input */}
-            <div className="text-center mb-6">
-              <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-semibold mb-2">
+            <div className="flex min-h-[48vh] flex-col justify-center sm:min-h-[22rem]">
+              <div className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 {t("expenses.amount")}
               </div>
-              <div className="relative inline-flex items-baseline gap-1">
+              <div className="flex min-h-48 w-full items-center gap-3 rounded-[2rem] border border-violet-400/35 bg-gradient-to-br from-violet-500/15 via-background to-cyan-500/10 px-5 shadow-[0_18px_48px_-32px_rgba(139,92,246,0.75)] transition-colors focus-within:border-violet-400/80 focus-within:ring-2 focus-within:ring-violet-400/20 sm:min-h-56 sm:px-8">
                 <input
                   type="text"
                   inputMode="decimal"
@@ -366,10 +366,10 @@ export function AddExpenseSheet({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
                   placeholder={fmt.amountPlaceholder}
-                  className="w-64 max-w-full text-center text-6xl sm:text-7xl font-black bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground tabular-nums tracking-tighter"
+                  className="min-w-0 flex-1 bg-transparent text-center text-[clamp(3.25rem,11vw,5.25rem)] font-black tracking-tight text-foreground outline-none placeholder:text-muted-foreground/55 tabular-nums"
                   aria-label={t("expenses.amount")}
                 />
-                <span className="text-2xl sm:text-3xl font-bold text-muted-foreground">
+                <span className="shrink-0 text-3xl font-bold text-muted-foreground sm:text-4xl">
                   {fmt.currencySymbol()}
                 </span>
               </div>
@@ -497,7 +497,7 @@ export function AddExpenseSheet({
 
             {step === "payer" && <>
             {/* Payer selector (single / multi) */}
-            <div className="mt-4">
+            <div className="flex min-h-[48vh] flex-col justify-center sm:min-h-[22rem]">
               <PayerSelector
                 participants={participants}
                 amount={amountNum}
@@ -527,14 +527,14 @@ export function AddExpenseSheet({
                   <div className="mt-4 space-y-4">
                 {/* Date */}
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
-                    <Calendar className="w-3 h-3" /> {t("expenses.v2.common.date")}
+                  <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <Calendar className="h-4 w-4" /> {t("expenses.v2.common.date")}
                   </div>
                   <input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="date-input-left appearance-none block w-full min-w-0 h-11 px-3 rounded-xl bg-muted border border-border text-foreground text-sm text-left [color-scheme:light] dark:[color-scheme:dark] focus:outline-none focus:border-primary/40"
+                    className="expense-date-input block h-20 w-full min-w-0 rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-500/10 to-cyan-500/5 px-4 text-center text-xl font-semibold tabular-nums text-foreground [color-scheme:light] focus:border-violet-400/70 focus:outline-none focus:ring-2 focus:ring-violet-400/20 dark:[color-scheme:dark]"
                   />
                 </div>
 

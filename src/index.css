@@ -1048,10 +1048,20 @@ html.capacitor-native ::-webkit-scrollbar {
   animation: none !important;
 }
 
-/* iOS/WebKit centers the value of <input type="date"> via its shadow part —
-   force left alignment where the design expects it (e.g. AddExpenseSheet). */
-input.date-input-left::-webkit-date-and-time-value {
-  text-align: left;
+/* Keep the expense date centered vertically and horizontally in WebKit. */
+input.expense-date-input::-webkit-date-and-time-value {
+  display: flex;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+input.expense-date-input::-webkit-datetime-edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
 /* WebKit places the selected date at the top of appearance-none inputs unless
