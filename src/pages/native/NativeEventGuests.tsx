@@ -20,6 +20,7 @@ import {
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, staggerItem, blissBloom } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { getBaseUrl } from "@/lib/platform";
 import { type Participant } from "@/hooks/useEvent";
 
 /* ------------------------------------------------------------------ */
@@ -229,14 +230,19 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
   }, [visibleCount, filtered.length]);
 
   // Share URL using real slug
-  const shareUrl = `${window.location.origin}/e/${eventSlug}`;
+  const shareUrl = `${getBaseUrl()}/e/${eventSlug}`;
 
   // Copy helpers
-  const copyLink = useCallback(() => {
-    navigator.clipboard?.writeText(shareUrl);
-    setCopiedLink(true);
-    haptics.success();
-    setTimeout(() => setCopiedLink(false), 2000);
+  const copyLink = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopiedLink(true);
+      haptics.success();
+      setTimeout(() => setCopiedLink(false), 2000);
+    } catch (error) {
+      console.error("Could not copy invite link:", error);
+      haptics.error();
+    }
   }, [shareUrl, haptics]);
 
   const copyCode = useCallback(() => {
@@ -424,7 +430,7 @@ export default function NativeEventGuests({ eventSlug, participants, accessCode,
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold text-foreground">{t("nativeGuests.inviteLink")}</p>
                 <p className="text-[11px] text-muted-foreground truncate">
-                  event-bliss.com/e/{eventSlug}
+                  {shareUrl.replace(/^https?:\/\//, "")}
                 </p>
               </div>
               <div className="w-8 h-8 rounded-lg bg-foreground/5 border border-border flex items-center justify-center shrink-0">

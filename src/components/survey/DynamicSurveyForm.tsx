@@ -1,10 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
-import { Send, AlertCircle } from "lucide-react";
+import { Send, AlertCircle, ArrowLeft, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -76,6 +76,7 @@ interface DynamicSurveyFormProps {
   previewMode?: boolean;
   /** Overrides `settings` when previewing an unsaved draft. */
   previewSettings?: EventSettings;
+  previewQuestionKey?: string;
 }
 
 /** Maps a core question key to its react-hook-form field name (progress calc). */
@@ -100,6 +101,7 @@ const DynamicSurveyForm = ({
   honoreeName,
   previewMode = false,
   previewSettings,
+  previewQuestionKey,
 }: DynamicSurveyFormProps) => {
   const navigate = useNavigate();
   const { slug } = useParams<{ slug: string }>();
@@ -107,6 +109,8 @@ const DynamicSurveyForm = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [customAnswers, setCustomAnswers] = useState<Record<string, string | boolean>>({});
+  const [guidedStep, setGuidedStep] = useState(0);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   // Helper to translate template labels
   const translateLabel = (label: string): string => {
@@ -131,6 +135,8 @@ const DynamicSurveyForm = ({
   // Event branding → CSS vars for the whole form body (selected states, submit,
   // progress). Fallback to the theme tokens when no branding is set.
   const branding = config.branding;
+  const presentation = branding?.presentation ?? "classic";
+  const guided = presentation !== "classic";
   const primaryColor = branding?.primary_color || "#8B5CF6";
   const accentColor = branding?.accent_color || "#06B6D4";
   const brandVars = {
@@ -179,6 +185,40 @@ const DynamicSurveyForm = ({
   const participantAnswered = previewMode ? 1 : isValueAnswered(watched.participant) ? 1 : 0;
   const totalQuestions = 1 + enabledCoreKeys.length + customQuestions.length;
   const answeredQuestions = participantAnswered + answeredCore + answeredCustoms;
+  const questionOrder = getEffectiveQuestionOrder(config);
+  const customById = new Map(customQuestions.map((q) => [q.id, q]));
+  const visibleQuestionOrder = questionOrder.filter((id) =>
+    id.startsWith(CUSTOM_ORDER_PREFIX)
+      ? customById.has(id.slice(CUSTOM_ORDER_PREFIX.length))
+      : enabledCoreKeys.includes(id as CoreQuestionKey)
+  );
+  const stepIds = ["participant", ...visibleQuestionOrder, "finish"];
+  const currentStep = Math.min(guidedStep, stepIds.length - 1);
+  const currentStepId = stepIds[currentStep];
+  const showStep = (id: string) => !guided || currentStepId === id;
+
+  useEffect(() => {
+    if (!previewQuestionKey || !guided) return;
+    const index = stepIds.indexOf(previewQuestionKey);
+    if (index >= 0) setGuidedStep(index);
+  }, [previewQuestionKey, guided, stepIds.join("|")]);
+
+  const goNext = async () => {
+    if (currentStepId === "participant" && !previewMode) {
+      if (!await form.trigger("participant")) return;
+    } else if (currentStepId.startsWith(CUSTOM_ORDER_PREFIX)) {
+      const question = customById.get(currentStepId.slice(CUSTOM_ORDER_PREFIX.length));
+      const answer = question && customAnswers[question.id];
+      if (question?.required && !(typeof answer === "boolean" || (typeof answer === "string" && answer.trim()))) {
+        toast.error(t("guestForm.requiredCustomToast", { defaultValue: "Bitte beantworte die Pflichtfrage: „{{label}}“", label: question.label }));
+        return;
+      }
+    } else if (currentStepId !== "finish" && currentStepId !== "participant") {
+      if (!await form.trigger(FIELD_BY_KEY[currentStepId as CoreQuestionKey])) return;
+    }
+    setGuidedStep((step) => Math.min(step + 1, stepIds.length - 1));
+    requestAnimationFrame(() => document.querySelector<HTMLElement>("[data-survey-form]")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  };
 
   const onSubmit = async (data: DynamicResponseFormData) => {
     if (previewMode) return; // preview never writes
@@ -284,26 +324,23 @@ const DynamicSurveyForm = ({
   // Core + custom questions render in the organizer-defined order. For events
   // without a stored question_order this is the legacy order (core keys first,
   // then custom questions), so the rendered result is unchanged.
-  const questionOrder = getEffectiveQuestionOrder(config);
-  const customById = new Map((config.custom_questions || []).map((q) => [q.id, q]));
-
   return (
-    <section className="pb-24 md:pb-8" style={brandVars}>
+    <section className="pb-24 md:pb-8" style={brandVars} data-survey-form data-presentation={presentation}>
       {/* Floating guest-completion bar (distinct from the event ProgressIndicator) */}
       <SurveyProgressBar
-        currentStep={answeredQuestions}
-        totalSteps={totalQuestions}
+        currentStep={guided ? currentStep + 1 : answeredQuestions}
+        totalSteps={guided ? stepIds.length : totalQuestions}
         themeColor={primaryColor}
       />
 
       <div className="container">
-        <div className="max-w-2xl mx-auto">
+        <div className={guided ? "max-w-xl mx-auto" : "max-w-2xl mx-auto"}>
           <div className="text-center mb-8 mt-6 animate-slide-up">
             <h2 className="font-display text-2xl font-semibold mb-2">
-              {t("guestForm.heading", { defaultValue: "Deine Antwort" })}
+              {guided ? t("guestForm.guidedHeading", "Dein Weg zum Event") : t("guestForm.heading", { defaultValue: "Deine Antwort" })}
             </h2>
             <p className="text-muted-foreground text-sm">
-              {t("guestForm.subheading", {
+              {guided ? t("guestForm.guidedStep", "Schritt {{step}} von {{total}}", { step: currentStep + 1, total: stepIds.length }) : t("guestForm.subheading", {
                 defaultValue:
                   "Dauert nur 2 Minuten. Du kannst später erneut absenden, um zu aktualisieren.",
               })}
@@ -311,9 +348,24 @@ const DynamicSurveyForm = ({
           </div>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6"
+              onTouchStart={(event) => {
+                if (presentation === "slides") touchStart.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+              }}
+              onTouchEnd={(event) => {
+                if (presentation !== "slides" || !touchStart.current) return;
+                const dx = event.changedTouches[0].clientX - touchStart.current.x;
+                const dy = event.changedTouches[0].clientY - touchStart.current.y;
+                touchStart.current = null;
+                if (Math.abs(dx) < 90 || Math.abs(dy) > 50) return;
+                if (dx < 0 && currentStepId !== "finish") void goNext();
+                if (dx > 0) setGuidedStep((step) => Math.max(0, step - 1));
+              }}
+            >
               {/* Participant Selection - Dynamic from DB (always first) */}
-              <div data-question-key="participant">
+              <div data-question-key="participant" className={showStep("participant") ? "" : "hidden"}>
                 <SurveyQuestionWrapper>
                   {previewMode ? (
                     <div className="space-y-2">
@@ -361,7 +413,7 @@ const DynamicSurveyForm = ({
                   wrapped in a div[data-question-key] for the Form Studio peek
                   feature; empty:hidden keeps disabled (null-rendering) core
                   questions from leaving a phantom space-y gap. */}
-              {questionOrder.map((id) => {
+              {visibleQuestionOrder.map((id) => {
                 let content;
                 if (id.startsWith(CUSTOM_ORDER_PREFIX)) {
                   const question = customById.get(id.slice(CUSTOM_ORDER_PREFIX.length));
@@ -385,12 +437,26 @@ const DynamicSurveyForm = ({
                 return (
                   // space-y-6 keeps the DateBlocks fragment (date_blocks + partial_days)
                   // at the same 24px rhythm the form uses; no-op for single-card blocks.
-                  <div key={id} data-question-key={id} className="space-y-6 empty:hidden">
+                  <div key={guided ? `${id}-${currentStep}` : id} data-question-key={id} className={showStep(id) ? "space-y-6 empty:hidden" : "hidden"}>
                     {content}
                   </div>
                 );
               })}
 
+              {guided && currentStepId !== "finish" && (
+                <div className="flex items-center gap-3 pt-2">
+                  {currentStep > 0 && (
+                    <Button type="button" variant="outline" onClick={() => setGuidedStep((step) => Math.max(0, step - 1))}>
+                      <ArrowLeft className="mr-1 h-4 w-4" />{t("guestForm.back", "Zurück")}
+                    </Button>
+                  )}
+                  <Button type="button" onClick={() => void goNext()} className="flex-1 gradient-bg">
+                    {t("guestForm.next", "Weiter")}<ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              <div className={showStep("finish") ? "space-y-6" : "hidden"} data-question-key="finish">
               {/* Restrictions */}
               <SurveyQuestionWrapper>
                 <FormField
@@ -491,6 +557,11 @@ const DynamicSurveyForm = ({
 
               {/* Submit Button — branded accent→primary gradient */}
               <div className="pt-4">
+                {guided && (
+                  <Button type="button" variant="outline" onClick={() => setGuidedStep((step) => Math.max(0, step - 1))} className="mb-3 w-full">
+                    <ArrowLeft className="mr-2 h-4 w-4" />{t("guestForm.back", "Zurück")}
+                  </Button>
+                )}
                 <Button
                   type="submit"
                   size="lg"
@@ -509,6 +580,7 @@ const DynamicSurveyForm = ({
                     </>
                   )}
                 </Button>
+              </div>
               </div>
             </form>
           </Form>

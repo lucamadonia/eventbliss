@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { AddPinInput, PinCategory } from "@/hooks/useIdeaBoard";
 import { CATEGORY_LIST, CATEGORY_META } from "./categories";
+import { IdeaCategoryIcon } from "./IdeaCategoryIcon";
 
 export interface AiIdea {
   title: string;
@@ -224,7 +225,7 @@ export function AiIdeasSheet({
                   <ChoiceChip
                     key={c.key}
                     active={category === c.key}
-                    icon={c.icon}
+                    category={c.key}
                     emoji={c.emoji}
                     label={t(`ideaBoard.categories.${c.key}`, c.label)}
                     onClick={() => {
@@ -279,7 +280,7 @@ export function AiIdeasSheet({
                       className="flex gap-3 rounded-2xl border border-white/10 bg-white/5 p-3.5"
                     >
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/8">
-                        <img src={cat.icon} alt="" className="h-6 w-6 object-contain" />
+                        <IdeaCategoryIcon category={cat.key} className="h-6 w-6" />
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-bold leading-tight text-white">{idea.title}</p>
@@ -329,13 +330,13 @@ export function AiIdeasSheet({
 function ChoiceChip({
   active,
   emoji,
-  icon,
+  category,
   label,
   onClick,
 }: {
   active: boolean;
   emoji: string;
-  icon?: string;
+  category?: PinCategory;
   label: string;
   onClick: () => void;
 }) {
@@ -350,8 +351,8 @@ function ChoiceChip({
           : "bg-white/8 text-white/60 hover:bg-white/15",
       )}
     >
-      {icon ? (
-        <img src={icon} alt="" className="h-4 w-4 shrink-0 object-contain" />
+      {category ? (
+        <IdeaCategoryIcon category={category} className="h-4 w-4 shrink-0" />
       ) : (
         <span>{emoji}</span>
       )}

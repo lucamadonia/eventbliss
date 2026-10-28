@@ -57,18 +57,14 @@ export function AIRequestCard({
       onMouseLeave={handleLeave}
       disabled={locked}
       className={cn(
-        "group relative overflow-hidden rounded-2xl text-left p-5 min-h-[168px] flex flex-col",
-        "border border-border bg-gradient-to-br from-foreground/[0.08] to-foreground/5",
+        "group relative overflow-hidden rounded-2xl text-left p-4 min-h-[138px] flex flex-col",
+        "border border-border bg-card",
         "transition-all duration-300",
         !locked && "hover:border-foreground/25 cursor-pointer",
         locked && "cursor-not-allowed",
         isLoading && "liquid-shimmer",
       )}
-      style={{
-        boxShadow: mouse.active && !locked
-          ? `0 20px 50px -20px rgba(${accentColor}, 0.4)`
-          : "0 6px 20px -8px rgba(0, 0, 0, 0.5)",
-      }}
+      style={{ boxShadow: mouse.active && !locked ? `0 12px 30px -24px rgba(${accentColor}, 0.35)` : "none" }}
     >
       {/* Mouse-tracking radial spotlight */}
       {!locked && (
@@ -103,20 +99,16 @@ export function AIRequestCard({
       />
 
       {/* Content */}
-      <div className="relative flex items-start justify-between mb-4">
+      <div className="relative flex items-start justify-between mb-3">
         <motion.div
-          className={cn(
-            "flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br",
-            gradient,
-            disabled && "grayscale opacity-60",
-          )}
-          whileHover={locked ? undefined : { y: -4, scale: 1.08 }}
+          className={cn("flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10", disabled && "opacity-60")}
+          whileHover={locked ? undefined : { y: -2 }}
           transition={{ type: "spring", stiffness: 400, damping: 18 }}
         >
           {isLoading ? (
-            <Loader2 className="w-5 h-5 text-white animate-spin" />
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
           ) : (
-            <Icon className="w-5 h-5 text-white" strokeWidth={2.25} />
+              <Icon className="h-5 w-5 text-primary" strokeWidth={2} />
           )}
         </motion.div>
         {badge && !disabled && (
@@ -140,7 +132,7 @@ export function AIRequestCard({
           {label}
         </div>
         <div className={cn(
-          "text-xs md:text-[13px] leading-relaxed",
+          "text-[11px] md:text-xs leading-relaxed",
           disabled ? "text-muted-foreground" : "text-foreground/70",
         )}>
           {description}
@@ -148,7 +140,7 @@ export function AIRequestCard({
       </div>
 
       {/* Bottom accent line — fills in on hover */}
-      <div className="relative mt-4 h-[3px] rounded-full bg-foreground/5 overflow-hidden">
+      <div className="relative mt-4 h-px overflow-hidden rounded-full bg-border">
         <div
           aria-hidden
           className={cn(

@@ -12,6 +12,7 @@ import { spring } from "@/lib/motion";
 import { useHaptics } from "@/hooks/useHaptics";
 import type { BoardPin } from "@/hooks/useIdeaBoard";
 import { CATEGORY_META } from "./categories";
+import { IdeaCategoryIcon } from "./IdeaCategoryIcon";
 import { LinkPreviewCard } from "./LinkPreviewCard";
 
 interface PinCardProps {
@@ -69,8 +70,8 @@ export function PinCard({ pin, canDelete, index, onOpen, onReact, onDelete }: Pi
       onClick={onOpen}
       className={cn(
         "group relative mb-4 block w-full break-inside-avoid cursor-pointer overflow-hidden",
-        "rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl",
-        "shadow-lg shadow-black/20 transition-shadow hover:shadow-xl hover:shadow-violet-500/10",
+        "rounded-2xl border border-white/10 bg-[#20212b]",
+        "shadow-sm shadow-black/10 transition-colors hover:border-white/25",
       )}
     >
       {/* ---- Media / body by kind ---- */}
@@ -86,7 +87,7 @@ export function PinCard({ pin, canDelete, index, onOpen, onReact, onDelete }: Pi
       )}
 
       {pin.kind === "note" && (
-        <div className="bg-gradient-to-br from-violet-600/25 via-fuchsia-500/15 to-cyan-500/15 px-4 py-5">
+        <div className="bg-[#252530] px-4 py-5">
           {pin.title && (
             <p className="mb-1 text-sm font-bold leading-tight text-white">{pin.title}</p>
           )}
@@ -107,7 +108,7 @@ export function PinCard({ pin, canDelete, index, onOpen, onReact, onDelete }: Pi
       {/* ---- Footer: category chip + reactions/comments ---- */}
       <div className="flex items-center justify-between gap-2 px-3 py-2.5">
         <span className="inline-flex items-center gap-1 rounded-full bg-white/8 px-2 py-0.5 text-[11px] font-medium text-white/70">
-          <img src={cat.icon} alt="" className="h-4 w-4 object-contain" />
+          <IdeaCategoryIcon category={cat.key} className="h-4 w-4" />
           <span className="truncate">{catLabel}</span>
         </span>
 

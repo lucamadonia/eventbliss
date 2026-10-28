@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => {
     react(),
     ...(isCapacitorBuild ? [] : [VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.png", "apple-touch-icon.png", "og-image.png"],
+      includeAssets: ["favicon.png", "apple-touch-icon.png"],
       manifest: {
         name: "EventBliss - Smart Event Planning",
         short_name: "EventBliss",
@@ -71,7 +71,10 @@ export default defineConfig(({ mode }) => {
         // Invitations must reach the current server route. A precached app shell
         // from before that route existed can otherwise display a false 404.
         navigateFallbackDenylist: [/^\/party\/join(?:\/|$)/],
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,woff,ttf}"],
+        // Large route imagery is fetched when needed and then covered by the
+        // image runtime cache. Preloading every PNG on each PWA update wastes
+        // transfer even when guests only open an invitation.
+        globPatterns: ["**/*.{js,css,html,ico,svg,woff2,woff,ttf}"],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10 MB limit
         runtimeCaching: [
           {
