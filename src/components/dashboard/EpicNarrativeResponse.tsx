@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -222,14 +222,20 @@ interface SectionCardProps {
 
 function SectionCard({ section, index, services, participantCount, city, onBookService, timeBlocks, dayName, onAddTimeBlock, onAddToPlanner }: SectionCardProps) {
   const { t } = useTranslation();
+  const reducedMotion = useReducedMotion();
   const style = SECTION_STYLES[section.kind];
   const cleaned = useMemo(() => cleanBodyMarkdown(section.body), [section.body]);
+  // These images set a mood; they never claim to depict the suggested place.
+  const dayImages = ["day-glow", "day-light", "day-motion"];
+  const imageSrc = section.kind === "day"
+    ? `/images/planning-studio/${dayImages[((section.dayNumber ?? index + 1) - 1) % dayImages.length]}.webp`
+    : section.kind === "budget" ? "/images/planning-studio/budget.webp" : null;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={reducedMotion ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: Math.min(index * 0.08, 0.4), ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: reducedMotion ? 0 : 0.5, delay: reducedMotion ? 0 : Math.min(index * 0.08, 0.4), ease: [0.22, 1, 0.36, 1] }}
       className="relative"
     >
       {section.kind === "day" && (
@@ -240,9 +246,22 @@ function SectionCard({ section, index, services, participantCount, city, onBookS
         </div>
       )}
 
-      <GlassCard className="relative overflow-hidden rounded-[24px] border border-border/70 bg-card/80 p-0 shadow-none">
+      <GlassCard className="group relative overflow-hidden rounded-[24px] border border-border/70 bg-card/80 p-0 shadow-none">
+        {imageSrc && (
+          <div className={cn("relative isolate overflow-hidden", section.kind === "day" ? "h-44 sm:h-52" : "h-36 sm:h-44")}>
+            <img src={imageSrc} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#10101b]/90 via-[#10101b]/55 to-[#10101b]/10" />
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-[#10101b]/75 to-transparent" />
+            <div className="relative flex h-full flex-col justify-end p-5 sm:p-6">
+              <span className="mb-2 w-fit rounded-full border border-white/25 bg-black/25 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/85 backdrop-blur-sm">
+                {section.kind === "day" ? `${t("dashboard.ai.dayLabel", "Tag")} ${section.dayNumber ?? index + 1}` : style.label}
+              </span>
+              <h3 className="max-w-[92%] text-xl font-bold leading-tight text-white drop-shadow-sm sm:text-2xl">{section.title}</h3>
+            </div>
+          </div>
+        )}
         <div className="relative p-5 md:p-6">
-          <div className="flex items-start gap-4 mb-4">
+          {!imageSrc && <div className="flex items-start gap-4 mb-4">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-border bg-muted/50 text-2xl">
               {section.emoji}
             </div>
@@ -256,7 +275,7 @@ function SectionCard({ section, index, services, participantCount, city, onBookS
                 {section.title}
               </h3>
             </div>
-          </div>
+          </div>}
 
           {/* Body — budget gets visualizer, everything else markdown */}
           {timeBlocks && timeBlocks.length > 0 ? (
