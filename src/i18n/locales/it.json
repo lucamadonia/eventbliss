@@ -158,6 +158,10 @@
     "forHonoree": "per"
   },
   "guestForm": {
+    "guidedHeading": "Il tuo percorso verso l’evento",
+    "guidedStep": "Passo {{step}} di {{total}}",
+    "back": "Indietro",
+    "next": "Avanti",
     "heading": "La tua risposta",
     "subheading": "Bastano 2 minuti. Puoi inviarla di nuovo più tardi per aggiornarla.",
     "participantLabel": "Chi sei?",
@@ -1442,6 +1446,7 @@
     "roseDesc": "Elegante e raffinato"
   },
   "common": {
+    "retry": "Riprova",
     "clear": "Cancella",
     "save": "Salva",
     "cancel": "Annulla",
@@ -3244,6 +3249,11 @@
       }
     },
     "ai": {
+      "dayLabel": "Giorno",
+      "tipsLabel": "Consigli",
+      "priceOnRequest": "Prezzo su richiesta",
+      "noMatchingServices": "Nessuna offerta prenotabile adatta per ora",
+      "noMatchingServicesDesc": "Scopri altre esperienze nel marketplace o perfeziona il piano.",
       "title": "Assistente IA",
       "subtitle": "Ottieni aiuto con la tua pianificazione",
       "basedOn": "Basato su {{count}} risposte per l'evento di {{name}}",
@@ -3689,6 +3699,9 @@
         "openLabel": "in sospeso"
       },
       "add": {
+        "stepProgress": "Passo {{step}} di 4",
+        "back": "Indietro",
+        "next": "Avanti",
         "srTitle": "Aggiungi una spesa",
         "title": "Nuova spesa",
         "listening": "In ascolto …",
@@ -8862,6 +8875,7 @@
     "host": "Host"
   },
   "nativeSchedule": {
+    "saveFailed": "Impossibile salvare l’attività",
     "categories": {
       "food": "Cibo e Bevande",
       "activity": "Attività",
@@ -8877,6 +8891,7 @@
     "addActivity": "Aggiungi attività",
     "day": "Giorno {{num}}",
     "form": {
+      "endAfterStart": "L’ora di fine deve essere successiva a quella di inizio.",
       "title": "Titolo",
       "time": "Ora",
       "category": "Categoria",
@@ -9938,6 +9953,9 @@
       "receiptAlt": "Scontrino"
     },
     "expenses": {
+      "stepProgress": "Passo {{step}} di 3",
+      "back": "Indietro",
+      "next": "Avanti",
       "totalSpent": "Spesa totale",
       "perPerson": "/ persona",
       "categories": "Categorie",
@@ -10092,6 +10110,20 @@
     "flaschendrehen": "Gira la bottiglia"
   },
   "formStudio": {
+    "chooseEmoji": "Scegli emoji",
+    "removeEmoji": "Senza emoji",
+    "presentationTitle": "Layout del modulo",
+    "presentationHint": "Scegli come gli ospiti scorrono le domande.",
+    "presentation": {
+      "classic": "Tutte le domande",
+      "wizard": "Procedura guidata",
+      "slides": "Schede"
+    },
+    "presentationDescription": {
+      "classic": "Tutto in una pagina",
+      "wizard": "Passo dopo passo",
+      "slides": "Una domanda per scheda"
+    },
     "title": "Form Studio",
     "edit": "Modifica",
     "preview": "Anteprima",

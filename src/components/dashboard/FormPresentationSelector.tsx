@@ -17,7 +17,7 @@ export function FormPresentationSelector({ value, onChange }: { value?: Presenta
     <div className="space-y-3">
       <div>
         <h3 className="text-sm font-semibold text-foreground">{t("formStudio.presentationTitle", "Formular-Darstellung")}</h3>
-        <p className="text-xs text-muted-foreground">{t("formStudio.presentationDescription", "So erleben Gäste die Fragen. Farben und Bild bleiben separat wählbar.")}</p>
+        <p className="text-xs text-muted-foreground">{t("formStudio.presentationHint", "So erleben Gäste die Fragen. Farben und Bild bleiben separat wählbar.")}</p>
       </div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label={t("formStudio.presentationTitle", "Formular-Darstellung")}>
         {OPTIONS.map((option) => {

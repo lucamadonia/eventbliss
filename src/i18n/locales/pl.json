@@ -158,6 +158,10 @@
     "forHonoree": "dla"
   },
   "guestForm": {
+    "guidedHeading": "Twoja droga do wydarzenia",
+    "guidedStep": "Krok {{step}} z {{total}}",
+    "back": "Wstecz",
+    "next": "Dalej",
     "heading": "Twoja odpowiedź",
     "subheading": "Zajmie tylko 2 minuty. Możesz wysłać ponownie później, aby zaktualizować.",
     "participantLabel": "Kim jesteś?",
@@ -1442,6 +1446,7 @@
     "roseDesc": "Elegancki i stylowy"
   },
   "common": {
+    "retry": "Spróbuj ponownie",
     "clear": "Wyczyść",
     "save": "Zapisz",
     "cancel": "Anuluj",
@@ -3294,6 +3299,11 @@
       }
     },
     "ai": {
+      "dayLabel": "Dzień",
+      "tipsLabel": "Wskazówki",
+      "priceOnRequest": "Cena na zapytanie",
+      "noMatchingServices": "Brak pasujących ofert do rezerwacji",
+      "noMatchingServicesDesc": "Odkryj więcej atrakcji w marketplace lub dopracuj plan.",
       "title": "Asystent AI",
       "subtitle": "Uzyskaj pomoc w planowaniu",
       "basedOn": "Na podstawie {{count}} odpowiedzi dla wydarzenia {{name}}",
@@ -3739,6 +3749,9 @@
         "openLabel": "otwarte"
       },
       "add": {
+        "stepProgress": "Krok {{step}} z 4",
+        "back": "Wstecz",
+        "next": "Dalej",
         "srTitle": "Dodaj wydatek",
         "title": "Nowy wydatek",
         "listening": "Słucham …",
@@ -8936,6 +8949,7 @@
     "host": "Gospodarz"
   },
   "nativeSchedule": {
+    "saveFailed": "Nie udało się zapisać aktywności",
     "categories": {
       "food": "Jedzenie i napoje",
       "activity": "Aktywność",
@@ -8951,6 +8965,7 @@
     "addActivity": "Dodaj aktywność",
     "day": "Dzień {{num}}",
     "form": {
+      "endAfterStart": "Godzina zakończenia musi być późniejsza niż godzina rozpoczęcia.",
       "title": "Tytuł",
       "time": "Godzina",
       "category": "Kategoria",
@@ -10012,6 +10027,9 @@
       "receiptAlt": "Paragon"
     },
     "expenses": {
+      "stepProgress": "Krok {{step}} z 3",
+      "back": "Wstecz",
+      "next": "Dalej",
       "totalSpent": "Łączne wydatki",
       "perPerson": "/ osobę",
       "categories": "Kategorie",
@@ -10166,6 +10184,20 @@
     "flaschendrehen": "Butelka"
   },
   "formStudio": {
+    "chooseEmoji": "Wybierz emoji",
+    "removeEmoji": "Bez emoji",
+    "presentationTitle": "Układ formularza",
+    "presentationHint": "Wybierz, jak goście przechodzą przez pytania.",
+    "presentation": {
+      "classic": "Wszystkie pytania",
+      "wizard": "Kreator",
+      "slides": "Karty"
+    },
+    "presentationDescription": {
+      "classic": "Wszystko na jednej stronie",
+      "wizard": "Krok po kroku",
+      "slides": "Jedno pytanie na karcie"
+    },
     "title": "Form Studio",
     "edit": "Edytuj",
     "preview": "Podgląd",

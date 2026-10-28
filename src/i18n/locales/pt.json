@@ -158,6 +158,10 @@
     "forHonoree": "para"
   },
   "guestForm": {
+    "guidedHeading": "O teu caminho até ao evento",
+    "guidedStep": "Passo {{step}} de {{total}}",
+    "back": "Voltar",
+    "next": "Seguinte",
     "heading": "A tua resposta",
     "subheading": "Demora só 2 minutos. Podes enviar novamente mais tarde para atualizar.",
     "participantLabel": "Quem és tu?",
@@ -1442,6 +1446,7 @@
     "roseDesc": "Elegante e estiloso"
   },
   "common": {
+    "retry": "Tentar novamente",
     "clear": "Limpar",
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -3294,6 +3299,11 @@
       }
     },
     "ai": {
+      "dayLabel": "Dia",
+      "tipsLabel": "Dicas",
+      "priceOnRequest": "Preço sob consulta",
+      "noMatchingServices": "Ainda não há ofertas reserváveis adequadas",
+      "noMatchingServicesDesc": "Descobre mais experiências no marketplace ou ajusta o teu plano.",
       "title": "Assistente IA",
       "subtitle": "Obtém ajuda com o teu planeamento",
       "basedOn": "Baseado em {{count}} respostas para o evento de {{name}}",
@@ -3739,6 +3749,9 @@
         "openLabel": "em aberto"
       },
       "add": {
+        "stepProgress": "Passo {{step}} de 4",
+        "back": "Voltar",
+        "next": "Seguinte",
         "srTitle": "Adicionar despesa",
         "title": "Nova despesa",
         "listening": "A ouvir …",
@@ -8912,6 +8925,7 @@
     "host": "Anfitrião"
   },
   "nativeSchedule": {
+    "saveFailed": "Não foi possível guardar a atividade",
     "categories": {
       "food": "Comida e bebida",
       "activity": "Atividade",
@@ -8927,6 +8941,7 @@
     "addActivity": "Adicionar atividade",
     "day": "Dia {{num}}",
     "form": {
+      "endAfterStart": "A hora de fim deve ser posterior à hora de início.",
       "title": "Título",
       "time": "Hora",
       "category": "Categoria",
@@ -9988,6 +10003,9 @@
       "receiptAlt": "Recibo"
     },
     "expenses": {
+      "stepProgress": "Passo {{step}} de 3",
+      "back": "Voltar",
+      "next": "Seguinte",
       "totalSpent": "Gasto total",
       "perPerson": "/ pessoa",
       "categories": "Categorias",
@@ -10142,6 +10160,20 @@
     "flaschendrehen": "Girar a garrafa"
   },
   "formStudio": {
+    "chooseEmoji": "Escolher emoji",
+    "removeEmoji": "Sem emoji",
+    "presentationTitle": "Apresentação do formulário",
+    "presentationHint": "Escolhe como os convidados percorrem as perguntas.",
+    "presentation": {
+      "classic": "Todas as perguntas",
+      "wizard": "Assistente",
+      "slides": "Cartões"
+    },
+    "presentationDescription": {
+      "classic": "Tudo numa página",
+      "wizard": "Passo a passo",
+      "slides": "Uma pergunta por cartão"
+    },
     "title": "Form Studio",
     "edit": "Editar",
     "preview": "Pré-visualização",

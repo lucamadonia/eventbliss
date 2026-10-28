@@ -160,6 +160,10 @@
   "guestForm": {
     "heading": "Your response",
     "subheading": "Takes just 2 minutes. You can submit again later to update.",
+    "guidedHeading": "Your way to the event",
+    "guidedStep": "Step {{step}} of {{total}}",
+    "back": "Back",
+    "next": "Next",
     "participantLabel": "Who are you?",
     "participantPlaceholder": "Select your name...",
     "restrictionsLabel": "Allergies / restrictions (optional)",
@@ -1443,6 +1447,7 @@
   },
   "common": {
     "clear": "Clear",
+    "retry": "Try again",
     "save": "Save",
     "cancel": "Cancel",
     "close": "Close",
@@ -3224,8 +3229,8 @@
       }
     },
     "ai": {
-      "title": "AI Assistant",
-      "subtitle": "Get help with your planning",
+      "title": "Planning Studio",
+      "subtitle": "Turn your group's answers into a plan",
       "basedOn": "Based on {{count}} responses for {{name}}'s event",
       "tripIdeas": "Trip Ideas",
       "tripIdeasDesc": "Suggest destinations",
@@ -3242,7 +3247,12 @@
       "noData": "No data yet",
       "noDataDesc": "Share the form. Answers will make your plan more personal.",
       "tooManyRequests": "Too many requests. Please wait a moment.",
-      "requestFailed": "AI request failed. Please try again.",
+      "requestFailed": "Could not create the plan. Please try again.",
+      "dayLabel": "Day",
+      "tipsLabel": "Tips",
+      "priceOnRequest": "Price on request",
+      "noMatchingServices": "No matching bookable offers yet",
+      "noMatchingServicesDesc": "Explore more experiences in the marketplace or refine your plan.",
       "ideaLabel": "IDEA",
       "activityLabel": "ACTIVITY",
       "topPick": "Top Pick",
@@ -3671,6 +3681,9 @@
       "add": {
         "srTitle": "Add expense",
         "title": "New expense",
+        "stepProgress": "Step {{step}} of 4",
+        "back": "Back",
+        "next": "Next",
         "listening": "Listening …",
         "descriptionPlaceholder": "What for? e.g. pizza, petrol, Airbnb",
         "voiceStart": "Start voice input",
@@ -8838,6 +8851,7 @@
     "host": "Host"
   },
   "nativeSchedule": {
+    "saveFailed": "Could not save the activity",
     "categories": {
       "food": "Food & Drinks",
       "activity": "Activity",
@@ -8855,6 +8869,7 @@
     "form": {
       "title": "Title",
       "time": "Time",
+      "endAfterStart": "The end time must be after the start time.",
       "category": "Category",
       "notes": "Notes",
       "location": "Location",
@@ -9915,6 +9930,9 @@
     },
     "expenses": {
       "totalSpent": "Total spending",
+      "stepProgress": "Step {{step}} of 3",
+      "back": "Back",
+      "next": "Next",
       "perPerson": "/ person",
       "categories": "Categories",
       "noneYet": "No expenses yet.",
@@ -10069,6 +10087,20 @@
   },
   "formStudio": {
     "title": "Form Studio",
+    "chooseEmoji": "Choose emoji",
+    "removeEmoji": "No emoji",
+    "presentationTitle": "Form layout",
+    "presentationHint": "Choose how guests move through the questions.",
+    "presentation": {
+      "classic": "All questions",
+      "wizard": "Wizard",
+      "slides": "Slides"
+    },
+    "presentationDescription": {
+      "classic": "Everything on one page",
+      "wizard": "Step by step",
+      "slides": "One question per card"
+    },
     "edit": "Edit",
     "preview": "Preview",
     "saved": "Saved",

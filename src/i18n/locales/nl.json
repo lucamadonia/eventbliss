@@ -158,6 +158,10 @@
     "forHonoree": "voor"
   },
   "guestForm": {
+    "guidedHeading": "Jouw weg naar het evenement",
+    "guidedStep": "Stap {{step}} van {{total}}",
+    "back": "Terug",
+    "next": "Volgende",
     "heading": "Jouw antwoord",
     "subheading": "Duurt maar 2 minuten. Je kunt later opnieuw versturen om bij te werken.",
     "participantLabel": "Wie ben jij?",
@@ -1442,6 +1446,7 @@
     "roseDesc": "Elegant & stijlvol"
   },
   "common": {
+    "retry": "Opnieuw proberen",
     "clear": "Wissen",
     "save": "Opslaan",
     "cancel": "Annuleren",
@@ -3294,6 +3299,11 @@
       }
     },
     "ai": {
+      "dayLabel": "Dag",
+      "tipsLabel": "Tips",
+      "priceOnRequest": "Prijs op aanvraag",
+      "noMatchingServices": "Nog geen passende boekbare aanbiedingen",
+      "noMatchingServicesDesc": "Ontdek meer ervaringen in de marketplace of verfijn je plan.",
       "title": "AI Assistent",
       "subtitle": "Krijg hulp bij je planning",
       "basedOn": "Gebaseerd op {{count}} antwoorden voor {{name}}'s evenement",
@@ -3739,6 +3749,9 @@
         "openLabel": "open"
       },
       "add": {
+        "stepProgress": "Stap {{step}} van 4",
+        "back": "Terug",
+        "next": "Volgende",
         "srTitle": "Uitgave toevoegen",
         "title": "Nieuwe uitgave",
         "listening": "Luistert …",
@@ -8912,6 +8925,7 @@
     "host": "Host"
   },
   "nativeSchedule": {
+    "saveFailed": "Activiteit kon niet worden opgeslagen",
     "categories": {
       "food": "Eten & drinken",
       "activity": "Activiteit",
@@ -8927,6 +8941,7 @@
     "addActivity": "Activiteit toevoegen",
     "day": "Dag {{num}}",
     "form": {
+      "endAfterStart": "De eindtijd moet na de begintijd liggen.",
       "title": "Titel",
       "time": "Tijd",
       "category": "Categorie",
@@ -9988,6 +10003,9 @@
       "receiptAlt": "Bon"
     },
     "expenses": {
+      "stepProgress": "Stap {{step}} van 3",
+      "back": "Terug",
+      "next": "Volgende",
       "totalSpent": "Totale uitgaven",
       "perPerson": "/ persoon",
       "categories": "Categorieën",
@@ -10142,6 +10160,20 @@
     "flaschendrehen": "Flesje draaien"
   },
   "formStudio": {
+    "chooseEmoji": "Emoji kiezen",
+    "removeEmoji": "Geen emoji",
+    "presentationTitle": "Formulierweergave",
+    "presentationHint": "Kies hoe gasten door de vragen gaan.",
+    "presentation": {
+      "classic": "Alle vragen",
+      "wizard": "Stapsgewijs",
+      "slides": "Kaarten"
+    },
+    "presentationDescription": {
+      "classic": "Alles op één pagina",
+      "wizard": "Stap voor stap",
+      "slides": "Eén vraag per kaart"
+    },
     "title": "Form Studio",
     "edit": "Bewerken",
     "preview": "Voorbeeld",
