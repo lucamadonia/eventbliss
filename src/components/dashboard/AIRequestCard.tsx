@@ -1,154 +1,60 @@
-import { useCallback, useState } from "react";
 import { motion } from "framer-motion";
-import { Loader2, Lock, type LucideIcon } from "lucide-react";
+import { ArrowUpRight, Loader2, Lock, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface AIRequestCardProps {
   label: string;
   description: string;
   icon: LucideIcon;
-  gradient: string;          // e.g. "from-purple-600 via-pink-600 to-amber-500"
-  accentColor: string;       // rgb tuple for spotlight (e.g. "236,72,153")
+  imageSrc: string;
+  gradient: string;
   onClick: () => void;
   isLoading?: boolean;
   disabled?: boolean;
-  lockedLabel?: string;      // shown over desaturated card when disabled
-  badge?: string;            // optional top-right pill, e.g. "NEU"
-  index?: number;            // for stagger reveal
+  lockedLabel?: string;
+  badge?: string;
+  index?: number;
 }
 
 export function AIRequestCard({
-  label,
-  description,
-  icon: Icon,
-  gradient,
-  accentColor,
-  onClick,
-  isLoading = false,
-  disabled = false,
-  lockedLabel,
-  badge,
-  index = 0,
+  label, description, icon: Icon, imageSrc, gradient, onClick,
+  isLoading = false, disabled = false, lockedLabel, badge, index = 0,
 }: AIRequestCardProps) {
-  const [mouse, setMouse] = useState({ x: 50, y: 50, active: false });
-
-  const handleMove = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setMouse({ x, y, active: true });
-  }, []);
-
-  const handleLeave = useCallback(() => {
-    setMouse((m) => ({ ...m, active: false }));
-  }, []);
-
   const locked = disabled || isLoading;
 
   return (
     <motion.button
-      initial={{ opacity: 0, y: 14 }}
+      type="button"
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: Math.min(index * 0.06, 0.3), ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.35, delay: Math.min(index * 0.06, 0.3) }}
       whileHover={locked ? undefined : { y: -3 }}
       whileTap={locked ? undefined : { scale: 0.98 }}
-      onClick={locked ? undefined : onClick}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
+      onClick={onClick}
       disabled={locked}
       className={cn(
-        "group relative overflow-hidden rounded-2xl text-left p-4 min-h-[138px] flex flex-col",
-        "border border-border bg-card",
-        "transition-all duration-300",
-        !locked && "hover:border-foreground/25 cursor-pointer",
-        locked && "cursor-not-allowed",
-        isLoading && "liquid-shimmer",
+        "group relative h-56 w-[min(76vw,19rem)] shrink-0 snap-center overflow-hidden rounded-[22px] border border-white/15 bg-gradient-to-br text-left shadow-[0_16px_40px_-24px_rgba(0,0,0,.8)] sm:w-[19rem]",
+        gradient,
+        locked && "cursor-not-allowed opacity-55",
+        !locked && "hover:border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400",
       )}
-      style={{ boxShadow: mouse.active && !locked ? `0 12px 30px -24px rgba(${accentColor}, 0.35)` : "none" }}
     >
-      {/* Mouse-tracking radial spotlight */}
-      {!locked && (
-        <div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none transition-opacity duration-300"
-          style={{
-            opacity: mouse.active ? 1 : 0,
-            background: `radial-gradient(350px circle at ${mouse.x}% ${mouse.y}%, rgba(${accentColor}, 0.18), transparent 60%)`,
-          }}
-        />
-      )}
+      <img src={imageSrc} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]" />
+      <span className="absolute inset-0 bg-gradient-to-t from-[#090815] via-[#090815]/50 to-[#090815]/10" />
 
-      {/* Gradient sheen on hover (diagonal) */}
-      <div
-        aria-hidden
-        className={cn(
-          "absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none bg-gradient-to-br",
-          gradient,
-          "mix-blend-overlay",
-        )}
-        style={{ opacity: mouse.active && !locked ? 0.12 : 0 }}
-      />
+      <span className="absolute left-4 top-4 grid h-10 w-10 place-items-center rounded-xl border border-white/25 bg-black/30 text-white backdrop-blur-md">
+        {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Icon className="h-5 w-5" />}
+      </span>
+      {badge && !disabled && <span className="absolute right-4 top-4 rounded-full border border-white/25 bg-black/35 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-md">{badge}</span>}
+      {disabled && lockedLabel && <span className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[10px] font-semibold text-white"><Lock className="h-3 w-3" />{lockedLabel}</span>}
 
-      {/* Decorative blur glow bottom-right */}
-      <div
-        aria-hidden
-        className={cn(
-          "absolute -bottom-8 -right-8 w-32 h-32 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity pointer-events-none bg-gradient-to-br",
-          gradient,
-        )}
-      />
-
-      {/* Content */}
-      <div className="relative flex items-start justify-between mb-3">
-        <motion.div
-          className={cn("flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10", disabled && "opacity-60")}
-          whileHover={locked ? undefined : { y: -2 }}
-          transition={{ type: "spring", stiffness: 400, damping: 18 }}
-        >
-          {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin text-primary" />
-          ) : (
-              <Icon className="h-5 w-5 text-primary" strokeWidth={2} />
-          )}
-        </motion.div>
-        {badge && !disabled && (
-          <span className="text-[9px] font-black uppercase tracking-widest text-white bg-gradient-to-r from-pink-500 to-amber-500 px-2 py-0.5 rounded-full shadow-md">
-            {badge}
-          </span>
-        )}
-        {disabled && lockedLabel && (
-          <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground bg-foreground/10 px-2 py-0.5 rounded-full">
-            <Lock className="w-2.5 h-2.5" />
-            {lockedLabel}
-          </span>
-        )}
-      </div>
-
-      <div className="relative flex-1">
-        <div className={cn(
-          "font-black text-base md:text-lg leading-tight mb-1.5",
-          disabled ? "text-muted-foreground" : "text-foreground",
-        )}>
-          {label}
-        </div>
-        <div className={cn(
-          "text-[11px] md:text-xs leading-relaxed",
-          disabled ? "text-muted-foreground" : "text-foreground/70",
-        )}>
-          {description}
-        </div>
-      </div>
-
-      {/* Bottom accent line — fills in on hover */}
-      <div className="relative mt-4 h-px overflow-hidden rounded-full bg-border">
-        <div
-          aria-hidden
-          className={cn(
-            "absolute inset-y-0 left-0 w-0 group-hover:w-full transition-[width] duration-500 ease-out bg-gradient-to-r",
-            gradient,
-          )}
-        />
-      </div>
+      <span className="absolute inset-x-4 bottom-4 flex items-end justify-between gap-3 text-white">
+        <span className="min-w-0">
+          <span className="block text-lg font-semibold leading-tight tracking-tight">{label}</span>
+          <span className="mt-1 block text-xs leading-snug text-white/80">{description}</span>
+        </span>
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/30 bg-white/15 backdrop-blur-md"><ArrowUpRight className="h-4 w-4" /></span>
+      </span>
     </motion.button>
   );
 }
