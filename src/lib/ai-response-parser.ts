@@ -438,6 +438,8 @@ export function parseDayPlan(response: string): ParsedDayPlan {
  * Supports all 10 languages including Italian day names
  */
 function matchDayHeader(line: string): { dayName: string; title: string; emoji: string } | null {
+  // The planning prompt places a calendar icon before the numbered day.
+  const normalizedLine = line.replace(/^(#{2,3})\s*[\p{Extended_Pictographic}\uFE0F]+\s*/u, '$1 ');
   // All day name patterns - comprehensive list for all 10 supported languages
   const dayNamePattern = '(' + [
     // German
@@ -478,7 +480,7 @@ function matchDayHeader(line: string): { dayName: string; title: string; emoji: 
   ];
 
   for (const pattern of patterns) {
-    const match = line.match(pattern);
+    const match = normalizedLine.match(pattern);
     if (match) {
       const title = match[2] ? cleanMarkdown(match[2]) : '';
       const emojiMatch = title.match(/([\p{Emoji}\u{1F300}-\u{1F9FF}]+)/gu);

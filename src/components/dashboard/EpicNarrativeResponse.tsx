@@ -414,15 +414,16 @@ export const EpicNarrativeResponse = ({
   const { intro, sections } = useMemo(() => {
     if (requestType === "day_plan" && parsedDays.length > 0) {
       const plan = parseDayPlan(response);
+      const summarySections = parseNarrative(response).sections.filter((section) => section.kind === "budget" || section.kind === "tips");
       return {
         intro: plan.intro,
-        sections: parsedDays.map((day, index): NarrativeSection => ({
+        sections: [...parsedDays.map((day, index): NarrativeSection => ({
           emoji: day.emoji || "📅",
           title: day.title || day.dayName,
           body: day.timeBlocks.map((block) => `${block.time} ${block.title} ${block.description} ${block.location}`).join("\n"),
           kind: "day",
           dayNumber: index + 1,
-        })),
+        })), ...summarySections],
       };
     }
     if (requestType === "activities" || requestType === "recommend_services") {
