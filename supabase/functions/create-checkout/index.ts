@@ -3,6 +3,7 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 import { withStripeProject } from "../_shared/stripe-project.ts";
+import { loadUserStripeCustomerIds, resolveOwnStripeCustomer } from "../_shared/stripe-customer.ts";
 
 // Price IDs are configured via Supabase secrets (no hardcoded fallbacks —
 // the function fails loudly if a price is not configured for the current
@@ -86,12 +87,30 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
     
-    // Check if customer already exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      logStep("Found existing customer", { customerId });
+    // Resolve EventBliss's own customer (shared Stripe account: never reuse
+    // another app's customer just because the email matches). The anon client
+    // above cannot read subscriptions, so use the service role here.
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+      { auth: { persistSession: false } }
+    );
+    const ownCustomer = await resolveOwnStripeCustomer(stripe, {
+      knownCustomerIds: await loadUserStripeCustomerIds(supabaseAdmin, user.id),
+      email: user.email,
+      log: logStep,
+    });
+    let customerId: string;
+    if (ownCustomer) {
+      customerId = ownCustomer.customerId;
+      logStep("Found existing customer", ownCustomer);
+    } else {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        metadata: withStripeProject({ user_id: user.id }),
+      });
+      customerId = customer.id;
+      logStep("Created customer", { customerId });
     }
 
     const origin = returnOrigin || req.headers.get("origin") || "https://event-bliss.com";
@@ -113,7 +132,6 @@ serve(async (req) => {
     // Use English locale and allow promotion codes for coupon input
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
       line_items: [
         {
           price: priceId,

@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { classifyStripeProject } from "../_shared/stripe-project.ts";
+import { resolveOwnStripeCustomer } from "../_shared/stripe-customer.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -125,20 +127,29 @@ serve(async (req) => {
 
     // Check Stripe
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    
-    if (customers.data.length === 0) {
+    // Shared Stripe account: only look at EventBliss's own customer — never at
+    // another app's customer that merely shares the email.
+    const ownCustomer = await resolveOwnStripeCustomer(stripe, {
+      knownCustomerIds: [dbSub?.stripe_customer_id],
+      email: user.email,
+      log: logStep,
+    });
+
+    if (!ownCustomer) {
       return new Response(JSON.stringify({ subscribed: false, plan: "free", plan_type: "free" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     }
 
-    const customerId = customers.data[0].id;
-    const subscriptions = await stripe.subscriptions.list({ customer: customerId, status: "active", limit: 1 });
-    
-    if (subscriptions.data.length > 0) {
-      const subscription = subscriptions.data[0];
+    const customerId = ownCustomer.customerId;
+    const subscriptions = await stripe.subscriptions.list({ customer: customerId, status: "active", limit: 10 });
+    // Skip subscriptions tagged with another project (legacy shared customers).
+    const subscription = subscriptions.data.find(
+      (sub: Stripe.Subscription) => classifyStripeProject(sub.metadata) !== "foreign",
+    );
+
+    if (subscription) {
       const subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
       const startedAt = new Date(subscription.start_date * 1000).toISOString();
       const interval = subscription.items.data[0]?.price?.recurring?.interval;

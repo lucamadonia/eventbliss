@@ -3,6 +3,11 @@ import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 import { withStripeProject } from "../_shared/stripe-project.ts";
+import {
+  loadAgencyStripeCustomerIds,
+  loadUserStripeCustomerIds,
+  resolveOwnStripeCustomer,
+} from "../_shared/stripe-customer.ts";
 
 const AGENCY_PRICE_IDS = {
   professional: Deno.env.get("STRIPE_PRICE_AGENCY_PROFESSIONAL") ?? "",
@@ -66,12 +71,31 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    const customerId = customers.data[0]?.id;
+    // Resolve EventBliss's own customer (agency first, then the owner's
+    // personal one). Never reuse another app's customer by email.
+    const ownCustomer = await resolveOwnStripeCustomer(stripe, {
+      knownCustomerIds: [
+        ...await loadAgencyStripeCustomerIds(supabaseClient, { agencyIds: [agency.id] }),
+        ...await loadUserStripeCustomerIds(supabaseClient, user.id),
+      ],
+      email: user.email,
+      log,
+    });
+    let customerId: string;
+    if (ownCustomer) {
+      customerId = ownCustomer.customerId;
+      log("Found existing customer", ownCustomer);
+    } else {
+      const customer = await stripe.customers.create({
+        email: user.email,
+        metadata: withStripeProject({ user_id: user.id, agency_id: agency.id }),
+      });
+      customerId = customer.id;
+      log("Created customer", { customerId });
+    }
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      customer_email: customerId ? undefined : user.email,
       line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       locale: locale as Stripe.Checkout.SessionCreateParams.Locale,
