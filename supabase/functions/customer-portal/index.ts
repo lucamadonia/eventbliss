@@ -2,6 +2,11 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import {
+  loadAgencyStripeCustomerIds,
+  loadUserStripeCustomerIds,
+  resolveOwnStripeCustomer,
+} from "../_shared/stripe-customer.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -40,9 +45,18 @@ serve(async (req) => {
     logStep("User authenticated", { userId: user.id, email: user.email });
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    
-    if (customers.data.length === 0) {
+    // Shared Stripe account: only open the portal for EventBliss's own
+    // customer, never for another app's customer with the same email.
+    const ownCustomer = await resolveOwnStripeCustomer(stripe, {
+      knownCustomerIds: [
+        ...await loadUserStripeCustomerIds(supabaseClient, user.id),
+        ...await loadAgencyStripeCustomerIds(supabaseClient, { ownerId: user.id }),
+      ],
+      email: user.email,
+      log: logStep,
+    });
+
+    if (!ownCustomer) {
       logStep("No Stripe customer found - user has never subscribed");
       return new Response(JSON.stringify({ 
         error: "no_subscription",
@@ -53,8 +67,8 @@ serve(async (req) => {
       });
     }
     
-    const customerId = customers.data[0].id;
-    logStep("Found Stripe customer", { customerId });
+    const customerId = ownCustomer.customerId;
+    logStep("Found Stripe customer", ownCustomer);
 
     const origin = req.headers.get("origin") || "https://event-bliss.com";
     const portalSession = await stripe.billingPortal.sessions.create({
