@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { withStripeProject } from "../_shared/stripe-project.ts";
 
 // Price IDs are configured via Supabase secrets (no hardcoded fallbacks —
 // the function fails loudly if a price is not configured for the current
@@ -101,6 +102,13 @@ serve(async (req) => {
 
     logStep("Creating checkout session", { priceId, mode, planType });
     
+    // Tag everything with project=EVENT — the Stripe account is shared with
+    // other apps and the webhook only processes EventBliss objects.
+    const metadata = withStripeProject({
+      user_id: user.id,
+      plan_type: planType,
+    });
+
     // Create checkout session with locale for Stripe UI
     // Use English locale and allow promotion codes for coupon input
     const session = await stripe.checkout.sessions.create({
@@ -117,10 +125,10 @@ serve(async (req) => {
       allow_promotion_codes: true, // Allow users to enter coupon codes
       success_url: `${origin}/premium?success=true`,
       cancel_url: `${origin}/premium?canceled=true`,
-      metadata: {
-        user_id: user.id,
-        plan_type: planType,
-      },
+      metadata,
+      ...(mode === "subscription"
+        ? { subscription_data: { metadata } }
+        : { payment_intent_data: { metadata } }),
     });
 
     logStep("Checkout session created", { sessionId: session.id, url: session.url });

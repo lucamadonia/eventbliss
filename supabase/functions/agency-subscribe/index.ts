@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { withStripeProject } from "../_shared/stripe-project.ts";
 
 const AGENCY_PRICE_IDS = {
   professional: Deno.env.get("STRIPE_PRICE_AGENCY_PROFESSIONAL") ?? "",
@@ -77,19 +78,19 @@ serve(async (req) => {
       allow_promotion_codes: true,
       success_url: `${returnOrigin}/agency?tier_upgraded=${tier}`,
       cancel_url: `${returnOrigin}/agency/pricing?canceled=1`,
-      metadata: {
+      metadata: withStripeProject({
         user_id: user.id,
         agency_id: agency.id,
         plan_type: `agency_${tier}`,
         tier,
-      },
+      }),
       subscription_data: {
-        metadata: {
+        metadata: withStripeProject({
           user_id: user.id,
           agency_id: agency.id,
           plan_type: `agency_${tier}`,
           tier,
-        },
+        }),
       },
     });
 
