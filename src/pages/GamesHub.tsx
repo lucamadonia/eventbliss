@@ -546,7 +546,7 @@ const GamesHubInner = () => {
       if (gameId === "story-builder") return <StoryBuilderGame online={onlineProps} />;
       if (gameId === "flaschendrehen") return <BottleSpinGame online={onlineProps} />;
       if (gameId === "ohrwurm") return <OhrwurmGame online={onlineProps} />;
-      if (gameId === "hitbuzzer") return <HitBuzzerGame online={onlineProps} />;
+      if (gameId === "hitbuzzer") return <HitBuzzerGame online={onlineProps} onOpenRules={openRules} />;
       if (gameId === "pixeljagd") return <PixeljagdGame online={onlineProps} />;
       if (gameId === "closeenough") return <CloseEnoughGame online={onlineProps} />;
       if (gameId === "pantomime") return <PantomimeGame online={onlineProps} />;
@@ -637,7 +637,7 @@ const GamesHubInner = () => {
   if (gameId === "story-builder") return <>{rulesOverlay}<Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense></>;
   if (gameId === "flaschendrehen") return <>{rulesOverlay}<Suspense fallback={GameFallback}><BottleSpinGame /></Suspense></>;
   if (gameId === "ohrwurm") return <>{rulesOverlay}<Suspense fallback={GameFallback}><OhrwurmGame /></Suspense></>;
-  if (gameId === "hitbuzzer") return <>{rulesOverlay}<Suspense fallback={GameFallback}><HitBuzzerGame /></Suspense></>;
+  if (gameId === "hitbuzzer") return <>{rulesOverlay}<Suspense fallback={GameFallback}><HitBuzzerGame onOpenRules={openRules} /></Suspense></>;
   if (gameId === "pixeljagd") return <>{rulesOverlay}<Suspense fallback={GameFallback}><PixeljagdGame /></Suspense></>;
   if (gameId === "closeenough") return <>{rulesOverlay}<Suspense fallback={GameFallback}><CloseEnoughGame /></Suspense></>;
   if (gameId === "pantomime") return <>{rulesOverlay}<Suspense fallback={GameFallback}><PantomimeGame /></Suspense></>;

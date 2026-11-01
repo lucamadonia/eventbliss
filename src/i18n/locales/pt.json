@@ -9024,10 +9024,10 @@
       "tagline": "Reconhece a música antes dos outros.",
       "step1": "O anfitrião inicia um excerto de 30 segundos.",
       "step2": "Carrega no teu botão assim que reconheceres a música.",
-      "step3": "Diz o artista e o título. O anfitrião decide.",
-      "step4": "Certo dá pontos pela rapidez. Errado custa a penalização escolhida e bloqueia a tua equipa nesta música.",
+      "step3": "Diz o artista e o título antes de acabar o tempo. O anfitrião compara ambos com a solução e decide.",
+      "step4": "Certo dá pontos pela rapidez. Errado custa a penalização, bloqueia a tua equipa nesta música e reativa os outros botões.",
       "step5": "Ganha a maior pontuação após as rondas escolhidas ou ao atingir o objetivo.",
-      "tip": "Cada pessoa tem o seu botão no modo comando."
+      "tip": "Cada pessoa tem o seu botão no modo comando. A TV mostra a solução apenas na revelação."
     },
     "pixeljagd": {
       "title": "Pixeljagd",

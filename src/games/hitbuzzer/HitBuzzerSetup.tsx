@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Play, SlidersHorizontal } from 'lucide-react';
+import { BookOpen, Play, SlidersHorizontal } from 'lucide-react';
 import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
 import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
 import { OHRWURM_GENRE_ASSETS, OHRWURM_MODE_ASSETS } from '../ui/premium-game-assets';
@@ -32,6 +32,7 @@ interface HitBuzzerSetupProps {
   teamNames: Record<string, string>;
   setTeamNames: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   onStart: () => void;
+  onOpenRules: () => void;
   busy: boolean;
 }
 
@@ -41,7 +42,7 @@ const idle = 'border-white/10 bg-[#21182e] text-white/70 hover:border-white/30 h
 
 const teamColors = ['#df8eff', '#8ff5ff', '#ff2e88', '#f9ca24'];
 
-export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd, onRemove, onRename, onImportNames, teamMode, setTeamMode, teams, setTeams, teamCount, setTeamCount, teamNames, setTeamNames, onStart, busy }: HitBuzzerSetupProps) {
+export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd, onRemove, onRename, onImportNames, teamMode, setTeamMode, teams, setTeams, teamCount, setTeamCount, teamNames, setTeamNames, onStart, onOpenRules, busy }: HitBuzzerSetupProps) {
   const { t } = useTranslation();
   const assignedTeam = (playerId: string, index: number) => teamForPlayer(playerId, index, teams, teamCount);
   const formedTeams = HIT_TEAM_IDS.slice(0, teamCount).map((teamId, index) => ({
@@ -83,7 +84,10 @@ export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd
     <section className="relative isolate min-h-[280px] overflow-hidden rounded-[32px] border border-white/10 bg-[#16101f] shadow-[0_24px_70px_rgba(0,0,0,0.38)] sm:min-h-[340px]">
       <img src={config.genre ? OHRWURM_GENRE_ASSETS[config.genre] : '/images/games/hit-buzzer.webp'} alt="" aria-hidden="true" className={`absolute inset-0 h-full w-full object-cover ${config.genre ? 'object-center' : 'object-[center_74%]'}`} />
       <div className="absolute inset-0 bg-gradient-to-b from-[#090711]/85 via-[#090711]/10 to-[#090711]/30 sm:bg-gradient-to-t sm:from-[#090711] sm:via-[#090711]/60 sm:to-[#090711]/5" />
-      <div className="relative flex min-h-[280px] flex-col justify-start p-6 sm:min-h-[340px] sm:justify-end sm:p-9">
+      <button type="button" onClick={onOpenRules} className="absolute right-5 top-5 z-10 flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-[#090711]/70 px-4 text-sm font-bold text-white shadow-lg backdrop-blur-md transition-colors hover:border-[#df8eff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff] sm:right-8 sm:top-8">
+        <BookOpen className="h-4 w-4 text-[#8ff5ff]" aria-hidden="true" />{t('gameRules.howToPlay')}
+      </button>
+      <div className="relative flex min-h-[280px] flex-col justify-start p-6 pt-20 sm:min-h-[340px] sm:justify-end sm:p-9">
         <p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[#8ff5ff]">{text.eyebrow}</p>
         <h1 className="text-[clamp(2.9rem,9vw,5.5rem)] font-black leading-[0.91] tracking-[-0.07em] text-white drop-shadow-[0_4px_22px_rgba(0,0,0,0.55)]">{text.name}</h1>
         <p className="mt-4 max-w-lg text-sm font-semibold leading-relaxed text-white/80 sm:text-base">{text.tagline}</p>

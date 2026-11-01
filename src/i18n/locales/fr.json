@@ -8974,10 +8974,10 @@
       "tagline": "Reconnais la chanson avant les autres.",
       "step1": "L’hôte lance un extrait de 30 secondes.",
       "step2": "Appuie sur ton buzzer dès que tu reconnais la chanson.",
-      "step3": "Annonce l’artiste et le titre. L’hôte valide.",
-      "step4": "Une bonne réponse rapporte des points selon la rapidité. Une erreur retire la pénalité choisie et bloque ton équipe pour ce titre.",
+      "step3": "Annonce l’artiste et le titre avant la fin du délai. L’hôte compare les deux à la solution et valide.",
+      "step4": "Une bonne réponse rapporte des points selon la rapidité. Une erreur retire la pénalité, bloque ton équipe pour ce titre et rouvre les autres buzzers.",
       "step5": "Le meilleur score gagne après les manches choisies ou dès que l’objectif est atteint.",
-      "tip": "Chaque personne a son propre buzzer en mode manette."
+      "tip": "Chaque personne a son propre buzzer en mode manette. La solution n’apparaît sur la TV qu’à la révélation."
     },
     "pixeljagd": {
       "title": "Pixeljagd",

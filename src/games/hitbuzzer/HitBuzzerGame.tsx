@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Music2, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
+import { ArrowLeft, BookOpen, Music2, Pause, Play, RotateCcw, SkipForward, Tv } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -50,7 +50,7 @@ interface HitSnapshot {
   teamNames?: Record<string, string>;
 }
 
-export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } = {}) {
+export default function HitBuzzerGame({ online, onOpenRules }: { online?: OnlineGameProps; onOpenRules: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { i18n, t } = useTranslation();
@@ -87,6 +87,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
+  const [showRulesOnTv, setShowRulesOnTv] = useState(false);
   const [audioStartFailed, setAudioStartFailed] = useState(false);
   const [now, setNow] = useState(serverClock.now());
   const [restoreDone, setRestoreDone] = useState(false);
@@ -223,6 +224,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     if (!isHost || stateRef.current?.phase !== 'loading' || !previewUrl || !audioRef.current) return;
     setError(null);
     setAudioStartFailed(false);
+    setShowRulesOnTv(false);
     try {
       audioRef.current.currentTime = 0;
       await audioRef.current.play();
@@ -339,6 +341,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     if (!isHost || !current) return;
     const next = advanceRound(current, id());
     lastDecisionRef.current = null;
+    setShowRulesOnTv(false);
     commit(next);
     if (next.phase === 'loading') prepareSong(deckRef.current);
   }, [isHost, commit, prepareSong]);
@@ -370,6 +373,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     commit(null);
     setSong(null);
     songRef.current = null;
+    setShowRulesOnTv(false);
     setError(null);
   }, [isHost, online, commit]);
 
@@ -508,6 +512,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     round: state?.round ?? 0, totalRounds: state?.config.rounds ?? 15,
     timeLeft: remaining, elapsedMs: state?.elapsedMs ?? 0, players: ranked,
     previewUrl: state && state.phase !== 'finished' ? previewUrl : null,
+    rulesOnTv: isHost && showRulesOnTv,
     partyScoresById: Object.fromEntries((state?.players ?? []).map(p => [p.id, p.score])),
     teams: teamMatch ? [...new Set(state?.players.map(p => p.teamId) ?? [])].map(teamId => ({
       name: state?.players.find(p => p.teamId === teamId)?.teamName ?? `${text.team} ${teamId}`,
@@ -518,9 +523,14 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     reveal: state?.phase === 'result' || state?.phase === 'finished'
       ? state.reveal && { ...state.reveal, winnerId: teamMatch ? state.players.find(p => p.id === state.reveal?.winnerId)?.teamId ?? null : state.reveal.winnerId }
       : null,
-  }), [state, remaining, previewUrl, claimPlayer?.name, ranked, teamMatch, text.team]);
+  }), [state, remaining, previewUrl, isHost, showRulesOnTv, claimPlayer?.name, ranked, teamMatch, text.team]);
   const tvBridge = useTVGameBridge('hitbuzzer', tvState, [tvState], isHost);
   const tvSpeaker = online ? tvConnected : !!tvBridge?.isActive && tvBridge.lastTvReadyAt > 0 && Date.now() - tvBridge.lastTvReadyAt < 45_000;
+  const toggleTvRules = useCallback(() => {
+    if (!isHost || !tvSpeaker) return;
+    if (!showRulesOnTv && stateRef.current?.phase === 'listening') pauseAudio();
+    setShowRulesOnTv(value => !value);
+  }, [isHost, tvSpeaker, showRulesOnTv, pauseAudio]);
   useEffect(() => {
     if (online?.isHost) {
       const { partyScoresById: _partyScoresById, ...publicTvState } = tvState;
@@ -532,7 +542,13 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     <GameStage gameId="hitbuzzer" className="min-h-[100dvh] bg-[#060810] text-white">
       {isHost && <audio ref={audioRef} src={previewUrl ?? undefined} muted={tvSpeaker} preload="auto" onEnded={endSong} onError={handleAudioError} />}
       <main className={`mx-auto flex min-h-[100dvh] flex-col gap-5 px-1 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:px-6 ${!state && isHost ? 'max-w-5xl' : 'max-w-3xl'}`}>
-        <button type="button" onClick={() => state?.phase === 'finished' ? leaveGame() : state || controllerParty ? exit.request() : leaveGame()} className="flex min-h-11 w-fit items-center gap-2 rounded-full px-3 text-sm text-[#b3a8c9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><ArrowLeft className="h-4 w-4" />{controllerParty ? state?.phase === 'finished' ? t('partyPlay.backToLobby') : t(isHost ? 'partyControllers.abort' : 'partyControllers.leave') : inParty ? t('partyPlay.backToLobby') : text.back}</button>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <button type="button" onClick={() => state?.phase === 'finished' ? leaveGame() : state || controllerParty ? exit.request() : leaveGame()} className="flex min-h-11 w-fit items-center gap-2 rounded-full px-3 text-sm text-[#b3a8c9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><ArrowLeft className="h-4 w-4" />{controllerParty ? state?.phase === 'finished' ? t('partyPlay.backToLobby') : t(isHost ? 'partyControllers.abort' : 'partyControllers.leave') : inParty ? t('partyPlay.backToLobby') : text.back}</button>
+          <div className="flex flex-wrap items-center gap-2">
+            {state && <button type="button" disabled={state.phase === 'answering' || state.phase === 'reviewing'} onClick={() => { if (isHost && state.phase === 'listening') pauseAudio(); onOpenRules(); }} className="flex min-h-11 items-center gap-2 rounded-full border border-white/15 bg-[#16101f] px-3 text-xs font-bold text-white/85 disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><BookOpen className="h-4 w-4 text-[#df8eff]" aria-hidden="true" />{t('gameRules.howToPlay')}</button>}
+            {isHost && tvSpeaker && <button type="button" aria-pressed={showRulesOnTv} disabled={state?.phase === 'answering' || state?.phase === 'reviewing'} onClick={toggleTvRules} className="flex min-h-11 items-center gap-2 rounded-full border border-[#8ff5ff]/30 bg-[#8ff5ff]/10 px-3 text-xs font-bold text-[#8ff5ff] disabled:opacity-40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><Tv className="h-4 w-4" aria-hidden="true" />{showRulesOnTv ? t('tv.remote.game') : `${t('tv.remote.rules')} · TV`}</button>}
+          </div>
+        </div>
         <ConfirmExitDialog {...exit.dialogProps} accent="#df8eff" title={controllerParty ? t(isHost ? 'partyControllers.abort' : 'partyControllers.leave') : undefined} />
         {(state || !isHost) && <StageHeader title={text.name} eyebrow={text.eyebrow} subtitle={state ? `${text.round} ${state.round} / ${state.config.rounds}` : text.tagline} progress={state ? { value: state.round, total: state.config.rounds } : undefined} />}
         {error && <p role="alert" className="rounded-2xl border border-[#ff6b98]/40 bg-[#ff6b98]/10 p-4 text-sm text-[#ffd2df]">{error}</p>}
@@ -545,7 +561,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
           onImportNames={importNames}
           teamMode={teamMode} setTeamMode={setTeamMode} teams={teams} setTeams={setTeams}
           teamCount={teamCount} setTeamCount={setTeamCount} teamNames={teamNames} setTeamNames={setTeamNames}
-          onStart={() => void startMatch()} busy={busy} />}
+          onStart={() => void startMatch()} onOpenRules={onOpenRules} busy={busy} />}
 
         {!state && !isHost && <StagePanel className="p-8 text-center text-[#b3a8c9]">{text.waitHost}</StagePanel>}
 

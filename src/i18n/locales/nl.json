@@ -9024,10 +9024,10 @@
       "tagline": "Herken het nummer eerder dan de anderen.",
       "step1": "De host start een fragment van 30 seconden.",
       "step2": "Druk op je eigen buzzer zodra je het nummer kent.",
-      "step3": "Noem artiest en titel. De host beoordeelt je antwoord.",
-      "step4": "Goed geeft punten op basis van snelheid. Fout kost de ingestelde strafpunten en blokkeert je team voor dit nummer.",
+      "step3": "Noem artiest en titel voordat de antwoordtijd afloopt. De host vergelijkt beide met de oplossing en beoordeelt.",
+      "step4": "Goed geeft punten op basis van snelheid. Fout kost strafpunten, blokkeert je team voor dit nummer en opent de andere buzzers weer.",
       "step5": "De hoogste score wint na de gekozen rondes of zodra het doel is bereikt.",
-      "tip": "Iedereen heeft een eigen buzzer in controllerstand."
+      "tip": "Iedereen heeft een eigen buzzer in controllerstand. De TV toont de oplossing pas bij de onthulling."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
