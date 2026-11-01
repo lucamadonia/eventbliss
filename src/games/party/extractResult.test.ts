@@ -44,6 +44,14 @@ describe("extractGameResult — Spieler mit eigener Punktzahl", () => {
     expect(result).toEqual({ scored: true, scores: { Anna: 7, Ben: 7, Cem: 4, Dora: 4 } });
   });
 
+  it("credits each Hit-Buzzer team member, including a negative team score", () => {
+    const result = extractGameResult("hitbuzzer", {
+      players: [{ id: "A", name: "Team A", score: 80 }, { id: "B", name: "Team B", score: -20 }],
+      teams: [{ score: 80, players: ["Anna", "Ben"] }, { score: -20, players: ["Cem", "Dora"] }],
+    });
+    expect(result).toEqual({ scored: true, scores: { Anna: 80, Ben: 80, Cem: -20, Dora: -20 } });
+  });
+
   it("credits every Nah dran team member instead of the synthetic team name", () => {
     const result = extractGameResult("closeenough", {
       players: [{ id: "team-a", name: "Zahlenfüchse", score: 11 }, { id: "team-b", name: "Team 2", score: 6 }],

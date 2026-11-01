@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTVGameBridge } from '@/hooks/useTVGameBridge';
+import { useBackGuard } from '@/lib/back-guard';
 import { GameStage, StageAction, StageHeader, StagePanel } from '../ui/GameStage';
 import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
 import { getPlayerColor } from '../ui/PlayerAvatars';
@@ -12,6 +13,8 @@ import { useInitialRoster } from '../ui/useInitialRoster';
 import { localSeats, type OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { OHRWURM_GENRES } from '../ohrwurm/ohrwurm-content';
 import { usePreviewLoader } from '../ohrwurm/usePreviewLoader';
+import { useTvPresence } from '../ohrwurm/useTvPresence';
+import { ConfirmExitDialog, useConfirmExit } from '../ui/useConfirmExit';
 import type { Song } from '../ohrwurm/ohrwurm-engine';
 import { loadHitBuzzerDeck } from './song-pool';
 import {
@@ -29,6 +32,8 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const text = hitText(i18n.language);
   const haptics = useHaptics();
   const isHost = !online || online.isHost;
+  const [tvConnected] = useTvPresence(online);
+  const exit = useConfirmExit(() => navigate('/games'));
   const initialRoster = useInitialRoster({ onlinePlayers: online?.players, min: 2 });
   const [roster, setRoster] = useState<(PlayerSetupPlayer & { avatar?: string })[]>(() => initialRoster?.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar }))
     ?? [{ id: 'p1', name: '' }, { id: 'p2', name: '' }]);
@@ -51,6 +56,12 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
   const [now, setNow] = useState(serverClock.now());
+  useBackGuard(() => {
+    if (!stateRef.current || stateRef.current.phase === 'finished') return false;
+    if (exit.open) { exit.cancel(); return true; }
+    exit.request();
+    return true;
+  });
 
   const flash = useCallback((message: string) => setError(message), []);
   const { previewUrl, previewLoading, loadPreview } = usePreviewLoader(drawIdRef, flash);
@@ -238,6 +249,17 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     prepareSong(deckRef.current);
   }, [isHost, prepareSong, commit]);
 
+  const resetMatch = useCallback(() => {
+    if (!isHost || stateRef.current?.phase !== 'finished') return;
+    const matchId = stateRef.current.matchId;
+    audioRef.current?.pause();
+    if (online) online.broadcast('hitbuzzer-state', { state: null, matchId });
+    commit(null);
+    setSong(null);
+    songRef.current = null;
+    setError(null);
+  }, [isHost, online, commit]);
+
   // Signed room transport attaches __senderId. The host verifies that the
   // sender owns the claimed seat, including a controlled Joystick guest.
   useEffect(() => {
@@ -268,6 +290,11 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   useEffect(() => {
     if (!online || online.isHost) return;
     return online.onBroadcast('hitbuzzer-state', data => {
+      if (data.__senderId !== online.hostPlayerId) return;
+      if (data.state === null && data.matchId === stateRef.current?.matchId && stateRef.current?.phase === 'finished') {
+        commit(null);
+        return;
+      }
       const incoming = data.state as HitState | undefined;
       if (!incoming || !Array.isArray(incoming.players) || typeof incoming.revision !== 'number'
         || typeof incoming.matchId !== 'string' || typeof incoming.roundId !== 'string') return;
@@ -339,22 +366,33 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const tvState = useMemo(() => ({
     phase: state?.phase === 'finished' ? 'gameOver' : state?.phase === 'result' ? 'reveal' : state?.phase ?? 'setup',
     round: state?.round ?? 0, totalRounds: state?.config.rounds ?? 15,
-    timeLeft: remaining, players: ranked,
+    timeLeft: remaining, elapsedMs: state?.elapsedMs ?? 0, players: ranked,
+    previewUrl: state && state.phase !== 'finished' ? previewUrl : null,
+    partyScoresById: Object.fromEntries((state?.players ?? []).map(p => [p.id, p.score])),
+    teams: teamMatch ? [...new Set(state?.players.map(p => p.teamId) ?? [])].map(teamId => ({
+      score: state?.players.find(p => p.teamId === teamId)?.score ?? 0,
+      players: state?.players.filter(p => p.teamId === teamId).map(p => p.name) ?? [],
+    })) : undefined,
     buzzedName: claimPlayer?.name ?? null,
     reveal: state?.phase === 'result' || state?.phase === 'finished'
       ? state.reveal && { ...state.reveal, winnerId: teamMatch ? state.players.find(p => p.id === state.reveal?.winnerId)?.teamId ?? null : state.reveal.winnerId }
       : null,
-  }), [state, remaining, claimPlayer?.name, ranked, teamMatch]);
-  useTVGameBridge('hitbuzzer', tvState, [tvState], isHost);
+  }), [state, remaining, previewUrl, claimPlayer?.name, ranked, teamMatch]);
+  const tvBridge = useTVGameBridge('hitbuzzer', tvState, [tvState], isHost);
+  const tvSpeaker = online ? tvConnected : !!tvBridge?.isActive && tvBridge.lastTvReadyAt > 0 && Date.now() - tvBridge.lastTvReadyAt < 45_000;
   useEffect(() => {
-    if (online?.isHost) online.broadcast('tv-state', { game: 'hitbuzzer', ...tvState });
+    if (online?.isHost) {
+      const { partyScoresById: _partyScoresById, ...publicTvState } = tvState;
+      online.broadcast('tv-state', { game: 'hitbuzzer', ...publicTvState });
+    }
   }, [online, tvState]);
 
   return (
     <GameStage gameId="hitbuzzer" className="min-h-[100dvh] bg-[#060810] text-white">
-      {isHost && <audio ref={audioRef} src={previewUrl ?? undefined} preload="auto" onEnded={endSong} onError={handleAudioError} />}
+      {isHost && <audio ref={audioRef} src={previewUrl ?? undefined} muted={tvSpeaker} preload="auto" onEnded={endSong} onError={handleAudioError} />}
       <main className="mx-auto flex min-h-[100dvh] max-w-3xl flex-col gap-5 px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:px-6">
-        <button type="button" onClick={() => navigate('/games')} className="flex min-h-11 w-fit items-center gap-2 rounded-full px-3 text-sm text-[#b3a8c9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><ArrowLeft className="h-4 w-4" />{text.back}</button>
+        <button type="button" onClick={() => state && state.phase !== 'finished' ? exit.request() : navigate('/games')} className="flex min-h-11 w-fit items-center gap-2 rounded-full px-3 text-sm text-[#b3a8c9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><ArrowLeft className="h-4 w-4" />{text.back}</button>
+        <ConfirmExitDialog {...exit.dialogProps} accent="#df8eff" />
         <StageHeader title={text.name} eyebrow={text.eyebrow} subtitle={state ? `${text.round} ${state.round} / ${state.config.rounds}` : text.tagline} progress={state ? { value: state.round, total: state.config.rounds } : undefined} />
         {error && <p role="alert" className="rounded-2xl border border-[#ff6b98]/40 bg-[#ff6b98]/10 p-4 text-sm text-[#ffd2df]">{error}</p>}
 
@@ -440,7 +478,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
             {state.reveal && <><p className="text-sm uppercase tracking-[0.2em] text-[#df8eff]">{text.songReveal}</p><p className="font-game text-3xl font-black">{state.reveal.title}</p><p className="text-lg text-[#b3a8c9]">{state.reveal.artist}</p>{state.reveal.winnerId && <p className="text-[#8ff5ff]">{state.players.find(p => p.id === state.reveal?.winnerId)?.name} +{state.reveal.delta}</p>}</>}
             {state.phase === 'finished' && <p className="font-game text-2xl font-black text-[#df8eff]">{text.winner}: {ranked.filter(p => p.score === ranked[0]?.score).map(p => p.name).join(', ')}</p>}
             {isHost && (state.phase === 'result' ? <StageAction onClick={nextRound} className="w-full"><SkipForward className="h-5 w-5" />{state.round >= state.config.rounds || (state.config.targetScore !== null && state.players.some(p => p.score >= state.config.targetScore!)) ? text.showResult : text.next}</StageAction>
-              : <StageAction onClick={() => { commit(null); setSong(null); songRef.current = null; }} className="w-full"><RotateCcw className="h-5 w-5" />{text.again}</StageAction>)}
+              : <StageAction onClick={resetMatch} className="w-full"><RotateCcw className="h-5 w-5" />{text.again}</StageAction>)}
             {isHost && state.phase === 'result' && lastDecisionRef.current?.roundId === state.roundId && <StageAction variant="secondary" onClick={undo} className="w-full"><RotateCcw className="h-4 w-4" />{t('partyPlay.undo')}</StageAction>}
           </StagePanel>}
 

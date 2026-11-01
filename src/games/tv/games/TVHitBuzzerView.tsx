@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { Music2 } from 'lucide-react';
 import { tvPanel, tvPanelRaised, tvType } from '../tv-tokens';
 import { hitText } from '@/games/hitbuzzer/strings';
@@ -13,6 +14,30 @@ export default function TVHitBuzzerView({ gameState }: { gameState: Record<strin
   const timeLeft = Number(gameState?.timeLeft ?? 30);
   const buzzedName = typeof gameState?.buzzedName === 'string' ? gameState.buzzedName : null;
   const players = (Array.isArray(gameState?.players) ? gameState.players : []) as TVPlayer[];
+  const previewUrl = typeof gameState?.previewUrl === 'string' ? gameState.previewUrl : null;
+  const elapsedMs = typeof gameState?.elapsedMs === 'number' ? gameState.elapsedMs : 0;
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !previewUrl) return;
+    if (phase !== 'listening') { audio.pause(); return; }
+    const expected = Math.max(0, elapsedMs / 1000);
+    if (Math.abs(audio.currentTime - expected) > 1.5) audio.currentTime = expected;
+    if (audio.paused) void audio.play().catch(() => {});
+  }, [phase, previewUrl, elapsedMs]);
+  useEffect(() => {
+    if (phase !== 'listening') return;
+    const unlock = () => {
+      const audio = audioRef.current;
+      if (audio?.paused) void audio.play().catch(() => {});
+    };
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, [phase]);
   const sorted = [...players].sort((a, b) => b.score - a.score);
   const revealed = phase === 'reveal' || phase === 'gameOver';
   const reveal = revealed && gameState?.reveal && typeof gameState.reveal === 'object'
@@ -20,6 +45,7 @@ export default function TVHitBuzzerView({ gameState }: { gameState: Record<strin
   const winner = players.find(p => p.id === reveal?.winnerId);
 
   return <div className="relative flex h-screen w-screen flex-col overflow-hidden bg-[#060810] p-[4vw] text-white">
+    <audio ref={audioRef} src={previewUrl ?? undefined} preload="none" className="hidden" aria-hidden />
     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgba(223,142,255,0.12),transparent_58%)]" />
     <header className="relative flex items-center justify-between gap-[3vw]">
       <div className="flex items-center gap-[1vw]"><Music2 className="text-[#df8eff]" style={{ width: '3vw', height: '3vw' }} /><span className="font-game font-black" style={{ fontSize: tvType.title }}>{text.name}</span></div>

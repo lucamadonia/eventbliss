@@ -22,7 +22,7 @@ Das Spiel braucht keine Jahreszahlen, Zeitlinie, Albumcover, Spotify-Premium-Mit
 | Falsche/keine Antwort | −20 Punkte, genau ein Versuch pro Spieler oder Team und Song | −10/−20/−30 oder ohne Abzug |
 | Punktestand | Darf negativ werden | Nein |
 | Gleichstand | Gemeinsamer Sieg | Stichrunde als spätere Variante |
-| Wiedergabe | Host spielt den Ausschnitt; TV zeigt nur die Runde | Keine doppelte TV-Wiedergabe |
+| Wiedergabe | Ohne TV spielt das Host-Gerät; bei verbundenem TV spielt der Fernseher und der Host hält den Audiotakt stumm weiter | Keine doppelte hörbare Wiedergabe |
 
 Der vorgeschlagene Zeitwert lautet `max(40, 100 - 2 × floor(abgelaufene Sekunden))`. Maßgeblich ist der vom Host angenommene Buzz-Zeitpunkt, **nicht** die Dauer der mündlichen Antwort. Nach Buzz werden Musik und 30-Sekunden-Uhr eingefroren. Bei einer falschen Antwort laufen beide an derselben Stelle weiter; bereits gesperrte Spieler dürfen in dieser Runde nicht erneut buzzern. Bei richtiger Antwort endet der Song sofort. Erreicht jemand das Punktziel durch einen bestätigten Treffer, endet das Spiel nach der Auflösung dieses Songs.
 
@@ -57,7 +57,7 @@ Beispiel: Buzz nach 7,8 Sekunden ergibt +86 Punkte. Falsche Antwort kostet 20, s
 1. **Setup:** Spielmodus, Runden-/Punktziel, Strafpunkte, Antwortfrist, Genre und Einzel-/Teamwertung wählen. Standardwerte erlauben einen Start mit einem Schritt. Die verfügbare Songzahl wird beim Start geprüft und die Rundenzahl auf den Pool begrenzt.
 2. **Lobby:** Code/QR, Host und Gäste, Teams und kontrollierte Plätze werden gezeigt. Erst der Host startet. Fehlende oder getrennte Teilnehmer sind klar markiert; Start ist erst ab zwei aktiven Spielplätzen möglich.
 3. **Song vorbereiten:** Der Host zieht genau eine bislang in dieser Partie ungespielte Song-ID. Die Vorschau wird vor dem Start geladen. Fehlt der Clip, kann der Host den Song ohne Punkteabzug und ohne Rundenverbrauch überspringen. Im Admin-Bereich kann er Songs unabhängig von einer Partie probehören.
-4. **Start:** Der Host startet die Host-Audioausgabe. Buzzer öffnen erst, wenn `audio.play()` erfolgreich war. Ein gemeinsamer 3–2–1-Countdown ist für eine spätere Version vorgemerkt, da ein zeitversetzter Audio-Start auf iOS sonst die Wiedergabe blockieren kann.
+4. **Start:** Der Host startet den Audiotakt. Buzzer öffnen erst, wenn `audio.play()` auf dem Host erfolgreich war. Bei verbundenem TV ist der Host stumm; der Fernseher erhält die Vorschau und spielt sie hörbar. Ein gemeinsamer 3–2–1-Countdown ist für eine spätere Version vorgemerkt, da ein zeitversetzter Audio-Start auf iOS sonst die Wiedergabe blockieren kann.
 5. **Buzz:** Das erste gültige Signal reserviert den Antwortversuch. Alle Geräte zeigen „[Name] ist dran“; Musik und Rundenuhr pausieren. Der Host hört die gesprochene Antwort und hat „Richtig“, „Falsch“, „Nicht wertbar“ sowie „Rückgängig“ nach einer Wertung.
 6. **Auflösung:** Richtig beendet den Song und zeigt Titel, Interpret, Punkte und neue Tabelle. Falsch zieht Punkte ab, sperrt den Spieler/das Team und öffnet die übrigen Buzzer wieder. „Nicht wertbar“ gibt den Buzzer ohne Abzug frei, etwa bei Verbindungsfehler oder Fehlbedienung.
 7. **Zeit abgelaufen:** Bei 30 Sekunden ohne Treffer endet der Song punktlos. Wenn ein gültiger Buzz unmittelbar vor Ablauf angenommen wurde, darf die begonnene Antwortfrist zu Ende laufen.
@@ -70,7 +70,8 @@ Beispiel: Buzz nach 7,8 Sekunden ergibt +86 Punkte. Falsche Antwort kostet 20, s
 | Feld | Bedeutung |
 | --- | --- |
 | `matchId`, `roundId`, `revision` | Neue Partie, eindeutiger Songversuch und monotoner Zustand; alte Aktionen verwerfen |
-| `songId`, `previewUrl` | Nur Host; niemals an Gäste oder TV vor Reveal schicken |
+| `songId` | Nur Host; nie an Gäste oder TV vor Reveal schicken |
+| `previewUrl` | Host und TV-Audioausgabe; nie an Gast-Handys schicken |
 | `phase`, `elapsedMs` | Synchronisierte Anzeige; Host bleibt Zeitautorität |
 | `claim` | Spieler-ID, Punkte zum Buzz-Zeitpunkt und Antwortfrist |
 | `players[].locked` | In diesem Song ausgeschlossene Spieler; bei Teams alle Mitglieder |
@@ -127,7 +128,7 @@ Hit-Buzzer ist visuell Teil von EventBliss Party Play. Die Grundlage ist `docs/p
 
 Auf dem Handy stehen **Aktion und Zustand** immer vor Dekoration. Der Buzzer muss bei 320 und 390 px Breite ohne Scrollen erreichbar bleiben, einschließlich iOS-Safe-Area und eingeblendeter Systemleisten. Bei mehreren 🔁-Plätzen bleiben die Buzzer eindeutig beschriftet; die Host-Jury erscheint erst nach einem angenommenen Buzz in einer eigenen Zone, damit kein Spielplatz versehentlich bewertet. Für zwei bis vier lokale Plätze ist ein 2×2-Raster möglich; bei mehr Plätzen erhalten die Buttons eine vertikale Liste mit festem Fortschrittskopf. Weder Punkte noch eine Animation dürfen die Trefferfläche verdecken.
 
-Auf dem TV bleiben 5 % Sicherheitsrand für Overscan. Runde und Uhr sind aus drei Metern lesbar; alle handlungsrelevanten Texte verwenden mindestens `tvType.label`, Namen `tvType.body`, Ansagen `tvType.title`. Die Rangliste rückt beim Buzz optisch zurück, aber nie so weit, dass der Punktestand verschwindet. Der TV ist die gemeinsame Bühne und zeigt keine Bedienknöpfe. Die Host-Audioausgabe bleibt die einzige Tonquelle, damit kein Echo entsteht; falls später TV-Audio gewünscht ist, braucht es einen ausdrücklich wählbaren Einzelausgang mit eigener Autoplay-Prüfung.
+Auf dem TV bleiben 5 % Sicherheitsrand für Overscan. Runde und Uhr sind aus drei Metern lesbar; alle handlungsrelevanten Texte verwenden mindestens `tvType.label`, Namen `tvType.body`, Ansagen `tvType.title`. Die Rangliste rückt beim Buzz optisch zurück, aber nie so weit, dass der Punktestand verschwindet. Der TV ist die gemeinsame Bühne und zeigt keine Bedienknöpfe. Ist er verbunden, spielt er den Ausschnitt; der Host hält seine Audiouhr stumm weiter und übernimmt den Ton wieder, sobald die TV-Verbindung ausfällt. Die TV-Audiofreigabe muss am echten Gerät geprüft werden.
 
 ### 8.2 Bewegung, Ton und Haptik
 
@@ -157,7 +158,7 @@ Erzeugt mit dem integrierten Imagegen-Werkzeug; anschließend als 1024 × 1024 W
 ## 9. Umsetzung und noch offene Abnahme
 
 1. **Regeln und Songs implementiert:** Hostautoritatives Zustandsmodell mit Erst-Buzz, Tempo-Punkten, Team-Sperre, Antwortfrist, Pause, Rückgängig und Rundenende; gemeinsame Ohrwurm-Datenquelle samt Deaktivierungs-Fallback. Gezielt getestet.
-2. **Spieloberflächen implementiert:** Lokales Setup, Host-Audio, getrennte Buzzer pro Platz auf dem Host-Handy, Jury, Ergebnis, Joystick-Buzzer pro kontrolliertem Platz, signierte Raumaktionen und TV-Ansicht ohne Songspoiler.
+2. **Spieloberflächen implementiert:** Lokales Setup, Host-/TV-Audio, getrennte Buzzer pro Platz auf dem Host-Handy, Jury, Ergebnis, Joystick-Buzzer pro kontrolliertem Platz, signierte Raumaktionen und TV-Ansicht ohne Songspoiler. Die Party-Wertung überträgt Teampunkte an jedes Mitglied und Joystick-Werte über die Platz-ID.
 3. **Integration implementiert:** Spielkatalog, Route, Admin-Einstieg, gemeinsame Songpflege mit Probehören, zehn Sprachen und Spielregeln. Die bestehende Produkt-Tour und die Spielzahl wurden auf 23 angepasst.
 4. **Geprüft und offen:** CI mit Tests, Datenbanktests, Typecheck, Build und Lint bestanden. In der Vercel-Vorschau wurden Einzelspiel mit Audio/Buzz/Fehlerabzug/Treffer, Team-Sperren sowie 320-/390-px-Ansichten geprüft. Noch abzunehmen sind Browser mit getrenntem Host/Gast/TV, echte zwei Handys plus Host, iOS-Audio/Hintergrund, Android-Audio, Reconnect unter Paketverlust und App-Store-/Play-Builds. Ein synchroner Countdown und aggregierte Clip-Fehlerberichte sind spätere Erweiterungen.
 
@@ -171,7 +172,7 @@ Erzeugt mit dem integrierten Imagegen-Werkzeug; anschließend als 1024 × 1024 W
 - Ein Clip schlägt fehl: keine stumme Runde, keine verlorene Runde, keine Punkteänderung; nächster Song lädt.
 - Ein neuer Admin-Song erscheint in beiden Decks nach neuer Partie, ohne Migration oder doppelten Eintrag. Inaktive beziehungsweise für die aktuelle Sprache ausgeblendete Songs erscheinen in keinem Deck.
 - Gerät verliert Verbindung während Buzz oder Juryphase: keine doppelte Wertung; Host kann fortsetzen oder den Claim ohne Strafe aufheben.
-- TV und Gäste sehen vor Reveal weder Interpret noch Titel noch Preview-URL; nach Reveal stimmen Punkte und Lösung überein.
+- TV und Gäste sehen vor Reveal weder Interpret noch Titel; die Preview-URL erhält ausschließlich die TV-Audioausgabe, nie ein Gast-Handy. Nach Reveal stimmen Punkte und Lösung überein.
 - Rematch setzt Punkte, Sperren, Songdeck und `matchId` frisch; alte Buzz-Nachrichten können keine neue Partie beeinflussen.
 
 ## Status dieser Ausarbeitung
