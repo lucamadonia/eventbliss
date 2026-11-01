@@ -79,13 +79,14 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const [now, setNow] = useState(serverClock.now());
   const [restoreDone, setRestoreDone] = useState(false);
   const leaveGame = useCallback(() => {
+    if (!online) clearSnapshot('hitbuzzer');
     if (controllerParty && stateRef.current?.phase !== 'finished') {
       if (isHost) void abortControllerGame().catch(() => {});
       else void leaveControllerParty(false).then(() => navigate('/party')).catch(() => {});
       return;
     }
     navigate(controllerParty ? '/party/controllers' : inParty ? '/party' : '/games');
-  }, [controllerParty, inParty, isHost, navigate]);
+  }, [controllerParty, inParty, isHost, navigate, online]);
   const exit = useConfirmExit(leaveGame);
   useBackGuard(() => {
     if ((!stateRef.current && !controllerParty) || stateRef.current?.phase === 'finished') return false;
