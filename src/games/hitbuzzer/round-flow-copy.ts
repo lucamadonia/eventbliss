@@ -19,6 +19,20 @@ const translations: Record<string, RoundFlowCopy> = {
   ar: { startNow: 'ابدأ الآن', otherSong: 'حمّل أغنية أخرى', ready: 'المقطع جاهز', finding: 'جارٍ تحميل المقطع …', unavailable: 'المقطع غير متاح', waiting: 'بانتظار المضيف', challenge: 'من يعرف الأغنية أولاً؟', promise: '٣٠ ثانية من الموسيقى. ضغطة واحدة. الفنان والعنوان يحسمان النتيجة.', checkHeading: 'تحقق من الإجابة', checking: 'المضيف يتحقق من الإجابة …', checkPrompt: 'اطلب ذكر الفنان والعنوان بصوت عالٍ، ثم افتح الحل على جهاز المضيف فقط.', openSolution: 'اعرض الحل للمضيف', artist: 'الفنان', title: 'العنوان', compare: 'الأغنية الصحيحة · تحقق من الأمرين' },
 };
 
-export function roundFlowText(language: string): RoundFlowCopy {
-  return translations[language.split('-')[0]] ?? translations.en;
+const privateHints: Record<string, string> = {
+  de: 'Geteiltes Gerät: Vor dem Öffnen kurz zum Host drehen.',
+  en: 'Shared device: turn the screen toward the host before opening.',
+  fr: 'Appareil partagé : tournez l’écran vers l’hôte avant d’ouvrir.',
+  es: 'Dispositivo compartido: gira la pantalla hacia el anfitrión antes de abrir.',
+  it: 'Dispositivo condiviso: rivolgi lo schermo all’host prima di aprire.',
+  pt: 'Dispositivo partilhado: vira o ecrã para o anfitrião antes de abrir.',
+  nl: 'Gedeeld apparaat: draai het scherm naar de host voor je opent.',
+  pl: 'Wspólne urządzenie: przed otwarciem obróć ekran do prowadzącego.',
+  tr: 'Ortak cihaz: açmadan önce ekranı sunucuya çevir.',
+  ar: 'جهاز مشترك: وجّه الشاشة إلى المضيف قبل فتح الإجابة.',
+};
+
+export function roundFlowText(language: string): RoundFlowCopy & { privateHint: string } {
+  const locale = language.split('-')[0];
+  return { ...(translations[locale] ?? translations.en), privateHint: privateHints[locale] ?? privateHints.en };
 }

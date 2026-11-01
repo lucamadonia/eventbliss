@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { HitBuzzerAnswerCheck } from './HitBuzzerAnswerCheck';
 
-const labels = { heading: 'Antwort prüfen', prompt: 'Erst laut nennen lassen', open: 'Lösung öffnen', artist: 'Interpret', title: 'Titel', compare: 'Abgleichen', correct: 'Richtig', wrong: 'Falsch', void: 'Nicht wertbar' };
-const props = { artist: 'The Weeknd', title: 'Blinding Lights', onOpen: () => {}, onCorrect: () => {}, onWrong: () => {}, onVoid: () => {}, labels };
+const labels = { heading: 'Antwort prüfen', prompt: 'Erst laut nennen lassen', open: 'Lösung öffnen', artist: 'Interpret', title: 'Titel', compare: 'Abgleichen', privateHint: 'Gerät zum Host drehen', correct: 'Richtig', wrong: 'Falsch', void: 'Nicht wertbar' };
+const props = { artist: 'The Weeknd', title: 'Blinding Lights', sharedDevice: false, onOpen: () => {}, onCorrect: () => {}, onWrong: () => {}, onVoid: () => {}, labels };
 
 describe('Hit-Buzzer host answer card', () => {
   it('keeps the reference answer hidden until the host opens the review', () => {
@@ -17,5 +17,8 @@ describe('Hit-Buzzer host answer card', () => {
     expect(open).toContain('The Weeknd');
     expect(open).toContain('Blinding Lights');
     expect(open).toContain('Richtig');
+    const shared = renderToStaticMarkup(<HitBuzzerAnswerCheck {...props} open sharedDevice />);
+    expect(shared).toContain('role="dialog"');
+    expect(shared).toContain('Gerät zum Host drehen');
   });
 });

@@ -576,9 +576,9 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
             {isHost && state.phase === 'listening' && lastDecisionRef.current?.roundId === state.roundId && <StageAction variant="ghost" onClick={undo} className="w-full"><RotateCcw className="h-4 w-4" />{t('partyPlay.undo')}</StageAction>}
             {isHost && state.phase === 'paused' && <StageAction onClick={() => void resumeAudio()} disabled={online?.isConnected === false} className="w-full"><Play className="h-5 w-5" />{t('games.play.resume')}</StageAction>}
             {(state.phase === 'answering' || state.phase === 'reviewing') && isHost && song && <HitBuzzerAnswerCheck artist={song.artist} title={song.title}
-              open={state.phase === 'reviewing'} onOpen={openHostAnswer} onCorrect={() => judge(true)} onWrong={() => judge(false)} onVoid={voidClaim}
+              open={state.phase === 'reviewing'} sharedDevice={!online} onOpen={openHostAnswer} onCorrect={() => judge(true)} onWrong={() => judge(false)} onVoid={voidClaim}
               labels={{ heading: flowText.checkHeading, prompt: flowText.checkPrompt, open: flowText.openSolution,
-                artist: flowText.artist, title: flowText.title, compare: flowText.compare,
+                artist: flowText.artist, title: flowText.title, compare: flowText.compare, privateHint: flowText.privateHint,
                 correct: text.correct, wrong: text.wrong, void: text.void }} />}
           </StagePanel>}
 
