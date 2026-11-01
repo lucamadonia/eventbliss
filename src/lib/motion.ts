@@ -132,12 +132,23 @@ export const entrance = {
 
 /** Taktzeiten des Splash in Millisekunden — eine Quelle fuer Bild und Haptik. */
 export const splashBeats = {
-  approach: 180,
-  impact: 620,
-  wordmark: 1040,
-  sparks: 1180,
-  dissolve: 1880,
-  done: 2300,
+  trace: 120,
+  reveal: 720,
+  release: 1850,
+  done: 2380,
+} as const;
+
+/** The static native frame and the first JS frame use the same centred mark. */
+export const splashMotion = {
+  markWidth: "min(46vmin, 194px)",
+  orbitWidth: "min(88vmin, 390px)",
+  markLift: -54,
+  markRevealScale: 0.78,
+  wordmarkY: 78,
+  taglineY: 122,
+  trace: { duration: 0.74, ease: ease.out } as Transition,
+  reveal: { duration: 0.58, ease: ease.out } as Transition,
+  release: { duration: 0.46, ease: ease.inOut } as Transition,
 } as const;
 
 /**
