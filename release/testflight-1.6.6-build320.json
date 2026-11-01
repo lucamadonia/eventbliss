@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Die Maske „Neue Ausgabe“ wurde für schmale iPhones überarbeitet. Die Auswahl der Zahler und die Details beginnen nun direkt unter dem Fortschritt. Das Datumsfeld bleibt innerhalb seiner Karte, die Aufteilungsarten sind besser lesbar und die Speichern-Aktion steht einheitlich am unteren Rand.\n\nBitte testen: Eine Ausgabe mit mehreren Zahlern erfassen, zwischen allen vier Schritten wechseln, Datum im iOS-Datumsdialog wählen und die vier Aufteilungsarten ausprobieren. Prüfen, ob alle Eingaben und die untere Schaltfläche beim Scrollen und mit geöffneter Tastatur erreichbar sind. Bei Problemen bitte Build 320, iPhone-Modell, iOS-Version und Schritte angeben.",
+    "en-US": "The New Expense sheet has been refined for narrow iPhones. Payer selection and details now start directly below the progress indicator. The date field stays within its card, split options are easier to read, and Save appears consistently at the bottom.\n\nPlease test: add an expense with multiple payers, move through all four steps, select a date in the iOS date picker, and try all four split modes. Check that every field and the bottom action remain reachable while scrolling and with the keyboard open. For issues, include build 320, iPhone model, iOS version, and reproduction steps."
+  }
+}
