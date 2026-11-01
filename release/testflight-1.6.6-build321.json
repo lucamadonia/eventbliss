@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "EventBliss hat ein neues App-Icon: Das bekannte Kalender- und Unendlichkeitszeichen ist jetzt deutlich größer und auf dem Homescreen besser erkennbar. Der App-Start verbindet das native Startbild mit einer neuen, kurzen Animation: Lichtlinien zeichnen das Zeichen nach, dann erscheinen Schriftzug und Claim. Die Einstellung „Bewegung reduzieren“ wird berücksichtigt.\n\nBitte testen: App auf einem iPhone vollständig schließen und neu öffnen; Icon auf dem Homescreen, Übergang ohne Aufblitzen, zentrierte Darstellung und Startdauer prüfen. Das Ganze im hellen und dunklen iOS-Modus sowie mit „Bewegung reduzieren“ wiederholen. Bei Problemen bitte Build 321, Gerät, iOS-Version und eine Bildschirmaufnahme angeben.",
+    "en-US": "EventBliss has a new app icon. Its familiar calendar and infinity symbol is larger and easier to recognize on the Home Screen. Launch now connects the native startup image to a short new animation: light trails frame the symbol, then the wordmark and tagline appear. Reduce Motion is supported.\n\nPlease test: fully close and reopen the app on an iPhone; check the Home Screen icon, a flash-free handoff, centered layout, and launch duration. Repeat in light and dark iOS appearance and with Reduce Motion enabled. For issues, include build 321, device, iOS version, and a screen recording."
+  }
+}
