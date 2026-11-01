@@ -7,6 +7,8 @@ export interface HitPlayer {
   color: string;
   avatar: string;
   teamId: string;
+  /** Display name of a formed team; absent in solo mode. */
+  teamName?: string;
   score: number;
   locked: boolean;
 }

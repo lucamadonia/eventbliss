@@ -5,6 +5,9 @@ import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
 import { OHRWURM_GENRE_ASSETS, OHRWURM_MODE_ASSETS } from '../ui/premium-game-assets';
 import { OHRWURM_GENRES } from '../ohrwurm/ohrwurm-content';
 import { StageAction } from '../ui/GameStage';
+import { TeamFormation } from '../ui/TeamFormation';
+import { randomTeamAssignments } from '../ui/random-teams';
+import { HIT_TEAM_IDS, teamForPlayer } from './setup-roster';
 import type { HitConfig } from './engine';
 import type { hitText } from './strings';
 
@@ -19,10 +22,15 @@ interface HitBuzzerSetupProps {
   onAdd: () => void;
   onRemove: (id: string) => void;
   onRename: (id: string, name: string) => void;
+  onImportNames: (names: string[]) => void;
   teamMode: boolean;
   setTeamMode: (value: boolean) => void;
   teams: Record<string, string>;
   setTeams: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  teamCount: number;
+  setTeamCount: React.Dispatch<React.SetStateAction<number>>;
+  teamNames: Record<string, string>;
+  setTeamNames: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   onStart: () => void;
   busy: boolean;
 }
@@ -31,9 +39,43 @@ const accent = '#df8eff';
 const selected = 'border-[#df8eff] bg-[#df8eff]/15 text-white shadow-[0_0_0_1px_rgba(223,142,255,0.2)]';
 const idle = 'border-white/10 bg-[#21182e] text-white/70 hover:border-white/30 hover:text-white';
 
-export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd, onRemove, onRename, teamMode, setTeamMode, teams, setTeams, onStart, busy }: HitBuzzerSetupProps) {
+const teamColors = ['#df8eff', '#8ff5ff', '#ff2e88', '#f9ca24'];
+
+export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd, onRemove, onRename, onImportNames, teamMode, setTeamMode, teams, setTeams, teamCount, setTeamCount, teamNames, setTeamNames, onStart, busy }: HitBuzzerSetupProps) {
   const { t } = useTranslation();
-  const canStart = players.filter(player => player.name.trim()).length >= 2;
+  const assignedTeam = (playerId: string, index: number) => teamForPlayer(playerId, index, teams, teamCount);
+  const formedTeams = HIT_TEAM_IDS.slice(0, teamCount).map((teamId, index) => ({
+    id: teamId, name: teamNames[teamId] ?? `${text.team} ${teamId}`, color: teamColors[index],
+    members: players.filter((player, playerIndex) => assignedTeam(player.id, playerIndex) === teamId)
+      .map(player => ({ id: player.id, name: player.name || text.player })),
+  }));
+  const canStart = players.length >= 2 && players.every(player => !!player.name.trim())
+    && (!teamMode || formedTeams.every(team => !!team.name.trim() && team.members.length > 0));
+  const shuffleTeams = () => {
+    const current = Object.fromEntries(players.map((player, index) => [player.id, HIT_TEAM_IDS.indexOf(assignedTeam(player.id, index) as typeof HIT_TEAM_IDS[number])]));
+    const shuffled = randomTeamAssignments(players.map(player => player.id), teamCount, current);
+    setTeams(Object.fromEntries(Object.entries(shuffled).map(([playerId, index]) => [playerId, HIT_TEAM_IDS[index]])));
+  };
+  const moveMember = (playerId: string) => {
+    const index = players.findIndex(player => player.id === playerId);
+    if (index < 0) return;
+    const current = HIT_TEAM_IDS.indexOf(assignedTeam(playerId, index) as typeof HIT_TEAM_IDS[number]);
+    setTeams(previous => ({ ...previous, [playerId]: HIT_TEAM_IDS[(current + 1) % teamCount] }));
+  };
+  const addTeam = () => {
+    if (teamCount >= 4 || teamCount >= players.length) return;
+    const largest = formedTeams.reduce((best, team, index) => team.members.length > formedTeams[best].members.length ? index : best, 0);
+    const moving = formedTeams[largest].members.at(-1);
+    if (moving) setTeams(previous => ({ ...previous, [moving.id]: HIT_TEAM_IDS[teamCount] }));
+    setTeamCount(teamCount + 1);
+  };
+  const removeTeam = () => {
+    if (teamCount <= 2) return;
+    const removed = HIT_TEAM_IDS[teamCount - 1];
+    setTeams(previous => ({ ...previous, ...Object.fromEntries(formedTeams[teamCount - 1].members.map((member, index) => [member.id, HIT_TEAM_IDS[index % (teamCount - 1)]])) }));
+    setTeamNames(previous => { const next = { ...previous }; delete next[removed]; return next; });
+    setTeamCount(teamCount - 1);
+  };
   const goalByScore = config.targetScore !== null;
   const chooseGoal = (byScore: boolean) => setConfig(previous => ({ ...previous, targetScore: byScore ? previous.targetScore ?? 750 : null }));
 
@@ -52,8 +94,9 @@ export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd
       <div className="min-w-0 space-y-8">
         <section className="min-w-0" aria-label={t('games.ohrwurm.players')}>
           <PlayerSetup players={players} locked={locked} onAdd={onAdd} onRemove={onRemove} onRename={onRename}
+            onImportNames={locked ? undefined : onImportNames}
             min={locked ? players.length : 2} max={locked ? players.length : 20} accent={accent}
-            label={locked ? t('games.ohrwurm.inRoom') : t('games.ohrwurm.players')} />
+            label={locked ? t('games.ohrwurm.inRoom') : t('games.ohrwurm.players')} maxNameLength={16} />
         </section>
 
         <section>
@@ -64,15 +107,18 @@ export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd
             <PremiumImageChoiceCard title={t('games.ohrwurm.modeGroupLabel')} image={OHRWURM_MODE_ASSETS.group}
               selected={teamMode} onClick={() => setTeamMode(true)} accent={accent} />
           </div>
-          {teamMode && <div className="mt-4 space-y-2 rounded-[24px] border border-white/10 bg-[#16101f] p-4">
-            {players.map((player, index) => <div key={player.id} className="flex min-h-12 items-center justify-between gap-3 border-b border-white/5 last:border-b-0">
-              <span className="min-w-0 truncate text-sm font-semibold text-white/85">{player.name || text.player}</span>
-              <div className="flex shrink-0 gap-1 rounded-xl bg-[#0d0915] p-1" role="group" aria-label={`${player.name || text.player}: ${text.team}`}>
-                {(['A', 'B'] as const).map(team => <button key={team} type="button" aria-pressed={(teams[player.id] || (index % 2 ? 'B' : 'A')) === team}
-                  onClick={() => setTeams(previous => ({ ...previous, [player.id]: team }))}
-                  className={`min-h-10 min-w-11 rounded-lg px-2 text-xs font-black transition-colors ${(teams[player.id] || (index % 2 ? 'B' : 'A')) === team ? 'bg-[#df8eff] text-[#090711]' : 'text-white/60 hover:text-white'}`}>{text.team} {team}</button>)}
-              </div>
-            </div>)}
+          {teamMode && <div className="mt-4 space-y-4 rounded-[24px] border border-white/10 bg-[#16101f] p-4" data-testid="hitbuzzer-team-setup">
+            <TeamFormation teams={formedTeams} title={t('games.ohrwurm.formTeams')} hint={t('games.pantomime.tapToSwap')}
+              shuffleLabel={t('games.splitquiz.reshuffleTeams')} emptyLabel={t('games.ohrwurm.emptyTeam')}
+              renameLabel={index => t('games.ohrwurm.nameTeam', { n: index + 1 })}
+              onShuffle={shuffleTeams} onMove={moveMember}
+              onRename={(index, name) => setTeamNames(previous => ({ ...previous, [HIT_TEAM_IDS[index]]: name }))}
+              surface="#21182e" elevated="#0d0915" text="#ffffff" muted="#b3a8c9" />
+            <div className="flex flex-wrap gap-3">
+              <button type="button" onClick={addTeam} disabled={teamCount >= 4 || teamCount >= players.length}
+                className="min-h-11 rounded-xl border border-[#df8eff]/40 px-3 text-xs font-bold text-[#df8eff] disabled:opacity-40">+ {t('games.ohrwurm.addTeam')}</button>
+              {teamCount > 2 && <button type="button" onClick={removeTeam} className="min-h-11 px-3 text-xs font-bold text-white/60">{t('games.ohrwurm.removeLastTeam')}</button>}
+            </div>
           </div>}
         </section>
       </div>
