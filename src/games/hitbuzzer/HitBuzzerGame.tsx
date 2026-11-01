@@ -142,11 +142,12 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   // copied once while setup is untouched; manual edits then stay intact.
   const importedRef = useRef(false);
   useEffect(() => {
+    if (!online && !restoreDone) return;
     if (state || !initialRoster?.length || importedRef.current) return;
     if (!online && roster.some(p => p.name.trim())) { importedRef.current = true; return; }
     setRoster(initialRoster.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar })));
     importedRef.current = true;
-  }, [initialRoster, online, roster, state]);
+  }, [initialRoster, online, restoreDone, roster, state]);
 
   const prepareSong = useCallback((cards: Song[]) => {
     const next = cards.pop() ?? null;
