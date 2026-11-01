@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Hit-Buzzer zeigt die Spielregeln beim ersten Öffnen und über einen gut sichtbaren Knopf im Spielmenü. Während der Partie lassen sie sich zwischen den Antworten erneut öffnen. Der Host kann dieselbe Anleitung auch auf dem TV anzeigen, selbst wenn nur ein einzelnes Spiel läuft; ein laufender Song wird dabei pausiert. Die Regeln erklären Antwortzeit, Prüfung durch den Host, Punkte, Strafpunkte und die Freigabe der übrigen Buzzer nach einer falschen Antwort. Der Song wird auf dem TV erst bei der Auflösung gezeigt.\n\nBitte testen: Regeln beim ersten Start, erneutes Öffnen im Menü und im Spiel sowie Ein- und Ausblenden auf dem TV. Prüft dies im Online-, Joystick-, TV- und Pass-&-Play-Modus, auch während eines Party-Abends. Bei Problemen bitte Build 323, Gerät, iOS-Version, Spielmodus und nach Möglichkeit eine Bildschirmaufnahme angeben.",
+    "en-US": "Hit-Buzzer now shows its rules on first opening and from a prominent button in the game setup. Players can reopen them between answers during a match. The host can show the same instructions on the TV, even for a single game; a playing clip pauses when the rules appear. The rules explain the answer timer, host review, points, penalties, and how other buzzers become available after a wrong answer. The song appears on TV only at the reveal.\n\nPlease test the first-play rules, reopening them in setup and during a match, and showing and hiding them on TV. Check Online, Joystick, TV, and Pass & Play modes, including Party Night. For issues, include build 323, device, iOS version, game mode, and a screen recording if possible."
+  }
+}
