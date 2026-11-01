@@ -98,13 +98,51 @@ Im Bereich **Admin → Spiele** steht eine Hit-Buzzer-Karte mit Cover und Link z
 
 Für den späteren Release braucht die Songverwaltung zusätzlich eine gut sichtbare Clip-Prüfung: `spielbar / Vorschau fehlt / Resolver prüfen`, gefiltert nach Sprache und Aktivierung. Ein „Probehören“-Knopf muss dieselbe Host-Wiedergabeart testen, ohne den Song einer Partie zu verbrauchen. Eine Fehlerquote und ein Bericht über übersprungene Songs helfen, stumme Runden gezielt zu beheben. Spielregeln wie Punkteziel und Strafpunkte gehören ins Match-Setup; Admin-Vorgaben dürfen nicht die eigene Songbibliothek duplizieren.
 
-## 8. Darstellung
+## 8. Corporate Design und Erlebnisqualität
 
-- **Cover:** Leuchtender Buzzer und Schallwellen in Korall/Pink und Türkis auf dunkler Bühne. Die App setzt den Namen als echten UI-Text darüber; das Bild selbst enthält keine Schrift. Datei: `public/images/games/hit-buzzer.webp`.
-- **Host:** Oben Songnummer und Fortschritt, mittig großer Musik-/Zeitbereich, unten Juryaktionen. Die Lösung bleibt bis zur Bewertungsphase verdeckt. Beim Buzz wird die aktive Person in ihrer Farbe gezeigt und die Musiksteuerung klar eingefroren.
-- **Spielerhandy:** Ein dominanter Buzzer mit deutlichem Zustand `bereit / Buzz gesendet / du bist dran / gesperrt / Verbindung unterbrochen`. Farbe ist nie das einzige Signal; Label, Form und Haptik ergänzen sie.
-- **TV:** Songnummer, 30-Sekunden-Ring, Live-Rangliste, aktueller Buzzer und später Reveal. Keine versteckte Songinfo im DOM oder Payload vor der Auflösung. Keine doppelte Tonausgabe.
-- **Bewegung:** Kurzer Lichtimpuls beim akzeptierten Buzz, dann ruhige Juryphase. Reduzierte Bewegung respektieren; keine Stroboskop-Effekte. Musik muss auf iOS/Android erst nach einer echten Nutzeraktion gestartet werden.
+Hit-Buzzer ist visuell Teil von EventBliss Party Play. Die verbindliche Grundlage ist `docs/party-play-design.md`; die Spielansichten verwenden die bereits vorhandenen Bausteine `partyMotion`, `playerGlow`, `pressable`, `SeatAvatar`, `PartyTurnRibbon`, `tvPanel` und `tvType`. Die Buzzerform gibt dem Spiel Wiedererkennung, während Typografie, Raumtiefe, Spielerfarben, Bewegungen und Zustandswechsel aus dem gemeinsamen System kommen.
+
+| Gestaltung | Hit-Buzzer-Anwendung |
+| --- | --- |
+| Flächen | `#060810` als Bühne, `#0d0915` als Panel, `#16101f` als aktive Karte; keine flachen grauen Kästen |
+| Akzente | `#df8eff` für Hauptaktionen, `#8ff5ff` für bereit/bestätigt, `#ff6b98` für Warnung/Strafe; Pink `#FF2E88` nur als Spielakzent am Buzzer |
+| Radien | 28 px für Bühnenpanels, 20 px für Karten, volle Rundung für Status-Pills; gleicher Rhythmus auf Host, Handy und TV |
+| Typografie | `font-game` für kurze Bühnenansagen; Fließtext in der bestehenden App-Schrift. Zahlen und Countdown mit `tabular-nums`; höchstens zwei Gewichte pro TV-Szene |
+| Spieleridentität | Zimmer-/Lobby-Farbe folgt dem Spieler via `playerGlow`; auf Text und Status zusätzlich Name, Avatar, Form und Icon |
+| Bild | Eigenständige gezeichnete Gruppenszene im Stil der vorhandenen Ohrwurm-, Pixeljagd- und GEBRÄU-Cover; kein fotorealistischer Neon-Buzzer |
+
+**Cover:** Vier Freunde an einem Tisch, jeder mit eigenem Buzzer, Musikquelle beim Host, ein Mensch drückt zuerst. Handgezeichnete Konturen, ausdrucksstarke Figuren, violette EventBliss-Bühne und sparsame Pink-/Türkis-Akzente. Die App setzt „Hit-Buzzer“ als echten UI-Text über oder neben das Bild; im Bild selbst stehen keine Buchstaben. Datei: `public/images/games/hit-buzzer.webp`.
+
+### 8.1 Informationshierarchie pro Bildschirm
+
+| Phase | Spielerhandy | Host-Handy | TV |
+| --- | --- | --- | --- |
+| Bereit | Eigener Avatar, Team und großer Buzzer; „Warte auf den Song“ | Song vorbereiten, Lautstärkeprobe, Teilnehmerstatus | Runde, alle Avatare, „Gleich geht's los“ |
+| Countdown | Große 3–2–1, Buzzer sichtbar aber gesperrt | Startstatus und Audio-Bereitschaft | Derselbe Countdown zur gemeinsamen `startsAt` |
+| Hören | Ein dominanter Buzzer in der Daumenzone, darunter eigener Punktestand | Audio/30-s-Ring, lokale Plätze mit **je eigenem** Buzzer, sichere Juryzone noch verborgen | Songnummer und Ring, Rangliste in fester Seitenzone |
+| Buzz angenommen | „Du bist dran“ mit eigenem Avatar und Antwortfrist; andere sehen „[Name] antwortet“ | Musik pausiert, Name groß, Juryaktionen getrennt von jedem Buzzer | Spotlight auf den Buzzenden; keinerlei Songtitel |
+| Falsch | Eigener Platz „Für diesen Song gesperrt“; andere Buzzer werden wieder aktiv | −20 sichtbar, dann „Weiterhören“; keine zusätzliche Bestätigung nötig | Kurzer Punktabzug am richtigen Platz, Zeitring läuft weiter |
+| Richtig/Ende | Lösung und eigene Punktänderung, dann ruhig warten | Titel/Interpret, kontrollierbarer nächster Song | Song-Reveal, neue Rangfolge und Moment für den Gewinner |
+| Verbindung weg | Ruhiger Sperrzustand mit „Verbinde neu …“; keine Schein-Buzzer | Teilnehmerstatus, Host kann pausieren/aufheben | Letzter gültiger Zustand ohne irreführenden Countdown |
+
+Auf dem Handy stehen **Aktion und Zustand** immer vor Dekoration. Der Buzzer muss bei 320 und 390 px Breite ohne Scrollen erreichbar bleiben, einschließlich iOS-Safe-Area und eingeblendeter Systemleisten. Bei mehreren 🔁-Plätzen bleiben die Buzzer eindeutig beschriftet; die Host-Jury erscheint erst nach einem angenommenen Buzz in einer eigenen Zone, damit kein Spielplatz versehentlich bewertet. Für zwei bis vier lokale Plätze ist ein 2×2-Raster möglich; bei mehr Plätzen erhalten die Buttons eine vertikale Liste mit festem Fortschrittskopf. Weder Punkte noch eine Animation dürfen die Trefferfläche verdecken.
+
+Auf dem TV bleiben 5 % Sicherheitsrand für Overscan. Runde und Uhr sind aus drei Metern lesbar; alle handlungsrelevanten Texte verwenden mindestens `tvType.label`, Namen `tvType.body`, Ansagen `tvType.title`. Die Rangliste rückt beim Buzz optisch zurück, aber nie so weit, dass der Punktestand verschwindet. Der TV ist die gemeinsame Bühne und zeigt keine Bedienknöpfe. Die Host-Audioausgabe bleibt die einzige Tonquelle, damit kein Echo entsteht; falls später TV-Audio gewünscht ist, braucht es einen ausdrücklich wählbaren Einzelausgang mit eigener Autoplay-Prüfung.
+
+### 8.2 Bewegung, Ton und Haptik
+
+- **Start:** Countdown und Öffnung der Buzzer benutzen die Party-Szenenuhr (`startsAt`, 600 ms Vorlauf). Ein verspätet verbundenes Handy springt in den aktuellen Zustand, statt den Countdown nachzuspielen.
+- **Drücken:** `pressable` mit 140 ms und Scale 0,97, eine präzise Haptik auf dem eigenen Handy. „Gesendet“ erscheint sofort; „angenommen“ erst nach Host-Bestätigung. Keine optimistische Punktevergabe.
+- **Buzz-Gewinn:** Avatar, Name und Spielerglow wechseln in höchstens 260 ms; ein kurzer Soundhinweis kommt nur aus der ausgewählten Audioquelle. Kein Stroboskop, keine dauerpulsierende Fläche.
+- **Falsch:** Der betroffene Score zählt einmal von alt auf neu, mit klarer −20-Markierung. Die anderen Geräte sehen die Freigabe erst, wenn der Host-Zustand wieder `listening` meldet.
+- **Richtig:** Kurzer `checkPop`, dann Lösungskarte. Konfetti ist für die Spielentscheidung am Ende reserviert; wiederholte Treffer erhalten kein überladenes Vollbild-Feuerwerk.
+- **Reduzierte Bewegung:** Derselbe Endzustand erscheint ohne räumliche Animation. Fristen und Sperren bleiben semantisch identisch. Haptik und Ton sind nicht die einzigen Hinweise.
+
+### 8.3 Lesbarkeit, Sprache und harte Abnahme
+
+Textkontrast mindestens 4,5:1, große Schrift mindestens 3:1; Spielerfarben niemals allein als Textfarbe. Hauptaktionen mindestens 56 px hoch, andere Trefferflächen mindestens 44 × 44 px mit 8 px Abstand. Sichtbarer Fokus bekommt den bestehenden 2-px-Türkisring. „Richtig“ und „Falsch“ stehen räumlich getrennt und haben Text plus Icon, damit ein Host im Tempo nicht falsch wertet. Live-Ansagen sind für Screenreader kurz und werden nicht bei jedem Timer-Tick wiederholt.
+
+Alle zehn vorhandenen Sprachen brauchen echte Texte für jede Phase, Fehlermeldung und Host-Aktion. Arabisch verwendet logische Layout-Eigenschaften; Zahlen, Punkte und Zeit bleiben lesbar. Lange Namen und lange Songtitel dürfen weder Buzzer noch Juryknöpfe verdrängen. Die Spielgrafik muss im Kartenformat bei 400 px, auf 320/390-px-Handys und auf 1080p-TV getestet werden. Für jede Phase entstehen Vergleichsbilder für Host, eigenes Spielerhandy, 🔁-Platz und TV. Vor Freigabe müssen ein kompletter 15-Song-Abend, Reconnect, fehlender Clip, gleichzeitige Buzzes und Rematch auf echten iOS- und Android-Geräten durchlaufen sein.
 
 ### Spätere Varianten
 
@@ -114,7 +152,7 @@ Der Standardmodus bleibt bewusst leicht erklärbar. Denkbare Varianten nach eine
 
 Erzeugt mit dem integrierten Imagegen-Werkzeug; anschließend als 1024 × 1024 WebP für die App gespeichert. Verwendeter Prompt:
 
-> Stylized-concept game cover art for a fast group music recognition quiz called Hit-Buzzer in a premium party-game app. Square composition designed to crop to 16:9 and 4:3. One large luminous physical buzzer in the center foreground, about to be pressed, concentric rings of sound and energetic audio waveforms radiating outward, subtle vinyl groove and stage-light atmosphere, a sense of split-second reaction and friendly competition. Distinct from a chronological music timeline game and a pixel-image guessing game. Rich deep midnight navy background with electric coral, hot pink and teal lighting, dramatic depth, polished tactile 3D illustration with crisp silhouettes and restrained glow, legible at thumbnail scale. Keep the central buzzer and main energy within the middle 70 percent. No people, no text, no letters, no logos, no trademarked imagery, no headphones or notes obscuring the buzzer.
+> Edit Image 1 into a square EventBliss game cover matching the established editorial illustration style of Images 2, 3 and 4. Keep the central idea of a song-recognition buzzer contest, but replace the realistic neon-rendered stage entirely with a lively hand-drawn cartoon group scene. Four distinct adult friends gathered around one table at a party; each has their own separate large red/pink buzzer or phone buzzer in front of them, one reaches to press first, others react with anticipation, and a host controls the music from a small speaker/phone. This game is about fast song recognition, not chronology: use a few floating colorful music notes and audio-wave accents, no timeline cards, no pixelated image. Match references' bold ink outlines, expressive faces, warm playful character art, crisp cel shading, textured purple-magenta ambient lighting, cyan and coral accents, grounded tabletop composition, detailed but readable at 400px thumbnail scale. Original characters, not copies of the reference people. Keep main action in center 80 percent with room for square crop. No photorealism, no glossy 3D object, no glowing nightclub laser stage, no written words, no letters, no speech bubbles, no logos, no trademarked imagery.
 
 ## 9. Wiederverwendung und Implementierungsreihenfolge
 

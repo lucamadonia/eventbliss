@@ -397,20 +397,20 @@ export default function AdminGames() {
         </div>
       </div>
 
-      <section aria-labelledby="hit-buzzer-admin-title" className="mx-4 mt-4 flex flex-col gap-4 rounded-2xl border border-[#ff6b98]/25 bg-[#151a21] p-4 sm:mx-6 sm:flex-row sm:items-center">
-        <img src="/images/games/hit-buzzer.webp" alt="Leuchtender Musik-Buzzer" className="h-24 w-full rounded-xl object-cover sm:h-24 sm:w-24" />
+      <section aria-labelledby="hit-buzzer-admin-title" className="mx-4 mt-4 flex flex-col gap-4 rounded-[28px] border border-white/[0.08] bg-[#16101f] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] sm:mx-6 sm:flex-row sm:items-center">
+        <img src="/images/games/hit-buzzer.webp" alt="Freunde buzzern bei einem Musikquiz" className="h-28 w-28 rounded-[20px] object-cover sm:h-24 sm:w-24" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 id="hit-buzzer-admin-title" className="text-base font-extrabold text-white">Hit-Buzzer</h2>
-            <span className="rounded-full bg-[#ff6b98]/15 px-2 py-0.5 text-[10px] font-bold text-[#ff9cbb]">Spielkonzept</span>
+            <h2 id="hit-buzzer-admin-title" className="font-game text-lg font-black text-white">Hit-Buzzer</h2>
+            <span className="rounded-full border border-[#df8eff]/30 bg-[#df8eff]/10 px-2.5 py-1 text-xs font-bold text-[#df8eff]">Spielkonzept</span>
           </div>
-          <p className="mt-1 text-xs leading-relaxed text-[#a8abb3]">
+          <p className="mt-1 text-sm leading-relaxed text-[#b3a8c9]">
             Musik schnell erkennen und buzzern. Hit-Buzzer ist auf die Ohrwurm-Songbibliothek ausgelegt:
             neue Songs, Sprachzuordnung und Aktivierung werden nur einmal gepflegt.
           </p>
         </div>
         <button type="button" onClick={() => navigate('/admin/ohrwurm-songs')}
-          className="min-h-11 shrink-0 rounded-xl bg-[#ff6b98] px-4 text-xs font-bold text-[#0a0e14] hover:bg-[#ff8bad]">
+          className="min-h-12 shrink-0 rounded-2xl bg-[#df8eff] px-4 text-sm font-bold text-[#16101f] transition-colors hover:bg-[#e8adff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8ff5ff]">
           Gemeinsame Songs verwalten
         </button>
       </section>
