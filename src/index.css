@@ -1048,6 +1048,18 @@ html.capacitor-native ::-webkit-scrollbar {
   animation: none !important;
 }
 
+/* iOS date controls have an intrinsic width that can exceed their card. The
+   shell owns geometry; the native input stays unpadded and shrinkable. */
+.expense-date-shell { box-sizing: border-box; }
+input.expense-date-input {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+}
+
 /* Keep the expense date centered vertically and horizontally in WebKit. */
 input.expense-date-input::-webkit-date-and-time-value {
   display: flex;

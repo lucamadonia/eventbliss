@@ -256,7 +256,7 @@ export function SplitConfigurator({
   return (
     <div className="space-y-3">
       {/* Mode segmented control */}
-      <div className="relative grid grid-cols-4 gap-1 p-1 rounded-2xl bg-muted border border-border">
+      <div className="relative grid grid-cols-2 gap-1.5 rounded-2xl border border-border bg-muted p-1.5 sm:grid-cols-4">
         {modes.map((m) => {
           const active = localMode === m.value;
           return (
@@ -265,7 +265,7 @@ export function SplitConfigurator({
               type="button"
               onClick={() => setMode(m.value)}
               className={cn(
-                "relative z-10 px-3 py-2 rounded-xl text-center transition-colors cursor-pointer",
+                "relative z-10 min-h-16 rounded-xl px-2 py-2 text-center transition-colors cursor-pointer",
                 active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
               )}
             >
@@ -275,8 +275,8 @@ export function SplitConfigurator({
                   className="absolute inset-0 rounded-xl bg-gradient-to-br from-violet-500/30 to-cyan-500/20 border border-violet-500/40 -z-10"
                 />
               )}
-              <div className="text-xs font-semibold">{m.label}</div>
-              <div className="text-[10px] text-muted-foreground mt-0.5">{m.sub}</div>
+              <div className="text-sm font-semibold">{m.label}</div>
+              <div className="mt-0.5 text-[11px] leading-tight text-muted-foreground">{m.sub}</div>
             </button>
           );
         })}
@@ -288,7 +288,7 @@ export function SplitConfigurator({
           <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-3">
             {t("expenses.v2.split.tapToToggle")}
           </div>
-          <div className="grid grid-cols-6 sm:grid-cols-8 gap-2">
+          <div className="flex flex-wrap gap-2">
             {participants.map((p) => {
               const isExcluded = excluded.includes(p.id);
               return (
