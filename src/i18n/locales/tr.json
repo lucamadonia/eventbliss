@@ -9024,10 +9024,10 @@
       "tagline": "Şarkıyı herkesten önce tanı.",
       "step1": "Sunucu 30 saniyelik parçayı başlatır.",
       "step2": "Şarkıyı tanıyınca kendi butonuna bas.",
-      "step3": "Sanatçıyı ve şarkı adını söyle. Sunucu karar verir.",
-      "step4": "Doğru cevap hıza göre puan kazandırır. Yanlış cevap seçilen cezayı uygular ve takımını bu şarkıda kilitler.",
+      "step3": "Süre dolmadan sanatçıyı ve şarkı adını söyle. Sunucu ikisini çözümle karşılaştırıp karar verir.",
+      "step4": "Doğru cevap hıza göre puan kazandırır. Yanlış cevap ceza getirir, takımını bu şarkıda kilitler ve diğer butonları yeniden açar.",
       "step5": "Seçilen turlardan sonra veya hedef puana ulaşınca en yüksek puan kazanır.",
-      "tip": "Kontrolcü modunda herkesin kendi butonu vardır."
+      "tip": "Kontrolcü modunda herkesin kendi butonu vardır. Çözüm TV'de yalnızca sonuçta görünür."
     },
     "pixeljagd": {
       "title": "Pixeljagd",

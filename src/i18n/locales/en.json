@@ -8950,10 +8950,10 @@
       "tagline": "Recognize the song before everyone else.",
       "step1": "The host starts a 30-second clip.",
       "step2": "Press your own buzzer as soon as you know the song.",
-      "step3": "Name the artist and title. The host judges your answer.",
-      "step4": "A correct answer earns speed points. A wrong answer costs the chosen penalty and locks your team for this song.",
+      "step3": "Name the artist and title before the answer timer runs out. The host compares both with the answer and judges.",
+      "step4": "A correct answer earns speed points. A wrong answer costs the chosen penalty, locks your team for this song, and reopens the other buzzers.",
       "step5": "The highest score wins after the chosen rounds or when the target score is reached.",
-      "tip": "Everyone has their own buzzer in controller mode."
+      "tip": "Everyone has their own buzzer in controller mode. The TV reveals the answer only with the result."
     },
     "pixeljagd": {
       "title": "Pixel Hunt",
