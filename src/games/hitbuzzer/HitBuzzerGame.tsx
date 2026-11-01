@@ -19,6 +19,7 @@ import { OHRWURM_GENRES } from '../ohrwurm/ohrwurm-content';
 import { usePreviewLoader } from '../ohrwurm/usePreviewLoader';
 import { useTvPresence } from '../ohrwurm/useTvPresence';
 import { ConfirmExitDialog, useConfirmExit } from '../ui/useConfirmExit';
+import { clearSnapshot, loadSnapshot, saveSnapshot } from '../ui/useGameSnapshot';
 import type { Song } from '../ohrwurm/ohrwurm-engine';
 import { loadHitBuzzerDeck } from './song-pool';
 import {
@@ -29,6 +30,17 @@ import {
 import { hitText } from './strings';
 
 const id = () => crypto.randomUUID();
+
+interface HitSnapshot {
+  state: HitState;
+  song: Song;
+  deck: Song[];
+  roundStart: HitState | null;
+  roster: (PlayerSetupPlayer & { avatar?: string })[];
+  config: HitConfig;
+  teamMode: boolean;
+  teams: Record<string, string>;
+}
 
 export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
@@ -65,6 +77,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
   const [now, setNow] = useState(serverClock.now());
+  const [restoreDone, setRestoreDone] = useState(false);
   const leaveGame = useCallback(() => {
     if (controllerParty && stateRef.current?.phase !== 'finished') {
       if (isHost) void abortControllerGame().catch(() => {});
@@ -87,6 +100,43 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     stateRef.current = next;
     setState(next);
   }, []);
+
+  useEffect(() => {
+    if (online) return;
+    const saved = loadSnapshot<HitSnapshot>('hitbuzzer');
+    if (saved?.state && saved.song && Array.isArray(saved.deck) && Array.isArray(saved.roster)
+      && saved.config && saved.teams && saved.state.phase !== 'finished') {
+      let recovered = saved.state;
+      if (['listening', 'paused', 'answering'].includes(recovered.phase)) {
+        if (saved.roundStart?.roundId !== recovered.roundId) {
+          clearSnapshot('hitbuzzer');
+          setRestoreDone(true);
+          return;
+        }
+        recovered = replaceBrokenClip(recovered, saved.roundStart, id());
+      }
+      deckRef.current = saved.deck;
+      roundStartRef.current = null;
+      songRef.current = saved.song;
+      setSong(saved.song);
+      setRoster(saved.roster);
+      setConfig(saved.config);
+      setTeamMode(saved.teamMode);
+      setTeams(saved.teams);
+      commit(recovered);
+      void loadPreview(saved.song, ++drawIdRef.current);
+    }
+    setRestoreDone(true);
+  }, [online, commit, loadPreview]);
+
+  useEffect(() => {
+    if (online || !restoreDone) return;
+    if (!state || state.phase === 'finished' || !song) { clearSnapshot('hitbuzzer'); return; }
+    saveSnapshot<HitSnapshot>('hitbuzzer', {
+      state, song, deck: deckRef.current, roundStart: roundStartRef.current,
+      roster, config, teamMode, teams,
+    });
+  }, [online, restoreDone, state, song, roster, config, teamMode, teams]);
 
   // The room roster is authoritative in online play. A local party roster is
   // copied once while setup is untouched; manual edits then stay intact.
