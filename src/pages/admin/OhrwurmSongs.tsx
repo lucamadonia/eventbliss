@@ -239,7 +239,7 @@ export default function OhrwurmSongs() {
           </button>
           <Music2 className="w-6 h-6 text-[#FF2E88]" />
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold">OHRWURM — Songs</h1>
+            <h1 className="text-xl font-bold">Songs für Ohrwurm + Hit-Buzzer</h1>
             <p className="text-xs text-[#a8abb3]">
               {rows.length} Songs · {rows.filter((r) => r.is_active).length} aktiv ·{' '}
               {rows.filter((r) => r.base_id).length} Grundbestand
@@ -249,6 +249,11 @@ export default function OhrwurmSongs() {
             <Plus className="w-4 h-4" /> Song
           </button>
         </div>
+
+        <p className="rounded-xl border border-[#ff6b98]/25 bg-[#ff6b98]/5 px-4 py-3 text-xs leading-relaxed text-[#d7d9e0]">
+          Eine gemeinsame Bibliothek: Hier ergänzte Songs, Sprachen und Aktivierung werden für Ohrwurm gepflegt
+          und vom geplanten Hit-Buzzer übernommen. Hit-Buzzer ist derzeit noch nicht spielbar.
+        </p>
 
         {/* Filter */}
         <div className="flex flex-wrap gap-2">

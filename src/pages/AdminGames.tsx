@@ -354,7 +354,7 @@ export default function AdminGames() {
                 eigenen Einstieg. */}
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate('/admin/ohrwurm-songs')}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-gradient-to-r from-[#FF2E88] to-[#d779ff] text-white">
-              🎵 OHRWURM Songs
+              🎵 Ohrwurm + Hit-Buzzer Songs
             </motion.button>
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate('/admin/pixel-images')}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-gradient-to-r from-[#38BDF8] to-[#A78BFA] text-[#0B1120]">
@@ -396,6 +396,24 @@ export default function AdminGames() {
           </div>
         </div>
       </div>
+
+      <section aria-labelledby="hit-buzzer-admin-title" className="mx-4 mt-4 flex flex-col gap-4 rounded-2xl border border-[#ff6b98]/25 bg-[#151a21] p-4 sm:mx-6 sm:flex-row sm:items-center">
+        <img src="/images/games/hit-buzzer.webp" alt="Leuchtender Musik-Buzzer" className="h-24 w-full rounded-xl object-cover sm:h-24 sm:w-24" />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 id="hit-buzzer-admin-title" className="text-base font-extrabold text-white">Hit-Buzzer</h2>
+            <span className="rounded-full bg-[#ff6b98]/15 px-2 py-0.5 text-[10px] font-bold text-[#ff9cbb]">Spielkonzept</span>
+          </div>
+          <p className="mt-1 text-xs leading-relaxed text-[#a8abb3]">
+            Musik schnell erkennen und buzzern. Hit-Buzzer ist auf die Ohrwurm-Songbibliothek ausgelegt:
+            neue Songs, Sprachzuordnung und Aktivierung werden nur einmal gepflegt.
+          </p>
+        </div>
+        <button type="button" onClick={() => navigate('/admin/ohrwurm-songs')}
+          className="min-h-11 shrink-0 rounded-xl bg-[#ff6b98] px-4 text-xs font-bold text-[#0a0e14] hover:bg-[#ff8bad]">
+          Gemeinsame Songs verwalten
+        </button>
+      </section>
 
       <div className="flex">
         {/* Sidebar */}
