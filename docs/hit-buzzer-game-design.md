@@ -6,7 +6,7 @@ Stand: 1. November 2026. Arbeitstitel **Hit-Buzzer**. Dieses Dokument beschreibt
 
 ## 1. Versprechen und Grenzen
 
-Hit-Buzzer ist ein schnelles Song-Erkennungsspiel. Ein 30-Sekunden-Ausschnitt läuft ausschließlich auf dem Host-Gerät. Jede spielende Person hat einen Buzzer. Wer zuerst buzzert, sagt **Interpret und Titel** laut. Der Host bestätigt die Antwort. Eine richtige Antwort belohnt eine schnelle Reaktion; eine falsche kostet Punkte und lässt die übrigen Spieler wieder zu.
+Hit-Buzzer ist ein schnelles Song-Erkennungsspiel. Ein 30-Sekunden-Ausschnitt läuft hörbar auf dem Host-Gerät oder bei verbundenem Fernseher auf dem TV; der Host hält dann die Zeit mit stummem Audio weiter. Jede spielende Person hat einen Buzzer. Wer zuerst buzzert, sagt **Interpret und Titel** laut. Der Host bestätigt die Antwort. Eine richtige Antwort belohnt eine schnelle Reaktion; eine falsche kostet Punkte und lässt die übrigen Spieler wieder zu.
 
 Das Spiel braucht keine Jahreszahlen, Zeitlinie, Albumcover, Spotify-Premium-Mitgliedschaft oder Texterkennung. Es verwendet die vorhandenen 30-Sekunden-Vorschauen und denselben gepflegten Songbestand wie Ohrwurm. Der Host trifft die Entscheidung bei Schreibvarianten, Features, Coverversionen und unklarer Aussprache.
 
@@ -88,16 +88,16 @@ Gäste senden nur `buzz` mit `matchId`, `roundId`, `actionId` und Platz-ID. Der 
 
 - **Einzige Datenquelle:** `public.ohrwurm_songs` und der bestehende Ohrwurm-Codebestand. Hit-Buzzer bekommt **keine zweite Songtabelle und keinen Kopierjob**. Der Spielmodus ruft beim Start jeder neuen Partie den Adapter `src/games/hitbuzzer/song-pool.ts` auf; dieser verwendet denselben `loadExtraSongs(aktuelleSprache)`-Lader und `buildDeck()` wie Ohrwurm. Neu angelegte Songs erscheinen dadurch bei der nächsten Partie automatisch; laufende Partien behalten ihren eingefrorenen Deck.
 - Dieselben `languages`-Zuordnungen, Aktivierung und Genre-Filter gelten. `base_id` ersetzt den statischen Grundsong, statt ihn zu duplizieren. Stabile IDs verhindern Doppelziehungen und erlauben eindeutige Reports.
-- Vorschau: `Song.previewUrl` bevorzugen; andernfalls den vorhandenen `ohrwurm-preview`-Resolver mit Cache, Timeout und Retry verwenden. Nur eine Audioquelle auf dem Host. Kein zweites Streaming, kein Clip-Upload und keine Weitergabe des Vorschau-Links an Gast oder TV.
+- Vorschau: `Song.previewUrl` bevorzugen; andernfalls den vorhandenen `ohrwurm-preview`-Resolver mit Cache, Timeout und Retry verwenden. Kein zweites Streaming und kein Clip-Upload. Bei verbundenem TV erhält dieser den Vorschau-Link zur Wiedergabe; der Host spielt stumm weiter.
 - Ein direkter Spotify-Link oder Suchlink nach dem Reveal bleibt eine spätere Ergänzung. Das ändert die In-Game-Wiedergabe nicht.
 - Beim Start werden aktive Songs der aktuellen Sprache und des gewählten Genres geladen. Die Vorschau wird pro Song vorbereitet; ein fehlender Clip kann ohne Rundenverbrauch übersprungen werden. Eine Prüfung aller Clips vor Spielstart bleibt offen.
 - **Deaktivierungs-Fallback:** Eine erfolgreiche Datenbankabfrage mit null aktiven Grundsongs wird als leere Liste übernommen; nur ein echter Abfragefehler nutzt den eingebauten Offline-Grundbestand. Dafür gibt es einen gezielten Songpool-Test.
 
 ## 7. Admin-Portal
 
-Im Bereich **Admin → Spiele** steht eine Hit-Buzzer-Karte mit Cover, Spiel-Link und Link zur gemeinsamen Songverwaltung. Derselbe `ohrwurm_songs`-Editor pflegt beide Spiele. Jahr bleibt ein Metadatenfeld für Ohrwurm, obwohl Hit-Buzzer es nicht wertet. Interpret, Titel, Land/Flagge, Genre, Sprachfassungen, Aktivierung, Vorschau und Spotify-URI werden nur einmal gepflegt.
+Im Bereich **Admin → Spiele** stehen Hit-Buzzer und Ohrwurm in der Navigation der eigenen Spielbibliotheken; eine Hit-Buzzer-Karte zeigt Cover, Spiel-Link und Link zur gemeinsamen Songverwaltung. Derselbe `ohrwurm_songs`-Editor pflegt beide Spiele. Jahr bleibt ein Metadatenfeld für Ohrwurm, obwohl Hit-Buzzer es nicht wertet. Interpret, Titel, Land/Flagge, Genre, Sprachfassungen, Aktivierung, Vorschau und Spotify-URI werden nur einmal gepflegt.
 
-Die Songverwaltung zeigt, ob ein direkter Clip-Link vorhanden ist oder der Resolver gebraucht wird; „Probehören“ testet die Wiedergabe, ohne eine Partie zu verbrauchen. Der Link ist im Editor pflegbar. Eine aggregierte Fehlerquote und ein Bericht über übersprungene Songs sind noch nicht implementiert. Spielregeln wie Punkteziel und Strafpunkte gehören ins Match-Setup; Admin-Vorgaben duplizieren die Songbibliothek nicht.
+Die Songverwaltung zeigt, ob ein direkter Clip-Link vorhanden ist oder der Resolver gebraucht wird; „Probehören“ testet die Wiedergabe, ohne eine Partie zu verbrauchen. Der Link ist im Editor pflegbar. Meldet der Host einen Song aus Hit-Buzzer, führen die Admin-Spielmeldungen über die Song-ID direkt zum gefilterten Eintrag. Eine aggregierte Fehlerquote und ein Bericht über übersprungene Songs sind noch nicht implementiert. Spielregeln wie Punkteziel und Strafpunkte gehören ins Match-Setup; Admin-Vorgaben duplizieren die Songbibliothek nicht.
 
 ## 8. Corporate Design und Erlebnisqualität
 
@@ -158,8 +158,8 @@ Erzeugt mit dem integrierten Imagegen-Werkzeug; anschließend als 1024 × 1024 W
 ## 9. Umsetzung und noch offene Abnahme
 
 1. **Regeln und Songs implementiert:** Hostautoritatives Zustandsmodell mit Erst-Buzz, Tempo-Punkten, Team-Sperre, Antwortfrist, Pause, Rückgängig und Rundenende; gemeinsame Ohrwurm-Datenquelle samt Deaktivierungs-Fallback. Gezielt getestet.
-2. **Spieloberflächen implementiert:** Lokales Setup, Host-/TV-Audio, getrennte Buzzer pro Platz auf dem Host-Handy, Jury, Ergebnis, Joystick-Buzzer pro kontrolliertem Platz, signierte Raumaktionen und TV-Ansicht ohne Songspoiler. Die Party-Wertung überträgt Teampunkte an jedes Mitglied und Joystick-Werte über die Platz-ID.
-3. **Integration implementiert:** Spielkatalog, Route, Admin-Einstieg, gemeinsame Songpflege mit Probehören, zehn Sprachen und Spielregeln. Die bestehende Produkt-Tour und die Spielzahl wurden auf 23 angepasst.
+2. **Spieloberflächen implementiert:** Lokales Setup, Host-/TV-Audio, getrennte Buzzer pro Platz auf dem Host-Handy, Jury, Ergebnis, Joystick-Buzzer pro kontrolliertem Platz, signierte Raumaktionen, TV-Ansicht sowie TV-Rundenkarte und Auflösungston ohne Songspoiler. Die Party-Wertung überträgt Teampunkte an jedes Mitglied und Joystick-Werte über die Platz-ID.
+3. **Integration implementiert:** Spielkatalog samt Filtern, Spielleiste, Route, Set-Listen-Dauerschätzung, Admin-Navigation und Song-Meldungen, gemeinsame Songpflege mit Probehören, zehn Sprachen und Spielregeln. Beim Spielende werden persönliche Statistiken und Erfolge wie bei Ohrwurm erfasst; Controller-Partien verwenden ihre zentrale Ergebnisbuchung. Die bestehende Produkt-Tour und die Spielzahl wurden auf 23 angepasst.
 4. **Geprüft und offen:** CI mit Tests, Datenbanktests, Typecheck, Build und Lint bestanden. In der Vercel-Vorschau wurden Einzelspiel mit Audio/Buzz/Fehlerabzug/Treffer, Team-Sperren sowie 320-/390-px-Ansichten geprüft. Noch abzunehmen sind Browser mit getrenntem Host/Gast/TV, echte zwei Handys plus Host, iOS-Audio/Hintergrund, Android-Audio, Reconnect unter Paketverlust und App-Store-/Play-Builds. Ein synchroner Countdown und aggregierte Clip-Fehlerberichte sind spätere Erweiterungen.
 
 ## 10. Abnahmefälle
