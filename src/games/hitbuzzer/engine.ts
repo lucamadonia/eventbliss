@@ -84,6 +84,13 @@ export function voidBuzz(state: HitState): HitState {
   return { ...state, phase: 'listening', claim: null, revision: state.revision + 1 };
 }
 
+/** Preserve the full answer window after a temporary room disconnection. */
+export function extendAnswerDeadline(state: HitState, pausedMs: number): HitState {
+  if (state.phase !== 'answering' || !state.claim || !Number.isFinite(pausedMs) || pausedMs <= 0) return state;
+  return { ...state, revision: state.revision + 1,
+    claim: { ...state.claim, expiresAt: state.claim.expiresAt + Math.floor(pausedMs) } };
+}
+
 export function revealRound(state: HitState, artist: string, title: string, winnerId: string | null = null, delta = 0): HitState {
   if (state.phase !== 'listening' && state.phase !== 'answering') return state;
   return { ...state, phase: 'result', claim: null, revision: state.revision + 1,

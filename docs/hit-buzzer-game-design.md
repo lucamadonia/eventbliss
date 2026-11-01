@@ -78,7 +78,7 @@ Beispiel: Buzz nach 7,8 Sekunden ergibt +86 Punkte. Falsche Antwort kostet 20, s
 | `players[].score`, `revision` | Wertung und Versionsfolge; die letzte Wertung ist für Rückgängig vorgehalten |
 | `claim.expiresAt` | Frist nach Buzz; Countdown pausiert die Vorschau |
 
-Gäste senden nur `buzz` mit `matchId`, `roundId`, `actionId` und Platz-ID. Der Raumtransport ergänzt den Absender. Der Host verarbeitet nur einen Eingang, der zur aktuellen Runde passt und dessen Absender den behaupteten Platz tatsächlich kontrolliert. Ein wiederholtes `actionId` ändert nichts. Punkte, Songwahl, Bewertung und Reveal bleiben lokale Host-Aktionen und werden als Zustand verteilt.
+Gäste senden nur `buzz` mit `matchId`, `roundId`, `actionId` und Platz-ID. Der Raumtransport ergänzt den Absender. Der Host verarbeitet nur einen Eingang, der zur aktuellen Runde passt und dessen Absender den behaupteten Platz tatsächlich kontrolliert. Ein wiederholtes `actionId` ändert nichts. Punkte, Songwahl, Bewertung und Reveal bleiben lokale Host-Aktionen und werden als Zustand verteilt. Unterbricht die Verbindung während einer Antwort, verlängert der Host die Antwortfrist beim Wiederverbinden um die Ausfallzeit.
 
 **Fairness:** Die erste beim Host gültig eingetroffene Buzz-Nachricht gewinnt. Geräteuhren dürfen die Reihenfolge nicht bestimmen, weil sie manipulierbar und unsynchron sind. Netzwerkverzögerung kann ein echtes Gleichzeitigkeitsergebnis verändern. Die UI soll daher keine Millisekunden-Rangliste behaupten; der Host kann ein offensichtlich falsches Ergebnis mit „Nicht wertbar“ aufheben. Ein transaktionaler Server-Buzz mit serverseitiger Reihenfolge ist eine spätere Option, falls reale Tests Host-Ankunft als unzureichend zeigen.
 

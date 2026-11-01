@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, judgeBuzz, pauseListening, pointsAt, removePlayer, replaceBrokenClip, resumeListening, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
+import { acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, pointsAt, removePlayer, replaceBrokenClip, resumeListening, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
 
 const roster = [
   { id: 'a', name: 'Alex', color: '#df8eff', avatar: 'A', teamId: 'a' },
@@ -51,6 +51,15 @@ describe('Hit-Buzzer host rules', () => {
     const paused = pauseListening(updateElapsed(ready(), 4200));
     expect(acceptBuzz(paused, 'a', 'round-1', 5000)).toBe(paused);
     expect(resumeListening(paused)).toMatchObject({ phase: 'listening', elapsedMs: 4200 });
+  });
+
+  it('keeps the answer window intact after an online interruption', () => {
+    const claimed = acceptBuzz(ready(), 'a', 'round-1', 1000);
+    const resumed = extendAnswerDeadline(claimed, 6_500);
+    expect(resumed.claim?.expiresAt).toBe(15_500);
+    expect(resumed.revision).toBe(claimed.revision + 1);
+    expect(extendAnswerDeadline(resumed, 0)).toBe(resumed);
+    expect(extendAnswerDeadline(ready(), 6_500)).toMatchObject({ phase: 'listening' });
   });
 
   it('undoes a mistaken judgement without restoring a stale answer deadline', () => {

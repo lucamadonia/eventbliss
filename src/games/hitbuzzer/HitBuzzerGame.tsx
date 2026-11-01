@@ -18,7 +18,7 @@ import { ConfirmExitDialog, useConfirmExit } from '../ui/useConfirmExit';
 import type { Song } from '../ohrwurm/ohrwurm-engine';
 import { loadHitBuzzerDeck } from './song-pool';
 import {
-  acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, judgeBuzz, pauseListening, removePlayer,
+  acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, removePlayer,
   replaceBrokenClip, resumeListening, revealRound, startListening, undoJudgement, updateElapsed, voidBuzz,
   type HitConfig, type HitPlayer, type HitState,
 } from './engine';
@@ -52,6 +52,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const lastDecisionRef = useRef<HitState | null>(null);
   const resolvingRef = useRef(false);
   const audioBlockedRef = useRef(false);
+  const answerDisconnectRef = useRef<{ roundId: string; at: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
@@ -323,6 +324,23 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   useEffect(() => {
     if (isHost && online?.isConnected === false && stateRef.current?.phase === 'listening') pauseAudio();
   }, [isHost, online?.isConnected, state?.phase, pauseAudio]);
+
+  useEffect(() => {
+    if (!online?.isHost) return;
+    const current = stateRef.current;
+    if (online.isConnected === false) {
+      if (current?.phase === 'answering' && !answerDisconnectRef.current) {
+        answerDisconnectRef.current = { roundId: current.roundId, at: serverClock.now() };
+      }
+      return;
+    }
+    const interruption = answerDisconnectRef.current;
+    answerDisconnectRef.current = null;
+    if (interruption && current?.roundId === interruption.roundId) {
+      const extended = extendAnswerDeadline(current, serverClock.now() - interruption.at);
+      if (extended !== current) commit(extended);
+    }
+  }, [online?.isHost, online?.isConnected, state?.phase, commit]);
 
   useEffect(() => {
     if (!isHost || !stateRef.current) return;
