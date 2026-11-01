@@ -1,6 +1,6 @@
 # Hit-Buzzer – Spielkonzept und Umsetzungsplan
 
-Stand: 1. November 2026. Arbeitstitel **Hit-Buzzer**. Dieses Dokument beschreibt Spielregel, Umsetzung und Abnahme. Der Spielmodus ist im Entwurf implementiert; Browser- und echte Geräteabnahme sowie Produktionsfreigabe stehen noch aus.
+Stand: 1. November 2026. Arbeitstitel **Hit-Buzzer**. Dieses Dokument beschreibt Spielregel, Umsetzung und Abnahme. Der Spielmodus ist im Entwurf implementiert. CI und ein lokaler Einzel-/Teamablauf in der Vercel-Vorschau sind geprüft; Mehrgeräte-, echte Geräte- und Produktionsabnahme stehen noch aus.
 
 ![Hit-Buzzer-Cover](../public/images/games/hit-buzzer.webp)
 
@@ -159,7 +159,7 @@ Erzeugt mit dem integrierten Imagegen-Werkzeug; anschließend als 1024 × 1024 W
 1. **Regeln und Songs implementiert:** Hostautoritatives Zustandsmodell mit Erst-Buzz, Tempo-Punkten, Team-Sperre, Antwortfrist, Pause, Rückgängig und Rundenende; gemeinsame Ohrwurm-Datenquelle samt Deaktivierungs-Fallback. Gezielt getestet.
 2. **Spieloberflächen implementiert:** Lokales Setup, Host-Audio, getrennte Buzzer pro Platz auf dem Host-Handy, Jury, Ergebnis, Joystick-Buzzer pro kontrolliertem Platz, signierte Raumaktionen und TV-Ansicht ohne Songspoiler.
 3. **Integration implementiert:** Spielkatalog, Route, Admin-Einstieg, gemeinsame Songpflege mit Probehören, zehn Sprachen und Spielregeln. Die bestehende Produkt-Tour und die Spielzahl wurden auf 23 angepasst.
-4. **Noch abzunehmen:** Browser mit Host/Gast/TV, echte zwei Handys plus Host, iOS-Audio/Hintergrund, Android-Audio, Reconnect unter Paketverlust und App-Store-/Play-Builds. Ein synchroner Countdown und aggregierte Clip-Fehlerberichte sind spätere Erweiterungen.
+4. **Geprüft und offen:** CI mit Tests, Datenbanktests, Typecheck, Build und Lint bestanden. In der Vercel-Vorschau wurden Einzelspiel mit Audio/Buzz/Fehlerabzug/Treffer, Team-Sperren sowie 320-/390-px-Ansichten geprüft. Noch abzunehmen sind Browser mit getrenntem Host/Gast/TV, echte zwei Handys plus Host, iOS-Audio/Hintergrund, Android-Audio, Reconnect unter Paketverlust und App-Store-/Play-Builds. Ein synchroner Countdown und aggregierte Clip-Fehlerberichte sind spätere Erweiterungen.
 
 ## 10. Abnahmefälle
 
@@ -176,4 +176,4 @@ Erzeugt mit dem integrierten Imagegen-Werkzeug; anschließend als 1024 × 1024 W
 
 ## Status dieser Ausarbeitung
 
-**Im Draft umgesetzt:** Regeln, Cover, gemeinsame Songquelle, Spielansichten für Host/Joystick/TV, Admin-Einstieg, Probehören und Übersetzungen. **Freigabe offen:** vollständige CI- und Browserprüfung der aktuellen Fassung sowie reale iOS-/Android-Geräteabnahme. Erst danach als live beziehungsweise Store-fertig bezeichnen.
+**Im Draft umgesetzt:** Regeln, Cover, gemeinsame Songquelle, Spielansichten für Host/Joystick/TV, Admin-Einstieg, Probehören und Übersetzungen. **Prüfung:** CI grün; ein lokaler Einzel- und Teamablauf in der Vercel-Vorschau einschließlich 320-/390-px-Ansichten geprüft. **Freigabe offen:** Mehrgeräte- und reale iOS-/Android-Abnahme sowie Anwendung der neuen Party-Datenbankmigration in Produktion. Erst danach als live beziehungsweise Store-fertig bezeichnen.
