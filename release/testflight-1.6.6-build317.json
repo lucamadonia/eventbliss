@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Neu: Hit-Buzzer ist als Musikspiel im Spielehub, Party-Abend und Online-Modus verfügbar. Jede Person hat im Joystick-Modus einen eigenen Buzzer. Der Host startet den 30-Sekunden-Ausschnitt und bewertet Interpret und Titel; Punkte hängen vom Tempo ab. TV zeigt Runden und Spielstand. Hit-Buzzer verwendet dieselben Lieder wie Ohrwurm.\n\nBitte testen: Mit zwei iPhones und optional TV einer Party beitreten, Hit-Buzzer starten, gleichzeitig buzzern, richtige und falsche Antworten bewerten, eine Runde nach einer Unterbrechung fortsetzen und nach Spielende erneut spielen. Meldet bei Problemen Build 317, Geräte, Rollen und genaue Schritte.",
+    "en-US": "New: Hit-Buzzer is available as a music game in the games hub, party night and online mode. Each person has their own buzzer in controller mode. The host starts a 30-second clip and judges artist and title; speed determines the score. TV shows rounds and scores. Hit-Buzzer shares its songs with Ohrwurm.\n\nPlease test: join a party with two iPhones and an optional TV, start Hit-Buzzer, buzz at nearly the same time, judge correct and incorrect answers, resume a round after an interruption, and play again after the result. For issues, include build 317, devices, roles and exact steps."
+  }
+}
