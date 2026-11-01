@@ -1,305 +1,194 @@
-/**
- * SplashExperience — animated JS splash that seamlessly takes over from the
- * native Capacitor splash PNG, then hands off to the app.
- *
- * CRITICAL: This component's background MUST be #1a1625 (matching native
- * splash PNG) — any drift causes a visible flash during handoff.
- *
- * "Die Nacht beginnt" — dieselbe Bildsprache wie die Nacht-Route der App
- * (src/games/tv/components/TVPartyMap.tsx): eine Lichtspur zieht aus der
- * Tiefe heran, das Logo entzuendet sich daraus, der Schriftzug setzt sich,
- * Funken loesen sich und steigen auf, dann loest sich alles nach oben auf.
- *
- * Takt (siehe splashBeats in src/lib/motion.ts — EINE Quelle fuer Bild UND
- * Haptik, damit sich beides nie auseinanderlaufen kann):
- *   0ms:     mount (native splash noch sichtbar dahinter)
- *   50ms:    SplashScreen.hide() — nativer Splash blendet aus (250ms)
- *   180ms:   approach — Lichtspur zieht heran, Logo noch fern & dunkel
- *   620ms:   impact — Logo zuendet, GROSS (65% Bildbreite), Bloom faechert auf
- *   1040ms:  wordmark — "EventBliss" setzt sich
- *   1180ms:  sparks — Funken loesen sich, steigen auf
- *   1880ms:  dissolve — alles loest sich nach oben auf
- *   2300ms:  onComplete()
- *
- * Bewegungsarmut: siehe Kopfkommentar von `entrance`/`entranceReduced` in
- * motion.ts. Bei reduzierter Bewegung zeigt dieselbe Komponente sofort den
- * Endzustand (Logo gross, Schriftzug da, Hintergrund-Kunst statisch) — kein
- * zweitklassiges Erlebnis, ein stilles. onComplete feuert dafuer frueher,
- * aber genauso verlaesslich.
- */
+/** A short, finite handoff from the native launch frame into EventBliss. */
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { SplashScreen } from "@capacitor/splash-screen";
+import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
 import { isNative } from "@/lib/platform";
-import { ease, entrance, splashBeats } from "@/lib/motion";
-import eventBlissLogo from "@/assets/eventbliss-logo.png";
-import { LogoParticles } from "./LogoParticles";
-import { useTranslation } from "react-i18next";
+import { splashBeats, splashMotion } from "@/lib/motion";
+import splashMark from "@/assets/eventbliss-splash-mark-v2.png";
+import wordmark from "@/assets/eventbliss-wordmark-v2.png";
 
 interface Props {
   onComplete: () => void;
 }
 
-// Match splash bg to theme (avoids flash on handoff)
-function getSplashBg(): string {
-  const cls = document.documentElement.classList;
-  if (cls.contains("rose")) return "#faf5f0"; // warm cream
-  if (cls.contains("light") || (!cls.contains("dark") && window.matchMedia("(prefers-color-scheme: light)").matches)) return "#fafafa";
-  return "#1a1625"; // dark default
+type Phase = "rest" | "trace" | "reveal" | "release";
+
+function launchBackground() {
+  // The native assets follow the OS appearance; matching that appearance is
+  // more reliable than reading an app theme that may load after the launch.
+  if (typeof window !== "undefined" && isNative() && window.matchMedia("(prefers-color-scheme: light)").matches) {
+    return "#fafafa";
+  }
+  return "#1a1625";
 }
-
-// Dieselben Akzente wie die Nacht-Route (tv-tokens.ts ACCENT) — hier
-// dupliziert statt importiert, siehe Begruendung in LogoParticles.tsx.
-const ACCENT = ["#df8eff", "#ff6b98", "#f9ca24"];
-
-/**
- * Drei Stationen statt vieler `times`-Arrays: `entrance.approach/impact/
- * bloom/dissolve` sind Federn bzw. Tweens fuer je EINEN Uebergang zwischen
- * zwei Zustaenden — Federn kennen kein `times`-Array (siehe framer-motion-
- * Doku: "times... only works with duration-based animations"). Ein
- * Phasen-State ist darum der richtige Bauplan, nicht eine einzige
- * Keyframe-Kette mit hart berechneten Zeit-Anteilen.
- */
-type Phase = "pre" | "ignite" | "dissolve";
 
 export function SplashExperience({ onComplete }: Props) {
   const { t } = useTranslation();
   const haptics = useHaptics();
-  const splashBg = getSplashBg();
-  /**
-   * Traegt die Neon-Handschrift hier ueberhaupt?
-   *
-   * Ein Bloom braucht Dunkelheit. Auf hellem Grund wird aus dem Gluehen ein
-   * rosa Dunst ohne Form — im Geraetetest sah der Splash im hellen Modus
-   * genau so aus. Den Splash IMMER dunkel zu machen waere falsch: Die native
-   * Grafik hat eine eigene helle Fassung (Splash.imageset, appearance
-   * luminosity/dark), ein dunkler JS-Splash erzeugte im hellen Modus also das
-   * Aufblitzen, vor dem der Kopfkommentar warnt.
-   *
-   * Also dieselbe Choreografie, andere Mittel: im Hellen gesaettigte Kanten
-   * und ein Schlagschatten statt Schein.
-   */
-  const isLight = splashBg !== "#1a1625";
-
-  // `useReducedMotion()` liefert beim allerersten Render `null` (SSR-sicher)
-  // und loest sich erst per Effekt auf — genau in diesem einen Frame wuerde
-  // sonst kurz die volle Choreografie aufblitzen, obwohl der Nutzer
-  // Bewegungsarmut eingestellt hat. Der Ref liest dieselbe Media Query
-  // synchron beim Mount, damit ab dem ersten Frame der richtige Zweig steht.
+  const background = launchBackground();
+  const isLight = background === "#fafafa";
   const initialReducedRef = useRef(
-    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
   const liveReducedMotion = useReducedMotion();
   const reducedMotion = liveReducedMotion ?? initialReducedRef.current;
-
-  const [phase, setPhase] = useState<Phase>(() => (reducedMotion ? "ignite" : "pre"));
-  const [wordmarkIn, setWordmarkIn] = useState(() => reducedMotion);
-  const [sparksOn, setSparksOn] = useState(false);
-
+  const [phase, setPhase] = useState<Phase>(() => reducedMotion ? "reveal" : "rest");
 
   useEffect(() => {
-    // Hide native splash immediately so JS owns the screen
-    if (isNative()) {
-      // Let the first paint land, then hide with a soft crossfade
-      requestAnimationFrame(() => {
-        SplashScreen.hide({ fadeOutDuration: 250 }).catch(() => undefined);
-      });
-    }
-
+    const hideFrame = requestAnimationFrame(() => {
+      if (isNative()) SplashScreen.hide({ fadeOutDuration: 180 }).catch(() => undefined);
+    });
     const timers: ReturnType<typeof setTimeout>[] = [];
+
     if (reducedMotion) {
-      // Ein einzelner Impuls statt einer Choreografie — Bewegungsarmut heisst
-      // "keine Reise", nicht "keine Rueckmeldung ueberhaupt". Phase und
-      // Schriftzug stehen bereits ab dem ersten Render im Endzustand (siehe
-      // die lazy useState-Initializer oben) — hier bleibt nur die Haptik.
-      timers.push(setTimeout(() => haptics.medium(), 100));
-      timers.push(setTimeout(onComplete, 900));
+      timers.push(setTimeout(() => setPhase("release"), 650));
+      timers.push(setTimeout(onComplete, 850));
     } else {
-      // Leicht beim Heranziehen, mittel beim Einschlag, feines Nachbeben beim
-      // Aufblühen — dieselben drei Momente, die auch das Bild markiert.
-      timers.push(setTimeout(() => haptics.light(), splashBeats.approach));
-      timers.push(setTimeout(() => { setPhase("ignite"); haptics.medium(); }, splashBeats.impact));
-      timers.push(setTimeout(() => haptics.light(), splashBeats.impact + 160));
-      timers.push(setTimeout(() => setWordmarkIn(true), splashBeats.wordmark));
-      timers.push(setTimeout(() => setSparksOn(true), splashBeats.sparks));
-      timers.push(setTimeout(() => setPhase("dissolve"), splashBeats.dissolve));
+      timers.push(setTimeout(() => { setPhase("trace"); haptics.light(); }, splashBeats.trace));
+      timers.push(setTimeout(() => { setPhase("reveal"); haptics.medium(); }, splashBeats.reveal));
+      timers.push(setTimeout(() => setPhase("release"), splashBeats.release));
       timers.push(setTimeout(onComplete, splashBeats.done));
     }
 
-    return () => timers.forEach(clearTimeout);
+    return () => {
+      cancelAnimationFrame(hideFrame);
+      timers.forEach(clearTimeout);
+    };
   }, [haptics, onComplete, reducedMotion]);
 
+  const revealed = phase === "reveal" || phase === "release";
+  const released = phase === "release";
+
   return (
-    <AnimatePresence>
+    <motion.div
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
+      style={{ backgroundColor: background }}
+      initial={false}
+      animate={{ opacity: released ? 0 : 1 }}
+      transition={released ? reducedMotion ? { duration: 0.2 } : splashMotion.release : { duration: 0 }}
+    >
       <motion.div
-        key="splash"
-        className="fixed inset-0 z-[9999] flex flex-col items-center justify-center overflow-hidden"
-        style={{ backgroundColor: splashBg }}
-        initial={{ opacity: 1 }}
-        exit={{ opacity: 0, transition: { duration: 0.3, ease: ease.out } }}
-      >
-        {/* ── Landschaft der Nacht-Route ─────────────────────────────── */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Grundverlauf — traegt die Szene, auch wenn kein Bild laedt. */}
-          <motion.div
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(120% 90% at 50% 42%, rgba(223,142,255,0.22) 0%, rgba(255,107,152,0.12) 38%, transparent 68%)",
-            }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={reducedMotion ? { duration: 0.2 } : entrance.approach}
-          />
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: isLight
+            ? "radial-gradient(ellipse 55% 36% at 50% 50%, rgba(137,69,194,0.13), transparent 76%)"
+            : "radial-gradient(ellipse 55% 38% at 50% 50%, rgba(111,62,204,0.27), rgba(28,118,170,0.08) 48%, transparent 78%)",
+        }}
+        initial={false}
+        animate={{ opacity: phase === "rest" || reducedMotion ? 0 : revealed ? 1 : 0.58 }}
+        transition={splashMotion.reveal}
+      />
 
-        </div>
-
-        {/* ── Lichtspur, die aus der Tiefe heranzieht ────────────────── */}
-        {/* Nur in der vollen Choreografie: bei Bewegungsarmut gibt es keine
-            Reise, also auch keine Spur, die sie zeichnen koennte. Sie zieht
-            beim Mount heran (`approach`) und zerfliesst beim Einschlag in
-            den Bloom (`bloom`) — danach uebernimmt das Logo selbst. */}
-        {!reducedMotion && (
-          <motion.div
-            aria-hidden
-            className="absolute rounded-full pointer-events-none"
-            style={{
-              width: "70vmin",
-              height: "70vmin",
-              background: `radial-gradient(circle, ${ACCENT[0]} 0%, ${ACCENT[1]} 45%, transparent 72%)`,
-              filter: "blur(40px)",
-            }}
-            initial={{ scale: 0.05, opacity: 0 }}
-            animate={phase === "pre" ? { scale: 0.85, opacity: 0.85 } : { scale: 1.6, opacity: 0 }}
-            transition={phase === "pre" ? entrance.approach : entrance.bloom}
-          />
-        )}
-
-        {/* ── Das Logo — Ort des Einschlags ──────────────────────────── */}
-        <motion.div
-          className="relative flex flex-col items-center gap-6 z-10"
-          initial={{ opacity: reducedMotion ? 0 : 1, scale: 1, y: 0 }}
-          animate={
-            phase === "dissolve"
-              ? { opacity: 0, scale: 1.06, y: -30 }
-              : { opacity: 1, scale: 1, y: 0 }
-          }
-          transition={reducedMotion ? { duration: 0.2 } : entrance.dissolve}
+      {!reducedMotion && (
+        <svg
+          aria-hidden="true"
+          className="pointer-events-none absolute overflow-visible"
+          style={{ width: splashMotion.orbitWidth, height: splashMotion.orbitWidth }}
+          viewBox="0 0 400 400"
+          fill="none"
         >
-          <div className="relative">
-            {/* Mehrlagiger Bloom hinter dem Logo — kein drop-shadow, weil ein
-                einzelner Schatten bei 65% Bildbreite duenn wirkt. Drei
-                Farbringe in den Akzenten der Nacht-Route stapeln sich zu
-                einem echten Gluehen, faechern beim Einschlag auf (`bloom`)
-                und loesen sich mit dem Rest auf (`dissolve`). */}
-            {[0, 1, 2].map((ring) => (
-              <motion.div
-                key={ring}
-                aria-hidden
-                className="absolute inset-0 rounded-full pointer-events-none"
-                style={{
-                  // Im Hellen kraeftiger, kleiner und weniger weich: So bleibt
-                  // eine erkennbare Form statt eines Dunstes.
-                  background: isLight
-                    ? `radial-gradient(circle, ${ACCENT[ring]}40 0%, transparent 58%)`
-                    : `radial-gradient(circle, ${ACCENT[ring]}55 0%, transparent 70%)`,
-                  filter: `blur(${(isLight ? 14 : 28) + ring * (isLight ? 9 : 18)}px)`,
-                  transform: `scale(${(isLight ? 1.12 : 1.4) + ring * (isLight ? 0.18 : 0.35)})`,
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: phase === "pre" ? 0 : phase === "dissolve" ? 0 : 0.85 - ring * 0.15 }}
-                transition={
-                  reducedMotion
-                    ? { duration: 0.2 }
-                    : phase === "dissolve"
-                      ? entrance.dissolve
-                      : { ...entrance.bloom, delay: ring * 0.05 }
-                }
-              />
-            ))}
+          <defs>
+            <linearGradient id="launch-orbit-a" x1="50" y1="80" x2="340" y2="300" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#9e58f0" />
+              <stop offset="0.55" stopColor="#35b7eb" />
+              <stop offset="1" stopColor="#84dfae" />
+            </linearGradient>
+            <linearGradient id="launch-orbit-b" x1="350" y1="90" x2="50" y2="320" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#83dcb4" />
+              <stop offset="0.52" stopColor="#42aeea" />
+              <stop offset="1" stopColor="#b775ed" />
+            </linearGradient>
+          </defs>
+          <motion.path
+            d="M 72 240 C 26 150, 94 58, 202 58 C 312 58, 374 145, 334 226"
+            stroke="url(#launch-orbit-a)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            initial={false}
+            animate={{ pathLength: phase === "rest" ? 0 : 1, opacity: revealed ? 0.22 : phase === "rest" ? 0 : 0.85 }}
+            transition={splashMotion.trace}
+          />
+          <motion.path
+            d="M 328 158 C 376 245, 315 344, 202 344 C 91 344, 27 252, 68 176"
+            stroke="url(#launch-orbit-b)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            initial={false}
+            animate={{ pathLength: phase === "rest" ? 0 : 1, opacity: revealed ? 0.22 : phase === "rest" ? 0 : 0.85 }}
+            transition={{ ...splashMotion.trace, delay: 0.09 }}
+          />
+        </svg>
+      )}
 
-            {/* Logo-Bild: entsteht fern & dunkel, zuendet beim Einschlag GROSS
-                — der harte, kurze `impact`-Spring liefert das Ueberschwingen
-                von selbst, keine manuellen Overshoot-Keyframes noetig. */}
-            <motion.img
-              src={eventBlissLogo}
-              alt="EventBliss"
-              className="relative object-contain"
-              /*
-               * QUADRAT war falsch. Die Logodatei ist ein liegendes
-               * Wortzeichen; in einem quadratischen Kasten mit `object-contain`
-               * bestimmt die HOEHE die Groesse, und 65vw Breite ergaben eine
-               * Darstellung, die viel kleiner wirkte als die Zahl verspricht.
-               * Breite vorgeben, Hoehe folgen lassen — dann fuellt der
-               * Schriftzug den Bildschirm wirklich.
-               *
-               * Im Hellen ein Schlagschatten: Der Bloom dahinter traegt dort
-               * nicht, das Wortzeichen braucht trotzdem Halt gegen den Grund.
-               */
-              style={{
-                width: "min(78vw, 420px)",
-                height: "auto",
-                filter: isLight ? "drop-shadow(0 10px 26px rgba(88,28,135,0.28))" : undefined,
-              }}
-              /* `entranceReduced.initial` ist als `Variant` typisiert und darf auch
-                 eine Funktion sein — `initial` nimmt das nicht. Derselbe Wert,
-                 nur direkt hingeschrieben. */
-              initial={reducedMotion ? { opacity: 0 } : { scale: 0.3, opacity: 0.12 }}
-              animate={
-                phase === "pre"
-                  ? { scale: 0.3, opacity: 0.12 }
-                  : phase === "dissolve"
-                    ? { scale: 1.12, opacity: 0 }
-                    : { scale: 1, opacity: 1 }
-              }
-              transition={
-                reducedMotion
-                  ? { duration: 0.2 }
-                  : phase === "ignite"
-                    ? entrance.impact
-                    : entrance.dissolve
-              }
-            />
+      {!reducedMotion && (
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute rounded-full border"
+          style={{
+            width: splashMotion.orbitWidth,
+            height: splashMotion.orbitWidth,
+            borderColor: isLight ? "rgba(114,54,171,0.25)" : "rgba(120,199,251,0.42)",
+            boxShadow: isLight ? "none" : "0 0 38px rgba(91,167,249,0.14)",
+          }}
+          initial={false}
+          animate={{ scale: revealed ? 1.28 : 0.55, opacity: revealed ? [0, 0.42, 0] : 0 }}
+          transition={{ ...splashMotion.reveal, times: [0, 0.25, 1] }}
+        />
+      )}
 
-            {/* Einschlagsfunke — ein Burst genau beim Zuenden (Mount-Gate,
-                nicht die Phase selbst: erst ab "ignite" gerendert). */}
-            {!reducedMotion && phase !== "pre" && <LogoParticles spread={170} variant="burst" />}
-            {/* Geloeste Funken — ab "sparks" bis zur Aufloesung auf. */}
-            {!reducedMotion && sparksOn && <LogoParticles spread={90} count={14} variant="rise" />}
-          </div>
+      <div className="relative flex h-[300px] w-full items-center justify-center" role="img" aria-label="EventBliss">
+        <motion.img
+          src={splashMark}
+          alt=""
+          className="relative z-10 object-contain"
+          style={{ width: splashMotion.markWidth, height: "auto" }}
+          initial={false}
+          animate={{
+            y: revealed ? splashMotion.markLift : 0,
+            scale: revealed ? splashMotion.markRevealScale : 1,
+            opacity: 1,
+          }}
+          transition={splashMotion.reveal}
+        />
 
-          {/* Schriftzug — setzt sich mit einem kleinen Einrasten (`bloom`),
-              nicht nur einem Fade, damit er wie eine Landung wirkt statt wie
-              ein Blenden; loest sich mit `dissolve` wieder auf. */}
-          <motion.div
-            className="text-center"
-            initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 18, scale: 0.94 }}
-            animate={
-              phase === "dissolve"
-                ? { opacity: 0, y: -24, scale: 1 }
-                : wordmarkIn
-                  ? { opacity: 1, y: 0, scale: 1 }
-                  : { opacity: 0, y: 18, scale: 0.94 }
-            }
-            transition={
-              reducedMotion
-                ? { duration: 0.2 }
-                : phase === "dissolve"
-                  ? entrance.dissolve
-                  : entrance.bloom
-            }
-          >
-            {/* Kein zweiter Schriftzug: Die Logodatei IST ein Wortzeichen und
-                traegt "EventBliss" bereits. Frueher stand der Name dadurch
-                zweimal untereinander, und das Wortzeichen wirkte neben seiner
-                eigenen Wiederholung klein. */}
-            <p className="text-sm text-muted-foreground mt-1 font-body">
-              {t('native.splash.tagline')}
-            </p>
-          </motion.div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        <motion.div
+          aria-hidden="true"
+          className="pointer-events-none absolute z-0 rounded-full"
+          style={{
+            width: "min(48vmin, 210px)",
+            height: "min(48vmin, 210px)",
+            background: isLight
+              ? "radial-gradient(circle, rgba(106,70,179,0.2), transparent 68%)"
+              : "radial-gradient(circle, rgba(114,80,232,0.36), rgba(40,187,229,0.14) 48%, transparent 72%)",
+            filter: "blur(18px)",
+          }}
+          initial={false}
+          animate={{ opacity: phase === "rest" || reducedMotion ? 0 : 1, scale: revealed ? 1.65 : 0.86 }}
+          transition={splashMotion.reveal}
+        />
+
+        <motion.img
+          src={wordmark}
+          alt=""
+          className="absolute z-10 object-contain"
+          style={{ width: "min(74vw, 330px)", height: "auto" }}
+          initial={false}
+          animate={{ opacity: revealed ? 1 : 0, y: revealed ? splashMotion.wordmarkY : splashMotion.wordmarkY + 18 }}
+          transition={{ ...splashMotion.reveal, delay: reducedMotion ? 0 : 0.05 }}
+        />
+        <motion.span
+          className="absolute z-10 whitespace-nowrap text-center font-body text-xs tracking-[0.18em]"
+          style={{ color: isLight ? "#5e546b" : "#b9adc8" }}
+          initial={false}
+          animate={{ opacity: revealed ? 1 : 0, y: revealed ? splashMotion.taglineY : splashMotion.taglineY + 12 }}
+          transition={{ ...splashMotion.reveal, delay: reducedMotion ? 0 : 0.17 }}
+        >
+          {t("native.splash.tagline")}
+        </motion.span>
+      </div>
+    </motion.div>
   );
 }
