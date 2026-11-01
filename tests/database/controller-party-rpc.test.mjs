@@ -23,7 +23,7 @@ await test('server game limits and entitlement requirements match the complete c
     .map(([,game_id,min,max,tier])=>({game_id,min_players:Number(min),max_players:Number(max),premium:tier==='premium'}))
     .sort((a,b)=>a.game_id.localeCompare(b.game_id));
   const actual=(await db.query('SELECT * FROM public.controller_game_limits')).rows.sort((a,b)=>a.game_id.localeCompare(b.game_id));
-  assert.equal(expected.length,22); assert.deepEqual(actual,expected);
+  assert.equal(expected.length,23); assert.deepEqual(actual,expected);
 });
 await test('three-player controller parties can start Hochstapler', async () => {
   await asUser(1);

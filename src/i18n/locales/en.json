@@ -8053,6 +8053,7 @@
       "woIstWas": "Where Is It?",
       "drueckDasWort": "Press the Word",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Close Enough",
       "pantomime": "No Words",
       "brew": "Brew"
@@ -8077,6 +8078,7 @@
       "woIstWas": "Find the place",
       "drueckDasWort": "Type fast, think fast",
       "ohrwurm": "Hear the song, place the year",
+      "hitbuzzer": "Recognize the song and buzz first",
       "closeenough": "Estimation questions with a number as the answer — closest guess wins",
       "pantomime": "Act it out in silence, your team guesses — with challenges for double points",
       "brew": "Collect ingredients without losing the tray — first to finish their recipe wins"
@@ -8358,7 +8360,7 @@
       "slide3Subtitle": "Discover venues, catering and experiences nearby and keep every enquiry in one place.",
       "slide4Title": "Every expense. Every share. Sorted.",
       "slide4Subtitle": "EventBliss splits costs transparently, tracks open balances and saves you from chasing payments.",
-      "slide5Title": "22 games. One connected party night.",
+      "slide5Title": "23 games. One connected party night.",
       "slide5Subtitle": "Build your set list, collect points across games and turn every phone into a controller.",
       "slide6Title": "Your TV becomes a game-show stage",
       "slide6Subtitle": "The route, scores and big moments appear live on TV while everyone plays from their phone.",
@@ -8943,6 +8945,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Recognize the song before everyone else.",
+      "step1": "The host starts a 30-second clip.",
+      "step2": "Press your own buzzer as soon as you know the song.",
+      "step3": "Name the artist and title. The host judges your answer.",
+      "step4": "A correct answer earns speed points. A wrong answer costs the chosen penalty and locks your team for this song.",
+      "step5": "The highest score wins after the chosen rounds or when the target score is reached.",
+      "tip": "Everyone has their own buzzer in controller mode."
+    },
     "pixeljagd": {
       "title": "Pixel Hunt",
       "tagline": "First a blur of colour, then a picture — but waiting costs you points.",

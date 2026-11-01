@@ -8127,6 +8127,7 @@
       "woIstWas": "Onde é?",
       "drueckDasWort": "Prime a Palavra",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Quase Lá",
       "pantomime": "Sem Palavras",
       "brew": "Beberagem"
@@ -8151,6 +8152,7 @@
       "woIstWas": "Encontra o lugar",
       "drueckDasWort": "Digita rápido, pensa rápido",
       "ohrwurm": "Ouve a música, acerta no ano",
+      "hitbuzzer": "Reconhece a música e carrega primeiro",
       "closeenough": "Perguntas de estimativa com um número por resposta — ganha quem chegar mais perto",
       "pantomime": "Representa em silêncio, a equipa adivinha — com desafios para pontos a dobrar",
       "brew": "Junta ingredientes sem entornar o tabuleiro — ganha quem completar a receita primeiro"
@@ -8435,7 +8437,7 @@
       "skip": "Saltar",
       "next": "Seguinte",
       "getStarted": "Criar o meu primeiro evento",
-      "slide5Title": "22 jogos. Uma noite de festa partilhada.",
+      "slide5Title": "23 jogos. Uma noite de festa partilhada.",
       "slide5Subtitle": "Criem a vossa lista, acumulem pontos entre jogos e transformem cada telemóvel num comando.",
       "slide6Title": "A vossa TV torna-se um palco de concurso",
       "slide6Subtitle": "O percurso, as pontuações e os grandes momentos aparecem em direto na TV enquanto todos jogam no telemóvel.",
@@ -9017,6 +9019,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Reconhece a música antes dos outros.",
+      "step1": "O anfitrião inicia um excerto de 30 segundos.",
+      "step2": "Carrega no teu botão assim que reconheceres a música.",
+      "step3": "Diz o artista e o título. O anfitrião decide.",
+      "step4": "Certo dá pontos pela rapidez. Errado custa a penalização escolhida e bloqueia a tua equipa nesta música.",
+      "step5": "Ganha a maior pontuação após as rondas escolhidas ou ao atingir o objetivo.",
+      "tip": "Cada pessoa tem o seu botão no modo comando."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Primeiro uma mancha de cor, depois uma imagem — mas quem espera recebe menos pontos.",

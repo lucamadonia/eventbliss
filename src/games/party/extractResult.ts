@@ -186,7 +186,7 @@ export function extractGameResult(
 
   // Group displays show teams as scored players on TV. Party totals
   // must credit each actual member of that team, not a synthetic team name.
-  if ((gameId === 'ohrwurm' || gameId === 'closeenough' || gameId === 'schnellzeichner') && teams) {
+  if ((gameId === 'ohrwurm' || gameId === 'hitbuzzer' || gameId === 'closeenough' || gameId === 'schnellzeichner') && teams) {
     return { scored: true, scores: toScores(teams.flatMap((team) => team.members.map((name) => [name, team.score] as [string, number]))) };
   }
 

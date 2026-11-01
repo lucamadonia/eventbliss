@@ -8127,6 +8127,7 @@
       "woIstWas": "Waar is het?",
       "drueckDasWort": "Druk het Woord",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Bijna Raak",
       "pantomime": "Zonder Woorden",
       "brew": "Brouwsel"
@@ -8151,6 +8152,7 @@
       "woIstWas": "Vind de plek",
       "drueckDasWort": "Typ snel, denk snel",
       "ohrwurm": "Luister naar de song, plaats het jaar",
+      "hitbuzzer": "Herken het nummer en buzz als eerste",
       "closeenough": "Schattingsvragen met een getal als antwoord — wie het dichtst zit, wint",
       "pantomime": "Zwijgend uitbeelden, je team raadt — met uitdagingen voor dubbele punten",
       "brew": "Ingrediënten verzamelen zonder je blad te verliezen — wie zijn recept eerst afheeft, wint"
@@ -8435,7 +8437,7 @@
       "skip": "Overslaan",
       "next": "Volgende",
       "getStarted": "Mijn eerste event maken",
-      "slide5Title": "22 spellen. Eén gezamenlijke feestavond.",
+      "slide5Title": "23 spellen. Eén gezamenlijke feestavond.",
       "slide5Subtitle": "Stel jullie setlist samen, verzamel punten over meerdere spellen en maak van elke telefoon een controller.",
       "slide6Title": "Jullie tv wordt een gameshowpodium",
       "slide6Subtitle": "De route, scores en grote momenten verschijnen live op tv terwijl iedereen op de telefoon speelt.",
@@ -9017,6 +9019,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Herken het nummer eerder dan de anderen.",
+      "step1": "De host start een fragment van 30 seconden.",
+      "step2": "Druk op je eigen buzzer zodra je het nummer kent.",
+      "step3": "Noem artiest en titel. De host beoordeelt je antwoord.",
+      "step4": "Goed geeft punten op basis van snelheid. Fout kost de ingestelde strafpunten en blokkeert je team voor dit nummer.",
+      "step5": "De hoogste score wint na de gekozen rondes of zodra het doel is bereikt.",
+      "tip": "Iedereen heeft een eigen buzzer in controllerstand."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Eerst een kleurvlek, dan een beeld — maar wie wacht, krijgt minder punten.",

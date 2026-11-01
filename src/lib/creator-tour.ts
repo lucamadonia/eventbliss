@@ -21,7 +21,7 @@
  * Deutsch. Die Bildschirme gibt es in denselben zehn Sprachen; ein englischer
  * Screenshot unter tuerkischem Text waere die Halbheit, die man sofort sieht.
  *
- * DIE SPIELE STEHEN NICHT HIER. Namen und Beschreibungen der 22 Spiele kommen
+ * DIE SPIELE STEHEN NICHT HIER. Namen und Beschreibungen der 23 Spiele kommen
  * aus playable-games.ts und i18n (native.gameNames.* / native.gameDescs.*),
  * also aus derselben Quelle wie in der App. Abgeschriebene Spielnamen waeren
  * am Tag der naechsten Umbenennung falsch.
@@ -93,7 +93,7 @@ const de: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 Party-Spiele",
+      title: "23 Party-Spiele",
       body: "Alle spielen am eigenen Handy mit, ohne etwas zu installieren. Ist ein Fernseher da, läuft das Spielfeld darauf und alle schauen in dieselbe Richtung.",
       idea: "Film die Runde, nicht den Bildschirm. Die Reaktionen ab Minute zwei sind das, was hängen bleibt.",
     },
@@ -104,7 +104,7 @@ const de: CreatorTour = {
       idea: "Wenn du in einer Stadt drehst, zeig, was dort buchbar ist. Das ist lokal und damit für dein Publikum nah.",
     },
   ],
-  gamesTitle: "Alle 22 Spiele",
+  gamesTitle: "Alle 23 Spiele",
   gamesIntro: "Damit du weißt, worüber du redest. „Frei\" heißt: ohne Premium spielbar.",
   gamesFree: "Frei",
   gamesPremium: "Premium",
@@ -156,7 +156,7 @@ const en: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 party games",
+      title: "23 party games",
       body: "Everyone joins from their own phone without installing anything. If there is a TV, the board runs on it and everyone looks the same way.",
       idea: "Film the group, not the screen. The reactions from minute two are what people remember.",
     },
@@ -167,7 +167,7 @@ const en: CreatorTour = {
       idea: "If you are filming in a city, show what is bookable there. That is local, and therefore close to your audience.",
     },
   ],
-  gamesTitle: "All 22 games",
+  gamesTitle: "All 23 games",
   gamesIntro: "So you know what you are talking about. \"Free\" means: playable without Premium.",
   gamesFree: "Free",
   gamesPremium: "Premium",
@@ -219,7 +219,7 @@ const es: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 juegos de fiesta",
+      title: "23 juegos de fiesta",
       body: "Todos juegan desde su propio móvil, sin instalar nada. Si hay televisor, el tablero se ve ahí y todos miran en la misma dirección.",
       idea: "Graba al grupo, no a la pantalla. Las reacciones a partir del segundo minuto son lo que se recuerda.",
     },
@@ -230,7 +230,7 @@ const es: CreatorTour = {
       idea: "Si grabas en una ciudad, enseña qué se puede reservar allí. Es local y por tanto cercano para tu público.",
     },
   ],
-  gamesTitle: "Los 22 juegos",
+  gamesTitle: "Los 23 juegos",
   gamesIntro: "Para que sepas de qué hablas. «Libre» significa: se juega sin Premium.",
   gamesFree: "Libre",
   gamesPremium: "Premium",
@@ -282,7 +282,7 @@ const fr: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 jeux de soirée",
+      title: "23 jeux de soirée",
       body: "Tout le monde joue depuis son propre téléphone, sans rien installer. S'il y a une télé, le plateau s'affiche dessus et tout le monde regarde dans la même direction.",
       idea: "Filme le groupe, pas l'écran. Les réactions à partir de la deuxième minute, c'est ce qui reste.",
     },
@@ -293,7 +293,7 @@ const fr: CreatorTour = {
       idea: "Si tu tournes dans une ville, montre ce qui s'y réserve. C'est local, donc proche de ton public.",
     },
   ],
-  gamesTitle: "Les 22 jeux",
+  gamesTitle: "Les 23 jeux",
   gamesIntro: "Pour que tu saches de quoi tu parles. « Libre » veut dire : jouable sans Premium.",
   gamesFree: "Libre",
   gamesPremium: "Premium",
@@ -345,7 +345,7 @@ const it: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 giochi di gruppo",
+      title: "23 giochi di gruppo",
       body: "Giocano tutti dal proprio telefono, senza installare niente. Se c'è una TV, il tabellone va lì e tutti guardano nella stessa direzione.",
       idea: "Riprendi il gruppo, non lo schermo. Le reazioni dal secondo minuto sono quelle che restano.",
     },
@@ -356,7 +356,7 @@ const it: CreatorTour = {
       idea: "Se giri in una città, mostra cosa si può prenotare lì. È locale, quindi vicino al tuo pubblico.",
     },
   ],
-  gamesTitle: "Tutti i 22 giochi",
+  gamesTitle: "Tutti i 23 giochi",
   gamesIntro: "Così sai di cosa parli. «Libero» significa: si gioca senza Premium.",
   gamesFree: "Libero",
   gamesPremium: "Premium",
@@ -408,7 +408,7 @@ const pt: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 jogos de festa",
+      title: "23 jogos de festa",
       body: "Jogam todos no próprio telemóvel, sem instalar nada. Se houver televisão, o tabuleiro vai para lá e toda a gente olha na mesma direção.",
       idea: "Filma o grupo, não o ecrã. As reações a partir do segundo minuto são o que fica.",
     },
@@ -419,7 +419,7 @@ const pt: CreatorTour = {
       idea: "Se gravares numa cidade, mostra o que lá se pode reservar. É local e por isso próximo do teu público.",
     },
   ],
-  gamesTitle: "Os 22 jogos",
+  gamesTitle: "Os 23 jogos",
   gamesIntro: "Para saberes do que falas. «Livre» significa: joga-se sem Premium.",
   gamesFree: "Livre",
   gamesPremium: "Premium",
@@ -471,7 +471,7 @@ const nl: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 partyspellen",
+      title: "23 partyspellen",
       body: "Iedereen speelt mee op zijn eigen telefoon, zonder iets te installeren. Is er een tv, dan draait het speelveld daarop en kijkt iedereen dezelfde kant op.",
       idea: "Film de groep, niet het scherm. De reacties vanaf de tweede minuut zijn wat blijft hangen.",
     },
@@ -482,7 +482,7 @@ const nl: CreatorTour = {
       idea: "Film je in een stad, laat dan zien wat daar te boeken is. Dat is lokaal en dus dichtbij voor je publiek.",
     },
   ],
-  gamesTitle: "Alle 22 spellen",
+  gamesTitle: "Alle 23 spellen",
   gamesIntro: "Zodat je weet waar je het over hebt. „Vrij\" betekent: speelbaar zonder Premium.",
   gamesFree: "Vrij",
   gamesPremium: "Premium",
@@ -534,7 +534,7 @@ const pl: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 gry imprezowe",
+      title: "23 gry imprezowe",
       body: "Wszyscy grają na własnym telefonie, bez instalowania czegokolwiek. Jeśli jest telewizor, plansza idzie na niego i wszyscy patrzą w tę samą stronę.",
       idea: "Filmuj grupę, nie ekran. Reakcje od drugiej minuty to jest to, co zostaje.",
     },
@@ -545,7 +545,7 @@ const pl: CreatorTour = {
       idea: "Jeśli kręcisz w jakimś mieście, pokaż, co da się tam zarezerwować. To lokalne, a więc bliskie twoim odbiorcom.",
     },
   ],
-  gamesTitle: "Wszystkie 22 gry",
+  gamesTitle: "Wszystkie 23 gry",
   gamesIntro: "Żebyś wiedział, o czym mówisz. „Wolna\" znaczy: da się grać bez Premium.",
   gamesFree: "Wolna",
   gamesPremium: "Premium",
@@ -597,7 +597,7 @@ const tr: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 parti oyunu",
+      title: "23 parti oyunu",
       body: "Herkes kendi telefonundan oynar, hiçbir şey kurmadan. Televizyon varsa oyun ekranı oraya gider ve herkes aynı yöne bakar.",
       idea: "Ekranı değil grubu çek. İkinci dakikadan sonraki tepkiler akılda kalan şeydir.",
     },
@@ -608,7 +608,7 @@ const tr: CreatorTour = {
       idea: "Bir şehirde çekim yapıyorsan, orada nelerin ayrılabildiğini göster. Yerel, dolayısıyla takipçine yakın.",
     },
   ],
-  gamesTitle: "22 oyunun tamamı",
+  gamesTitle: "23 oyunun tamamı",
   gamesIntro: "Neden söz ettiğini bilesin diye. „Serbest\" demek: Premium olmadan oynanır.",
   gamesFree: "Serbest",
   gamesPremium: "Premium",
@@ -660,7 +660,7 @@ const ar: CreatorTour = {
     },
     {
       shot: "games",
-      title: "22 لعبة للسهرات",
+      title: "23 لعبة للسهرات",
       body: "الجميع يلعب من هاتفه دون تثبيت أي شيء. وإن وُجد تلفاز، تظهر اللعبة عليه وينظر الجميع في الاتجاه نفسه.",
       idea: "صوّر المجموعة، لا الشاشة. ردود الفعل بعد الدقيقة الثانية هي ما يبقى في الذاكرة.",
     },
@@ -671,7 +671,7 @@ const ar: CreatorTour = {
       idea: "إن كنت تصوّر في مدينة، فاعرض ما يمكن حجزه فيها. محلي، وبالتالي قريب من متابعيك.",
     },
   ],
-  gamesTitle: "الألعاب الـ22 كاملة",
+  gamesTitle: "الألعاب الـ23 كاملة",
   gamesIntro: "لتعرف عمّا تتحدث. «مجانية» تعني: تُلعب بدون Premium.",
   gamesFree: "مجانية",
   gamesPremium: "Premium",
