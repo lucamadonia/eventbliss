@@ -550,10 +550,10 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
         {!state && !isHost && <StagePanel className="p-8 text-center text-[#b3a8c9]">{text.waitHost}</StagePanel>}
 
         {state && <>
-          <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-[#0d0915] px-5 py-4">
-            <span className="flex items-center gap-2 font-game font-bold"><Music2 className="h-5 w-5 text-[#df8eff]" />{state.phase === 'loading' ? text.prepare : state.phase === 'listening' ? text.listen : state.phase === 'paused' ? t('games.connectionPaused') : state.phase === 'answering' ? text.answer : state.phase === 'reviewing' ? flowText.checkHeading : state.phase === 'result' ? text.reveal : text.finished}</span>
+          {state.phase !== 'loading' && <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-[#0d0915] px-5 py-4">
+            <span className="flex items-center gap-2 font-game font-bold"><Music2 className="h-5 w-5 text-[#df8eff]" />{state.phase === 'listening' ? text.listen : state.phase === 'paused' ? t('games.connectionPaused') : state.phase === 'answering' ? text.answer : state.phase === 'reviewing' ? flowText.checkHeading : state.phase === 'result' ? text.reveal : text.finished}</span>
             <span className="font-game text-2xl font-black tabular-nums text-[#8ff5ff]">{state.phase === 'answering' ? `${answerLeft}s` : state.phase === 'listening' ? `${remaining}s` : ''}</span>
-          </div>
+          </div>}
 
           {state.phase === 'loading' && <HitBuzzerRoundIntro round={state.round} total={state.config.rounds} isHost={isHost}
             loading={previewLoading} ready={!!previewUrl} failed={audioStartFailed}
