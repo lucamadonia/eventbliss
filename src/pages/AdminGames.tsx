@@ -398,7 +398,7 @@ export default function AdminGames() {
       </div>
 
       <section aria-labelledby="hit-buzzer-admin-title" className="mx-4 mt-4 flex flex-col gap-4 rounded-[28px] border border-white/[0.08] bg-[#16101f] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] sm:mx-6 sm:flex-row sm:items-center">
-        <img src="/images/games/hit-buzzer.webp" alt="Freunde buzzern bei einem Musikquiz" className="h-28 w-28 rounded-[20px] object-cover sm:h-24 sm:w-24" />
+        <img src="/images/games/hit-buzzer.webp" alt="Vier Freunde greifen nach dem Buzzer in der Tischmitte" className="h-28 w-28 rounded-[20px] object-cover sm:h-24 sm:w-24" />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 id="hit-buzzer-admin-title" className="font-game text-lg font-black text-white">Hit-Buzzer</h2>
