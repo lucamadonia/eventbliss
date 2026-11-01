@@ -1,5 +1,5 @@
 /** Host-authoritative rules. The song and preview URL never enter this public state. */
-export type HitPhase = 'loading' | 'listening' | 'paused' | 'answering' | 'result' | 'finished';
+export type HitPhase = 'loading' | 'listening' | 'paused' | 'answering' | 'reviewing' | 'result' | 'finished';
 
 export interface HitPlayer {
   id: string;
@@ -82,8 +82,15 @@ export function acceptBuzz(state: HitState, playerId: string, roundId: string, n
 }
 
 export function voidBuzz(state: HitState): HitState {
-  if (state.phase !== 'answering') return state;
+  if (state.phase !== 'answering' && state.phase !== 'reviewing') return state;
   return { ...state, phase: 'listening', claim: null, revision: state.revision + 1 };
+}
+
+/** The spoken answer has been given; stop the answer clock while the host checks the private song card. */
+export function reviewBuzz(state: HitState): HitState {
+  return state.phase === 'answering' && state.claim
+    ? { ...state, phase: 'reviewing', revision: state.revision + 1 }
+    : state;
 }
 
 /** Preserve the full answer window after a temporary room disconnection. */
@@ -100,7 +107,7 @@ export function revealRound(state: HitState, artist: string, title: string, winn
 }
 
 export function judgeBuzz(state: HitState, correct: boolean, artist: string, title: string): HitState {
-  if (state.phase !== 'answering' || !state.claim) return state;
+  if ((state.phase !== 'answering' && state.phase !== 'reviewing') || !state.claim) return state;
   const claim = state.claim;
   const teamId = state.players.find(p => p.id === claim.playerId)?.teamId;
   if (!teamId) return state;
@@ -125,7 +132,7 @@ export function advanceRound(state: HitState, roundId: string): HitState {
 
 /** Reopen the last judged claim with a fresh answer window. */
 export function undoJudgement(current: HitState, before: HitState, now: number): HitState {
-  if (current.matchId !== before.matchId || current.roundId !== before.roundId || before.phase !== 'answering'
+  if (current.matchId !== before.matchId || current.roundId !== before.roundId || (before.phase !== 'answering' && before.phase !== 'reviewing')
     || !before.claim || !Number.isFinite(now) || (current.phase !== 'result' && current.phase !== 'listening')) return current;
   return { ...before, revision: current.revision + 1,
     claim: { ...before.claim, expiresAt: now + before.config.answerSeconds * 1000 } };
@@ -134,7 +141,7 @@ export function undoJudgement(current: HitState, before: HitState, now: number):
 /** Discard a broken clip without consuming its round or retaining wrong-answer penalties. */
 export function replaceBrokenClip(current: HitState, roundStart: HitState, roundId: string): HitState {
   if (current.matchId !== roundStart.matchId || current.roundId !== roundStart.roundId
-    || roundStart.phase !== 'listening' || !['listening', 'answering', 'paused'].includes(current.phase)) return current;
+    || roundStart.phase !== 'listening' || !['listening', 'answering', 'reviewing', 'paused'].includes(current.phase)) return current;
   return { ...current, phase: 'loading', roundId, revision: current.revision + 1,
     elapsedMs: 0, claim: null, reveal: null,
     players: current.players.map(p => ({ ...p,

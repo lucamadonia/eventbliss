@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Music2, Pause, Play, RotateCcw, SkipForward, Volume2 } from 'lucide-react';
+import { ArrowLeft, Music2, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -23,12 +23,15 @@ import type { Song } from '../ohrwurm/ohrwurm-engine';
 import { loadHitBuzzerDeck } from './song-pool';
 import {
   acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, removePlayer,
-  replaceBrokenClip, resumeListening, revealRound, startListening, undoJudgement, updateElapsed, voidBuzz,
+  replaceBrokenClip, resumeListening, revealRound, reviewBuzz, startListening, undoJudgement, updateElapsed, voidBuzz,
   type HitConfig, type HitPlayer, type HitState,
 } from './engine';
 import { hitText } from './strings';
 import { HitBuzzerSetup } from './HitBuzzerSetup';
 import { HitBuzzerButton } from './HitBuzzerButton';
+import { HitBuzzerRoundIntro } from './HitBuzzerRoundIntro';
+import { HitBuzzerAnswerCheck } from './HitBuzzerAnswerCheck';
+import { roundFlowText } from './round-flow-copy';
 import { HIT_TEAM_IDS, mergeEventPlayers, teamForPlayer } from './setup-roster';
 import { canBuzzForSeat } from './buzz-access';
 
@@ -52,6 +55,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const location = useLocation();
   const { i18n, t } = useTranslation();
   const text = hitText(i18n.language);
+  const flowText = roundFlowText(i18n.language);
   const haptics = useHaptics();
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedMatchRef = useRef<string | null>(null);
@@ -83,6 +87,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
+  const [audioStartFailed, setAudioStartFailed] = useState(false);
   const [now, setNow] = useState(serverClock.now());
   const [restoreDone, setRestoreDone] = useState(false);
   const leaveGame = useCallback(() => {
@@ -115,7 +120,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     if (saved?.state && saved.song && Array.isArray(saved.deck) && Array.isArray(saved.roster)
       && saved.config && saved.teams && saved.state.phase !== 'finished') {
       let recovered = saved.state;
-      if (['listening', 'paused', 'answering'].includes(recovered.phase)) {
+      if (['listening', 'paused', 'answering', 'reviewing'].includes(recovered.phase)) {
         if (saved.roundStart?.roundId !== recovered.roundId) {
           clearSnapshot('hitbuzzer');
           setRestoreDone(true);
@@ -170,6 +175,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     songRef.current = next;
     setSong(next);
     setError(next ? null : text.noSongs);
+    setAudioStartFailed(false);
     audioRef.current?.pause();
     if (next) void loadPreview(next, ++drawIdRef.current);
   }, [loadPreview, text.noSongs]);
@@ -216,6 +222,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const startAudio = useCallback(async () => {
     if (!isHost || stateRef.current?.phase !== 'loading' || !previewUrl || !audioRef.current) return;
     setError(null);
+    setAudioStartFailed(false);
     try {
       audioRef.current.currentTime = 0;
       await audioRef.current.play();
@@ -225,7 +232,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
         roundStartRef.current = next;
         commit(next);
       }
-    } catch { setError(text.audioFailed); }
+    } catch { setAudioStartFailed(true); setError(text.audioFailed); }
   }, [isHost, previewUrl, commit, text.audioFailed]);
 
   const pauseAudio = useCallback(() => {
@@ -308,7 +315,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const judge = useCallback((correct: boolean) => {
     const current = stateRef.current;
     const card = songRef.current;
-    if (!isHost || !current || !card || current.phase !== 'answering' || resolvingRef.current) return;
+    if (!isHost || !current || !card || current.phase !== 'reviewing' || resolvingRef.current) return;
     lastDecisionRef.current = current;
     const next = judgeBuzz(current, correct, card.artist, card.title);
     void resumeAfter(next);
@@ -320,6 +327,12 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     if (!isHost || !current || resolvingRef.current) return;
     void resumeAfter(voidBuzz(current));
   }, [isHost, resumeAfter]);
+
+  const openHostAnswer = useCallback(() => {
+    const current = stateRef.current;
+    if (!isHost || !current || current.phase !== 'answering') return;
+    commit(reviewBuzz(current));
+  }, [isHost, commit]);
 
   const nextRound = useCallback(() => {
     const current = stateRef.current;
@@ -415,7 +428,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     let next = stateRef.current;
     for (const playerId of online.removedPlayerIds) if (next) next = removePlayer(next, playerId);
     if (next && next !== stateRef.current) {
-      if (stateRef.current?.phase === 'answering' && next.phase === 'listening') void resumeAfter(next);
+      if ((stateRef.current?.phase === 'answering' || stateRef.current?.phase === 'reviewing') && next.phase === 'listening') void resumeAfter(next);
       else commit(next);
     }
   }, [online, state, commit, resumeAfter]);
@@ -537,23 +550,24 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
         {!state && !isHost && <StagePanel className="p-8 text-center text-[#b3a8c9]">{text.waitHost}</StagePanel>}
 
         {state && <>
-          <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-[#0d0915] px-5 py-4">
-            <span className="flex items-center gap-2 font-game font-bold"><Music2 className="h-5 w-5 text-[#df8eff]" />{state.phase === 'loading' ? text.prepare : state.phase === 'listening' ? text.listen : state.phase === 'paused' ? t('games.connectionPaused') : state.phase === 'answering' ? text.answer : state.phase === 'result' ? text.reveal : text.finished}</span>
+          {state.phase !== 'loading' && <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-[#0d0915] px-5 py-4">
+            <span className="flex items-center gap-2 font-game font-bold"><Music2 className="h-5 w-5 text-[#df8eff]" />{state.phase === 'listening' ? text.listen : state.phase === 'paused' ? t('games.connectionPaused') : state.phase === 'answering' ? text.answer : state.phase === 'reviewing' ? flowText.checkHeading : state.phase === 'result' ? text.reveal : text.finished}</span>
             <span className="font-game text-2xl font-black tabular-nums text-[#8ff5ff]">{state.phase === 'answering' ? `${answerLeft}s` : state.phase === 'listening' ? `${remaining}s` : ''}</span>
-          </div>
+          </div>}
 
-          {state.phase === 'loading' && <StagePanel className="space-y-4 p-6 text-center">
-            <Volume2 className="mx-auto h-10 w-10 text-[#df8eff]" />
-            <p className="text-[#b3a8c9]">{isHost ? previewLoading ? text.findPreview : previewUrl ? text.readyPreview : text.missingPreview : text.waitHost}</p>
-            {isHost && <div className="flex flex-col gap-3 sm:flex-row"><StageAction onClick={() => void startAudio()} disabled={!previewUrl} className="w-full sm:flex-1"><Play className="h-5 w-5" />{text.playClip}</StageAction><StageAction variant="secondary" onClick={skipSong} className="w-full sm:flex-1"><SkipForward className="h-5 w-5" />{text.skip}</StageAction></div>}
-          </StagePanel>}
+          {state.phase === 'loading' && <HitBuzzerRoundIntro round={state.round} total={state.config.rounds} isHost={isHost}
+            loading={previewLoading} ready={!!previewUrl} failed={audioStartFailed}
+            labels={{ round: text.round, startNow: flowText.startNow, otherSong: flowText.otherSong, ready: flowText.ready,
+              finding: flowText.finding, unavailable: flowText.unavailable, waiting: flowText.waiting,
+              challenge: flowText.challenge, promise: flowText.promise }}
+            onStart={() => void startAudio()} onReplace={skipSong} />}
 
-          {(state.phase === 'listening' || state.phase === 'paused' || state.phase === 'answering') && <StagePanel className="space-y-5 p-5 text-center">
-            {state.phase === 'answering' && <p role="status" className="text-xl font-black text-[#8ff5ff]">{claimPlayer?.name || text.player} — {text.yourAnswer}</p>}
+          {(state.phase === 'listening' || state.phase === 'paused' || state.phase === 'answering' || state.phase === 'reviewing') && <StagePanel className="space-y-5 p-5 text-center">
+            {(state.phase === 'answering' || state.phase === 'reviewing') && <p role="status" className="text-xl font-black text-[#8ff5ff]">{claimPlayer?.name || text.player} — {state.phase === 'reviewing' ? flowText.checking : text.yourAnswer}</p>}
             <div className={`grid gap-3 ${localIds.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
               {state.players.filter(p => localIds.includes(p.id)).map(p => <HitBuzzerButton key={p.id} name={p.name} score={p.score} pointsLabel={text.points}
                 buzzLabel={text.buzz} lockedLabel={text.locked} sentLabel={text.sent} answerLabel={text.answer} locked={p.locked} pending={pending === p.id}
-                claimed={state.phase === 'answering' && state.claim?.playerId === p.id}
+                claimed={(state.phase === 'answering' || state.phase === 'reviewing') && state.claim?.playerId === p.id}
                 disabled={state.phase !== 'listening' || p.locked || !!pending || online?.isConnected === false}
                 large={localIds.length === 1} onClick={() => requestBuzz(p.id)} />)}
             </div>
@@ -561,11 +575,11 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
             {isHost && state.phase === 'listening' && <StageAction variant="secondary" onClick={pauseAudio} className="w-full"><Pause className="h-5 w-5" />{t('games.play.pause')}</StageAction>}
             {isHost && state.phase === 'listening' && lastDecisionRef.current?.roundId === state.roundId && <StageAction variant="ghost" onClick={undo} className="w-full"><RotateCcw className="h-4 w-4" />{t('partyPlay.undo')}</StageAction>}
             {isHost && state.phase === 'paused' && <StageAction onClick={() => void resumeAudio()} disabled={online?.isConnected === false} className="w-full"><Play className="h-5 w-5" />{t('games.play.resume')}</StageAction>}
-            {state.phase === 'answering' && isHost && <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-5">
-              <StageAction onClick={() => judge(true)} className="min-h-14 !px-2 whitespace-nowrap text-[13px] sm:text-sm">{text.correct}</StageAction>
-              <StageAction variant="danger" onClick={() => judge(false)} className="min-h-14 !px-2 whitespace-nowrap text-[13px] sm:text-sm">{text.wrong}</StageAction>
-              <StageAction variant="secondary" onClick={voidClaim} className="col-span-2 min-h-12 px-3 text-sm">{text.void}</StageAction>
-            </div>}
+            {(state.phase === 'answering' || state.phase === 'reviewing') && isHost && song && <HitBuzzerAnswerCheck artist={song.artist} title={song.title}
+              open={state.phase === 'reviewing'} sharedDevice={!online} onOpen={openHostAnswer} onCorrect={() => judge(true)} onWrong={() => judge(false)} onVoid={voidClaim}
+              labels={{ heading: flowText.checkHeading, prompt: flowText.checkPrompt, open: flowText.openSolution,
+                artist: flowText.artist, title: flowText.title, compare: flowText.compare, privateHint: flowText.privateHint,
+                correct: text.correct, wrong: text.wrong, void: text.void }} />}
           </StagePanel>}
 
           {(state.phase === 'result' || state.phase === 'finished') && <StagePanel className="space-y-5 p-6 text-center">
