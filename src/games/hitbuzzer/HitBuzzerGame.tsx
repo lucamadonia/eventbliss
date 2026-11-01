@@ -29,6 +29,8 @@ import {
 import { hitText } from './strings';
 import { HitBuzzerSetup } from './HitBuzzerSetup';
 import { HitBuzzerButton } from './HitBuzzerButton';
+import { HIT_TEAM_IDS, mergeEventPlayers, teamForPlayer } from './setup-roster';
+import { canBuzzForSeat } from './buzz-access';
 
 const id = () => crypto.randomUUID();
 
@@ -41,6 +43,8 @@ interface HitSnapshot {
   config: HitConfig;
   teamMode: boolean;
   teams: Record<string, string>;
+  teamCount?: number;
+  teamNames?: Record<string, string>;
 }
 
 export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } = {}) {
@@ -60,6 +64,8 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     ?? [{ id: 'p1', name: '' }, { id: 'p2', name: '' }]);
   const [teamMode, setTeamMode] = useState(false);
   const [teams, setTeams] = useState<Record<string, string>>({});
+  const [teamCount, setTeamCount] = useState(2);
+  const [teamNames, setTeamNames] = useState<Record<string, string>>({});
   const [config, setConfig] = useState<HitConfig>(DEFAULT_CONFIG);
   const [state, setState] = useState<HitState | null>(null);
   const stateRef = useRef<HitState | null>(null);
@@ -125,6 +131,8 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
       setConfig(saved.config);
       setTeamMode(saved.teamMode);
       setTeams(saved.teams);
+      setTeamCount(saved.teamCount ?? 2);
+      setTeamNames(saved.teamNames ?? {});
       commit(recovered);
       void loadPreview(saved.song, ++drawIdRef.current);
     }
@@ -136,9 +144,9 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     if (!state || state.phase === 'finished' || !song) { clearSnapshot('hitbuzzer'); return; }
     saveSnapshot<HitSnapshot>('hitbuzzer', {
       state, song, deck: deckRef.current, roundStart: roundStartRef.current,
-      roster, config, teamMode, teams,
+      roster, config, teamMode, teams, teamCount, teamNames,
     });
-  }, [online, restoreDone, state, song, roster, config, teamMode, teams]);
+  }, [online, restoreDone, state, song, roster, config, teamMode, teams, teamCount, teamNames]);
 
   // The room roster is authoritative in online play. A local party roster is
   // copied once while setup is untouched; manual edits then stay intact.
@@ -150,6 +158,11 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     setRoster(initialRoster.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar })));
     importedRef.current = true;
   }, [initialRoster, online, restoreDone, roster, state]);
+
+  const importNames = useCallback((names: string[]) => {
+    if (online) return;
+    setRoster(previous => mergeEventPlayers(previous, names, id));
+  }, [online]);
 
   const prepareSong = useCallback((cards: Song[]) => {
     const next = cards.pop() ?? null;
@@ -175,7 +188,11 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const startMatch = useCallback(async () => {
     if (!isHost || busy) return;
     const entrants = (online ? online.players : roster).filter(p => p.name.trim());
-    if (entrants.length < 2) { setError(text.needPlayers); return; }
+    if (entrants.length < 2 || entrants.length !== (online ? online.players : roster).length) { setError(text.needPlayers); return; }
+    const groupIds = HIT_TEAM_IDS.slice(0, teamCount);
+    const memberTeam = (playerId: string, index: number) => teamForPlayer(playerId, index, teams, teamCount);
+    if (teamMode && groupIds.some(teamId => !entrants.some((player, index) => memberTeam(player.id, index) === teamId)
+      || !(teamNames[teamId] ?? `${text.team} ${teamId}`).trim())) { setError(t('games.ohrwurm.emptyTeam')); return; }
     setBusy(true); setError(null);
     try {
       const deck = await loadHitBuzzerDeck();
@@ -183,7 +200,8 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
       if (filtered.length === 0) { setError(text.noSongs); return; }
       const players = entrants.map((p, index) => ({
         id: p.id, name: p.name.trim(), color: p.color || getPlayerColor(index), avatar: p.avatar || p.name.trim().charAt(0),
-        teamId: teamMode ? (teams[p.id] || (index % 2 ? 'B' : 'A')) : p.id,
+        teamId: teamMode ? memberTeam(p.id, index) : p.id,
+        teamName: teamMode ? (teamNames[memberTeam(p.id, index)] ?? `${text.team} ${memberTeam(p.id, index)}`).trim() : undefined,
       }));
       seenActions.current.clear();
       lastDecisionRef.current = null;
@@ -193,7 +211,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
       prepareSong([...filtered.filter(s => !s.previewUrl), ...filtered.filter(s => !!s.previewUrl)]);
     } catch { setError(text.loadFailed); }
     finally { setBusy(false); }
-  }, [isHost, busy, online, roster, text, config, teamMode, teams, commit, prepareSong]);
+  }, [isHost, busy, online, roster, text, config, teamMode, teams, teamCount, teamNames, commit, prepareSong, t]);
 
   const startAudio = useCallback(async () => {
     if (!isHost || stateRef.current?.phase !== 'loading' || !previewUrl || !audioRef.current) return;
@@ -350,7 +368,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
       if (data.type !== 'buzz' || typeof data.playerId !== 'string' || typeof data.__senderId !== 'string'
         || typeof data.actionId !== 'string' || typeof data.roundId !== 'string') return;
       const sender = data.__senderId;
-      const authorized = data.playerId === sender || online.players.some(p => p.id === data.playerId && p.controlledBy === sender);
+      const authorized = canBuzzForSeat(online.players, sender, data.playerId);
       const current = stateRef.current;
       if (!authorized || !current || data.matchId !== current.matchId || seenActions.current.has(data.actionId)) return;
       seenActions.current.add(data.actionId);
@@ -458,9 +476,9 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const claimPlayer = state?.players.find(p => p.id === state.claim?.playerId);
   const remaining = Math.max(0, 30 - Math.floor((state?.elapsedMs ?? 0) / 1000));
   const answerLeft = state?.claim ? Math.max(0, Math.ceil((state.claim.expiresAt - now) / 1000)) : 0;
-  const teamMatch = useMemo(() => !!state?.players.some((p, index, players) => players.findIndex(other => other.teamId === p.teamId) !== index), [state?.players]);
+  const teamMatch = useMemo(() => !!state?.players.some(player => !!player.teamName), [state?.players]);
   const ranked = useMemo(() => (teamMatch
-    ? [...new Map((state?.players ?? []).map(p => [p.teamId, { ...p, id: p.teamId, name: `${text.team} ${p.teamId}`, avatar: p.teamId }])).values()]
+    ? [...new Map((state?.players ?? []).map(p => [p.teamId, { ...p, id: p.teamId, name: p.teamName || `${text.team} ${p.teamId}`, avatar: p.teamId }])).values()]
     : [...(state?.players ?? [])]).sort((a, b) => b.score - a.score || a.name.localeCompare(b.name)), [state?.players, teamMatch, text.team]);
   useEffect(() => {
     if (state?.phase !== 'finished' || state.players.length < 2 || recordedMatchRef.current === state.matchId) return;
@@ -479,6 +497,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     previewUrl: state && state.phase !== 'finished' ? previewUrl : null,
     partyScoresById: Object.fromEntries((state?.players ?? []).map(p => [p.id, p.score])),
     teams: teamMatch ? [...new Set(state?.players.map(p => p.teamId) ?? [])].map(teamId => ({
+      name: state?.players.find(p => p.teamId === teamId)?.teamName ?? `${text.team} ${teamId}`,
       score: state?.players.find(p => p.teamId === teamId)?.score ?? 0,
       players: state?.players.filter(p => p.teamId === teamId).map(p => p.name) ?? [],
     })) : undefined,
@@ -486,7 +505,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     reveal: state?.phase === 'result' || state?.phase === 'finished'
       ? state.reveal && { ...state.reveal, winnerId: teamMatch ? state.players.find(p => p.id === state.reveal?.winnerId)?.teamId ?? null : state.reveal.winnerId }
       : null,
-  }), [state, remaining, previewUrl, claimPlayer?.name, ranked, teamMatch]);
+  }), [state, remaining, previewUrl, claimPlayer?.name, ranked, teamMatch, text.team]);
   const tvBridge = useTVGameBridge('hitbuzzer', tvState, [tvState], isHost);
   const tvSpeaker = online ? tvConnected : !!tvBridge?.isActive && tvBridge.lastTvReadyAt > 0 && Date.now() - tvBridge.lastTvReadyAt < 45_000;
   useEffect(() => {
@@ -510,7 +529,9 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
           locked={!!online} onAdd={() => setRoster(p => [...p, { id: id(), name: '' }])}
           onRemove={playerId => setRoster(p => p.filter(x => x.id !== playerId))}
           onRename={(playerId, name) => setRoster(p => p.map(x => x.id === playerId ? { ...x, name } : x))}
+          onImportNames={importNames}
           teamMode={teamMode} setTeamMode={setTeamMode} teams={teams} setTeams={setTeams}
+          teamCount={teamCount} setTeamCount={setTeamCount} teamNames={teamNames} setTeamNames={setTeamNames}
           onStart={() => void startMatch()} busy={busy} />}
 
         {!state && !isHost && <StagePanel className="p-8 text-center text-[#b3a8c9]">{text.waitHost}</StagePanel>}
