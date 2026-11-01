@@ -132,23 +132,28 @@ export const entrance = {
 
 /** Taktzeiten des Splash in Millisekunden — eine Quelle fuer Bild und Haptik. */
 export const splashBeats = {
-  trace: 120,
-  reveal: 720,
-  release: 1850,
-  done: 2380,
+  trace: 140,
+  ignite: 560,
+  compose: 1020,
+  release: 2020,
+  done: 2460,
 } as const;
 
 /** The static native frame and the first JS frame use the same centred mark. */
 export const splashMotion = {
-  markWidth: "min(46vmin, 194px)",
-  orbitWidth: "min(88vmin, 390px)",
-  markLift: -54,
-  markRevealScale: 0.78,
-  wordmarkY: 78,
-  taglineY: 122,
-  trace: { duration: 0.74, ease: ease.out } as Transition,
-  reveal: { duration: 0.58, ease: ease.out } as Transition,
-  release: { duration: 0.46, ease: ease.inOut } as Transition,
+  // The native square launch image uses scaleAspectFill. Its mark occupies
+  // about 26% of the longer screen edge, so the first WebView frame does too.
+  markWidth: "min(26vmax, 420px)",
+  orbitWidth: "min(44vmax, 560px)",
+  markLift: "-7vmax",
+  markRevealScale: 0.74,
+  wordmarkY: "10vmax",
+  taglineY: "15vmax",
+  trace: { duration: 0.58, ease: ease.out } as Transition,
+  ignite: { duration: 0.32, ease: ease.out } as Transition,
+  compose: { duration: 0.62, ease: ease.out } as Transition,
+  wordmark: { duration: 0.52, ease: ease.out } as Transition,
+  release: { duration: 0.44, ease: ease.inOut } as Transition,
 } as const;
 
 /**

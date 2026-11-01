@@ -13,7 +13,7 @@ interface Props {
   onComplete: () => void;
 }
 
-type Phase = "rest" | "trace" | "reveal" | "release";
+type Phase = "rest" | "trace" | "ignite" | "compose" | "release";
 
 function launchBackground() {
   // The native assets follow the OS appearance; matching that appearance is
@@ -34,7 +34,7 @@ export function SplashExperience({ onComplete }: Props) {
   );
   const liveReducedMotion = useReducedMotion();
   const reducedMotion = liveReducedMotion ?? initialReducedRef.current;
-  const [phase, setPhase] = useState<Phase>(() => reducedMotion ? "reveal" : "rest");
+  const [phase, setPhase] = useState<Phase>("rest");
 
   useEffect(() => {
     const hideFrame = requestAnimationFrame(() => {
@@ -43,11 +43,13 @@ export function SplashExperience({ onComplete }: Props) {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
     if (reducedMotion) {
+      timers.push(setTimeout(() => setPhase("compose"), 160));
       timers.push(setTimeout(() => setPhase("release"), 650));
       timers.push(setTimeout(onComplete, 850));
     } else {
-      timers.push(setTimeout(() => { setPhase("trace"); haptics.light(); }, splashBeats.trace));
-      timers.push(setTimeout(() => { setPhase("reveal"); haptics.medium(); }, splashBeats.reveal));
+      timers.push(setTimeout(() => setPhase("trace"), splashBeats.trace));
+      timers.push(setTimeout(() => { setPhase("ignite"); haptics.medium(); }, splashBeats.ignite));
+      timers.push(setTimeout(() => setPhase("compose"), splashBeats.compose));
       timers.push(setTimeout(() => setPhase("release"), splashBeats.release));
       timers.push(setTimeout(onComplete, splashBeats.done));
     }
@@ -58,11 +60,13 @@ export function SplashExperience({ onComplete }: Props) {
     };
   }, [haptics, onComplete, reducedMotion]);
 
-  const revealed = phase === "reveal" || phase === "release";
+  const ignited = phase === "ignite" || phase === "compose" || phase === "release";
+  const composed = phase === "compose" || phase === "release";
   const released = phase === "release";
 
   return (
     <motion.div
+      data-splash-phase={phase}
       className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden"
       style={{ backgroundColor: background }}
       initial={false}
@@ -78,9 +82,18 @@ export function SplashExperience({ onComplete }: Props) {
             : "radial-gradient(ellipse 55% 38% at 50% 50%, rgba(111,62,204,0.27), rgba(28,118,170,0.08) 48%, transparent 78%)",
         }}
         initial={false}
-        animate={{ opacity: phase === "rest" || reducedMotion ? 0 : revealed ? 1 : 0.58 }}
-        transition={splashMotion.reveal}
+        animate={{ opacity: phase === "rest" || reducedMotion ? 0 : phase === "trace" ? 0.42 : phase === "ignite" ? 1 : 0.72 }}
+        transition={splashMotion.compose}
       />
+
+      {!reducedMotion && <motion.div
+        aria-hidden="true"
+        className="pointer-events-none absolute h-[2px]"
+        style={{ width: "min(76vmax, 680px)", background: "linear-gradient(90deg, transparent, #9e58f0 27%, #35b7eb 52%, #84dfae 75%, transparent)" }}
+        initial={false}
+        animate={{ opacity: phase === "ignite" ? 0.9 : 0, scaleX: phase === "ignite" ? 1 : 0 }}
+        transition={splashMotion.ignite}
+      />}
 
       {!reducedMotion && (
         <svg
@@ -108,8 +121,8 @@ export function SplashExperience({ onComplete }: Props) {
             strokeWidth="2"
             strokeLinecap="round"
             initial={false}
-            animate={{ pathLength: phase === "rest" ? 0 : 1, opacity: revealed ? 0.22 : phase === "rest" ? 0 : 0.85 }}
-            transition={splashMotion.trace}
+            animate={{ pathLength: phase === "rest" ? 0 : 1, opacity: composed ? 0 : phase === "rest" ? 0 : phase === "ignite" ? 1 : 0.85 }}
+            transition={composed ? { duration: 0.2 } : splashMotion.trace}
           />
           <motion.path
             d="M 328 158 C 376 245, 315 344, 202 344 C 91 344, 27 252, 68 176"
@@ -117,13 +130,13 @@ export function SplashExperience({ onComplete }: Props) {
             strokeWidth="2"
             strokeLinecap="round"
             initial={false}
-            animate={{ pathLength: phase === "rest" ? 0 : 1, opacity: revealed ? 0.22 : phase === "rest" ? 0 : 0.85 }}
-            transition={{ ...splashMotion.trace, delay: 0.09 }}
+            animate={{ pathLength: phase === "rest" ? 0 : 1, opacity: composed ? 0 : phase === "rest" ? 0 : phase === "ignite" ? 1 : 0.85 }}
+            transition={composed ? { duration: 0.2 } : { ...splashMotion.trace, delay: 0.09 }}
           />
         </svg>
       )}
 
-      {!reducedMotion && (
+      {phase === "ignite" && !reducedMotion && (
         <motion.div
           aria-hidden="true"
           className="pointer-events-none absolute rounded-full border"
@@ -133,9 +146,9 @@ export function SplashExperience({ onComplete }: Props) {
             borderColor: isLight ? "rgba(114,54,171,0.25)" : "rgba(120,199,251,0.42)",
             boxShadow: isLight ? "none" : "0 0 38px rgba(91,167,249,0.14)",
           }}
-          initial={false}
-          animate={{ scale: revealed ? 1.28 : 0.55, opacity: revealed ? [0, 0.42, 0] : 0 }}
-          transition={{ ...splashMotion.reveal, times: [0, 0.25, 1] }}
+          initial={{ scale: 0.6, opacity: 0.65 }}
+          animate={{ scale: 1.38, opacity: 0 }}
+          transition={{ duration: 0.48, ease: [0.23, 1, 0.32, 1] }}
         />
       )}
 
@@ -147,44 +160,48 @@ export function SplashExperience({ onComplete }: Props) {
           style={{ width: splashMotion.markWidth, height: "auto" }}
           initial={false}
           animate={{
-            y: revealed ? splashMotion.markLift : 0,
-            scale: revealed ? splashMotion.markRevealScale : 1,
+            y: reducedMotion ? "0vmax" : composed ? splashMotion.markLift : "0vmax",
+            scale: reducedMotion ? 1 : composed ? splashMotion.markRevealScale : ignited ? 1.06 : 1,
             opacity: 1,
           }}
-          transition={splashMotion.reveal}
+          transition={reducedMotion ? { duration: 0 } : composed ? splashMotion.compose : splashMotion.ignite}
         />
 
         <motion.div
           aria-hidden="true"
           className="pointer-events-none absolute z-0 rounded-full"
           style={{
-            width: "min(48vmin, 210px)",
-            height: "min(48vmin, 210px)",
+            width: "min(34vmax, 420px)",
+            height: "min(34vmax, 420px)",
             background: isLight
               ? "radial-gradient(circle, rgba(106,70,179,0.2), transparent 68%)"
               : "radial-gradient(circle, rgba(114,80,232,0.36), rgba(40,187,229,0.14) 48%, transparent 72%)",
             filter: "blur(18px)",
           }}
           initial={false}
-          animate={{ opacity: phase === "rest" || reducedMotion ? 0 : 1, scale: revealed ? 1.65 : 0.86 }}
-          transition={splashMotion.reveal}
+          animate={{ opacity: phase === "rest" || reducedMotion ? 0 : phase === "ignite" ? 1 : 0.6, scale: composed ? 1.55 : 0.9 }}
+          transition={splashMotion.compose}
         />
 
         <motion.img
           src={wordmark}
           alt=""
           className="absolute z-10 object-contain"
-          style={{ width: "min(74vw, 330px)", height: "auto" }}
+          style={{ width: "min(74vw, 420px)", height: "auto" }}
           initial={false}
-          animate={{ opacity: revealed ? 1 : 0, y: revealed ? splashMotion.wordmarkY : splashMotion.wordmarkY + 18 }}
-          transition={{ ...splashMotion.reveal, delay: reducedMotion ? 0 : 0.05 }}
+          animate={{
+            opacity: composed ? 1 : 0,
+            y: reducedMotion ? "17vmax" : splashMotion.wordmarkY,
+            clipPath: reducedMotion ? "none" : composed ? "inset(0 0% 0 0%)" : "inset(0 50% 0 50%)",
+          }}
+          transition={reducedMotion ? { duration: 0.2 } : { ...splashMotion.wordmark, delay: 0.05 }}
         />
         <motion.span
-          className="absolute z-10 whitespace-nowrap text-center font-body text-xs tracking-[0.18em]"
+          className="absolute z-10 w-[calc(100vw-32px)] max-w-lg px-2 text-center font-body text-[clamp(10px,2.6vw,12px)] leading-snug tracking-[0.11em]"
           style={{ color: isLight ? "#5e546b" : "#b9adc8" }}
           initial={false}
-          animate={{ opacity: revealed ? 1 : 0, y: revealed ? splashMotion.taglineY : splashMotion.taglineY + 12 }}
-          transition={{ ...splashMotion.reveal, delay: reducedMotion ? 0 : 0.17 }}
+          animate={{ opacity: composed ? 1 : 0, y: reducedMotion ? "22vmax" : splashMotion.taglineY }}
+          transition={reducedMotion ? { duration: 0.2 } : { ...splashMotion.wordmark, delay: 0.18 }}
         >
           {t("native.splash.tagline")}
         </motion.span>
