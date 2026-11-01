@@ -413,7 +413,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
           {state.phase === 'loading' && <StagePanel className="space-y-4 p-6 text-center">
             <Volume2 className="mx-auto h-10 w-10 text-[#df8eff]" />
             <p className="text-[#b3a8c9]">{isHost ? previewLoading ? text.findPreview : previewUrl ? text.readyPreview : text.missingPreview : text.waitHost}</p>
-            {isHost && <div className="flex gap-3"><StageAction onClick={() => void startAudio()} disabled={!previewUrl} className="flex-1"><Play className="h-5 w-5" />{text.playClip}</StageAction><StageAction variant="secondary" onClick={skipSong} className="flex-1"><SkipForward className="h-5 w-5" />{text.skip}</StageAction></div>}
+            {isHost && <div className="flex flex-col gap-3 sm:flex-row"><StageAction onClick={() => void startAudio()} disabled={!previewUrl} className="w-full sm:flex-1"><Play className="h-5 w-5" />{text.playClip}</StageAction><StageAction variant="secondary" onClick={skipSong} className="w-full sm:flex-1"><SkipForward className="h-5 w-5" />{text.skip}</StageAction></div>}
           </StagePanel>}
 
           {(state.phase === 'listening' || state.phase === 'paused' || state.phase === 'answering') && <StagePanel className="space-y-5 p-5 text-center">
