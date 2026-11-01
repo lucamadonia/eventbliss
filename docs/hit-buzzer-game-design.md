@@ -71,7 +71,7 @@ Beispiel: Buzz nach 7,8 Sekunden ergibt +86 Punkte. Falsche Antwort kostet 20, s
 | --- | --- |
 | `matchId`, `roundId`, `revision` | Neue Partie, eindeutiger Songversuch und monotoner Zustand; alte Aktionen verwerfen |
 | `songId` | Nur Host; nie an Gäste oder TV vor Reveal schicken |
-| `previewUrl` | Host und TV-Audioausgabe; nie an Gast-Handys schicken |
+| `previewUrl` | Host und TV-Audioausgabe; Gastoberflächen zeigen die URL nicht. Der bestehende TV-Raumkanal ist für Raumteilnehmer technisch beobachtbar. |
 | `phase`, `elapsedMs` | Synchronisierte Anzeige; Host bleibt Zeitautorität |
 | `claim` | Spieler-ID, Punkte zum Buzz-Zeitpunkt und Antwortfrist |
 | `players[].locked` | In diesem Song ausgeschlossene Spieler; bei Teams alle Mitglieder |
@@ -172,7 +172,7 @@ Erzeugt mit dem integrierten Imagegen-Werkzeug; anschließend als 1024 × 1024 W
 - Ein Clip schlägt fehl: keine stumme Runde, keine verlorene Runde, keine Punkteänderung; nächster Song lädt.
 - Ein neuer Admin-Song erscheint in beiden Decks nach neuer Partie, ohne Migration oder doppelten Eintrag. Inaktive beziehungsweise für die aktuelle Sprache ausgeblendete Songs erscheinen in keinem Deck.
 - Gerät verliert Verbindung während Buzz oder Juryphase: keine doppelte Wertung; Host kann fortsetzen oder den Claim ohne Strafe aufheben.
-- TV und Gäste sehen vor Reveal weder Interpret noch Titel; die Preview-URL erhält ausschließlich die TV-Audioausgabe, nie ein Gast-Handy. Nach Reveal stimmen Punkte und Lösung überein.
+- TV und Gastoberflächen zeigen vor Reveal weder Interpret noch Titel. Der TV erhält die Preview-URL für die Wiedergabe; im bestehenden Raumkanal ist sie technisch auch für Raumteilnehmer beobachtbar, enthält aber keine Antwortfelder. Nach Reveal stimmen Punkte und Lösung überein.
 - Rematch setzt Punkte, Sperren, Songdeck und `matchId` frisch; alte Buzz-Nachrichten können keine neue Partie beeinflussen.
 
 ## Status dieser Ausarbeitung
