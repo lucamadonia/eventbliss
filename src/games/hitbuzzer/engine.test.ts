@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, pointsAt, removePlayer, replaceBrokenClip, resumeListening, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
+import { acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, pointsAt, removePlayer, replaceBrokenClip, resumeListening, reviewBuzz, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
 
 const roster = [
   { id: 'a', name: 'Alex', color: '#df8eff', avatar: 'A', teamId: 'a' },
@@ -60,6 +60,19 @@ describe('Hit-Buzzer host rules', () => {
     expect(resumed.revision).toBe(claimed.revision + 1);
     expect(extendAnswerDeadline(resumed, 0)).toBe(resumed);
     expect(extendAnswerDeadline(ready(), 6_500)).toMatchObject({ phase: 'listening' });
+  });
+
+  it('lets the host check a spoken answer without a running answer deadline or leaking the song', () => {
+    const claimed = acceptBuzz(ready(), 'a', 'round-1', 1000);
+    const reviewing = reviewBuzz(claimed);
+    expect(reviewing).toMatchObject({ phase: 'reviewing', claim: claimed.claim });
+    expect(JSON.stringify(reviewing)).not.toContain('Artist');
+    expect(acceptBuzz(reviewing, 'b', 'round-1', 2000)).toBe(reviewing);
+    expect(extendAnswerDeadline(reviewing, 10_000)).toBe(reviewing);
+    const judged = judgeBuzz(reviewing, true, 'Artist', 'Song');
+    expect(judged).toMatchObject({ phase: 'result', reveal: { artist: 'Artist', title: 'Song' } });
+    expect(undoJudgement(judged, reviewing, 30_000).phase).toBe('reviewing');
+    expect(voidBuzz(reviewing)).toMatchObject({ phase: 'listening', claim: null });
   });
 
   it('undoes a mistaken judgement without restoring a stale answer deadline', () => {
