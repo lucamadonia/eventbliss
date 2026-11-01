@@ -46,6 +46,7 @@ const SETUP_FILE: Record<string, string> = {
   "drueck-das-wort": "wordpress",
   schnellzeichner: "quickdraw",
   ohrwurm: "ohrwurm",
+  hitbuzzer: "hitbuzzer",
   pixeljagd: "pixeljagd",
   closeenough: "closeenough",
   pantomime: "pantomime",
@@ -171,8 +172,8 @@ describe("playable-games — geteiltes Handy (Party-Play 7)", () => {
     expect(missing, "Neues Spiel ohne gueltiges sharedDevice").toEqual([]);
   });
 
-  it("alle 22 Party-Spiele fuehren Gaeste am geteilten Handy", () => {
-    expect(playableGames).toHaveLength(22);
+  it("alle 23 Party-Spiele fuehren Gaeste am geteilten Handy", () => {
+    expect(playableGames).toHaveLength(23);
     expect(playableGames.filter((g) => !g.sharedDeviceSupported || g.sharedDevice === "sitout").map((g) => g.id)).toEqual([]);
   });
 
@@ -518,7 +519,7 @@ describe("sharedDevice — festgelegte Einordnung je Spiel", () => {
     hochstapler: "secret", "wahrheit-pflicht": "turns", "wer-bin-ich": "secret", flaschendrehen: "turns",
     "emoji-raten": "turns", "fake-or-fact": "turns", schnellzeichner: "turns", "split-quiz": "secret",
     "geteilt-gequizzt": "secret", "story-builder": "turns", "wo-ist-was": "sequential", "drueck-das-wort": "turns",
-    ohrwurm: "turns", pixeljagd: "team", closeenough: "sequential", pantomime: "turns", brew: "turns",
+    ohrwurm: "turns", hitbuzzer: "team", pixeljagd: "team", closeenough: "sequential", pantomime: "turns", brew: "turns",
   };
   it("jedes Spiel hat den abgestimmten Modus", () => {
     expect(Object.fromEntries(playableGames.map((g) => [g.id, g.sharedDevice]))).toEqual(EXPECTED);

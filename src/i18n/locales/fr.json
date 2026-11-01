@@ -8077,6 +8077,7 @@
       "woIstWas": "Où est-ce ?",
       "drueckDasWort": "Appuie sur le Mot",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Presque !",
       "pantomime": "Sans un mot",
       "brew": "Breuvage"
@@ -8101,6 +8102,7 @@
       "woIstWas": "Trouve l'endroit",
       "drueckDasWort": "Tape vite, pense vite",
       "ohrwurm": "Écoute le titre, place l'année",
+      "hitbuzzer": "Reconnais la chanson et buzze en premier",
       "closeenough": "Des questions d'estimation dont la réponse est un nombre — le plus proche gagne",
       "pantomime": "Mime en silence, ton équipe devine — avec des défis pour doubler les points",
       "brew": "Récolter des ingrédients sans faire tomber le plateau — le premier à finir sa recette gagne"
@@ -8385,7 +8387,7 @@
       "skip": "Passer",
       "next": "Suivant",
       "getStarted": "Créer mon premier événement",
-      "slide5Title": "22 jeux. Une seule soirée à partager.",
+      "slide5Title": "23 jeux. Une seule soirée à partager.",
       "slide5Subtitle": "Composez votre sélection, cumulez des points d’un jeu à l’autre et transformez chaque téléphone en manette.",
       "slide6Title": "Votre télé devient un plateau de jeu",
       "slide6Subtitle": "Le parcours, les scores et les grands moments s’affichent en direct sur la télé pendant que vous jouez sur vos téléphones.",
@@ -8967,6 +8969,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Reconnais la chanson avant les autres.",
+      "step1": "L’hôte lance un extrait de 30 secondes.",
+      "step2": "Appuie sur ton buzzer dès que tu reconnais la chanson.",
+      "step3": "Annonce l’artiste et le titre. L’hôte valide.",
+      "step4": "Bonne réponse : 40 à 100 points. Erreur : moins 20 et tu attends le titre suivant.",
+      "step5": "Le meilleur score après 15 chansons gagne.",
+      "tip": "Chaque personne a son propre buzzer en mode manette."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "D'abord une tache de couleur, puis une image — mais qui attend marque moins de points.",

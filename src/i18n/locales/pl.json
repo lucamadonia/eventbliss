@@ -8151,6 +8151,7 @@
       "woIstWas": "Gdzie to jest?",
       "drueckDasWort": "Wciśnij Słowo",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Blisko!",
       "pantomime": "Bez Słów",
       "brew": "Mikstura"
@@ -8175,6 +8176,7 @@
       "woIstWas": "Znajdź miejsce",
       "drueckDasWort": "Pisz szybko, myśl szybko",
       "ohrwurm": "Posłuchaj utworu, wskaż rok",
+      "hitbuzzer": "Rozpoznaj utwór i naciśnij pierwszy",
       "closeenough": "Pytania szacunkowe z liczbą w odpowiedzi — wygrywa ten, kto jest najbliżej",
       "pantomime": "Pokazuj bez słów, drużyna zgaduje — z wyzwaniami za podwójne punkty",
       "brew": "Zbieraj składniki, nie tracąc tacy — wygrywa ten, kto pierwszy skompletuje przepis"
@@ -8459,7 +8461,7 @@
       "skip": "Pomiń",
       "next": "Dalej",
       "getStarted": "Utwórz moje pierwsze wydarzenie",
-      "slide5Title": "22 gry. Jedna wspólna imprezowa noc.",
+      "slide5Title": "23 gry. Jedna wspólna imprezowa noc.",
       "slide5Subtitle": "Ułóżcie listę gier, zbierajcie punkty we wszystkich rozgrywkach i zmieńcie każdy telefon w kontroler.",
       "slide6Title": "Wasz telewizor staje się sceną teleturnieju",
       "slide6Subtitle": "Trasa, wyniki i najważniejsze chwile pojawiają się na żywo na ekranie, gdy wszyscy grają na telefonach.",
@@ -9041,6 +9043,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Rozpoznaj utwór przed innymi.",
+      "step1": "Gospodarz włącza 30-sekundowy fragment.",
+      "step2": "Naciśnij własny przycisk, gdy rozpoznasz utwór.",
+      "step3": "Podaj wykonawcę i tytuł. Gospodarz ocenia odpowiedź.",
+      "step4": "Dobrze: 40–100 punktów. Źle: minus 20 i koniec prób w tym utworze.",
+      "step5": "Wygrywa najlepszy wynik po 15 utworach.",
+      "tip": "W trybie kontrolera każdy ma własny przycisk."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Najpierw plama kolorów, potem obraz — ale kto czeka, zgarnia mniej punktów.",

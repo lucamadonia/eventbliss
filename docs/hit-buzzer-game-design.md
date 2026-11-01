@@ -1,6 +1,6 @@
 # Hit-Buzzer – Spielkonzept und Umsetzungsplan
 
-Stand: 1. November 2026. Arbeitstitel **Hit-Buzzer**. Dieses Dokument beschreibt die beabsichtigte Spielregel und den konkreten Bauplan. Das Cover und der Einstieg im Admin-Bereich sind angelegt; der spielbare Ablauf ist noch nicht implementiert.
+Stand: 1. November 2026. Arbeitstitel **Hit-Buzzer**. Dieses Dokument beschreibt Spielregel, Umsetzung und Abnahme. Der Spielmodus ist im Entwurf implementiert; Browser- und echte Geräteabnahme sowie Produktionsfreigabe stehen noch aus.
 
 ![Hit-Buzzer-Cover](../public/images/games/hit-buzzer.webp)
 
@@ -48,24 +48,24 @@ Beispiel: Buzz nach 7,8 Sekunden ergibt +86 Punkte. Falsche Antwort kostet 20, s
 
 ### Teams
 
-- Teamfarben, Namen und Mitglieder werden aus der Party-Lobby übernommen. Außerhalb der Party-Lobby bietet das Setup Einzelspieler und Teams an.
+- Die Party-Lobby liefert Namen, Avatare und Farben der Mitglieder. Die Zuordnung zu Team A oder B erfolgt im Spiel-Setup; auch außerhalb der Party-Lobby bietet das Setup Einzelspieler und Teams an.
 - Punkte gehören dem Team, der Buzz wird zusätzlich mit dem tatsächlichen Mitglied protokolliert. Auf TV und Ergebnisanzeige stehen Teamname und – wenn vorhanden – der buzzende Spieler.
 - Gleichzeitige Buzzes aus demselben Team ergeben nur einen Teamversuch. Der zuerst angenommene Buzz wird angezeigt.
 
 ## 4. Ablauf einer Partie
 
-1. **Setup:** Spielmodus, Runden-/Punktziel, Strafpunkte, Antwortfrist, Genre/Marktfilter und Einzel-/Teamwertung wählen. Standardwerte erlauben einen Start mit einem Schritt. Die Anzahl tatsächlich verfügbarer Songs wird angezeigt.
+1. **Setup:** Spielmodus, Runden-/Punktziel, Strafpunkte, Antwortfrist, Genre und Einzel-/Teamwertung wählen. Standardwerte erlauben einen Start mit einem Schritt. Die verfügbare Songzahl wird beim Start geprüft und die Rundenzahl auf den Pool begrenzt.
 2. **Lobby:** Code/QR, Host und Gäste, Teams und kontrollierte Plätze werden gezeigt. Erst der Host startet. Fehlende oder getrennte Teilnehmer sind klar markiert; Start ist erst ab zwei aktiven Spielplätzen möglich.
-3. **Song vorbereiten:** Der Host zieht genau eine bislang in dieser Partie ungespielte Song-ID. Die Vorschau wird vor dem Countdown geladen. Der Host hört optional kurz in einer privaten Kontrolle, ohne den Song zu verbrauchen. Fehlt der Clip, gibt es „Erneut laden“ und „Song überspringen“; kein Punkteabzug, keine verbrauchte Runde.
-4. **Synchroner Start:** 3–2–1 auf Host, Handys und TV; danach startet die Host-Audioausgabe. Der Host sendet `roundId`, `startedAt` und Zustand. Buzzer öffnen erst nach bestätigt gestarteter Wiedergabe.
-5. **Buzz:** Das erste gültige Signal reserviert den Antwortversuch. Alle Geräte zeigen „[Name] ist dran“; Musik und Rundenuhr pausieren. Der Host hört die gesprochene Antwort und hat „Richtig“, „Falsch“, „Nochmal hören“ und „Nicht wertbar“.
-6. **Auflösung:** Richtig beendet den Song und zeigt Titel, Interpret, Punkte und neue Tabelle. Falsch zieht Punkte ab, sperrt den Spieler/das Team und öffnet nach kurzer gemeinsamer Freigabe die übrigen Buzzer. „Nicht wertbar“ gibt den Buzzer ohne Abzug frei, etwa bei Verbindungsfehler oder Fehlbedienung.
+3. **Song vorbereiten:** Der Host zieht genau eine bislang in dieser Partie ungespielte Song-ID. Die Vorschau wird vor dem Start geladen. Fehlt der Clip, kann der Host den Song ohne Punkteabzug und ohne Rundenverbrauch überspringen. Im Admin-Bereich kann er Songs unabhängig von einer Partie probehören.
+4. **Start:** Der Host startet die Host-Audioausgabe. Buzzer öffnen erst, wenn `audio.play()` erfolgreich war. Ein gemeinsamer 3–2–1-Countdown ist für eine spätere Version vorgemerkt, da ein zeitversetzter Audio-Start auf iOS sonst die Wiedergabe blockieren kann.
+5. **Buzz:** Das erste gültige Signal reserviert den Antwortversuch. Alle Geräte zeigen „[Name] ist dran“; Musik und Rundenuhr pausieren. Der Host hört die gesprochene Antwort und hat „Richtig“, „Falsch“, „Nicht wertbar“ sowie „Rückgängig“ nach einer Wertung.
+6. **Auflösung:** Richtig beendet den Song und zeigt Titel, Interpret, Punkte und neue Tabelle. Falsch zieht Punkte ab, sperrt den Spieler/das Team und öffnet die übrigen Buzzer wieder. „Nicht wertbar“ gibt den Buzzer ohne Abzug frei, etwa bei Verbindungsfehler oder Fehlbedienung.
 7. **Zeit abgelaufen:** Bei 30 Sekunden ohne Treffer endet der Song punktlos. Wenn ein gültiger Buzz unmittelbar vor Ablauf angenommen wurde, darf die begonnene Antwortfrist zu Ende laufen.
 8. **Nächster Song:** Host bestätigt; die neue Runde bekommt eine neue ID und einen anderen Song. Nach 15 Songs oder Erreichen des Punktziels folgt die Rangliste mit „Noch einmal“ und frischer Punktzahl.
 
 ## 5. Zustände und Datenvertrag
 
-`setup → lobby → loading → countdown → listening → answering → judging → listening/roundResult → gameResult`.
+`setup/Lobby → loading → listening ↔ paused → answering → listening/roundResult → gameResult`.
 
 | Feld | Bedeutung |
 | --- | --- |
@@ -74,7 +74,7 @@ Beispiel: Buzz nach 7,8 Sekunden ergibt +86 Punkte. Falsche Antwort kostet 20, s
 | `phase`, `phaseStartedAt`, `clipElapsedMs` | Synchronisierte Anzeige; Host bleibt Zeitautorität |
 | `claim` | Buzz-ID, Spieler-/Team-ID, angenommener Host-Zeitpunkt, Status |
 | `lockedIds` | In diesem Song ausgeschlossene Spieler/Teams |
-| `scores`, `history` | Wertung und idempotent protokollierte Entscheidungen |
+| `players[].score`, `revision` | Wertung und Versionsfolge; die letzte Wertung ist für Rückgängig vorgehalten |
 | `answerExpiresAt` | Frist nach Buzz; Countdown pausiert die Vorschau |
 
 Eingänge heißen etwa `buzz`, `host-judge`, `host-void`, `next-round`, `clip-ready`. Jeder Eingang trägt `matchId`, `roundId`, `actionId` und Absender. Der Host verarbeitet nur einen Eingang, der zur aktuellen Runde passt und dessen Absender den behaupteten Platz tatsächlich kontrolliert. Ein wiederholtes `actionId` ändert nichts. Gäste dürfen nie selbst Punkte, Songwahl, Host-Bewertung oder Reveal senden.
@@ -85,18 +85,18 @@ Eingänge heißen etwa `buzz`, `host-judge`, `host-void`, `next-round`, `clip-re
 
 ## 6. Audio und Songbestand
 
-- **Einzige Datenquelle:** `public.ohrwurm_songs` und der bestehende Ohrwurm-Codebestand. Hit-Buzzer bekommt **keine zweite Songtabelle und keinen Kopierjob**. Der vorbereitete Adapter `src/games/hitbuzzer/song-pool.ts` ruft denselben `loadExtraSongs(aktuelleSprache)`-Lader und `buildDeck()` auf. Die spätere Spielimplementierung muss diesen Adapter beim Start jeder neuen Partie verwenden. Neu angelegte Songs erscheinen dadurch bei der nächsten Partie automatisch; laufende Partien behalten ihren eingefrorenen Deck.
+- **Einzige Datenquelle:** `public.ohrwurm_songs` und der bestehende Ohrwurm-Codebestand. Hit-Buzzer bekommt **keine zweite Songtabelle und keinen Kopierjob**. Der Spielmodus ruft beim Start jeder neuen Partie den Adapter `src/games/hitbuzzer/song-pool.ts` auf; dieser verwendet denselben `loadExtraSongs(aktuelleSprache)`-Lader und `buildDeck()` wie Ohrwurm. Neu angelegte Songs erscheinen dadurch bei der nächsten Partie automatisch; laufende Partien behalten ihren eingefrorenen Deck.
 - Dieselben `languages`-Zuordnungen, Aktivierung und Genre-Filter gelten. `base_id` ersetzt den statischen Grundsong, statt ihn zu duplizieren. Stabile IDs verhindern Doppelziehungen und erlauben eindeutige Reports.
 - Vorschau: `Song.previewUrl` bevorzugen; andernfalls den vorhandenen `ohrwurm-preview`-Resolver mit Cache, Timeout und Retry verwenden. Nur eine Audioquelle auf dem Host. Kein zweites Streaming, kein Clip-Upload und keine Weitergabe des Vorschau-Links an Gast oder TV.
 - Nach dem Reveal kann wie bei Ohrwurm ein direkter Spotify-Link oder Suchlink angeboten werden. Das ändert die In-Game-Wiedergabe nicht.
 - Vor Spielstart muss der Songdeck nach aktiven, zum Markt passenden und **spielbaren Vorschauen** beurteilt werden. Ein später fehlgeschlagener Clip wird ohne Rundenverbrauch ersetzt.
-- **Bestehende Kante:** `setBaseSongs(null)` fällt auf den eingebauten Grundbestand zurück. Falls die Datenbank erreichbar ist, aber alle Grundsongs bewusst deaktiviert wurden, darf dieser Fallback sie nicht unbemerkt reaktivieren. Das ist vor Freigabe beider Spiele im gemeinsamen Lader zu korrigieren und mit einem Datenbanktest zu belegen.
+- **Deaktivierungs-Fallback:** Eine erfolgreiche Datenbankabfrage mit null aktiven Grundsongs wird als leere Liste übernommen; nur ein echter Abfragefehler nutzt den eingebauten Offline-Grundbestand. Dafür gibt es einen gezielten Songpool-Test.
 
 ## 7. Admin-Portal
 
-Im Bereich **Admin → Spiele** steht eine Hit-Buzzer-Karte mit Cover und Link zur gemeinsamen Songverwaltung. Dort wird derzeit derselbe `ohrwurm_songs`-Editor geöffnet. Jahr bleibt ein Metadatenfeld für Ohrwurm, obwohl Hit-Buzzer es nicht wertet. Interpret, Titel, Land/Flagge, Genre, Sprachfassungen, Aktivierung, Vorschau und Spotify-URI werden nur einmal gepflegt. Die Karte ist als **Spielkonzept** gekennzeichnet, bis der komplette Spielablauf freigegeben ist.
+Im Bereich **Admin → Spiele** steht eine Hit-Buzzer-Karte mit Cover, Spiel-Link und Link zur gemeinsamen Songverwaltung. Derselbe `ohrwurm_songs`-Editor pflegt beide Spiele. Jahr bleibt ein Metadatenfeld für Ohrwurm, obwohl Hit-Buzzer es nicht wertet. Interpret, Titel, Land/Flagge, Genre, Sprachfassungen, Aktivierung, Vorschau und Spotify-URI werden nur einmal gepflegt.
 
-Für den späteren Release braucht die Songverwaltung zusätzlich eine gut sichtbare Clip-Prüfung: `spielbar / Vorschau fehlt / Resolver prüfen`, gefiltert nach Sprache und Aktivierung. Ein „Probehören“-Knopf muss dieselbe Host-Wiedergabeart testen, ohne den Song einer Partie zu verbrauchen. Eine Fehlerquote und ein Bericht über übersprungene Songs helfen, stumme Runden gezielt zu beheben. Spielregeln wie Punkteziel und Strafpunkte gehören ins Match-Setup; Admin-Vorgaben dürfen nicht die eigene Songbibliothek duplizieren.
+Die Songverwaltung zeigt, ob ein direkter Clip-Link vorhanden ist oder der Resolver gebraucht wird; „Probehören“ testet die Wiedergabe, ohne eine Partie zu verbrauchen. Der Link ist im Editor pflegbar. Eine aggregierte Fehlerquote und ein Bericht über übersprungene Songs sind noch nicht implementiert. Spielregeln wie Punkteziel und Strafpunkte gehören ins Match-Setup; Admin-Vorgaben duplizieren die Songbibliothek nicht.
 
 ## 8. Corporate Design und Erlebnisqualität
 
@@ -154,15 +154,12 @@ Erzeugt mit dem integrierten Imagegen-Werkzeug; anschließend als 1024 × 1024 W
 
 > Revise the attached square EventBliss Hit-Buzzer cover. Keep the same premium editorial cartoon look, four excited friends, bold dark outlines and EventBliss violet, magenta, cyan and yellow palette. On the table there must be EXACTLY ONE physical game buzzer in the entire picture: one big bright magenta dome on a dark base, precisely in the middle of the table, unobstructed and visually dominant. REMOVE all other buzzer domes and button-shaped objects. The players all lean toward this one central buzzer; one hand is about to press it. Keep a small speaker and phone as distinct music cues, plus restrained snacks. No letters, words, logos, numbers, UI, or additional buzzers. Thumbnail-legible square game cover.
 
-## 9. Wiederverwendung und Implementierungsreihenfolge
+## 9. Umsetzung und noch offene Abnahme
 
-1. **Reine Regeln:** Neuer `src/games/hitbuzzer`-Reducer mit Phasen, Punktformel, Sperren, Teamzuordnung, Timeout, Undo und doppelten/verspäteten Aktionen. Testfälle zuerst an der Regelgrenze.
-2. **Gemeinsamer Songadapter:** Der direkte Ohrwurm-Adapter ist angelegt. Den Deaktivierungs-Fallback bereinigen; bei fehlendem Audio ohne Strafpunkte weiterziehen. Test: im Admin neuer Song → nächster Hit-Buzzer-Deck enthält dieselbe ID.
-3. **Lokale Partie:** Setup, Host-Audio, Pass-&-Play-Buzzer pro Platz, Host-Jury und Ergebnisansicht. Ohne Netzwerk vollständig spielbar machen.
-4. **Joystick/Party:** `OnlineGameProps`, `localSeats`, `mayActFor` und hostautoritatives Aktionsmuster von Pixeljagd verwenden; jedoch **keine** Pixeljagd-Regel „ein Buzzer pro Gerät“ übernehmen. Für jeden kontrollierten Platz einen eigenen Button und eine eigene Sperre zeigen.
-5. **TV:** Öffentliche Projektion über `useTVGameBridge`, eigene Hit-Buzzer-Ansicht und Zustandssynchronisierung. Hostgerät bleibt einzige Audioquelle.
-6. **Integration:** Erst nach funktionierendem Ablauf in `playable-games.ts`, `GamesHub`, Party-Auswahl, Premium-Konfiguration, zehn i18n-Sprachen, Regeln/Report und ggf. native Navigation aufnehmen. Bis dahin kein antippbares Spiel ohne Route.
-7. **Release:** Lokale Tests, Browser mit Host/Gast/TV, echte zwei Handys plus Host, iOS-Audio/Hintergrund, Android-Audio, Reconnect und App-Store-/Play-Builds getrennt nachweisen.
+1. **Regeln und Songs implementiert:** Hostautoritatives Zustandsmodell mit Erst-Buzz, Tempo-Punkten, Team-Sperre, Antwortfrist, Pause, Rückgängig und Rundenende; gemeinsame Ohrwurm-Datenquelle samt Deaktivierungs-Fallback. Gezielt getestet.
+2. **Spieloberflächen implementiert:** Lokales Setup, Host-Audio, getrennte Buzzer pro Platz auf dem Host-Handy, Jury, Ergebnis, Joystick-Buzzer pro kontrolliertem Platz, signierte Raumaktionen und TV-Ansicht ohne Songspoiler.
+3. **Integration implementiert:** Spielkatalog, Route, Admin-Einstieg, gemeinsame Songpflege mit Probehören, zehn Sprachen und Spielregeln. Die bestehende Produkt-Tour und die Spielzahl wurden auf 23 angepasst.
+4. **Noch abzunehmen:** Browser mit Host/Gast/TV, echte zwei Handys plus Host, iOS-Audio/Hintergrund, Android-Audio, Reconnect unter Paketverlust und App-Store-/Play-Builds. Ein synchroner Countdown und aggregierte Clip-Fehlerberichte sind spätere Erweiterungen.
 
 ## 10. Abnahmefälle
 
@@ -179,4 +176,4 @@ Erzeugt mit dem integrierten Imagegen-Werkzeug; anschließend als 1024 × 1024 W
 
 ## Status dieser Ausarbeitung
 
-**Angelegt:** Regelkonzept, Coverdatei, direkter Adapter auf den Ohrwurm-Songpool und Hit-Buzzer-Einstieg im Admin-Bereich mit gemeinsamer Songverwaltung. **Noch umzusetzen:** spielbarer Reducer und Screens, Live-Buzzer für eigene Handys und Host-Plätze, Host-Audio/Jury, TV-Projektion, gemeinsame Songadapter-Tests und echte Geräteabnahme. Der Admin-Einstieg ist bewusst als Konzept markiert, damit die App keinen fertigen Spielmodus verspricht.
+**Im Draft umgesetzt:** Regeln, Cover, gemeinsame Songquelle, Spielansichten für Host/Joystick/TV, Admin-Einstieg, Probehören und Übersetzungen. **Freigabe offen:** vollständige CI- und Browserprüfung der aktuellen Fassung sowie reale iOS-/Android-Geräteabnahme. Erst danach als live beziehungsweise Store-fertig bezeichnen.

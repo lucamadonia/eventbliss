@@ -8077,6 +8077,7 @@
       "woIstWas": "¿Dónde está?",
       "drueckDasWort": "Pulsa la Palabra",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Casi Casi",
       "pantomime": "Sin Palabras",
       "brew": "Brebaje"
@@ -8101,6 +8102,7 @@
       "woIstWas": "Encuentra el lugar",
       "drueckDasWort": "Teclea rápido, piensa rápido",
       "ohrwurm": "Escucha la canción, sitúa el año",
+      "hitbuzzer": "Reconoce la canción y pulsa primero",
       "closeenough": "Preguntas de estimación con un número por respuesta: gana quien más se acerque",
       "pantomime": "Represéntalo en silencio, tu equipo adivina — con retos para puntos dobles",
       "brew": "Reúne ingredientes sin volcar la bandeja: gana quien complete su receta primero"
@@ -8385,7 +8387,7 @@
       "skip": "Saltar",
       "next": "Siguiente",
       "getStarted": "Crear mi primer evento",
-      "slide5Title": "22 juegos. Una noche de fiesta compartida.",
+      "slide5Title": "23 juegos. Una noche de fiesta compartida.",
       "slide5Subtitle": "Cread vuestra lista, sumad puntos entre juegos y convertid cada móvil en un mando.",
       "slide6Title": "Tu tele se convierte en un escenario de concurso",
       "slide6Subtitle": "La ruta, las puntuaciones y los grandes momentos aparecen en directo en la tele mientras jugáis con el móvil.",
@@ -9000,6 +9002,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Reconoce la canción antes que los demás.",
+      "step1": "El anfitrión inicia un fragmento de 30 segundos.",
+      "step2": "Pulsa tu propio botón en cuanto reconozcas la canción.",
+      "step3": "Di el artista y el título. El anfitrión decide.",
+      "step4": "Acierto: 40–100 puntos. Error: menos 20 y quedas fuera de esta canción.",
+      "step5": "Gana la mayor puntuación tras 15 canciones.",
+      "tip": "Cada persona tiene su propio botón en modo mando."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Primero una mancha de color, luego una imagen: pero quien espera se lleva menos puntos.",

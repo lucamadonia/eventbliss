@@ -1452,7 +1452,7 @@ export function getAllSongs(): Song[] {
  * im Stapel.
  */
 export function setBaseSongs(songs: Song[] | null): void {
-  _dbBase = songs && songs.length > 0 ? songs : null;
+  _dbBase = songs;
 }
 
 /** Nur für Diagnose/Admin: wie viele Songs stecken im Code-Bestand? */

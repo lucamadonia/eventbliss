@@ -47,6 +47,7 @@ const TVTabooView = lazy(() => import('./games/TVTabooView'));
 const TVCategoryView = lazy(() => import('./games/TVCategoryView'));
 const TVImpostorView = lazy(() => import('./games/TVImpostorView'));
 const TVOhrwurmView = lazy(() => import('./games/TVOhrwurmView'));
+const TVHitBuzzerView = lazy(() => import('./games/TVHitBuzzerView'));
 const TVPixeljagdView = lazy(() => import('./games/TVPixeljagdView'));
 const TVCloseEnoughView = lazy(() => import('./games/TVCloseEnoughView'));
 const TVPantomimeView = lazy(() => import('./games/TVPantomimeView'));
@@ -90,6 +91,7 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
       {game === 'category' && <TVCategoryView {...props} />}
       {game === 'impostor' && <TVImpostorView {...props} />}
       {game === 'ohrwurm' && <TVOhrwurmView {...props} />}
+      {game === 'hitbuzzer' && <TVHitBuzzerView {...props} />}
       {game === 'pixeljagd' && <TVPixeljagdView {...props} />}
       {game === 'closeenough' && <TVCloseEnoughView {...props} />}
       {game === 'pantomime' && <TVPantomimeView {...props} />}
@@ -100,7 +102,7 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
       {game === 'wordpress' && <TVWordPressView {...props} />}
       {game === 'findit' && <TVFindItView {...props} />}
       {/* Smart fallback for games without specific TV view */}
-      {!['bomb', 'headup', 'quickdraw', 'draw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'bottlespin', 'this-or-that', 'thisorthat', 'story-builder', 'storybuilder', 'taboo', 'category', 'impostor', 'ohrwurm', 'pixeljagd', 'closeenough', 'pantomime', 'brew', 'emojiguess', 'truthdare', 'whoami', 'wordpress', 'findit'].includes(game) && (
+      {!['bomb', 'headup', 'quickdraw', 'draw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'bottlespin', 'this-or-that', 'thisorthat', 'story-builder', 'storybuilder', 'taboo', 'category', 'impostor', 'ohrwurm', 'hitbuzzer', 'pixeljagd', 'closeenough', 'pantomime', 'brew', 'emojiguess', 'truthdare', 'whoami', 'wordpress', 'findit'].includes(game) && (
         <TVSmartFallback gameState={gameState} />
       )}
     </Suspense>

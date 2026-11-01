@@ -19,7 +19,7 @@
  * ohnehin funktioniert.
  *
  * HANDWERK: zweite Person, Alltagssprache, kurze Saetze neben langen. Keine
- * Zahl, die nicht nachgezaehlt ist (22 Spiele ja, Nutzerzahlen nein). Kein
+ * Zahl, die nicht nachgezaehlt ist (23 Spiele ja, Nutzerzahlen nein). Kein
  * "innovativ", "einzigartig", "Mehrwert". Jeder Abschnitt endet konkret.
  */
 
@@ -143,7 +143,7 @@ const de: CreatorCopy = {
     },
     {
       title: "Der Abend selbst",
-      body: "22 Party-Spiele, alle spielen am eigenen Handy mit, das Spiel läuft auf dem Fernseher. Echte Reaktionen, kein Schnittgewitter nötig.",
+      body: "23 Party-Spiele, alle spielen am eigenen Handy mit, das Spiel läuft auf dem Fernseher. Echte Reaktionen, kein Schnittgewitter nötig.",
     },
   ],
   themeClose:
@@ -244,7 +244,7 @@ const en: CreatorCopy = {
     },
     {
       title: "The evening itself",
-      body: "22 party games, everyone plays from their own phone, the game runs on the TV. Real reactions, no fast cuts required.",
+      body: "23 party games, everyone plays from their own phone, the game runs on the TV. Real reactions, no fast cuts required.",
     },
   ],
   themeClose:

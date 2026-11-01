@@ -8053,6 +8053,7 @@
       "woIstWas": "Wo ist was?",
       "drueckDasWort": "Drück das Wort",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Nah Dran",
       "pantomime": "Ohne Worte",
       "brew": "Gebräu"
@@ -8077,6 +8078,7 @@
       "woIstWas": "Finde den Ort",
       "drueckDasWort": "Schnell tippen, schnell denken",
       "ohrwurm": "Song hören, Jahr einordnen",
+      "hitbuzzer": "Song erkennen und als Erste buzzern",
       "closeenough": "Schätzfragen mit einer Zahl als Antwort — wer am nächsten dran liegt, gewinnt",
       "pantomime": "Stumm vormachen, das Team rät — mit Herausforderungen für doppelte Punkte",
       "brew": "Zutaten sammeln, ohne dass das Tablett kippt — wer sein Rezept zuerst vollhat, gewinnt"
@@ -8358,7 +8360,7 @@
       "slide3Subtitle": "Entdecke Locations, Catering und Erlebnisse in deiner Nähe und behalte jede Anfrage an einem Ort.",
       "slide4Title": "Jeder Betrag. Jeder Anteil. Geklärt.",
       "slide4Subtitle": "EventBliss verteilt Kosten nachvollziehbar, zeigt offene Beträge und erspart dir das Hinterherlaufen.",
-      "slide5Title": "22 Spiele. Eine gemeinsame Partynacht.",
+      "slide5Title": "23 Spiele. Eine gemeinsame Partynacht.",
       "slide5Subtitle": "Stellt eure Set-Liste zusammen, sammelt spielübergreifend Punkte und macht jedes Handy zum Controller.",
       "slide6Title": "Euer Fernseher wird zur Gameshow-Bühne",
       "slide6Subtitle": "Route, Spielstände und große Momente erscheinen live auf dem TV — während ihr mit den Handys spielt.",
@@ -8943,6 +8945,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Erkenne den Song schneller als die anderen.",
+      "step1": "Der Host startet einen 30-Sekunden-Ausschnitt.",
+      "step2": "Drücke deinen eigenen Buzzer, sobald du den Song erkennst.",
+      "step3": "Nenne Interpret und Titel. Der Host bewertet die Antwort.",
+      "step4": "Richtig bringt 40–100 Punkte. Falsch kostet 20 und sperrt dich für diesen Song.",
+      "step5": "Nach 15 Songs gewinnt die höchste Punktzahl.",
+      "tip": "Im Joystick-Modus hat jede Person einen eigenen Buzzer."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Erst ein Farbklecks, dann ein Bild — aber wer wartet, bekommt weniger Punkte.",

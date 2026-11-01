@@ -8127,6 +8127,7 @@
       "woIstWas": "Nerede?",
       "drueckDasWort": "Kelimeye Bas",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Yaklaştın",
       "pantomime": "Tek Kelime Yok",
       "brew": "Karışım"
@@ -8151,6 +8152,7 @@
       "woIstWas": "Yeri bul",
       "drueckDasWort": "Hızlı yaz, hızlı düşün",
       "ohrwurm": "Şarkıyı dinle, yılını tahmin et",
+      "hitbuzzer": "Şarkıyı tanı ve ilk sen bas",
       "closeenough": "Cevabı sayı olan tahmin soruları — en yakın tahmin kazanır",
       "pantomime": "Sessizce canlandır, takımın bilsin — çift puan için meydan okumalarla",
       "brew": "Tepsiyi devirmeden malzeme topla — tarifini ilk tamamlayan kazanır"
@@ -8435,7 +8437,7 @@
       "skip": "Atla",
       "next": "İleri",
       "getStarted": "İlk etkinliğimi oluştur",
-      "slide5Title": "22 oyun. Birlikte yaşanan tek parti gecesi.",
+      "slide5Title": "23 oyun. Birlikte yaşanan tek parti gecesi.",
       "slide5Subtitle": "Oyun listenizi oluşturun, oyunlar boyunca puan toplayın ve her telefonu bir kumandaya dönüştürün.",
       "slide6Title": "Televizyonunuz bir yarışma sahnesine dönüşür",
       "slide6Subtitle": "Rota, skorlar ve büyük anlar siz telefonlarınızdan oynarken TV’de canlı görünür.",
@@ -9017,6 +9019,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Şarkıyı herkesten önce tanı.",
+      "step1": "Sunucu 30 saniyelik parçayı başlatır.",
+      "step2": "Şarkıyı tanıyınca kendi butonuna bas.",
+      "step3": "Sanatçıyı ve şarkı adını söyle. Sunucu karar verir.",
+      "step4": "Doğru: 40–100 puan. Yanlış: eksi 20 ve bu şarkıda tekrar basamazsın.",
+      "step5": "15 şarkıdan sonra en yüksek puan kazanır.",
+      "tip": "Kontrolcü modunda herkesin kendi butonu vardır."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Önce bir renk lekesi, sonra bir resim — ama bekleyen daha az puan alır.",

@@ -23,6 +23,7 @@ const themes: Record<string, GameTheme> = {
   'story-builder': { background: '#181e1d', surface: '#26332f', accent: '#e8d6b5', secondary: '#a7cbbf' },
   flaschendrehen: { background: '#131c19', surface: '#24372e', accent: '#b5d7a8', secondary: '#e0c198' },
   ohrwurm: { background: '#171022', surface: '#281d35', accent: '#f2a3d2', secondary: '#a7dedd' },
+  hitbuzzer: { background: '#060810', surface: '#0d0915', accent: '#df8eff', secondary: '#8ff5ff' },
   closeenough: { background: '#101322', surface: '#22283e', accent: '#c5b6f1', secondary: '#a2dee7' },
   pixeljagd: { background: '#101b23', surface: '#1c3040', accent: '#8ed5f2', secondary: '#f3d889' },
   pantomime: { background: '#1e151c', surface: '#332431', accent: '#edb1cf', secondary: '#e3cd9e' },

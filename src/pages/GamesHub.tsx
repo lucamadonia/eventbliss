@@ -47,6 +47,7 @@ const FakeOrFactGame = lazy(() => import("@/games/fakeorfact/FakeOrFactGame"));
 const StoryBuilderGame = lazy(() => import("@/games/storybuilder/StoryBuilderGame"));
 const BottleSpinGame = lazy(() => import("@/games/bottlespin/BottleSpinGame"));
 const OhrwurmGame = lazy(() => import("@/games/ohrwurm/OhrwurmGame"));
+const HitBuzzerGame = lazy(() => import("@/games/hitbuzzer/HitBuzzerGame"));
 const PixeljagdGame = lazy(() => import("@/games/pixeljagd/PixeljagdGame"));
 const CloseEnoughGame = lazy(() => import("@/games/closeenough/CloseEnoughGame"));
 const PantomimeGame = lazy(() => import("@/games/pantomime/PantomimeGame"));
@@ -102,6 +103,7 @@ const GAME_PRESENTATION: GamePresentation[] = [
   { id: "story-builder", icon: BookOpen, gradient: "from-teal-400 to-emerald-500", duration: "10-25", badge: "Neu", rating: 4.4, image: "/images/games/story-builder.webp" },
   { id: "flaschendrehen", icon: Wine, gradient: "from-[#cf96ff] to-pink-500", duration: "10-30", badge: "Hot", rating: 4.9, image: "/images/games/flaschendrehen.webp" },
   { id: "ohrwurm", icon: Music2, gradient: "from-[#FF2E88] to-[#26E0C4]", duration: "20-40", badge: "Neu", rating: 4.8, image: "/images/games/ohrwurm.webp" },
+  { id: "hitbuzzer", icon: Bell, gradient: "from-[#FF2E88] to-[#df8eff]", duration: "10-25", badge: "Neu", rating: 4.8, image: "/images/games/hit-buzzer.webp" },
   { id: "pixeljagd", icon: Eye, gradient: "from-[#38BDF8] to-[#A78BFA]", duration: "10-20", badge: "Neu", rating: 4.7, image: "/images/games/pixeljagd.webp" },
   { id: "closeenough", icon: Target, gradient: "from-[#FBBF24] to-[#34D399]", duration: "10-25", badge: "Neu", rating: 4.8, image: "/images/games/closeenough.webp" },
   { id: "pantomime", icon: Drama, gradient: "from-[#FBBF24] to-[#F472B6]", duration: "15-30", badge: "Neu", rating: 4.9, image: "/images/games/pantomime.webp" },
@@ -543,6 +545,7 @@ const GamesHubInner = () => {
       if (gameId === "story-builder") return <StoryBuilderGame online={onlineProps} />;
       if (gameId === "flaschendrehen") return <BottleSpinGame online={onlineProps} />;
       if (gameId === "ohrwurm") return <OhrwurmGame online={onlineProps} />;
+      if (gameId === "hitbuzzer") return <HitBuzzerGame online={onlineProps} />;
       if (gameId === "pixeljagd") return <PixeljagdGame online={onlineProps} />;
       if (gameId === "closeenough") return <CloseEnoughGame online={onlineProps} />;
       if (gameId === "pantomime") return <PantomimeGame online={onlineProps} />;
@@ -633,6 +636,7 @@ const GamesHubInner = () => {
   if (gameId === "story-builder") return <>{rulesOverlay}<Suspense fallback={GameFallback}><StoryBuilderGame /></Suspense></>;
   if (gameId === "flaschendrehen") return <>{rulesOverlay}<Suspense fallback={GameFallback}><BottleSpinGame /></Suspense></>;
   if (gameId === "ohrwurm") return <>{rulesOverlay}<Suspense fallback={GameFallback}><OhrwurmGame /></Suspense></>;
+  if (gameId === "hitbuzzer") return <>{rulesOverlay}<Suspense fallback={GameFallback}><HitBuzzerGame /></Suspense></>;
   if (gameId === "pixeljagd") return <>{rulesOverlay}<Suspense fallback={GameFallback}><PixeljagdGame /></Suspense></>;
   if (gameId === "closeenough") return <>{rulesOverlay}<Suspense fallback={GameFallback}><CloseEnoughGame /></Suspense></>;
   if (gameId === "pantomime") return <>{rulesOverlay}<Suspense fallback={GameFallback}><PantomimeGame /></Suspense></>;

@@ -8077,6 +8077,7 @@
       "woIstWas": "Dov'è?",
       "drueckDasWort": "Premi la Parola",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Quasi Quasi",
       "pantomime": "Senza parole",
       "brew": "Intruglio"
@@ -8101,6 +8102,7 @@
       "woIstWas": "Trova il posto",
       "drueckDasWort": "Digita veloce, pensa veloce",
       "ohrwurm": "Ascolta il brano, indovina l'anno",
+      "hitbuzzer": "Riconosci il brano e premi per primo",
       "closeenough": "Domande di stima con un numero per risposta: vince chi si avvicina di più",
       "pantomime": "Mima in silenzio, la squadra indovina — con sfide per punti doppi",
       "brew": "Raccogli ingredienti senza rovesciare il vassoio: vince chi completa la ricetta per primo"
@@ -8385,7 +8387,7 @@
       "skip": "Salta",
       "next": "Avanti",
       "getStarted": "Crea il mio primo evento",
-      "slide5Title": "22 giochi. Un’unica serata insieme.",
+      "slide5Title": "23 giochi. Un’unica serata insieme.",
       "slide5Subtitle": "Create la vostra scaletta, accumulate punti tra un gioco e l’altro e trasformate ogni telefono in un controller.",
       "slide6Title": "La TV diventa il palco di un game show",
       "slide6Subtitle": "Percorso, punteggi e momenti più belli appaiono in diretta sulla TV mentre tutti giocano dal telefono.",
@@ -8967,6 +8969,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Riconosci la canzone prima degli altri.",
+      "step1": "L’host avvia un estratto di 30 secondi.",
+      "step2": "Premi il tuo pulsante appena riconosci la canzone.",
+      "step3": "Di’ artista e titolo. L’host valuta la risposta.",
+      "step4": "Giusto: 40–100 punti. Sbagliato: meno 20 e salti questo brano.",
+      "step5": "Vince il punteggio più alto dopo 15 brani.",
+      "tip": "Ognuno ha il proprio pulsante in modalità controller."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Prima una macchia di colore, poi un'immagine — ma chi aspetta prende meno punti.",

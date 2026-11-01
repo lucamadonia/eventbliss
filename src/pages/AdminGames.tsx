@@ -402,17 +402,23 @@ export default function AdminGames() {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 id="hit-buzzer-admin-title" className="font-game text-lg font-black text-white">Hit-Buzzer</h2>
-            <span className="rounded-full border border-[#df8eff]/30 bg-[#df8eff]/10 px-2.5 py-1 text-xs font-bold text-[#df8eff]">Spielkonzept</span>
+            <span className="rounded-full border border-[#df8eff]/30 bg-[#df8eff]/10 px-2.5 py-1 text-xs font-bold text-[#df8eff]">Neuer Spielmodus</span>
           </div>
           <p className="mt-1 text-sm leading-relaxed text-[#b3a8c9]">
-            Musik schnell erkennen und buzzern. Hit-Buzzer ist auf die Ohrwurm-Songbibliothek ausgelegt:
+            Musik schnell erkennen und buzzern. Hit-Buzzer verwendet direkt die Ohrwurm-Songbibliothek:
             neue Songs, Sprachzuordnung und Aktivierung werden nur einmal gepflegt.
           </p>
         </div>
-        <button type="button" onClick={() => navigate('/admin/ohrwurm-songs')}
-          className="min-h-12 shrink-0 rounded-2xl bg-[#df8eff] px-4 text-sm font-bold text-[#16101f] transition-colors hover:bg-[#e8adff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8ff5ff]">
-          Gemeinsame Songs verwalten
-        </button>
+        <div className="flex shrink-0 flex-col gap-2">
+          <button type="button" onClick={() => navigate('/games/hitbuzzer')}
+            className="min-h-12 rounded-2xl bg-[#df8eff] px-4 text-sm font-bold text-[#16101f] transition-colors hover:bg-[#e8adff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8ff5ff]">
+            Hit-Buzzer öffnen
+          </button>
+          <button type="button" onClick={() => navigate('/admin/ohrwurm-songs')}
+            className="min-h-12 rounded-2xl border border-[#df8eff]/30 px-4 text-sm font-bold text-[#df8eff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8ff5ff]">
+            Gemeinsame Songs verwalten
+          </button>
+        </div>
       </section>
 
       <div className="flex">
