@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, judgeBuzz, pauseListening, pointsAt, removePlayer, resumeListening, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
+import { acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, judgeBuzz, pauseListening, pointsAt, removePlayer, replaceBrokenClip, resumeListening, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
 
 const roster = [
   { id: 'a', name: 'Alex', color: '#df8eff', avatar: 'A', teamId: 'a' },
@@ -61,5 +61,15 @@ describe('Hit-Buzzer host rules', () => {
     expect(restored.players[0]).toMatchObject({ score: 0, locked: false });
     expect(restored.claim?.expiresAt).toBe(28_000);
     expect(undoJudgement(advanceRound(judgeBuzz(restored, true, 'Artist', 'Song'), 'round-2'), before, 25_000)).toMatchObject({ round: 2 });
+  });
+
+  it('replaces a broken clip without spending the round or retaining its penalties', () => {
+    const started = ready();
+    const wrong = judgeBuzz(acceptBuzz(started, 'a', 'round-1', 0), false, 'A', 'B');
+    const replaced = replaceBrokenClip(wrong, started, 'round-1-retry');
+    expect(replaced).toMatchObject({ phase: 'loading', round: 1, roundId: 'round-1-retry', elapsedMs: 0 });
+    expect(replaced.players[0]).toMatchObject({ score: 0, locked: false });
+    expect(acceptBuzz(replaced, 'b', 'round-1', 1)).toBe(replaced);
+    expect(replaceBrokenClip(removePlayer(wrong, 'b'), started, 'retry').players.map(p => p.id)).toEqual(['a']);
   });
 });

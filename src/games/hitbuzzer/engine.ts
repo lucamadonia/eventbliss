@@ -122,6 +122,18 @@ export function undoJudgement(current: HitState, before: HitState, now: number):
     claim: { ...before.claim, expiresAt: now + before.config.answerSeconds * 1000 } };
 }
 
+/** Discard a broken clip without consuming its round or retaining wrong-answer penalties. */
+export function replaceBrokenClip(current: HitState, roundStart: HitState, roundId: string): HitState {
+  if (current.matchId !== roundStart.matchId || current.roundId !== roundStart.roundId
+    || roundStart.phase !== 'listening' || !['listening', 'answering', 'paused'].includes(current.phase)) return current;
+  return { ...current, phase: 'loading', roundId, revision: current.revision + 1,
+    elapsedMs: 0, claim: null, reveal: null,
+    players: current.players.map(p => ({ ...p,
+      score: roundStart.players.find(startPlayer => startPlayer.id === p.id)?.score ?? p.score,
+      locked: false,
+    })) };
+}
+
 export function removePlayer(state: HitState, id: string): HitState {
   if (!state.players.some(p => p.id === id)) return state;
   const players = state.players.filter(p => p.id !== id);

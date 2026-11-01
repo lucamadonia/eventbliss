@@ -16,7 +16,7 @@ import type { Song } from '../ohrwurm/ohrwurm-engine';
 import { loadHitBuzzerDeck } from './song-pool';
 import {
   acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, judgeBuzz, pauseListening, removePlayer,
-  resumeListening, revealRound, startListening, undoJudgement, updateElapsed, voidBuzz,
+  replaceBrokenClip, resumeListening, revealRound, startListening, undoJudgement, updateElapsed, voidBuzz,
   type HitConfig, type HitPlayer, type HitState,
 } from './engine';
 import { hitText } from './strings';
@@ -39,6 +39,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const stateRef = useRef<HitState | null>(null);
   const deckRef = useRef<Song[]>([]);
   const songRef = useRef<Song | null>(null);
+  const roundStartRef = useRef<HitState | null>(null);
   const [song, setSong] = useState<Song | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const drawIdRef = useRef(0);
@@ -108,7 +109,11 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
       audioRef.current.currentTime = 0;
       await audioRef.current.play();
       const current = stateRef.current;
-      if (current?.phase === 'loading') commit(startListening(current));
+      if (current?.phase === 'loading') {
+        const next = startListening(current);
+        roundStartRef.current = next;
+        commit(next);
+      }
     } catch { setError(text.audioFailed); }
   }, [isHost, previewUrl, commit, text.audioFailed]);
 
@@ -136,6 +141,24 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     audioRef.current?.pause();
     commit(revealRound(current, card.artist, card.title));
   }, [isHost, commit]);
+
+  const handleAudioError = useCallback(() => {
+    const current = stateRef.current;
+    if (!isHost || !current || current.phase === 'loading') { setError(text.audioFailed); return; }
+    const roundStart = roundStartRef.current;
+    if (!roundStart) { setError(text.audioFailed); return; }
+    const replacement = replaceBrokenClip(current, roundStart, id());
+    if (replacement === current) { setError(text.audioFailed); return; }
+    audioRef.current?.pause();
+    lastDecisionRef.current = null;
+    if (deckRef.current.length === 0) {
+      commit({ ...replacement, phase: 'finished', revision: replacement.revision + 1 });
+      setError(text.noSongs);
+    } else {
+      commit(replacement);
+      prepareSong(deckRef.current);
+    }
+  }, [isHost, text.audioFailed, text.noSongs, commit, prepareSong]);
 
   const buzz = useCallback((playerId: string, roundId: string) => {
     const current = stateRef.current;
@@ -264,8 +287,11 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     if (!online?.isHost || !state || !online.removedPlayerIds?.length) return;
     let next = stateRef.current;
     for (const playerId of online.removedPlayerIds) if (next) next = removePlayer(next, playerId);
-    if (next && next !== stateRef.current) commit(next);
-  }, [online, state, commit]);
+    if (next && next !== stateRef.current) {
+      if (stateRef.current?.phase === 'answering' && next.phase === 'listening') void resumeAfter(next);
+      else commit(next);
+    }
+  }, [online, state, commit, resumeAfter]);
 
   useEffect(() => {
     if (isHost && online?.isConnected === false && stateRef.current?.phase === 'listening') pauseAudio();
@@ -326,7 +352,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
 
   return (
     <GameStage gameId="hitbuzzer" className="min-h-[100dvh] bg-[#060810] text-white">
-      {isHost && <audio ref={audioRef} src={previewUrl ?? undefined} preload="auto" onEnded={endSong} onError={() => { if (stateRef.current?.phase === 'listening') endSong(); else setError(text.audioFailed); }} />}
+      {isHost && <audio ref={audioRef} src={previewUrl ?? undefined} preload="auto" onEnded={endSong} onError={handleAudioError} />}
       <main className="mx-auto flex min-h-[100dvh] max-w-3xl flex-col gap-5 px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:px-6">
         <button type="button" onClick={() => navigate('/games')} className="flex min-h-11 w-fit items-center gap-2 rounded-full px-3 text-sm text-[#b3a8c9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><ArrowLeft className="h-4 w-4" />{text.back}</button>
         <StageHeader title={text.name} eyebrow={text.eyebrow} subtitle={state ? `${text.round} ${state.round} / ${state.config.rounds}` : text.tagline} progress={state ? { value: state.round, total: state.config.rounds } : undefined} />
