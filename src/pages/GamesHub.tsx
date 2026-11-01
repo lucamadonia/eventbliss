@@ -163,6 +163,7 @@ const GAME_CATEGORIES: Record<string, string[]> = {
   "story-builder": ["kreativ", "wort"],
   "flaschendrehen": ["party", "social"],
   "ohrwurm": ["party", "quiz"],
+  "hitbuzzer": ["party", "quiz", "reaktion"],
   "pixeljagd": ["quiz", "reaktion"],
   "closeenough": ["quiz", "party"],
   "pantomime": ["party", "kreativ"],

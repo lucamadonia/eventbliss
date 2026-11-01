@@ -9025,8 +9025,8 @@
       "step1": "Sunucu 30 saniyelik parçayı başlatır.",
       "step2": "Şarkıyı tanıyınca kendi butonuna bas.",
       "step3": "Sanatçıyı ve şarkı adını söyle. Sunucu karar verir.",
-      "step4": "Doğru: 40–100 puan. Yanlış: eksi 20 ve bu şarkıda tekrar basamazsın.",
-      "step5": "15 şarkıdan sonra en yüksek puan kazanır.",
+      "step4": "Doğru cevap hıza göre puan kazandırır. Yanlış cevap seçilen cezayı uygular ve takımını bu şarkıda kilitler.",
+      "step5": "Seçilen turlardan sonra veya hedef puana ulaşınca en yüksek puan kazanır.",
       "tip": "Kontrolcü modunda herkesin kendi butonu vardır."
     },
     "pixeljagd": {

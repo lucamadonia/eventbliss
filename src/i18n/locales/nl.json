@@ -9025,8 +9025,8 @@
       "step1": "De host start een fragment van 30 seconden.",
       "step2": "Druk op je eigen buzzer zodra je het nummer kent.",
       "step3": "Noem artiest en titel. De host beoordeelt je antwoord.",
-      "step4": "Goed: 40–100 punten. Fout: 20 punten eraf en dit nummer niet meer meedoen.",
-      "step5": "De hoogste score na 15 nummers wint.",
+      "step4": "Goed geeft punten op basis van snelheid. Fout kost de ingestelde strafpunten en blokkeert je team voor dit nummer.",
+      "step5": "De hoogste score wint na de gekozen rondes of zodra het doel is bereikt.",
       "tip": "Iedereen heeft een eigen buzzer in controllerstand."
     },
     "pixeljagd": {

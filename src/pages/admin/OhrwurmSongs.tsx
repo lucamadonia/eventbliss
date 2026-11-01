@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Search, Trash2, Edit3, Music2, Sparkles, Check, X, Power, Play, Square } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
@@ -64,6 +64,7 @@ const db = () => (supabase as SupabaseClient<SongsDatabase>).from('ohrwurm_songs
 
 export default function OhrwurmSongs() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [rows, setRows] = useState<SongRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -127,6 +128,16 @@ export default function OhrwurmSongs() {
 
   useEffect(() => { void load(); }, [load]);
 
+  useEffect(() => {
+    const songId = new URLSearchParams(location.search).get('song');
+    if (!songId) return;
+    setFilterLang('');
+    setFilterCountry('');
+    setFilterState('all');
+    setFilterOrigin('all');
+    setSearch(songId.replace(/^db-/, ''));
+  }, [location.search]);
+
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
     return rows.filter((r) => {
@@ -141,7 +152,8 @@ export default function OhrwurmSongs() {
       if (filterOrigin === 'base' && !r.base_id) return false;
       if (filterOrigin === 'custom' && r.base_id) return false;
       if (!s) return true;
-      return r.artist.toLowerCase().includes(s) || r.title.toLowerCase().includes(s);
+      return r.artist.toLowerCase().includes(s) || r.title.toLowerCase().includes(s)
+        || r.id.toLowerCase() === s || r.base_id?.toLowerCase() === s;
     });
   }, [rows, search, filterLang, filterCountry, filterState, filterOrigin]);
 

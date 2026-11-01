@@ -8975,8 +8975,8 @@
       "step1": "L’host avvia un estratto di 30 secondi.",
       "step2": "Premi il tuo pulsante appena riconosci la canzone.",
       "step3": "Di’ artista e titolo. L’host valuta la risposta.",
-      "step4": "Giusto: 40–100 punti. Sbagliato: meno 20 e salti questo brano.",
-      "step5": "Vince il punteggio più alto dopo 15 brani.",
+      "step4": "Una risposta giusta dà punti in base alla velocità. Una risposta errata costa la penalità scelta e blocca la squadra per questo brano.",
+      "step5": "Vince il punteggio più alto dopo i round scelti o al raggiungimento dell’obiettivo.",
       "tip": "Ognuno ha il proprio pulsante in modalità controller."
     },
     "pixeljagd": {

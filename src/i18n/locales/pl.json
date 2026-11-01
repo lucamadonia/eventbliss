@@ -9049,8 +9049,8 @@
       "step1": "Gospodarz włącza 30-sekundowy fragment.",
       "step2": "Naciśnij własny przycisk, gdy rozpoznasz utwór.",
       "step3": "Podaj wykonawcę i tytuł. Gospodarz ocenia odpowiedź.",
-      "step4": "Dobrze: 40–100 punktów. Źle: minus 20 i koniec prób w tym utworze.",
-      "step5": "Wygrywa najlepszy wynik po 15 utworach.",
+      "step4": "Dobra odpowiedź daje punkty za szybkość. Błędna kosztuje wybraną karę i blokuje drużynę w tym utworze.",
+      "step5": "Wygrywa najlepszy wynik po wybranej liczbie rund lub osiągnięciu celu.",
       "tip": "W trybie kontrolera każdy ma własny przycisk."
     },
     "pixeljagd": {

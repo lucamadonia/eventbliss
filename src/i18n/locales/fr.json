@@ -8975,8 +8975,8 @@
       "step1": "L’hôte lance un extrait de 30 secondes.",
       "step2": "Appuie sur ton buzzer dès que tu reconnais la chanson.",
       "step3": "Annonce l’artiste et le titre. L’hôte valide.",
-      "step4": "Bonne réponse : 40 à 100 points. Erreur : moins 20 et tu attends le titre suivant.",
-      "step5": "Le meilleur score après 15 chansons gagne.",
+      "step4": "Une bonne réponse rapporte des points selon la rapidité. Une erreur retire la pénalité choisie et bloque ton équipe pour ce titre.",
+      "step5": "Le meilleur score gagne après les manches choisies ou dès que l’objectif est atteint.",
       "tip": "Chaque personne a son propre buzzer en mode manette."
     },
     "pixeljagd": {

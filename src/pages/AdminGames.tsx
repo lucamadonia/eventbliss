@@ -439,6 +439,19 @@ export default function AdminGames() {
               </button>
             );
           })}
+          <div className="border-t border-white/10 pt-3">
+            <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-[#a8abb3]">Eigene Spielbibliotheken</p>
+            {[
+              { name: 'Ohrwurm', detail: 'Gemeinsame Songs', icon: '🎵', path: '/admin/ohrwurm-songs' },
+              { name: 'Hit-Buzzer', detail: 'Gemeinsame Songs', icon: '🔔', path: '/admin/ohrwurm-songs' },
+              { name: 'Pixeljagd', detail: 'Bilder', icon: '🔍', path: '/admin/pixel-images' },
+              { name: 'Nah Dran', detail: 'Fragen', icon: '🎯', path: '/admin/closeenough-questions' },
+            ].map(game => <button key={game.name} type="button" onClick={() => navigate(game.path)}
+              className="flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-left text-sm text-[#a8abb3] transition-colors hover:border-white/10 hover:bg-white/[0.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#281d35] text-lg">{game.icon}</span>
+              <span className="min-w-0"><span className="block truncate font-semibold">{game.name}</span><span className="block text-[10px] text-[#a8abb3]/60">{game.detail}</span></span>
+            </button>)}
+          </div>
         </div>
 
         {/* Main */}

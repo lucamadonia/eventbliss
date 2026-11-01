@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTVGameBridge } from '@/hooks/useTVGameBridge';
+import { GameEndOverlay } from '../social/GameEndOverlay';
+import { useGameEnd } from '../social/useGameEnd';
+import { clearReportContext, getReportContext, setReportContext } from '../ui/useReportContext';
 import { useBackGuard } from '@/lib/back-guard';
 import { GameStage, StageAction, StageHeader, StagePanel } from '../ui/GameStage';
 import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
@@ -31,6 +34,8 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const { i18n, t } = useTranslation();
   const text = hitText(i18n.language);
   const haptics = useHaptics();
+  const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
+  const recordedMatchRef = useRef<string | null>(null);
   const isHost = !online || online.isHost;
   const [tvConnected] = useTvPresence(online);
   const exit = useConfirmExit(() => navigate('/games'));
@@ -90,6 +95,17 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     audioRef.current?.pause();
     if (next) void loadPreview(next, ++drawIdRef.current);
   }, [loadPreview, text.noSongs]);
+
+  useEffect(() => {
+    if (isHost && song) {
+      setReportContext({ gameId: 'hitbuzzer', contentId: song.id, label: `${song.artist} — ${song.title} (${song.year})` });
+    } else if (getReportContext()?.gameId === 'hitbuzzer') {
+      clearReportContext();
+    }
+    return () => {
+      if (getReportContext()?.gameId === 'hitbuzzer') clearReportContext();
+    };
+  }, [isHost, song]);
 
   const startMatch = useCallback(async () => {
     if (!isHost || busy) return;
@@ -381,6 +397,16 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const ranked = useMemo(() => (teamMatch
     ? [...new Map((state?.players ?? []).map(p => [p.teamId, { ...p, id: p.teamId, name: `${text.team} ${p.teamId}`, avatar: p.teamId }])).values()]
     : [...(state?.players ?? [])]).sort((a, b) => b.score - a.score || a.name.localeCompare(b.name)), [state?.players, teamMatch, text.team]);
+  useEffect(() => {
+    if (state?.phase !== 'finished' || state.players.length < 2 || recordedMatchRef.current === state.matchId) return;
+    recordedMatchRef.current = state.matchId;
+    // Controller-party completion writes every account's result in one server
+    // transaction. Guest phones have no local party session, so skip here too.
+    if (online && new URLSearchParams(window.location.search).get('party') === 'true') return;
+    const player = online ? state.players.find(p => p.id === online.myPlayerId)
+      : [...state.players].sort((a, b) => b.score - a.score)[0];
+    if (player) void recordEnd('hitbuzzer', player.score, player.score === Math.max(...state.players.map(p => p.score)));
+  }, [state, online, recordEnd]);
   const tvState = useMemo(() => ({
     phase: state?.phase === 'finished' ? 'gameOver' : state?.phase === 'result' ? 'reveal' : state?.phase ?? 'setup',
     round: state?.round ?? 0, totalRounds: state?.config.rounds ?? 15,
@@ -499,6 +525,7 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
               : <StageAction onClick={resetMatch} className="w-full"><RotateCcw className="h-5 w-5" />{text.again}</StageAction>)}
             {isHost && state.phase === 'result' && lastDecisionRef.current?.roundId === state.roundId && <StageAction variant="secondary" onClick={undo} className="w-full"><RotateCcw className="h-4 w-4" />{t('partyPlay.undo')}</StageAction>}
           </StagePanel>}
+          {state.phase === 'finished' && <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />}
 
           <StagePanel className="p-4"><h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#b3a8c9]">{text.standings}</h2><ol className="space-y-2">{ranked.map((p, index) => <li key={p.id} className="flex items-center gap-3 rounded-2xl bg-[#16101f] px-4 py-3"><span className="w-6 text-[#b3a8c9]">{index + 1}.</span><span className="grid size-9 shrink-0 place-items-center rounded-full text-sm font-bold text-[#060810]" style={{ background: p.color }}>{p.avatar}</span><span className="min-w-0 flex-1 truncate font-semibold">{p.name}</span><span className="font-game font-black tabular-nums text-[#8ff5ff]">{p.score}</span></li>)}</ol></StagePanel>
         </>}

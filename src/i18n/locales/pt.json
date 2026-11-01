@@ -9025,8 +9025,8 @@
       "step1": "O anfitrião inicia um excerto de 30 segundos.",
       "step2": "Carrega no teu botão assim que reconheceres a música.",
       "step3": "Diz o artista e o título. O anfitrião decide.",
-      "step4": "Certo: 40–100 pontos. Errado: menos 20 e ficas fora desta música.",
-      "step5": "Ganha a maior pontuação após 15 músicas.",
+      "step4": "Certo dá pontos pela rapidez. Errado custa a penalização escolhida e bloqueia a tua equipa nesta música.",
+      "step5": "Ganha a maior pontuação após as rondas escolhidas ou ao atingir o objetivo.",
       "tip": "Cada pessoa tem o seu botão no modo comando."
     },
     "pixeljagd": {

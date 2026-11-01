@@ -8951,8 +8951,8 @@
       "step1": "Der Host startet einen 30-Sekunden-Ausschnitt.",
       "step2": "Drücke deinen eigenen Buzzer, sobald du den Song erkennst.",
       "step3": "Nenne Interpret und Titel. Der Host bewertet die Antwort.",
-      "step4": "Richtig bringt 40–100 Punkte. Falsch kostet 20 und sperrt dich für diesen Song.",
-      "step5": "Nach 15 Songs gewinnt die höchste Punktzahl.",
+      "step4": "Richtig bringt je nach Tempo Punkte. Falsch kostet die eingestellten Strafpunkte und sperrt dein Team für diesen Song.",
+      "step5": "Nach der gewählten Rundenzahl oder beim Punktziel gewinnt die höchste Punktzahl.",
       "tip": "Im Joystick-Modus hat jede Person einen eigenen Buzzer."
     },
     "pixeljagd": {
