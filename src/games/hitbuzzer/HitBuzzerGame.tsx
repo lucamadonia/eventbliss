@@ -9,13 +9,12 @@ import { useGameEnd } from '../social/useGameEnd';
 import { clearReportContext, getReportContext, setReportContext } from '../ui/useReportContext';
 import { useBackGuard } from '@/lib/back-guard';
 import { GameStage, StageAction, StageHeader, StagePanel } from '../ui/GameStage';
-import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
+import type { PlayerSetupPlayer } from '../ui/PlayerSetup';
 import { getPlayerColor } from '../ui/PlayerAvatars';
 import { serverClock } from '../party/scene-clock';
 import { abortControllerGame, leaveControllerParty } from '../party/controller-session';
 import { useInitialRoster } from '../ui/useInitialRoster';
 import { localSeats, type OnlineGameProps } from '../multiplayer/OnlineGameTypes';
-import { OHRWURM_GENRES } from '../ohrwurm/ohrwurm-content';
 import { usePreviewLoader } from '../ohrwurm/usePreviewLoader';
 import { useTvPresence } from '../ohrwurm/useTvPresence';
 import { ConfirmExitDialog, useConfirmExit } from '../ui/useConfirmExit';
@@ -28,6 +27,8 @@ import {
   type HitConfig, type HitPlayer, type HitState,
 } from './engine';
 import { hitText } from './strings';
+import { HitBuzzerSetup } from './HitBuzzerSetup';
+import { HitBuzzerButton } from './HitBuzzerButton';
 
 const id = () => crypto.randomUUID();
 
@@ -498,55 +499,19 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   return (
     <GameStage gameId="hitbuzzer" className="min-h-[100dvh] bg-[#060810] text-white">
       {isHost && <audio ref={audioRef} src={previewUrl ?? undefined} muted={tvSpeaker} preload="auto" onEnded={endSong} onError={handleAudioError} />}
-      <main className="mx-auto flex min-h-[100dvh] max-w-3xl flex-col gap-5 px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:px-6">
+      <main className={`mx-auto flex min-h-[100dvh] flex-col gap-5 px-1 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:px-6 ${!state && isHost ? 'max-w-5xl' : 'max-w-3xl'}`}>
         <button type="button" onClick={() => state?.phase === 'finished' ? leaveGame() : state || controllerParty ? exit.request() : leaveGame()} className="flex min-h-11 w-fit items-center gap-2 rounded-full px-3 text-sm text-[#b3a8c9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><ArrowLeft className="h-4 w-4" />{controllerParty ? state?.phase === 'finished' ? t('partyPlay.backToLobby') : t(isHost ? 'partyControllers.abort' : 'partyControllers.leave') : inParty ? t('partyPlay.backToLobby') : text.back}</button>
         <ConfirmExitDialog {...exit.dialogProps} accent="#df8eff" title={controllerParty ? t(isHost ? 'partyControllers.abort' : 'partyControllers.leave') : undefined} />
-        <StageHeader title={text.name} eyebrow={text.eyebrow} subtitle={state ? `${text.round} ${state.round} / ${state.config.rounds}` : text.tagline} progress={state ? { value: state.round, total: state.config.rounds } : undefined} />
+        {(state || !isHost) && <StageHeader title={text.name} eyebrow={text.eyebrow} subtitle={state ? `${text.round} ${state.round} / ${state.config.rounds}` : text.tagline} progress={state ? { value: state.round, total: state.config.rounds } : undefined} />}
         {error && <p role="alert" className="rounded-2xl border border-[#ff6b98]/40 bg-[#ff6b98]/10 p-4 text-sm text-[#ffd2df]">{error}</p>}
 
-        {!state && isHost && <>
-          <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#16101f]">
-            <img src="/images/games/hit-buzzer.webp" alt="" className="h-48 w-full object-cover object-center sm:h-56" />
-            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#16101f] to-transparent" />
-          </div>
-          <StagePanel className="space-y-5 p-5">
-            <PlayerSetup players={online ? online.players.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar, readOnly: true })) : roster} locked={!!online} onAdd={() => setRoster(p => [...p, { id: id(), name: '' }])}
-              onRemove={playerId => setRoster(p => p.filter(x => x.id !== playerId))}
-              onRename={(playerId, name) => setRoster(p => p.map(x => x.id === playerId ? { ...x, name } : x))}
-              min={2} max={20} accent="#df8eff" />
-            <div className="grid grid-cols-2 gap-3">
-              <label className="text-sm text-[#b3a8c9]">{text.goal}
-                <select value={config.targetScore ?? 0} onChange={e => setConfig(c => ({ ...c, targetScore: Number(e.target.value) || null }))} className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-[#16101f] px-3 text-white">
-                  <option value={0}>{text.roundGoal}</option><option value={500}>500 {text.points}</option><option value={750}>750 {text.points}</option><option value={1000}>1000 {text.points}</option>
-                </select>
-              </label>
-              <label className="text-sm text-[#b3a8c9]">{text.rounds}
-                <input type="number" min={5} max={30} value={config.rounds} onChange={e => setConfig(c => ({ ...c, rounds: Math.max(5, Math.min(30, Number(e.target.value) || 15)) }))} className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-[#16101f] px-3 text-white" />
-              </label>
-              <label className="text-sm text-[#b3a8c9]">{text.genre}
-                <select value={config.genre ?? ''} onChange={e => setConfig(c => ({ ...c, genre: e.target.value || null }))} className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-[#16101f] px-3 text-white">
-                  <option value="">{text.allGenres}</option>{OHRWURM_GENRES.map(genre => <option key={genre} value={genre}>{genre}</option>)}
-                </select>
-              </label>
-              <label className="text-sm text-[#b3a8c9]">{text.answerTime}
-                <select value={config.answerSeconds} onChange={e => setConfig(c => ({ ...c, answerSeconds: Number(e.target.value) }))} className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-[#16101f] px-3 text-white">
-                  {[5, 8, 12].map(n => <option key={n} value={n}>{n} s</option>)}
-                </select>
-              </label>
-              <label className="text-sm text-[#b3a8c9]">{text.penalty}
-                <select value={config.penalty} onChange={e => setConfig(c => ({ ...c, penalty: Number(e.target.value) }))} className="mt-2 min-h-12 w-full rounded-2xl border border-white/10 bg-[#16101f] px-3 text-white">
-                  {[0, 10, 20, 30].map(n => <option key={n} value={n}>−{n}</option>)}
-                </select>
-              </label>
-              <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-[#16101f] px-3 text-sm text-[#b3a8c9]">
-                <input type="checkbox" checked={config.constantPoints} onChange={e => setConfig(c => ({ ...c, constantPoints: e.target.checked }))} className="size-5 accent-[#df8eff]" />{text.constantPoints}
-              </label>
-            </div>
-            <label className="flex min-h-12 items-center gap-3 text-sm"><input type="checkbox" checked={teamMode} onChange={e => setTeamMode(e.target.checked)} className="size-5 accent-[#df8eff]" />{text.teams}</label>
-            {teamMode && <div className="grid gap-2">{(online ? online.players : roster).map((p, index) => <label key={p.id} className="flex items-center justify-between gap-3 rounded-2xl bg-[#16101f] px-4 py-2 text-sm"><span>{p.name || text.player}</span><select value={teams[p.id] || (index % 2 ? 'B' : 'A')} onChange={e => setTeams(x => ({ ...x, [p.id]: e.target.value }))} className="min-h-11 rounded-xl bg-[#0d0915] px-3"><option value="A">{text.team} A</option><option value="B">{text.team} B</option></select></label>)}</div>}
-            <StageAction onClick={() => void startMatch()} disabled={busy} className="w-full"><Play className="h-5 w-5" />{busy ? text.loading : text.start}</StageAction>
-          </StagePanel>
-        </>}
+        {!state && isHost && <HitBuzzerSetup text={text} config={config} setConfig={setConfig}
+          players={online ? online.players.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar, readOnly: true })) : roster}
+          locked={!!online} onAdd={() => setRoster(p => [...p, { id: id(), name: '' }])}
+          onRemove={playerId => setRoster(p => p.filter(x => x.id !== playerId))}
+          onRename={(playerId, name) => setRoster(p => p.map(x => x.id === playerId ? { ...x, name } : x))}
+          teamMode={teamMode} setTeamMode={setTeamMode} teams={teams} setTeams={setTeams}
+          onStart={() => void startMatch()} busy={busy} />}
 
         {!state && !isHost && <StagePanel className="p-8 text-center text-[#b3a8c9]">{text.waitHost}</StagePanel>}
 
@@ -565,20 +530,20 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
           {(state.phase === 'listening' || state.phase === 'paused' || state.phase === 'answering') && <StagePanel className="space-y-5 p-5 text-center">
             {state.phase === 'answering' && <p role="status" className="text-xl font-black text-[#8ff5ff]">{claimPlayer?.name || text.player} — {text.yourAnswer}</p>}
             <div className={`grid gap-3 ${localIds.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
-              {state.players.filter(p => localIds.includes(p.id)).map(p => <button key={p.id} type="button" onClick={() => requestBuzz(p.id)} disabled={state.phase !== 'listening' || p.locked || !!pending || online?.isConnected === false}
-                aria-label={`${text.buzz}: ${p.name}`} className="group flex min-h-32 flex-col items-center justify-center gap-2 rounded-[28px] border border-[#df8eff]/35 bg-[#16101f] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-transform active:scale-[0.97] enabled:hover:border-[#df8eff] disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]">
-                <span className="grid h-16 w-16 place-items-center rounded-full border-[6px] border-[#8ff5ff] bg-[#ff2e88] text-2xl font-black shadow-[0_0_30px_rgba(255,46,136,0.38)]">{p.locked ? '×' : '!'}</span>
-                <span className="font-game font-bold">{p.name}</span><span className="text-xs text-[#b3a8c9]">{p.locked ? text.locked : pending === p.id ? text.sent : text.buzz} · {p.score} {text.points}</span>
-              </button>)}
+              {state.players.filter(p => localIds.includes(p.id)).map(p => <HitBuzzerButton key={p.id} name={p.name} score={p.score} pointsLabel={text.points}
+                buzzLabel={text.buzz} lockedLabel={text.locked} sentLabel={text.sent} answerLabel={text.answer} locked={p.locked} pending={pending === p.id}
+                claimed={state.phase === 'answering' && state.claim?.playerId === p.id}
+                disabled={state.phase !== 'listening' || p.locked || !!pending || online?.isConnected === false}
+                large={localIds.length === 1} onClick={() => requestBuzz(p.id)} />)}
             </div>
             {localIds.length === 0 && <p className="text-[#b3a8c9]">{text.watch}</p>}
             {isHost && state.phase === 'listening' && <StageAction variant="secondary" onClick={pauseAudio} className="w-full"><Pause className="h-5 w-5" />{t('games.play.pause')}</StageAction>}
             {isHost && state.phase === 'listening' && lastDecisionRef.current?.roundId === state.roundId && <StageAction variant="ghost" onClick={undo} className="w-full"><RotateCcw className="h-4 w-4" />{t('partyPlay.undo')}</StageAction>}
             {isHost && state.phase === 'paused' && <StageAction onClick={() => void resumeAudio()} disabled={online?.isConnected === false} className="w-full"><Play className="h-5 w-5" />{t('games.play.resume')}</StageAction>}
-            {state.phase === 'answering' && isHost && <div className="grid grid-cols-3 gap-2 border-t border-white/10 pt-5">
-              <StageAction onClick={() => judge(true)} className="min-h-14 px-2 text-xs sm:text-sm">{text.correct}</StageAction>
-              <StageAction variant="danger" onClick={() => judge(false)} className="min-h-14 px-2 text-xs sm:text-sm">{text.wrong}</StageAction>
-              <StageAction variant="secondary" onClick={voidClaim} className="min-h-14 px-2 text-xs sm:text-sm">{text.void}</StageAction>
+            {state.phase === 'answering' && isHost && <div className="grid grid-cols-2 gap-2 border-t border-white/10 pt-5">
+              <StageAction onClick={() => judge(true)} className="min-h-14 !px-2 whitespace-nowrap text-[13px] sm:text-sm">{text.correct}</StageAction>
+              <StageAction variant="danger" onClick={() => judge(false)} className="min-h-14 !px-2 whitespace-nowrap text-[13px] sm:text-sm">{text.wrong}</StageAction>
+              <StageAction variant="secondary" onClick={voidClaim} className="col-span-2 min-h-12 px-3 text-sm">{text.void}</StageAction>
             </div>}
           </StagePanel>}
 
