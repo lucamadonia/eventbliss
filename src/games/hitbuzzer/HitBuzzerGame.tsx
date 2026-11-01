@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Music2, Pause, Play, RotateCcw, SkipForward, Volume2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTVGameBridge } from '@/hooks/useTVGameBridge';
@@ -12,6 +12,7 @@ import { GameStage, StageAction, StageHeader, StagePanel } from '../ui/GameStage
 import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
 import { getPlayerColor } from '../ui/PlayerAvatars';
 import { serverClock } from '../party/scene-clock';
+import { abortControllerGame, leaveControllerParty } from '../party/controller-session';
 import { useInitialRoster } from '../ui/useInitialRoster';
 import { localSeats, type OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { OHRWURM_GENRES } from '../ohrwurm/ohrwurm-content';
@@ -31,14 +32,16 @@ const id = () => crypto.randomUUID();
 
 export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } = {}) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { i18n, t } = useTranslation();
   const text = hitText(i18n.language);
   const haptics = useHaptics();
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const recordedMatchRef = useRef<string | null>(null);
   const isHost = !online || online.isHost;
+  const inParty = new URLSearchParams(location.search).get('party') === 'true';
+  const controllerParty = !!online && inParty;
   const [tvConnected] = useTvPresence(online);
-  const exit = useConfirmExit(() => navigate('/games'));
   const initialRoster = useInitialRoster({ onlinePlayers: online?.players, min: 2 });
   const [roster, setRoster] = useState<(PlayerSetupPlayer & { avatar?: string })[]>(() => initialRoster?.map(p => ({ id: p.id, name: p.name, color: p.color, avatar: p.avatar }))
     ?? [{ id: 'p1', name: '' }, { id: 'p2', name: '' }]);
@@ -62,8 +65,17 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
   const [now, setNow] = useState(serverClock.now());
+  const leaveGame = useCallback(() => {
+    if (controllerParty && stateRef.current?.phase !== 'finished') {
+      if (isHost) void abortControllerGame().catch(() => {});
+      else void leaveControllerParty(false).then(() => navigate('/party')).catch(() => {});
+      return;
+    }
+    navigate(controllerParty ? '/party/controllers' : inParty ? '/party' : '/games');
+  }, [controllerParty, inParty, isHost, navigate]);
+  const exit = useConfirmExit(leaveGame);
   useBackGuard(() => {
-    if (!stateRef.current || stateRef.current.phase === 'finished') return false;
+    if ((!stateRef.current && !controllerParty) || stateRef.current?.phase === 'finished') return false;
     if (exit.open) { exit.cancel(); return true; }
     exit.request();
     return true;
@@ -435,8 +447,8 @@ export default function HitBuzzerGame({ online }: { online?: OnlineGameProps } =
     <GameStage gameId="hitbuzzer" className="min-h-[100dvh] bg-[#060810] text-white">
       {isHost && <audio ref={audioRef} src={previewUrl ?? undefined} muted={tvSpeaker} preload="auto" onEnded={endSong} onError={handleAudioError} />}
       <main className="mx-auto flex min-h-[100dvh] max-w-3xl flex-col gap-5 px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-6 sm:px-6">
-        <button type="button" onClick={() => state && state.phase !== 'finished' ? exit.request() : navigate('/games')} className="flex min-h-11 w-fit items-center gap-2 rounded-full px-3 text-sm text-[#b3a8c9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><ArrowLeft className="h-4 w-4" />{text.back}</button>
-        <ConfirmExitDialog {...exit.dialogProps} accent="#df8eff" />
+        <button type="button" onClick={() => state?.phase === 'finished' ? leaveGame() : state || controllerParty ? exit.request() : leaveGame()} className="flex min-h-11 w-fit items-center gap-2 rounded-full px-3 text-sm text-[#b3a8c9] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]"><ArrowLeft className="h-4 w-4" />{controllerParty ? state?.phase === 'finished' ? t('partyPlay.backToLobby') : t(isHost ? 'partyControllers.abort' : 'partyControllers.leave') : inParty ? t('partyPlay.backToLobby') : text.back}</button>
+        <ConfirmExitDialog {...exit.dialogProps} accent="#df8eff" title={controllerParty ? t(isHost ? 'partyControllers.abort' : 'partyControllers.leave') : undefined} />
         <StageHeader title={text.name} eyebrow={text.eyebrow} subtitle={state ? `${text.round} ${state.round} / ${state.config.rounds}` : text.tagline} progress={state ? { value: state.round, total: state.config.rounds } : undefined} />
         {error && <p role="alert" className="rounded-2xl border border-[#ff6b98]/40 bg-[#ff6b98]/10 p-4 text-sm text-[#ffd2df]">{error}</p>}
 
