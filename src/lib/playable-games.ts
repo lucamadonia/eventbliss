@@ -54,9 +54,10 @@ export interface PlayableGame {
  * - `sequential`: alle antworten gleichzeitig → Gaeste nacheinander, Zeit pro Person.
  * - `secret`: geheime Rollen/Infos → wie `sequential`, verdeckt auf-/zudecken.
  * - `team`: Echtzeit mit Teams → Gaeste im Team des Hosts.
+ * - `parallel`: Echtzeit mit eigenem Bedienelement je Gast auf demselben Geraet.
  * - `sitout`: Echtzeit ohne Teams → Gaeste setzen aus (zaehlt nicht als gespielt).
  */
-export type SharedDeviceMode = "turns" | "sequential" | "secret" | "team" | "sitout";
+export type SharedDeviceMode = "turns" | "sequential" | "secret" | "team" | "parallel" | "sitout";
 
 /**
  * Der i18n-Schluessel zum Abzeichen.
@@ -115,7 +116,7 @@ export const playableGames: PlayableGame[] = [
   { id: "wo-ist-was",      nameKey: "native.gameNames.woIstWas",        descKey: "native.gameDescs.woIstWas",        image: "/images/games/wo-ist-was.webp",      gradient: "from-cyan-500 to-blue-600",        minPlayers: 1, maxPlayers: 10, tier: "premium",               sharedDevice: "sequential", sharedDeviceSupported: true, categories: ["karte", "quiz"] },
   { id: "drueck-das-wort", nameKey: "native.gameNames.drueckDasWort",   descKey: "native.gameDescs.drueckDasWort",   image: "/images/games/drueck-das-wort.webp", gradient: "from-emerald-500 to-green-600",    minPlayers: 1, maxPlayers:  8, tier: "premium",               sharedDevice: "turns", sharedDeviceSupported: true, categories: ["wort", "reaktion"] },
   { id: "ohrwurm",         nameKey: "native.gameNames.ohrwurm",         descKey: "native.gameDescs.ohrwurm",         image: "/images/games/ohrwurm.webp",         gradient: "from-pink-500 to-teal-400",        minPlayers: 2, maxPlayers: 20, tier: "free",    badge: "Neu", sharedDevice: "turns", sharedDeviceSupported: true, categories: ["party", "quiz"] },
-  { id: "hitbuzzer",       nameKey: "native.gameNames.hitbuzzer",       descKey: "native.gameDescs.hitbuzzer",       image: "/images/games/hit-buzzer.webp",       gradient: "from-pink-500 to-violet-500",      minPlayers: 2, maxPlayers: 20, tier: "free",    badge: "Neu", sharedDevice: "team", sharedDeviceSupported: true, categories: ["party", "quiz", "reaktion"] },
+  { id: "hitbuzzer",       nameKey: "native.gameNames.hitbuzzer",       descKey: "native.gameDescs.hitbuzzer",       image: "/images/games/hit-buzzer.webp",       gradient: "from-pink-500 to-violet-500",      minPlayers: 2, maxPlayers: 20, tier: "free",    badge: "Neu", sharedDevice: "parallel", sharedDeviceSupported: true, categories: ["party", "quiz", "reaktion"] },
   { id: "pixeljagd",       nameKey: "native.gameNames.pixeljagd",       descKey: "native.gameDescs.pixeljagd",       image: "/images/games/pixeljagd.webp",       gradient: "from-sky-400 to-violet-500",       minPlayers: 2, maxPlayers:  8, tier: "free",    badge: "Neu", sharedDevice: "team", sharedDeviceSupported: true, categories: ["quiz", "reaktion"] },
   { id: "closeenough",     nameKey: "native.gameNames.closeenough",     descKey: "native.gameDescs.closeenough",     image: "/images/games/closeenough.webp",     gradient: "from-amber-400 to-emerald-400",     minPlayers: 2, maxPlayers:  8, tier: "free",    badge: "Neu", sharedDevice: "sequential", sharedDeviceSupported: true, categories: ["quiz", "party"] },
   { id: "pantomime",       nameKey: "native.gameNames.pantomime",       descKey: "native.gameDescs.pantomime",       image: "/images/games/pantomime.webp",       gradient: "from-amber-400 to-pink-400",        minPlayers: 4, maxPlayers: 16, tier: "free",    badge: "Neu", sharedDevice: "turns", sharedDeviceSupported: true, categories: ["party", "kreativ"] },

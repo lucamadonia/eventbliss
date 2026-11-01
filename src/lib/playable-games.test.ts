@@ -165,7 +165,7 @@ describe("playable-games — Spielerzahl deckt sich mit den Spielen", () => {
 });
 
 describe("playable-games — geteiltes Handy (Party-Play 7)", () => {
-  const MODES = ["turns", "sequential", "secret", "team", "sitout"];
+  const MODES = ["turns", "sequential", "secret", "team", "parallel", "sitout"];
 
   it("jedes Spiel deklariert sharedDevice", () => {
     const missing = playableGames.filter((g) => !MODES.includes(g.sharedDevice)).map((g) => g.id);
@@ -519,7 +519,7 @@ describe("sharedDevice — festgelegte Einordnung je Spiel", () => {
     hochstapler: "secret", "wahrheit-pflicht": "turns", "wer-bin-ich": "secret", flaschendrehen: "turns",
     "emoji-raten": "turns", "fake-or-fact": "turns", schnellzeichner: "turns", "split-quiz": "secret",
     "geteilt-gequizzt": "secret", "story-builder": "turns", "wo-ist-was": "sequential", "drueck-das-wort": "turns",
-    ohrwurm: "turns", hitbuzzer: "team", pixeljagd: "team", closeenough: "sequential", pantomime: "turns", brew: "turns",
+    ohrwurm: "turns", hitbuzzer: "parallel", pixeljagd: "team", closeenough: "sequential", pantomime: "turns", brew: "turns",
   };
   it("jedes Spiel hat den abgestimmten Modus", () => {
     expect(Object.fromEntries(playableGames.map((g) => [g.id, g.sharedDevice]))).toEqual(EXPECTED);
