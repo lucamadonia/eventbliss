@@ -326,7 +326,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     if (!card || current.phase !== 'reviewing' || current.claim?.playerId !== playerId) return;
     const solution: PrivateSolution = { matchId: current.matchId, roundId: current.roundId, playerId, artist: card.artist, title: card.title };
     if (!online || localSeats(online).includes(playerId)) setPrivateSolution(solution);
-    else online.broadcastTo?.(recipient ?? online.players.find(p => p.id === playerId)?.controlledBy ?? playerId, 'hitbuzzer-solution', solution);
+    else online.broadcastTo?.(recipient ?? online.players.find(p => p.id === playerId)?.controlledBy ?? playerId, 'hitbuzzer-solution', { ...solution });
   }, [online]);
 
   const finishSpokenAnswer = useCallback((playerId: string, roundId: string) => {
