@@ -32,6 +32,25 @@ try {
   });
   await page.waitForSelector('[data-testid="tv-ohrwurm-view"]');
   await page.screenshot({ path: 'src/assets/splash-ohrwurm-tv.webp', type: 'webp', quality: 88 });
+
+  await page.evaluate(() => window.qa.updateTV((previous) => ({
+    ...previous,
+    phase: 'reveal', listening: false, timeLeft: 0,
+    reveal: { year: 1976, title: 'Dancing Queen', artist: 'ABBA', flag: '🇸🇪', genre: 'Pop' },
+    timeline: [{ id: 'song-0', year: 1976 }, ...previous.timeline],
+    players: previous.players.map((player) => player.id === 'ohrwurm-team-1' ? { ...player, score: 3 } : player),
+  })));
+  await page.waitForSelector('[data-testid="tv-ohrwurm-reveal"]');
+  await new Promise((resolve) => setTimeout(resolve, 900));
+  await page.screenshot({ path: 'src/assets/splash-ohrwurm-tv-reveal.webp', type: 'webp', quality: 88 });
+
+  await page.setViewport({ width: 390, height: 844, deviceScaleFactor: 1 });
+  for (const view of ['active', 'waiting', 'reveal']) {
+    await page.goto(`${origin}/scripts/qa/ohrwurm-phone-browser.html?view=${view}`, { waitUntil: 'domcontentloaded', timeout: 120000 });
+    await page.waitForFunction(() => document.body.innerText.includes('OHRWURM'), { timeout: 120000 });
+    if (view === 'reveal') await new Promise((resolve) => setTimeout(resolve, 900));
+    await page.screenshot({ path: `src/assets/splash-ohrwurm-phone-${view}.webp`, type: 'webp', quality: 88 });
+  }
 } finally {
   await browser.close();
 }

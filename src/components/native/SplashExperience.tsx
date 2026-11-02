@@ -12,6 +12,10 @@ import planningScene from "@/assets/splash-plan.webp";
 import playingScene from "@/assets/splash-play.webp";
 import celebratingScene from "@/assets/splash-celebrate.webp";
 import ohrwurmTV from "@/assets/splash-ohrwurm-tv.webp";
+import ohrwurmTVReveal from "@/assets/splash-ohrwurm-tv-reveal.webp";
+import ohrwurmPhoneActive from "@/assets/splash-ohrwurm-phone-active.webp";
+import ohrwurmPhoneWaiting from "@/assets/splash-ohrwurm-phone-waiting.webp";
+import ohrwurmPhoneReveal from "@/assets/splash-ohrwurm-phone-reveal.webp";
 import "./splash-story.css";
 
 interface Props {
@@ -36,11 +40,16 @@ const scenes = [
   { src: celebratingScene, name: "celebrate", step: phaseOrder.celebrate, origin: "51% 53%" },
 ] as const;
 
-function StoryArtwork({ src, showTV }: { src: string; showTV: boolean }) {
+function StoryArtwork({ src, showTV, celebrating = false }: { src: string; showTV: boolean; celebrating?: boolean }) {
   return (
     <div className="splash-story-art">
       <img src={src} alt="" className="splash-story-image" loading="eager" decoding="async" />
-      {showTV && <img src={ohrwurmTV} alt="" className="splash-story-tv" loading="eager" decoding="async" />}
+      {showTV && <>
+        <img src={celebrating ? ohrwurmTVReveal : ohrwurmTV} alt="" className="splash-story-tv" loading="eager" decoding="async" />
+        {[celebrating ? ohrwurmPhoneReveal : ohrwurmPhoneActive, ohrwurmPhoneWaiting, ohrwurmPhoneWaiting, ohrwurmPhoneWaiting].map((screen, index) => (
+          <img key={index} src={screen} alt="" className={`splash-story-phone splash-story-phone--${index + 1}`} loading="eager" decoding="async" />
+        ))}
+      </>}
     </div>
   );
 }
@@ -81,7 +90,7 @@ export function SplashExperience({ onComplete }: Props) {
       timers.push(setTimeout(onComplete, 890));
     } else {
       // Keep the matching native mark visible until local scenes can be painted.
-      const ready = Promise.all([...scenes.map(({ src }) => src), ohrwurmTV].map((src) => {
+      const ready = Promise.all([...scenes.map(({ src }) => src), ohrwurmTV, ohrwurmTVReveal, ohrwurmPhoneActive, ohrwurmPhoneWaiting, ohrwurmPhoneReveal].map((src) => {
         const image = new Image();
         image.src = src;
         return image.decode().catch(() => undefined);
@@ -124,7 +133,7 @@ export function SplashExperience({ onComplete }: Props) {
           transition={{ duration: 0.2 }}
         >
           <div className="splash-story-backdrop" style={{ backgroundImage: `url(${celebratingScene})` }} />
-          <StoryArtwork src={celebratingScene} showTV />
+          <StoryArtwork src={celebratingScene} showTV celebrating />
         </motion.div>
       ) : scenes.map(({ src, name, step: sceneStep, origin }) => {
         const visible = step >= sceneStep;
@@ -147,7 +156,7 @@ export function SplashExperience({ onComplete }: Props) {
             }}
           >
             <div className="splash-story-backdrop" style={{ backgroundImage: `url(${src})` }} />
-            <StoryArtwork src={src} showTV={name !== "plan"} />
+            <StoryArtwork src={src} showTV={name !== "plan"} celebrating={name === "celebrate"} />
           </motion.div>
         );
       })}
