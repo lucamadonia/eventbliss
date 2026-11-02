@@ -8950,10 +8950,10 @@
       "tagline": "Erkenne den Song schneller als die anderen.",
       "step1": "Der Host startet einen 30-Sekunden-Ausschnitt.",
       "step2": "Drücke deinen eigenen Buzzer, sobald du den Song erkennst.",
-      "step3": "Nenne Interpret und Titel vor Ablauf des Countdowns laut. Wähle auf deinem eigenen Gerät selbst „Richtig“ oder „Falsch“.",
+      "step3": "Vor dem Spiel wird gewählt, ob Songtitel, Interpret oder beides stimmen muss. Wer buzzert, nennt die Antwort laut und tippt vor Ablauf der Zeit auf „Antwort gesagt“. Erst danach erscheinen Titel und Interpret nur auf dem eigenen Gerät.",
       "step4": "Richtig bringt je nach Tempo Punkte. Falsch kostet Strafpunkte, sperrt dein Team für diesen Song und gibt die anderen Buzzer wieder frei.",
       "step5": "Nach der gewählten Rundenzahl oder beim Punktziel gewinnt die höchste Punktzahl.",
-      "tip": "Bei „Richtig“ sehen alle sofort die Lösung. Bei „Falsch“ bleibt sie verborgen und die anderen dürfen weiterbuzzern."
+      "tip": "Der gewählte Teil ist beim privaten Abgleich markiert. Bei „Richtig“ sehen alle die Lösung; bei „Falsch“ bleibt sie verborgen und die anderen können weiterbuzzern."
     },
     "pixeljagd": {
       "title": "Pixeljagd",

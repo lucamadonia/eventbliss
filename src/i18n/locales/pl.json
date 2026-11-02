@@ -9048,10 +9048,10 @@
       "tagline": "Rozpoznaj utwór przed innymi.",
       "step1": "Gospodarz włącza 30-sekundowy fragment.",
       "step2": "Naciśnij własny przycisk, gdy rozpoznasz utwór.",
-      "step3": "Podaj wykonawcę i tytuł na głos przed końcem odliczania. Wybierz Dobrze lub Źle na własnym urządzeniu.",
+      "step3": "Przed grą wybierz, czy zgadzać ma się tytuł, wykonawca czy oba. Osoba, która nacisnęła buzzer, mówi odpowiedź na głos i potwierdza ją przed końcem czasu. Dopiero wtedy widzi tytuł i wykonawcę na swoim urządzeniu.",
       "step4": "Dobra odpowiedź daje punkty za szybkość. Błędna oznacza karę, blokuje drużynę w tym utworze i ponownie otwiera pozostałe przyciski.",
       "step5": "Wygrywa najlepszy wynik po wybranej liczbie rund lub osiągnięciu celu.",
-      "tip": "Dobrze od razu ujawnia utwór wszystkim. Źle ukrywa odpowiedź, aby inni mogli dalej naciskać."
+      "tip": "Wymagana część jest wyróżniona podczas prywatnego sprawdzenia. Dobra odpowiedź ujawnia rozwiązanie wszystkim; zła pozostawia je ukryte."
     },
     "pixeljagd": {
       "title": "Pixeljagd",

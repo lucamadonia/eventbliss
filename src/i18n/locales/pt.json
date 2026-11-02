@@ -9024,10 +9024,10 @@
       "tagline": "Reconhece a música antes dos outros.",
       "step1": "O anfitrião inicia um excerto de 30 segundos.",
       "step2": "Carrega no teu botão assim que reconheceres a música.",
-      "step3": "Diz o artista e o título em voz alta antes de terminar a contagem decrescente. Escolhe Certo ou Errado no teu dispositivo.",
+      "step3": "Antes de jogar, escolhe se é preciso acertar o título, o artista ou ambos. Quem carrega no buzzer responde em voz alta e confirma antes de o tempo acabar. Só depois vê título e artista no seu dispositivo.",
       "step4": "Certo dá pontos pela rapidez. Errado custa a penalização, bloqueia a tua equipa nesta música e reativa os outros botões.",
       "step5": "Ganha a maior pontuação após as rondas escolhidas ou ao atingir o objetivo.",
-      "tip": "Certo revela logo a música a todos. Errado mantém-na oculta para os outros continuarem a jogar."
+      "tip": "A parte exigida fica destacada na verificação privada. Uma resposta certa revela a solução a todos; uma errada mantém-na oculta."
     },
     "pixeljagd": {
       "title": "Pixeljagd",

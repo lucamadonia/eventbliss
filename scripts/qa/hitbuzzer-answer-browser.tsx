@@ -2,12 +2,11 @@ import { createRoot } from 'react-dom/client';
 import { HitBuzzerAnswerCheck } from '@/games/hitbuzzer/HitBuzzerAnswerCheck';
 import { HitBuzzerRoundHistory } from '@/games/hitbuzzer/HitBuzzerRoundHistory';
 import { GameStage } from '@/games/ui/GameStage';
+import { roundFlowText } from '@/games/hitbuzzer/round-flow-copy';
 import '@/index.css';
 
 const view = new URLSearchParams(location.search).get('view');
-const labels = { answerNow: 'Dein Buzzer-Moment', sayAnswer: 'Nenne jetzt Interpret und Titel.',
-  markAnswer: 'Bewerte danach deine Antwort selbst.', waitForPlayer: 'Die Antwort wird gerade laut genannt.',
-  correct: 'Richtig', wrong: 'Falsch', round: 'Runde', history: 'Rundenverlauf', timeout: 'Zeit abgelaufen', noAttempts: 'Niemand hat gebuzzert.' };
+const labels = { ...roundFlowText('de'), correct: 'Richtig', wrong: 'Falsch', round: 'Runde' };
 
 createRoot(document.getElementById('root')!).render(<GameStage gameId="hitbuzzer"><main className="min-h-[100dvh] bg-[#060810] p-4 text-white">
   <div className="mx-auto max-w-xl space-y-4">
@@ -20,7 +19,9 @@ createRoot(document.getElementById('root')!).render(<GameStage gameId="hitbuzzer
         { playerId: 'a', playerName: 'Mia', outcome: 'wrong', delta: -20 },
         { playerId: 'b', playerName: 'Alex', outcome: 'correct', delta: 86 },
       ] },
-    ]} /> : <HitBuzzerAnswerCheck playerName="Mia" secondsLeft={6} totalSeconds={8}
-      canJudge={view !== 'other'} onCorrect={() => {}} onWrong={() => {}} labels={labels} />}
+    ]} /> : <HitBuzzerAnswerCheck playerName="Mia" secondsLeft={view === 'urgent' ? 2 : 6} totalSeconds={8}
+      phase={view === 'check' || view === 'other' || view === 'artist' || view === 'title' ? 'reviewing' : 'answering'} mode={view === 'artist' ? 'artist' : view === 'title' ? 'title' : 'both'}
+      solution={view === 'check' || view === 'title' || view === 'artist' ? { title: 'Dancing Queen', artist: 'ABBA' } : null}
+      isClaimant={view !== 'other'} onSpoken={() => {}} onCorrect={() => {}} onWrong={() => {}} labels={labels} />}
   </div>
 </main></GameStage>);

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { BookOpen, Play, SlidersHorizontal } from 'lucide-react';
+import { BookOpen, Disc3, Mic2, Music2, Play, SlidersHorizontal } from 'lucide-react';
 import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
 import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
 import { OHRWURM_GENRE_ASSETS, OHRWURM_MODE_ASSETS } from '../ui/premium-game-assets';
@@ -10,6 +10,7 @@ import { randomTeamAssignments } from '../ui/random-teams';
 import { HIT_TEAM_IDS, teamForPlayer } from './setup-roster';
 import type { HitConfig } from './engine';
 import type { hitText } from './strings';
+import { roundFlowText } from './round-flow-copy';
 
 type SetupText = ReturnType<typeof hitText>;
 
@@ -43,7 +44,8 @@ const idle = 'border-white/10 bg-[#21182e] text-white/70 hover:border-white/30 h
 const teamColors = ['#df8eff', '#8ff5ff', '#ff2e88', '#f9ca24'];
 
 export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd, onRemove, onRename, onImportNames, teamMode, setTeamMode, teams, setTeams, teamCount, setTeamCount, teamNames, setTeamNames, onStart, onOpenRules, busy }: HitBuzzerSetupProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const flowText = roundFlowText(i18n.language);
   const assignedTeam = (playerId: string, index: number) => teamForPlayer(playerId, index, teams, teamCount);
   const formedTeams = HIT_TEAM_IDS.slice(0, teamCount).map((teamId, index) => ({
     id: teamId, name: teamNames[teamId] ?? `${text.team} ${teamId}`, color: teamColors[index],
@@ -128,6 +130,23 @@ export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd
       </div>
 
       <div className="min-w-0 space-y-8">
+        <section>
+          <h2 className="mb-1 text-sm font-bold text-white/85">{flowText.answerMode}</h2>
+          <p className="mb-3 text-xs text-white/50">{flowText.answerModeHint}</p>
+          <div className="space-y-2 rounded-[28px] border border-white/10 bg-[#16101f] p-3" role="radiogroup" aria-label={flowText.answerMode}>
+            {([
+              { id: 'title' as const, title: flowText.modeTitle, hint: flowText.modeTitleHint, icon: Music2 },
+              { id: 'artist' as const, title: flowText.modeArtist, hint: flowText.modeArtistHint, icon: Mic2 },
+              { id: 'both' as const, title: flowText.modeBoth, hint: flowText.modeBothHint, icon: Disc3 },
+            ]).map(option => <button key={option.id} type="button" role="radio" aria-checked={(config.answerMode ?? 'both') === option.id}
+              onClick={() => setConfig(previous => ({ ...previous, answerMode: option.id }))}
+              className={`flex min-h-16 w-full items-center gap-3 rounded-[20px] border px-4 text-left transition-colors ${(config.answerMode ?? 'both') === option.id ? selected : idle}`}>
+              <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${(config.answerMode ?? 'both') === option.id ? 'bg-[#df8eff]/20 text-[#df8eff]' : 'bg-white/[.06] text-white/55'}`}><option.icon className="size-5" aria-hidden="true" /></span>
+              <span className="min-w-0 flex-1"><strong className="block text-sm">{option.title}</strong><span className="mt-0.5 block text-xs opacity-65">{option.hint}</span></span>
+              <span className={`size-5 shrink-0 rounded-full border-2 ${(config.answerMode ?? 'both') === option.id ? 'border-[#df8eff] bg-[#df8eff] shadow-[inset_0_0_0_3px_#16101f]' : 'border-white/30'}`} aria-hidden="true" />
+            </button>)}
+          </div>
+        </section>
         <section>
           <h2 className="mb-3 text-sm font-bold text-white/65">{text.goal}</h2>
           <div className="rounded-[28px] border border-white/10 bg-[#16101f] p-4 sm:p-5">

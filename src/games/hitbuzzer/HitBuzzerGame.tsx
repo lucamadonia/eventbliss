@@ -22,8 +22,8 @@ import { clearSnapshot, loadSnapshot, saveSnapshot } from '../ui/useGameSnapshot
 import type { Song } from '../ohrwurm/ohrwurm-engine';
 import { loadHitBuzzerDeck } from './song-pool';
 import {
-  acceptBuzz, advanceRound, canJudgeClaim, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, removePlayer,
-  replaceBrokenClip, resumeListening, revealRound, startListening, undoJudgement, updateElapsed,
+  acceptBuzz, advanceRound, ANSWER_NETWORK_GRACE_MS, canFinishAnswer, canJudgeClaim, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, removePlayer,
+  replaceBrokenClip, resumeListening, revealRound, reviewBuzz, startListening, undoJudgement, updateElapsed,
   type HitConfig, type HitPlayer, type HitState,
 } from './engine';
 import { playAnswerTick, unlockAnswerSound } from './answer-sound';
@@ -52,6 +52,8 @@ interface HitSnapshot {
   teamNames?: Record<string, string>;
 }
 
+interface PrivateSolution { matchId: string; roundId: string; playerId: string; artist: string; title: string }
+
 export default function HitBuzzerGame({ online, onOpenRules }: { online?: OnlineGameProps; onOpenRules: () => void }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -79,6 +81,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
   const songRef = useRef<Song | null>(null);
   const roundStartRef = useRef<HitState | null>(null);
   const [song, setSong] = useState<Song | null>(null);
+  const [privateSolution, setPrivateSolution] = useState<PrivateSolution | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const drawIdRef = useRef(0);
   const seenActions = useRef(new Set<string>());
@@ -289,6 +292,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     const next = acceptBuzz(elapsed, playerId, roundId, serverClock.now());
     if (next.phase !== 'answering') return;
     audioRef.current?.pause();
+    setPrivateSolution(null);
     lastDecisionRef.current = null;
     commit(next);
     void haptics.medium();
@@ -317,11 +321,40 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     finally { resolvingRef.current = false; }
   }, [commit, text.audioFailed]);
 
+  const sendSolution = useCallback((current: HitState, playerId: string, recipient?: string) => {
+    const card = songRef.current;
+    if (!card || current.phase !== 'reviewing' || current.claim?.playerId !== playerId) return;
+    const solution: PrivateSolution = { matchId: current.matchId, roundId: current.roundId, playerId, artist: card.artist, title: card.title };
+    if (!online || localSeats(online).includes(playerId)) setPrivateSolution(solution);
+    else online.broadcastTo?.(recipient ?? online.players.find(p => p.id === playerId)?.controlledBy ?? playerId, 'hitbuzzer-solution', solution);
+  }, [online]);
+
+  const finishSpokenAnswer = useCallback((playerId: string, roundId: string) => {
+    const current = stateRef.current;
+    if (!isHost || !current || !songRef.current || resolvingRef.current) return;
+    if (online && !localSeats(online).includes(playerId) && !online.broadcastTo) return;
+    const next = reviewBuzz(current, playerId, roundId, serverClock.now());
+    if (next === current) return;
+    commit(next);
+    sendSolution(next, playerId);
+  }, [isHost, online, commit, sendSolution]);
+
+  const requestSolution = useCallback(() => {
+    const current = stateRef.current;
+    const playerId = current?.claim?.playerId;
+    if (!current || !playerId || !canFinishAnswer(current, playerId, current.roundId, serverClock.now())
+      || online?.isConnected === false || (online && !localSeats(online).includes(playerId))) return;
+    if (online && !online.isHost) online.broadcast('hitbuzzer-action', { type: 'spoken', playerId, roundId: current.roundId,
+      matchId: current.matchId, actionId: id() });
+    else finishSpokenAnswer(playerId, current.roundId);
+  }, [online, finishSpokenAnswer]);
+
   const judge = useCallback((correct: boolean, playerId: string, roundId: string) => {
     const current = stateRef.current;
     const card = songRef.current;
     if (!isHost || !current || !card || !canJudgeClaim(current, playerId, roundId, serverClock.now()) || resolvingRef.current) return;
     lastDecisionRef.current = current;
+    setPrivateSolution(null);
     const next = judgeBuzz(current, correct, card.artist, card.title);
     void resumeAfter(next);
     if (correct) void haptics.success(); else void haptics.warning();
@@ -330,14 +363,16 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
   const requestJudgement = useCallback((correct: boolean) => {
     const current = stateRef.current;
     const playerId = current?.claim?.playerId;
-    if (!current || !playerId || !canJudgeClaim(current, playerId, current.roundId, serverClock.now())
+    if (!current || !playerId || !privateSolution || privateSolution.matchId !== current.matchId
+      || privateSolution.roundId !== current.roundId || privateSolution.playerId !== playerId
+      || !canJudgeClaim(current, playerId, current.roundId, serverClock.now())
       || online?.isConnected === false) return;
     if (online && !online.isHost) {
       if (!localSeats(online).includes(playerId)) return;
       online.broadcast('hitbuzzer-action', { type: 'judge', playerId, roundId: current.roundId,
         matchId: current.matchId, correct, actionId: id() });
     } else judge(correct, playerId, current.roundId);
-  }, [online, judge]);
+  }, [online, judge, privateSolution]);
 
   const nextRound = useCallback(() => {
     const current = stateRef.current;
@@ -345,6 +380,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     const next = advanceRound(current, id());
     lastDecisionRef.current = null;
     setShowRulesOnTv(false);
+    setPrivateSolution(null);
     commit(next);
     if (next.phase === 'loading') prepareSong(deckRef.current);
   }, [isHost, commit, prepareSong]);
@@ -359,8 +395,10 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     if (audioRef.current) audioRef.current.currentTime = before.elapsedMs / 1000;
     lastDecisionRef.current = null;
     setError(null);
+    setPrivateSolution(null);
     commit(restored);
-  }, [isHost, commit]);
+    if (restored.phase === 'reviewing') sendSolution(restored, restored.claim!.playerId);
+  }, [isHost, commit, sendSolution]);
 
   const skipSong = useCallback(() => {
     if (!isHost || stateRef.current?.phase !== 'loading') return;
@@ -375,6 +413,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     if (online) online.broadcast('hitbuzzer-state', { state: null, matchId });
     commit(null);
     setSong(null);
+    setPrivateSolution(null);
     songRef.current = null;
     setShowRulesOnTv(false);
     setError(null);
@@ -385,7 +424,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast('hitbuzzer-action', data => {
-      if ((data.type !== 'buzz' && data.type !== 'judge') || typeof data.playerId !== 'string' || typeof data.__senderId !== 'string'
+      if ((data.type !== 'buzz' && data.type !== 'spoken' && data.type !== 'judge') || typeof data.playerId !== 'string' || typeof data.__senderId !== 'string'
         || typeof data.actionId !== 'string' || typeof data.roundId !== 'string') return;
       const sender = data.__senderId;
       const authorized = canBuzzForSeat(online.players, sender, data.playerId);
@@ -393,9 +432,10 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
       if (!authorized || !current || data.matchId !== current.matchId || seenActions.current.has(data.actionId)) return;
       seenActions.current.add(data.actionId);
       if (data.type === 'buzz') buzz(data.playerId, data.roundId);
+      else if (data.type === 'spoken') finishSpokenAnswer(data.playerId, data.roundId);
       else if (typeof data.correct === 'boolean') judge(data.correct, data.playerId, data.roundId);
     });
-  }, [online, buzz, judge]);
+  }, [online, buzz, finishSpokenAnswer, judge]);
 
   useEffect(() => {
     if (!online?.isHost || !state) return;
@@ -406,6 +446,30 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     return online.onBroadcast('hitbuzzer-sync-request', data => {
       if (typeof data.__senderId !== 'string' || !online.players.some(p => p.id === data.__senderId)) return;
       if (stateRef.current) online.broadcast('hitbuzzer-state', { state: stateRef.current });
+    });
+  }, [online]);
+  useEffect(() => {
+    if (!online?.isHost) return;
+    return online.onBroadcast('hitbuzzer-solution-request', data => {
+      const current = stateRef.current;
+      if (typeof data.__senderId !== 'string' || typeof data.playerId !== 'string' || !current
+        || data.matchId !== current.matchId || data.roundId !== current.roundId
+        || current.phase !== 'reviewing' || current.claim?.playerId !== data.playerId
+        || !canBuzzForSeat(online.players, data.__senderId, data.playerId)) return;
+      sendSolution(current, data.playerId, data.__senderId);
+    });
+  }, [online, sendSolution]);
+  useEffect(() => {
+    if (!online || online.isHost) return;
+    return online.onBroadcast('hitbuzzer-solution', data => {
+      const current = stateRef.current;
+      if (data.__senderId !== online.hostPlayerId || !current || !current.claim
+        || (current.phase !== 'answering' && current.phase !== 'reviewing')
+        || data.matchId !== current.matchId || data.roundId !== current.roundId
+        || data.playerId !== current.claim.playerId || !localSeats(online).includes(data.playerId)
+        || typeof data.artist !== 'string' || typeof data.title !== 'string') return;
+      setPrivateSolution({ matchId: current.matchId, roundId: current.roundId,
+        playerId: data.playerId, artist: data.artist, title: data.title });
     });
   }, [online]);
   useEffect(() => {
@@ -471,7 +535,8 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
         const next = updateElapsed(current, Math.floor(audioRef.current.currentTime) * 1000);
         if (next.elapsedMs >= 30_000) endSong();
         else if (next !== current) commit(next);
-      } else if (current.phase === 'answering' && current.claim && !resolvingRef.current && !audioBlockedRef.current && serverClock.now() >= current.claim.expiresAt) {
+      } else if (current.phase === 'answering' && current.claim && !resolvingRef.current && !audioBlockedRef.current
+        && serverClock.now() >= current.claim.expiresAt + ANSWER_NETWORK_GRACE_MS) {
         const card = songRef.current;
         if (card) { lastDecisionRef.current = current; void resumeAfter(judgeBuzz(current, false, card.artist, card.title, true)); }
       }
@@ -486,6 +551,23 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
   }, [state?.phase]);
 
   const localIds = useMemo(() => state?.players.filter(p => !online || localSeats(online).includes(p.id)).map(p => p.id) ?? [], [state?.players, online]);
+  useEffect(() => {
+    setPrivateSolution(previous => previous && state && (state.phase === 'answering' || state.phase === 'reviewing')
+      && previous.matchId === state.matchId && previous.roundId === state.roundId
+      && previous.playerId === state.claim?.playerId ? previous : null);
+  }, [state]);
+  useEffect(() => {
+    if (!online || online.isHost || online.isConnected === false || state?.phase !== 'reviewing' || !state.claim
+      || !localIds.includes(state.claim.playerId)
+      || (privateSolution?.matchId === state.matchId && privateSolution.roundId === state.roundId
+        && privateSolution.playerId === state.claim.playerId)) return;
+    const request = () => online.broadcast('hitbuzzer-solution-request', {
+      matchId: state.matchId, roundId: state.roundId, playerId: state.claim!.playerId, actionId: id(),
+    });
+    request();
+    const retry = window.setInterval(request, 2000);
+    return () => window.clearInterval(retry);
+  }, [online, state, localIds, privateSolution]);
   const acceptedClaimRef = useRef<string | null>(null);
   useEffect(() => {
     if (isHost || state?.phase !== 'answering' || !state.claim || !localIds.includes(state.claim.playerId)) return;
@@ -533,6 +615,8 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     answerLeft: state?.phase === 'answering' ? answerLeft : null,
     answerDeadline: state?.claim?.expiresAt ?? null,
     answerSeconds: state?.config.answerSeconds ?? DEFAULT_CONFIG.answerSeconds,
+    answerMode: state?.config.answerMode ?? DEFAULT_CONFIG.answerMode,
+    lastAttempt: state?.attempts?.at(-1) ?? null,
     attempts: state?.phase === 'result' || state?.phase === 'finished' ? state.attempts ?? [] : [],
     reveal: state?.phase === 'result' || state?.phase === 'finished'
       ? state.reveal && { ...state.reveal, winnerId: teamMatch ? state.players.find(p => p.id === state.reveal?.winnerId)?.teamId ?? null : state.reveal.winnerId }
@@ -589,10 +673,13 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
             loading={previewLoading} ready={!!previewUrl} failed={audioStartFailed}
             labels={{ round: text.round, startNow: flowText.startNow, otherSong: flowText.otherSong, ready: flowText.ready,
               finding: flowText.finding, unavailable: flowText.unavailable, waiting: flowText.waiting,
-              challenge: flowText.challenge, promise: flowText.promise }}
+              challenge: flowText.challenge, promise: state.config.answerMode === 'title' ? flowText.modeTitleHint
+                : state.config.answerMode === 'artist' ? flowText.modeArtistHint : flowText.modeBothHint }}
             onStart={() => void startAudio()} onReplace={skipSong} />}
 
           {(state.phase === 'listening' || state.phase === 'paused') && <StagePanel className="space-y-5 p-5 text-center">
+            <p className="text-xs font-bold uppercase tracking-[.14em] text-[#df8eff]">{state.config.answerMode === 'title' ? flowText.modeTitle
+              : state.config.answerMode === 'artist' ? flowText.modeArtist : flowText.modeBoth}</p>
             <div className={`grid gap-3 ${localIds.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
               {state.players.filter(p => localIds.includes(p.id)).map(p => <HitBuzzerButton key={p.id} name={p.name} score={p.score} pointsLabel={text.points}
                 buzzLabel={text.buzz} lockedLabel={text.locked} sentLabel={text.sent} answerLabel={text.answer} locked={p.locked} pending={pending === p.id}
@@ -608,10 +695,13 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
 
           {(state.phase === 'answering' || state.phase === 'reviewing') && <HitBuzzerAnswerCheck
             playerName={claimPlayer?.name || text.player} secondsLeft={answerLeft} totalSeconds={state.config.answerSeconds}
-            canJudge={state.phase === 'answering' && answerLeft > 0 && !!state.claim && localIds.includes(state.claim.playerId) && online?.isConnected !== false}
+            phase={state.phase} mode={state.config.answerMode ?? DEFAULT_CONFIG.answerMode}
+            solution={state.phase === 'reviewing' && privateSolution?.matchId === state.matchId
+              && privateSolution.roundId === state.roundId && privateSolution.playerId === state.claim?.playerId ? privateSolution : null}
+            isClaimant={!!state.claim && localIds.includes(state.claim.playerId) && online?.isConnected !== false}
+            onSpoken={requestSolution}
             onCorrect={() => requestJudgement(true)} onWrong={() => requestJudgement(false)}
-            labels={{ answerNow: flowText.answerNow, sayAnswer: flowText.sayAnswer, markAnswer: flowText.markAnswer,
-              waitForPlayer: flowText.waitForPlayer, correct: text.correct, wrong: text.wrong }} />}
+            labels={{ ...flowText, correct: text.correct, wrong: text.wrong }} />}
 
           {(state.phase === 'result' || state.phase === 'finished') && <StagePanel className="space-y-5 p-6 text-center">
             {state.reveal && <><p className="text-sm uppercase tracking-[0.2em] text-[#df8eff]">{text.songReveal}</p><p className="font-game text-3xl font-black">{state.reveal.title}</p><p className="text-lg text-[#b3a8c9]">{state.reveal.artist}</p>{state.reveal.winnerId && <p className="text-[#8ff5ff]">{state.players.find(p => p.id === state.reveal?.winnerId)?.name} +{state.reveal.delta}</p>}</>}

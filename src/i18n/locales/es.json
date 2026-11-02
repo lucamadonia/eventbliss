@@ -9007,10 +9007,10 @@
       "tagline": "Reconoce la canción antes que los demás.",
       "step1": "El anfitrión inicia un fragmento de 30 segundos.",
       "step2": "Pulsa tu propio botón en cuanto reconozcas la canción.",
-      "step3": "Di el artista y el título en voz alta antes de que termine la cuenta atrás. Elige Correcto o Incorrecto en tu dispositivo.",
+      "step3": "Antes de jugar, elige si deben acertarse el título, el artista o ambos. Quien pulse el buzzer responde en voz alta y confirma antes de que termine el tiempo. Solo entonces ve el título y el artista en su móvil.",
       "step4": "Un acierto da puntos según la rapidez. Un error resta la penalización, bloquea a tu equipo en esta canción y reactiva los demás pulsadores.",
       "step5": "Gana la mayor puntuación al terminar las rondas elegidas o alcanzar el objetivo.",
-      "tip": "Correcto muestra la canción a todos de inmediato. Incorrecto la mantiene oculta para que los demás puedan pulsar."
+      "tip": "La parte requerida se destaca en la comprobación privada. Una respuesta correcta revela la solución a todos; una incorrecta la mantiene oculta."
     },
     "pixeljagd": {
       "title": "Pixeljagd",

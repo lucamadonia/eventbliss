@@ -10,8 +10,16 @@ const hitbuzzer: CueFn = stableCue((phase, state) => {
         { key: 'gameRules.hitbuzzer.title', fallback: 'Hit-Buzzer' },
         { eyebrow: roundEyebrow(round, num(state.totalRounds, 0)),
           subtitle: { key: 'gameRules.hitbuzzer.tagline', fallback: 'Erkenne den Song schneller als die anderen.' } });
-    case 'answering':
-      return sound(`hitbuzzer:${round}:buzz:${str(state.buzzedName)}:${num(state.answerDeadline, 0)}:${num(state.answerLeft, 0)}`, 'tick', '#8ff5ff');
+    case 'answering': {
+      const left = num(state.answerLeft, 0);
+      return left > 0 ? sound(`hitbuzzer:${round}:buzz:${str(state.buzzedName)}:${num(state.answerDeadline, 0)}:${left}`,
+        left <= 3 ? 'buzzerUrgent' : 'buzzerTick', left <= 3 ? '#ff6b98' : '#8ff5ff') : null;
+    }
+    case 'listening': {
+      const attempt = state.lastAttempt && typeof state.lastAttempt === 'object' && !Array.isArray(state.lastAttempt)
+        ? state.lastAttempt as { outcome?: string; playerId?: string } : null;
+      return attempt?.outcome === 'timeout' ? sound(`hitbuzzer:${round}:timeout:${str(attempt.playerId)}`, 'buzzerTimeout', '#ff6b98') : null;
+    }
     case 'reveal':
       return sound(`hitbuzzer:${round}:reveal`, 'reveal', '#ff2e88');
     default:

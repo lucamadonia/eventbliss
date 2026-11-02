@@ -9024,10 +9024,10 @@
       "tagline": "Şarkıyı herkesten önce tanı.",
       "step1": "Sunucu 30 saniyelik parçayı başlatır.",
       "step2": "Şarkıyı tanıyınca kendi butonuna bas.",
-      "step3": "Geri sayım bitmeden sanatçıyı ve şarkı adını yüksek sesle söyle. Kendi cihazında Doğru veya Yanlış seç.",
+      "step3": "Oyundan önce şarkı adının, sanatçının veya ikisinin de doğru olması gerektiğini seç. Butona basan kişi yanıtı yüksek sesle söyler ve süre dolmadan onaylar. Ancak bundan sonra şarkı ve sanatçı kendi cihazında görünür.",
       "step4": "Doğru cevap hıza göre puan kazandırır. Yanlış cevap ceza getirir, takımını bu şarkıda kilitler ve diğer butonları yeniden açar.",
       "step5": "Seçilen turlardan sonra veya hedef puana ulaşınca en yüksek puan kazanır.",
-      "tip": "Doğru seçilince şarkı hemen herkese gösterilir. Yanlış seçilince gizli kalır ve diğerleri basabilir."
+      "tip": "Gerekli bölüm özel kontrolde vurgulanır. Doğru yanıt çözümü herkese gösterir; yanlış yanıt gizli tutar."
     },
     "pixeljagd": {
       "title": "Pixeljagd",
