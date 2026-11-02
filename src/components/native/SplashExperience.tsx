@@ -11,6 +11,7 @@ import wordmark from "@/assets/eventbliss-wordmark-v2.png";
 import planningScene from "@/assets/splash-plan.webp";
 import playingScene from "@/assets/splash-play.webp";
 import celebratingScene from "@/assets/splash-celebrate.webp";
+import ohrwurmTV from "@/assets/splash-ohrwurm-tv.webp";
 import "./splash-story.css";
 
 interface Props {
@@ -34,6 +35,15 @@ const scenes = [
   { src: playingScene, name: "play", step: phaseOrder.play, origin: "54% 58%" },
   { src: celebratingScene, name: "celebrate", step: phaseOrder.celebrate, origin: "51% 53%" },
 ] as const;
+
+function StoryArtwork({ src, showTV }: { src: string; showTV: boolean }) {
+  return (
+    <div className="splash-story-art">
+      <img src={src} alt="" className="splash-story-image" loading="eager" decoding="async" />
+      {showTV && <img src={ohrwurmTV} alt="" className="splash-story-tv" loading="eager" decoding="async" />}
+    </div>
+  );
+}
 
 function launchBackground() {
   // The first WebView frame must match the OS-selected native launch image.
@@ -71,7 +81,7 @@ export function SplashExperience({ onComplete }: Props) {
       timers.push(setTimeout(onComplete, 890));
     } else {
       // Keep the matching native mark visible until local scenes can be painted.
-      const ready = Promise.all(scenes.map(({ src }) => {
+      const ready = Promise.all([...scenes.map(({ src }) => src), ohrwurmTV].map((src) => {
         const image = new Image();
         image.src = src;
         return image.decode().catch(() => undefined);
@@ -107,14 +117,15 @@ export function SplashExperience({ onComplete }: Props) {
       transition={released ? reducedMotion ? { duration: 0.2 } : splashMotion.release : { duration: 0 }}
     >
       {reducedMotion ? (
-        <motion.img
-          src={celebratingScene}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
+        <motion.div
+          className="splash-story-scene absolute inset-0 overflow-hidden"
           initial={false}
           animate={{ opacity: brand ? 0.28 : 0 }}
           transition={{ duration: 0.2 }}
-        />
+        >
+          <div className="splash-story-backdrop" style={{ backgroundImage: `url(${celebratingScene})` }} />
+          <StoryArtwork src={celebratingScene} showTV />
+        </motion.div>
       ) : scenes.map(({ src, name, step: sceneStep, origin }) => {
         const visible = step >= sceneStep;
         return (
@@ -136,7 +147,7 @@ export function SplashExperience({ onComplete }: Props) {
             }}
           >
             <div className="splash-story-backdrop" style={{ backgroundImage: `url(${src})` }} />
-            <img src={src} alt="" className="splash-story-image" loading="eager" decoding="async" />
+            <StoryArtwork src={src} showTV={name !== "plan"} />
           </motion.div>
         );
       })}
