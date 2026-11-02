@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Die EventBliss-Startanimation zeigt das gemeinsame Ohrwurm-Spiel jetzt aus Sicht hinter der Gruppe: Alle schauen auf den Fernseher und spielen gleichzeitig auf ihren Handys. Auf dem TV und den vier Handys sind echte Ohrwurm-Ansichten zu sehen. Beim Jubeln erscheint die Song-Auflösung auf dem Fernseher und auf dem Handy des aktiven Teams.\n\nBitte testen: App vollständig schließen und auf iPhone und iPad erneut starten. Prüft die TV- und Handy-Ansichten im Hoch- und Querformat sowie mit „Bewegung reduzieren“. Meldet bei Problemen Build 327, Gerät, iOS-Version und den genauen Schritt.",
+    "en-US": "The EventBliss launch animation now shows a shared Ohrwurm game from behind the group: everyone looks at the TV while playing on their phones. The TV and all four phones display real Ohrwurm views. During the celebration, the song reveal appears on the TV and the active team's phone.\n\nPlease fully close and relaunch the app on iPhone and iPad. Check the TV and phone views in portrait and landscape, and with Reduce Motion enabled. If anything looks wrong, include build 327, device, iOS version and the exact step."
+  }
+}
