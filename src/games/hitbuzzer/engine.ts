@@ -22,6 +22,21 @@ export interface HitConfig {
   genre: string | null;
 }
 
+export interface HitAttempt {
+  playerId: string;
+  playerName: string;
+  teamName?: string;
+  outcome: 'correct' | 'wrong' | 'timeout';
+  delta: number;
+}
+
+export interface HitRoundHistory {
+  round: number;
+  artist: string;
+  title: string;
+  attempts: HitAttempt[];
+}
+
 export interface HitState {
   matchId: string;
   roundId: string;
@@ -33,6 +48,9 @@ export interface HitState {
   elapsedMs: number;
   claim: { playerId: string; points: number; expiresAt: number } | null;
   reveal: { artist: string; title: string; winnerId: string | null; delta: number } | null;
+  /** Only resolved rounds enter history; the current song stays private. */
+  history: HitRoundHistory[];
+  attempts: HitAttempt[];
 }
 
 export const DEFAULT_CONFIG: HitConfig = {
@@ -49,13 +67,13 @@ export function createMatch(players: Omit<HitPlayer, 'score' | 'locked'>[], conf
   return {
     matchId, roundId, revision: 1, phase: 'loading', round: 1, config,
     players: players.map(p => ({ ...p, score: 0, locked: false })),
-    elapsedMs: 0, claim: null, reveal: null,
+    elapsedMs: 0, claim: null, reveal: null, history: [], attempts: [],
   };
 }
 
 export function startListening(state: HitState): HitState {
   if (state.phase !== 'loading') return state;
-  return { ...state, phase: 'listening', revision: state.revision + 1, elapsedMs: 0, claim: null, reveal: null,
+  return { ...state, phase: 'listening', revision: state.revision + 1, elapsedMs: 0, claim: null, reveal: null, attempts: [],
     players: state.players.map(p => ({ ...p, locked: false })) };
 }
 
@@ -81,12 +99,17 @@ export function acceptBuzz(state: HitState, playerId: string, roundId: string, n
     claim: { playerId, points: pointsAt(state.elapsedMs, state.config.constantPoints), expiresAt: now + state.config.answerSeconds * 1000 } };
 }
 
+export function canJudgeClaim(state: HitState, playerId: string, roundId: string, now: number): boolean {
+  return state.phase === 'answering' && state.roundId === roundId && state.claim?.playerId === playerId
+    && Number.isFinite(now) && now < state.claim.expiresAt;
+}
+
 export function voidBuzz(state: HitState): HitState {
   if (state.phase !== 'answering' && state.phase !== 'reviewing') return state;
   return { ...state, phase: 'listening', claim: null, revision: state.revision + 1 };
 }
 
-/** The spoken answer has been given; stop the answer clock while the host checks the private song card. */
+/** Kept for restoring older snapshots that were saved during a host review. */
 export function reviewBuzz(state: HitState): HitState {
   return state.phase === 'answering' && state.claim
     ? { ...state, phase: 'reviewing', revision: state.revision + 1 }
@@ -103,23 +126,30 @@ export function extendAnswerDeadline(state: HitState, pausedMs: number): HitStat
 export function revealRound(state: HitState, artist: string, title: string, winnerId: string | null = null, delta = 0): HitState {
   if (state.phase !== 'listening' && state.phase !== 'answering') return state;
   return { ...state, phase: 'result', claim: null, revision: state.revision + 1,
-    reveal: { artist, title, winnerId, delta } };
+    reveal: { artist, title, winnerId, delta },
+    history: [...(state.history ?? []), { round: state.round, artist, title, attempts: state.attempts ?? [] }] };
 }
 
-export function judgeBuzz(state: HitState, correct: boolean, artist: string, title: string): HitState {
+export function judgeBuzz(state: HitState, correct: boolean, artist: string, title: string, timedOut = false): HitState {
   if ((state.phase !== 'answering' && state.phase !== 'reviewing') || !state.claim) return state;
   const claim = state.claim;
-  const teamId = state.players.find(p => p.id === claim.playerId)?.teamId;
-  if (!teamId) return state;
+  const claimant = state.players.find(p => p.id === claim.playerId);
+  if (!claimant) return state;
+  const teamId = claimant.teamId;
   const delta = correct ? claim.points : -state.config.penalty;
+  const attempts: HitAttempt[] = [...(state.attempts ?? []), {
+    playerId: claimant.id, playerName: claimant.name, teamName: claimant.teamName,
+    outcome: correct ? 'correct' : timedOut ? 'timeout' : 'wrong', delta,
+  }];
   const players = state.players.map(p => p.teamId === teamId
     ? { ...p, score: p.score + delta, locked: p.locked || !correct }
     : p);
   if (correct || players.every(p => p.locked)) {
-    return { ...state, players, phase: 'result', claim: null, revision: state.revision + 1,
-      reveal: { artist, title, winnerId: correct ? claim.playerId : null, delta: correct ? delta : 0 } };
+    return { ...state, players, phase: 'result', claim: null, revision: state.revision + 1, attempts,
+      reveal: { artist, title, winnerId: correct ? claim.playerId : null, delta: correct ? delta : 0 },
+      history: [...(state.history ?? []), { round: state.round, artist, title, attempts }] };
   }
-  return { ...state, players, phase: 'listening', claim: null, revision: state.revision + 1 };
+  return { ...state, players, phase: 'listening', claim: null, revision: state.revision + 1, attempts };
 }
 
 export function advanceRound(state: HitState, roundId: string): HitState {
@@ -127,7 +157,7 @@ export function advanceRound(state: HitState, roundId: string): HitState {
   const targetReached = state.config.targetScore !== null && state.players.some(p => p.score >= state.config.targetScore!);
   if (state.round >= state.config.rounds || targetReached) return { ...state, phase: 'finished', revision: state.revision + 1 };
   return { ...state, phase: 'loading', round: state.round + 1, roundId, revision: state.revision + 1,
-    elapsedMs: 0, claim: null, reveal: null, players: state.players.map(p => ({ ...p, locked: false })) };
+    elapsedMs: 0, claim: null, reveal: null, attempts: [], players: state.players.map(p => ({ ...p, locked: false })) };
 }
 
 /** Reopen the last judged claim with a fresh answer window. */
@@ -143,7 +173,7 @@ export function replaceBrokenClip(current: HitState, roundStart: HitState, round
   if (current.matchId !== roundStart.matchId || current.roundId !== roundStart.roundId
     || roundStart.phase !== 'listening' || !['listening', 'answering', 'reviewing', 'paused'].includes(current.phase)) return current;
   return { ...current, phase: 'loading', roundId, revision: current.revision + 1,
-    elapsedMs: 0, claim: null, reveal: null,
+    elapsedMs: 0, claim: null, reveal: null, attempts: roundStart.attempts ?? [],
     players: current.players.map(p => ({ ...p,
       score: roundStart.players.find(startPlayer => startPlayer.id === p.id)?.score ?? p.score,
       locked: false,

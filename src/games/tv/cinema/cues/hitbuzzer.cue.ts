@@ -11,7 +11,7 @@ const hitbuzzer: CueFn = stableCue((phase, state) => {
         { eyebrow: roundEyebrow(round, num(state.totalRounds, 0)),
           subtitle: { key: 'gameRules.hitbuzzer.tagline', fallback: 'Erkenne den Song schneller als die anderen.' } });
     case 'answering':
-      return sound(`hitbuzzer:${round}:buzz:${str(state.buzzedName)}`, 'tick', '#8ff5ff');
+      return sound(`hitbuzzer:${round}:buzz:${str(state.buzzedName)}:${num(state.answerDeadline, 0)}:${num(state.answerLeft, 0)}`, 'tick', '#8ff5ff');
     case 'reveal':
       return sound(`hitbuzzer:${round}:reveal`, 'reveal', '#ff2e88');
     default:
