@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, pointsAt, removePlayer, replaceBrokenClip, resumeListening, reviewBuzz, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
+import { acceptBuzz, advanceRound, canJudgeClaim, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, pointsAt, removePlayer, replaceBrokenClip, resumeListening, reviewBuzz, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
 
 const roster = [
   { id: 'a', name: 'Alex', color: '#df8eff', avatar: 'A', teamId: 'a' },
@@ -17,16 +17,33 @@ describe('Hit-Buzzer host rules', () => {
     expect(pointsAt(35_000)).toBe(40);
   });
 
+  it('lets only the current claimant grade before the answer deadline', () => {
+    const claimed = acceptBuzz(ready(), 'a', 'round-1', 1000);
+    expect(canJudgeClaim(claimed, 'a', 'round-1', 8999)).toBe(true);
+    expect(canJudgeClaim(claimed, 'b', 'round-1', 2000)).toBe(false);
+    expect(canJudgeClaim(claimed, 'a', 'old-round', 2000)).toBe(false);
+    expect(canJudgeClaim(claimed, 'a', 'round-1', 9000)).toBe(false);
+  });
+
   it('penalizes a wrong answer once, locks the team, then lets another player buzz', () => {
     const first = acceptBuzz(ready(), 'a', 'round-1', 1000);
     const wrong = judgeBuzz(first, false, 'Artist', 'Song');
     expect(wrong.players.find(p => p.id === 'a')).toMatchObject({ score: -20, locked: true });
+    expect(wrong.attempts).toEqual([{ playerId: 'a', playerName: 'Alex', teamName: undefined, outcome: 'wrong', delta: -20 }]);
+    expect(JSON.stringify(wrong)).not.toContain('Artist');
     expect(judgeBuzz(wrong, false, 'Artist', 'Song')).toBe(wrong);
     expect(acceptBuzz(wrong, 'a', 'round-1', 2000)).toBe(wrong);
     const second = acceptBuzz(wrong, 'b', 'round-1', 2000);
     const won = judgeBuzz(second, true, 'Artist', 'Song');
     expect(won.reveal).toEqual({ artist: 'Artist', title: 'Song', winnerId: 'b', delta: 100 });
-    expect(advanceRound(won, 'round-2').round).toBe(2);
+    expect(won.history).toEqual([{ round: 1, artist: 'Artist', title: 'Song', attempts: [
+      { playerId: 'a', playerName: 'Alex', teamName: undefined, outcome: 'wrong', delta: -20 },
+      { playerId: 'b', playerName: 'Bo', teamName: undefined, outcome: 'correct', delta: 100 },
+    ] }]);
+    const next = advanceRound(won, 'round-2');
+    expect(next.round).toBe(2);
+    expect(next.attempts).toEqual([]);
+    expect(next.history).toEqual(won.history);
   });
 
   it('locks every member of a team on a wrong answer and keeps individual buzz identities', () => {
@@ -60,6 +77,15 @@ describe('Hit-Buzzer host rules', () => {
     expect(resumed.revision).toBe(claimed.revision + 1);
     expect(extendAnswerDeadline(resumed, 0)).toBe(resumed);
     expect(extendAnswerDeadline(ready(), 6_500)).toMatchObject({ phase: 'listening' });
+  });
+
+  it('records an expired answer and reveals the song when no team can still buzz', () => {
+    const first = judgeBuzz(acceptBuzz(ready(), 'a', 'round-1', 0), false, 'Artist', 'Song', true);
+    expect(first.attempts[0].outcome).toBe('timeout');
+    expect(first.reveal).toBeNull();
+    const last = judgeBuzz(acceptBuzz(first, 'b', 'round-1', 9000), false, 'Artist', 'Song');
+    expect(last.phase).toBe('result');
+    expect(last.history[0].attempts.map(attempt => attempt.outcome)).toEqual(['timeout', 'wrong']);
   });
 
   it('lets the host check a spoken answer without a running answer deadline or leaking the song', () => {

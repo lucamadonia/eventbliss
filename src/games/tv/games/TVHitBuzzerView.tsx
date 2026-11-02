@@ -3,6 +3,7 @@ import { Music2 } from 'lucide-react';
 import { tvPanel, tvPanelRaised, tvType } from '../tv-tokens';
 import { hitText } from '@/games/hitbuzzer/strings';
 import { roundFlowText } from '@/games/hitbuzzer/round-flow-copy';
+import type { HitAttempt } from '@/games/hitbuzzer/engine';
 import i18n from '@/i18n';
 
 interface TVPlayer { id: string; name: string; color: string; avatar: string; score: number }
@@ -14,6 +15,8 @@ export default function TVHitBuzzerView({ gameState }: { gameState: Record<strin
   const round = Number(gameState?.round ?? 1);
   const total = Number(gameState?.totalRounds ?? 15);
   const timeLeft = Number(gameState?.timeLeft ?? 30);
+  const answerLeft = Math.max(0, Number(gameState?.answerLeft ?? 0));
+  const answerSeconds = Math.max(1, Number(gameState?.answerSeconds ?? 8));
   const buzzedName = typeof gameState?.buzzedName === 'string' ? gameState.buzzedName : null;
   const players = (Array.isArray(gameState?.players) ? gameState.players : []) as TVPlayer[];
   const previewUrl = typeof gameState?.previewUrl === 'string' ? gameState.previewUrl : null;
@@ -45,6 +48,7 @@ export default function TVHitBuzzerView({ gameState }: { gameState: Record<strin
   const reveal = revealed && gameState?.reveal && typeof gameState.reveal === 'object'
     ? gameState.reveal as { title?: string; artist?: string; winnerId?: string; delta?: number } : null;
   const winner = players.find(p => p.id === reveal?.winnerId);
+  const attempts = revealed && Array.isArray(gameState?.attempts) ? gameState.attempts as HitAttempt[] : [];
 
   return <div className="relative flex h-screen w-screen flex-col overflow-hidden bg-[#060810] p-[4vw] text-white">
     <audio ref={audioRef} src={previewUrl ?? undefined} preload="none" className="hidden" aria-hidden />
@@ -58,8 +62,9 @@ export default function TVHitBuzzerView({ gameState }: { gameState: Record<strin
         {phase === 'loading' && <><span className="text-[#df8eff]" style={{ fontSize: tvType.body }}>{text.prepare}</span><p className="font-game font-black" style={{ fontSize: tvType.display }}>{text.waitHost}</p></>}
         {phase === 'listening' && <><span className="text-[#df8eff]" style={{ fontSize: tvType.body }}>{text.listen}</span><div className="grid aspect-square w-[min(25vw,35vh)] place-items-center rounded-full border-[1vw] border-[#8ff5ff] bg-[#ff2e88] font-game font-black shadow-[0_0_6vw_rgba(255,46,136,0.3)]" style={{ fontSize: tvType.hero }}>!</div><p className="font-game font-black tabular-nums text-[#8ff5ff]" style={{ fontSize: tvType.display }}>{timeLeft}s</p></>}
         {phase === 'paused' && <p className="font-game font-black text-[#df8eff]" style={{ fontSize: tvType.display }}>{i18n.t('games.connectionPaused')}</p>}
-        {(phase === 'answering' || phase === 'reviewing') && <><span className="text-[#df8eff]" style={{ fontSize: tvType.body }}>{text.answer}</span><p className="font-game font-black text-[#8ff5ff]" style={{ fontSize: tvType.display }}>{buzzedName}</p><p className="text-[#b3a8c9]" style={{ fontSize: tvType.body }}>{phase === 'reviewing' ? flowText.checking : text.yourAnswer}</p></>}
-        {revealed && <><span className="text-[#df8eff]" style={{ fontSize: tvType.body }}>{phase === 'gameOver' ? text.finished : text.songReveal}</span><p className="font-game font-black" style={{ fontSize: tvType.display }}>{reveal?.title}</p><p className="text-[#b3a8c9]" style={{ fontSize: tvType.title }}>{reveal?.artist}</p>{winner && <p className="font-bold text-[#8ff5ff]" style={{ fontSize: tvType.body }}>{winner.name} +{reveal?.delta}</p>}</>}
+        {phase === 'answering' && <><span className="text-[#df8eff]" style={{ fontSize: tvType.body }}>{flowText.answerNow}</span><p className="font-game font-black text-white" style={{ fontSize: tvType.display }}>{buzzedName}</p><div className="grid aspect-square w-[min(22vw,31vh)] place-items-center rounded-full border-[.8vw] border-[#8ff5ff] bg-[#110c1c] font-game font-black tabular-nums text-[#8ff5ff] shadow-[0_0_5vw_rgba(143,245,255,.12)]" style={{ fontSize: tvType.hero }}>{answerLeft}</div><div className="h-[.65vh] w-[min(30vw,45vh)] overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-[#8ff5ff] transition-[width] duration-200" style={{ width: `${Math.min(100, answerLeft / answerSeconds * 100)}%` }} /></div><p className="text-[#b3a8c9]" style={{ fontSize: tvType.body }}>{text.yourAnswer}</p></>}
+        {phase === 'reviewing' && <p className="font-game font-black text-[#8ff5ff]" style={{ fontSize: tvType.display }}>{buzzedName}</p>}
+        {revealed && <><span className="text-[#df8eff]" style={{ fontSize: tvType.body }}>{phase === 'gameOver' ? text.finished : text.songReveal}</span><p className="font-game font-black" style={{ fontSize: tvType.display }}>{reveal?.title}</p><p className="text-[#b3a8c9]" style={{ fontSize: tvType.title }}>{reveal?.artist}</p>{winner && <p className="font-bold text-[#8ff5ff]" style={{ fontSize: tvType.body }}>{winner.name} +{reveal?.delta}</p>}{attempts.length > 0 && <div className="flex max-h-[18vh] w-full flex-wrap items-center justify-center gap-[.8vw] overflow-y-auto">{attempts.map((attempt, index) => <span key={`${attempt.playerId}-${index}`} className={`rounded-full border px-[1.2vw] py-[.6vh] font-bold ${attempt.outcome === 'correct' ? 'border-[#8ff5ff]/35 bg-[#8ff5ff]/10 text-[#8ff5ff]' : 'border-[#ff6b98]/35 bg-[#ff6b98]/10 text-[#ff8bad]'}`} style={{ fontSize: tvType.label }}>{attempt.playerName} {attempt.delta > 0 ? '+' : ''}{attempt.delta}</span>)}</div>}</>}
       </section>
       <aside className={`${tvPanel} flex min-h-0 flex-col p-[2vw]`}><h2 className="mb-[2vh] font-game font-bold text-[#b3a8c9]" style={{ fontSize: tvType.body }}>{text.standings}</h2><ol className="min-h-0 space-y-[1vh] overflow-y-auto">{sorted.map((p, index) => <li key={p.id} className="flex items-center gap-[1vw] rounded-[1vw] bg-[#16101f] p-[1vw]"><span className="text-[#b3a8c9]" style={{ fontSize: tvType.body }}>{index + 1}.</span><span className="grid size-[3vw] shrink-0 place-items-center rounded-full font-bold text-[#060810]" style={{ background: p.color, fontSize: tvType.label }}>{p.avatar}</span><span className="min-w-0 flex-1 truncate font-semibold" style={{ fontSize: tvType.body }}>{p.name}</span><strong className="tabular-nums text-[#8ff5ff]" style={{ fontSize: tvType.body }}>{p.score}</strong></li>)}</ol></aside>
     </div>

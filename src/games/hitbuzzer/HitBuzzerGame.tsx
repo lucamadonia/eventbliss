@@ -22,15 +22,17 @@ import { clearSnapshot, loadSnapshot, saveSnapshot } from '../ui/useGameSnapshot
 import type { Song } from '../ohrwurm/ohrwurm-engine';
 import { loadHitBuzzerDeck } from './song-pool';
 import {
-  acceptBuzz, advanceRound, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, removePlayer,
-  replaceBrokenClip, resumeListening, revealRound, reviewBuzz, startListening, undoJudgement, updateElapsed, voidBuzz,
+  acceptBuzz, advanceRound, canJudgeClaim, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, removePlayer,
+  replaceBrokenClip, resumeListening, revealRound, startListening, undoJudgement, updateElapsed,
   type HitConfig, type HitPlayer, type HitState,
 } from './engine';
+import { playAnswerTick, unlockAnswerSound } from './answer-sound';
 import { hitText } from './strings';
 import { HitBuzzerSetup } from './HitBuzzerSetup';
 import { HitBuzzerButton } from './HitBuzzerButton';
 import { HitBuzzerRoundIntro } from './HitBuzzerRoundIntro';
 import { HitBuzzerAnswerCheck } from './HitBuzzerAnswerCheck';
+import { HitBuzzerAttempts, HitBuzzerRoundHistory } from './HitBuzzerRoundHistory';
 import { roundFlowText } from './round-flow-copy';
 import { HIT_TEAM_IDS, mergeEventPlayers, teamForPlayer } from './setup-roster';
 import { canBuzzForSeat } from './buzz-access';
@@ -294,6 +296,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
 
   const requestBuzz = useCallback((playerId: string) => {
     if (!state || state.phase !== 'listening' || online?.isConnected === false || pending) return;
+    unlockAnswerSound();
     haptics.light();
     if (online && !online.isHost) {
       setPending(playerId);
@@ -314,27 +317,27 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     finally { resolvingRef.current = false; }
   }, [commit, text.audioFailed]);
 
-  const judge = useCallback((correct: boolean) => {
+  const judge = useCallback((correct: boolean, playerId: string, roundId: string) => {
     const current = stateRef.current;
     const card = songRef.current;
-    if (!isHost || !current || !card || current.phase !== 'reviewing' || resolvingRef.current) return;
+    if (!isHost || !current || !card || !canJudgeClaim(current, playerId, roundId, serverClock.now()) || resolvingRef.current) return;
     lastDecisionRef.current = current;
     const next = judgeBuzz(current, correct, card.artist, card.title);
     void resumeAfter(next);
     if (correct) void haptics.success(); else void haptics.warning();
   }, [isHost, resumeAfter, haptics]);
 
-  const voidClaim = useCallback(() => {
+  const requestJudgement = useCallback((correct: boolean) => {
     const current = stateRef.current;
-    if (!isHost || !current || resolvingRef.current) return;
-    void resumeAfter(voidBuzz(current));
-  }, [isHost, resumeAfter]);
-
-  const openHostAnswer = useCallback(() => {
-    const current = stateRef.current;
-    if (!isHost || !current || current.phase !== 'answering') return;
-    commit(reviewBuzz(current));
-  }, [isHost, commit]);
+    const playerId = current?.claim?.playerId;
+    if (!current || !playerId || !canJudgeClaim(current, playerId, current.roundId, serverClock.now())
+      || online?.isConnected === false) return;
+    if (online && !online.isHost) {
+      if (!localSeats(online).includes(playerId)) return;
+      online.broadcast('hitbuzzer-action', { type: 'judge', playerId, roundId: current.roundId,
+        matchId: current.matchId, correct, actionId: id() });
+    } else judge(correct, playerId, current.roundId);
+  }, [online, judge]);
 
   const nextRound = useCallback(() => {
     const current = stateRef.current;
@@ -382,16 +385,17 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
   useEffect(() => {
     if (!online?.isHost) return;
     return online.onBroadcast('hitbuzzer-action', data => {
-      if (data.type !== 'buzz' || typeof data.playerId !== 'string' || typeof data.__senderId !== 'string'
+      if ((data.type !== 'buzz' && data.type !== 'judge') || typeof data.playerId !== 'string' || typeof data.__senderId !== 'string'
         || typeof data.actionId !== 'string' || typeof data.roundId !== 'string') return;
       const sender = data.__senderId;
       const authorized = canBuzzForSeat(online.players, sender, data.playerId);
       const current = stateRef.current;
       if (!authorized || !current || data.matchId !== current.matchId || seenActions.current.has(data.actionId)) return;
       seenActions.current.add(data.actionId);
-      buzz(data.playerId, data.roundId);
+      if (data.type === 'buzz') buzz(data.playerId, data.roundId);
+      else if (typeof data.correct === 'boolean') judge(data.correct, data.playerId, data.roundId);
     });
-  }, [online, buzz]);
+  }, [online, buzz, judge]);
 
   useEffect(() => {
     if (!online?.isHost || !state) return;
@@ -469,7 +473,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
         else if (next !== current) commit(next);
       } else if (current.phase === 'answering' && current.claim && !resolvingRef.current && !audioBlockedRef.current && serverClock.now() >= current.claim.expiresAt) {
         const card = songRef.current;
-        if (card) { lastDecisionRef.current = current; void resumeAfter(judgeBuzz(current, false, card.artist, card.title)); }
+        if (card) { lastDecisionRef.current = current; void resumeAfter(judgeBuzz(current, false, card.artist, card.title, true)); }
       }
     }, 250);
     return () => window.clearInterval(timer);
@@ -493,6 +497,12 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
   const claimPlayer = state?.players.find(p => p.id === state.claim?.playerId);
   const remaining = Math.max(0, 30 - Math.floor((state?.elapsedMs ?? 0) / 1000));
   const answerLeft = state?.claim ? Math.max(0, Math.ceil((state.claim.expiresAt - now) / 1000)) : 0;
+  useEffect(() => {
+    if (state?.phase !== 'answering' || !state.claim || answerLeft < 1
+      || !localIds.includes(state.claim.playerId) || tvConnected) return;
+    playAnswerTick(answerLeft <= 3);
+    if (answerLeft <= 3) haptics.light();
+  }, [state?.phase, state?.claim, answerLeft, localIds, tvConnected, haptics]);
   const teamMatch = useMemo(() => !!state?.players.some(player => !!player.teamName), [state?.players]);
   const ranked = useMemo(() => (teamMatch
     ? [...new Map((state?.players ?? []).map(p => [p.teamId, { ...p, id: p.teamId, name: p.teamName || `${text.team} ${p.teamId}`, avatar: p.teamId }])).values()]
@@ -520,10 +530,14 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
       players: state?.players.filter(p => p.teamId === teamId).map(p => p.name) ?? [],
     })) : undefined,
     buzzedName: claimPlayer?.name ?? null,
+    answerLeft: state?.phase === 'answering' ? answerLeft : null,
+    answerDeadline: state?.claim?.expiresAt ?? null,
+    answerSeconds: state?.config.answerSeconds ?? DEFAULT_CONFIG.answerSeconds,
+    attempts: state?.phase === 'result' || state?.phase === 'finished' ? state.attempts ?? [] : [],
     reveal: state?.phase === 'result' || state?.phase === 'finished'
       ? state.reveal && { ...state.reveal, winnerId: teamMatch ? state.players.find(p => p.id === state.reveal?.winnerId)?.teamId ?? null : state.reveal.winnerId }
       : null,
-  }), [state, remaining, previewUrl, isHost, showRulesOnTv, claimPlayer?.name, ranked, teamMatch, text.team]);
+  }), [state, remaining, previewUrl, isHost, showRulesOnTv, claimPlayer?.name, ranked, teamMatch, text.team, answerLeft]);
   const tvBridge = useTVGameBridge('hitbuzzer', tvState, [tvState], isHost);
   const tvSpeaker = online ? tvConnected : !!tvBridge?.isActive && tvBridge.lastTvReadyAt > 0 && Date.now() - tvBridge.lastTvReadyAt < 45_000;
   const toggleTvRules = useCallback(() => {
@@ -567,7 +581,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
 
         {state && <>
           {state.phase !== 'loading' && <div className="flex items-center justify-between rounded-[20px] border border-white/10 bg-[#0d0915] px-5 py-4">
-            <span className="flex items-center gap-2 font-game font-bold"><Music2 className="h-5 w-5 text-[#df8eff]" />{state.phase === 'listening' ? text.listen : state.phase === 'paused' ? t('games.connectionPaused') : state.phase === 'answering' ? text.answer : state.phase === 'reviewing' ? flowText.checkHeading : state.phase === 'result' ? text.reveal : text.finished}</span>
+            <span className="flex items-center gap-2 font-game font-bold"><Music2 className="h-5 w-5 text-[#df8eff]" />{state.phase === 'listening' ? text.listen : state.phase === 'paused' ? t('games.connectionPaused') : state.phase === 'answering' || state.phase === 'reviewing' ? text.answer : state.phase === 'result' ? text.reveal : text.finished}</span>
             <span className="font-game text-2xl font-black tabular-nums text-[#8ff5ff]">{state.phase === 'answering' ? `${answerLeft}s` : state.phase === 'listening' ? `${remaining}s` : ''}</span>
           </div>}
 
@@ -578,12 +592,11 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
               challenge: flowText.challenge, promise: flowText.promise }}
             onStart={() => void startAudio()} onReplace={skipSong} />}
 
-          {(state.phase === 'listening' || state.phase === 'paused' || state.phase === 'answering' || state.phase === 'reviewing') && <StagePanel className="space-y-5 p-5 text-center">
-            {(state.phase === 'answering' || state.phase === 'reviewing') && <p role="status" className="text-xl font-black text-[#8ff5ff]">{claimPlayer?.name || text.player} — {state.phase === 'reviewing' ? flowText.checking : text.yourAnswer}</p>}
+          {(state.phase === 'listening' || state.phase === 'paused') && <StagePanel className="space-y-5 p-5 text-center">
             <div className={`grid gap-3 ${localIds.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
               {state.players.filter(p => localIds.includes(p.id)).map(p => <HitBuzzerButton key={p.id} name={p.name} score={p.score} pointsLabel={text.points}
                 buzzLabel={text.buzz} lockedLabel={text.locked} sentLabel={text.sent} answerLabel={text.answer} locked={p.locked} pending={pending === p.id}
-                claimed={(state.phase === 'answering' || state.phase === 'reviewing') && state.claim?.playerId === p.id}
+                claimed={false}
                 disabled={state.phase !== 'listening' || p.locked || !!pending || online?.isConnected === false}
                 large={localIds.length === 1} onClick={() => requestBuzz(p.id)} />)}
             </div>
@@ -591,15 +604,18 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
             {isHost && state.phase === 'listening' && <StageAction variant="secondary" onClick={pauseAudio} className="w-full"><Pause className="h-5 w-5" />{t('games.play.pause')}</StageAction>}
             {isHost && state.phase === 'listening' && lastDecisionRef.current?.roundId === state.roundId && <StageAction variant="ghost" onClick={undo} className="w-full"><RotateCcw className="h-4 w-4" />{t('partyPlay.undo')}</StageAction>}
             {isHost && state.phase === 'paused' && <StageAction onClick={() => void resumeAudio()} disabled={online?.isConnected === false} className="w-full"><Play className="h-5 w-5" />{t('games.play.resume')}</StageAction>}
-            {(state.phase === 'answering' || state.phase === 'reviewing') && isHost && song && <HitBuzzerAnswerCheck artist={song.artist} title={song.title}
-              open={state.phase === 'reviewing'} sharedDevice={!online} onOpen={openHostAnswer} onCorrect={() => judge(true)} onWrong={() => judge(false)} onVoid={voidClaim}
-              labels={{ heading: flowText.checkHeading, prompt: flowText.checkPrompt, open: flowText.openSolution,
-                artist: flowText.artist, title: flowText.title, compare: flowText.compare, privateHint: flowText.privateHint,
-                correct: text.correct, wrong: text.wrong, void: text.void }} />}
           </StagePanel>}
+
+          {(state.phase === 'answering' || state.phase === 'reviewing') && <HitBuzzerAnswerCheck
+            playerName={claimPlayer?.name || text.player} secondsLeft={answerLeft} totalSeconds={state.config.answerSeconds}
+            canJudge={state.phase === 'answering' && answerLeft > 0 && !!state.claim && localIds.includes(state.claim.playerId) && online?.isConnected !== false}
+            onCorrect={() => requestJudgement(true)} onWrong={() => requestJudgement(false)}
+            labels={{ answerNow: flowText.answerNow, sayAnswer: flowText.sayAnswer, markAnswer: flowText.markAnswer,
+              waitForPlayer: flowText.waitForPlayer, correct: text.correct, wrong: text.wrong }} />}
 
           {(state.phase === 'result' || state.phase === 'finished') && <StagePanel className="space-y-5 p-6 text-center">
             {state.reveal && <><p className="text-sm uppercase tracking-[0.2em] text-[#df8eff]">{text.songReveal}</p><p className="font-game text-3xl font-black">{state.reveal.title}</p><p className="text-lg text-[#b3a8c9]">{state.reveal.artist}</p>{state.reveal.winnerId && <p className="text-[#8ff5ff]">{state.players.find(p => p.id === state.reveal?.winnerId)?.name} +{state.reveal.delta}</p>}</>}
+            {state.reveal && <HitBuzzerAttempts attempts={state.attempts ?? []} labels={{ round: text.round, history: flowText.history, correct: text.correct, wrong: text.wrong, timeout: flowText.timeout, noAttempts: flowText.noAttempts }} />}
             {state.phase === 'finished' && <p className="font-game text-2xl font-black text-[#df8eff]">{text.winner}: {ranked.filter(p => p.score === ranked[0]?.score).map(p => p.name).join(', ')}</p>}
             {isHost && (state.phase === 'result' ? <StageAction onClick={nextRound} className="w-full"><SkipForward className="h-5 w-5" />{state.round >= state.config.rounds || (state.config.targetScore !== null && state.players.some(p => p.score >= state.config.targetScore!)) ? text.showResult : text.next}</StageAction>
               : <StageAction onClick={resetMatch} className="w-full"><RotateCcw className="h-5 w-5" />{text.again}</StageAction>)}
@@ -608,6 +624,8 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
           {state.phase === 'finished' && <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />}
 
           <StagePanel className="p-4"><h2 className="mb-3 text-sm font-bold uppercase tracking-wider text-[#b3a8c9]">{text.standings}</h2><ol className="space-y-2">{ranked.map((p, index) => <li key={p.id} className="flex items-center gap-3 rounded-2xl bg-[#16101f] px-4 py-3"><span className="w-6 text-[#b3a8c9]">{index + 1}.</span><span className="grid size-9 shrink-0 place-items-center rounded-full text-sm font-bold text-[#060810]" style={{ background: p.color }}>{p.avatar}</span><span className="min-w-0 flex-1 truncate font-semibold">{p.name}</span><span className="font-game font-black tabular-nums text-[#8ff5ff]">{p.score}</span></li>)}</ol></StagePanel>
+          <HitBuzzerRoundHistory history={state.history ?? []} expanded={state.phase === 'finished'}
+            labels={{ round: text.round, history: flowText.history, correct: text.correct, wrong: text.wrong, timeout: flowText.timeout, noAttempts: flowText.noAttempts }} />
         </>}
       </main>
     </GameStage>
