@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Hit-Buzzer: Die buzzernde Person nennt die Antwort laut und tippt vor Ablauf des Countdowns auf „Gesagt · prüfen“. Erst dann sieht nur ihr eigenes Gerät Titel und Interpret zum Abgleichen. Neu sind drei Modi: nur Song, nur Interpret oder beides. Der benötigte Teil ist hervorgehoben. Bei „Falsch“ bleibt die Lösung für alle anderen und den TV verborgen; derselbe Song läuft weiter. Auf dem TV zeigt ein animierter Countdown mit Sounds die Antwortzeit.\n\nBitte testen: Alle drei Modi im Joystick- und Online-Spiel, auch wenn der Host mitspielt. Prüft den Abgleich auf zwei Handys und dem TV, besonders nach falscher Antwort, Zeitablauf, Verbindungspause und erneutem Buzz. Bei Problemen bitte Build 329, Gerät, iOS-Version und genauen Schritt nennen.",
+    "en-US": "Hit-Buzzer: The player who buzzes says the answer aloud and taps “Spoken · check” before the countdown ends. Only then does their own device show the title and artist for comparison. Three modes are available: song only, artist only or both. The required part is highlighted. Wrong keeps the solution hidden from everyone else and the TV while the same song continues. The TV now shows an animated answer countdown with sounds.\n\nPlease test all three modes in controller and online play, including a host who plays. Compare the two phone views and the TV after a wrong answer, timeout, connection pause and another buzz. If anything fails, include build 329, device, iOS version and the exact step."
+  }
+}
