@@ -8950,10 +8950,10 @@
       "tagline": "Recognize the song before everyone else.",
       "step1": "The host starts a 30-second clip.",
       "step2": "Press your own buzzer as soon as you know the song.",
-      "step3": "Say the artist and title aloud before the countdown ends. Choose Correct or Wrong yourself on your own device.",
+      "step3": "Before play, choose whether the title, artist or both must match. The player who buzzes says the answer aloud and taps “Answer spoken” before time runs out. Only then do title and artist appear on their own device.",
       "step4": "A correct answer earns speed points. A wrong answer costs the chosen penalty, locks your team for this song, and reopens the other buzzers.",
       "step5": "The highest score wins after the chosen rounds or when the target score is reached.",
-      "tip": "Correct reveals the song to everyone immediately. Wrong keeps it hidden so others can buzz."
+      "tip": "The required part is highlighted during the private check. Correct reveals the answer to everyone; Wrong keeps it hidden and lets others buzz."
     },
     "pixeljagd": {
       "title": "Pixel Hunt",

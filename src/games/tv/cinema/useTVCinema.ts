@@ -16,6 +16,9 @@ export function useTVCinema(audio: ReturnType<typeof useTVAudio>, gameState: TVS
   const playSound = useCallback((sound: PartySound) => {
     if (sound === 'chime') audio.playChime();
     else if (sound === 'tick') audio.playTick();
+    else if (sound === 'buzzerTick') audio.playBuzzerTick();
+    else if (sound === 'buzzerUrgent') audio.playBuzzerTick(true);
+    else if (sound === 'buzzerTimeout') audio.playBuzzerTimeout();
     else if (sound === 'reveal') audio.playReveal();
     else if (sound === 'correct') audio.playCorrect();
     else if (sound === 'wrong') audio.playWrong();

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { acceptBuzz, advanceRound, canJudgeClaim, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, pointsAt, removePlayer, replaceBrokenClip, resumeListening, reviewBuzz, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
+import { acceptBuzz, advanceRound, canFinishAnswer, canJudgeClaim, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, pointsAt, removePlayer, replaceBrokenClip, resumeListening, reviewBuzz, startListening, undoJudgement, updateElapsed, voidBuzz } from './engine';
 
 const roster = [
   { id: 'a', name: 'Alex', color: '#df8eff', avatar: 'A', teamId: 'a' },
@@ -17,12 +17,18 @@ describe('Hit-Buzzer host rules', () => {
     expect(pointsAt(35_000)).toBe(40);
   });
 
-  it('lets only the current claimant grade before the answer deadline', () => {
+  it('lets only the current claimant finish speaking before the deadline and then grade', () => {
     const claimed = acceptBuzz(ready(), 'a', 'round-1', 1000);
-    expect(canJudgeClaim(claimed, 'a', 'round-1', 8999)).toBe(true);
-    expect(canJudgeClaim(claimed, 'b', 'round-1', 2000)).toBe(false);
-    expect(canJudgeClaim(claimed, 'a', 'old-round', 2000)).toBe(false);
-    expect(canJudgeClaim(claimed, 'a', 'round-1', 9000)).toBe(false);
+    expect(canFinishAnswer(claimed, 'a', 'round-1', 8999)).toBe(true);
+    expect(canFinishAnswer(claimed, 'b', 'round-1', 2000)).toBe(false);
+    expect(canFinishAnswer(claimed, 'a', 'old-round', 2000)).toBe(false);
+    expect(canFinishAnswer(claimed, 'a', 'round-1', 9000)).toBe(true);
+    expect(canFinishAnswer(claimed, 'a', 'round-1', 9700)).toBe(false);
+    expect(canJudgeClaim(claimed, 'a', 'round-1', 8999)).toBe(false);
+    const reviewing = reviewBuzz(claimed, 'a', 'round-1', 8999);
+    expect(canJudgeClaim(reviewing, 'a', 'round-1', 12_000)).toBe(true);
+    expect(canJudgeClaim(reviewing, 'b', 'round-1', 12_000)).toBe(false);
+    expect(reviewBuzz(claimed, 'a', 'round-1', 9700)).toBe(claimed);
   });
 
   it('penalizes a wrong answer once, locks the team, then lets another player buzz', () => {
@@ -90,7 +96,7 @@ describe('Hit-Buzzer host rules', () => {
 
   it('lets the host check a spoken answer without a running answer deadline or leaking the song', () => {
     const claimed = acceptBuzz(ready(), 'a', 'round-1', 1000);
-    const reviewing = reviewBuzz(claimed);
+    const reviewing = reviewBuzz(claimed, 'a', 'round-1', 2000);
     expect(reviewing).toMatchObject({ phase: 'reviewing', claim: claimed.claim });
     expect(JSON.stringify(reviewing)).not.toContain('Artist');
     expect(acceptBuzz(reviewing, 'b', 'round-1', 2000)).toBe(reviewing);

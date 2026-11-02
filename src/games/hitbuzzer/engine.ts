@@ -1,5 +1,6 @@
 /** Host-authoritative rules. The song and preview URL never enter this public state. */
 export type HitPhase = 'loading' | 'listening' | 'paused' | 'answering' | 'reviewing' | 'result' | 'finished';
+export type HitAnswerMode = 'title' | 'artist' | 'both';
 
 export interface HitPlayer {
   id: string;
@@ -17,6 +18,7 @@ export interface HitConfig {
   rounds: number;
   targetScore: number | null;
   answerSeconds: number;
+  answerMode: HitAnswerMode;
   penalty: number;
   constantPoints: boolean;
   genre: string | null;
@@ -55,8 +57,11 @@ export interface HitState {
 
 export const DEFAULT_CONFIG: HitConfig = {
   rounds: 15, targetScore: null, answerSeconds: 8, penalty: 20,
-  constantPoints: false, genre: null,
+  answerMode: 'both', constantPoints: false, genre: null,
 };
+
+/** A tap made in the last visible second must survive ordinary room latency. */
+export const ANSWER_NETWORK_GRACE_MS = 700;
 
 export function pointsAt(elapsedMs: number, constant = false): number {
   return constant ? 100 : Math.max(40, 100 - 2 * Math.floor(Math.max(0, elapsedMs) / 1000));
@@ -65,7 +70,7 @@ export function pointsAt(elapsedMs: number, constant = false): number {
 export function createMatch(players: Omit<HitPlayer, 'score' | 'locked'>[], config: HitConfig, matchId: string, roundId: string): HitState {
   if (players.length < 2 || new Set(players.map(p => p.id)).size !== players.length) throw new Error('At least two unique players are required');
   return {
-    matchId, roundId, revision: 1, phase: 'loading', round: 1, config,
+    matchId, roundId, revision: 1, phase: 'loading', round: 1, config: { ...DEFAULT_CONFIG, ...config },
     players: players.map(p => ({ ...p, score: 0, locked: false })),
     elapsedMs: 0, claim: null, reveal: null, history: [], attempts: [],
   };
@@ -100,8 +105,12 @@ export function acceptBuzz(state: HitState, playerId: string, roundId: string, n
 }
 
 export function canJudgeClaim(state: HitState, playerId: string, roundId: string, now: number): boolean {
+  return state.phase === 'reviewing' && state.roundId === roundId && state.claim?.playerId === playerId && Number.isFinite(now);
+}
+
+export function canFinishAnswer(state: HitState, playerId: string, roundId: string, now: number): boolean {
   return state.phase === 'answering' && state.roundId === roundId && state.claim?.playerId === playerId
-    && Number.isFinite(now) && now < state.claim.expiresAt;
+    && Number.isFinite(now) && now < state.claim.expiresAt + ANSWER_NETWORK_GRACE_MS;
 }
 
 export function voidBuzz(state: HitState): HitState {
@@ -109,9 +118,9 @@ export function voidBuzz(state: HitState): HitState {
   return { ...state, phase: 'listening', claim: null, revision: state.revision + 1 };
 }
 
-/** Kept for restoring older snapshots that were saved during a host review. */
-export function reviewBuzz(state: HitState): HitState {
-  return state.phase === 'answering' && state.claim
+/** The spoken answer is finished; stop the countdown before privately showing the solution. */
+export function reviewBuzz(state: HitState, playerId: string, roundId: string, now: number): HitState {
+  return canFinishAnswer(state, playerId, roundId, now)
     ? { ...state, phase: 'reviewing', revision: state.revision + 1 }
     : state;
 }

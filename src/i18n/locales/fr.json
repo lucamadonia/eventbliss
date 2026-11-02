@@ -8974,10 +8974,10 @@
       "tagline": "Reconnais la chanson avant les autres.",
       "step1": "L’hôte lance un extrait de 30 secondes.",
       "step2": "Appuie sur ton buzzer dès que tu reconnais la chanson.",
-      "step3": "Annonce l’artiste et le titre à voix haute avant la fin du compte à rebours. Choisis toi-même Correct ou Faux sur ton appareil.",
+      "step3": "Avant de jouer, choisissez si le titre, l’artiste ou les deux doivent être corrects. La personne qui buzze répond à voix haute puis confirme avant la fin du temps. Le titre et l’artiste n’apparaissent qu’ensuite sur son appareil.",
       "step4": "Une bonne réponse rapporte des points selon la rapidité. Une erreur retire la pénalité, bloque ton équipe pour ce titre et rouvre les autres buzzers.",
       "step5": "Le meilleur score gagne après les manches choisies ou dès que l’objectif est atteint.",
-      "tip": "Correct révèle immédiatement le titre à tous. Faux garde la solution cachée pour que les autres puissent buzzer."
+      "tip": "La partie requise est mise en évidence lors de la vérification privée. Une bonne réponse révèle la solution à tous ; une mauvaise la garde cachée."
     },
     "pixeljagd": {
       "title": "Pixeljagd",

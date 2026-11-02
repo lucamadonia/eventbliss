@@ -6,7 +6,8 @@ import '@/index.css';
 await i18nInitPromise;
 await loadLocale('de');
 await i18n.changeLanguage('de');
-const revealed = new URLSearchParams(location.search).get('view') === 'reveal';
+const view = new URLSearchParams(location.search).get('view');
+const revealed = view === 'reveal';
 const players = [
   { id: 'a', name: 'Mia', avatar: 'M', color: '#df8eff', score: -20 },
   { id: 'b', name: 'Alex', avatar: 'A', color: '#8ff5ff', score: 86 },
@@ -19,4 +20,5 @@ createRoot(document.getElementById('root')!).render(<TVHitBuzzerView gameState={
     { playerId: 'a', playerName: 'Mia', outcome: 'wrong', delta: -20 },
     { playerId: 'b', playerName: 'Alex', outcome: 'correct', delta: 86 },
   ],
-} : { phase: 'answering', round: 3, totalRounds: 15, players, buzzedName: 'Mia', answerLeft: 6, answerSeconds: 8 }} />);
+} : { phase: view === 'reviewing' ? 'reviewing' : 'answering', round: 3, totalRounds: 15, players,
+  buzzedName: 'Mia', answerLeft: 3, answerSeconds: 8, answerMode: 'title' }} />);
