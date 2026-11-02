@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Der EventBliss-Start erzählt jetzt einen gemeinsamen Abend in Bildern: zusammen planen, mit vier eigenen Handys auf dem Fernseher spielen und den Spielmoment feiern. Die Szenen fließen ineinander; auf dem TV ist ein zentraler Buzzer zu sehen. Danach erscheint die EventBliss-Marke. Für „Bewegung reduzieren“ gibt es ein ruhiges, statisches Schlussbild.\n\nBitte testen: App aus geschlossenem Zustand starten und den ganzen Ablauf auf iPhone und iPad ansehen, auch im Querformat sowie im hellen und dunklen Erscheinungsbild. Prüft besonders, ob Fernseher, vier Handys, Übergänge und Markenabschluss klar zu sehen sind. Mit „Bewegung reduzieren“ sollte nichts wandern oder blitzen. Bei Problemen bitte Build 325, Gerät, iOS-Version und möglichst eine Bildschirmaufnahme angeben.",
+    "en-US": "EventBliss now opens with a visual story of friends planning together, playing on a shared TV with their own four phones, and celebrating the moment. The scenes flow into one another; the TV shows one central buzzer. The EventBliss brand closes the sequence. Reduce Motion uses a calm, static final frame.\n\nPlease watch a cold launch on iPhone and iPad, including landscape, light and dark appearance. Check that the TV, four phones, transitions, and brand ending are clear. With Reduce Motion enabled, nothing should travel or flash. For issues, include build 325, device, iOS version, and a screen recording if possible."
+  }
+}
