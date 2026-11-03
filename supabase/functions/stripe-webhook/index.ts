@@ -6,6 +6,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeadersWithStripe } from "../_shared/cors.ts";
+import { classifyStripeProject, getStripeProject } from "../_shared/stripe-project.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -230,6 +231,16 @@ serve(async (req) => {
         const session = event.data.object as Stripe.Checkout.Session;
         logStep("Checkout completed", { sessionId: session.id, customerId: session.customer });
 
+        // Shared Stripe account: ignore sessions created by other apps.
+        const ownership = classifyStripeProject(session.metadata);
+        if (ownership === "foreign") {
+          logStep("Ignoring foreign checkout session", {
+            sessionId: session.id,
+            project: getStripeProject(session.metadata),
+          });
+          break;
+        }
+
         // Marketplace booking? Route to marketplace handling instead of the
         // subscription flow. This makes a SINGLE Stripe Dashboard endpoint
         // work for both worlds — if the user also has a dedicated
@@ -249,9 +260,13 @@ serve(async (req) => {
               .from("marketplace_bookings")
               .select("service_id")
               .eq("id", bookingId)
-              .single();
+              .maybeSingle();
+            if (!booking) {
+              logStep("Ignoring checkout session: booking not found", { bookingId, sessionId: session.id });
+              break;
+            }
             let newStatus = "pending_confirmation";
-            if (booking?.service_id) {
+            if (booking.service_id) {
               const { data: service } = await supabaseClient
                 .from("marketplace_services")
                 .select("auto_confirm")
@@ -282,13 +297,36 @@ serve(async (req) => {
           break;
         }
 
+        const customerId = session.customer as string;
+        const userId = session.metadata?.user_id;
+
+        // Untagged (legacy) session: only process it when its user_id belongs
+        // to an EventBliss profile. Never match by customer email — the same
+        // person may buy in another app sharing this Stripe account.
+        if (ownership === "untagged") {
+          if (!userId) {
+            logStep("Ignoring untagged checkout session without user_id/booking_id", { sessionId: session.id });
+            break;
+          }
+          const { data: profile, error: profileError } = await supabaseClient
+            .from("profiles")
+            .select("id")
+            .eq("id", userId)
+            .maybeSingle();
+          if (profileError || !profile) {
+            logStep("Ignoring untagged checkout session: user_id not an EventBliss profile", {
+              sessionId: session.id,
+              error: profileError,
+            });
+            break;
+          }
+        }
+
+        // Session is confirmed as EventBliss's from here on.
+        const planType = session.metadata?.plan_type || "monthly";
+
         // Track affiliate commission if a coupon was used
         await trackAffiliateCommission(supabaseClient, session, stripe);
-
-        const customerId = session.customer as string;
-        const customerEmail = session.customer_email || session.customer_details?.email;
-        const planType = session.metadata?.plan_type || "monthly";
-        let userId = session.metadata?.user_id;
 
         // B2B Agency tier subscription: route to agency_marketplace_subscriptions
         if (planType.startsWith("agency_") && session.subscription) {
@@ -319,26 +357,8 @@ serve(async (req) => {
           break;
         }
 
-        // Fallback: Find user by email if user_id is missing from metadata
-        if (!userId && customerEmail) {
-          logStep("No user_id in metadata, searching by email", { email: customerEmail });
-          
-          const { data: profile, error: profileError } = await supabaseClient
-            .from("profiles")
-            .select("id")
-            .eq("email", customerEmail)
-            .maybeSingle();
-          
-          if (profileError) {
-            logStep("Error searching profile by email", { error: profileError });
-          } else if (profile) {
-            userId = profile.id;
-            logStep("Found user by email", { userId, email: customerEmail });
-          }
-        }
-
         if (!userId) {
-          logStep("ERROR", { message: "No user_id found by metadata or email", customerEmail });
+          logStep("ERROR", { message: "No user_id in session metadata", sessionId: session.id });
           break;
         }
 
@@ -394,6 +414,11 @@ serve(async (req) => {
         // single Stripe endpoint can cover both subscription and
         // marketplace refunds.
         const charge = event.data.object as Stripe.Charge;
+        if (classifyStripeProject(charge.metadata) === "foreign") {
+          logStep("Ignoring foreign charge", { chargeId: charge.id, project: getStripeProject(charge.metadata) });
+          break;
+        }
+        // Untagged charges are only matched via our own payment_intent id below.
         const paymentIntentId = typeof charge.payment_intent === "string"
           ? charge.payment_intent
           : charge.payment_intent?.id || null;
@@ -426,6 +451,16 @@ serve(async (req) => {
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
         logStep("Subscription updated", { subscriptionId: subscription.id, status: subscription.status });
+
+        // Ignore other apps' subscriptions. Untagged ones are only matched
+        // via stripe_subscription_id in our own tables below.
+        if (classifyStripeProject(subscription.metadata) === "foreign") {
+          logStep("Ignoring foreign subscription", {
+            subscriptionId: subscription.id,
+            project: getStripeProject(subscription.metadata),
+          });
+          break;
+        }
 
         // Check if this is an agency tier subscription first
         const { data: agencySub } = await supabaseClient
@@ -490,6 +525,14 @@ serve(async (req) => {
         const subscription = event.data.object as Stripe.Subscription;
         logStep("Subscription deleted", { subscriptionId: subscription.id });
 
+        if (classifyStripeProject(subscription.metadata) === "foreign") {
+          logStep("Ignoring foreign subscription", {
+            subscriptionId: subscription.id,
+            project: getStripeProject(subscription.metadata),
+          });
+          break;
+        }
+
         // Handle agency tier cancellation first
         const { data: agencySub } = await supabaseClient
           .from("agency_marketplace_subscriptions")
@@ -527,7 +570,15 @@ serve(async (req) => {
         const invoice = event.data.object as Stripe.Invoice;
         if (invoice.subscription) {
           const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
-          
+
+          if (classifyStripeProject(subscription.metadata) === "foreign") {
+            logStep("Ignoring invoice of foreign subscription", {
+              subscriptionId: subscription.id,
+              project: getStripeProject(subscription.metadata),
+            });
+            break;
+          }
+
           logStep("Invoice paid, updating subscription", { subscriptionId: subscription.id });
           
           await supabaseClient

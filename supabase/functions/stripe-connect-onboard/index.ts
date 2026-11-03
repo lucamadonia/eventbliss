@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { withStripeProject } from "../_shared/stripe-project.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -109,7 +110,7 @@ serve(async (req) => {
           card_payments: { requested: true },
           transfers: { requested: true },
         },
-        metadata: { agency_id },
+        metadata: withStripeProject({ agency_id }),
       });
 
       stripeAccountId = account.id;

@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { classifyStripeProject } from "../_shared/stripe-project.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -52,27 +53,29 @@ serve(async (req) => {
     }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    
-    if (customers.data.length === 0) {
-      throw new Error("No Stripe customer found for this user");
-    }
-    
-    const customerId = customers.data[0].id;
-    logStep("Found Stripe customer", { customerId });
-
-    // Get active subscriptions
-    const subscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: "active",
-      limit: 1,
-    });
-
-    if (subscriptions.data.length === 0) {
+    // Shared Stripe account: only ever cancel the subscription stored for this
+    // user in EventBliss's DB — never one found via the customer's email,
+    // which could belong to another app.
+    const subscriptionId = dbSub?.stripe_subscription_id;
+    if (!subscriptionId) {
       throw new Error("No active subscription found to cancel");
     }
 
-    const subscription = subscriptions.data[0];
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    if (classifyStripeProject(subscription.metadata) === "foreign") {
+      logStep("Stored subscription belongs to another project, refusing", { subscriptionId });
+      throw new Error("No active subscription found to cancel");
+    }
+    const subscriptionCustomerId = typeof subscription.customer === "string"
+      ? subscription.customer
+      : subscription.customer.id;
+    if (dbSub.stripe_customer_id && subscriptionCustomerId !== dbSub.stripe_customer_id) {
+      logStep("Stored subscription customer mismatch, refusing", { subscriptionId });
+      throw new Error("No active subscription found to cancel");
+    }
+    if (subscription.status !== "active") {
+      throw new Error("No active subscription found to cancel");
+    }
     logStep("Found active subscription", { subscriptionId: subscription.id });
 
     // Cancel at period end (not immediately)

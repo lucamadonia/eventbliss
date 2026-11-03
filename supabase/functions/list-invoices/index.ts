@@ -2,6 +2,12 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { classifyStripeProject } from "../_shared/stripe-project.ts";
+import {
+  loadAgencyStripeCustomerIds,
+  loadUserStripeCustomerIds,
+  resolveOwnStripeCustomer,
+} from "../_shared/stripe-customer.ts";
 
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -41,10 +47,17 @@ serve(async (req) => {
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
 
-    // Find customer by email
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    
-    if (customers.data.length === 0) {
+    // Shared Stripe account: resolve EventBliss's own customer only.
+    const ownCustomer = await resolveOwnStripeCustomer(stripe, {
+      knownCustomerIds: [
+        ...await loadUserStripeCustomerIds(supabaseClient, user.id),
+        ...await loadAgencyStripeCustomerIds(supabaseClient, { ownerId: user.id }),
+      ],
+      email: user.email,
+      log: logStep,
+    });
+
+    if (!ownCustomer) {
       logStep("No customer found");
       return new Response(JSON.stringify({ invoices: [] }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -52,8 +65,8 @@ serve(async (req) => {
       });
     }
 
-    const customerId = customers.data[0].id;
-    logStep("Found Stripe customer", { customerId });
+    const customerId = ownCustomer.customerId;
+    logStep("Found Stripe customer", ownCustomer);
 
     // Fetch invoices for this customer
     const invoices = await stripe.invoices.list({
@@ -63,8 +76,14 @@ serve(async (req) => {
 
     logStep("Retrieved invoices", { count: invoices.data.length });
 
+    // Drop invoices of another app's subscription on a shared legacy customer.
+    const ownInvoices = invoices.data.filter((invoice: Stripe.Invoice) =>
+      classifyStripeProject(invoice.metadata) !== "foreign" &&
+      classifyStripeProject(invoice.parent?.subscription_details?.metadata) !== "foreign"
+    );
+
     // Map to simplified format
-    const formattedInvoices = invoices.data.map((invoice: Stripe.Invoice) => ({
+    const formattedInvoices = ownInvoices.map((invoice: Stripe.Invoice) => ({
       id: invoice.id,
       number: invoice.number,
       date: invoice.created,

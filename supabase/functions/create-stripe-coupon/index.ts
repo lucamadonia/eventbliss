@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { withStripeProject } from "../_shared/stripe-project.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -65,6 +66,7 @@ serve(async (req) => {
     const couponParams: Stripe.CouponCreateParams = {
       duration: "once",
       name: `EventBliss Discount - ${code}`,
+      metadata: withStripeProject(),
     };
 
     if (discount_type === "percentage") {
@@ -85,6 +87,7 @@ serve(async (req) => {
       coupon: coupon.id,
       code: code,
       active: true,
+      metadata: withStripeProject(),
     });
     logStep("Stripe promotion code created", { promoCodeId: promotionCode.id, code: promotionCode.code });
 

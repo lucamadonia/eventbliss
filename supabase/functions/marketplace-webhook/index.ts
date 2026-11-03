@@ -3,6 +3,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeadersWithStripe } from "../_shared/cors.ts";
+import { classifyStripeProject, getStripeProject } from "../_shared/stripe-project.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -85,6 +86,16 @@ serve(async (req) => {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+
+        // Shared Stripe account: ignore sessions created by other apps.
+        if (classifyStripeProject(session.metadata) === "foreign") {
+          logStep("Ignoring foreign checkout session", {
+            sessionId: session.id,
+            project: getStripeProject(session.metadata),
+          });
+          break;
+        }
+
         const bookingId = session.metadata?.booking_id;
 
         if (!bookingId) {
@@ -99,11 +110,16 @@ serve(async (req) => {
           .from("marketplace_bookings")
           .select("service_id")
           .eq("id", bookingId)
-          .single();
+          .maybeSingle();
+
+        if (!booking) {
+          logStep("Booking not found, skipping", { bookingId, sessionId: session.id });
+          break;
+        }
 
         let newStatus = "pending_confirmation";
 
-        if (booking?.service_id) {
+        if (booking.service_id) {
           const { data: service } = await supabaseClient
             .from("marketplace_services")
             .select("auto_confirm")
@@ -145,6 +161,10 @@ serve(async (req) => {
 
       case "charge.refunded": {
         const charge = event.data.object as Stripe.Charge;
+        if (classifyStripeProject(charge.metadata) === "foreign") {
+          logStep("Ignoring foreign charge", { chargeId: charge.id, project: getStripeProject(charge.metadata) });
+          break;
+        }
         const paymentIntentId = typeof charge.payment_intent === "string"
           ? charge.payment_intent
           : charge.payment_intent?.id || null;
