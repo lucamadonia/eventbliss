@@ -220,7 +220,13 @@
       "food": "Essen & Trinken",
       "chill": "Entspannung",
       "mixed": "Sonstiges"
-    }
+    },
+    "guidedHeading": "Dein Weg zum Event",
+    "guidedStep": "Schritt {{step}} von {{total}}",
+    "back": "Zurück",
+    "next": "Weiter",
+    "responseExists": "Für diesen Namen gibt es schon Antworten – bitte auf demselben Gerät bearbeiten oder den Organisator fragen.",
+    "answersTooLarge": "Deine Antworten sind zu lang. Bitte kürze die Freitexte und versuche es erneut."
   },
   "designTemplates": {
     "jga-classic": {
@@ -1486,7 +1492,8 @@
     "warning": "Warnung",
     "organizer": "Organisator",
     "people": "Personen",
-    "unknown": "Unbekannt"
+    "unknown": "Unbekannt",
+    "retry": "Erneut versuchen"
   },
   "feedback": {
     "button": "Feedback",
@@ -3316,7 +3323,12 @@
       },
       "basedOnNoName": "Basierend auf {{count}} Antworten",
       "budgetTip": "Budget-Tipp",
-      "listen": "Vorlesen"
+      "listen": "Vorlesen",
+      "dayLabel": "Tag",
+      "tipsLabel": "Tipps",
+      "priceOnRequest": "Preis auf Anfrage",
+      "noMatchingServices": "Noch keine passenden buchbaren Angebote",
+      "noMatchingServicesDesc": "Entdecke weitere Erlebnisse im Marketplace oder verfeinere deinen Entwurf."
     },
     "settings": {
       "title": "Einstellungen",
@@ -3683,7 +3695,10 @@
         "showDetails": "Details hinzufügen",
         "hideDetails": "Details verbergen",
         "hideSplit": "Aufteilung verbergen",
-        "adjustSplit": "Aufteilung anpassen ({{amount}})"
+        "adjustSplit": "Aufteilung anpassen ({{amount}})",
+        "stepProgress": "Schritt {{step}} von 4",
+        "back": "Zurück",
+        "next": "Weiter"
       },
       "split": {
         "mode": {
@@ -4280,7 +4295,14 @@
       "success": "Gutschein erfolgreich eingelöst!",
       "error": "Ungültiger Gutscheincode",
       "discountHint": "Dieser Code gibt dir einen Rabatt!",
-      "discountHintDesc": "Klicke auf 'Kaufen' oder 'Abonnieren' und gib den Code im Checkout ein."
+      "discountHintDesc": "Klicke auf 'Kaufen' oder 'Abonnieren' und gib den Code im Checkout ein.",
+      "errors": {
+        "ALREADY_REDEEMED": "Du hast diesen Gutschein bereits eingelöst.",
+        "ALREADY_LIFETIME": "Du hast bereits unbegrenzten Premium-Zugang.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Du hast bereits ein aktives bezahltes Abo. Kündige es zuerst oder löse den Gutschein nach dessen Ablauf ein.",
+        "MAX_REDEMPTIONS": "Dieser Gutschein wurde bereits zu oft eingelöst.",
+        "UNSUPPORTED_VOUCHER": "Dieser Gutschein kann hier nicht eingelöst werden."
+      }
     },
     "paywall": {
       "title": "Premium-Funktion",
@@ -8856,8 +8878,10 @@
       "cost": "Kosten",
       "responsible": "Zuständig",
       "add": "Hinzufügen",
-      "titlePlaceholder": "z.B. Frühstück im Hotel"
-    }
+      "titlePlaceholder": "z.B. Frühstück im Hotel",
+      "endAfterStart": "Die Endzeit muss nach der Startzeit liegen."
+    },
+    "saveFailed": "Aktivität konnte nicht gespeichert werden"
   },
   "nativeJoinRoom": {
     "title": "Raum beitreten",
@@ -9928,7 +9952,10 @@
         "drinks": "Getränke",
         "gifts": "Geschenke",
         "other": "Sonstiges"
-      }
+      },
+      "stepProgress": "Schritt {{step}} von 3",
+      "back": "Zurück",
+      "next": "Weiter"
     },
     "startParty": "Party starten",
     "startPartySub": "Mehrere Spiele, eine Rangliste",
@@ -10130,7 +10157,21 @@
     "aiPreviewDuration": "Dauer-Optionen",
     "aiCreditsBadge": "{{remaining}}/{{limit}} Credits",
     "aiGenCount": "Generierung {{used}}/{{max}}",
-    "aiLimitReached": "Maximal {{max}} Generierungen pro Sitzung erreicht"
+    "aiLimitReached": "Maximal {{max}} Generierungen pro Sitzung erreicht",
+    "chooseEmoji": "Emoji auswählen",
+    "removeEmoji": "Ohne Emoji",
+    "presentationTitle": "Formular-Darstellung",
+    "presentationDescription": "So erleben Gäste die Fragen. Farben und Bild bleiben separat wählbar.",
+    "presentation": {
+      "classic": "Alle Fragen",
+      "wizard": "Wizard",
+      "slides": "Slides"
+    },
+    "presentationHint": {
+      "classic": "Alles auf einer Seite",
+      "wizard": "Schritt für Schritt",
+      "slides": "Eine Frage pro Karte"
+    }
   },
   "tv": {
     "partyNight": {

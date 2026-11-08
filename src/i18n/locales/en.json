@@ -220,7 +220,13 @@
       "food": "Food & Drink",
       "chill": "Relaxation",
       "mixed": "Other"
-    }
+    },
+    "guidedHeading": "Your path to the event",
+    "guidedStep": "Step {{step}} of {{total}}",
+    "back": "Back",
+    "next": "Next",
+    "responseExists": "There are already answers for this name – please edit them on the same device or ask the organizer.",
+    "answersTooLarge": "Your answers are too long. Please shorten the free-text answers and try again."
   },
   "designTemplates": {
     "jga-classic": {
@@ -1486,7 +1492,8 @@
     "warning": "Warning",
     "organizer": "Organizer",
     "people": "People",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "retry": "Try again"
   },
   "feedback": {
     "button": "Feedback",
@@ -3316,7 +3323,12 @@
       },
       "basedOnNoName": "Based on {{count}} responses",
       "budgetTip": "Budget tip",
-      "listen": "Read aloud"
+      "listen": "Read aloud",
+      "dayLabel": "Day",
+      "tipsLabel": "Tips",
+      "priceOnRequest": "Price on request",
+      "noMatchingServices": "No matching bookable offers yet",
+      "noMatchingServicesDesc": "Discover more experiences in the marketplace or refine your draft."
     },
     "settings": {
       "title": "Settings",
@@ -3683,7 +3695,10 @@
         "showDetails": "Add details",
         "hideDetails": "Hide details",
         "hideSplit": "Hide split",
-        "adjustSplit": "Adjust split ({{amount}})"
+        "adjustSplit": "Adjust split ({{amount}})",
+        "stepProgress": "Step {{step}} of 4",
+        "back": "Back",
+        "next": "Next"
       },
       "split": {
         "mode": {
@@ -4280,7 +4295,14 @@
       "success": "Voucher redeemed successfully!",
       "error": "Invalid voucher code",
       "discountHint": "This code gives you a discount!",
-      "discountHintDesc": "Click 'Buy' or 'Subscribe' and enter the code in the checkout."
+      "discountHintDesc": "Click 'Buy' or 'Subscribe' and enter the code in the checkout.",
+      "errors": {
+        "ALREADY_REDEEMED": "You have already redeemed this voucher.",
+        "ALREADY_LIFETIME": "You already have unlimited Premium access.",
+        "ACTIVE_PAID_SUBSCRIPTION": "You already have an active paid subscription. Cancel it first or redeem the voucher after it ends.",
+        "MAX_REDEMPTIONS": "This voucher has reached its maximum number of redemptions.",
+        "UNSUPPORTED_VOUCHER": "This voucher can't be redeemed here."
+      }
     },
     "paywall": {
       "title": "Premium Feature",
@@ -8856,8 +8878,10 @@
       "cost": "Cost",
       "responsible": "Responsible",
       "add": "Add",
-      "titlePlaceholder": "e.g. Breakfast at hotel"
-    }
+      "titlePlaceholder": "e.g. Breakfast at hotel",
+      "endAfterStart": "The end time must be after the start time."
+    },
+    "saveFailed": "Activity could not be saved"
   },
   "nativeJoinRoom": {
     "title": "Join Room",
@@ -9928,7 +9952,10 @@
         "drinks": "Drinks",
         "gifts": "Gifts",
         "other": "Other"
-      }
+      },
+      "stepProgress": "Step {{step}} of 3",
+      "back": "Back",
+      "next": "Next"
     },
     "startParty": "Start Party",
     "startPartySub": "Many games, one leaderboard",
@@ -10130,7 +10157,21 @@
     "aiPreviewDuration": "Duration options",
     "aiCreditsBadge": "{{remaining}}/{{limit}} credits",
     "aiGenCount": "Generation {{used}}/{{max}}",
-    "aiLimitReached": "Maximum of {{max}} generations per session reached"
+    "aiLimitReached": "Maximum of {{max}} generations per session reached",
+    "chooseEmoji": "Choose emoji",
+    "removeEmoji": "No emoji",
+    "presentationTitle": "Form layout",
+    "presentationDescription": "How guests experience the questions. Colors and image can still be chosen separately.",
+    "presentation": {
+      "classic": "All questions",
+      "wizard": "Wizard",
+      "slides": "Slides"
+    },
+    "presentationHint": {
+      "classic": "Everything on one page",
+      "wizard": "Step by step",
+      "slides": "One question per card"
+    }
   },
   "tv": {
     "partyNight": {

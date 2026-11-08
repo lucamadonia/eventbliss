@@ -220,7 +220,13 @@
       "food": "Eten & drinken",
       "chill": "Ontspanning",
       "mixed": "Overig"
-    }
+    },
+    "guidedHeading": "Jouw weg naar het event",
+    "guidedStep": "Stap {{step}} van {{total}}",
+    "back": "Terug",
+    "next": "Volgende",
+    "responseExists": "Er zijn al antwoorden voor deze naam – bewerk ze op hetzelfde apparaat of vraag het de organisator.",
+    "answersTooLarge": "Je antwoorden zijn te lang. Kort de vrije teksten in en probeer het opnieuw."
   },
   "designTemplates": {
     "jga-classic": {
@@ -1486,7 +1492,8 @@
     "warning": "Waarschuwing",
     "organizer": "Organisator",
     "people": "Personen",
-    "unknown": "Onbekend"
+    "unknown": "Onbekend",
+    "retry": "Opnieuw proberen"
   },
   "feedback": {
     "button": "Feedback",
@@ -3386,7 +3393,12 @@
       },
       "basedOnNoName": "Op basis van {{count}} antwoorden",
       "budgetTip": "Budgettip",
-      "listen": "Voorlezen"
+      "listen": "Voorlezen",
+      "dayLabel": "Dag",
+      "tipsLabel": "Tips",
+      "priceOnRequest": "Prijs op aanvraag",
+      "noMatchingServices": "Nog geen passende boekbare aanbiedingen",
+      "noMatchingServicesDesc": "Ontdek meer belevenissen in de marketplace of verfijn je concept."
     },
     "settings": {
       "title": "Instellingen",
@@ -3753,7 +3765,10 @@
         "showDetails": "Details toevoegen",
         "hideDetails": "Details verbergen",
         "hideSplit": "Verdeling verbergen",
-        "adjustSplit": "Verdeling aanpassen ({{amount}})"
+        "adjustSplit": "Verdeling aanpassen ({{amount}})",
+        "stepProgress": "Stap {{step}} van 4",
+        "back": "Terug",
+        "next": "Volgende"
       },
       "split": {
         "mode": {
@@ -4354,7 +4369,14 @@
       "success": "Voucher succesvol ingewisseld!",
       "error": "Ongeldige vouchercode",
       "discountHint": "Met deze code krijg je korting!",
-      "discountHintDesc": "Klik op 'Kopen' of 'Abonneren' en voer de code in bij het afrekenen."
+      "discountHintDesc": "Klik op 'Kopen' of 'Abonneren' en voer de code in bij het afrekenen.",
+      "errors": {
+        "ALREADY_REDEEMED": "Je hebt deze voucher al ingewisseld.",
+        "ALREADY_LIFETIME": "Je hebt al onbeperkte Premium-toegang.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Je hebt al een actief betaald abonnement. Zeg het eerst op of wissel de voucher in nadat het afloopt.",
+        "MAX_REDEMPTIONS": "Deze voucher is al het maximale aantal keren ingewisseld.",
+        "UNSUPPORTED_VOUCHER": "Deze voucher kan hier niet worden ingewisseld."
+      }
     },
     "paywall": {
       "title": "Premium Functie",
@@ -8930,8 +8952,10 @@
       "cost": "Kosten",
       "responsible": "Verantwoordelijke",
       "add": "Toevoegen",
-      "titlePlaceholder": "bijv. Ontbijt in het hotel"
-    }
+      "titlePlaceholder": "bijv. Ontbijt in het hotel",
+      "endAfterStart": "De eindtijd moet na de begintijd liggen."
+    },
+    "saveFailed": "Activiteit kon niet worden opgeslagen"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",
@@ -10002,7 +10026,10 @@
         "drinks": "Drinken",
         "gifts": "Cadeaus",
         "other": "Overig"
-      }
+      },
+      "stepProgress": "Stap {{step}} van 3",
+      "back": "Terug",
+      "next": "Volgende"
     },
     "startParty": "Feest starten",
     "startPartySub": "Meerdere spellen, één ranglijst",
@@ -10204,7 +10231,21 @@
     "aiPreviewDuration": "Duuropties",
     "aiCreditsBadge": "{{remaining}}/{{limit}} credits",
     "aiGenCount": "Generatie {{used}}/{{max}}",
-    "aiLimitReached": "Maximaal {{max}} generaties per sessie bereikt"
+    "aiLimitReached": "Maximaal {{max}} generaties per sessie bereikt",
+    "chooseEmoji": "Emoji kiezen",
+    "removeEmoji": "Geen emoji",
+    "presentationTitle": "Formulierweergave",
+    "presentationDescription": "Zo beleven gasten de vragen. Kleuren en afbeelding kies je apart.",
+    "presentation": {
+      "classic": "Alle vragen",
+      "wizard": "Wizard",
+      "slides": "Slides"
+    },
+    "presentationHint": {
+      "classic": "Alles op één pagina",
+      "wizard": "Stap voor stap",
+      "slides": "Eén vraag per kaart"
+    }
   },
   "tv": {
     "partyNight": {

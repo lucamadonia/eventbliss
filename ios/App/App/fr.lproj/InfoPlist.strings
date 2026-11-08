@@ -1,0 +1,5 @@
+/* Localized permission prompts (Info.plist usage descriptions). */
+"NSCameraUsageDescription" = "EventBliss a besoin d'accéder à l'appareil photo pour que tu puisses prendre des photos de profil et scanner des reçus.";
+"NSPhotoLibraryUsageDescription" = "EventBliss a besoin d'accéder à tes photos pour que tu puisses choisir une photo de profil ou importer des reçus.";
+"NSMicrophoneUsageDescription" = "EventBliss a besoin d'accéder au micro pour que tu puisses saisir des dépenses à la voix.";
+"NSSpeechRecognitionUsageDescription" = "EventBliss utilise la reconnaissance vocale pour transformer ta dépense dictée en texte.";

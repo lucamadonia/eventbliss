@@ -21,6 +21,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { extractErrorCode, readFunctionError } from "@/lib/function-error";
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
 import { useAICredits } from "@/hooks/useAICredits";
@@ -39,6 +40,15 @@ import type { PurchasesOffering } from "@revenuecat/purchases-capacitor";
 
 const STORE_SUBSCRIPTIONS_URL_IOS = "https://apps.apple.com/account/subscriptions";
 const STORE_SUBSCRIPTIONS_URL_ANDROID = "https://play.google.com/store/account/subscriptions";
+
+/** redeem-voucher error codes with a localized message (premium.voucher.errors.*). */
+const VOUCHER_ERROR_CODES = new Set([
+  "ALREADY_LIFETIME",
+  "ACTIVE_PAID_SUBSCRIPTION",
+  "MAX_REDEMPTIONS",
+  "UNSUPPORTED_VOUCHER",
+  "ALREADY_REDEEMED",
+]);
 
 export default function Premium() {
   const { t } = useTranslation();
@@ -338,22 +348,33 @@ export default function Premium() {
       const { data, error } = await supabase.functions.invoke("redeem-voucher", {
         body: { code: voucherCode.trim().toUpperCase() }
       });
-      
-      if (error) throw error;
-      
-      if (!data?.success) {
-        const errorMessage = data?.error || "";
-        
-        // Check if it's a discount voucher that should be used in checkout
-        if (errorMessage.startsWith("DISCOUNT_VOUCHER:")) {
+
+      // redeem-voucher answers 400/409 with { success:false, error:"CODE:text" }
+      // or { code }. invoke() hides that body behind a generic error, so read it.
+      let failure: Record<string, unknown> | null = null;
+      if (error) {
+        const info = await readFunctionError(error);
+        if (!info.body) throw error;
+        failure = info.body;
+      } else if (!data?.success) {
+        failure = (data ?? {}) as Record<string, unknown>;
+      }
+
+      if (failure) {
+        const code = extractErrorCode(failure);
+        if (code === "DISCOUNT_VOUCHER") {
           toast.info(t("premium.voucher.discountHint"), {
             description: t("premium.voucher.discountHintDesc"),
             duration: 6000,
           });
           return;
         }
-        
-        throw new Error(errorMessage || t("premium.voucher.error"));
+        if (code && VOUCHER_ERROR_CODES.has(code)) {
+          toast.error(t(`premium.voucher.errors.${code}`));
+          return;
+        }
+        const rawMessage = typeof failure.error === "string" ? failure.error : "";
+        throw new Error(rawMessage || t("premium.voucher.error"));
       }
       
       toast.success(data.message || t("premium.voucher.success"));
@@ -372,7 +393,8 @@ export default function Premium() {
         return;
       }
       
-      toast.error(errorMessage || t("premium.voucher.error"));
+      // Never surface supabase-js' generic "non-2xx status code" text.
+      toast.error(errorMessage && !errorMessage.includes("non-2xx") ? errorMessage : t("premium.voucher.error"));
     } finally {
       setVoucherLoading(false);
     }

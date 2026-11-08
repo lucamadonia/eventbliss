@@ -11,6 +11,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { isEventMember, isEventOrganizer, serviceClient } from "../_shared/authz.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 const log = (step: string, details?: unknown) => {
   const s = details ? ` - ${JSON.stringify(details)}` : "";
@@ -94,9 +96,21 @@ serve(async (req) => {
     const { data: { user } } = await userClient.auth.getUser();
     if (!user) return json({ error: "Nicht autorisiert" }, 401, corsHeaders);
 
+    // Per-user throttle on the paid vision call (see voxtral-tts for why this
+    // is not charged against the ai_usage credit pool).
+    if (
+      !checkRateLimit("ocr-receipt-min", user.id, 10, 60_000) ||
+      !checkRateLimit("ocr-receipt-hour", user.id, 60, 60 * 60_000)
+    ) {
+      return rateLimitResponse(corsHeaders);
+    }
+
     const { expense_id, storage_path } = await req.json();
     if (!storage_path || typeof storage_path !== "string") {
       return json({ error: "storage_path fehlt" }, 400, corsHeaders);
+    }
+    if (expense_id !== undefined && expense_id !== null && typeof expense_id !== "string") {
+      return json({ error: "expense_id ungültig" }, 400, corsHeaders);
     }
 
     log("Received", { user: user.id, expense_id, storage_path });
@@ -104,6 +118,32 @@ serve(async (req) => {
     const admin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: { persistSession: false },
     });
+
+    // AuthZ: the service-role client signs any object and writes any expense,
+    // so verify the caller belongs to the event. Upload paths are
+    // `<eventId>/<expenseId|tmp-uuid>/<file>` (useExpenseExtras).
+    const pathEventId = storage_path.split("/")[0] ?? "";
+    if (
+      storage_path.includes("..") ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pathEventId)
+    ) {
+      return json({ error: "storage_path ungültig" }, 400, corsHeaders);
+    }
+    const authzClient = serviceClient();
+    const isMember =
+      (await isEventMember(authzClient, pathEventId, user.id)) ||
+      (await isEventOrganizer(authzClient, pathEventId, user.id));
+    if (!isMember) return json({ error: "Nicht autorisiert" }, 403, corsHeaders);
+    if (expense_id) {
+      const { data: exp } = await admin
+        .from("expenses")
+        .select("event_id")
+        .eq("id", expense_id)
+        .maybeSingle();
+      if (!exp || exp.event_id !== pathEventId) {
+        return json({ error: "Nicht autorisiert" }, 403, corsHeaders);
+      }
+    }
 
     // Signed URL for OpenAI to fetch (short-lived)
     const { data: signed, error: signErr } = await admin.storage

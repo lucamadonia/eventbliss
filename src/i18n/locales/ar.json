@@ -220,7 +220,13 @@
       "food": "طعام وشراب",
       "chill": "استرخاء",
       "mixed": "أخرى"
-    }
+    },
+    "guidedHeading": "طريقك إلى الحدث",
+    "guidedStep": "الخطوة {{step}} من {{total}}",
+    "back": "رجوع",
+    "next": "التالي",
+    "responseExists": "توجد إجابات بالفعل لهذا الاسم – يرجى تعديلها من الجهاز نفسه أو سؤال المنظِّم.",
+    "answersTooLarge": "إجاباتك طويلة جدًا. يرجى اختصار النصوص الحرة والمحاولة مرة أخرى."
   },
   "designTemplates": {
     "jga-classic": {
@@ -361,7 +367,8 @@
     "warning": "تحذير",
     "organizer": "المنظم",
     "people": "أشخاص",
-    "unknown": "غير معروف"
+    "unknown": "غير معروف",
+    "retry": "إعادة المحاولة"
   },
   "feedback": {
     "button": "ملاحظات",
@@ -2250,7 +2257,12 @@
       },
       "basedOnNoName": "بناءً على {{count}} إجابة",
       "budgetTip": "نصيحة الميزانية",
-      "listen": "استماع"
+      "listen": "استماع",
+      "dayLabel": "اليوم",
+      "tipsLabel": "نصائح",
+      "priceOnRequest": "السعر عند الطلب",
+      "noMatchingServices": "لا توجد عروض مناسبة قابلة للحجز بعد",
+      "noMatchingServicesDesc": "اكتشف المزيد من التجارب في السوق أو حسّن مسودتك."
     },
     "guestWarning": {
       "title": "الحدث غير محمي بعد",
@@ -2628,7 +2640,10 @@
         "showDetails": "إضافة تفاصيل",
         "hideDetails": "إخفاء التفاصيل",
         "hideSplit": "إخفاء التقسيم",
-        "adjustSplit": "تعديل التقسيم ({{amount}})"
+        "adjustSplit": "تعديل التقسيم ({{amount}})",
+        "stepProgress": "الخطوة {{step}} من 4",
+        "back": "رجوع",
+        "next": "التالي"
       },
       "split": {
         "mode": {
@@ -3160,7 +3175,14 @@
       "success": "تم استخدام القسيمة بنجاح!",
       "error": "كود قسيمة غير صالح",
       "discountHint": "هذا الرمز يمنحك خصمًا!",
-      "discountHintDesc": "انقر على \"شراء\" أو \"اشتراك\" وأدخل الرمز عند الدفع."
+      "discountHintDesc": "انقر على \"شراء\" أو \"اشتراك\" وأدخل الرمز عند الدفع.",
+      "errors": {
+        "ALREADY_REDEEMED": "لقد استخدمت هذه القسيمة من قبل.",
+        "ALREADY_LIFETIME": "لديك بالفعل وصول غير محدود إلى Premium.",
+        "ACTIVE_PAID_SUBSCRIPTION": "لديك بالفعل اشتراك مدفوع نشط. ألغِه أولًا أو استخدم القسيمة بعد انتهائه.",
+        "MAX_REDEMPTIONS": "وصلت هذه القسيمة إلى الحد الأقصى لعدد مرات الاستخدام.",
+        "UNSUPPORTED_VOUCHER": "لا يمكن استخدام هذه القسيمة هنا."
+      }
     },
     "credits": {
       "monthly": "50 رصيد AI شهريًا",
@@ -9757,7 +9779,8 @@
       "duration": "المدة",
       "cost": "التكلفة",
       "responsible": "المسؤول",
-      "titlePlaceholder": "مثال: إفطار في الفندق"
+      "titlePlaceholder": "مثال: إفطار في الفندق",
+      "endAfterStart": "يجب أن يكون وقت الانتهاء بعد وقت البدء."
     },
     "categories": {
       "food": "طعام ومشروبات",
@@ -9770,7 +9793,8 @@
       "other": "أخرى"
     },
     "noActivitiesDesc": "خطط للبرنامج المثالي لحدثك",
-    "day": "اليوم {{num}}"
+    "day": "اليوم {{num}}",
+    "saveFailed": "تعذّر حفظ النشاط"
   },
   "whoami": {
     "setup": {
@@ -9939,7 +9963,10 @@
         "drinks": "المشروبات",
         "gifts": "الهدايا",
         "other": "أخرى"
-      }
+      },
+      "stepProgress": "الخطوة {{step}} من 3",
+      "back": "رجوع",
+      "next": "التالي"
     },
     "startParty": "ابدأ الحفلة",
     "startPartySub": "ألعاب متعددة، لوحة صدارة واحدة",
@@ -10252,7 +10279,21 @@
     "aiPreviewDuration": "خيارات المدة",
     "aiCreditsBadge": "{{remaining}}/{{limit}} رصيد",
     "aiGenCount": "الإنشاء {{used}}/{{max}}",
-    "aiLimitReached": "تم الوصول إلى الحد الأقصى {{max}} عمليات إنشاء لكل جلسة"
+    "aiLimitReached": "تم الوصول إلى الحد الأقصى {{max}} عمليات إنشاء لكل جلسة",
+    "chooseEmoji": "اختر رمزًا تعبيريًا",
+    "removeEmoji": "بدون رمز تعبيري",
+    "presentationTitle": "شكل النموذج",
+    "presentationDescription": "هكذا يرى الضيوف الأسئلة. يمكن اختيار الألوان والصورة بشكل منفصل.",
+    "presentation": {
+      "classic": "كل الأسئلة",
+      "wizard": "معالج خطوة بخطوة",
+      "slides": "شرائح"
+    },
+    "presentationHint": {
+      "classic": "كل شيء في صفحة واحدة",
+      "wizard": "خطوة بخطوة",
+      "slides": "سؤال واحد في كل بطاقة"
+    }
   },
   "tv": {
     "partyNight": {

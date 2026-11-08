@@ -1,0 +1,5 @@
+/* Localized permission prompts (Info.plist usage descriptions). */
+"NSCameraUsageDescription" = "EventBliss, profil fotoğrafı çekebilmen ve fiş tarayabilmen için kameraya erişmek ister.";
+"NSPhotoLibraryUsageDescription" = "EventBliss, profil fotoğrafı seçebilmen veya fiş yükleyebilmen için fotoğraflarına erişmek ister.";
+"NSMicrophoneUsageDescription" = "EventBliss, harcamaları sesle ekleyebilmen için mikrofona erişmek ister.";
+"NSSpeechRecognitionUsageDescription" = "EventBliss, söylediğin harcamayı metne dönüştürmek için konuşma tanımayı kullanır.";

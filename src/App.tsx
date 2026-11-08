@@ -155,11 +155,11 @@ const AppContent = () => {
           <Route path="/tv" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><TVCodeEntryPage /></Suspense></ErrorBoundary>} />
           <Route path="/tv/:roomCode" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><TVScreen /></Suspense></ErrorBoundary>} />
           <Route path="/games/profile" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><GameProfilePage /></Suspense></ErrorBoundary>} />
-          <Route path="/admin/games" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><AdminGames /></ProtectedRoute></Suspense></ErrorBoundary>} />
-          <Route path="/admin/ohrwurm-songs" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><OhrwurmSongs /></ProtectedRoute></Suspense></ErrorBoundary>} />
-          <Route path="/admin/pixel-images" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><PixelImages /></ProtectedRoute></Suspense></ErrorBoundary>} />
-          <Route path="/admin/closeenough-questions" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><CloseEnoughQuestions /></ProtectedRoute></Suspense></ErrorBoundary>} />
-          <Route path="/admin/game-reports" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><ProtectedRoute><GameReports /></ProtectedRoute></Suspense></ErrorBoundary>} />
+          <Route path="/admin/games" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AdminRoute><AdminGames /></AdminRoute></Suspense></ErrorBoundary>} />
+          <Route path="/admin/ohrwurm-songs" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AdminRoute><OhrwurmSongs /></AdminRoute></Suspense></ErrorBoundary>} />
+          <Route path="/admin/pixel-images" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AdminRoute><PixelImages /></AdminRoute></Suspense></ErrorBoundary>} />
+          <Route path="/admin/closeenough-questions" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AdminRoute><CloseEnoughQuestions /></AdminRoute></Suspense></ErrorBoundary>} />
+          <Route path="/admin/game-reports" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><AdminRoute><GameReports /></AdminRoute></Suspense></ErrorBoundary>} />
           <Route path="/marketplace" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><Marketplace /></Suspense></ErrorBoundary>} />
           <Route path="/marketplace/service/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceService /></Suspense></ErrorBoundary>} />
           <Route path="/marketplace/agency/:slug" element={<ErrorBoundary><Suspense fallback={<PageLoader />}><MarketplaceAgency /></Suspense></ErrorBoundary>} />

@@ -123,7 +123,27 @@ serve(async (req) => {
     };
     
     let safeParticipants: ParticipantData[] = participants || [];
-    if (!isAuthorized) {
+    if (isAuthorized) {
+      // invite_token is a bearer credential: claiming it binds that seat to
+      // the caller, and an organizer seat's token also passes
+      // organizerTokenValid() in update-event-settings. So:
+      //  - organizers (creator or organizer seat) see every token,
+      //  - members allowed to manage settings (TeamInviteManager) see tokens
+      //    of non-organizer seats plus their own,
+      //  - everyone else only sees their own row's token.
+      const own = safeParticipants.find((p) => p.user_id && p.user_id === userId);
+      const isOrganizer = event.created_by === userId || own?.role === "organizer";
+      const perms = (own?.dashboard_permissions ?? {}) as { can_edit_settings?: unknown };
+      // Mirrors useParticipantPermissions: can_edit_settings unlocks the Settings tab.
+      const canManageInvites = perms.can_edit_settings === true;
+      if (!isOrganizer) {
+        safeParticipants = safeParticipants.map((p) => {
+          const isOwnRow = !!p.user_id && p.user_id === userId;
+          const maySeeToken = isOwnRow || (canManageInvites && p.role !== "organizer");
+          return maySeeToken ? p : { ...p, invite_token: null };
+        });
+      }
+    } else {
       safeParticipants = safeParticipants.map(p => ({
         id: p.id,
         name: p.name,

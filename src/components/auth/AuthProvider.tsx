@@ -58,8 +58,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [auth.user?.id, auth.isLoading]);
 
   // Check if user needs to change password
+  // A failed lookup (network blip, transient 5xx) must neither lock the user
+  // out nor silently clear a pending requirement: the last known value is kept
+  // and the check is retried once. A definite answer from the DB always wins.
   useEffect(() => {
-    const checkPasswordRequirement = async () => {
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const checkPasswordRequirement = async (attempt: number) => {
       if (!auth.user || auth.isLoading) {
         setMustChangePassword(false);
         return;
@@ -72,21 +78,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .select("must_change_password")
           .eq("id", auth.user.id)
           .maybeSingle();
-
-        if (!error && data?.must_change_password === true) {
-          setMustChangePassword(true);
-        } else {
-          setMustChangePassword(false);
-        }
+        if (error) throw error;
+        if (!cancelled) setMustChangePassword(data?.must_change_password === true);
       } catch (err) {
-        console.error("Error checking password requirement:", err);
-        setMustChangePassword(false);
+        console.error("[AuthProvider] must_change_password check failed — keeping last known state", err);
+        if (!cancelled && attempt === 0) {
+          retryTimer = setTimeout(() => void checkPasswordRequirement(1), 3000);
+        }
       } finally {
-        setCheckingPassword(false);
+        if (!cancelled) setCheckingPassword(false);
       }
     };
 
-    checkPasswordRequirement();
+    void checkPasswordRequirement(0);
+    return () => {
+      cancelled = true;
+      if (retryTimer) clearTimeout(retryTimer);
+    };
   }, [auth.user, auth.isLoading]);
 
   // Backfill profiles.language from the current UI language once per signed-in

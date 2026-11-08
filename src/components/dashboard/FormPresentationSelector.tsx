@@ -37,7 +37,7 @@ export function FormPresentationSelector({ value, onChange }: { value?: Presenta
               <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-xl", active ? "bg-violet-500 text-white" : "bg-muted text-muted-foreground")}><Icon className="h-5 w-5" /></span>
               <span className="min-w-0">
                 <span className="block text-sm font-semibold text-foreground">{t(`formStudio.presentation.${option.id}`, option.title)}</span>
-                <span className="block text-xs text-muted-foreground">{t(`formStudio.presentationDescription.${option.id}`, option.description)}</span>
+                <span className="block text-xs text-muted-foreground">{t(`formStudio.presentationHint.${option.id}`, option.description)}</span>
               </span>
               {active && <Check className="absolute right-3 top-3 h-4 w-4 text-violet-400" />}
             </button>

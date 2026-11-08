@@ -220,7 +220,13 @@
       "food": "Yeme ve içme",
       "chill": "Rahatlama",
       "mixed": "Diğer"
-    }
+    },
+    "guidedHeading": "Etkinliğe giden yolun",
+    "guidedStep": "Adım {{step}} / {{total}}",
+    "back": "Geri",
+    "next": "İleri",
+    "responseExists": "Bu isim için zaten yanıtlar var – lütfen aynı cihazdan düzenle veya organizatöre sor.",
+    "answersTooLarge": "Yanıtların çok uzun. Lütfen serbest metinleri kısaltıp tekrar dene."
   },
   "designTemplates": {
     "jga-classic": {
@@ -1486,7 +1492,8 @@
     "warning": "Uyarı",
     "organizer": "Organizatör",
     "people": "Kişi",
-    "unknown": "Bilinmiyor"
+    "unknown": "Bilinmiyor",
+    "retry": "Tekrar dene"
   },
   "feedback": {
     "button": "Geri Bildirim",
@@ -3386,7 +3393,12 @@
       },
       "basedOnNoName": "{{count}} yanıta dayanarak",
       "budgetTip": "Bütçe ipucu",
-      "listen": "Sesli oku"
+      "listen": "Sesli oku",
+      "dayLabel": "Gün",
+      "tipsLabel": "İpuçları",
+      "priceOnRequest": "Fiyat talep üzerine",
+      "noMatchingServices": "Henüz uygun rezervasyon yapılabilir teklif yok",
+      "noMatchingServicesDesc": "Marketplace'te daha fazla deneyim keşfet veya taslağını geliştir."
     },
     "settings": {
       "title": "Ayarlar",
@@ -3753,7 +3765,10 @@
         "showDetails": "Ayrıntı ekle",
         "hideDetails": "Ayrıntıları gizle",
         "hideSplit": "Paylaşımı gizle",
-        "adjustSplit": "Paylaşımı düzenle ({{amount}})"
+        "adjustSplit": "Paylaşımı düzenle ({{amount}})",
+        "stepProgress": "Adım {{step}} / 4",
+        "back": "Geri",
+        "next": "İleri"
       },
       "split": {
         "mode": {
@@ -4354,7 +4369,14 @@
       "success": "Kupon başarıyla kullanıldı!",
       "error": "Geçersiz kupon kodu",
       "discountHint": "Bu kod size indirim sağlar!",
-      "discountHintDesc": "'Satın al' veya 'Abone ol'a tıklayın ve kodu ödeme ekranında girin."
+      "discountHintDesc": "'Satın al' veya 'Abone ol'a tıklayın ve kodu ödeme ekranında girin.",
+      "errors": {
+        "ALREADY_REDEEMED": "Bu kuponu zaten kullandın.",
+        "ALREADY_LIFETIME": "Zaten sınırsız Premium erişimin var.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Zaten aktif bir ücretli aboneliğin var. Önce iptal et ya da kuponu abonelik bittikten sonra kullan.",
+        "MAX_REDEMPTIONS": "Bu kupon maksimum kullanım sayısına ulaştı.",
+        "UNSUPPORTED_VOUCHER": "Bu kupon burada kullanılamaz."
+      }
     },
     "paywall": {
       "title": "Premium Özellik",
@@ -8930,8 +8952,10 @@
       "cost": "Maliyet",
       "responsible": "Sorumlu",
       "add": "Ekle",
-      "titlePlaceholder": "örn. Otelde kahvaltı"
-    }
+      "titlePlaceholder": "örn. Otelde kahvaltı",
+      "endAfterStart": "Bitiş saati başlangıç saatinden sonra olmalıdır."
+    },
+    "saveFailed": "Etkinlik kaydedilemedi"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",
@@ -10002,7 +10026,10 @@
         "drinks": "İçecekler",
         "gifts": "Hediyeler",
         "other": "Diğer"
-      }
+      },
+      "stepProgress": "Adım {{step}} / 3",
+      "back": "Geri",
+      "next": "İleri"
     },
     "startParty": "Partiyi başlat",
     "startPartySub": "Birçok oyun, tek sıralama",
@@ -10204,7 +10231,21 @@
     "aiPreviewDuration": "Süre seçenekleri",
     "aiCreditsBadge": "{{remaining}}/{{limit}} kredi",
     "aiGenCount": "Oluşturma {{used}}/{{max}}",
-    "aiLimitReached": "Oturum başına en fazla {{max}} oluşturmaya ulaşıldı"
+    "aiLimitReached": "Oturum başına en fazla {{max}} oluşturmaya ulaşıldı",
+    "chooseEmoji": "Emoji seç",
+    "removeEmoji": "Emojisiz",
+    "presentationTitle": "Form görünümü",
+    "presentationDescription": "Misafirler soruları böyle görür. Renkler ve görsel ayrıca seçilebilir.",
+    "presentation": {
+      "classic": "Tüm sorular",
+      "wizard": "Sihirbaz",
+      "slides": "Slaytlar"
+    },
+    "presentationHint": {
+      "classic": "Her şey tek sayfada",
+      "wizard": "Adım adım",
+      "slides": "Kart başına bir soru"
+    }
   },
   "tv": {
     "partyNight": {

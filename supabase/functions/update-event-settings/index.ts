@@ -2,6 +2,19 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { getCorsHeaders } from "../_shared/cors.ts";
 import { serviceClient, getUserId, isEventOrganizer, organizerTokenValid, unauthorized } from "../_shared/authz.ts";
 
+// Mirrors the public.event_status enum.
+const EVENT_STATUSES = new Set(["draft", "planning", "active", "completed", "cancelled"]);
+// Columns handed back to the client. Never echo access_code / created_by etc.:
+// a guest holding only the organizer_token must not learn more than it set.
+const SAFE_EVENT_COLUMNS = "id, slug, name, status, currency, settings, survey_deadline, updated_at";
+
+function badRequest(corsHeaders: Record<string, string>, error: string): Response {
+  return new Response(
+    JSON.stringify({ success: false, error }),
+    { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+  );
+}
+
 serve(async (req) => {
   const corsHeaders = getCorsHeaders(req.headers.get("origin"));
 
@@ -31,6 +44,26 @@ serve(async (req) => {
       (await organizerTokenValid(supabase, event_id, organizer_token));
     if (!authorized) {
       return unauthorized(corsHeaders);
+    }
+
+    // Input validation (service role bypasses DB-side checks on JSON shape).
+    if (settings !== undefined && settings !== null &&
+        (typeof settings !== "object" || Array.isArray(settings))) {
+      return badRequest(corsHeaders, "settings must be an object");
+    }
+    if (status !== undefined && (typeof status !== "string" || !EVENT_STATUSES.has(status))) {
+      return badRequest(corsHeaders, "Invalid status");
+    }
+    let normalizedCurrency: string | undefined;
+    if (currency !== undefined) {
+      if (typeof currency !== "string" || !/^[A-Za-z]{3}$/.test(currency)) {
+        return badRequest(corsHeaders, "Invalid currency");
+      }
+      normalizedCurrency = currency.toUpperCase();
+    }
+    if (survey_deadline !== undefined && survey_deadline !== null &&
+        (typeof survey_deadline !== "string" || Number.isNaN(Date.parse(survey_deadline)))) {
+      return badRequest(corsHeaders, "Invalid survey_deadline");
     }
 
     console.log("Updating event settings for:", event_id);
@@ -76,8 +109,8 @@ serve(async (req) => {
       updateData.status = status;
     }
 
-    if (currency !== undefined) {
-      updateData.currency = currency;
+    if (normalizedCurrency !== undefined) {
+      updateData.currency = normalizedCurrency;
     }
 
     // Update event
@@ -85,7 +118,7 @@ serve(async (req) => {
       .from("events")
       .update(updateData)
       .eq("id", event_id)
-      .select()
+      .select(SAFE_EVENT_COLUMNS)
       .single();
 
     if (updateError) {

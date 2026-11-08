@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveServiceLocation, sanitizeIlikeValue, serviceMatchesLocation } from "@/lib/service-location";
 import {
   Sparkles, Flame, Play, ShoppingBag, Camera, Music,
   Utensils, Mountain, Heart, PartyPopper, Trophy, Building2,
@@ -39,7 +40,8 @@ export type ServiceSource = "db" | "none";
 export interface UseContextualServicesOptions {
   /** AI response text (will be scanned for keywords) */
   text: string;
-  /** Event city for geographic filtering */
+  /** Event destination (survey slug or label: city and/or country). Services
+   *  are only returned when this (or a city named in `text`) resolves. */
   city?: string;
   /** Event type hint — bachelor, birthday, etc. */
   eventType?: string;
@@ -299,12 +301,16 @@ export function useContextualServices({
     return m;
   }, [scoredCategories]);
 
+  // Services must be at the event's destination. No resolvable destination →
+  // no services at all (never fall back to "anything from anywhere").
+  const location = useMemo(() => resolveServiceLocation(city, text), [city, text]);
+
   const query = useQuery({
-    queryKey: ["contextual-services", categories, city, enterpriseOnly, limit, locale],
-    enabled: categories.length > 0,
+    queryKey: ["contextual-services", categories, location, enterpriseOnly, limit, locale],
+    enabled: categories.length > 0 && location !== null,
     staleTime: 60_000,
     queryFn: async () => {
-      if (categories.length === 0) return [] as ContextualService[];
+      if (categories.length === 0 || !location) return [] as ContextualService[];
 
       // Run in parallel for the top 3 categories (widest net)
       const topCats = categories.slice(0, 3);
@@ -312,15 +318,20 @@ export function useContextualServices({
 
       const fetches = topCats.map(async (cat) => {
         let q = (supabase.from as any)("marketplace_services")
-          .select("id, slug, category, price_cents, price_type, avg_rating, review_count, cover_image_url, location_city, agency_id, agencies!inner(name, slug, logo_url, marketplace_tier)")
+          .select("id, slug, category, price_cents, price_type, avg_rating, review_count, cover_image_url, location_city, location_country, agency_id, agencies!inner(name, slug, logo_url, marketplace_tier)")
           .eq("status", "approved")
           .eq("category", cat);
 
         if (enterpriseOnly) {
           q = q.eq("agencies.marketplace_tier", "enterprise");
         }
-        if (city) {
-          q = q.ilike("location_city", `%${city}%`);
+        const citySpellings = location.cities.map(sanitizeIlikeValue).filter((c) => c.length >= 2);
+        if (citySpellings.length > 0) {
+          q = q.or(citySpellings.map((c) => `location_city.ilike.%${c}%`).join(","));
+        } else if (location.country) {
+          q = q.eq("location_country", location.country);
+        } else {
+          return [];
         }
 
         q = q
@@ -329,9 +340,12 @@ export function useContextualServices({
           .order("avg_rating", { ascending: false })
           .limit(perCat);
 
-        const { data, error } = await q;
+        const { data: rawData, error } = await q;
         if (error) throw error;
-        if (!data || data.length === 0) return [];
+        const data = (rawData ?? []).filter((s: { location_city: string | null; location_country: string | null }) =>
+          serviceMatchesLocation(location, { city: s.location_city, country: s.location_country }),
+        );
+        if (data.length === 0) return [];
 
         // Fetch localized titles — preferred locale + de + en
         const ids = data.map((s: any) => s.id);

@@ -46,6 +46,7 @@ import {
 } from "@/components/survey/EventQuestionsStep";
 import { AIFormSheet } from "@/components/formstudio/sheets/AIFormSheet";
 import { usePremium } from "@/hooks/usePremium";
+import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import { ChevronRight } from "lucide-react";
 import type { EventSettings } from "@/lib/survey-config";
 import {
@@ -133,6 +134,9 @@ export default function CreateEventFlow() {
   const [skippedQuestions, setSkippedQuestions] = useState(false);
   const [showAiSheet, setShowAiSheet] = useState(false);
   const { isPremium } = usePremium();
+  // Kill-switch (missing row = Form Studio on). When off, the Form Studio AI
+  // sheet is hidden and the wizard falls back to the plain question picker.
+  const { enabled: formStudioOff } = useFeatureFlag("form_studio_off");
 
   // Apply an AI-generated form to the wizard: overlay only the AI-owned keys
   // onto the current step value (locked option arrays + date blocks survive).
@@ -355,6 +359,7 @@ export default function CreateEventFlow() {
             {stepKeys[step - 1] === "questions" && (
               <div className="space-y-4">
                 {/* AI hero — let the KI configure the whole form from a short description */}
+                {!formStudioOff && (
                 <motion.button
                   type="button"
                   whileTap={{ scale: 0.985 }}
@@ -383,11 +388,13 @@ export default function CreateEventFlow() {
                   </span>
                   <ChevronRight className="relative h-5 w-5 shrink-0 text-white/90" />
                 </motion.button>
+                )}
 
                 <EventQuestionsStep
                   value={{ question_config: form.question_config, custom_questions: form.custom_questions, options: form.options }}
                   onChange={(v) => setForm((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions, options: v.options }))}
                   eventType={form.event_type}
+                  formStudioOff={formStudioOff}
                 />
               </div>
             )}
@@ -462,7 +469,7 @@ export default function CreateEventFlow() {
         </div>
       )}
 
-      {showAiSheet && (
+      {showAiSheet && !formStudioOff && (
         <AIFormSheet
           open
           event={{

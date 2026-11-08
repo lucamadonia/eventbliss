@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { getPeriodEnd, unixToIso } from "../_shared/stripe-compat.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -80,12 +81,17 @@ serve(async (req) => {
       cancel_at_period_end: true,
     });
 
-    logStep("Subscription cancelled at period end", { 
-      subscriptionId: cancelledSubscription.id, 
-      cancelAt: new Date(cancelledSubscription.current_period_end * 1000).toISOString() 
-    });
+    // Basil: current_period_end lives on the items; `cancel_at` is set by
+    // Stripe when cancel_at_period_end is true. Prefer it, fall back to the
+    // period end; null (never NaN) if neither is present.
+    const cancelDate =
+      unixToIso(cancelledSubscription.cancel_at) ??
+      unixToIso(getPeriodEnd(cancelledSubscription));
 
-    const cancelDate = new Date(cancelledSubscription.current_period_end * 1000).toISOString();
+    logStep("Subscription cancelled at period end", {
+      subscriptionId: cancelledSubscription.id,
+      cancelAt: cancelDate,
+    });
 
     return new Response(JSON.stringify({ 
       success: true,
