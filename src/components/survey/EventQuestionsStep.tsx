@@ -135,10 +135,17 @@ export function EventQuestionsStep({
   value,
   onChange,
   eventType = "",
+  formStudioOff = false,
 }: {
   value: QuestionsValue;
   onChange: (v: QuestionsValue) => void;
   eventType?: string;
+  /**
+   * `form_studio_off` kill-switch, read by the parent via useFeatureFlag.
+   * When true, the Form Studio custom-question sheet is not offered — only the
+   * legacy presets remain; existing free-form questions stay visible read-only.
+   */
+  formStudioOff?: boolean;
 }) {
   const { t } = useTranslation();
   const haptics = useHaptics();
@@ -563,6 +570,7 @@ export function EventQuestionsStep({
               type="button"
               whileTap={reduce ? undefined : { scale: 0.93 }}
               transition={SPRING}
+              disabled={formStudioOff}
               onClick={() => {
                 haptics.select();
                 setEditingCustomId(q.id);
@@ -577,6 +585,7 @@ export function EventQuestionsStep({
           ))}
 
           {/* Create a brand-new question (the sheet gates the free limit itself) */}
+          {!formStudioOff && (
           <motion.button
             type="button"
             whileTap={reduce ? undefined : { scale: 0.93 }}
@@ -591,10 +600,11 @@ export function EventQuestionsStep({
             <Plus className="h-3.5 w-3.5" />
             {t("native.create.questions.createCustom", "Eigene Frage erstellen")}
           </motion.button>
+          )}
         </div>
       </motion.div>
 
-      {showCustomSheet && (
+      {showCustomSheet && !formStudioOff && (
         <CustomQuestionSheet
           open
           editingId={editingCustomId}

@@ -224,7 +224,9 @@
       "food": "Food & Drink",
       "chill": "Relaxation",
       "mixed": "Other"
-    }
+    },
+    "responseExists": "There are already answers for this name – please edit them on the same device or ask the organizer.",
+    "answersTooLarge": "Your answers are too long. Please shorten the free-text answers and try again."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4294,7 +4296,14 @@
       "success": "Voucher redeemed successfully!",
       "error": "Invalid voucher code",
       "discountHint": "This code gives you a discount!",
-      "discountHintDesc": "Click 'Buy' or 'Subscribe' and enter the code in the checkout."
+      "discountHintDesc": "Click 'Buy' or 'Subscribe' and enter the code in the checkout.",
+      "errors": {
+        "ALREADY_REDEEMED": "You have already redeemed this voucher.",
+        "ALREADY_LIFETIME": "You already have unlimited Premium access.",
+        "ACTIVE_PAID_SUBSCRIPTION": "You already have an active paid subscription. Cancel it first or redeem the voucher after it ends.",
+        "MAX_REDEMPTIONS": "This voucher has reached its maximum number of redemptions.",
+        "UNSUPPORTED_VOUCHER": "This voucher can't be redeemed here."
+      }
     },
     "paywall": {
       "title": "Premium Feature",

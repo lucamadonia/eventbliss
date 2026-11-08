@@ -224,7 +224,9 @@
       "food": "Manger et boire",
       "chill": "Détente",
       "mixed": "Autres"
-    }
+    },
+    "responseExists": "Des réponses existent déjà pour ce nom – modifie-les depuis le même appareil ou demande à l'organisateur.",
+    "answersTooLarge": "Tes réponses sont trop longues. Raccourcis les textes libres et réessaie."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4318,7 +4320,14 @@
       "success": "Coupon utilisé avec succès !",
       "error": "Code coupon invalide",
       "discountHint": "Ce code vous fait bénéficier d'une réduction !",
-      "discountHintDesc": "Cliquez sur « Acheter » ou « S'abonner » et saisissez le code lors du paiement."
+      "discountHintDesc": "Cliquez sur « Acheter » ou « S'abonner » et saisissez le code lors du paiement.",
+      "errors": {
+        "ALREADY_REDEEMED": "Tu as déjà utilisé ce bon.",
+        "ALREADY_LIFETIME": "Tu as déjà un accès Premium illimité.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Tu as déjà un abonnement payant actif. Résilie-le d'abord ou utilise le bon après son expiration.",
+        "MAX_REDEMPTIONS": "Ce bon a atteint son nombre maximal d'utilisations.",
+        "UNSUPPORTED_VOUCHER": "Ce bon ne peut pas être utilisé ici."
+      }
     },
     "paywall": {
       "title": "Fonctionnalité Premium",

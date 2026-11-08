@@ -3,6 +3,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeadersWithStripe } from "../_shared/cors.ts";
+import { isCheckoutSessionPaid, isUniqueViolation } from "../_shared/stripe-compat.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -61,11 +62,16 @@ serve(async (req) => {
 
     logStep("Event received", { type: event.type, id: event.id });
 
-    // Idempotency check
+    // Idempotency. Namespaced with "mp_" because stripe-webhook receives the
+    // SAME event ids: with a shared key, a no-op here (e.g. a subscription
+    // checkout without booking_id) would mark the event and make
+    // stripe-webhook skip the premium grant. The booking update is guarded by
+    // status = pending_payment, so both endpoints processing it is safe.
+    const idempotencyKey = `mp_${event.id}`;
     const { data: existingEvent } = await supabaseClient
       .from("processed_webhook_events")
       .select("id")
-      .eq("stripe_event_id", event.id)
+      .eq("stripe_event_id", idempotencyKey)
       .maybeSingle();
 
     if (existingEvent) {
@@ -76,14 +82,12 @@ serve(async (req) => {
       });
     }
 
-    // Record this event as being processed
-    await supabaseClient.from("processed_webhook_events").insert({
-      stripe_event_id: event.id,
-      event_type: event.type,
-    });
+    // The processed marker is written only after the handler succeeded (end
+    // of try) so a failed run is retried by Stripe instead of being skipped.
 
     switch (event.type) {
-      case "checkout.session.completed": {
+      case "checkout.session.completed":
+      case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
         const bookingId = session.metadata?.booking_id;
 
@@ -92,7 +96,22 @@ serve(async (req) => {
           break;
         }
 
-        logStep("Checkout completed for booking", { bookingId, sessionId: session.id });
+        logStep("Checkout completed for booking", {
+          eventType: event.type,
+          bookingId,
+          sessionId: session.id,
+          paymentStatus: session.payment_status,
+        });
+
+        // Delayed payment methods finish with payment_status "unpaid"; the
+        // booking is confirmed later on async_payment_succeeded.
+        if (!isCheckoutSessionPaid(session)) {
+          logStep("Session not paid yet, booking stays pending_payment", {
+            bookingId,
+            paymentStatus: session.payment_status,
+          });
+          break;
+        }
 
         // Fetch the booking to check auto_confirm on its service
         const { data: booking } = await supabaseClient
@@ -129,17 +148,36 @@ serve(async (req) => {
           updateData.confirmed_at = new Date().toISOString();
         }
 
-        const { error: updateError } = await supabaseClient
+        // Only advance a booking still waiting for payment — stripe-webhook or
+        // marketplace-verify-payment may already have moved it on.
+        const { data: updatedRows, error: updateError } = await supabaseClient
           .from("marketplace_bookings")
           .update(updateData)
-          .eq("id", bookingId);
+          .eq("id", bookingId)
+          .eq("status", "pending_payment")
+          .select("id");
 
         if (updateError) {
           logStep("ERROR updating booking", { error: updateError, bookingId });
-        } else {
-          logStep("Booking updated", { bookingId, newStatus });
+          throw new Error(`Booking update failed: ${updateError.message}`);
         }
+        logStep(
+          updatedRows && updatedRows.length > 0
+            ? "Booking updated"
+            : "Booking not in pending_payment, left unchanged",
+          { bookingId, newStatus },
+        );
 
+        break;
+      }
+
+      case "checkout.session.async_payment_failed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        // Booking stays pending_payment (booking_status has no failed value).
+        logStep("Async payment failed, booking stays pending_payment", {
+          bookingId: session.metadata?.booking_id ?? null,
+          sessionId: session.id,
+        });
         break;
       }
 
@@ -182,6 +220,7 @@ serve(async (req) => {
 
         if (updateError) {
           logStep("ERROR updating booking for refund", { error: updateError, bookingId: booking.id });
+          throw new Error(`Booking refund update failed: ${updateError.message}`);
         } else {
           logStep("Booking refunded", { bookingId: booking.id, refundAmountCents });
         }
@@ -210,6 +249,15 @@ serve(async (req) => {
 
       default:
         logStep("Unhandled event type", { type: event.type });
+    }
+
+    // Mark processed only after success; a unique violation = a concurrent
+    // delivery of the same event finished first.
+    const { error: markError } = await supabaseClient
+      .from("processed_webhook_events")
+      .insert({ stripe_event_id: idempotencyKey, event_type: `marketplace.${event.type}` });
+    if (markError && !isUniqueViolation(markError)) {
+      logStep("WARN could not record processed event", { eventId: event.id, error: markError.message });
     }
 
     return new Response(JSON.stringify({ received: true }), {

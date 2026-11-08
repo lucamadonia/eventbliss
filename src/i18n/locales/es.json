@@ -224,7 +224,9 @@
       "food": "Comida y bebida",
       "chill": "Relax",
       "mixed": "Otros"
-    }
+    },
+    "responseExists": "Ya hay respuestas para este nombre: edítalas desde el mismo dispositivo o pregunta al organizador.",
+    "answersTooLarge": "Tus respuestas son demasiado largas. Acorta los textos libres e inténtalo de nuevo."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4318,7 +4320,14 @@
       "success": "¡Cupón canjeado con éxito!",
       "error": "Código de cupón inválido",
       "discountHint": "¡Este código te da un descuento!",
-      "discountHintDesc": "Haz clic en 'Comprar' o 'Suscribirse' e introduce el código en el pago."
+      "discountHintDesc": "Haz clic en 'Comprar' o 'Suscribirse' e introduce el código en el pago.",
+      "errors": {
+        "ALREADY_REDEEMED": "Ya has canjeado este cupón.",
+        "ALREADY_LIFETIME": "Ya tienes acceso Premium ilimitado.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Ya tienes una suscripción de pago activa. Cancélala primero o canjea el cupón cuando termine.",
+        "MAX_REDEMPTIONS": "Este cupón ya alcanzó el máximo de canjes.",
+        "UNSUPPORTED_VOUCHER": "Este cupón no se puede canjear aquí."
+      }
     },
     "paywall": {
       "title": "Función Premium",

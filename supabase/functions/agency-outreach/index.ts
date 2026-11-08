@@ -2,6 +2,8 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { getUserId, serviceClient } from "../_shared/authz.ts";
+import { isPlatformAdmin, isServiceRoleRequest } from "../_shared/edge-guards.ts";
 
 const log = (step: string, details?: unknown) => {
   const suffix = details ? ` - ${JSON.stringify(details)}` : "";
@@ -257,6 +259,26 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey, {
       auth: { persistSession: false },
     });
+
+    // AuthZ: this function sends mail from our domains and calls a paid LLM.
+    // Only pg_cron / server calls (service-role Bearer) or a platform admin
+    // (admin UI via supabase.functions.invoke with the user's JWT) may use it.
+    if (!isServiceRoleRequest(req)) {
+      const authzClient = serviceClient();
+      const userId = await getUserId(req, authzClient);
+      if (!userId) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (!(await isPlatformAdmin(authzClient, userId))) {
+        return new Response(JSON.stringify({ error: "Forbidden - Admin access required" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
 
     const body = await req.json();
     const mode: string = body.type ?? "send_batch";
@@ -539,7 +561,10 @@ Antworte NUR mit dem JSON, kein Markdown drumherum.`;
       const dirId = body.directory_id;
       const rawSubject = body.subject;
       const rawBody = body.body;
-      const sEmail = body.sender_email || "partner@event-bliss.com";
+      // Only our own mailboxes may be used as sender (no spoofed From).
+      const sEmail = typeof body.sender_email === "string" && SENDER_SIGNATURES[body.sender_email]
+        ? body.sender_email
+        : "partner@event-bliss.com";
       const sName = body.sender_name || "EventBliss";
       if (!dirId || !rawSubject) throw new Error("directory_id + subject required");
 

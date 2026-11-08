@@ -43,6 +43,8 @@ import {
   CORE_QUESTION_KEYS,
 } from "@/lib/survey-config";
 import { supabase } from "@/integrations/supabase/client";
+import { readFunctionError } from "@/lib/function-error";
+import { loadEditToken, saveEditToken } from "@/lib/response-edit-token";
 import {
   CORE_QUESTION_RENDERERS,
   CustomQuestionField,
@@ -243,11 +245,28 @@ const DynamicSurveyForm = ({
           ...data,
           event_id: eventId,
           custom_answers: validation.sanitized,
+          // Proof that this device may overwrite its own earlier answer.
+          edit_token: loadEditToken(eventId, data.participant),
         },
       });
 
       if (error) {
-        throw new Error(error.message || "Fehler beim Absenden");
+        // Non-2xx: the useful part is in the response body, not error.message.
+        const info = await readFunctionError(error);
+        if (info.status === 409 && info.code === "RESPONSE_EXISTS") {
+          toast.error(t("guestForm.responseExists", {
+            defaultValue: "Für diesen Namen gibt es schon Antworten – bitte auf demselben Gerät bearbeiten oder den Organisator fragen.",
+          }));
+          return;
+        }
+        if (info.status === 413) {
+          toast.error(t("guestForm.answersTooLarge", {
+            defaultValue: "Deine Antworten sind zu lang. Bitte kürze die Freitexte und versuche es erneut.",
+          }));
+          return;
+        }
+        const serverMessage = typeof info.body?.error === "string" ? info.body.error : "";
+        throw new Error(serverMessage || error.message || "submit_failed");
       }
 
       if (result?.error) {
@@ -260,6 +279,7 @@ const DynamicSurveyForm = ({
         return;
       }
 
+      saveEditToken(eventId, data.participant, result?.edit_token);
       toast.success(t("guestForm.savedToast", { defaultValue: "Antwort gespeichert!" }));
       setIsSubmitted(true);
     } catch (error) {

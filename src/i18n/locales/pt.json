@@ -224,7 +224,9 @@
       "food": "Comida e bebida",
       "chill": "Relaxamento",
       "mixed": "Outros"
-    }
+    },
+    "responseExists": "Já existem respostas para este nome – edita-as no mesmo dispositivo ou pergunta ao organizador.",
+    "answersTooLarge": "As tuas respostas são demasiado longas. Encurta os textos livres e tenta novamente."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4368,7 +4370,14 @@
       "success": "Voucher resgatado com sucesso!",
       "error": "Código de voucher inválido",
       "discountHint": "Este código dá-lhe um desconto!",
-      "discountHintDesc": "Clique em 'Comprar' ou 'Subscrever' e introduza o código no checkout."
+      "discountHintDesc": "Clique em 'Comprar' ou 'Subscrever' e introduza o código no checkout.",
+      "errors": {
+        "ALREADY_REDEEMED": "Já resgataste este voucher.",
+        "ALREADY_LIFETIME": "Já tens acesso Premium ilimitado.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Já tens uma subscrição paga ativa. Cancela-a primeiro ou resgata o voucher quando terminar.",
+        "MAX_REDEMPTIONS": "Este voucher já atingiu o número máximo de resgates.",
+        "UNSUPPORTED_VOUCHER": "Este voucher não pode ser resgatado aqui."
+      }
     },
     "paywall": {
       "title": "Funcionalidade Premium",

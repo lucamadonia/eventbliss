@@ -1,0 +1,5 @@
+/* Localized permission prompts (Info.plist usage descriptions). */
+"NSCameraUsageDescription" = "EventBliss heeft toegang tot je camera nodig zodat je profielfoto's kunt maken en bonnetjes kunt scannen.";
+"NSPhotoLibraryUsageDescription" = "EventBliss heeft toegang tot je foto's nodig zodat je een profielfoto kunt kiezen of bonnetjes kunt uploaden.";
+"NSMicrophoneUsageDescription" = "EventBliss heeft toegang tot je microfoon nodig zodat je uitgaven met je stem kunt invoeren.";
+"NSSpeechRecognitionUsageDescription" = "EventBliss gebruikt spraakherkenning om je ingesproken uitgave om te zetten in tekst.";

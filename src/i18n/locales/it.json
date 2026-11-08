@@ -224,7 +224,9 @@
       "food": "Cibo e bevande",
       "chill": "Relax",
       "mixed": "Altro"
-    }
+    },
+    "responseExists": "Esistono già risposte per questo nome: modificale dallo stesso dispositivo o chiedi all'organizzatore.",
+    "answersTooLarge": "Le tue risposte sono troppo lunghe. Accorcia i testi liberi e riprova."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4318,7 +4320,14 @@
       "success": "Voucher riscattato con successo!",
       "error": "Codice voucher non valido",
       "discountHint": "Questo codice ti dà uno sconto!",
-      "discountHintDesc": "Clicca su 'Acquista' o 'Abbonati' e inserisci il codice al checkout."
+      "discountHintDesc": "Clicca su 'Acquista' o 'Abbonati' e inserisci il codice al checkout.",
+      "errors": {
+        "ALREADY_REDEEMED": "Hai già riscattato questo buono.",
+        "ALREADY_LIFETIME": "Hai già l'accesso Premium illimitato.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Hai già un abbonamento a pagamento attivo. Annullalo prima o riscatta il buono quando scade.",
+        "MAX_REDEMPTIONS": "Questo buono ha raggiunto il numero massimo di utilizzi.",
+        "UNSUPPORTED_VOUCHER": "Questo buono non può essere riscattato qui."
+      }
     },
     "paywall": {
       "title": "Funzionalità Premium",

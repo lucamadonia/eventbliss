@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { getPeriodEnd, unixToIso } from "../_shared/stripe-compat.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -139,8 +140,9 @@ serve(async (req) => {
     
     if (subscriptions.data.length > 0) {
       const subscription = subscriptions.data[0];
-      const subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-      const startedAt = new Date(subscription.start_date * 1000).toISOString();
+      // Basil moved current_period_end onto the subscription items.
+      const subscriptionEnd = unixToIso(getPeriodEnd(subscription));
+      const startedAt = unixToIso(subscription.start_date) ?? new Date().toISOString();
       const interval = subscription.items.data[0]?.price?.recurring?.interval;
       const isYearly = interval === "year";
       
@@ -152,23 +154,28 @@ serve(async (req) => {
         expiresAt: subscriptionEnd 
       });
 
-      // Always upsert to keep DB in sync with Stripe
-      const { error: upsertError } = await supabaseClient.from("subscriptions").upsert({
-        user_id: user.id,
-        plan: "premium",
-        provider: "stripe",
-        plan_type: isYearly ? "yearly" : "monthly",
-        product_id: subscription.items.data[0]?.price?.id ?? null,
-        stripe_customer_id: customerId,
-        stripe_subscription_id: subscription.id,
-        expires_at: subscriptionEnd,
-        started_at: startedAt,
-      }, { onConflict: "user_id" });
-
-      if (upsertError) {
-        logStep("ERROR upserting subscription", { error: upsertError.message });
+      // Keep DB in sync with Stripe — but never write expires_at: null for a
+      // recurring subscription (that would read as lifetime premium).
+      if (!subscriptionEnd) {
+        logStep("WARN no period end on subscription, skipping DB sync", { subscriptionId: subscription.id });
       } else {
-        logStep("Subscription synced to database successfully");
+        const { error: upsertError } = await supabaseClient.from("subscriptions").upsert({
+          user_id: user.id,
+          plan: "premium",
+          provider: "stripe",
+          plan_type: isYearly ? "yearly" : "monthly",
+          product_id: subscription.items.data[0]?.price?.id ?? null,
+          stripe_customer_id: customerId,
+          stripe_subscription_id: subscription.id,
+          expires_at: subscriptionEnd,
+          started_at: startedAt,
+        }, { onConflict: "user_id" });
+
+        if (upsertError) {
+          logStep("ERROR upserting subscription", { error: upsertError.message });
+        } else {
+          logStep("Subscription synced to database successfully");
+        }
       }
 
       return new Response(JSON.stringify({

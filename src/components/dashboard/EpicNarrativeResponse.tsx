@@ -474,9 +474,11 @@ export const EpicNarrativeResponse = ({
   }, [displayCity, response]);
 
   // Enterprise-only: only paying agencies appear in AI recommendations.
+  // Pass the raw destination: the hook resolves city/country (incl. slugs
+  // like "de_city" and flag labels) and shows nothing if it can't match.
   const aggregate = useContextualServices({
     text: aggregateBlob,
-    city: serviceCity,
+    city,
     eventType,
     limit: 12,
   });

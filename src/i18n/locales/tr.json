@@ -224,7 +224,9 @@
       "food": "Yeme ve içme",
       "chill": "Rahatlama",
       "mixed": "Diğer"
-    }
+    },
+    "responseExists": "Bu isim için zaten yanıtlar var – lütfen aynı cihazdan düzenle veya organizatöre sor.",
+    "answersTooLarge": "Yanıtların çok uzun. Lütfen serbest metinleri kısaltıp tekrar dene."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4368,7 +4370,14 @@
       "success": "Kupon başarıyla kullanıldı!",
       "error": "Geçersiz kupon kodu",
       "discountHint": "Bu kod size indirim sağlar!",
-      "discountHintDesc": "'Satın al' veya 'Abone ol'a tıklayın ve kodu ödeme ekranında girin."
+      "discountHintDesc": "'Satın al' veya 'Abone ol'a tıklayın ve kodu ödeme ekranında girin.",
+      "errors": {
+        "ALREADY_REDEEMED": "Bu kuponu zaten kullandın.",
+        "ALREADY_LIFETIME": "Zaten sınırsız Premium erişimin var.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Zaten aktif bir ücretli aboneliğin var. Önce iptal et ya da kuponu abonelik bittikten sonra kullan.",
+        "MAX_REDEMPTIONS": "Bu kupon maksimum kullanım sayısına ulaştı.",
+        "UNSUPPORTED_VOUCHER": "Bu kupon burada kullanılamaz."
+      }
     },
     "paywall": {
       "title": "Premium Özellik",

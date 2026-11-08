@@ -1,7 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { createClient, type SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { getUserId } from "../_shared/authz.ts";
+import { isServiceRoleRequest, timingSafeEqual } from "../_shared/edge-guards.ts";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 const log = (step: string, details?: unknown) => {
   const suffix = details ? ` - ${JSON.stringify(details)}` : "";
@@ -19,7 +22,7 @@ interface BookingRow {
   booking_number: string;
   service_id: string;
   agency_id: string;
-  customer_id: string;
+  customer_id: string | null;
   event_id: string | null;
   status: string;
   booking_date: string;
@@ -31,7 +34,58 @@ interface BookingRow {
   customer_phone: string | null;
   customer_notes: string | null;
   language: string | null;
+  public_token: string | null;
   created_at: string;
+}
+
+// Anonymous guest bookings (customer_id NULL, created by marketplace-checkout)
+// may trigger their own confirmation without a token for this long after
+// creation — keeps the current guest flow working until the client passes
+// the booking's public_token.
+const GUEST_CONFIRMATION_WINDOW_MS = 15 * 60_000;
+
+const jsonResponse = (cors: Record<string, string>, payload: unknown, status = 200) =>
+  new Response(JSON.stringify(payload), {
+    status,
+    headers: { ...cors, "Content-Type": "application/json" },
+  });
+
+/** Who may (re)send the confirmation mail for a booking without the
+ *  service-role key: the customer, an active member of the agency, or a guest
+ *  holding the booking's public_token (or within the fresh-guest window). */
+async function canSendConfirmation(
+  req: Request,
+  supabase: any,
+  b: BookingRow,
+  publicToken: unknown,
+): Promise<boolean> {
+  if (typeof publicToken === "string" && b.public_token && timingSafeEqual(publicToken, b.public_token)) {
+    return true;
+  }
+  const userId = await getUserId(req, supabase);
+  if (userId) {
+    if (b.customer_id && b.customer_id === userId) return true;
+    const { data: member } = await supabase
+      .from("agency_members")
+      .select("id")
+      .eq("agency_id", b.agency_id)
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .limit(1)
+      .maybeSingle();
+    if (member) return true;
+    const { data: agency } = await supabase
+      .from("agencies")
+      .select("owner_id")
+      .eq("id", b.agency_id)
+      .maybeSingle();
+    if (agency?.owner_id && agency.owner_id === userId) return true;
+  }
+  if (!b.customer_id) {
+    const age = Date.now() - new Date(b.created_at).getTime();
+    if (Number.isFinite(age) && age >= 0 && age <= GUEST_CONFIRMATION_WINDOW_MS) return true;
+  }
+  return false;
 }
 
 // ---------------------------------------------------------------------------
@@ -572,7 +626,7 @@ async function sendBookingEmail(to: string, subject: string, html: string, text:
 // ---------------------------------------------------------------------------
 
 async function getServiceTitle(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient,
   serviceId: string,
   locale: string,
 ): Promise<string> {
@@ -593,7 +647,7 @@ async function getServiceTitle(
 }
 
 async function getAgencyInfo(
-  supabase: ReturnType<typeof createClient>,
+  supabase: SupabaseClient,
   agencyId: string,
 ): Promise<{ name: string; email: string | null }> {
   const { data } = await (supabase as any).from("agencies").select("name, contact_email").eq("id", agencyId).single();
@@ -689,20 +743,45 @@ serve(async (req) => {
 
     const body = await req.json();
     const notifyType: NotifyType = body.type ?? "confirmation";
+    const isService = isServiceRoleRequest(req);
+
+    // Reminders fan out to every booking of tomorrow → cron/service only.
+    if (notifyType !== "confirmation" && !isService) {
+      return jsonResponse(corsHeaders, { error: "Unauthorized" }, 401);
+    }
 
     // ───── CONFIRMATION: send for a single booking ─────
     if (notifyType === "confirmation") {
       const bookingId: string = body.booking_id;
       const requestLocale: string | undefined = body.locale;
-      if (!bookingId) throw new Error("booking_id required");
+      if (!bookingId || typeof bookingId !== "string") {
+        return jsonResponse(corsHeaders, { error: "booking_id required" }, 400);
+      }
+
+      if (!isService) {
+        // Re-sends are a mail-bombing vector for the customer/agency inbox.
+        if (
+          !checkRateLimit("booking-notify-ip", getClientIp(req), 10, 60_000) ||
+          !checkRateLimit("booking-notify-booking", bookingId, 3, 10 * 60_000)
+        ) {
+          return rateLimitResponse(corsHeaders);
+        }
+      }
 
       const { data: booking, error } = await (supabase as any)
         .from("marketplace_bookings")
         .select("*")
         .eq("id", bookingId)
-        .single();
-      if (error || !booking) throw new Error(`Booking ${bookingId} not found`);
+        .maybeSingle();
+      if (error || !booking) {
+        // Same answer for "missing" and "not yours" when unauthenticated.
+        return jsonResponse(corsHeaders, { error: "Booking not found" }, isService ? 404 : 403);
+      }
       const b = booking as BookingRow;
+
+      if (!isService && !(await canSendConfirmation(req, supabase, b, body.public_token))) {
+        return jsonResponse(corsHeaders, { error: "Not authorized" }, 403);
+      }
 
       // Language precedence: logged booking.language → request locale → 'de'.
       const lang = resolveLang(b.language ?? requestLocale ?? "de");

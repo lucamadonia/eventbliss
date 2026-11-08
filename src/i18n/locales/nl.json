@@ -224,7 +224,9 @@
       "food": "Eten & drinken",
       "chill": "Ontspanning",
       "mixed": "Overig"
-    }
+    },
+    "responseExists": "Er zijn al antwoorden voor deze naam – bewerk ze op hetzelfde apparaat of vraag het de organisator.",
+    "answersTooLarge": "Je antwoorden zijn te lang. Kort de vrije teksten in en probeer het opnieuw."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4368,7 +4370,14 @@
       "success": "Voucher succesvol ingewisseld!",
       "error": "Ongeldige vouchercode",
       "discountHint": "Met deze code krijg je korting!",
-      "discountHintDesc": "Klik op 'Kopen' of 'Abonneren' en voer de code in bij het afrekenen."
+      "discountHintDesc": "Klik op 'Kopen' of 'Abonneren' en voer de code in bij het afrekenen.",
+      "errors": {
+        "ALREADY_REDEEMED": "Je hebt deze voucher al ingewisseld.",
+        "ALREADY_LIFETIME": "Je hebt al onbeperkte Premium-toegang.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Je hebt al een actief betaald abonnement. Zeg het eerst op of wissel de voucher in nadat het afloopt.",
+        "MAX_REDEMPTIONS": "Deze voucher is al het maximale aantal keren ingewisseld.",
+        "UNSUPPORTED_VOUCHER": "Deze voucher kan hier niet worden ingewisseld."
+      }
     },
     "paywall": {
       "title": "Premium Functie",

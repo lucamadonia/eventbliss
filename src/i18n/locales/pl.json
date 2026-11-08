@@ -224,7 +224,9 @@
       "food": "Jedzenie i picie",
       "chill": "Relaks",
       "mixed": "Inne"
-    }
+    },
+    "responseExists": "Dla tego imienia istnieją już odpowiedzi – edytuj je na tym samym urządzeniu lub zapytaj organizatora.",
+    "answersTooLarge": "Twoje odpowiedzi są za długie. Skróć teksty i spróbuj ponownie."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4368,7 +4370,14 @@
       "success": "Voucher zrealizowany pomyślnie!",
       "error": "Nieprawidłowy kod vouchera",
       "discountHint": "Ten kod daje Ci zniżkę!",
-      "discountHintDesc": "Kliknij „Kup” lub „Subskrybuj” i wpisz kod przy płatności."
+      "discountHintDesc": "Kliknij „Kup” lub „Subskrybuj” i wpisz kod przy płatności.",
+      "errors": {
+        "ALREADY_REDEEMED": "Ten kupon został już przez Ciebie zrealizowany.",
+        "ALREADY_LIFETIME": "Masz już nieograniczony dostęp Premium.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Masz już aktywną płatną subskrypcję. Najpierw ją anuluj lub zrealizuj kupon po jej zakończeniu.",
+        "MAX_REDEMPTIONS": "Ten kupon osiągnął maksymalną liczbę realizacji.",
+        "UNSUPPORTED_VOUCHER": "Tego kuponu nie można tutaj zrealizować."
+      }
     },
     "paywall": {
       "title": "Funkcja Premium",

@@ -224,7 +224,9 @@
       "food": "Essen & Trinken",
       "chill": "Entspannung",
       "mixed": "Sonstiges"
-    }
+    },
+    "responseExists": "Für diesen Namen gibt es schon Antworten – bitte auf demselben Gerät bearbeiten oder den Organisator fragen.",
+    "answersTooLarge": "Deine Antworten sind zu lang. Bitte kürze die Freitexte und versuche es erneut."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4294,7 +4296,14 @@
       "success": "Gutschein erfolgreich eingelöst!",
       "error": "Ungültiger Gutscheincode",
       "discountHint": "Dieser Code gibt dir einen Rabatt!",
-      "discountHintDesc": "Klicke auf 'Kaufen' oder 'Abonnieren' und gib den Code im Checkout ein."
+      "discountHintDesc": "Klicke auf 'Kaufen' oder 'Abonnieren' und gib den Code im Checkout ein.",
+      "errors": {
+        "ALREADY_REDEEMED": "Du hast diesen Gutschein bereits eingelöst.",
+        "ALREADY_LIFETIME": "Du hast bereits unbegrenzten Premium-Zugang.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Du hast bereits ein aktives bezahltes Abo. Kündige es zuerst oder löse den Gutschein nach dessen Ablauf ein.",
+        "MAX_REDEMPTIONS": "Dieser Gutschein wurde bereits zu oft eingelöst.",
+        "UNSUPPORTED_VOUCHER": "Dieser Gutschein kann hier nicht eingelöst werden."
+      }
     },
     "paywall": {
       "title": "Premium-Funktion",

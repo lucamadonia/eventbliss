@@ -32,6 +32,7 @@ import { TemplateSelector } from "@/components/create-event/TemplateSelector";
 import { type EventTemplate } from "@/lib/event-templates";
 import { cn } from "@/lib/utils";
 import { useAuthContext } from "@/components/auth/AuthProvider";
+import { useFeatureFlag } from "@/hooks/useFeatureFlag";
 import {
   EventQuestionsStep,
   defaultQuestionsOptions,
@@ -89,6 +90,7 @@ const eventTypes = [
 
 const CreateEvent = () => {
   const { t } = useTranslation();
+  const { enabled: formStudioOff } = useFeatureFlag("form_studio_off");
   const navigate = useNavigate();
   const { isAuthenticated, isPremium, isLoading: authLoading } = useAuthContext();
   const [step, setStep] = useState(1);
@@ -474,6 +476,7 @@ const CreateEvent = () => {
                   value={{ question_config: formData.question_config, custom_questions: formData.custom_questions, options: formData.options }}
                   onChange={(v) => setFormData((prev) => ({ ...prev, question_config: v.question_config, custom_questions: v.custom_questions, options: v.options }))}
                   eventType={formData.event_type}
+                  formStudioOff={formStudioOff}
                 />
               </div>
             )}
