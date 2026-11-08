@@ -4347,10 +4347,10 @@
     },
     "subscribe": "Passer à Premium",
     "credits": {
-      "monthly": "50 crédits IA/mois",
+      "monthly": "{{count}} crédits IA/mois",
       "remaining": "{{remaining}} crédits restants sur {{limit}}",
-      "yearly": "100 crédits IA/mois",
-      "lifetime": "75 crédits IA/mois"
+      "yearly": "{{count}} crédits IA/mois",
+      "lifetime": "{{count}} crédits IA/mois"
     }
   },
   "admin": {

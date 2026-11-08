@@ -79,10 +79,10 @@ export function EarningsOverviewCards({ agencyId }: Props) {
       {/* KPI Row */}
       <div>
         <div className="flex items-baseline justify-between mb-3">
-          <h3 className="text-xs font-bold uppercase tracking-widest text-slate-500">
+          <h3 className="text-xs font-bold uppercase tracking-widest text-foreground0">
             {t("agency.earnings.title", "Marketplace-Umsatz")}
           </h3>
-          <span className="text-xs text-slate-500">{t("agency.earnings.liveBadge", "Live aus Supabase")}</span>
+          <span className="text-xs text-foreground0">{t("agency.earnings.liveBadge", "Live aus Supabase")}</span>
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {kpis.map((kpi, i) => {
@@ -94,8 +94,8 @@ export function EarningsOverviewCards({ agencyId }: Props) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
                 className={cn(
-                  "relative bg-white/[0.03] backdrop-blur-xl border rounded-2xl p-4 overflow-hidden transition-colors",
-                  kpi.highlight ? "border-cyan-500/40" : "border-white/[0.08]",
+                  "relative bg-card/70 backdrop-blur-xl border rounded-2xl p-4 overflow-hidden transition-colors",
+                  kpi.highlight ? "border-cyan-500/40" : "border-border",
                 )}
               >
                 <div className={cn("absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl opacity-20 bg-gradient-to-br", kpi.accent)} />
@@ -111,10 +111,10 @@ export function EarningsOverviewCards({ agencyId }: Props) {
                       </div>
                     )}
                   </div>
-                  <div className="text-2xl font-black text-slate-50 leading-tight">
+                  <div className="text-2xl font-black text-foreground leading-tight">
                     {loadingEarnings ? "—" : kpi.value}
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-1 leading-tight">
+                  <div className="text-[11px] text-foreground0 mt-1 leading-tight">
                     {kpi.label}
                   </div>
                   {kpi.sub && (
@@ -136,12 +136,12 @@ export function EarningsOverviewCards({ agencyId }: Props) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="lg:col-span-3 bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5"
+          className="lg:col-span-3 bg-card/70 backdrop-blur-xl border border-border rounded-2xl p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h4 className="text-sm font-bold text-slate-50">{t("agency.earnings.chartTitle", "Umsatz-Verlauf")}</h4>
-              <p className="text-[11px] text-slate-500">{t("agency.earnings.chartSub", "letzte 6 Monate")}</p>
+              <h4 className="text-sm font-bold text-foreground">{t("agency.earnings.chartTitle", "Umsatz-Verlauf")}</h4>
+              <p className="text-[11px] text-foreground0">{t("agency.earnings.chartSub", "letzte 6 Monate")}</p>
             </div>
             <Calendar className="w-4 h-4 text-slate-600" />
           </div>
@@ -170,7 +170,7 @@ export function EarningsOverviewCards({ agencyId }: Props) {
                         </div>
                       </motion.div>
                     </div>
-                    <div className="text-[10px] text-slate-500 uppercase font-bold">
+                    <div className="text-[10px] text-foreground0 uppercase font-bold">
                       {monthShort(m.month)}
                     </div>
                   </div>
@@ -178,22 +178,22 @@ export function EarningsOverviewCards({ agencyId }: Props) {
               })}
             </div>
           )}
-          <div className="mt-4 pt-3 border-t border-white/[0.05] grid grid-cols-3 gap-2">
+          <div className="mt-4 pt-3 border-t border-border/60 grid grid-cols-3 gap-2">
             <div>
               <div className="text-[10px] text-slate-600 uppercase tracking-wider">{t("agency.earnings.bookingsThis", "Buchungen")}</div>
-              <div className="text-sm font-bold text-slate-50">
+              <div className="text-sm font-bold text-foreground">
                 {monthly.reduce((s, m) => s + m.bookings_count, 0)}
               </div>
             </div>
             <div>
               <div className="text-[10px] text-slate-600 uppercase tracking-wider">{t("agency.earnings.participantsTotal", "Teilnehmer")}</div>
-              <div className="text-sm font-bold text-slate-50">
+              <div className="text-sm font-bold text-foreground">
                 {monthly.reduce((s, m) => s + m.participants, 0)}
               </div>
             </div>
             <div>
               <div className="text-[10px] text-slate-600 uppercase tracking-wider">{t("agency.earnings.avgBooking", "Ø Buchung")}</div>
-              <div className="text-sm font-bold text-slate-50">
+              <div className="text-sm font-bold text-foreground">
                 {monthly.reduce((s, m) => s + m.bookings_count, 0) > 0
                   ? formatEUR(
                       monthly.reduce((s, m) => s + m.earnings_cents, 0) /
@@ -210,12 +210,12 @@ export function EarningsOverviewCards({ agencyId }: Props) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="lg:col-span-2 bg-white/[0.03] backdrop-blur-xl border border-white/[0.08] rounded-2xl p-5"
+          className="lg:col-span-2 bg-card/70 backdrop-blur-xl border border-border rounded-2xl p-5"
         >
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h4 className="text-sm font-bold text-slate-50">{t("agency.earnings.topServicesTitle", "Top Services")}</h4>
-              <p className="text-[11px] text-slate-500">{t("agency.earnings.topServicesSub", "nach Umsatz")}</p>
+              <h4 className="text-sm font-bold text-foreground">{t("agency.earnings.topServicesTitle", "Top Services")}</h4>
+              <p className="text-[11px] text-foreground0">{t("agency.earnings.topServicesSub", "nach Umsatz")}</p>
             </div>
             <Star className="w-4 h-4 text-amber-400" />
           </div>
@@ -230,7 +230,7 @@ export function EarningsOverviewCards({ agencyId }: Props) {
           ) : (
             <div className="space-y-2">
               {topServices.map((s, i) => (
-                <div key={s.service_id} className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.03] border border-white/[0.05]">
+                <div key={s.service_id} className="flex items-center gap-3 p-2.5 rounded-lg bg-card/70 border border-border/60">
                   <div className={cn(
                     "w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black shrink-0",
                     i === 0 ? "bg-gradient-to-br from-amber-500 to-orange-600 text-white" :
@@ -240,10 +240,10 @@ export function EarningsOverviewCards({ agencyId }: Props) {
                     #{i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-slate-200 truncate">
+                    <div className="text-xs font-semibold text-foreground truncate">
                       {s.service_title || t("agency.earnings.unknownService", "Unbenannter Service")}
                     </div>
-                    <div className="text-[10px] text-slate-500 flex items-center gap-2">
+                    <div className="text-[10px] text-foreground0 flex items-center gap-2">
                       <span>{s.booking_count} {t("agency.earnings.bookingsLabel", "Buchungen")}</span>
                       <span>·</span>
                       <span className="flex items-center gap-0.5">

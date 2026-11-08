@@ -4323,10 +4323,10 @@
     },
     "subscribe": "Jetzt upgraden",
     "credits": {
-      "monthly": "50 KI-Credits/Monat",
+      "monthly": "{{count}} KI-Credits/Monat",
       "remaining": "{{remaining}} von {{limit}} Credits übrig",
-      "yearly": "100 KI-Credits/Monat",
-      "lifetime": "75 KI-Credits/Monat"
+      "yearly": "{{count}} KI-Credits/Monat",
+      "lifetime": "{{count}} KI-Credits/Monat"
     }
   },
   "admin": {

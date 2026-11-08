@@ -4347,10 +4347,10 @@
     },
     "subscribe": "Actualizar Ahora",
     "credits": {
-      "monthly": "50 créditos de IA al mes",
+      "monthly": "{{count}} créditos de IA al mes",
       "remaining": "{{remaining}} de {{limit}} créditos restantes",
-      "yearly": "100 créditos de IA al mes",
-      "lifetime": "75 créditos de IA al mes"
+      "yearly": "{{count}} créditos de IA al mes",
+      "lifetime": "{{count}} créditos de IA al mes"
     }
   },
   "admin": {

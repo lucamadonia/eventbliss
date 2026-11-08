@@ -4397,10 +4397,10 @@
     },
     "subscribe": "Ulepsz Teraz",
     "credits": {
-      "monthly": "50 kredytów AI/miesiąc",
+      "monthly": "{{count}} kredytów AI/miesiąc",
       "remaining": "Pozostało {{remaining}} z {{limit}} kredytów",
-      "yearly": "100 kredytów AI/miesiąc",
-      "lifetime": "75 kredytów AI/miesiąc"
+      "yearly": "{{count}} kredytów AI/miesiąc",
+      "lifetime": "{{count}} kredytów AI/miesiąc"
     }
   },
   "admin": {

@@ -4323,10 +4323,10 @@
     },
     "subscribe": "Upgrade Now",
     "credits": {
-      "monthly": "50 AI credits/month",
+      "monthly": "{{count}} AI credits/month",
       "remaining": "{{remaining}} of {{limit}} credits remaining",
-      "yearly": "100 AI credits/month",
-      "lifetime": "75 AI credits/month"
+      "yearly": "{{count}} AI credits/month",
+      "lifetime": "{{count}} AI credits/month"
     }
   },
   "admin": {

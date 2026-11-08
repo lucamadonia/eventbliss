@@ -3186,10 +3186,10 @@
       }
     },
     "credits": {
-      "monthly": "50 رصيد AI شهريًا",
+      "monthly": "{{count}} رصيد AI شهريًا",
       "remaining": "تبقّى {{remaining}} من {{limit}} رصيد",
-      "yearly": "100 رصيد AI شهريًا",
-      "lifetime": "75 رصيد AI شهريًا"
+      "yearly": "{{count}} رصيد AI شهريًا",
+      "lifetime": "{{count}} رصيد AI شهريًا"
     },
     "cancelSuccess": "تم إلغاء اشتراكك وسينتهي مع نهاية مدة الاشتراك.",
     "cancelError": "حدث خطأ أثناء الإلغاء. يُرجى المحاولة مرة أخرى.",

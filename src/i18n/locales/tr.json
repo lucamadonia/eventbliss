@@ -4397,10 +4397,10 @@
     },
     "subscribe": "Şimdi Yükselt",
     "credits": {
-      "monthly": "Aylık 50 AI kredisi",
+      "monthly": "Aylık {{count}} AI kredisi",
       "remaining": "{{limit}} kredinin {{remaining}} tanesi kaldı",
-      "yearly": "Aylık 100 AI kredisi",
-      "lifetime": "Aylık 75 AI kredisi"
+      "yearly": "Aylık {{count}} AI kredisi",
+      "lifetime": "Aylık {{count}} AI kredisi"
     }
   },
   "admin": {

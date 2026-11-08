@@ -25,6 +25,7 @@ import { extractErrorCode, readFunctionError } from "@/lib/function-error";
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
 import { useAICredits } from "@/hooks/useAICredits";
+import { usePlanConfigs } from "@/hooks/usePlanConfigs";
 import { toast } from "sonner";
 import { AI_CREDIT_LIMITS } from "@/lib/ai-credits";
 import { isNative, isIOS } from "@/lib/platform";
@@ -57,6 +58,7 @@ export default function Premium() {
   const { user } = useAuth();
   const { isPremium, loading: premiumLoading, subscription, subscriptionEnd, planType, cancelAtPeriodEnd, checkSubscription } = usePremium();
   const { remaining: creditsRemaining, limit: creditsLimit, loading: creditsLoading } = useAICredits();
+  const { data: planConfigs } = usePlanConfigs();
   const [checkoutLoading, setCheckoutLoading] = useState<"monthly" | "yearly" | "lifetime" | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
@@ -414,6 +416,11 @@ export default function Premium() {
   const isLifetimeActive = isPremium && planType === "lifetime";
   const hasRecurringSubscription = isMonthlyActive || isYearlyActive;
 
+  // Credit counts come from plan_configs (admin-editable) — the same source
+  // useAICredits enforces — so the cards never promise a different number.
+  const planCredits = (plan: PremiumPlan, fallback: number): number =>
+    planConfigs?.find((c) => c.plan_key === plan)?.ai_credits_monthly ?? fallback;
+
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -505,7 +512,7 @@ export default function Premium() {
                     <div className="rounded-full bg-primary/10 p-2">
                       <Sparkles className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm">{t("premium.credits.monthly", "50 AI-Credits/Monat")}</span>
+                    <span className="text-sm">{t("premium.credits.monthly", "{{count}} AI-Credits/Monat", { count: planCredits("monthly", 50) })}</span>
                   </div>
                 </div>
 
@@ -525,8 +532,10 @@ export default function Premium() {
                 ) : isMonthlyActive ? (
                   renderManageSubscription()
                 ) : isPremium ? (
+                  // Premium via another plan (yearly/lifetime/voucher): don't label
+                  // the monthly card as the user's current plan.
                   <Button className="w-full" size="lg" disabled variant="outline">
-                    {t("premium.currentPlan")}
+                    {isLifetimeActive ? t("premium.lifetimeActive") : t("premium.active")}
                   </Button>
                 ) : (
                   <Button 
@@ -606,7 +615,7 @@ export default function Premium() {
                     <div className="rounded-full bg-primary/10 p-2">
                       <Sparkles className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm font-medium">{t("premium.credits.yearly", "100 AI-Credits/Monat")}</span>
+                    <span className="text-sm font-medium">{t("premium.credits.yearly", "{{count}} AI-Credits/Monat", { count: planCredits("yearly", 100) })}</span>
                   </div>
                 </div>
 
@@ -694,7 +703,7 @@ export default function Premium() {
                     <div className="rounded-full bg-primary/10 p-2">
                       <Sparkles className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm">{t("premium.credits.lifetime", "75 AI-Credits/Monat")}</span>
+                    <span className="text-sm">{t("premium.credits.lifetime", "{{count}} AI-Credits/Monat", { count: planCredits("lifetime", 75) })}</span>
                   </div>
                   {/* Extra lifetime benefit */}
                   <div className="flex items-center gap-3">
