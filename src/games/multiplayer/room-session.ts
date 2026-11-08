@@ -69,12 +69,56 @@ export class RoomSession {
     if (!access.memberIds.includes(this.identity.id)) { this.removeSelf('Du bist nicht mehr in dieser Party.'); return; }
     const look = this.own && ownLook(access, this.own.id, this.own.color, () => this.own!.color); // profile edited in the lobby
     if (look && this.own && (look.avatar !== this.own.avatar || look.color !== this.own.color)) { Object.assign(this.own, look); void this.track().catch(error => this.fail(error)); }
-    const next = this.isHost() ? partyRoomUpdate(room, access) : null;
+    const host = this.isHost();
+    const next = host ? partyRoomUpdate(room, access) : this.recoverPartyMatch(room, access);
     if (!next) return;
     const players = withGuests(this.live, readGuests(next.settings));
     const updated = { ...next, players: next.status === 'playing' ? next.players : players };
     this.publish({ room: updated, players, ...(this.pending ? {} : this.health(updated)) });
-    this.send('room-state', this.roomInfo());
+    if (host) this.send('room-state', this.roomInfo());
+    else if (this.peers.has(updated.hostId)) {
+      this.finishJoin?.();
+      // The server can restore the route and roster; the Host still supplies
+      // the live game snapshot and any private state through the signed channel.
+      this.send('room-request', {});
+    }
+  }
+  /** Repair a missed start packet from the authenticated party snapshot. */
+  private recoverPartyMatch(room: GameRoom, access: PartyRoomAccess): GameRoom | null {
+    const { matchId, matchGameId, matchParticipantIds } = access;
+    if (!matchId || !Array.isArray(matchParticipantIds)) return null;
+    const active = new Set(matchParticipantIds);
+    const participantIds = access.memberIds.filter(id => active.has(id));
+    if (room.status === 'playing' && room.sessionId === matchId
+      && (!matchGameId || room.gameId === matchGameId)) {
+      const removed = room.participantIds.filter(id => !active.has(id));
+      return removed.length ? dropFromMatch(room, removed) : null;
+    }
+    if (!matchGameId || !playableGames.some(game => game.id === matchGameId)) return null;
+    this.cache.clear();
+    const known = new Map([...room.players, ...this.snapshot.players, ...this.live].map(player => [player.id, player]));
+    const profiles = new Map(access.memberProfiles?.map(profile => [profile.id, profile]) ?? []);
+    const guests = new Map((access.guests ?? []).map(guest => [guest.id, guest]));
+    const players: RoomPlayer[] = access.memberIds.map(id => {
+      const old = known.get(id), profile = profiles.get(id), guest = guests.get(id);
+      return {
+        id, name: profile?.name ?? guest?.name ?? old?.name ?? 'Spieler',
+        avatar: profile?.avatar ?? guest?.avatar ?? old?.avatar ?? '🎉',
+        color: profile?.color ?? guest?.color ?? old?.color ?? '#df8eff',
+        isHost: id === access.hostId, isReady: old?.isReady ?? true,
+        isPremium: id === access.hostId ? access.premium : old?.isPremium ?? false,
+        ...(guest || profile?.controlledBy ? { controlledBy: guest?.controlledBy ?? profile?.controlledBy } : {}),
+      };
+    });
+    return {
+      ...room, gameId: matchGameId, sessionId: matchId, status: 'playing', participantIds,
+      players: players.filter(player => player.isHost || active.has(player.id)),
+      settings: {
+        ...room.settings, controllerParty: true, hostPremium: access.premium,
+        guests: access.guests ?? [], sittingOut: (access.guests ?? []).filter(guest => !active.has(guest.id)).map(guest => guest.id),
+        removedPlayerIds: [],
+      },
+    };
   }
   /** Connection state for a room: paused while any active seat (or its controlling device) is missing. */
   private health(room = this.snapshot.room) {
@@ -202,6 +246,8 @@ export class RoomSession {
     }));
     if (generation !== this.generation || revision !== this.presenceRevision || !this.snapshot.room) return;
     this.peers = new Map(valid.filter((p): p is Presence => !!p).map(p => [p.id, p]));
+    this.reconcileParty();
+    if (!this.snapshot.room) return;
     // The server dropped our presence (rejoin without re-track): announce again, else peers wait forever.
     if (this.own && this.sentTrackSignature && !this.peers.has(this.own.id) && channel.state === 'joined') { this.trackSignature = ''; this.sentTrackSignature = ''; void this.track().catch(error => this.fail(error)); }
     const sorted = [...this.peers.values()].sort((a, b) => a.id.localeCompare(b.id));
@@ -301,6 +347,9 @@ export class RoomSession {
     }
     if (packet.event === 'room-state' && fromHost) {
       if (typeof data.gameId !== 'string' || !playableGames.some(g => g.id === data.gameId) || !['lobby', 'playing', 'finished'].includes(String(data.status)) || typeof data.sessionId !== 'string') return;
+      // An older lobby packet must not undo a match already confirmed by the server.
+      if (this.partyAccess?.matchId && (data.status !== 'playing' || data.sessionId !== this.partyAccess.matchId
+        || (this.partyAccess.matchGameId && data.gameId !== this.partyAccess.matchGameId))) return;
       if (this.snapshot.room.sessionId !== data.sessionId) this.cache.clear();
       const settings = object(data.settings) ? data.settings : {}, players = withGuests(this.live, readGuests(settings));
       const room = { ...this.snapshot.room, players: this.snapshot.room.sessionId === data.sessionId && data.status === 'playing' ? this.snapshot.room.players : players, gameId: data.gameId, sessionId: data.sessionId, status: data.status as GameRoom['status'], settings, participantIds: Array.isArray(data.participantIds) ? data.participantIds.filter((p): p is string => typeof p === 'string') : [] };

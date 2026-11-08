@@ -158,6 +158,10 @@
     "forHonoree": "için"
   },
   "guestForm": {
+    "guidedHeading": "Etkinliğe giden yolun",
+    "guidedStep": "{{total}} adımdan {{step}}.",
+    "back": "Geri",
+    "next": "İleri",
     "heading": "Cevabın",
     "subheading": "Sadece 2 dakika sürer. Güncellemek için daha sonra tekrar gönderebilirsin.",
     "participantLabel": "Sen kimsin?",
@@ -221,10 +225,6 @@
       "chill": "Rahatlama",
       "mixed": "Diğer"
     },
-    "guidedHeading": "Etkinliğe giden yolun",
-    "guidedStep": "Adım {{step}} / {{total}}",
-    "back": "Geri",
-    "next": "İleri",
     "responseExists": "Bu isim için zaten yanıtlar var – lütfen aynı cihazdan düzenle veya organizatöre sor.",
     "answersTooLarge": "Yanıtların çok uzun. Lütfen serbest metinleri kısaltıp tekrar dene."
   },
@@ -1448,6 +1448,7 @@
     "roseDesc": "Zarif ve şık"
   },
   "common": {
+    "retry": "Tekrar dene",
     "clear": "Temizle",
     "save": "Kaydet",
     "cancel": "İptal",
@@ -1492,8 +1493,7 @@
     "warning": "Uyarı",
     "organizer": "Organizatör",
     "people": "Kişi",
-    "unknown": "Bilinmiyor",
-    "retry": "Tekrar dene"
+    "unknown": "Bilinmiyor"
   },
   "feedback": {
     "button": "Geri Bildirim",
@@ -3301,6 +3301,11 @@
       }
     },
     "ai": {
+      "dayLabel": "Gün",
+      "tipsLabel": "İpuçları",
+      "priceOnRequest": "Fiyat için iletişime geçin",
+      "noMatchingServices": "Henüz uygun rezervasyon seçeneği yok",
+      "noMatchingServicesDesc": "Pazaryerindeki diğer deneyimleri keşfet veya planını geliştir.",
       "title": "AI Asistan",
       "subtitle": "Planlamanızda yardım alın",
       "basedOn": "{{name}}'ın etkinliği için {{count}} cevaba dayalı",
@@ -3310,6 +3315,7 @@
       "activitiesDesc": "Aktivite öner",
       "dayPlan": "Günlük Plan",
       "dayPlanDesc": "Program oluştur",
+      "incompletePlan": "Tam plan oluşturulamadı. Tekrar deneyin; kredi kullanılmadı.",
       "budgetEstimate": "Bütçe Tahmini",
       "budgetEstimateDesc": "Maliyetleri hesapla",
       "chatPlaceholder": "Etkinlik planlaması hakkında bir soru sorun...",
@@ -3393,12 +3399,7 @@
       },
       "basedOnNoName": "{{count}} yanıta dayanarak",
       "budgetTip": "Bütçe ipucu",
-      "listen": "Sesli oku",
-      "dayLabel": "Gün",
-      "tipsLabel": "İpuçları",
-      "priceOnRequest": "Fiyat talep üzerine",
-      "noMatchingServices": "Henüz uygun rezervasyon yapılabilir teklif yok",
-      "noMatchingServicesDesc": "Marketplace'te daha fazla deneyim keşfet veya taslağını geliştir."
+      "listen": "Sesli oku"
     },
     "settings": {
       "title": "Ayarlar",
@@ -3751,6 +3752,9 @@
         "openLabel": "açık"
       },
       "add": {
+        "stepProgress": "4 adımdan {{step}}.",
+        "back": "Geri",
+        "next": "İleri",
         "srTitle": "Harcama ekle",
         "title": "Yeni harcama",
         "listening": "Dinliyor …",
@@ -3765,10 +3769,7 @@
         "showDetails": "Ayrıntı ekle",
         "hideDetails": "Ayrıntıları gizle",
         "hideSplit": "Paylaşımı gizle",
-        "adjustSplit": "Paylaşımı düzenle ({{amount}})",
-        "stepProgress": "Adım {{step}} / 4",
-        "back": "Geri",
-        "next": "İleri"
+        "adjustSplit": "Paylaşımı düzenle ({{amount}})"
       },
       "split": {
         "mode": {
@@ -5711,6 +5712,10 @@
     "maxDaysReached": "Maksimuma ulaşıldı (7 gün)",
     "selectDuration": "Kaç gün?",
     "selectDurationDesc": "Planınız için gün sayısını seçin",
+    "dayCount": "{{count}} gün",
+    "customDays": "Farklı süre (1–14 gün)",
+    "planWishes": "Plan için isteklerin",
+    "planWishesPlaceholder": "Örneğin: sakin tempo, yerel yemekler, sınırlı bütçe",
     "days3": "Hafta sonu",
     "days5": "Kısa tatil",
     "days7": "Tam hafta",
@@ -7866,16 +7871,22 @@
       "playersLabel": "Oyuncular",
       "ingredientCountLabel": "Tarif uzunluğu",
       "reserveModeLabel": "Kart rezervi",
+      "counterOptionLabel": "Ortak tezgâh",
+      "withoutCounter": "Tezgâhsız",
+      "withoutCounterHint": "Artan malzemeler atılan kart destesine gider.",
+      "withCounter": "Tezgâhlı",
+      "withCounterHint": "Artan malzemeler herkesin görebileceği şekilde kalır.",
+      "partyWatchNoCounter": "İzle: artan malzemeler atılan kart destesine gider.",
       "withTray": "Tepsiyle",
       "withTrayHint": "Çekilen kartları biriktir. Güvenceye almak için bardağa dök; kapanışta rezerv kaybolur.",
       "withoutTray": "Tepsisiz",
-      "withoutTrayHint": "Her malzemeyi hemen yerleştir. Kapanış turu bitirir; güvenceye alınan malzemeler kalır.",
-      "directCardLabel": "Geçerli kart",
-      "directCardHint": "Açılır açılmaz yerleştirilir.",
-      "directCardEmpty": "Sonraki kart doğrudan bardağa veya tezgâha gider.",
-      "directDrawHint": "Yeniden kart çek veya turunu bitir. Her kart hemen yerleştirilir.",
+      "withoutTrayHint": "Çekilen kartlar tepsi olmadan bekler. Onları güvenceye almak için turu bitir; kapanışta kaybolurlar.",
+      "directCardLabel": "Çekilen kartlar",
+      "directCardHint": "Tur bitene kadar risk altındalar.",
+      "directCardEmpty": "Bu tur henüz kart çekilmedi.",
+      "directDrawHint": "Kart çekmeye devam et veya kartları korumak için turu bitir. Kapanışta kaybolurlar.",
       "endTurn": "Turu bitir",
-      "directBustBody": "Tur biter. Güvenceye alınmış malzemeler bardakta kalır.",
+      "directBustBody": "Bu tur çekilen kartlar kaybolur. Önceden güvenceye alınan malzemeler bardakta kalır.",
       "ingredientCountOption": "{{count}} malzeme",
       "start": "Hadi başlayalım!",
       "yourRecipe": "Tarifin",
@@ -8125,6 +8136,7 @@
       "woIstWas": "Nerede?",
       "drueckDasWort": "Kelimeye Bas",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Yaklaştın",
       "pantomime": "Tek Kelime Yok",
       "brew": "Karışım"
@@ -8149,6 +8161,7 @@
       "woIstWas": "Yeri bul",
       "drueckDasWort": "Hızlı yaz, hızlı düşün",
       "ohrwurm": "Şarkıyı dinle, yılını tahmin et",
+      "hitbuzzer": "Şarkıyı tanı ve ilk sen bas",
       "closeenough": "Cevabı sayı olan tahmin soruları — en yakın tahmin kazanır",
       "pantomime": "Sessizce canlandır, takımın bilsin — çift puan için meydan okumalarla",
       "brew": "Tepsiyi devirmeden malzeme topla — tarifini ilk tamamlayan kazanır"
@@ -8433,7 +8446,7 @@
       "skip": "Atla",
       "next": "İleri",
       "getStarted": "İlk etkinliğimi oluştur",
-      "slide5Title": "22 oyun. Birlikte yaşanan tek parti gecesi.",
+      "slide5Title": "23 oyun. Birlikte yaşanan tek parti gecesi.",
       "slide5Subtitle": "Oyun listenizi oluşturun, oyunlar boyunca puan toplayın ve her telefonu bir kumandaya dönüştürün.",
       "slide6Title": "Televizyonunuz bir yarışma sahnesine dönüşür",
       "slide6Subtitle": "Rota, skorlar ve büyük anlar siz telefonlarınızdan oynarken TV’de canlı görünür.",
@@ -8928,6 +8941,7 @@
     "host": "Ev sahibi"
   },
   "nativeSchedule": {
+    "saveFailed": "Etkinlik kaydedilemedi",
     "categories": {
       "food": "Yeme ve içme",
       "activity": "Aktivite",
@@ -8943,6 +8957,7 @@
     "addActivity": "Aktivite ekle",
     "day": "{{num}}. gün",
     "form": {
+      "endAfterStart": "Bitiş saati başlangıç saatinden sonra olmalı.",
       "title": "Başlık",
       "time": "Saat",
       "category": "Kategori",
@@ -8952,10 +8967,8 @@
       "cost": "Maliyet",
       "responsible": "Sorumlu",
       "add": "Ekle",
-      "titlePlaceholder": "örn. Otelde kahvaltı",
-      "endAfterStart": "Bitiş saati başlangıç saatinden sonra olmalıdır."
-    },
-    "saveFailed": "Etkinlik kaydedilemedi"
+      "titlePlaceholder": "örn. Otelde kahvaltı"
+    }
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",
@@ -8965,11 +8978,27 @@
     "invalidCode": "El código debe tener 6 caracteres."
   },
   "nativeFab": {
+    "scanQr": "QR kodu tara",
     "createEvent": "Crear evento",
     "joinEvent": "Unirse",
     "createRoom": "Crear sala",
     "joinRoom": "Unirse a sala",
     "quickGame": "Juego rápido"
+  },
+  "qrScanner": {
+    "title": "QR kodu tara",
+    "hint": "Parti, oyun odası veya başka bir EventBliss davetini tara.",
+    "invalid": "Bu QR kodu bir EventBliss daveti değil.",
+    "cameraUnavailable": "Kamera kullanılamıyor. Bir QR görseli seç veya bağlantıyı gir.",
+    "noCodeInImage": "Bu görselde QR kodu bulunamadı.",
+    "codeFound": "{{code}} kodu bulundu. Neyi açmak istersin?",
+    "joinParty": "Partiye katıl",
+    "joinRoom": "Çevrimiçi odaya katıl",
+    "scanAgain": "Tekrar tara",
+    "chooseImage": "QR görseli seç",
+    "retryCamera": "Kamerayı yeniden başlat",
+    "enterLink": "Bağlantı veya kod gir",
+    "open": "Aç"
   },
   "nativeTabs": {
     "home": "Ana sayfa",
@@ -8999,6 +9028,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Şarkıyı herkesten önce tanı.",
+      "step1": "Sunucu 30 saniyelik parçayı başlatır.",
+      "step2": "Şarkıyı tanıyınca kendi butonuna bas.",
+      "step3": "Oyundan önce şarkı adının, sanatçının veya ikisinin de doğru olması gerektiğini seç. Butona basan kişi yanıtı yüksek sesle söyler ve süre dolmadan onaylar. Ancak bundan sonra şarkı ve sanatçı kendi cihazında görünür.",
+      "step4": "Doğru cevap hıza göre puan kazandırır. Yanlış cevap ceza getirir, takımını bu şarkıda kilitler ve diğer butonları yeniden açar.",
+      "step5": "Seçilen turlardan sonra veya hedef puana ulaşınca en yüksek puan kazanır.",
+      "tip": "Gerekli bölüm özel kontrolde vurgulanır. Doğru yanıt çözümü herkese gösterir; yanlış yanıt gizli tutar."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Önce bir renk lekesi, sonra bir resim — ama bekleyen daha az puan alır.",
@@ -9990,6 +10029,9 @@
       "receiptAlt": "Fiş"
     },
     "expenses": {
+      "stepProgress": "3 adımdan {{step}}.",
+      "back": "Geri",
+      "next": "İleri",
       "totalSpent": "Toplam harcama",
       "perPerson": "/ kişi",
       "categories": "Kategoriler",
@@ -10026,10 +10068,7 @@
         "drinks": "İçecekler",
         "gifts": "Hediyeler",
         "other": "Diğer"
-      },
-      "stepProgress": "Adım {{step}} / 3",
-      "back": "Geri",
-      "next": "İleri"
+      }
     },
     "startParty": "Partiyi başlat",
     "startPartySub": "Birçok oyun, tek sıralama",
@@ -10147,6 +10186,20 @@
     "flaschendrehen": "Şişe Çevirmece"
   },
   "formStudio": {
+    "chooseEmoji": "Emoji seç",
+    "removeEmoji": "Emoji yok",
+    "presentationTitle": "Form düzeni",
+    "presentationHint": "Konukların sorular arasında nasıl ilerleyeceğini seç.",
+    "presentation": {
+      "classic": "Tüm sorular",
+      "wizard": "Sihirbaz",
+      "slides": "Kartlar"
+    },
+    "presentationDescription": {
+      "classic": "Hepsi tek sayfada",
+      "wizard": "Adım adım",
+      "slides": "Kart başına bir soru"
+    },
     "title": "Form Studio",
     "edit": "Düzenle",
     "preview": "Önizleme",
@@ -10231,21 +10284,7 @@
     "aiPreviewDuration": "Süre seçenekleri",
     "aiCreditsBadge": "{{remaining}}/{{limit}} kredi",
     "aiGenCount": "Oluşturma {{used}}/{{max}}",
-    "aiLimitReached": "Oturum başına en fazla {{max}} oluşturmaya ulaşıldı",
-    "chooseEmoji": "Emoji seç",
-    "removeEmoji": "Emojisiz",
-    "presentationTitle": "Form görünümü",
-    "presentationDescription": "Misafirler soruları böyle görür. Renkler ve görsel ayrıca seçilebilir.",
-    "presentation": {
-      "classic": "Tüm sorular",
-      "wizard": "Sihirbaz",
-      "slides": "Slaytlar"
-    },
-    "presentationHint": {
-      "classic": "Her şey tek sayfada",
-      "wizard": "Adım adım",
-      "slides": "Kart başına bir soru"
-    }
+    "aiLimitReached": "Oturum başına en fazla {{max}} oluşturmaya ulaşıldı"
   },
   "tv": {
     "partyNight": {
@@ -10466,6 +10505,10 @@
     "winnerTie": "{{name}} ile berabere"
   },
   "partyControllers": {
+    "activateTitle": "Bu parti için telefonları etkinleştir",
+    "activateProgress": "Oyuncular, oyunlar ve puanlar korunur. Tüm telefonlar için QR kodu birazdan görünecek.",
+    "activateHostRequired": "Devam eden partiyi ev sahibinin telefonunda aç ve telefon kontrollerini oradan etkinleştir.",
+    "activateOnHost": "Bu kodu ev sahibinin telefonunda EventBliss ile açarak mevcut parti için telefonları etkinleştir.",
     "title": "Kontrolcü modu",
     "subtitle": "Herkes kendi telefonundan oynar.",
     "appRequired": "Oynamak için EventBliss uygulaması ve bir hesap gerekir.",

@@ -15,6 +15,7 @@ const GAME_ACCENTS: Record<string, [string, string, string]> = {
   pixeljagd: ['#38BDF8', '#FDE047', '#FB7185'],
   bomb: ['#FB7185', '#F59E0B', '#A78BFA'],
   ohrwurm: ['#22D3EE', '#A78BFA', '#F472B6'],
+  hitbuzzer: ['#df8eff', '#8ff5ff', '#ff2e88'],
   taboo: ['#F472B6', '#FBBF24', '#8B5CF6'],
 };
 

@@ -17,7 +17,7 @@ export function FormPresentationSelector({ value, onChange }: { value?: Presenta
     <div className="space-y-3">
       <div>
         <h3 className="text-sm font-semibold text-foreground">{t("formStudio.presentationTitle", "Formular-Darstellung")}</h3>
-        <p className="text-xs text-muted-foreground">{t("formStudio.presentationDescription", "So erleben Gäste die Fragen. Farben und Bild bleiben separat wählbar.")}</p>
+        <p className="text-xs text-muted-foreground">{t("formStudio.presentationHint", "So erleben Gäste die Fragen. Farben und Bild bleiben separat wählbar.")}</p>
       </div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3" role="group" aria-label={t("formStudio.presentationTitle", "Formular-Darstellung")}>
         {OPTIONS.map((option) => {
@@ -37,7 +37,7 @@ export function FormPresentationSelector({ value, onChange }: { value?: Presenta
               <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-xl", active ? "bg-violet-500 text-white" : "bg-muted text-muted-foreground")}><Icon className="h-5 w-5" /></span>
               <span className="min-w-0">
                 <span className="block text-sm font-semibold text-foreground">{t(`formStudio.presentation.${option.id}`, option.title)}</span>
-                <span className="block text-xs text-muted-foreground">{t(`formStudio.presentationHint.${option.id}`, option.description)}</span>
+                <span className="block text-xs text-muted-foreground">{t(`formStudio.presentationDescription.${option.id}`, option.description)}</span>
               </span>
               {active && <Check className="absolute right-3 top-3 h-4 w-4 text-violet-400" />}
             </button>

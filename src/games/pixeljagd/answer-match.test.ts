@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { normalizeAnswer, isCorrectAnswer } from "./answer-match";
-import { stepsFor, pointsAt, FINAL_STEP } from "./pixelate";
+import { stepsFor, pointsAt, FINAL_STEP, visibleStepForRound } from "./pixelate";
 
 describe("normalizeAnswer", () => {
   it("faltet Groß-/Kleinschreibung und Rand-Leerzeichen", () => {
@@ -101,5 +101,21 @@ describe("pointsAt", () => {
 
   it("fällt nie unter 10, auch bei Überzeit", () => {
     expect(pointsAt(999, 30)).toBe(10);
+  });
+});
+
+describe("pixel image visibility across rounds", () => {
+  it("does not show the next image sharp while phase and timer messages catch up", () => {
+    const steps = stepsFor(8, 30);
+    const frame = (phase: string, view: string, imageReady: boolean, timeLeft: number) =>
+      visibleStepForRound({ phase, view, imageReady, timeLeft, duration: 30, steps });
+
+    expect(frame('roundEnd', 'roundEnd', true, 0)).toBe(FINAL_STEP);
+    expect(frame('playing', 'roundEnd', false, 0)).toBe(8);
+    expect(frame('playing', 'roundEnd', true, 0)).toBe(8);
+    expect(frame('playing', 'playing', true, 0)).toBe(8);
+    expect(frame('playing', 'playing', true, 30)).toBe(8);
+    expect(frame('playing', 'playing', true, 10)).toBeGreaterThan(8);
+    expect(frame('playing', 'playing', true, 1)).toBeLessThan(FINAL_STEP);
   });
 });

@@ -29,6 +29,7 @@ const HIDDEN_PATTERNS = [
   "/auth",
   "/create",
   "/join",
+  "/scan-qr",
   "/danke",
   "/premium",
   "/tv",

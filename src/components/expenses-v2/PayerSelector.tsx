@@ -5,7 +5,7 @@
  */
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Users, User } from "lucide-react";
+import { Check, Users, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PayerConfig } from "@/lib/expenses-v2/types";
 import { DecimalInput } from "./SplitConfigurator";
@@ -73,19 +73,19 @@ export function PayerSelector({
     const activeId = value[0]?.participant_id;
     return (
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+        <div className="mb-5 flex items-center justify-between gap-3">
+          <div className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             {t("expenses.paidBy")}
           </div>
           <button
             type="button"
             onClick={enableMulti}
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-violet-600 dark:text-violet-300 cursor-pointer hover:opacity-80"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-violet-400/30 px-3 text-xs font-semibold text-violet-600 transition-colors hover:bg-violet-500/10 dark:text-violet-300"
           >
-            <Users className="w-3.5 h-3.5" /> {t("expenses.v2.payer.multiple")}
+            <Users className="h-4 w-4" /> {t("expenses.v2.payer.multiple")}
           </button>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-none">
+        <div className={cn("grid gap-3", participants.length === 1 ? "grid-cols-1" : "grid-cols-2")}>
           {participants.map((p) => {
             const active = activeId === p.id;
             return (
@@ -94,21 +94,23 @@ export function PayerSelector({
                 type="button"
                 onClick={() => selectSingle(p.id)}
                 className={cn(
-                  "flex-shrink-0 h-11 px-4 rounded-full border text-sm font-medium cursor-pointer transition-colors flex items-center gap-2",
+                  "relative flex min-h-28 w-full flex-col items-start justify-between gap-3 rounded-3xl border p-4 text-left text-sm font-semibold transition-all active:scale-[0.98]",
                   active
-                    ? "bg-gradient-to-r from-violet-500/25 to-cyan-500/25 border-violet-400/50 text-foreground"
-                    : "bg-muted border-border text-muted-foreground hover:text-foreground",
+                    ? "border-violet-400/70 bg-gradient-to-br from-violet-500/25 to-cyan-500/15 text-foreground shadow-[0_12px_28px_-20px_rgba(139,92,246,0.9)] ring-1 ring-violet-400/30"
+                    : "border-border bg-muted/70 text-foreground hover:border-violet-400/40 hover:bg-muted",
                 )}
+                aria-pressed={active}
               >
                 <div
                   className={cn(
-                    "w-6 h-6 rounded-full text-[10px] font-bold flex items-center justify-center",
-                    active ? "bg-foreground/15" : "bg-muted",
+                    "flex h-11 w-11 items-center justify-center rounded-2xl text-lg font-bold",
+                    active ? "bg-violet-500/25 text-violet-700 dark:text-violet-100" : "bg-background text-muted-foreground",
                   )}
                 >
                   {(p.name ?? "?").slice(0, 1).toUpperCase()}
                 </div>
-                {p.name}
+                <span className="w-full break-words leading-tight">{p.name}</span>
+                {active && <Check className="absolute right-4 top-4 h-5 w-5 text-violet-600 dark:text-violet-200" aria-hidden="true" />}
               </button>
             );
           })}

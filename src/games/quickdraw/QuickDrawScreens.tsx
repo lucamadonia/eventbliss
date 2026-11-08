@@ -13,7 +13,9 @@ import { playerGlow } from '@/lib/party-motion';
 import { hasShellBackButton } from '@/games/ui/shell-back';
 import { StageHeader } from '../ui/GameStage';
 import { PlayerSetup } from '../ui/PlayerSetup';
+import { TeamFormation } from '../ui/TeamFormation';
 import { getPlayerInitial } from '../ui/PlayerAvatars';
+import type { QuickDrawTeam } from './quickdraw-teams';
 
 export type QuickDrawMode = 'classic' | 'speed' | 'blind';
 export const QUICKDRAW_MODE_IDS: QuickDrawMode[] = ['classic', 'speed', 'blind'];
@@ -32,6 +34,13 @@ export interface SetupScreenProps {
   onAdd: () => void;
   onRemove: (id: string) => void;
   onRename: (id: string, name: string) => void;
+  teamMode: 'solo' | 'groups';
+  onTeamMode: (mode: 'solo' | 'groups') => void;
+  teams: QuickDrawTeam[];
+  onShuffleTeams: () => void;
+  onMoveTeamMember: (id: string) => void;
+  onRenameTeam: (index: number, name: string) => void;
+  canStart: boolean;
   mode: QuickDrawMode;
   onMode: (mode: QuickDrawMode) => void;
   totalRounds: number;
@@ -54,6 +63,30 @@ export function SetupScreen(props: SetupScreenProps) {
           onImportNames={props.importNames}
           min={2} max={10} accent="#77cbbb" label={t('games.quickdraw.playerLabel')} />
       </div>
+      <section className="mb-6 space-y-3" data-testid="quickdraw-team-setup">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-white/65">{t('games.pixeljagd.teamMode')}</h2>
+        <div className="grid grid-cols-2 gap-2">
+          {(['solo', 'groups'] as const).map((option) => (
+            <button key={option} type="button" onClick={() => props.onTeamMode(option)} aria-pressed={props.teamMode === option}
+              className={cn('min-h-12 rounded-xl border px-3 text-sm font-bold', props.teamMode === option ? 'border-[#77cbbb] bg-[#77cbbb]/15 text-[#77cbbb]' : 'border-white/15 bg-[#1b2028] text-white/70')}>
+              {t(option === 'solo' ? 'games.pixeljagd.teamModeSolo' : 'games.pixeljagd.teamModeGroups')}
+            </button>
+          ))}
+        </div>
+        {props.teamMode === 'groups' && <>
+          <TeamFormation
+            teams={props.teams}
+            title={t('games.ohrwurm.formTeams')}
+            hint={t('games.pantomime.tapToSwap')}
+            shuffleLabel={t('games.pantomime.reshuffle')}
+            emptyLabel={t('games.ohrwurm.emptyTeam')}
+            renameLabel={(index) => t('games.ohrwurm.nameTeam', { n: index + 1 })}
+            onShuffle={props.onShuffleTeams} onMove={props.onMoveTeamMember} onRename={props.onRenameTeam}
+            surface="#1b2028" elevated="#252c36" text="#f1f3fc" muted="#a8abb3"
+          />
+          {!props.canStart && <p className="text-xs text-[#ffb1a2]">{t('games.pantomime.needTwoPerTeam')}</p>}
+        </>}
+      </section>
       <section className="space-y-3 mb-6">
         <h2 className="text-xs font-bold uppercase tracking-widest text-white/65">{t('games.quickdraw.modeLabel')}</h2>
         <div className="space-y-2">
@@ -82,8 +115,8 @@ export function SetupScreen(props: SetupScreenProps) {
       </section>
       <div className="sticky bottom-0 mt-6 border-t border-white/10 bg-[var(--stage-bg)] py-4 z-20">
         <div className="w-full mx-auto space-y-3">
-          <motion.button whileTap={{ scale: 0.97 }} onClick={props.onStart}
-            className="w-full py-4 rounded-full bg-[#77cbbb] text-[#14221a] text-base font-extrabold font-sans uppercase tracking-wide  flex items-center justify-center gap-2">
+          <motion.button whileTap={{ scale: 0.97 }} onClick={props.onStart} disabled={!props.canStart}
+            className="w-full py-4 rounded-full bg-[#77cbbb] text-[#14221a] text-base font-extrabold font-sans uppercase tracking-wide flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-40">
             <Play className="w-5 h-5" /> {t('games.setup.startGame')}</motion.button>
           {/* Nur im Web. In der App macht das der FloatingBackButton. */}
           {!hasShellBackButton() && (

@@ -1,0 +1,8 @@
+{
+  "version": "1.6.1",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Die Handy-Steuerung lässt sich nun zur laufenden Party zuschalten: Spielerprofile, Spielplan, bisherige Punkte und die TV-Verbindung bleiben erhalten. Der Fernseher zeigt danach den Beitritts-QR für die Mitspieler. Im globalen Plus-Menü gibt es einen QR-Scanner für EventBliss-Einladungen. Ohrwurm stellt auf später einsteigenden oder neu verbundenen Handys den laufenden Spielstand wieder her.\n\nBitte mit Host-Handy, zweitem Handy und TV testen: lokale Party starten, Handy-Steuerung aktivieren, einen vorhandenen Spielerplatz übernehmen, Ohrwurm starten, einen Zug auf dem zweiten Handy ausführen und dieses mitten im Zug neu öffnen. Prüft außerdem, ob der TV verbunden bleibt und Punkte und Spielplan erhalten sind. Nennt bei Problemen Gerät, Buildnummer und die genauen Schritte.",
+    "en-US": "Phone controls can now be enabled during an existing party while keeping player profiles, the game plan, previous scores, and the TV connection. The TV then shows a join QR code for other players. The global plus menu now includes a scanner for EventBliss invitations. Ohrwurm restores the current game state when a phone joins late or reconnects.\n\nPlease test with a host phone, another phone, and a TV: start a local party, enable phone controls, claim an existing seat, start Ohrwurm, take a turn on the second phone, and reopen that phone mid-turn. Check that the TV stays connected and that scores and the game plan remain. Include your device, build number, and exact steps if anything fails."
+  }
+}

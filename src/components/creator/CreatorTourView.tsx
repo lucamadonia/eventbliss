@@ -1,5 +1,5 @@
 /**
- * Die Produkt-Tour — acht Module und alle 22 Spiele, mit echten Bildschirmen.
+ * Die Produkt-Tour — acht Module und alle 23 Spiele, mit echten Bildschirmen.
  *
  * WIRD AN ZWEI STELLEN GEZEIGT: im Token-Bereich /creators/<token> und im
  * angemeldeten Portal /influencer. Deshalb ein Bauteil und nicht zwei Kopien —
@@ -10,7 +10,7 @@
  * Bauteils schaltet `tone` eine Handvoll Klassen um.
  *
  * DIE SPIELE KOMMEN AUS DER APP, nicht aus einer Liste hier: `playableGames`
- * liefert die 22 Eintraege, die Namen und Beschreibungen stehen in i18n unter
+ * liefert die 23 Eintraege, die Namen und Beschreibungen stehen in i18n unter
  * native.gameNames.* / native.gameDescs.*. Damit stimmt die Uebersicht auch
  * noch, wenn ein Spiel dazukommt oder umbenannt wird.
  *
@@ -101,7 +101,7 @@ export function CreatorTourView({
       <div className="space-y-6">
         {tour.chapters.map((ch, i) => (
           <section key={ch.shot} className={cn("rounded-2xl border p-5 md:p-6", c.card)}>
-            <div className="grid gap-6 md:grid-cols-[220px_1fr] md:items-start">
+            <div className="grid gap-6 md:grid-cols-[230px_1fr] md:items-start">
               {/*
                 Oben ausgerichtet und angeschnitten: die Kopfzeile eines
                 Bildschirms sagt in einem Blick, worum es geht — die Mitte
@@ -149,7 +149,7 @@ export function CreatorTourView({
         ))}
       </div>
 
-      {/* ── Alle 22 Spiele ───────────────────────────────────────── */}
+      {/* ── Alle 23 Spiele ───────────────────────────────────────── */}
       <section>
         <h3 className="text-xl font-black">{tour.gamesTitle}</h3>
         <p className={cn("mt-1.5 max-w-2xl", c.body)}>{tour.gamesIntro}</p>

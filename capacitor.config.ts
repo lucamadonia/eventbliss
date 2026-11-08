@@ -18,7 +18,7 @@ const config: CapacitorConfig = {
       // Manual hide — SplashExperience handles the fade-out for a
       // seamless handoff to the animated JS splash.
       launchAutoHide: false,
-      backgroundColor: '#1a1625',
+      backgroundColor: '#fafafa',
       backgroundColorDark: '#1a1625',
       showSpinner: false,
       androidSplashResourceName: 'splash',

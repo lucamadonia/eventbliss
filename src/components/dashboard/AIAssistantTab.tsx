@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { MapPin, Calendar, DollarSign, Lightbulb, RefreshCw, AlertTriangle, Store, Sparkles } from "lucide-react";
+import { useRef, useState } from "react";
+import { ArrowLeft, ArrowRight, MapPin, Calendar, DollarSign, Lightbulb, RefreshCw, AlertTriangle, Store, Sparkles } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -40,17 +40,16 @@ interface AIAssistantTabProps {
 }
 
 type RequestType = "trip_ideas" | "activities" | "day_plan" | "budget_estimate" | "chat" | "recommend_services";
-type PlanningDraft = { response: string; type: RequestType };
+type PlanningDraft = { response: string; type: RequestType; targetDays?: number; wishes?: string };
 
 interface AIRequest {
   type: RequestType;
   icon: typeof MapPin;
   labelKey: string;
   descriptionKey: string;
+  image: string;
   /** Tailwind gradient classes — "from-… via-… to-…" */
   gradient: string;
-  /** "r,g,b" tuple for mouse-tracking spotlight rgba */
-  accent: string;
   badge?: string;
 }
 
@@ -60,40 +59,40 @@ const AI_REQUESTS: AIRequest[] = [
     icon: MapPin,
     labelKey: "dashboard.ai.tripIdeas",
     descriptionKey: "dashboard.ai.tripIdeasDesc",
+    image: "/images/planning-studio/quick-travel-v2.webp",
     gradient: "from-purple-600 via-pink-600 to-amber-500",
-    accent: "236,72,153",
   },
   {
     type: "activities",
     icon: Lightbulb,
     labelKey: "dashboard.ai.activities",
     descriptionKey: "dashboard.ai.activitiesDesc",
+    image: "/images/planning-studio/quick-activities-v2.webp",
     gradient: "from-cyan-500 via-blue-500 to-indigo-600",
-    accent: "59,130,246",
   },
   {
     type: "day_plan",
     icon: Calendar,
     labelKey: "dashboard.ai.dayPlan",
     descriptionKey: "dashboard.ai.dayPlanDesc",
+    image: "/images/planning-studio/duration-5-v2.webp",
     gradient: "from-emerald-500 via-teal-500 to-cyan-500",
-    accent: "20,184,166",
   },
   {
     type: "budget_estimate",
     icon: DollarSign,
     labelKey: "dashboard.ai.budgetEstimate",
     descriptionKey: "dashboard.ai.budgetEstimateDesc",
+    image: "/images/planning-studio/quick-budget-v2.webp",
     gradient: "from-amber-500 via-orange-500 to-red-500",
-    accent: "245,158,11",
   },
   {
     type: "recommend_services" as RequestType,
     icon: Store,
     labelKey: "dashboard.ai.recommendServices",
     descriptionKey: "dashboard.ai.recommendServicesDesc",
+    image: "/images/planning-studio/quick-services-v2.webp",
     gradient: "from-fuchsia-500 via-rose-500 to-amber-400",
-    accent: "232,121,249",
     badge: "NEU",
   },
 ];
@@ -108,6 +107,11 @@ export const AIAssistantTab = ({ event, stats, participantCount: invitedCount, r
   const [currentType, setCurrentType] = useState<RequestType | null>(() => queryClient.getQueryData<PlanningDraft>(["planning-draft", event.id])?.type ?? null);
   const [chatMessage, setChatMessage] = useState("");
   const [lastChatMessage, setLastChatMessage] = useState("");
+  const [lastPlanOptions, setLastPlanOptions] = useState(() => {
+    const draft = queryClient.getQueryData<PlanningDraft>(["planning-draft", event.id]);
+    return { days: draft?.targetDays ?? 3, wishes: draft?.wishes };
+  });
+  const ideasScrollRef = useRef<HTMLDivElement>(null);
   const [selectedActivity, setSelectedActivity] = useState<ParsedActivity | null>(null);
   const [showPlannerDialog, setShowPlannerDialog] = useState(false);
   const [showDurationSelector, setShowDurationSelector] = useState(false);
@@ -199,7 +203,7 @@ export const AIAssistantTab = ({ event, stats, participantCount: invitedCount, r
     };
   };
 
-  const handleRequest = async (type: RequestType, message?: string, options?: { targetDays?: number }) => {
+  const handleRequest = async (type: RequestType, message?: string, options?: { targetDays?: number; wishes?: string }) => {
     if (planningUnavailable) return;
     if (creditsExhausted) {
       toast.error(t('aiCredits.noCreditsLeft'));
@@ -235,7 +239,11 @@ export const AIAssistantTab = ({ event, stats, participantCount: invitedCount, r
 
       if (error) {
         console.error("AI function error:", error);
-        if (error.message?.includes('429') || error.message?.includes('rate')) {
+        const errorContext = (error as { context?: unknown }).context;
+        const errorDetails = errorContext instanceof Response ? await errorContext.clone().json().catch(() => null) : null;
+        if (errorDetails?.code === "INCOMPLETE_PLAN") {
+          toast.error(t("dashboard.ai.incompletePlan"));
+        } else if (error.message?.includes('429') || error.message?.includes('rate')) {
           toast.error(t('dashboard.ai.tooManyRequests'));
         } else if (error.message?.includes('402') || error.message?.includes('credit')) {
           toast.error(t('aiCredits.noCreditsLeft'));
@@ -251,7 +259,8 @@ export const AIAssistantTab = ({ event, stats, participantCount: invitedCount, r
       }
 
       setResponse(result.response);
-      queryClient.setQueryData<PlanningDraft>(["planning-draft", event.id], { response: result.response, type });
+      queryClient.setQueryData<PlanningDraft>(["planning-draft", event.id], { response: result.response, type, targetDays: options?.targetDays, wishes: options?.wishes });
+      if (type === "day_plan") setLastPlanOptions({ days: options?.targetDays ?? 3, wishes: options?.wishes });
 
       // Refetch credits and show animation
       await refetchCredits();
@@ -288,20 +297,20 @@ export const AIAssistantTab = ({ event, stats, participantCount: invitedCount, r
     setCurrentType("day_plan");
   };
 
-  const handleDurationSelect = async (days: number) => {
-    await handleRequest("day_plan", undefined, { targetDays: days });
+  const handleDurationSelect = async (days: number, wishes?: string) => {
+    await handleRequest("day_plan", wishes, { targetDays: days, wishes });
   };
 
   const handleRegenerate = async (targetDays?: number) => {
     if (currentType === "day_plan") {
-      await handleRequest("day_plan", undefined, { targetDays });
+      await handleRequest("day_plan", lastPlanOptions.wishes, { targetDays: targetDays ?? lastPlanOptions.days, wishes: lastPlanOptions.wishes });
     } else if (currentType) {
       await handleRequest(currentType, currentType === "chat" ? lastChatMessage : undefined);
     }
   };
 
   const handleExpand = async (targetDays: number) => {
-    await handleRequest("day_plan", undefined, { targetDays });
+    await handleRequest("day_plan", lastPlanOptions.wishes, { targetDays, wishes: lastPlanOptions.wishes });
   };
 
   const handleAddToPlanner = (activity: ParsedActivity) => {
@@ -436,22 +445,27 @@ export const AIAssistantTab = ({ event, stats, participantCount: invitedCount, r
       )}
 
       <div className="space-y-3">
-        <div>
-          <h3 className="text-lg font-semibold tracking-tight">{i18n.language.startsWith("de") ? "Den Plan verfeinern" : "Refine your plan"}</h3>
-          <p className="text-sm text-muted-foreground">{i18n.language.startsWith("de") ? "Vertiefe einzelne Bausteine, wenn der erste Entwurf steht." : "Explore individual parts after creating your first draft."}</p>
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <h3 className="text-lg font-semibold tracking-tight">{i18n.language.startsWith("de") ? "Quick-Ideen" : "Quick ideas"}</h3>
+            <p className="text-sm text-muted-foreground">{i18n.language.startsWith("de") ? "Entdecke Bausteine für deinen Plan – wische für mehr." : "Explore ideas for your plan – swipe for more."}</p>
+          </div>
+          <div className="hidden shrink-0 gap-2 sm:flex">
+            <button type="button" onClick={() => ideasScrollRef.current?.scrollBy({ left: -320, behavior: "smooth" })} aria-label={i18n.language.startsWith("de") ? "Vorherige Idee" : "Previous idea"} className="grid h-9 w-9 place-items-center rounded-full border border-border text-foreground hover:bg-muted"><ArrowLeft className="h-4 w-4" /></button>
+            <button type="button" onClick={() => ideasScrollRef.current?.scrollBy({ left: 320, behavior: "smooth" })} aria-label={i18n.language.startsWith("de") ? "Nächste Idee" : "Next idea"} className="grid h-9 w-9 place-items-center rounded-full border border-border text-foreground hover:bg-muted"><ArrowRight className="h-4 w-4" /></button>
+          </div>
         </div>
-        <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
+        <div ref={ideasScrollRef} role="region" tabIndex={0} aria-label={i18n.language.startsWith("de") ? "Quick-Ideen" : "Quick ideas"} className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-3">
         {AI_REQUESTS.filter((req) => req.type !== "day_plan").map((req, i) => {
           const isActive = currentType === req.type && isLoading;
-          const isDayPlan = req.type === "day_plan";
           return (
             <AIRequestCard
               key={req.type}
               label={t(req.labelKey)}
               description={t(req.descriptionKey)}
               icon={req.icon}
+              imageSrc={req.image}
               gradient={req.gradient}
-              accentColor={req.accent}
               isLoading={isActive}
               disabled={creditsExhausted || planningUnavailable}
               lockedLabel={creditsExhausted ? t("aiCredits.exhausted", "Leer") : undefined}
@@ -459,8 +473,7 @@ export const AIAssistantTab = ({ event, stats, participantCount: invitedCount, r
               index={i}
               onClick={() => {
                 if (isLoading || creditsExhausted) return;
-                if (isDayPlan) handleDayPlanClick();
-                else handleRequest(req.type);
+                handleRequest(req.type);
               }}
             />
           );
@@ -547,6 +560,7 @@ export const AIAssistantTab = ({ event, stats, participantCount: invitedCount, r
         onOpenChange={setShowPlannerDialog}
         activity={selectedActivity}
         eventId={event.id}
+        defaultDate={event.event_date || undefined}
         onSuccess={() => {
           setSelectedActivity(null);
         }}

@@ -1,9 +1,19 @@
 import { createPrivateKey, sign } from 'node:crypto';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 
-const bundleId = 'app.eventbliss';
-const targetVersion = '1.6.0';
-const buildNumber = '302';
+const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.2.json', import.meta.url), 'utf8'));
+const testflightBuildNumber = process.env.TESTFLIGHT_BUILD_NUMBER;
+if (testflightBuildNumber && !/^\d+$/.test(testflightBuildNumber)) throw new Error('Invalid TestFlight build number.');
+const releaseDir = new URL('../../release/', import.meta.url);
+const noteFiles = testflightBuildNumber
+  ? readdirSync(releaseDir).filter((name) => new RegExp(`^testflight-\\d+\\.\\d+\\.\\d+-build${testflightBuildNumber}\\.json$`).test(name))
+  : [];
+if (testflightBuildNumber && noteFiles.length !== 1) throw new Error(`Expected exactly one TestFlight notes file for build ${testflightBuildNumber}.`);
+const testflightNotes = noteFiles.length ? JSON.parse(readFileSync(new URL(noteFiles[0], releaseDir), 'utf8')) : null;
+const bundleId = testflightNotes?.bundleId ?? release.bundleId;
+const targetVersion = testflightNotes?.version ?? release.version;
+const buildNumber = testflightBuildNumber ?? release.buildNumber;
+const previousVersion = targetVersion === release.version ? release.previousVersion : release.version;
 const issuer = process.env.APP_STORE_CONNECT_ISSUER_ID;
 const keyId = process.env.APP_STORE_CONNECT_KEY_ID;
 const secret = process.env.APP_STORE_CONNECT_PRIVATE_KEY;
@@ -56,9 +66,28 @@ const report = {
   })),
   versions: [],
 };
+if (testflightBuildNumber) {
+  const testflightBuilds = await api(`builds?filter[app]=${app.id}&filter[version]=${testflightBuildNumber}&limit=20`);
+  const testflightBuild = testflightBuilds.data?.find((entry) => entry.attributes?.version === testflightBuildNumber);
+  if (!testflightBuild) throw new Error(`TestFlight build ${testflightBuildNumber} is not listed for ${bundleId}.`);
+  const testflightPrerelease = await api(`builds/${testflightBuild.id}/preReleaseVersion`);
+  if (testflightPrerelease.data?.attributes?.version !== targetVersion || testflightPrerelease.data?.attributes?.platform !== 'IOS') {
+    throw new Error(`TestFlight build ${testflightBuildNumber} does not belong to iOS ${targetVersion}.`);
+  }
+  const betaGroups = await api(`betaGroups?filter[builds]=${testflightBuild.id}&limit=200`);
+  report.testflight = {
+    number: testflightBuildNumber,
+    processingState: testflightBuild.attributes?.processingState,
+    groups: (betaGroups.data ?? []).map(({ attributes }) => ({
+      name: attributes?.name,
+      isInternalGroup: attributes?.isInternalGroup,
+      hasAccessToAllBuilds: attributes?.hasAccessToAllBuilds,
+    })),
+  };
+}
 for (const version of iosVersions) {
   const { versionString, appVersionState, appStoreState } = version.attributes ?? {};
-  if (versionString !== targetVersion && versionString !== '1.5.11' && !['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'PENDING_DEVELOPER_RELEASE', 'PENDING_APPLE_RELEASE'].includes(appVersionState ?? appStoreState)) continue;
+  if (versionString !== targetVersion && versionString !== previousVersion && !['PREPARE_FOR_SUBMISSION', 'READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVIEW', 'PENDING_DEVELOPER_RELEASE', 'PENDING_APPLE_RELEASE'].includes(appVersionState ?? appStoreState)) continue;
   const attached = await api(`appStoreVersions/${version.id}/build`);
   const localizations = await api(`appStoreVersions/${version.id}/appStoreVersionLocalizations?limit=200`);
   const localeReport = [];

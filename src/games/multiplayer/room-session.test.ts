@@ -273,6 +273,51 @@ describe('account-verified controller parties', () => {
     return { network, rooms, ids, memberIds, start, access };
   }
 
+  it('restores a phone into the running match when its start room-state is lost', async () => {
+    const network = new Network(), host = session(network), phone = session(network);
+    const hostId = await host.prepareAccountIdentity('host'), phoneId = await phone.prepareAccountIdentity('phone');
+    let match: { id: string; gameId: string; participants: string[] } | null = null;
+    const access = (): import('./party-access').PartyRoomAccess => ({
+      code: 'ABCDEF', hostId, hostPlays: true, premium: true, memberIds: [hostId, phoneId],
+      matchId: match?.id ?? null, matchGameId: match?.gameId ?? null,
+      matchParticipantIds: match?.participants ?? null,
+      memberProfiles: [
+        { id: hostId, name: 'Host', avatar: '🎉', color: '#df8eff' },
+        { id: phoneId, name: 'Phone', avatar: '🎯', color: '#8ff5ff' },
+      ],
+      refresh: async () => access(),
+      start: async (gameId, participants) => {
+        match = { id: crypto.randomUUID(), gameId, participants };
+        return match.id;
+      },
+    });
+    host.configureParty(access()); phone.configureParty(access());
+    await host.createPartyRoom('ABCDEF', 'Host');
+    await phone.joinRoom('ABCDEF', 'Phone'); phone.setReady(true);
+    await until(() => host.getSnapshot().players.every(player => player.isReady));
+    const channel = network.channels[0], originalSend = channel.send.bind(channel);
+    vi.spyOn(channel, 'send').mockImplementation(async message => {
+      const body = (message.payload as { body?: string })?.body;
+      const packet = body ? JSON.parse(body) as { event: string; data?: { status?: string } } : null;
+      if (packet?.event === 'room-state' && packet.data?.status === 'playing') return 'ok';
+      return originalSend(message);
+    });
+
+    await expect(host.startGame('pixeljagd')).resolves.toBe(true);
+    expect(phone.getSnapshot().room?.status).toBe('lobby');
+    // The party poll knows the committed match even when Realtime lost its start packet.
+    phone.configureParty(access());
+    expect(phone.getSnapshot().room).toMatchObject({
+      status: 'playing', gameId: 'pixeljagd', sessionId: match!.id,
+      participantIds: [hostId, phoneId],
+    });
+    expect(phone.getSnapshot().room?.players.map(player => player.name)).toEqual(['Host', 'Phone']);
+    expect(phone.getSnapshot().connection).toBe('connected');
+    host.finishPartyGame();
+    await delay(); await delay();
+    expect(phone.getSnapshot().room?.status).toBe('playing');
+  });
+
   it('rejects correctly signed presence and actions from accounts absent from verified membership', async () => {
     const { network, rooms: [host, guest], ids } = await controllers();
     const outsider = await createRoomIdentity();

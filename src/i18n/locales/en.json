@@ -160,6 +160,10 @@
   "guestForm": {
     "heading": "Your response",
     "subheading": "Takes just 2 minutes. You can submit again later to update.",
+    "guidedHeading": "Your way to the event",
+    "guidedStep": "Step {{step}} of {{total}}",
+    "back": "Back",
+    "next": "Next",
     "participantLabel": "Who are you?",
     "participantPlaceholder": "Select your name...",
     "restrictionsLabel": "Allergies / restrictions (optional)",
@@ -221,10 +225,6 @@
       "chill": "Relaxation",
       "mixed": "Other"
     },
-    "guidedHeading": "Your path to the event",
-    "guidedStep": "Step {{step}} of {{total}}",
-    "back": "Back",
-    "next": "Next",
     "responseExists": "There are already answers for this name – please edit them on the same device or ask the organizer.",
     "answersTooLarge": "Your answers are too long. Please shorten the free-text answers and try again."
   },
@@ -1449,6 +1449,7 @@
   },
   "common": {
     "clear": "Clear",
+    "retry": "Try again",
     "save": "Save",
     "cancel": "Cancel",
     "close": "Close",
@@ -1492,8 +1493,7 @@
     "warning": "Warning",
     "organizer": "Organizer",
     "people": "People",
-    "unknown": "Unknown",
-    "retry": "Try again"
+    "unknown": "Unknown"
   },
   "feedback": {
     "button": "Feedback",
@@ -3231,8 +3231,8 @@
       }
     },
     "ai": {
-      "title": "AI Assistant",
-      "subtitle": "Get help with your planning",
+      "title": "Planning Studio",
+      "subtitle": "Turn your group's answers into a plan",
       "basedOn": "Based on {{count}} responses for {{name}}'s event",
       "tripIdeas": "Trip Ideas",
       "tripIdeasDesc": "Suggest destinations",
@@ -3249,7 +3249,13 @@
       "noData": "No data yet",
       "noDataDesc": "Share the form. Answers will make your plan more personal.",
       "tooManyRequests": "Too many requests. Please wait a moment.",
-      "requestFailed": "AI request failed. Please try again.",
+      "requestFailed": "Could not create the plan. Please try again.",
+      "incompletePlan": "The full plan could not be created. Please try again – no credit was used.",
+      "dayLabel": "Day",
+      "tipsLabel": "Tips",
+      "priceOnRequest": "Price on request",
+      "noMatchingServices": "No matching bookable offers yet",
+      "noMatchingServicesDesc": "Explore more experiences in the marketplace or refine your plan.",
       "ideaLabel": "IDEA",
       "activityLabel": "ACTIVITY",
       "topPick": "Top Pick",
@@ -3323,12 +3329,7 @@
       },
       "basedOnNoName": "Based on {{count}} responses",
       "budgetTip": "Budget tip",
-      "listen": "Read aloud",
-      "dayLabel": "Day",
-      "tipsLabel": "Tips",
-      "priceOnRequest": "Price on request",
-      "noMatchingServices": "No matching bookable offers yet",
-      "noMatchingServicesDesc": "Discover more experiences in the marketplace or refine your draft."
+      "listen": "Read aloud"
     },
     "settings": {
       "title": "Settings",
@@ -3683,6 +3684,9 @@
       "add": {
         "srTitle": "Add expense",
         "title": "New expense",
+        "stepProgress": "Step {{step}} of 4",
+        "back": "Back",
+        "next": "Next",
         "listening": "Listening …",
         "descriptionPlaceholder": "What for? e.g. pizza, petrol, Airbnb",
         "voiceStart": "Start voice input",
@@ -3695,10 +3699,7 @@
         "showDetails": "Add details",
         "hideDetails": "Hide details",
         "hideSplit": "Hide split",
-        "adjustSplit": "Adjust split ({{amount}})",
-        "stepProgress": "Step {{step}} of 4",
-        "back": "Back",
-        "next": "Next"
+        "adjustSplit": "Adjust split ({{amount}})"
       },
       "split": {
         "mode": {
@@ -5637,6 +5638,10 @@
     "maxDaysReached": "Maximum reached (7 days)",
     "selectDuration": "How many days?",
     "selectDurationDesc": "Choose the number of days for your plan",
+    "dayCount": "{{count}} days",
+    "customDays": "Other duration (1–14 days)",
+    "planWishes": "Your wishes (optional)",
+    "planWishesPlaceholder": "What should your plan include?",
     "days3": "Weekend",
     "days5": "Short Trip",
     "days7": "Full Week",
@@ -7663,16 +7668,22 @@
       "playersLabel": "Players",
       "ingredientCountLabel": "Recipe length",
       "reserveModeLabel": "Card reserve",
+      "counterOptionLabel": "Shared counter",
+      "withoutCounter": "No counter",
+      "withoutCounterHint": "Leftover ingredients go to the discard pile.",
+      "withCounter": "With counter",
+      "withCounterHint": "Leftover ingredients stay visible for everyone.",
+      "partyWatchNoCounter": "Watch along – leftovers go to the discard pile.",
       "withTray": "With tray",
       "withTrayHint": "Collect drawn cards. Pour to secure them; curfew costs the reserve.",
       "withoutTray": "Without tray",
-      "withoutTrayHint": "Sort each ingredient immediately. Curfew ends the turn; secured ingredients stay.",
-      "directCardLabel": "Current card",
-      "directCardHint": "Sorted immediately after the reveal.",
-      "directCardEmpty": "The next card goes straight into the glass or onto the counter.",
-      "directDrawHint": "Keep drawing or end your turn. Each card is sorted immediately.",
+      "withoutTrayHint": "Drawn cards wait without a tray. Ending your turn secures them; curfew loses them.",
+      "directCardLabel": "Drawn cards",
+      "directCardHint": "At risk until the turn ends.",
+      "directCardEmpty": "No card drawn this turn yet.",
+      "directDrawHint": "Draw again or end your turn to secure the cards. Curfew loses them.",
       "endTurn": "End turn",
-      "directBustBody": "The turn ends. Ingredients already secured stay in the glass.",
+      "directBustBody": "Cards drawn this turn are lost. Ingredients secured earlier stay in the glass.",
       "ingredientCountOption": "{{count}} ingredients",
       "start": "Let's go!",
       "yourRecipe": "Your recipe",
@@ -8051,6 +8062,7 @@
       "woIstWas": "Where Is It?",
       "drueckDasWort": "Press the Word",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Close Enough",
       "pantomime": "No Words",
       "brew": "Brew"
@@ -8075,6 +8087,7 @@
       "woIstWas": "Find the place",
       "drueckDasWort": "Type fast, think fast",
       "ohrwurm": "Hear the song, place the year",
+      "hitbuzzer": "Recognize the song and buzz first",
       "closeenough": "Estimation questions with a number as the answer — closest guess wins",
       "pantomime": "Act it out in silence, your team guesses — with challenges for double points",
       "brew": "Collect ingredients without losing the tray — first to finish their recipe wins"
@@ -8356,7 +8369,7 @@
       "slide3Subtitle": "Discover venues, catering and experiences nearby and keep every enquiry in one place.",
       "slide4Title": "Every expense. Every share. Sorted.",
       "slide4Subtitle": "EventBliss splits costs transparently, tracks open balances and saves you from chasing payments.",
-      "slide5Title": "22 games. One connected party night.",
+      "slide5Title": "23 games. One connected party night.",
       "slide5Subtitle": "Build your set list, collect points across games and turn every phone into a controller.",
       "slide6Title": "Your TV becomes a game-show stage",
       "slide6Subtitle": "The route, scores and big moments appear live on TV while everyone plays from their phone.",
@@ -8854,6 +8867,7 @@
     "host": "Host"
   },
   "nativeSchedule": {
+    "saveFailed": "Could not save the activity",
     "categories": {
       "food": "Food & Drinks",
       "activity": "Activity",
@@ -8871,6 +8885,7 @@
     "form": {
       "title": "Title",
       "time": "Time",
+      "endAfterStart": "The end time must be after the start time.",
       "category": "Category",
       "notes": "Notes",
       "location": "Location",
@@ -8878,10 +8893,8 @@
       "cost": "Cost",
       "responsible": "Responsible",
       "add": "Add",
-      "titlePlaceholder": "e.g. Breakfast at hotel",
-      "endAfterStart": "The end time must be after the start time."
-    },
-    "saveFailed": "Activity could not be saved"
+      "titlePlaceholder": "e.g. Breakfast at hotel"
+    }
   },
   "nativeJoinRoom": {
     "title": "Join Room",
@@ -8891,11 +8904,27 @@
     "invalidCode": "The code must be 6 characters long."
   },
   "nativeFab": {
+    "scanQr": "Scan QR code",
     "createEvent": "Create Event",
     "joinEvent": "Join Event",
     "createRoom": "Create Room",
     "joinRoom": "Join Room",
     "quickGame": "Quick Game"
+  },
+  "qrScanner": {
+    "title": "Scan QR code",
+    "hint": "Scan a party, game room, or other EventBliss invitation.",
+    "invalid": "This QR code is not an EventBliss invitation.",
+    "cameraUnavailable": "Camera unavailable. Choose a QR image or enter the link instead.",
+    "noCodeInImage": "No QR code was found in this image.",
+    "codeFound": "Code {{code}} found. What would you like to open?",
+    "joinParty": "Join party",
+    "joinRoom": "Join online room",
+    "scanAgain": "Scan again",
+    "chooseImage": "Choose QR image",
+    "retryCamera": "Restart camera",
+    "enterLink": "Enter link or code",
+    "open": "Open"
   },
   "nativeTabs": {
     "home": "Home",
@@ -8925,6 +8954,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Recognize the song before everyone else.",
+      "step1": "The host starts a 30-second clip.",
+      "step2": "Press your own buzzer as soon as you know the song.",
+      "step3": "Before play, choose whether the title, artist or both must match. The player who buzzes says the answer aloud and taps “Answer spoken” before time runs out. Only then do title and artist appear on their own device.",
+      "step4": "A correct answer earns speed points. A wrong answer costs the chosen penalty, locks your team for this song, and reopens the other buzzers.",
+      "step5": "The highest score wins after the chosen rounds or when the target score is reached.",
+      "tip": "The required part is highlighted during the private check. Correct reveals the answer to everyone; Wrong keeps it hidden and lets others buzz."
+    },
     "pixeljagd": {
       "title": "Pixel Hunt",
       "tagline": "First a blur of colour, then a picture — but waiting costs you points.",
@@ -9917,6 +9956,9 @@
     },
     "expenses": {
       "totalSpent": "Total spending",
+      "stepProgress": "Step {{step}} of 3",
+      "back": "Back",
+      "next": "Next",
       "perPerson": "/ person",
       "categories": "Categories",
       "noneYet": "No expenses yet.",
@@ -9952,10 +9994,7 @@
         "drinks": "Drinks",
         "gifts": "Gifts",
         "other": "Other"
-      },
-      "stepProgress": "Step {{step}} of 3",
-      "back": "Back",
-      "next": "Next"
+      }
     },
     "startParty": "Start Party",
     "startPartySub": "Many games, one leaderboard",
@@ -10074,6 +10113,20 @@
   },
   "formStudio": {
     "title": "Form Studio",
+    "chooseEmoji": "Choose emoji",
+    "removeEmoji": "No emoji",
+    "presentationTitle": "Form layout",
+    "presentationHint": "Choose how guests move through the questions.",
+    "presentation": {
+      "classic": "All questions",
+      "wizard": "Wizard",
+      "slides": "Slides"
+    },
+    "presentationDescription": {
+      "classic": "Everything on one page",
+      "wizard": "Step by step",
+      "slides": "One question per card"
+    },
     "edit": "Edit",
     "preview": "Preview",
     "saved": "Saved",
@@ -10157,21 +10210,7 @@
     "aiPreviewDuration": "Duration options",
     "aiCreditsBadge": "{{remaining}}/{{limit}} credits",
     "aiGenCount": "Generation {{used}}/{{max}}",
-    "aiLimitReached": "Maximum of {{max}} generations per session reached",
-    "chooseEmoji": "Choose emoji",
-    "removeEmoji": "No emoji",
-    "presentationTitle": "Form layout",
-    "presentationDescription": "How guests experience the questions. Colors and image can still be chosen separately.",
-    "presentation": {
-      "classic": "All questions",
-      "wizard": "Wizard",
-      "slides": "Slides"
-    },
-    "presentationHint": {
-      "classic": "Everything on one page",
-      "wizard": "Step by step",
-      "slides": "One question per card"
-    }
+    "aiLimitReached": "Maximum of {{max}} generations per session reached"
   },
   "tv": {
     "partyNight": {
@@ -10392,6 +10431,10 @@
     "winnerTie": "Tied with {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Enable phones for this party",
+    "activateProgress": "Your players, games and points are kept. A QR code for every phone will appear shortly.",
+    "activateHostRequired": "Open the current party on the host phone and enable phone controls there.",
+    "activateOnHost": "Open this code on the host phone in EventBliss to enable phones for your current party.",
     "title": "Joystick mode",
     "subtitle": "Everyone plays on their own phone.",
     "appRequired": "You need the EventBliss app and an account to play.",
@@ -10454,7 +10497,7 @@
     "localHint": "Tonight the phone gets passed around – the TV shows whose turn it is.",
     "localTitle": "One phone for everyone",
     "switchToJoysticks": "Start joystick mode",
-    "switchHostHint": "Host: scan the QR code and start the party. The join code for everyone will appear here next.",
+    "switchHostHint": "Host: scan this QR code in the EventBliss app to add phone controllers to this party. Everyone can then join here.",
     "nextUp": "Up next",
     "notReady": "not ready yet",
     "offline": "disconnected",

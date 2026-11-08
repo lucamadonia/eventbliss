@@ -158,6 +158,10 @@
     "forHonoree": "für"
   },
   "guestForm": {
+    "guidedHeading": "Dein Weg zum Event",
+    "guidedStep": "Schritt {{step}} von {{total}}",
+    "back": "Zurück",
+    "next": "Weiter",
     "heading": "Deine Antwort",
     "subheading": "Dauert nur 2 Minuten. Du kannst später erneut absenden, um zu aktualisieren.",
     "participantLabel": "Wer bist du?",
@@ -221,10 +225,6 @@
       "chill": "Entspannung",
       "mixed": "Sonstiges"
     },
-    "guidedHeading": "Dein Weg zum Event",
-    "guidedStep": "Schritt {{step}} von {{total}}",
-    "back": "Zurück",
-    "next": "Weiter",
     "responseExists": "Für diesen Namen gibt es schon Antworten – bitte auf demselben Gerät bearbeiten oder den Organisator fragen.",
     "answersTooLarge": "Deine Antworten sind zu lang. Bitte kürze die Freitexte und versuche es erneut."
   },
@@ -1448,6 +1448,7 @@
     "roseDesc": "Elegant & stilvoll"
   },
   "common": {
+    "retry": "Erneut versuchen",
     "clear": "Löschen",
     "save": "Speichern",
     "cancel": "Abbrechen",
@@ -1492,8 +1493,7 @@
     "warning": "Warnung",
     "organizer": "Organisator",
     "people": "Personen",
-    "unknown": "Unbekannt",
-    "retry": "Erneut versuchen"
+    "unknown": "Unbekannt"
   },
   "feedback": {
     "button": "Feedback",
@@ -3232,6 +3232,11 @@
     },
     "ai": {
       "title": "Planungsstudio",
+      "dayLabel": "Tag",
+      "tipsLabel": "Tipps",
+      "priceOnRequest": "Preis auf Anfrage",
+      "noMatchingServices": "Noch keine passenden buchbaren Angebote",
+      "noMatchingServicesDesc": "Entdecke weitere Erlebnisse im Marketplace oder verfeinere deinen Plan.",
       "subtitle": "Aus euren Antworten entsteht euer Plan",
       "basedOn": "Basierend auf {{count}} Antworten für {{name}}s Event",
       "tripIdeas": "Reise-Ideen",
@@ -3250,6 +3255,7 @@
       "noDataDesc": "Teile das Formular. Mit den Antworten wird dein Plan persönlicher.",
       "tooManyRequests": "Zu viele Anfragen. Bitte warte einen Moment.",
       "requestFailed": "Der Plan konnte nicht erstellt werden. Bitte versuche es erneut.",
+      "incompletePlan": "Der vollständige Plan konnte nicht erstellt werden. Versuche es erneut – es wurde kein Credit verbraucht.",
       "ideaLabel": "IDEE",
       "activityLabel": "AKTIVITÄT",
       "topPick": "Top Pick",
@@ -3323,12 +3329,7 @@
       },
       "basedOnNoName": "Basierend auf {{count}} Antworten",
       "budgetTip": "Budget-Tipp",
-      "listen": "Vorlesen",
-      "dayLabel": "Tag",
-      "tipsLabel": "Tipps",
-      "priceOnRequest": "Preis auf Anfrage",
-      "noMatchingServices": "Noch keine passenden buchbaren Angebote",
-      "noMatchingServicesDesc": "Entdecke weitere Erlebnisse im Marketplace oder verfeinere deinen Entwurf."
+      "listen": "Vorlesen"
     },
     "settings": {
       "title": "Einstellungen",
@@ -3683,6 +3684,9 @@
       "add": {
         "srTitle": "Ausgabe hinzufügen",
         "title": "Neue Ausgabe",
+        "stepProgress": "Schritt {{step}} von 4",
+        "back": "Zurück",
+        "next": "Weiter",
         "listening": "Hört zu …",
         "descriptionPlaceholder": "Wofür? z. B. Pizza, Tankstelle, Airbnb",
         "voiceStart": "Spracheingabe starten",
@@ -3695,10 +3699,7 @@
         "showDetails": "Details hinzufügen",
         "hideDetails": "Details verbergen",
         "hideSplit": "Aufteilung verbergen",
-        "adjustSplit": "Aufteilung anpassen ({{amount}})",
-        "stepProgress": "Schritt {{step}} von 4",
-        "back": "Zurück",
-        "next": "Weiter"
+        "adjustSplit": "Aufteilung anpassen ({{amount}})"
       },
       "split": {
         "mode": {
@@ -5637,6 +5638,10 @@
     "maxDaysReached": "Maximum erreicht (7 Tage)",
     "selectDuration": "Wie viele Tage?",
     "selectDurationDesc": "Wähle die Anzahl der Tage für deinen Plan",
+    "dayCount": "{{count}} Tage",
+    "customDays": "Andere Dauer (1–14 Tage)",
+    "planWishes": "Deine Wünsche (optional)",
+    "planWishesPlaceholder": "Was darf in deinem Plan nicht fehlen?",
     "days3": "Wochenende",
     "days5": "Kurzurlaub",
     "days7": "Vollwoche",
@@ -7663,16 +7668,22 @@
       "playersLabel": "Spieler",
       "ingredientCountLabel": "Rezeptlänge",
       "reserveModeLabel": "Kartenreserve",
+      "counterOptionLabel": "Gemeinsame Theke",
+      "withoutCounter": "Ohne Theke",
+      "withoutCounterHint": "Übrige Zutaten gehen auf den Ablagestapel.",
+      "withCounter": "Mit Theke",
+      "withCounterHint": "Übrige Zutaten liegen offen für alle bereit.",
+      "partyWatchNoCounter": "Schau mit – übrige Zutaten gehen auf den Ablagestapel.",
       "withTray": "Mit Tablett",
       "withTrayHint": "Gezogene Karten sammeln. Eingießen sichert sie; bei Sperrstunde geht die Reserve verloren.",
       "withoutTray": "Ohne Tablett",
-      "withoutTrayHint": "Jede Zutat wird sofort einsortiert. Die Sperrstunde beendet den Zug, gesicherte Zutaten bleiben.",
-      "directCardLabel": "Aktuelle Karte",
-      "directCardHint": "Wird nach dem Aufdecken sofort einsortiert.",
-      "directCardEmpty": "Die nächste Karte kommt direkt ins Glas oder auf die Theke.",
-      "directDrawHint": "Zieh weiter oder beende deinen Zug. Jede Karte wird sofort einsortiert.",
+      "withoutTrayHint": "Gezogene Karten liegen ohne Tablett bereit. Erst das Zugende sichert sie; bei Sperrstunde sind sie verloren.",
+      "directCardLabel": "Gezogene Karten",
+      "directCardHint": "Bis zum Zugende ungesichert.",
+      "directCardEmpty": "Noch keine Karte in diesem Zug gezogen.",
+      "directDrawHint": "Zieh weiter oder beende den Zug, um die Karten zu sichern. Bei Sperrstunde sind sie verloren.",
       "endTurn": "Zug beenden",
-      "directBustBody": "Der Zug endet. Bereits gesicherte Zutaten bleiben im Glas.",
+      "directBustBody": "Die gezogenen Karten dieses Zuges sind verloren. Früher gesicherte Zutaten bleiben im Glas.",
       "ingredientCountOption": "{{count}} Zutaten",
       "start": "Los geht's!",
       "yourRecipe": "Dein Rezept",
@@ -8051,6 +8062,7 @@
       "woIstWas": "Wo ist was?",
       "drueckDasWort": "Drück das Wort",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Nah Dran",
       "pantomime": "Ohne Worte",
       "brew": "Gebräu"
@@ -8075,6 +8087,7 @@
       "woIstWas": "Finde den Ort",
       "drueckDasWort": "Schnell tippen, schnell denken",
       "ohrwurm": "Song hören, Jahr einordnen",
+      "hitbuzzer": "Song erkennen und als Erste buzzern",
       "closeenough": "Schätzfragen mit einer Zahl als Antwort — wer am nächsten dran liegt, gewinnt",
       "pantomime": "Stumm vormachen, das Team rät — mit Herausforderungen für doppelte Punkte",
       "brew": "Zutaten sammeln, ohne dass das Tablett kippt — wer sein Rezept zuerst vollhat, gewinnt"
@@ -8356,7 +8369,7 @@
       "slide3Subtitle": "Entdecke Locations, Catering und Erlebnisse in deiner Nähe und behalte jede Anfrage an einem Ort.",
       "slide4Title": "Jeder Betrag. Jeder Anteil. Geklärt.",
       "slide4Subtitle": "EventBliss verteilt Kosten nachvollziehbar, zeigt offene Beträge und erspart dir das Hinterherlaufen.",
-      "slide5Title": "22 Spiele. Eine gemeinsame Partynacht.",
+      "slide5Title": "23 Spiele. Eine gemeinsame Partynacht.",
       "slide5Subtitle": "Stellt eure Set-Liste zusammen, sammelt spielübergreifend Punkte und macht jedes Handy zum Controller.",
       "slide6Title": "Euer Fernseher wird zur Gameshow-Bühne",
       "slide6Subtitle": "Route, Spielstände und große Momente erscheinen live auf dem TV — während ihr mit den Handys spielt.",
@@ -8854,6 +8867,7 @@
     "host": "Host"
   },
   "nativeSchedule": {
+    "saveFailed": "Aktivität konnte nicht gespeichert werden",
     "categories": {
       "food": "Essen & Trinken",
       "activity": "Aktivität",
@@ -8871,6 +8885,7 @@
     "form": {
       "title": "Titel",
       "time": "Uhrzeit",
+      "endAfterStart": "Die Endzeit muss nach der Startzeit liegen.",
       "category": "Kategorie",
       "notes": "Notizen",
       "location": "Ort",
@@ -8878,10 +8893,8 @@
       "cost": "Kosten",
       "responsible": "Zuständig",
       "add": "Hinzufügen",
-      "titlePlaceholder": "z.B. Frühstück im Hotel",
-      "endAfterStart": "Die Endzeit muss nach der Startzeit liegen."
-    },
-    "saveFailed": "Aktivität konnte nicht gespeichert werden"
+      "titlePlaceholder": "z.B. Frühstück im Hotel"
+    }
   },
   "nativeJoinRoom": {
     "title": "Raum beitreten",
@@ -8891,11 +8904,27 @@
     "invalidCode": "Der Code muss 6 Zeichen lang sein."
   },
   "nativeFab": {
+    "scanQr": "QR-Code scannen",
     "createEvent": "Event erstellen",
     "joinEvent": "Event beitreten",
     "createRoom": "Raum erstellen",
     "joinRoom": "Raum beitreten",
     "quickGame": "Quick Game"
+  },
+  "qrScanner": {
+    "title": "QR-Code scannen",
+    "hint": "Scanne eine Party-, Spielraum- oder andere EventBliss-Einladung.",
+    "invalid": "Dieser QR-Code gehört nicht zu EventBliss.",
+    "cameraUnavailable": "Kamera nicht verfügbar. Du kannst ein QR-Bild wählen oder den Link eingeben.",
+    "noCodeInImage": "In diesem Bild wurde kein QR-Code gefunden.",
+    "codeFound": "Code {{code}} erkannt. Was möchtest du öffnen?",
+    "joinParty": "Party beitreten",
+    "joinRoom": "Online-Raum beitreten",
+    "scanAgain": "Erneut scannen",
+    "chooseImage": "QR-Bild wählen",
+    "retryCamera": "Kamera neu starten",
+    "enterLink": "Link oder Code eingeben",
+    "open": "Öffnen"
   },
   "nativeTabs": {
     "home": "Home",
@@ -8925,6 +8954,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Erkenne den Song schneller als die anderen.",
+      "step1": "Der Host startet einen 30-Sekunden-Ausschnitt.",
+      "step2": "Drücke deinen eigenen Buzzer, sobald du den Song erkennst.",
+      "step3": "Vor dem Spiel wird gewählt, ob Songtitel, Interpret oder beides stimmen muss. Wer buzzert, nennt die Antwort laut und tippt vor Ablauf der Zeit auf „Antwort gesagt“. Erst danach erscheinen Titel und Interpret nur auf dem eigenen Gerät.",
+      "step4": "Richtig bringt je nach Tempo Punkte. Falsch kostet Strafpunkte, sperrt dein Team für diesen Song und gibt die anderen Buzzer wieder frei.",
+      "step5": "Nach der gewählten Rundenzahl oder beim Punktziel gewinnt die höchste Punktzahl.",
+      "tip": "Der gewählte Teil ist beim privaten Abgleich markiert. Bei „Richtig“ sehen alle die Lösung; bei „Falsch“ bleibt sie verborgen und die anderen können weiterbuzzern."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Erst ein Farbklecks, dann ein Bild — aber wer wartet, bekommt weniger Punkte.",
@@ -9917,6 +9956,9 @@
     },
     "expenses": {
       "totalSpent": "Gesamtausgaben",
+      "stepProgress": "Schritt {{step}} von 3",
+      "back": "Zurück",
+      "next": "Weiter",
       "perPerson": "/ Person",
       "categories": "Kategorien",
       "noneYet": "Noch keine Ausgaben.",
@@ -9952,10 +9994,7 @@
         "drinks": "Getränke",
         "gifts": "Geschenke",
         "other": "Sonstiges"
-      },
-      "stepProgress": "Schritt {{step}} von 3",
-      "back": "Zurück",
-      "next": "Weiter"
+      }
     },
     "startParty": "Party starten",
     "startPartySub": "Mehrere Spiele, eine Rangliste",
@@ -10074,6 +10113,20 @@
   },
   "formStudio": {
     "title": "Form Studio",
+    "chooseEmoji": "Emoji auswählen",
+    "removeEmoji": "Ohne Emoji",
+    "presentationTitle": "Formular-Darstellung",
+    "presentationHint": "So erleben Gäste die Fragen. Farben und Bild bleiben separat wählbar.",
+    "presentation": {
+      "classic": "Alle Fragen",
+      "wizard": "Wizard",
+      "slides": "Slides"
+    },
+    "presentationDescription": {
+      "classic": "Alles auf einer Seite",
+      "wizard": "Schritt für Schritt",
+      "slides": "Eine Frage pro Karte"
+    },
     "edit": "Bearbeiten",
     "preview": "Vorschau",
     "saved": "Gespeichert",
@@ -10157,21 +10210,7 @@
     "aiPreviewDuration": "Dauer-Optionen",
     "aiCreditsBadge": "{{remaining}}/{{limit}} Credits",
     "aiGenCount": "Generierung {{used}}/{{max}}",
-    "aiLimitReached": "Maximal {{max}} Generierungen pro Sitzung erreicht",
-    "chooseEmoji": "Emoji auswählen",
-    "removeEmoji": "Ohne Emoji",
-    "presentationTitle": "Formular-Darstellung",
-    "presentationDescription": "So erleben Gäste die Fragen. Farben und Bild bleiben separat wählbar.",
-    "presentation": {
-      "classic": "Alle Fragen",
-      "wizard": "Wizard",
-      "slides": "Slides"
-    },
-    "presentationHint": {
-      "classic": "Alles auf einer Seite",
-      "wizard": "Schritt für Schritt",
-      "slides": "Eine Frage pro Karte"
-    }
+    "aiLimitReached": "Maximal {{max}} Generierungen pro Sitzung erreicht"
   },
   "tv": {
     "partyNight": {
@@ -10392,6 +10431,10 @@
     "winnerTie": "Gleichstand mit {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Handys für diesen Abend aktivieren",
+    "activateProgress": "Eure Spieler, Spiele und Punkte bleiben erhalten. Gleich erscheint der QR-Code für alle Handys.",
+    "activateHostRequired": "Öffne die laufende Party auf dem Host-Handy und aktiviere dort die Handy-Steuerung.",
+    "activateOnHost": "Öffne diesen Code auf dem Host-Handy in EventBliss. Dort werden die Handys für euren laufenden Abend aktiviert.",
     "title": "Joystick-Modus",
     "subtitle": "Jeder spielt auf seinem eigenen Handy.",
     "appRequired": "Zum Mitspielen brauchst du die EventBliss-App und ein Konto.",
@@ -10454,7 +10497,7 @@
     "localHint": "Heute wird das Handy herumgereicht – der Fernseher zeigt, wer dran ist.",
     "localTitle": "Ein Handy für alle",
     "switchToJoysticks": "Joystick-Modus starten",
-    "switchHostHint": "Host: QR scannen, Party starten. Danach erscheint hier der Beitrittscode für alle.",
+    "switchHostHint": "Host: QR mit der EventBliss-App scannen und Handys für diesen Abend aktivieren. Danach können alle hier beitreten.",
     "nextUp": "Als Nächstes",
     "notReady": "noch nicht bereit",
     "offline": "getrennt",

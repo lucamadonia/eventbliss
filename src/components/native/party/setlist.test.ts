@@ -232,7 +232,7 @@ describe("localGameAvailability", () => {
   });
 
   it("kennt im lokalen Abend kein Premium-Hindernis (das regelt das Gratis-Kontingent)", () => {
-    expect(localGameAvailability("hochstapler", 4).startable).toBe(true);
+    expect(localGameAvailability("hochstapler", 3).startable).toBe(true);
   });
 });
 
@@ -258,7 +258,7 @@ describe("findUnfitSetlistEntries", () => {
  */
 describe("nextFittingIndex", () => {
   // Echte Kennungen, damit der Test die Registry mitprueft und nicht nur sich
-  // selbst: hochstapler = ab 4, ohrwurm = bis 20, bomb = 2-x.
+  // selbst: hochstapler = ab 3, ohrwurm = bis 20, bomb = 2-x.
   const LIST = ["bomb", "hochstapler", "taboo", "ohrwurm"];
 
   it("nimmt den faelligen Eintrag, wenn er passt", () => {
@@ -266,8 +266,12 @@ describe("nextFittingIndex", () => {
   });
 
   it("ueberspringt ein Spiel, fuer das die Runde zu klein ist", () => {
-    // Hochstapler und Taboo brauchen vier Personen; zu zweit folgt Ohrwurm.
+    // Hochstapler braucht drei, Taboo vier Personen; zu zweit folgt Ohrwurm.
     expect(nextFittingIndex(LIST, 1, 2)).toBe(3);
+  });
+
+  it("startet das letzte geplante Hochstapler-Spiel mit drei Personen", () => {
+    expect(nextFittingIndex(["bomb", "ohrwurm", "brew", "hochstapler"], 3, 3)).toBe(3);
   });
 
   it("lets a large group start Ohrwurm", () => {

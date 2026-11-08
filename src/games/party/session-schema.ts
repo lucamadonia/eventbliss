@@ -84,7 +84,7 @@ export interface PartySession {
   roomCode?: string;
   id: string;
   players: PartyPlayer[];
-  /** Departed controller members keep standings without occupying a game slot. */
+  /** Departed members remain in history without occupying a game slot or visible standing. */
   archivedPlayers?: PartyPlayer[];
   tvCode: string;
   currentGameId: string | null;

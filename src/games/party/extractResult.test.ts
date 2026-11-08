@@ -44,6 +44,22 @@ describe("extractGameResult — Spieler mit eigener Punktzahl", () => {
     expect(result).toEqual({ scored: true, scores: { Anna: 7, Ben: 7, Cem: 4, Dora: 4 } });
   });
 
+  it("credits each Hit-Buzzer team member, including a negative team score", () => {
+    const result = extractGameResult("hitbuzzer", {
+      players: [{ id: "A", name: "Team A", score: 80 }, { id: "B", name: "Team B", score: -20 }],
+      teams: [{ score: 80, players: ["Anna", "Ben"] }, { score: -20, players: ["Cem", "Dora"] }],
+    });
+    expect(result).toEqual({ scored: true, scores: { Anna: 80, Ben: 80, Cem: -20, Dora: -20 } });
+  });
+
+  it("credits every Nah dran team member instead of the synthetic team name", () => {
+    const result = extractGameResult("closeenough", {
+      players: [{ id: "team-a", name: "Zahlenfüchse", score: 11 }, { id: "team-b", name: "Team 2", score: 6 }],
+      teams: [{ score: 11, players: ["Anna", "Ben"] }, { score: 6, players: ["Cem", "Dora"] }],
+    });
+    expect(result).toEqual({ scored: true, scores: { Anna: 11, Ben: 11, Cem: 6, Dora: 6 } });
+  });
+
   it("wertet eine 0 als echte Punktzahl, nicht als fehlend", () => {
     const result = extractGameResult("wer-bin-ich", {
       phase: "gameOver",
@@ -94,6 +110,22 @@ describe("extractGameResult — BOMBE zaehlt Strafen, nicht Punkte", () => {
 });
 
 describe("extractGameResult — Teams", () => {
+  it("schreibt Schnellzeichner-Teamwertungen allen Mitgliedern gut", () => {
+    const result = extractGameResult("schnellzeichner", {
+      phase: "gameOver",
+      teamMode: "groups",
+      players: [
+        { name: "Anna", score: 2 }, { name: "Ben", score: 1 },
+        { name: "Cem", score: 5 }, { name: "Dora", score: 1 },
+      ],
+      teams: [
+        { name: "Füchse", score: 3, players: ["Anna", "Ben"] },
+        { name: "Eulen", score: 6, players: ["Cem", "Dora"] },
+      ],
+    });
+    expect(result).toEqual({ scored: true, scores: { Anna: 3, Ben: 3, Cem: 6, Dora: 6 } });
+  });
+
   it("gibt jedem Mitglied die Teampunktzahl (TABU/PANTOMIME)", () => {
     const result = extractGameResult("taboo", {
       phase: "gameOver",

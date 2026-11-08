@@ -48,4 +48,18 @@ describe('dropRemovedPlayers', () => {
     expect(out?.players.map((p) => p.id)).toEqual(['a']);
     expect(out?.allSubmitted).toBe(true);
   });
+
+  it('removes a kicked person from their team without discarding its score or submitted guess', () => {
+    const teams = [
+      { id: 'team-1', score: 5, memberIds: ['a', 'b'], memberNames: ['Anna', 'Ben'] },
+      { id: 'team-2', score: 3, memberIds: ['c'], memberNames: ['Clara'] },
+    ];
+    const out = dropRemovedPlayers({ players: teams, guesses: { 'team-1': 12 }, results: [result('team-1', 1)] }, ['b']);
+    expect(out?.players[0]).toMatchObject({ score: 5, memberIds: ['a'], memberNames: ['Anna'] });
+    expect(out?.guesses).toEqual({ 'team-1': 12 });
+    expect(out?.results?.map((entry) => entry.playerId)).toEqual(['team-1']);
+    const empty = dropRemovedPlayers({ players: teams, guesses: { 'team-2': 4 }, results: null }, ['c']);
+    expect(empty?.players.map((player) => player.id)).toEqual(['team-1']);
+    expect(empty?.guesses).toEqual({});
+  });
 });

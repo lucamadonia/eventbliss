@@ -21,8 +21,11 @@ import { planPhaseStart } from '../party/phase-gate';
 import { usePhaseGate } from '../party/usePhaseGate';
 import { quickDrawActiveSeat, quickDrawInputDelay, quickDrawTvPlayers, quickDrawTvWord } from './guest-flow';
 import { GuessList, GuessPanel, SetupScreen, TurnLight, WaitingStage, type QuickDrawMode } from './QuickDrawScreens';
+import { quickDrawTeams } from './quickdraw-teams';
 import { getDRAW_WORDS, type DrawWord } from './quickdraw-words';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
+import { TeamRosterDisclosure } from '../ui/TeamRosterDisclosure';
+import { assignTeams, canPlay, flipTeam, shuffleTeams, type TeamMap } from '../pantomime/pantomime-teams';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useInitialRoster } from "@/games/ui/useInitialRoster";
@@ -97,12 +100,24 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   /* ---- Setup ---- */
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
   const [mode, setMode] = useState<Mode>('classic');
+  const [teamMode, setTeamMode] = useState<'solo' | 'groups'>('solo');
+  const [teamOf, setTeamOf] = useState<TeamMap>(() => assignTeams(initialPlayers.map(player => player.id)));
+  const [teamNames, setTeamNames] = useState(() => [1, 2].map(n => t('games.ohrwurm.teamName', { n })));
   const [totalRounds, setTotalRounds] = useState(8);
   const { recordEnd, newAchievements, clearAchievements } = useGameEnd();
   const gameRecordedRef = useRef(false);
 
   /* ---- Game state ---- */
   const [phase, setPhase] = useState<Phase>('setup');
+  const onlineRosterKey = online?.players.map(player => `${player.id}:${player.name}`).join('|') ?? '';
+  useEffect(() => {
+    if (!online?.isHost || phase !== 'setup') return;
+    const roster = online.players.map((player, index) => ({
+      id: player.id, name: player.name, color: getPlayerColor(index), score: 0,
+    }));
+    setPlayers(previous => previous.length === roster.length && previous.every((player, index) => player.id === roster[index].id && player.name === roster[index].name)
+      ? previous : roster);
+  }, [onlineRosterKey, online?.isHost, phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Der native Zurück-Knopf (FloatingBackButton / Android-Hardware-Taste)
   // liegt über allem und löst kein onClick im Spiel aus. Ohne Eintrag im
@@ -174,6 +189,13 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
       return roster;
     });
   };
+  const playerIds = players.map(player => player.id).join('|');
+  useEffect(() => {
+    setTeamOf(previous => assignTeams(players.map(player => player.id), previous));
+  }, [playerIds]); // eslint-disable-line react-hooks/exhaustive-deps
+  const teams = useMemo(() => quickDrawTeams(players, teamOf, teamNames), [players, teamOf, teamNames]);
+  const canStart = players.length >= 2 && (teamMode === 'solo' || canPlay(teamOf));
+  const sortedTeams = useMemo(() => [...teams].sort((a, b) => b.score - a.score), [teams]);
   const drawer = players[drawerIdx % players.length];
   const guessers = players.filter((_, i) => i !== drawerIdx % players.length);
   // Dieses Geraet zeichnet: eigener Platz oder der bestaetigte Gast am Host-Handy.
@@ -183,17 +205,19 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const tv = useTVGameBridge('quickdraw', {
     phase, phaseStartsAt, round, totalRounds, drawerIdx, drawerId: drawer?.id, drawer: drawer?.name, drawerColor: drawer?.color,
     timeLeft, maxTime: MODE_TIMERS[mode], drawingDataURL,
-    currentWord: quickDrawTvWord(phase, currentWord?.word), players: tvPlayers, handover: handover.tv,
-  }, [phase, phaseStartsAt, round, drawerIdx, timeLeft, drawingDataURL, players, handover.tv?.playerId ?? '', handover.tv?.progress?.phase ?? ''], !online || online.isHost);
+    currentWord: quickDrawTvWord(phase, currentWord?.word), players: tvPlayers, teamMode,
+    teams: teamMode === 'groups' ? teams : [], handover: handover.tv,
+  }, [phase, phaseStartsAt, round, drawerIdx, timeLeft, drawingDataURL, players, teamMode, teams, handover.tv?.playerId ?? '', handover.tv?.progress?.phase ?? ''], !online || online.isHost);
   useEffect(() => {
     if (!online?.isHost) return;
     online.broadcast('tv-state', {
       game: 'quickdraw', phase, phaseStartsAt, round, totalRounds, drawerId: drawer?.id, drawer: drawer?.name, drawerColor: drawer?.color,
       timeLeft, maxTime: MODE_TIMERS[mode], drawingDataURL,
-      currentWord: quickDrawTvWord(phase, currentWord?.word), players: tvPlayers, handover: handover.tv,
+      currentWord: quickDrawTvWord(phase, currentWord?.word), players: tvPlayers, teamMode,
+      teams: teamMode === 'groups' ? teams : [], handover: handover.tv,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [online?.isHost, online?.broadcast, phase, phaseStartsAt, round, totalRounds, drawer, timeLeft, mode, drawingDataURL, currentWord, players, handover.tv?.playerId, handover.tv?.progress?.phase]);
+  }, [online?.isHost, online?.broadcast, phase, phaseStartsAt, round, totalRounds, drawer, timeLeft, mode, drawingDataURL, currentWord, players, teamMode, teams, handover.tv?.playerId, handover.tv?.progress?.phase]);
 
   /* ---- Draw word ---- */
   function drawWord(): DrawWord {
@@ -297,7 +321,15 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   const saveDrawing = () => { if (canvasRef.current) setDrawingDataURL(canvasRef.current.toDataURL()); };
 
   /* ---- Game flow ---- */
-  function startGame() { setTotalRounds(completeDrawingRounds(totalRounds, online?.players.length ?? players.length)); setPlayers(online ? online.players.map((p, i) => ({ id: p.id, name: p.name, color: getPlayerColor(i), score: 0 })) : players.map(p => ({ ...p, score: 0 }))); deck.current = shuffle(getDRAW_WORDS()); deckPos.current = 0; setRound(1); setGuesses([]); beginRound(0); }
+  function startGame() {
+    if (!canStart) return;
+    const roster = online ? online.players.map((p, i) => ({ id: p.id, name: p.name, color: getPlayerColor(i), score: 0 })) : players.map(p => ({ ...p, score: 0 }));
+    setTeamOf(previous => assignTeams(roster.map(player => player.id), previous));
+    setTotalRounds(completeDrawingRounds(totalRounds, roster.length));
+    setPlayers(roster);
+    deck.current = shuffle(getDRAW_WORDS()); deckPos.current = 0;
+    setRound(1); setGuesses([]); beginRound(0);
+  }
   // A new match keeps the roster and settings, with a fresh score table.
   function playAgain() { setPlayers(previous => previous.map(player => ({ ...player, score: 0 }))); deck.current = shuffle(getDRAW_WORDS()); deckPos.current = 0; setRound(1); setGuesses([]); gameRecordedRef.current = false; beginRound(0); }
   function beginRound(dIdx: number) { setDrawerIdx(dIdx); setCurrentWord(drawWord()); setGuesses([]); setGuessInput(''); setCurrentGuesser(0); setDrawingDataURL(null); setTool('pen'); setPenSize(6); setPhase('drawerReveal'); }
@@ -389,10 +421,10 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
     again: { allowed: phase === 'gameOver' ? 'host' : false, run: playAgain },
   });
   actionRef.current = act;
-  useOnlinePrivateSnapshot(online, 'quickdraw', { phase, phaseStartsAt, players, mode, totalRounds, round, drawerIdx, currentWord, timeLeft, guessSeconds, drawingDataURL, guesses, currentGuesser }, (state, recipient) => ({ ...state, guesses: sealedGuesses(state.phase, state.guesses), currentWord: recipient === drawer?.id || state.phase === 'roundResult' || state.phase === 'gameOver' ? state.currentWord : null }), state => {
+  useOnlinePrivateSnapshot(online, 'quickdraw', { phase, phaseStartsAt, players, mode, teamMode, teamOf, teamNames, totalRounds, round, drawerIdx, currentWord, timeLeft, guessSeconds, drawingDataURL, guesses, currentGuesser }, (state, recipient) => ({ ...state, guesses: sealedGuesses(state.phase, state.guesses), currentWord: recipient === drawer?.id || state.phase === 'roundResult' || state.phase === 'gameOver' ? state.currentWord : null }), state => {
     setGuessSeconds(state.guessSeconds);
     setRemotePhaseStartsAt(typeof state.phaseStartsAt === 'number' ? state.phaseStartsAt : null);
-    setPhase(state.phase); setPlayers(state.players); setMode(state.mode); setTotalRounds(state.totalRounds); setRound(state.round); setDrawerIdx(state.drawerIdx); setCurrentWord(state.currentWord); setTimeLeft(state.timeLeft); setDrawingDataURL(state.drawingDataURL); setGuesses(state.guesses); setCurrentGuesser(state.currentGuesser);
+    setPhase(state.phase); setPlayers(state.players); setMode(state.mode); setTeamMode(state.teamMode); setTeamOf(state.teamOf); setTeamNames(state.teamNames); setTotalRounds(state.totalRounds); setRound(state.round); setDrawerIdx(state.drawerIdx); setCurrentWord(state.currentWord); setTimeLeft(state.timeLeft); setDrawingDataURL(state.drawingDataURL); setGuesses(state.guesses); setCurrentGuesser(state.currentGuesser);
   });
   useEffect(() => {
     if (!online || isDrawer || gate.shown !== 'drawing' || !drawingDataURL) return;
@@ -435,11 +467,19 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
   return (
     <GameStage gameId="quickdraw" className="sketchbook-stage">
       <TurnLight color={actor?.color} />
+      {teamMode === 'groups' && view !== 'setup' && view !== 'gameOver' && (
+        <TeamRosterDisclosure teams={teams} surface="#1b2028" text="#f1f3fc" muted="#a8abb3" pointsLabel={t('games.results.points')} />
+      )}
 
       {/* ---- SETUP ---- */}
       {view === 'setup' && <SetupScreen players={players} locked={!!online}
         importNames={isOnlineOrParty ? undefined : handleImportNames}
         onAdd={addPlayer} onRemove={removePlayer} onRename={updateName}
+        teamMode={teamMode} onTeamMode={setTeamMode} teams={teams}
+        onShuffleTeams={() => setTeamOf(previous => shuffleTeams(players.map(player => player.id), Math.random, previous))}
+        onMoveTeamMember={id => setTeamOf(previous => flipTeam(previous, id))}
+        onRenameTeam={(index, name) => setTeamNames(previous => previous.map((old, i) => i === index ? name : old))}
+        canStart={canStart}
         mode={mode} onMode={setMode} totalRounds={totalRounds} onRounds={setTotalRounds} onStart={() => act('start')} />}
 
       {/* ---- DRAWER REVEAL ---- */}
@@ -486,7 +526,9 @@ export default function QuickDrawGame({ online }: { online?: OnlineGameProps } =
       {view === 'gameOver' && <div className="mx-auto w-full max-w-3xl space-y-7">
         <GameEndOverlay achievements={newAchievements} onDismiss={clearAchievements} />
         <StageHeader title={t('games.results.gameOver')} eyebrow={t('games.results.leaderboard')} />
-        <ol className="divide-y divide-white/15 border-y border-white/15">{sorted.map((player, index) => <li key={player.id} className="flex items-center gap-4 py-6"><span className="text-sm tabular-nums text-[var(--stage-muted)]">{index + 1}</span><p className="min-w-0 flex-1 break-words text-xl font-semibold">{player.name}</p><strong className={player.score === sorted[0]?.score ? 'text-4xl tabular-nums text-[#77cbbb]' : 'text-4xl tabular-nums'}>{player.score}</strong></li>)}</ol>
+        <ol className="divide-y divide-white/15 border-y border-white/15">{teamMode === 'groups'
+          ? sortedTeams.map((team, index) => <li key={team.id} className="flex items-center gap-4 py-6"><span className="text-sm tabular-nums text-[var(--stage-muted)]">{index + 1}</span><div className="min-w-0 flex-1"><p className="break-words text-xl font-semibold">{team.name}</p><p className="text-sm text-white/60">{team.memberNames.join(' · ')}</p></div><strong className={team.score === sortedTeams[0]?.score ? 'text-4xl tabular-nums text-[#77cbbb]' : 'text-4xl tabular-nums'}>{team.score}</strong></li>)
+          : sorted.map((player, index) => <li key={player.id} className="flex items-center gap-4 py-6"><span className="text-sm tabular-nums text-[var(--stage-muted)]">{index + 1}</span><p className="min-w-0 flex-1 break-words text-xl font-semibold">{player.name}</p><strong className={player.score === sorted[0]?.score ? 'text-4xl tabular-nums text-[#77cbbb]' : 'text-4xl tabular-nums'}>{player.score}</strong></li>)}</ol>
         <StageFooter className="flex-wrap"><StageAction disabled={!act.can('again')} onClick={() => act('again')}><RotateCcw className="h-5 w-5" />{t('games.results.playAgain')}</StageAction>{!hasShellBackButton() && <StageAction variant="secondary" onClick={() => navigate('/games')}>{t('games.results.otherGame')}</StageAction>}</StageFooter>
       </div>}
       <ConfirmExitDialog {...exitGuard.dialogProps} accent="#77cbbb" />

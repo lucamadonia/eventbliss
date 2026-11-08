@@ -158,6 +158,10 @@
     "forHonoree": "voor"
   },
   "guestForm": {
+    "guidedHeading": "Jouw weg naar het evenement",
+    "guidedStep": "Stap {{step}} van {{total}}",
+    "back": "Terug",
+    "next": "Volgende",
     "heading": "Jouw antwoord",
     "subheading": "Duurt maar 2 minuten. Je kunt later opnieuw versturen om bij te werken.",
     "participantLabel": "Wie ben jij?",
@@ -221,10 +225,6 @@
       "chill": "Ontspanning",
       "mixed": "Overig"
     },
-    "guidedHeading": "Jouw weg naar het event",
-    "guidedStep": "Stap {{step}} van {{total}}",
-    "back": "Terug",
-    "next": "Volgende",
     "responseExists": "Er zijn al antwoorden voor deze naam – bewerk ze op hetzelfde apparaat of vraag het de organisator.",
     "answersTooLarge": "Je antwoorden zijn te lang. Kort de vrije teksten in en probeer het opnieuw."
   },
@@ -1448,6 +1448,7 @@
     "roseDesc": "Elegant & stijlvol"
   },
   "common": {
+    "retry": "Opnieuw proberen",
     "clear": "Wissen",
     "save": "Opslaan",
     "cancel": "Annuleren",
@@ -1492,8 +1493,7 @@
     "warning": "Waarschuwing",
     "organizer": "Organisator",
     "people": "Personen",
-    "unknown": "Onbekend",
-    "retry": "Opnieuw proberen"
+    "unknown": "Onbekend"
   },
   "feedback": {
     "button": "Feedback",
@@ -3301,6 +3301,11 @@
       }
     },
     "ai": {
+      "dayLabel": "Dag",
+      "tipsLabel": "Tips",
+      "priceOnRequest": "Prijs op aanvraag",
+      "noMatchingServices": "Nog geen passende boekbare aanbiedingen",
+      "noMatchingServicesDesc": "Ontdek meer ervaringen in de marketplace of verfijn je plan.",
       "title": "AI Assistent",
       "subtitle": "Krijg hulp bij je planning",
       "basedOn": "Gebaseerd op {{count}} antwoorden voor {{name}}'s evenement",
@@ -3310,6 +3315,7 @@
       "activitiesDesc": "Activiteiten aanbevelen",
       "dayPlan": "Dagplan",
       "dayPlanDesc": "Programma maken",
+      "incompletePlan": "Het volledige plan kon niet worden gemaakt. Probeer het opnieuw; er is geen credit gebruikt.",
       "budgetEstimate": "Budget Schatting",
       "budgetEstimateDesc": "Kosten berekenen",
       "chatPlaceholder": "Stel een vraag over evenementplanning...",
@@ -3393,12 +3399,7 @@
       },
       "basedOnNoName": "Op basis van {{count}} antwoorden",
       "budgetTip": "Budgettip",
-      "listen": "Voorlezen",
-      "dayLabel": "Dag",
-      "tipsLabel": "Tips",
-      "priceOnRequest": "Prijs op aanvraag",
-      "noMatchingServices": "Nog geen passende boekbare aanbiedingen",
-      "noMatchingServicesDesc": "Ontdek meer belevenissen in de marketplace of verfijn je concept."
+      "listen": "Voorlezen"
     },
     "settings": {
       "title": "Instellingen",
@@ -3751,6 +3752,9 @@
         "openLabel": "open"
       },
       "add": {
+        "stepProgress": "Stap {{step}} van 4",
+        "back": "Terug",
+        "next": "Volgende",
         "srTitle": "Uitgave toevoegen",
         "title": "Nieuwe uitgave",
         "listening": "Luistert …",
@@ -3765,10 +3769,7 @@
         "showDetails": "Details toevoegen",
         "hideDetails": "Details verbergen",
         "hideSplit": "Verdeling verbergen",
-        "adjustSplit": "Verdeling aanpassen ({{amount}})",
-        "stepProgress": "Stap {{step}} van 4",
-        "back": "Terug",
-        "next": "Volgende"
+        "adjustSplit": "Verdeling aanpassen ({{amount}})"
       },
       "split": {
         "mode": {
@@ -5711,6 +5712,10 @@
     "maxDaysReached": "Maximum bereikt (7 dagen)",
     "selectDuration": "Hoeveel dagen?",
     "selectDurationDesc": "Kies het aantal dagen voor je plan",
+    "dayCount": "{{count}} dagen",
+    "customDays": "Andere duur (1–14 dagen)",
+    "planWishes": "Jouw wensen voor het plan",
+    "planWishesPlaceholder": "Bijvoorbeeld: rustig tempo, lokaal eten, beperkt budget",
     "days3": "Weekend",
     "days5": "Korte vakantie",
     "days7": "Volle week",
@@ -7866,16 +7871,22 @@
       "playersLabel": "Spelers",
       "ingredientCountLabel": "Receptlengte",
       "reserveModeLabel": "Kaartenreserve",
+      "counterOptionLabel": "Gezamenlijke bar",
+      "withoutCounter": "Zonder bar",
+      "withoutCounterHint": "Overgebleven ingrediënten gaan naar de aflegstapel.",
+      "withCounter": "Met bar",
+      "withCounterHint": "Overgebleven ingrediënten blijven voor iedereen zichtbaar.",
+      "partyWatchNoCounter": "Kijk mee: overgebleven ingrediënten gaan naar de aflegstapel.",
       "withTray": "Met dienblad",
       "withTrayHint": "Verzamel getrokken kaarten. Schenk ze in om ze veilig te stellen; bij sluiting verlies je de reserve.",
       "withoutTray": "Zonder dienblad",
-      "withoutTrayHint": "Plaats elk ingrediënt meteen. Bij sluiting eindigt de beurt; veilige ingrediënten blijven liggen.",
-      "directCardLabel": "Huidige kaart",
-      "directCardHint": "Wordt meteen na het onthullen geplaatst.",
-      "directCardEmpty": "De volgende kaart gaat direct in het glas of op de bar.",
-      "directDrawHint": "Trek opnieuw of beëindig je beurt. Elke kaart wordt meteen geplaatst.",
+      "withoutTrayHint": "Getrokken kaarten blijven zonder dienblad liggen. Rond je beurt af om ze veilig te stellen; bij sluiting raak je ze kwijt.",
+      "directCardLabel": "Getrokken kaarten",
+      "directCardHint": "In gevaar tot het einde van de beurt.",
+      "directCardEmpty": "Nog geen kaart getrokken deze beurt.",
+      "directDrawHint": "Trek opnieuw of rond je beurt af om de kaarten veilig te stellen. Bij sluiting raak je ze kwijt.",
       "endTurn": "Beurt beëindigen",
-      "directBustBody": "De beurt eindigt. Ingrediënten die al veilig zijn, blijven in het glas.",
+      "directBustBody": "De kaarten van deze beurt zijn verloren. Eerder veiliggestelde ingrediënten blijven in het glas.",
       "ingredientCountOption": "{{count}} ingrediënten",
       "start": "Daar gaan we!",
       "yourRecipe": "Jouw recept",
@@ -8125,6 +8136,7 @@
       "woIstWas": "Waar is het?",
       "drueckDasWort": "Druk het Woord",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Bijna Raak",
       "pantomime": "Zonder Woorden",
       "brew": "Brouwsel"
@@ -8149,6 +8161,7 @@
       "woIstWas": "Vind de plek",
       "drueckDasWort": "Typ snel, denk snel",
       "ohrwurm": "Luister naar de song, plaats het jaar",
+      "hitbuzzer": "Herken het nummer en buzz als eerste",
       "closeenough": "Schattingsvragen met een getal als antwoord — wie het dichtst zit, wint",
       "pantomime": "Zwijgend uitbeelden, je team raadt — met uitdagingen voor dubbele punten",
       "brew": "Ingrediënten verzamelen zonder je blad te verliezen — wie zijn recept eerst afheeft, wint"
@@ -8433,7 +8446,7 @@
       "skip": "Overslaan",
       "next": "Volgende",
       "getStarted": "Mijn eerste event maken",
-      "slide5Title": "22 spellen. Eén gezamenlijke feestavond.",
+      "slide5Title": "23 spellen. Eén gezamenlijke feestavond.",
       "slide5Subtitle": "Stel jullie setlist samen, verzamel punten over meerdere spellen en maak van elke telefoon een controller.",
       "slide6Title": "Jullie tv wordt een gameshowpodium",
       "slide6Subtitle": "De route, scores en grote momenten verschijnen live op tv terwijl iedereen op de telefoon speelt.",
@@ -8928,6 +8941,7 @@
     "host": "Host"
   },
   "nativeSchedule": {
+    "saveFailed": "Activiteit kon niet worden opgeslagen",
     "categories": {
       "food": "Eten & drinken",
       "activity": "Activiteit",
@@ -8943,6 +8957,7 @@
     "addActivity": "Activiteit toevoegen",
     "day": "Dag {{num}}",
     "form": {
+      "endAfterStart": "De eindtijd moet na de begintijd liggen.",
       "title": "Titel",
       "time": "Tijd",
       "category": "Categorie",
@@ -8952,10 +8967,8 @@
       "cost": "Kosten",
       "responsible": "Verantwoordelijke",
       "add": "Toevoegen",
-      "titlePlaceholder": "bijv. Ontbijt in het hotel",
-      "endAfterStart": "De eindtijd moet na de begintijd liggen."
-    },
-    "saveFailed": "Activiteit kon niet worden opgeslagen"
+      "titlePlaceholder": "bijv. Ontbijt in het hotel"
+    }
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",
@@ -8965,11 +8978,27 @@
     "invalidCode": "El código debe tener 6 caracteres."
   },
   "nativeFab": {
+    "scanQr": "QR-code scannen",
     "createEvent": "Crear evento",
     "joinEvent": "Unirse",
     "createRoom": "Crear sala",
     "joinRoom": "Unirse a sala",
     "quickGame": "Juego rápido"
+  },
+  "qrScanner": {
+    "title": "QR-code scannen",
+    "hint": "Scan een uitnodiging voor een feest, spelruimte of andere EventBliss-uitnodiging.",
+    "invalid": "Deze QR-code is geen EventBliss-uitnodiging.",
+    "cameraUnavailable": "Camera niet beschikbaar. Kies een QR-afbeelding of voer de link in.",
+    "noCodeInImage": "Geen QR-code gevonden in deze afbeelding.",
+    "codeFound": "Code {{code}} herkend. Wat wil je openen?",
+    "joinParty": "Deelnemen aan feest",
+    "joinRoom": "Deelnemen aan online ruimte",
+    "scanAgain": "Opnieuw scannen",
+    "chooseImage": "QR-afbeelding kiezen",
+    "retryCamera": "Camera opnieuw starten",
+    "enterLink": "Link of code invoeren",
+    "open": "Openen"
   },
   "nativeTabs": {
     "home": "Start",
@@ -8999,6 +9028,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Herken het nummer eerder dan de anderen.",
+      "step1": "De host start een fragment van 30 seconden.",
+      "step2": "Druk op je eigen buzzer zodra je het nummer kent.",
+      "step3": "Kies vooraf of de titel, de artiest of beide moeten kloppen. Wie buzzert, zegt het antwoord hardop en bevestigt dit binnen de tijd. Pas daarna verschijnen titel en artiest op het eigen toestel.",
+      "step4": "Goed geeft punten op basis van snelheid. Fout kost strafpunten, blokkeert je team voor dit nummer en opent de andere buzzers weer.",
+      "step5": "De hoogste score wint na de gekozen rondes of zodra het doel is bereikt.",
+      "tip": "Het vereiste deel is gemarkeerd bij de privécontrole. Goed onthult de oplossing aan iedereen; fout houdt haar verborgen."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Eerst een kleurvlek, dan een beeld — maar wie wacht, krijgt minder punten.",
@@ -9990,6 +10029,9 @@
       "receiptAlt": "Bon"
     },
     "expenses": {
+      "stepProgress": "Stap {{step}} van 3",
+      "back": "Terug",
+      "next": "Volgende",
       "totalSpent": "Totale uitgaven",
       "perPerson": "/ persoon",
       "categories": "Categorieën",
@@ -10026,10 +10068,7 @@
         "drinks": "Drinken",
         "gifts": "Cadeaus",
         "other": "Overig"
-      },
-      "stepProgress": "Stap {{step}} van 3",
-      "back": "Terug",
-      "next": "Volgende"
+      }
     },
     "startParty": "Feest starten",
     "startPartySub": "Meerdere spellen, één ranglijst",
@@ -10147,6 +10186,20 @@
     "flaschendrehen": "Flesje draaien"
   },
   "formStudio": {
+    "chooseEmoji": "Emoji kiezen",
+    "removeEmoji": "Geen emoji",
+    "presentationTitle": "Formulierweergave",
+    "presentationHint": "Kies hoe gasten door de vragen gaan.",
+    "presentation": {
+      "classic": "Alle vragen",
+      "wizard": "Stapsgewijs",
+      "slides": "Kaarten"
+    },
+    "presentationDescription": {
+      "classic": "Alles op één pagina",
+      "wizard": "Stap voor stap",
+      "slides": "Eén vraag per kaart"
+    },
     "title": "Form Studio",
     "edit": "Bewerken",
     "preview": "Voorbeeld",
@@ -10231,21 +10284,7 @@
     "aiPreviewDuration": "Duuropties",
     "aiCreditsBadge": "{{remaining}}/{{limit}} credits",
     "aiGenCount": "Generatie {{used}}/{{max}}",
-    "aiLimitReached": "Maximaal {{max}} generaties per sessie bereikt",
-    "chooseEmoji": "Emoji kiezen",
-    "removeEmoji": "Geen emoji",
-    "presentationTitle": "Formulierweergave",
-    "presentationDescription": "Zo beleven gasten de vragen. Kleuren en afbeelding kies je apart.",
-    "presentation": {
-      "classic": "Alle vragen",
-      "wizard": "Wizard",
-      "slides": "Slides"
-    },
-    "presentationHint": {
-      "classic": "Alles op één pagina",
-      "wizard": "Stap voor stap",
-      "slides": "Eén vraag per kaart"
-    }
+    "aiLimitReached": "Maximaal {{max}} generaties per sessie bereikt"
   },
   "tv": {
     "partyNight": {
@@ -10466,6 +10505,10 @@
     "winnerTie": "Gelijk met {{name}}"
   },
   "partyControllers": {
+    "activateTitle": "Telefoons voor dit feest inschakelen",
+    "activateProgress": "Spelers, spellen en punten blijven behouden. De QR-code voor alle telefoons verschijnt zo.",
+    "activateHostRequired": "Open het lopende feest op de telefoon van de host en schakel daar de telefoonbediening in.",
+    "activateOnHost": "Open deze code op de telefoon van de host in EventBliss om telefoons voor het lopende feest in te schakelen.",
     "title": "Controllermodus",
     "subtitle": "Iedereen speelt op zijn eigen telefoon.",
     "appRequired": "Om mee te spelen heb je de EventBliss-app en een account nodig.",

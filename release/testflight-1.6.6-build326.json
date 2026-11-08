@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Der EventBliss-Start zeigt beim gemeinsamen Spielen auf dem Fernseher jetzt die echte Ohrwurm-Oberfläche mit Countdown, Zeitleiste und Teams. Gäste, die über „Team verwalten“ zum Event-Dashboard eingeladen werden, bestätigen nach dem Erstellen ihres Kontos zuerst ihre E-Mail. Der Bestätigungslink führt zur Einladung zurück und aktiviert den Zugang erst nach der Anmeldung. Bereits registrierte Gäste können sich anmelden und zur Einladung zurückkehren.\n\nBitte testen: App aus geschlossenem Zustand starten und die TV-Szene auf iPhone und iPad ansehen, auch im Querformat und mit „Bewegung reduzieren“. Testet zusätzlich mit einer neuen Gastadresse den gesamten Einladungsweg: Konto erstellen, E-Mail bestätigen, zum Event zurückkehren und Dashboard-Zugang prüfen. Bei Problemen bitte Build 326, Gerät, iOS-Version und den genauen Schritt angeben.",
+    "en-US": "The EventBliss launch story now shows the real Ohrwurm game on the shared TV, including its countdown, timeline and teams. Guests invited to an event dashboard through Team management now confirm their email after creating an account. The confirmation link returns to the invitation, and access is activated after sign-in. Existing account holders can sign in and return to the invitation.\n\nPlease watch a cold launch on iPhone and iPad, including landscape and Reduce Motion. Also test the full invitation flow with a new guest email: create an account, confirm the email, return to the event and check dashboard access. If anything fails, include build 326, device, iOS version and the exact step."
+  }
+}

@@ -37,6 +37,8 @@ interface Props {
   compact?: boolean;
   /** Vor dem Reveal: leere Sockel als Silhouette (Trommelwirbel), ohne Namen. */
   ghost?: boolean;
+  /** Show the final number throughout the reveal so the podium matches the winner line and table. */
+  instantPoints?: boolean;
   className?: string;
 }
 
@@ -48,6 +50,7 @@ function PodiumColumn({
   compact,
   reduce,
   ghost,
+  instantPoints,
 }: {
   entry: PartyStanding;
   place: number;
@@ -56,9 +59,11 @@ function PodiumColumn({
   compact: boolean;
   reduce: boolean;
   ghost: boolean;
+  instantPoints: boolean;
 }) {
   const silhouette = ghost && !reveal;
-  const animatedPoints = useCountUp(entry.points, reduce ? 0.01 : 1.15, reveal);
+  const animatedPoints = useCountUp(entry.points, reduce || instantPoints ? 0.01 : 1.15, reveal);
+  const shownPoints = instantPoints && reveal ? entry.points : animatedPoints;
   const isChampion = entry.rank === 1;
   const delay = reduce ? 0 : REVEAL_DELAY[place];
   const avatarSize = compact
@@ -136,10 +141,11 @@ function PodiumColumn({
           </span>
           <div className="mt-1.5 flex items-center justify-center gap-[.45em]">
             <span
+              data-testid={`tv-podium-points-${entry.id}`}
               className="font-black tabular-nums"
               style={{ color: podiumColor, fontSize: compact ? '.78rem' : tvType.label }}
             >
-              {animatedPoints.toLocaleString('de-DE')}
+              {shownPoints.toLocaleString('de-DE')}
             </span>
             {showDelta && <TVRankDelta rank={entry.rank} prevRank={entry.prevRank} size={compact ? '.72rem' : tvType.label} />}
             {(entry.streak ?? 0) >= 2 && (
@@ -200,6 +206,7 @@ export default function TVPartyPodium({
   variant = 'standings',
   compact = false,
   ghost = false,
+  instantPoints = false,
   className,
 }: Props) {
   const reduce = !!useReducedMotion();
@@ -260,6 +267,7 @@ export default function TVPartyPodium({
             compact={compact}
             reduce={reduce}
             ghost={ghost}
+            instantPoints={instantPoints}
           />
         ))}
       </div>

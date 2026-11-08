@@ -1,7 +1,7 @@
 {
   "name": "eventbliss",
   "private": true,
-  "version": "1.6.1",
+  "version": "1.6.6",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -14,6 +14,7 @@
     "og:png": "node scripts/convert-og-png.mjs",
     "og:all": "npm run og:svg && npm run og:png",
     "sitemap": "node scripts/generate-sitemap.mjs",
+    "brand:launch-assets": "node scripts/brand/generate-launch-assets.mjs",
     "android:prepare": "node scripts/fetch-spotify-android-aar.mjs",
     "android:release": "npm run android:prepare && cd android && gradlew bundleRelease",
     "cap:build": "cross-env CAPACITOR_BUILD=true npm run build && npx cap sync",
@@ -22,7 +23,7 @@
     "cap:dev:ios": "cross-env CAPACITOR_BUILD=true vite --host & npx cap run ios --livereload --external",
     "cap:dev:android": "cross-env CAPACITOR_BUILD=true vite --host & npx cap run android --livereload --external",
     "test": "vitest run",
-    "test:db": "node --test tests/database/controller-party-rpc.test.mjs",
+    "test:db": "node --test tests/database/controller-party-rpc.test.mjs tests/database/controller-party-upgrade.test.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "test:watch": "vitest"
   },
@@ -99,6 +100,7 @@
     "mapbox-gl": "^3.17.0",
     "next-themes": "^0.3.0",
     "ohrwurm-spotify": "file:./native-plugins/ohrwurm-spotify",
+    "qr-scanner": "^1.4.2",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",

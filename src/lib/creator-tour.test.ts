@@ -98,8 +98,8 @@ describe("Produkt-Tour — Bildbestand", () => {
     expect(tourShotLang("tr")).toBe("tr");
   });
 
-  it("hat die Kachel zu jedem der 22 Spiele", () => {
-    expect(playableGames).toHaveLength(22);
+  it("hat die Kachel zu jedem der 23 Spiele", () => {
+    expect(playableGames).toHaveLength(23);
     for (const game of playableGames) {
       expect(exists(game.image), `${game.id}: ${game.image} fehlt`).toBe(true);
     }

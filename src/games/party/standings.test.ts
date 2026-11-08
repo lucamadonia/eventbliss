@@ -264,6 +264,16 @@ describe("buildPartyNightState", () => {
       streak: 1,
     });
   });
+
+  it("zeigt nach dem Entfernen nur die verbleibenden Spieler auf dem TV", () => {
+    const current = session({
+      players: [player("b", "Ben", 10)],
+      archivedPlayers: [player("a", "Anna", 25, 2)],
+    });
+    const state = buildPartyNightState(current, (id) => id, "finale");
+    expect(state.standings.map((entry) => [entry.id, entry.points, entry.rank])).toEqual([["b", 10, 1]]);
+    expect(state.history).toHaveLength(1);
+  });
 });
 
 /**

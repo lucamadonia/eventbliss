@@ -14,6 +14,7 @@ import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { supabase } from "@/integrations/supabase/client";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { NativeOverlayPortal } from "@/components/native/NativeOverlayPortal";
 
 type Tab = "active" | "archived";
 
@@ -238,6 +239,7 @@ export default function EventsScreen() {
       </div>
 
       {/* Manage sheet — archive / restore / delete */}
+      <NativeOverlayPortal>
       <AnimatePresence>
         {actionFor && (
           <motion.div
@@ -325,6 +327,7 @@ export default function EventsScreen() {
           </motion.div>
         )}
       </AnimatePresence>
+      </NativeOverlayPortal>
     </div>
   );
 }

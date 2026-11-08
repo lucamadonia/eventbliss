@@ -1,4 +1,5 @@
 import type { IngredientId } from "./brew-content";
+import type { DeckCard } from "./deck";
 
 export type BrewRiskTier = "calm" | "simmering" | "unstable" | "critical";
 
@@ -9,6 +10,14 @@ export interface BrewBonusResult {
 }
 
 export const MAX_BREW_BONUS = 3;
+
+/** The shared counter is optional; without it every unused ingredient must
+ * return to the discard pile so the deck remains playable after reshuffling. */
+export function routeLeftovers(leftover: IngredientId[], withCounter: boolean): { counter: IngredientId[]; discard: DeckCard[] } {
+  return withCounter
+    ? { counter: leftover, discard: [] }
+    : { counter: [], discard: leftover.map((id) => ({ kind: 'ingredient', id })) };
+}
 
 /**
  * Beschreibt den Einsatz auf dem Tablett, nicht die Wahrscheinlichkeit der

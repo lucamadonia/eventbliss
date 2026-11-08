@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { dayPlanTokenBudget, isCompleteDayPlan } from "./day-plan-completion.ts";
 
 // Credit limits per plan type
 const AI_CREDIT_LIMITS: Record<string, number> = {
@@ -1640,13 +1641,27 @@ function getDayPlanPromptWithDays(language: string, targetDays: number): string 
     ar: `أنشئ خطة تفصيلية لمدة ${targetDays} أيام لهذا الحدث.`,
   };
 
-  const promptTemplate = getPromptTemplate(language);
-  const basePrompt = promptTemplate.prompts.day_plan;
-  
-  // Replace generic "day plan" text with specific days count
   const daysIntro = daysText[language] || daysText.en;
-  
-  return `${daysIntro}\n\n${basePrompt}`;
+  const dayLabels: Record<string, string> = {
+    de: "Tag", en: "Day", fr: "Jour", es: "Día", it: "Giorno",
+    nl: "Dag", pl: "Dzień", pt: "Dia", tr: "Gün", ar: "يوم",
+  };
+  const dayLabel = dayLabels[language] || dayLabels.en;
+
+  return `${daysIntro}
+
+Return exactly ${targetDays} numbered day sections, from 1 through ${targetDays}. Use this structure for EVERY day:
+### 📅 ${dayLabel} 1: [short, evocative title]
+**09:00** [first activity]
+- **Place:** [specific location, only when known]
+- **Experience:** [one concrete sentence]
+- **Cost:** [realistic estimate per person]
+
+**13:00** [second activity]
+- **Experience:** [one concrete sentence]
+- **Cost:** [realistic estimate per person]
+
+Continue with day 2, day 3 and every remaining day. Give each day at least two distinct timed activities and a complete description. Vary the experiences and pacing; incorporate the event details and the planner's wishes. Do not invent an exact address or claim a service is bookable without evidence. After the last day add a separate budget section with per-day estimates and a separate practical tips section. Keep the introduction to one sentence. Write all content in the language of the request. Do not repeat the day content in a second format.`;
 }
 
 // =============================================================================
@@ -1772,7 +1787,8 @@ serve(async (req) => {
         : undefined,
       custom_instruction: typeof rawContext.custom_instruction === 'string' ? rawContext.custom_instruction.slice(0, 500) : undefined,
       template_type: typeof rawContext.template_type === 'string' ? rawContext.template_type.slice(0, 100) : undefined,
-      target_days: typeof rawContext.target_days === 'number' ? Math.min(Math.max(rawContext.target_days, 1), 14) : undefined,
+      target_days: typeof rawContext.target_days === 'number' && Number.isFinite(rawContext.target_days)
+        ? Math.min(Math.max(Math.round(rawContext.target_days), 1), 14) : undefined,
     };
 
     const message = typeof rawBody.message === 'string' ? rawBody.message.slice(0, 2000) : undefined;
@@ -1990,7 +2006,7 @@ serve(async (req) => {
         // Get target days from context (default to 3 for weekend)
         const targetDays = context.target_days || 3;
         const dayPlanPromptWithDays = getDayPlanPromptWithDays(language, targetDays);
-        userPrompt = `${contextInfo}\n\n${dayPlanPromptWithDays}`;
+        userPrompt = `${contextInfo}\n\n${dayPlanPromptWithDays}${message?.trim() ? `\n\nAdditional wishes from the planner: ${message.trim().slice(0, 500)}` : ""}`;
         break;
 
       case "budget_estimate":
@@ -2031,7 +2047,13 @@ Return ONLY the improved message without additional explanations. Keep placehold
 
     console.log(`Calling OpenRouter AI — model: ${model}, lang: ${language}, type: ${type}`);
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    const requestedDays = type === "day_plan" ? context.target_days || 3 : 0;
+    const outputTokenBudget = type === "day_plan" ? dayPlanTokenBudget(requestedDays) : 2000;
+    const completionMessages = [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ];
+    const callCompletion = (maxTokens: number, retry = false) => fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
@@ -2041,13 +2063,13 @@ Return ONLY the improved message without additional explanations. Keep placehold
       },
       body: JSON.stringify({
         model,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-        max_tokens: 2000,
+        messages: retry
+          ? [...completionMessages, { role: "user", content: `The previous result was incomplete. Return a complete ${requestedDays}-day plan with every numbered day section, a realistic budget and practical tips. Keep each day concise enough to fit, but include concrete timed activities. Start again at Day 1.` }]
+          : completionMessages,
+        max_tokens: maxTokens,
       }),
     });
+    const response = await callCompletion(outputTokenBudget);
 
     if (!response.ok) {
       if (response.status === 429) {
@@ -2082,8 +2104,29 @@ Return ONLY the improved message without additional explanations. Keep placehold
       );
     }
 
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content || "No response received.";
+    let data = await response.json();
+    let content = data.choices?.[0]?.message?.content || "";
+
+    if (type === "day_plan" && !isCompleteDayPlan(content, requestedDays, data.choices?.[0]?.finish_reason)) {
+      console.warn("Incomplete day plan; retrying before charging a credit", { requestedDays, finishReason: data.choices?.[0]?.finish_reason });
+      const retryResponse = await callCompletion(Math.min(20_000, outputTokenBudget + 4_000), true);
+      if (retryResponse.ok) {
+        data = await retryResponse.json();
+        content = data.choices?.[0]?.message?.content || "";
+      }
+      if (!retryResponse.ok || !isCompleteDayPlan(content, requestedDays, data.choices?.[0]?.finish_reason)) {
+        return new Response(
+          JSON.stringify({ success: false, code: "INCOMPLETE_PLAN", error: "The complete plan could not be generated. Please try again; no credit was used." }),
+          { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
+    if (!content) {
+      return new Response(JSON.stringify({ success: false, error: "No response received; no credit was used." }), {
+        status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     console.log("AI response received successfully");
 

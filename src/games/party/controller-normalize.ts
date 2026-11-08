@@ -42,6 +42,8 @@ export function normalizePartyData(value: unknown): ControllerPartyData | null {
     party: {
       id: party.id, code: party.code,
       ...(typeof party.created_at === 'string' ? { created_at: party.created_at } : {}),
+      ...(typeof party.tv_code === 'string' ? { tv_code: party.tv_code } : {}),
+      ...(typeof party.local_started_at === 'string' ? { local_started_at: party.local_started_at } : {}),
       revision: typeof party.revision === 'number' ? party.revision : 0,
       host_user_id: text(party.host_user_id), host_player_id: text(party.host_player_id),
       host_plays: party.host_plays !== false, premium: party.premium === true, status,

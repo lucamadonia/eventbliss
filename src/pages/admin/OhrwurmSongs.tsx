@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Search, Trash2, Edit3, Music2, Sparkles, Check, X, Power } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Plus, Search, Trash2, Edit3, Music2, Sparkles, Check, X, Power, Play, Square } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -34,6 +34,7 @@ type SongRow = {
   /** Sprachfassungen, in denen der Song erscheint. ['*'] = alle zehn. */
   languages: string[];
   spotify_uri: string | null;
+  preview_url: string | null;
   is_active: boolean;
 };
 
@@ -47,7 +48,7 @@ const EMPTY: Omit<SongRow, 'id'> = {
   artist: '', title: '', country: '🌍', genre: 'Pop', language: 'de',
   // Vorgabe: überall sichtbar. Einschränken ist der bewusste Schritt.
   languages: ['*'],
-  spotify_uri: '', is_active: true,
+  spotify_uri: '', preview_url: null, is_active: true,
 };
 
 // This migrated table is not yet present in the generated database type file.
@@ -63,6 +64,7 @@ const db = () => (supabase as SupabaseClient<SongsDatabase>).from('ohrwurm_songs
 
 export default function OhrwurmSongs() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [rows, setRows] = useState<SongRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -78,6 +80,30 @@ export default function OhrwurmSongs() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<Omit<SongRow, 'id'>>(EMPTY);
   const [resolving, setResolving] = useState(false);
+  const [previewingId, setPreviewingId] = useState<string | null>(null);
+  const previewAudio = useRef<HTMLAudioElement | null>(null);
+  const previewRequest = useRef(0);
+
+  useEffect(() => () => { previewRequest.current++; previewAudio.current?.pause(); previewAudio.current = null; }, []);
+
+  const testPreview = async (row: SongRow) => {
+    const request = ++previewRequest.current;
+    if (previewingId === row.id) { previewAudio.current?.pause(); previewAudio.current = null; setPreviewingId(null); return; }
+    previewAudio.current?.pause(); previewAudio.current = null; setPreviewingId(row.id);
+    let url = row.preview_url;
+    if (!url) {
+      const { data, error } = await supabase.functions.invoke('ohrwurm-preview', { body: { artist: row.artist, title: row.title } });
+      if (previewRequest.current !== request) return;
+      if (error) { toast.error('Vorschau-Resolver nicht erreichbar'); setPreviewingId(null); return; }
+      url = (data as { previewUrl?: string | null } | null)?.previewUrl ?? null;
+    }
+    if (!url) { toast.error('Keine Vorschau für diesen Song gefunden'); setPreviewingId(null); return; }
+    const audio = new Audio(url);
+    previewAudio.current = audio;
+    audio.onended = () => { if (previewAudio.current === audio) { previewAudio.current = null; setPreviewingId(null); } };
+    audio.onerror = () => { if (previewAudio.current === audio) { previewAudio.current = null; setPreviewingId(null); toast.error('Vorschau konnte nicht abgespielt werden'); } };
+    try { await audio.play(); } catch { if (previewAudio.current === audio) { previewAudio.current = null; setPreviewingId(null); toast.error('Vorschau konnte nicht gestartet werden'); } }
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -102,6 +128,16 @@ export default function OhrwurmSongs() {
 
   useEffect(() => { void load(); }, [load]);
 
+  useEffect(() => {
+    const songId = new URLSearchParams(location.search).get('song');
+    if (!songId) return;
+    setFilterLang('');
+    setFilterCountry('');
+    setFilterState('all');
+    setFilterOrigin('all');
+    setSearch(songId.replace(/^db-/, ''));
+  }, [location.search]);
+
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
     return rows.filter((r) => {
@@ -116,7 +152,8 @@ export default function OhrwurmSongs() {
       if (filterOrigin === 'base' && !r.base_id) return false;
       if (filterOrigin === 'custom' && r.base_id) return false;
       if (!s) return true;
-      return r.artist.toLowerCase().includes(s) || r.title.toLowerCase().includes(s);
+      return r.artist.toLowerCase().includes(s) || r.title.toLowerCase().includes(s)
+        || r.id.toLowerCase() === s || r.base_id?.toLowerCase() === s;
     });
   }, [rows, search, filterLang, filterCountry, filterState, filterOrigin]);
 
@@ -189,7 +226,7 @@ export default function OhrwurmSongs() {
       language: r.language,
       // Altbestand ohne Array: den früheren Einzelwert übernehmen.
       languages: r.languages?.length ? r.languages : [r.language || '*'],
-      spotify_uri: r.spotify_uri ?? '', is_active: r.is_active,
+      spotify_uri: r.spotify_uri ?? '', preview_url: r.preview_url ?? null, is_active: r.is_active,
     });
     setModal(true);
   };
@@ -205,7 +242,9 @@ export default function OhrwurmSongs() {
 
   const save = async () => {
     if (!form.artist.trim() || !form.title.trim() || !form.year) { toast.error('Jahr, Interpret & Titel sind Pflicht'); return; }
-    const payload = { ...form, spotify_uri: form.spotify_uri?.trim() || null };
+    const preview = form.preview_url?.trim() || null;
+    if (preview && !/^https:\/\//i.test(preview)) { toast.error('Vorschau-Link muss mit https:// beginnen'); return; }
+    const payload = { ...form, spotify_uri: form.spotify_uri?.trim() || null, preview_url: preview };
     const res = editId
       ? await db().update(payload).eq('id', editId)
       : await db().insert(payload);
@@ -239,16 +278,22 @@ export default function OhrwurmSongs() {
           </button>
           <Music2 className="w-6 h-6 text-[#FF2E88]" />
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold">OHRWURM — Songs</h1>
+            <h1 className="text-xl font-bold">Songs für Ohrwurm + Hit-Buzzer</h1>
             <p className="text-xs text-[#a8abb3]">
               {rows.length} Songs · {rows.filter((r) => r.is_active).length} aktiv ·{' '}
-              {rows.filter((r) => r.base_id).length} Grundbestand
+              {rows.filter((r) => r.base_id).length} Grundbestand ·{' '}
+              {rows.filter((r) => r.is_active && r.preview_url).length} aktive Songs mit Vorschau-Link
             </p>
           </div>
           <button onClick={openAdd} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl font-bold text-sm bg-gradient-to-r from-[#FF2E88] to-[#d779ff]">
             <Plus className="w-4 h-4" /> Song
           </button>
         </div>
+
+        <p className="rounded-xl border border-[#ff6b98]/25 bg-[#ff6b98]/5 px-4 py-3 text-xs leading-relaxed text-[#d7d9e0]">
+          Eine gemeinsame Bibliothek: Hier ergänzte Songs, Sprachen und Aktivierung werden für Ohrwurm gepflegt
+          und von Hit-Buzzer beim Start jeder neuen Partie übernommen.
+        </p>
 
         {/* Filter */}
         <div className="flex flex-wrap gap-2">
@@ -358,6 +403,8 @@ export default function OhrwurmSongs() {
                 {r.spotify_uri
                   ? <span title={r.spotify_uri} className="text-[10px] px-2 py-1 rounded-full bg-[#1DB954]/20 text-[#1DB954] font-bold">Spotify ✓</span>
                   : <span className="text-[10px] px-2 py-1 rounded-full bg-white/5 text-[#a8abb3]">nur Vorschau</span>}
+                <span title={r.preview_url || 'Vorschau wird beim Start über den Resolver gesucht'} className={`hidden sm:inline text-[10px] px-2 py-1 rounded-full ${r.preview_url ? 'bg-[#8ff5ff]/10 text-[#8ff5ff]' : 'bg-[#ff6b98]/10 text-[#ffb0c7]'}`}>{r.preview_url ? 'Clip-Link' : 'Resolver nötig'}</span>
+                <button type="button" onClick={() => void testPreview(r)} aria-label={`${previewingId === r.id ? 'Probehören stoppen' : 'Probehören'}: ${r.artist} – ${r.title}`} title="Probehören" className="grid min-h-11 min-w-11 place-items-center rounded-xl text-[#df8eff] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]">{previewingId === r.id ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}</button>
                 <button onClick={() => toggleActive(r)} title="Aktiv/Inaktiv" className="p-1.5 rounded-lg hover:bg-white/10 text-[#a8abb3]"><Power className="w-4 h-4" /></button>
                 <button onClick={() => openEdit(r)} className="p-1.5 rounded-lg hover:bg-white/10 text-[#8ff5ff]"><Edit3 className="w-4 h-4" /></button>
                 <button onClick={() => remove(r)} className="p-1.5 rounded-lg hover:bg-white/10 text-[#ff6e84]"><Trash2 className="w-4 h-4" /></button>
@@ -432,6 +479,11 @@ export default function OhrwurmSongs() {
                   <Sparkles className="w-3.5 h-3.5" /> {resolving ? '…' : 'Auto'}
                 </button>
               </div>
+            </label>
+
+            <label className="text-xs text-[#a8abb3] block">30-Sekunden-Vorschau-Link <span className="opacity-60">(leer = Resolver sucht beim Spielstart)</span>
+              <input type="url" value={form.preview_url ?? ''} onChange={(e) => setForm({ ...form, preview_url: e.target.value })} placeholder="https://…"
+                className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-white" />
             </label>
 
             <label className="flex items-center gap-2 text-sm">

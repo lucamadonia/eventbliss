@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { Plus, Calendar, Users, Gamepad2, Wifi, LogIn, X } from "lucide-react";
+import { Plus, Calendar, Users, Gamepad2, Wifi, LogIn, QrCode, X } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
 import { useTabBarVisible } from "./BottomTabBar";
@@ -55,6 +55,7 @@ export function FloatingActionButton() {
   const isGamesTab = location.pathname === "/games";
 
   const actions: Action[] = [
+    { icon: QrCode, label: t('nativeFab.scanQr', 'QR-Code scannen'), path: '/scan-qr', color: 'from-violet-500 to-cyan-400' },
     { icon: Calendar, label: t("nativeFab.createEvent"), path: "/create", color: "from-violet-500 to-fuchsia-500" },
     { icon: Users, label: t("nativeFab.joinEvent"), path: "/join", color: "from-cyan-500 to-teal-500" },
     { icon: Wifi, label: t("nativeFab.createRoom"), onClick: () => openRoom("create"), color: "from-emerald-500 to-green-500" },

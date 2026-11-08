@@ -10,20 +10,15 @@ import type { GuestHandover } from '../ui/useGuestHandover';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Camera, Check, ChevronRight, Trophy, MapPin, Crosshair, Eye, Timer } from 'lucide-react';
-import { APIProvider, Map, Marker, useMap } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, Marker, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
 import { haversineKm } from '../engine/haversine';
+import { GUESS_MAP_STYLE } from './guess-map-style';
 import type { StreetViewLocation } from './streetview-locations';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTranslation } from 'react-i18next';
 
 const GMAP_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || '';
 
-const MAP_STYLE: google.maps.MapTypeStyle[] = [
-  { featureType: 'administrative.locality', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-];
-
-function MapStyler() { const map = useMap(); useEffect(() => { if (map) map.setOptions({ styles: MAP_STYLE }); }, [map]); return null; }
 function ClickHandler({ onClick }: { onClick: (lat: number, lng: number) => void }) {
   const map = useMap();
   useEffect(() => { if (!map) return; const l = map.addListener('click', (e: google.maps.MapMouseEvent) => { if (e.latLng) onClick(e.latLng.lat(), e.latLng.lng()); }); return () => l.remove(); }, [map, onClick]);
@@ -48,43 +43,49 @@ const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text
 // Street View component — waits for Google Maps API to load
 function StreetViewPano({ lat, lng, onStatus }: { lat: number; lng: number; onStatus: (ready: boolean) => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const panoRef = useRef<google.maps.StreetViewPanorama | null>(null);
+  const streetView = useMapsLibrary('streetView');
 
   useEffect(() => {
-    if (!containerRef.current) return;
-
-    // Poll until google.maps is available (loaded by APIProvider)
+    if (!streetView || !containerRef.current) return;
     let cancelled = false;
-    let statusListener: { remove: () => void } | undefined;
-    const failTimer = window.setTimeout(() => onStatus(false), 15000);
-    const tryInit = () => {
-      if (cancelled) return;
-      if (typeof google === 'undefined' || !google.maps) {
-        setTimeout(tryInit, 200);
-        return;
-      }
-      if (!containerRef.current || panoRef.current) return;
-      panoRef.current = new google.maps.StreetViewPanorama(containerRef.current, {
-        position: { lat, lng },
-        pov: { heading: 0, pitch: 0 },
-        zoom: 1,
-        disableDefaultUI: true,
-        showRoadLabels: false,
-        addressControl: false,
-        linksControl: true,
-        panControl: true,
-        enableCloseButton: false,
-      });
-      statusListener = panoRef.current.addListener('status_changed', () => {
+    let statusListener: google.maps.MapsEventListener | undefined;
+    let panorama: google.maps.StreetViewPanorama | undefined;
+    const init = async () => {
+      try {
+        const { data } = await new streetView.StreetViewService().getPanorama({
+          location: { lat, lng },
+          radius: 1500,
+          preference: streetView.StreetViewPreference.NEAREST,
+        });
         if (cancelled) return;
-        window.clearTimeout(failTimer);
-        onStatus(panoRef.current?.getStatus() === 'OK');
-      });
+        if (!data.location?.pano || !containerRef.current) throw new Error('No nearby panorama');
+        panorama = new streetView.StreetViewPanorama(containerRef.current, {
+          pano: data.location.pano,
+          pov: { heading: 0, pitch: 0 },
+          zoom: 1,
+          visible: true,
+          disableDefaultUI: true,
+          showRoadLabels: false,
+          addressControl: false,
+          linksControl: true,
+          panControl: true,
+          enableCloseButton: false,
+        });
+        statusListener = panorama.addListener('status_changed', () => {
+          if (cancelled || !panorama) return;
+          const status = panorama.getStatus();
+          if (status === streetView.StreetViewStatus.OK) onStatus(true);
+          else if (status === streetView.StreetViewStatus.ZERO_RESULTS || status === streetView.StreetViewStatus.UNKNOWN_ERROR) onStatus(false);
+        });
+        if (panorama.getStatus() === streetView.StreetViewStatus.OK) onStatus(true);
+      } catch {
+        if (!cancelled) onStatus(false);
+      }
     };
-    tryInit();
+    void init();
 
-    return () => { cancelled = true; window.clearTimeout(failTimer); statusListener?.remove(); panoRef.current = null; };
-  }, [lat, lng, onStatus]);
+    return () => { cancelled = true; statusListener?.remove(); panorama?.setVisible(false); };
+  }, [streetView, lat, lng, onStatus]);
 
   return <div ref={containerRef} style={{ width: '100%', height: '100%', background: '#0a0e14' }} />;
 }
@@ -96,8 +97,20 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   const [phase, setPhase] = useState<Phase>('explore');
   const [panoReady, setPanoReady] = useState(false);
   const [panoError, setPanoError] = useState(false);
+  const [panoAttempt, setPanoAttempt] = useState(0);
+  const [guessMapReady, setGuessMapReady] = useState(false);
   const [readyIds, setReadyIds] = useState<string[]>([]);
   const panoStatus = useCallback((ready: boolean) => { setPanoReady(ready); setPanoError(!ready); }, []);
+  useEffect(() => {
+    if (panoReady || panoError) return;
+    const timeout = window.setTimeout(() => setPanoError(true), 20000);
+    return () => window.clearTimeout(timeout);
+  }, [panoReady, panoError, panoAttempt, location.lat, location.lng]);
+  const retryPanorama = () => {
+    setPanoReady(false);
+    setPanoError(false);
+    setPanoAttempt(attempt => attempt + 1);
+  };
   useEffect(() => {
     if (!online || !panoReady) return;
     if (online.isHost) setReadyIds(ids => ids.includes(online.myPlayerId) ? ids : [...ids, online.myPlayerId]);
@@ -291,20 +304,20 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     setPinPos(null);
     const nextIdx = playerIdxRef.current + 1;
     if (nextIdx >= players.length) { setPhase('result'); }
-    else { setPlayerIdx(nextIdx); setPhase('explore'); setExploreTime(20); }
+    else { setPlayerIdx(nextIdx); setGuessMapReady(false); setPhase('explore'); setExploreTime(20); }
   }, [location, players.length, online, receiveGuess, roundNumber, timerSeconds]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Guess countdown
   useEffect(() => {
     // Stands while the host phone travels and until input opens.
-    if (online?.isConnected === false || phase !== 'guess' || paused || (online && !inputOpen)) return;
+    if (online?.isConnected === false || phase !== 'guess' || !guessMapReady || paused || (online && !inputOpen)) return;
     // In online mode, skip timer if already guessed
     if (online && myGuessPlaced) return;
     timerRef.current = setInterval(() => {
       setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
     }, 1000);
     return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
-  }, [phase, playerIdx, confirmGuess, online, myGuessPlaced, paused, inputOpen, handover?.activeGuest]);
+  }, [phase, playerIdx, confirmGuess, online, myGuessPlaced, guessMapReady, paused, inputOpen, handover?.activeGuest]);
 
   // Preserve the deadline across disconnects, even after this host submitted.
   usePausableTimeout(() => {
@@ -319,7 +332,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     online?.broadcast('findit-sv-results', { results: filled, roundNumber, location });
 
     setPhase('result');
-  }, online?.isHost && phase === 'guess' ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
+  }, online?.isHost && phase === 'guess' && guessMapReady ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     if (online && (myGuessPlaced || paused || !inputOpen)) return; // can't change after confirming
@@ -336,11 +349,12 @@ export default function StreetViewRound({ location: promptLocation, players, rou
         {/* EXPLORE PHASE — Street View Panorama */}
         {view === 'explore' && (
           <div className="absolute inset-0">
-            <StreetViewPano lat={location.lat} lng={location.lng} onStatus={panoStatus} />
-            {!panoReady && <div className="absolute inset-0 z-20 bg-black/70 flex flex-col items-center justify-center gap-4 p-6 text-white text-center"><p>{t(panoError ? 'games.findit.panoramaError' : 'games.findit.panoramaLoading')}</p>{panoError && <button onClick={onExit} className="min-h-12 px-6 rounded-xl bg-white/15">{t('games.results.otherGame')}</button>}</div>}
+            <StreetViewPano key={panoAttempt} lat={location.lat} lng={location.lng} onStatus={panoStatus} />
+            {!panoReady && <div className="absolute inset-0 z-20 bg-black/70 flex flex-col items-center justify-center gap-4 p-6 text-white text-center"><p>{t(panoError ? 'games.findit.panoramaError' : 'games.findit.panoramaLoading')}</p>{panoError && <><button onClick={retryPanorama} className="min-h-12 px-6 rounded-xl bg-[#df8eff] text-[#4f006d] font-bold">{t('partyControllers.retry', 'Erneut versuchen')}</button><button onClick={onExit} className="min-h-12 px-6 rounded-xl bg-white/15">{t('games.results.otherGame')}</button></>}</div>}
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-10">
-              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced} guest={!!online && currentPlayer.id !== online.myPlayerId} />
+              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced}
+                host={!!online?.isHost && currentPlayer.id === online.myPlayerId} status="explore" />
             </div>
             <div className="absolute top-4 right-4 z-10">
               <div className="glass-panel px-3 py-2 rounded-full border border-white/5">
@@ -354,7 +368,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
                 <span className="text-lg font-black text-white tabular-nums">{exploreTime}s</span>
               </div>
             </div>
-            <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center">
+            {(!online || online.isHost) && <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center">
               <motion.button onClick={() => { setPhase('guess'); setCountdown(timerSeconds); }}
                 className="px-10 py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)]"
                 whileTap={{ scale: 0.95 }}>
@@ -363,7 +377,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
                   <span className="text-lg font-black tracking-[0.1em] text-[#4f006d]">{t('games.findit.svGuessBtn')}</span>
                 </span>
               </motion.button>
-            </div>
+            </div>}
           </div>
         )}
 
@@ -372,14 +386,18 @@ export default function StreetViewRound({ location: promptLocation, players, rou
           <div className="absolute inset-0">
             <Map defaultCenter={{ lat: 20, lng: 10 }} defaultZoom={2}
               style={{ width: '100%', height: '100%' }} gestureHandling="greedy"
+              renderingType={'RASTER' as google.maps.RenderingType} styles={GUESS_MAP_STYLE}
+              onTilesLoaded={() => setGuessMapReady(true)}
               disableDefaultUI fullscreenControl={false} mapTypeControl={false} streetViewControl={false}>
-              <MapStyler />
               <ClickHandler onClick={handleMapClick} />
               {pinPos && <Marker position={pinPos} label={{ text: currentPlayer.name.charAt(0), color: 'white', fontWeight: 'bold' }} />}
             </Map>
+            {!guessMapReady && <div className="absolute inset-0 z-[5] flex items-center justify-center bg-[#14281f] text-white">{t('common.loading')}</div>}
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-10">
-              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced} guest={!!online && currentPlayer.id !== online.myPlayerId} />
+              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced}
+                host={!!online?.isHost && currentPlayer.id === online.myPlayerId}
+                status={myGuessPlaced ? 'waiting' : 'guess'} />
             </div>
             <div className="absolute top-16 left-0 right-0 z-10 px-4 mt-2">
               <div className="max-w-2xl mx-auto bg-[#151a21]/80 backdrop-blur-2xl p-1 rounded-full shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] border border-white/5">
@@ -442,7 +460,6 @@ export default function StreetViewRound({ location: promptLocation, players, rou
               <div className="aspect-video rounded-xl border border-white/10 overflow-hidden mb-6">
                 <Map defaultCenter={{ lat: location.lat, lng: location.lng }} defaultZoom={3}
                   style={{ width: '100%', height: '100%' }} disableDefaultUI mapTypeControl={false}>
-                  <MapStyler />
                   <Marker position={{ lat: location.lat, lng: location.lng }} label={{ text: '★', color: '#8ff5ff', fontWeight: 'bold', fontSize: '16px' }} />
                   {guesses.map(g => (
                     <Marker key={g.playerId} position={{ lat: g.lat, lng: g.lng }} label={{ text: g.playerName.charAt(0), color: 'white', fontWeight: 'bold' }} />

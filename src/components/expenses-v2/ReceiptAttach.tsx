@@ -76,7 +76,7 @@ export function ReceiptAttach({
           onChange={handleChange}
           className="hidden"
         />
-        <div className={cn("grid gap-2", compact ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2")}>
+        <div className={cn("grid gap-2", compact ? "grid-cols-1 min-[360px]:grid-cols-2" : "grid-cols-1 sm:grid-cols-2")}>
           <button
             type="button"
             onClick={pickFromCamera}

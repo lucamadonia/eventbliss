@@ -4,9 +4,10 @@ import {createDB} from './controller-db.mjs';
 import {createRealDB} from './controller-real-db.mjs';
 const real=process.argv.includes('--real');
 const historySmoke=process.argv.includes('--history-smoke');
+const routeGame=process.argv.includes('--route-game')?process.argv[process.argv.indexOf('--route-game')+1]:null;
 const base=process.env.QA_CONTROLLER_URL||(real?'http://127.0.0.1:5185':'http://127.0.0.1:5183');
-const moderator=!process.argv.includes('--host-plays');const guestCount=moderator?4:3;
-const output=`scripts/tmp/controllers-browser/${historySmoke?'history-smoke':`${real?'real-':''}${moderator?'moderator':'host'}`}`;fs.mkdirSync(output,{recursive:true});
+const moderator=!process.argv.includes('--host-plays');const guestCount=routeGame?1:moderator?4:3;
+const output=`scripts/tmp/controllers-browser/${historySmoke?'history-smoke':routeGame?`route-${routeGame}`:`${real?'real-':''}${moderator?'moderator':'host'}`}`;fs.mkdirSync(output,{recursive:true});
 console.log(real?'Connecting local Supabase':'Creating PGlite');const db=real?await createRealDB():await createDB();console.log('Launching browser');const browser=await puppeteer.launch({headless:true,protocolTimeout:120000});
 const channels=new Map(),clients=[],evidence={backend:real?'real-local-supabase':'pglite-broker',scope:real?'Real React lobby, coordinator, auth provider, games and Supabase SDK against isolated local GoTrue/Postgres/Realtime; native route eligibility simulated. No production access.':'Real React lobby/controller-session/game UI, signed RoomSession packets, actual migration in PGlite; synthetic account identity, local asynchronous transport, simulated native routing only.',checks:[],errors:[],packets:0,rpc:[]};
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
@@ -55,20 +56,35 @@ try{
  television=real?await client(99,'TV',`/tv/${code}`):null;if(television){clients.pop();await television.page.setViewport({width:1280,height:720});}
  for(let i=1;i<=guestCount;i++)await client(i,['','Anna','Ben','Clara','David'][i],`/party/join/${code}`);
  await until(async()=>(await snapshot(host)).players.length===guestCount+1,'Roster never reached moderator plus four guests');
- for(const guest of clients.slice(1))await click(guest.page,'ready');
+ for(const guest of clients.slice(1))await click(guest.page,"let.s go|los geht.s");
+ for(const guest of clients.slice(1))await guest.page.click('[data-testid="lobby-ready-toggle"]');
  await until(async()=>(await snapshot(host)).players.filter(p=>!p.isHost&&p.isReady).length===guestCount,'Ready state missing');
  evidence.checks.push({name:'rendered-create-invite-join-ready',passed:true,code,clients:guestCount+1});
  await host.page.screenshot({path:`${output}/moderator-lobby.png`,fullPage:true});
- await host.page.evaluate(()=>controllerQA.playlist(['fake-or-fact','this-or-that','flaschendrehen','fake-or-fact']));
+ await host.page.evaluate(games=>controllerQA.playlist(games),routeGame?[routeGame]:['fake-or-fact','this-or-that','flaschendrehen','fake-or-fact']);
  const identities=new Map();for(const c of clients)identities.set((await snapshot(c)).myPlayerId,c);
  const observer=clients.at(-1);
  const state=event=>observer.page.evaluate(event=>window.controllerGameStates[event],event);
  let rejoined=false;
- for(const [matchIndex,game] of ['fake-or-fact','this-or-that','flaschendrehen','fake-or-fact'].entries()){
+ for(const [matchIndex,game] of (routeGame?[routeGame]:['fake-or-fact','this-or-that','flaschendrehen','fake-or-fact']).entries()){
    console.log('Starting match',matchIndex,game);
-   await click(host.page,'start next');
+   await host.page.click('[data-testid="lobby-start"]');
    await until(async()=>(await snapshot(host)).room?.status==='playing','Game not started');
    await until(async()=>await host.page.evaluate(()=>document.querySelector('#qa-route')?.textContent.startsWith('/games/')),'Coordinator did not route host');
+   for(const guest of clients.slice(1))await until(async()=>await guest.page.evaluate(game=>document.querySelector('#qa-route')?.textContent===`/games/${game}`,game),`${guest.name} stayed in the waiting lobby for ${game}`);
+   evidence.checks.push({name:'all-phone-game-route',game,matchIndex,passed:true});
+   if(routeGame){
+     if(game==='pixeljagd'){
+       await click(host.page,'^start',20000);
+       for(const phone of clients.slice(1))await until(async()=>await phone.page.evaluate(()=>{
+         const canvas=document.querySelector('[data-online-game-content] [data-phase] canvas');
+         if(!canvas || canvas.parentElement?.querySelector('div.absolute.inset-0'))return false;
+         try{return canvas.getContext('2d')?.getImageData(canvas.width/2,canvas.height/2,1,1).data[3]>0;}catch{return false;}
+       }),`${phone.name} did not render the Pixeljagd image`,20000);
+       evidence.checks.push({name:'pixeljagd-image-on-phone',passed:true});
+     }
+     break;
+   }
    if(game==='flaschendrehen'){await click(host.page,'^questions only');await click(host.page,'^prepare');}
    await host.page.waitForSelector('input[type=range]');
    const ranges=await host.page.$$('input[type=range]');await ranges.at(-1).focus();await host.page.keyboard.press('Home');
@@ -121,10 +137,11 @@ try{
    evidence.checks.push({name:'complete-rendered-game',game,matchIndex,actions,result:data.results[matchIndex],passed:true});
    await host.page.screenshot({path:`${output}/completed-${matchIndex}-${game}.png`,fullPage:true});
  }
- assert(new Set((await host.page.evaluate(()=>controllerQA.state().data.results)).map(r=>r.match_id)).size===4,'Duplicate match IDs on replay');
+ if(!routeGame){assert(new Set((await host.page.evaluate(()=>controllerQA.state().data.results)).map(r=>r.match_id)).size===4,'Duplicate match IDs on replay');
  evidence.checks.push({name:'three-game-set-plus-fresh-rematch',passed:true});
  if(television){const messages=await television.page.evaluate(()=>controllerTVMessages);assert(messages.every(m=>!m.internalScoresPresent),'TV exposed internal score map');const statements=messages.filter(m=>m.game==='fakeorfact'&&m.phase==='statement');assert(statements.length>0,'TV received no playable Fake state');assert(statements.every(m=>m.correctAnswer===-1),'TV exposed quiz answer before reveal');evidence.checks.push({name:'actual-tv-screen-public-realtime',passed:true,messages:messages.length});}
- assert(evidence.checks.filter(check=>check.name==='tv-rendered-playing').every(check=>check.passed),'TV retained lobby over gameplay');assert(!evidence.errors.length,'Browser runtime errors recorded');
+ assert(evidence.checks.filter(check=>check.name==='tv-rendered-playing').every(check=>check.passed),'TV retained lobby over gameplay');}
+ assert(!evidence.errors.length,'Browser runtime errors recorded');
  }
 
 }catch(error){if(television)evidence.tv={messages:await television.page.evaluate(()=>controllerTVMessages),text:await television.page.evaluate(()=>document.body.innerText)};evidence.lastStates=await Promise.all(clients.map(async c=>({name:c.name,snapshot:await snapshot(c),controller:await c.page.evaluate(()=>controllerQA.state()),transport:await c.page.evaluate(()=>controllerQA.connection()),text:await c.page.evaluate(()=>document.body.innerText)})));evidence.failure=String(error.stack??error);for(const c of clients)await c.page.screenshot({path:`${output}/failure-${c.name}.png`,fullPage:true}).catch(()=>{});process.exitCode=1;}

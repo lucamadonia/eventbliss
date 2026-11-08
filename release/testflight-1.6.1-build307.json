@@ -1,0 +1,8 @@
+{
+  "version": "1.6.1",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Teams lassen sich vor dem Spiel jetzt per Knopfdruck zufällig und möglichst gleichmäßig mischen. In Ohrwurm funktioniert das mit zwei bis vier Teams und bis zu 20 Personen; danach könnt ihr einzelne Personen weiterhin manuell zuordnen. Auch in Wortverbot gibt es die Mischfunktion. Ohne Worte mischt bei jedem erneuten Tippen neu.\n\nBitte testet mit Host-Handy, zweitem Handy und TV: Neun Personen in Ohrwurm eintragen, drei Teams bilden, mehrmals mischen, eine Person manuell verschieben und starten. Prüft, ob alle Personen genau einmal im richtigen Team sind und die gewählte Aufstellung auf den Geräten erhalten bleibt. Testet das Mischen auch in Wortverbot. Gebt bei Problemen Gerät, Buildnummer und Schritte an.",
+    "en-US": "Before starting a game, you can now shuffle people into balanced teams with one tap. Ohrwurm supports two to four teams and up to 20 people, with manual changes still available afterward. Wortverbot also has a shuffle button, and Ohne Worte produces a new arrangement when you tap shuffle again.\n\nPlease test with a host phone, a second phone, and a TV: add nine people in Ohrwurm, create three teams, shuffle several times, move one person manually, then start. Check that everyone appears once in the selected team and that the chosen arrangement stays intact across devices. Try shuffling in Wortverbot too. Include your device, build number, and steps when reporting an issue."
+  }
+}

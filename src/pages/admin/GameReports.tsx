@@ -36,6 +36,7 @@ const TYPE_LABEL: Record<string, string> = {
 const FIX_PAGE: Record<string, string> = {
   closeenough: "/admin/closeenough-questions",
   ohrwurm: "/admin/ohrwurm-songs",
+  hitbuzzer: "/admin/ohrwurm-songs",
   pixeljagd: "/admin/pixel-images",
 };
 
@@ -111,7 +112,7 @@ export default function GameReports() {
                     <span>{game}</span>
                     <span className="text-white/30 font-mono truncate">{content}</span>
                     {FIX_PAGE[game] && (
-                      <Link to={FIX_PAGE[game]} className="text-violet-300 hover:underline inline-flex items-center gap-1">
+                      <Link to={content && (game === 'ohrwurm' || game === 'hitbuzzer') ? `${FIX_PAGE[game]}?song=${encodeURIComponent(content)}` : FIX_PAGE[game]} className="text-violet-300 hover:underline inline-flex items-center gap-1">
                         beheben <ExternalLink className="w-3 h-3" />
                       </Link>
                     )}
@@ -162,6 +163,13 @@ export default function GameReports() {
                   )}
                 </div>
                 <pre className="text-sm text-white/80 whitespace-pre-wrap font-sans">{r.message}</pre>
+                {r.game_id && FIX_PAGE[r.game_id] && (
+                  <Link to={r.content_id && (r.game_id === 'ohrwurm' || r.game_id === 'hitbuzzer')
+                    ? `${FIX_PAGE[r.game_id]}?song=${encodeURIComponent(r.content_id)}` : FIX_PAGE[r.game_id]}
+                    className="mt-3 inline-flex items-center gap-1.5 text-xs font-semibold text-violet-300 hover:underline">
+                    Inhalt öffnen <ExternalLink className="h-3 w-3" />
+                  </Link>
+                )}
                 {r.status === "new" && (
                   <button
                     onClick={() => setStatus(r.id, "resolved")}

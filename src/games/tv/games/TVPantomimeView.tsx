@@ -205,7 +205,7 @@ export default function TVPantomimeView({ gameState }: Props) {
   const left = teams[0];
   const right = teams[1];
   return (
-    <div className="relative h-screen overflow-hidden" style={{ background: TS.bg, color: TS.text }}>
+    <div data-testid="tv-pantomime-view" className="relative h-screen overflow-hidden" style={{ background: TS.bg, color: TS.text }}>
       <Wash color={phase === 'gameOver' ? (winner?.color ?? TS.gold) : teamColor} strength={0.12} />
       <TVTopBar phase={phaseBadge} round={t('games.pantomime.roundOf', 'Runde {{round}} von {{total}}', { round, total: totalRounds })} />
 

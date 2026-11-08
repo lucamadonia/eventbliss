@@ -227,7 +227,7 @@ export function NumberEntry({
             const on = i === rung;
             const passed = rung >= 0 && i < rung;
             return (
-              <div key={step} className="flex-1 flex flex-col items-center gap-1">
+              <div key={step} className="min-w-0 flex-1 flex flex-col items-center gap-1">
                 <motion.div
                   className="w-full rounded-full"
                   animate={{ height: on ? 18 : passed ? 9 : 5 }}
@@ -243,7 +243,7 @@ export function NumberEntry({
                   }}
                 />
                 <span
-                  className="text-[12px] font-bold leading-none"
+                  className="w-full truncate text-center text-[12px] font-bold leading-none"
                   style={{
                     // Aktive Sprosse voll, Anfang und Ende als Orientierung
                     // gedaempft — ohne jede Beschriftung waere die Leiter eine

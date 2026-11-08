@@ -7,7 +7,7 @@
  * Beispieltexte, Hashtags, Bilder.
  *
  * ALLE ZAHLEN SIND CODE-VERIFIZIERT (Stand 2026-08-26):
- *   22 Party-Spiele  — Zaehlung aus src/pages/GamesHub.tsx
+ *   23 Party-Spiele  — Zaehlung aus src/pages/GamesHub.tsx
  *   10 Sprachen      — SEO_LANGS in src/lib/seo-routes.ts
  *   Web, iOS, Android; TV-Modus; Kostenteilung; Agentur-Marktplatz
  *
@@ -99,13 +99,13 @@ const de: MediaKit = {
 
   boilerplateTitle: "Beschreibung zum Kopieren",
   boilerplateShort:
-    "EventBliss ist die App, in der Gruppen ihren Junggesellenabschied, Geburtstag oder Städtetrip gemeinsam planen — Termine, Ideen, Budget, Kostenteilung und 22 Party-Spiele an einem Ort.",
+    "EventBliss ist die App, in der Gruppen ihren Junggesellenabschied, Geburtstag oder Städtetrip gemeinsam planen — Termine, Ideen, Budget, Kostenteilung und 23 Party-Spiele an einem Ort.",
   boilerplateLong:
-    "EventBliss bündelt, was bei Gruppenplanung sonst in drei Chats auseinanderfällt: Termin abstimmen, Ideen sammeln, Budget festhalten, Ausgaben eintragen und am Ende sehen, wer wem was schuldet. Dazu 22 Party-Spiele, bei denen alle am eigenen Handy mitspielen — auf Wunsch mit dem Fernseher als Spielfeld. Die App gibt es für iPhone, Android und im Browser, in zehn Sprachen. Planen ist kostenlos.",
+    "EventBliss bündelt, was bei Gruppenplanung sonst in drei Chats auseinanderfällt: Termin abstimmen, Ideen sammeln, Budget festhalten, Ausgaben eintragen und am Ende sehen, wer wem was schuldet. Dazu 23 Party-Spiele, bei denen alle am eigenen Handy mitspielen — auf Wunsch mit dem Fernseher als Spielfeld. Die App gibt es für iPhone, Android und im Browser, in zehn Sprachen. Planen ist kostenlos.",
 
   factsTitle: "Zahlen, die stimmen",
   facts: [
-    "22 Party-Spiele, alle ohne Installation im Browser spielbar",
+    "23 Party-Spiele, alle ohne Installation im Browser spielbar",
     "TV-Modus: das Spiel läuft auf dem Fernseher, gespielt wird am Handy",
     "Zehn Sprachen: Deutsch, Englisch, Spanisch, Französisch, Italienisch, Portugiesisch, Niederländisch, Polnisch, Türkisch, Arabisch",
     "Für iPhone, Android und im Browser",
@@ -138,7 +138,7 @@ const de: MediaKit = {
       hint: "Der Spieleabend, mit echten Reaktionen",
       text:
         "Wir haben den Abend mit einem Spiel auf dem Fernseher gestartet. Gespielt haben alle am eigenen Handy.\n\n" +
-        "Keine Karten, keine Regeln zum Vorlesen, niemand musste etwas installieren. Es gibt 22 davon — wir haben drei geschafft, dann war es zwei Uhr.\n\n" +
+        "Keine Karten, keine Regeln zum Vorlesen, niemand musste etwas installieren. Es gibt 23 davon — wir haben drei geschafft, dann war es zwei Uhr.\n\n" +
         "Ab Minute zwei ist da nichts mehr gestellt. #Werbung",
     },
     {
@@ -154,7 +154,7 @@ const de: MediaKit = {
     {
       format: "Story",
       hint: "Am Abend selbst, mit Bildschirmaufnahme",
-      text: "Spieleabend-Trick: Das Spiel läuft auf dem Fernseher, alle spielen am eigenen Handy mit. 22 Stück zur Auswahl, nichts zu installieren. #Werbung",
+      text: "Spieleabend-Trick: Das Spiel läuft auf dem Fernseher, alle spielen am eigenen Handy mit. 23 Stück zur Auswahl, nichts zu installieren. #Werbung",
     },
     {
       format: "Beitrag",
@@ -163,7 +163,7 @@ const de: MediaKit = {
         "Zehn Leute, ein Wochenende — und am Anfang drei Gruppenchats.\n\n" +
         "Wir haben den JGA diesmal komplett an einem Ort geplant. Termin abstimmen, Ideen sammeln, Budget festhalten. Alle sehen dasselbe, keiner muss etwas weiterleiten.\n\n" +
         "Am meisten überrascht hat mich der langweiligste Teil: die Abrechnung. Ausgaben rein, aufteilen, fertig — auch ungleich, wenn nicht alle bei allem dabei waren.\n\n" +
-        "Und für den Abend selbst gibt es 22 Spiele, bei denen alle am Handy mitspielen und das Spiel auf dem Fernseher läuft.\n\n" +
+        "Und für den Abend selbst gibt es 23 Spiele, bei denen alle am Handy mitspielen und das Spiel auf dem Fernseher läuft.\n\n" +
         "Planen kostet nichts. Link in der Bio. #Werbung",
     },
     {
@@ -182,7 +182,7 @@ const de: MediaKit = {
         "1. Niemand musste 200 Nachrichten nachlesen, um den Stand zu kennen.\n" +
         "2. Keine drei Termin-Umfragen in drei verschiedenen Chats.\n" +
         "3. Niemand ist auf 180 € sitzen geblieben, weil man es „später klärt\".\n" +
-        "4. Der Abend musste nicht mit „und was machen wir jetzt?\" anfangen — 22 Spiele, alle am Handy.\n\n" +
+        "4. Der Abend musste nicht mit „und was machen wir jetzt?\" anfangen — 23 Spiele, alle am Handy.\n\n" +
         "Alles an einem Ort. Link in der Bio. #Werbung",
     },
   ],
@@ -191,7 +191,7 @@ const de: MediaKit = {
     { key: "chaos", label: "Drei Chats" },
     { key: "planning", label: "Alles an einem Ort" },
     { key: "split", label: "Wer schuldet wem" },
-    { key: "games", label: "22 Spiele" },
+    { key: "games", label: "23 Spiele" },
     { key: "ideas", label: "Ideen sammeln" },
     { key: "code", label: "Dein Code" },
   ],
@@ -259,13 +259,13 @@ const en: MediaKit = {
 
   boilerplateTitle: "Description to copy",
   boilerplateShort:
-    "EventBliss is the app where groups plan a stag do, birthday or city trip together — dates, ideas, budget, cost splitting and 22 party games in one place.",
+    "EventBliss is the app where groups plan a stag do, birthday or city trip together — dates, ideas, budget, cost splitting and 23 party games in one place.",
   boilerplateLong:
-    "EventBliss holds together what usually falls apart across three group chats: agreeing a date, collecting ideas, keeping the budget, entering expenses and finally seeing who owes whom. Plus 22 party games everyone joins from their own phone — with the TV as the board if there is one. Available on iPhone, Android and in the browser, in ten languages. Planning is free.",
+    "EventBliss holds together what usually falls apart across three group chats: agreeing a date, collecting ideas, keeping the budget, entering expenses and finally seeing who owes whom. Plus 23 party games everyone joins from their own phone — with the TV as the board if there is one. Available on iPhone, Android and in the browser, in ten languages. Planning is free.",
 
   factsTitle: "Facts we can back up",
   facts: [
-    "22 party games, all playable in the browser without installing anything",
+    "23 party games, all playable in the browser without installing anything",
     "TV mode: the game runs on the TV, everyone plays from their phone",
     "Ten languages: German, English, Spanish, French, Italian, Portuguese, Dutch, Polish, Turkish, Arabic",
     "Available on iPhone, Android and in the browser",
@@ -298,7 +298,7 @@ const en: MediaKit = {
       hint: "Game night, real reactions",
       text:
         "We started the evening with a game running on the TV. Everyone played from their own phone.\n\n" +
-        "No cards, no rules to read out, nothing to install. There are 22 of them — we managed three before it was 2am.\n\n" +
+        "No cards, no rules to read out, nothing to install. There are 23 of them — we managed three before it was 2am.\n\n" +
         "From minute two, none of it is staged. #ad",
     },
     {
@@ -314,7 +314,7 @@ const en: MediaKit = {
     {
       format: "Story",
       hint: "During the evening, with a screen recording",
-      text: "Game night trick: the game runs on the TV, everyone plays from their own phone. 22 to choose from, nothing to install. #ad",
+      text: "Game night trick: the game runs on the TV, everyone plays from their own phone. 23 to choose from, nothing to install. #ad",
     },
     {
       format: "Post",
@@ -323,7 +323,7 @@ const en: MediaKit = {
         "Ten people, one weekend — and three group chats to start with.\n\n" +
         "This time we planned the whole stag do in one place. Agreeing the date, collecting ideas, keeping the budget. Everyone sees the same thing, nobody forwards anything.\n\n" +
         "What surprised me most was the dullest part: the settlement. Expenses in, split, done — unevenly too, when not everyone joined everything.\n\n" +
-        "And for the evening itself there are 22 games everyone joins from their phone while the game runs on the TV.\n\n" +
+        "And for the evening itself there are 23 games everyone joins from their phone while the game runs on the TV.\n\n" +
         "Planning is free. Link in bio. #ad",
     },
     {
@@ -342,7 +342,7 @@ const en: MediaKit = {
         "1. Nobody had to read back 200 messages to know where things stood.\n" +
         "2. No three separate date polls in three separate chats.\n" +
         "3. Nobody was left £150 out of pocket because we would \"sort it later\".\n" +
-        "4. The evening did not have to start with \"so what now?\" — 22 games, everyone on their phone.\n\n" +
+        "4. The evening did not have to start with \"so what now?\" — 23 games, everyone on their phone.\n\n" +
         "All in one place. Link in bio. #ad",
     },
   ],
@@ -351,7 +351,7 @@ const en: MediaKit = {
     { key: "chaos", label: "Three chats" },
     { key: "planning", label: "All in one place" },
     { key: "split", label: "Who owes whom" },
-    { key: "games", label: "22 games" },
+    { key: "games", label: "23 games" },
     { key: "ideas", label: "Collecting ideas" },
     { key: "code", label: "Your code" },
   ],

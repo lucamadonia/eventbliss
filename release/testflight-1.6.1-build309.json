@@ -1,0 +1,8 @@
+{
+  "version": "1.6.1",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Party-Abend: Der TV-Code ist jetzt schon vor dem ersten Spiel in „Euer Abend“ sichtbar. Das TV-Startbild zeigt Spieler und QR-Code; auch ein später verbundener Fernseher erhält die aktuellen Lobbydaten. Gebräu: „Mit Theke“ und „Ohne Theke“ lassen sich unabhängig von „Mit Tablett“ und „Ohne Tablett“ wählen. Ohne Theke werden übrige Zutaten abgelegt und die Theke bleibt auf Handy und TV ausgeblendet.\n\nBitte testet mit Host-Handy und TV: Party-Abend planen, vor Spiel 1 den TV-Code öffnen, Startbild anzeigen, ein Spiel beenden und erneut zum Startbild wechseln. Prüft Gebräu einmal mit und einmal ohne Theke. Meldet Buildnummer, Geräte und genaue Schritte bei Problemen.",
+    "en-US": "Party night: The TV code is now visible in Your Evening before the first game. The TV start screen shows players and the join QR code; a TV connected later also receives the current lobby data. Brew: choose With Counter or Without Counter independently of the tray reserve setting. Without Counter, leftover ingredients are discarded and the counter stays hidden on phone and TV.\n\nPlease test with a host phone and TV: plan a party night, open the TV code before game one, show the start screen, finish a game, then return to the start screen. Try Brew once with and once without the counter. Include the build number, devices and exact steps when reporting an issue."
+  }
+}

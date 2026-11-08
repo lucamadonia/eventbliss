@@ -16,6 +16,7 @@ import DrawCanvas from './draw/DrawCanvas';
 import { TS, TVTimerRing, TVTopBar, Wash, emojiOnly, hexOr } from './turn-stage/kit';
 
 interface Player { id?: string; name: string; color?: string; avatar?: string; score?: number }
+interface DrawTeam { id: string; name: string; color: string; score: number; memberNames: string[]; members?: { id: string; name: string }[] }
 interface ViewState {
   partyNight?: PartyNightState;
   phase?: string;
@@ -32,6 +33,8 @@ interface ViewState {
   word?: string;
   guessedBy?: string;
   players?: Player[];
+  teamMode?: 'solo' | 'groups';
+  teams?: DrawTeam[];
 }
 
 /**
@@ -77,10 +80,19 @@ export default function TVDrawView({ gameState, drawing }: { gameState: ViewStat
     gameOver: { label: t('tvCinema.draw.result', 'Auflösung'), color: TS.gold },
   }[phase] ?? null;
 
-  const roster: TVScorePlayer[] = useMemo(() => players.map((p) => ({
-    id: p.id || p.name, name: p.name, color: hexOr(p.color, TS.accent), score: p.score, avatar: emojiOnly(p.avatar),
-  })), [players]);
+  const groupMode = gameState?.teamMode === 'groups' && !!gameState?.teams?.length;
+  const roster: TVScorePlayer[] = useMemo(() => groupMode
+    ? (gameState.teams ?? []).map((team) => ({
+      id: team.id, name: team.name, color: hexOr(team.color, TS.accent), score: team.score,
+      members: team.memberNames,
+    }))
+    : players.map((p) => ({
+      id: p.id || p.name, name: p.name, color: hexOr(p.color, TS.accent), score: p.score, avatar: emojiOnly(p.avatar),
+    })), [groupMode, gameState?.teams, players]);
   const drawerId = drawerPlayer ? (drawerPlayer.id || drawerPlayer.name) : null;
+  const activeScoreId = groupMode
+    ? gameState.teams?.find((team) => team.members?.some((member) => member.id === drawerPlayer?.id))?.id ?? null
+    : drawerId;
 
   const drawerStatus = phase === 'drawerReveal' ? t('tvCinema.draw.statusReveal', 'schaut sich den Begriff an')
     : phase === 'drawing' ? t('tvCinema.draw.statusDrawing', 'zeichnet')
@@ -195,7 +207,7 @@ export default function TVDrawView({ gameState, drawing }: { gameState: ViewStat
 
       {roster.length > 0 && (
         <div className="absolute bottom-[5vh] left-[5vw] right-[5vw] z-10">
-          <TVScoreboard party={gameState?.partyNight} players={roster} activeId={phase === 'drawing' || phase === 'drawerReveal' ? drawerId : null} sort="order" />
+          <TVScoreboard party={groupMode ? null : gameState?.partyNight} players={roster} activeId={phase === 'drawing' || phase === 'drawerReveal' ? activeScoreId : null} sort="order" />
         </div>
       )}
     </div>

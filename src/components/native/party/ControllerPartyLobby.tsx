@@ -5,8 +5,8 @@ import { ArrowLeft, Download, Loader2, PartyPopper } from 'lucide-react';
 import { useAuthContext } from '@/components/auth/AuthProvider';
 import { useGameRoom } from '@/games/multiplayer/useGameRoom';
 import {
-  abortControllerGame, addControllerGuest, closeControllerParty, controllerSeatStatus, dismissControllerRemoval, endControllerParty, leaveControllerParty, openControllerParty, ownMember, releaseControllerSeat,
-  retryControllerConnection, setControllerPlaylist, useControllerParty,
+  abortControllerGame, closeControllerParty, controllerSeatStatus, dismissControllerRemoval, endControllerParty, leaveControllerParty, openControllerParty, ownMember, releaseControllerSeat,
+  retryControllerConnection, upgradeControllerParty, useControllerParty,
 } from '@/games/party/controller-session';
 import { needsClientUpdate } from '@/games/party/controller-api';
 import { controllerErrorCode, describeControllerError } from '@/games/party/controller-errors';
@@ -57,12 +57,23 @@ export default function ControllerPartyLobby() {
   const [importingLocal, setImportingLocal] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const attempted = useRef('');
+  const attemptedUpgrade = useRef('');
   const switching = useRef(false);
   const localParty = useRef(party.session?.playMode === 'local' ? party.session : null);
-  const importPlan = useRef((location.state as { plannedGames?: string[] } | null)?.plannedGames ?? localParty.current?.playlist ?? []);
-  const importRequested = new URLSearchParams(location.search).has('source');
-  const importSource = importRequested ? localParty.current : null;
-  const data = controller.data;
+  const importPlan = useRef((location.state as { plannedGames?: string[] } | null)?.plannedGames
+    ?? localParty.current?.playlist.slice(localParty.current.playlistIndex) ?? []);
+  const params = new URLSearchParams(location.search);
+  const source = params.get('source');
+  const importRequested = source === 'local' || source === 'tv';
+  const scannedTvCode = params.get('tv')?.toUpperCase() ?? null;
+  const localTvCode = localParty.current?.tvCode ?? tv?.displayCode ?? null;
+  const importSource = importRequested && (source !== 'tv' || (scannedTvCode && scannedTvCode === localTvCode)) ? localParty.current : null;
+  const localAlreadyUpgraded = !!importSource && !!controller.data
+    && controller.data.party.tv_code === importSource.tvCode
+    && Math.abs(Date.parse(controller.data.party.local_started_at ?? '') - importSource.createdAt) < 1000;
+  // A prior controller room must never replace the evening that the Host is
+  // activating now. The new room is shown only after its local identity matches.
+  const data = importSource && !localAlreadyUpgraded ? null : controller.data;
   const isHost = data?.party.host_user_id === auth.user?.id;
   const roster = data?.members.filter(member => !member.banned && (data.party.host_plays || !member.is_host)) ?? [];
   const playlist = data?.party.playlist ?? [];
@@ -76,6 +87,10 @@ export default function ControllerPartyLobby() {
   const me = ownMember(data, auth.user?.id);
   const pendingClaim = data ? myPendingClaim(data) : null;
   const inMatch = !!room.room?.participantIds.includes(room.myPlayerId);
+  const currentGameRoute = playing && room.room?.status === 'playing'
+    && data?.party.current_match_id === room.room.sessionId
+    && data.party.current_game_id === room.room.gameId && (inMatch || isHost)
+    ? `/games/${room.room.gameId}?room=${data.party.code}&party=true` : null;
   const myReady = !!room.players.find(p => p.id === room.myPlayerId)?.isReady;
   const next = useNextGame(data, notReady, room.connection === 'connected');
   const minPlayers = Math.max(2, next.game?.minPlayers ?? 2);
@@ -88,24 +103,28 @@ export default function ControllerPartyLobby() {
   const errorCode = controllerErrorCode(controller.error);
   const act = (work: Promise<unknown>) => { void work.catch(() => { /* state displays failure */ }); };
   const importLocalParty = async (name: string) => {
-    if (!auth.user || !importSource || importingLocal) return;
+    if (!auth.user || !importSource || importingLocal || controller.busy) return;
     setImportingLocal(true);
     setImportError(null);
     try {
       // Controller snapshots replace the active PartySession. Keep the local
       // evening intact before the first server write, including its old score.
       localStorage.setItem('eventbliss_party_local_backup', JSON.stringify(importSource));
-      await openControllerParty(auth.user.id, name, undefined, false);
-      for (const player of importSource.players) {
-        await addControllerGuest({ name: player.name, avatar: player.avatar, color: player.color });
-      }
-      if (importPlan.current.length > 0) await setControllerPlaylist(importPlan.current);
+      const upcoming = importSource.currentGameId && !importPlan.current.includes(importSource.currentGameId)
+        ? [importSource.currentGameId, ...importPlan.current] : importPlan.current;
+      await upgradeControllerParty(auth.user.id, name, importSource, upcoming, localTvCode ?? importSource.tvCode);
     } catch (error) {
       setImportError(error instanceof Error ? error.message : String(error));
     } finally {
       setImportingLocal(false);
     }
   };
+  useEffect(() => {
+    if (!importSource || !auth.user || auth.isLoading || data || controller.busy || importingLocal || importError) return;
+    if (attemptedUpgrade.current === importSource.id) return;
+    attemptedUpgrade.current = importSource.id;
+    void importLocalParty(accountName);
+  }, [auth.user, auth.isLoading, data, controller.busy, importSource, importingLocal, importError, accountName]); // eslint-disable-line react-hooks/exhaustive-deps
   const invitation = invitationAction(inviteCode, data?.party.code, controller.busy);
   const changeParty = () => {
     if (invitation !== 'confirm' || switching.current || !auth.user || !inviteCode) return;
@@ -144,9 +163,10 @@ export default function ControllerPartyLobby() {
       : openControllerParty(userId, accountName, code, true, { resume: seat === 'here' })));
   }, [auth.isLoading, auth.user, inviteCode, invitation, accountName, location.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!isNative()) return <ControllerPartyWebInvite inviteCode={inviteCode} />;
+  if (!isNative()) return <ControllerPartyWebInvite inviteCode={inviteCode} activationCode={source === 'tv' ? scannedTvCode : null} />;
   if (auth.isLoading) return <div className="grid min-h-dvh place-items-center"><Loader2 className="animate-spin" aria-label={t('partyControllers.loading')} /></div>;
-  if (!auth.user) return <ControllerPartyLogin inviteCode={inviteCode} onLogin={path => navigate(path)} />;
+  if (!auth.user) return <ControllerPartyLogin inviteCode={inviteCode}
+    returnPath={importRequested ? location.pathname + location.search : undefined} onLogin={path => navigate(path)} />;
 
   const shell = (children: ReactNode) => <main data-testid="party-lobby" data-role={isHost ? 'host' : 'player'}
     className="relative h-full min-h-dvh overflow-y-auto overscroll-y-contain native-scroll bg-[#060810] px-5 pb-tabbar pt-[max(24px,env(safe-area-inset-top))] text-white">
@@ -178,7 +198,7 @@ export default function ControllerPartyLobby() {
   // D04/T16: the party is over — every device shows the closing screen; the TV runs the finale.
   if (data && ended) return shell(<PartyClosingScreen myPlayerId={me?.player_id ?? null}
     history={party.session?.gameHistory ?? []} partyDateMs={party.session?.createdAt || Date.now()}
-    standings={party.session ? derivePartyStandings([...party.session.players, ...(party.session.archivedPlayers ?? [])], party.session.gameHistory) : []}
+    standings={party.session ? derivePartyStandings(party.session.players, party.session.gameHistory) : []}
     onStartOwn={() => { closeControllerParty(); navigate('/party/controllers', { replace: true }); }}
     onDone={() => { closeControllerParty(); navigate('/games', { replace: true }); }} />);
   if (data && controller.onboarding && !isHost && (me || pendingClaim || controller.seatless)) return shell(<ControllerOnboarding data={data} userId={auth.user.id} busy={controller.busy} seatless={controller.seatless} />);
@@ -196,8 +216,14 @@ export default function ControllerPartyLobby() {
     {importingLocal && <p role="status" data-testid="local-import-progress" className="rounded-xl border border-[#8ff5ff]/30 bg-[#8ff5ff]/10 p-4">{t('partyControllers.importingLocal', 'Spieler und Spielplan werden übernommen…')}</p>}
     {importError && <p role="alert" className="rounded-xl border border-rose-300/30 bg-rose-300/10 p-4">{t('partyControllers.importLocalFailed', 'Übernahme nicht vollständig: {{error}}', { error: importError })}</p>}
     {data && room.connection !== 'connected' && !ended && <button className={`${button} w-full border border-white/20`} disabled={controller.busy} onClick={() => act(retryControllerConnection())}>{t('partyControllers.retry')}</button>}
-    {!data ? <ControllerPartyStart busy={controller.busy || importingLocal} defaultName={accountName} initialCode={inviteCode ?? ''}
-      localPlayerCount={importSource?.players.length} onImportLocal={importSource ? importLocalParty : undefined}
+    {!data ? importRequested ? <section data-testid="local-party-activation" className="space-y-4 rounded-3xl border border-[#8ff5ff]/30 bg-[#8ff5ff]/10 p-5">
+      <h2 className="text-xl font-bold">{t('partyControllers.activateTitle', 'Handys für diesen Abend aktivieren')}</h2>
+      <p className="text-sm text-white/70">{importSource
+        ? t('partyControllers.activateProgress', 'Eure Spieler, Spiele und Punkte bleiben erhalten. Gleich erscheint der QR-Code für alle Handys.')
+        : t('partyControllers.activateHostRequired', 'Öffne die laufende Party auf dem Host-Handy und aktiviere dort die Handy-Steuerung.')}</p>
+      {importSource && !importingLocal && importError && <button type="button" data-testid="retry-local-upgrade" className={`${button} w-full bg-[#8ff5ff] text-[#0a0e14]`} onClick={() => { setImportError(null); attemptedUpgrade.current = ''; }}>{t('partyControllers.retry', 'Erneut versuchen')}</button>}
+      {!importSource && <button type="button" className={`${button} w-full border border-white/20`} onClick={() => navigate('/games')}>{t('common.back', 'Zurück')}</button>}
+    </section> : <ControllerPartyStart busy={controller.busy} defaultName={accountName} initialCode={inviteCode ?? ''}
       onCreate={(name, hostPlays) => act(openControllerParty(auth.user!.id, name, undefined, hostPlays))}
       onJoin={(name, code) => act(openControllerParty(auth.user!.id, name, code))} /> : <>
       {pendingClaim && <PendingClaim guest={pendingClaim} onCancel={() => act(releaseControllerSeat(pendingClaim.player_id))} />}
@@ -206,7 +232,12 @@ export default function ControllerPartyLobby() {
         {me && <span className="rounded-full" style={{ boxShadow: playerGlow(me.color) }}><SeatAvatar avatar={me.avatar} color={me.color} size={48} /></span>}
         <div className="min-w-0 flex-1">
           <p className="font-bold">{!inMatch && !isHost ? t('partyPlay.lobby.soon', 'Gleich bist du dran') : t('partyPlay.lobby.running', 'Gerade läuft ein Spiel')}</p>
-          <p className="text-sm text-white/60">{!inMatch && !isHost ? t('partyPlay.lobby.nextRound', 'Ab der nächsten Runde bist du dabei.') : t('partyControllers.waitNext')}</p>
+          {!currentGameRoute && <p className="text-sm text-white/60">{!inMatch && !isHost ? t('partyPlay.lobby.nextRound', 'Ab der nächsten Runde bist du dabei.') : t('partyControllers.waitNext')}</p>}
+          {currentGameRoute && <button data-testid="resume-current-game" type="button"
+            className="mt-3 min-h-11 rounded-full bg-[#8ff5ff] px-5 text-sm font-bold text-[#061018]"
+            onClick={() => navigate(currentGameRoute, { replace: true })}>
+            {t('partyPlay.switchDevice.back', 'Hier weiterspielen')}
+          </button>}
           {isHost && <button className="mt-2 min-h-11 rounded-full px-4 text-sm font-semibold text-rose-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] active:bg-white/5" onClick={() => act(abortControllerGame())}>{t('partyControllers.abort')}</button>}
         </div>
       </section>}
@@ -218,8 +249,8 @@ export default function ControllerPartyLobby() {
       <PartyRoster data={data} myUserId={auth.user.id} presence={room.players} participantIds={room.room?.participantIds ?? []} busy={controller.busy} />
 
       {isHost && data.party.status === 'lobby' && <ControllerPlaylistPanel data={data} busy={controller.busy} />}
-      {party.session && data.results.length > 0 && <details className="rounded-2xl border border-white/10 p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.partyLobby.overallScore')}</summary><PartyStandingsList standings={derivePartyStandings([...party.session.players, ...(party.session.archivedPlayers ?? [])], party.session.gameHistory)} /></details>}
-      {party.session && nextIndex > finaleSeen && playlist.length > 0 && nextIndex >= playlist.length && <PartyFinaleOverlay open standings={derivePartyStandings([...party.session.players, ...(party.session.archivedPlayers ?? [])], party.session.gameHistory)} history={party.session.gameHistory.map(entry => ({ ...entry, gameName: t(playableGames.find(game => game.id === entry.gameId)?.nameKey ?? entry.gameName) }))} gamesPlayed={nextIndex} playerCount={roster.length} onDone={() => setFinaleSeen(nextIndex)} />}
+      {party.session && data.results.length > 0 && <details className="rounded-2xl border border-white/10 p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.partyLobby.overallScore')}</summary><PartyStandingsList standings={derivePartyStandings(party.session.players, party.session.gameHistory)} /></details>}
+      {party.session && nextIndex > finaleSeen && playlist.length > 0 && nextIndex >= playlist.length && <PartyFinaleOverlay open standings={derivePartyStandings(party.session.players, party.session.gameHistory)} history={party.session.gameHistory.map(entry => ({ ...entry, gameName: t(playableGames.find(game => game.id === entry.gameId)?.nameKey ?? entry.gameName) }))} gamesPlayed={nextIndex} playerCount={roster.length} onDone={() => setFinaleSeen(nextIndex)} />}
       <button data-testid={isHost ? 'end-party' : 'leave-party'} disabled={controller.busy}
         className="mx-auto block min-h-11 rounded-full px-4 text-sm font-semibold text-white/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8ff5ff] active:bg-white/5 disabled:opacity-40"
         onClick={() => setConfirmLeave(true)}>{t(isHost ? 'partyControllers.end' : 'partyControllers.leave')}</button>

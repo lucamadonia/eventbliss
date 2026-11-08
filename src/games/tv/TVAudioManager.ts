@@ -103,6 +103,19 @@ export function useTVAudio() {
     playTone(800, 0.05, 'sine', 0.1);
   }, [isEnabled]);
 
+  const playBuzzerTick = useCallback((urgent = false) => {
+    if (!isEnabled) return;
+    playTone(urgent ? 700 : 440, urgent ? 0.095 : 0.07, 'triangle', urgent ? 0.15 : 0.095);
+    if (urgent) playTone(1046, 0.065, 'sine', 0.105, 0.13);
+  }, [isEnabled]);
+
+  const playBuzzerTimeout = useCallback(() => {
+    if (!isEnabled) return;
+    playTone(392, 0.2, 'triangle', 0.15);
+    playTone(262, 0.32, 'triangle', 0.14, 0.18);
+    playFilteredNoise(0.24, 1600, 0.045, 0.24);
+  }, [isEnabled]);
+
   const playCorrect = useCallback(() => {
     if (!isEnabled) return;
     playTone(523, 0.1, 'sine', 0.2, 0);
@@ -167,6 +180,8 @@ export function useTVAudio() {
   return {
     playChime,
     playTick,
+    playBuzzerTick,
+    playBuzzerTimeout,
     playCorrect,
     playWrong,
     playFanfare,

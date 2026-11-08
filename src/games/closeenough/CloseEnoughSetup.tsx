@@ -1,7 +1,7 @@
 /**
  * NAH DRAN — Einrichtung (Spieler/Gruppen, Modus, Kategorien, Runden).
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,8 @@ import { CloseEnoughAtmosphere } from './CloseEnoughAtmosphere';
 import { categoryLabelKey, ceContentState, CE_CATEGORIES, type CeCategory, type CeQuestion } from './closeenough-content';
 import { CeContentNotice } from './CeContentNotice';
 import { CE, MODES, type ModeId } from './ce-theme';
+import { TeamFormation } from '../ui/TeamFormation';
+import { assignTeams, flipTeam, shuffleTeams, splitByTeam, type TeamMap } from '../pantomime/pantomime-teams';
 
 // ===========================================================================
 // Einrichtung
@@ -31,7 +33,7 @@ export function CloseEnoughSetup({
   toast,
 }: {
   onStart: (cfg: {
-    players: { id: string; name: string }[];
+    players: { id: string; name: string; memberIds?: string[]; memberNames?: string[] }[];
     mode: ModeId;
     categories: CeCategory[];
     rounds: number;
@@ -70,6 +72,16 @@ export function CloseEnoughSetup({
   // gespielt wird in beiden Faellen ueber dieselbe Liste, eine Gruppe ist
   // schlicht ein Spieler mit mehreren Koepfen dahinter.
   const [teamMode, setTeamMode] = useState<'solo' | 'groups'>('solo');
+  const [teamOf, setTeamOf] = useState<TeamMap>({});
+  const [teamNames, setTeamNames] = useState(() => [1, 2].map((n) => t('games.ohrwurm.teamName', { n })));
+
+  useEffect(() => {
+    const ids = list.map((player) => player.id);
+    setTeamOf((previous) => {
+      const next = assignTeams(ids, previous);
+      return ids.length === Object.keys(previous).length && ids.every((id) => next[id] === previous[id]) ? previous : next;
+    });
+  }, [list]);
 
   /** Wie viele Fragen je Kategorie da sind — leere Kategorien bleiben draußen. */
   const perCategory = useMemo(() => {
@@ -85,13 +97,17 @@ export function CloseEnoughSetup({
 
   const named = list.map((p, i) => ({
     id: p.id,
-    name:
-      p.name.trim() ||
-      (teamMode === 'groups'
-        ? t('games.closeenough.teamN', { n: i + 1 })
-        : t('games.closeenough.playerN', { n: i + 1 })),
+    name: p.name.trim() || t('games.closeenough.playerN', { n: i + 1 }),
   }));
-  const canStart = contentReady && available > 0 && named.length >= 2;
+  const [idsA, idsB] = splitByTeam(named.map((player) => player.id), teamOf);
+  const teams = [idsA, idsB].map((ids, index) => ({
+    id: `closeenough-team-${index + 1}`,
+    name: teamNames[index]?.trim() || t('games.ohrwurm.teamName', { n: index + 1 }),
+    color: index === 0 ? CE.accent : CE.truth,
+    members: ids.map((id) => named.find((player) => player.id === id)!).filter(Boolean),
+  }));
+  const canStart = contentReady && available > 0 && named.length >= 2
+    && (teamMode === 'solo' || teams.every((team) => team.members.length > 0));
   const contentState = ceContentState({ contentReady, failed: contentFailed, poolSize: pool.length, available });
 
   return (
@@ -197,11 +213,7 @@ export function CloseEnoughSetup({
             min={2}
             max={8}
             accent={CE.accent}
-            label={
-              teamMode === 'groups'
-                ? t('games.closeenough.groupsLabel')
-                : t('games.closeenough.playersLabel')
-            }
+            label={t('games.closeenough.playersLabel')}
             /* Aus dem Event uebernehmen: Wer schon eine Gaesteliste gepflegt
                hat, soll sie nicht ein zweites Mal abtippen. */
             onImportNames={(names) =>
@@ -226,6 +238,23 @@ export function CloseEnoughSetup({
             }
           />
         </div>
+
+        {teamMode === 'groups' && (
+          <section className="mt-7" data-testid="closeenough-team-setup">
+            <TeamFormation
+              teams={teams}
+              title={t('games.ohrwurm.formTeams')}
+              hint={t('games.pantomime.tapToSwap')}
+              shuffleLabel={t('games.pantomime.reshuffle')}
+              emptyLabel={t('games.ohrwurm.emptyTeam')}
+              renameLabel={(index) => t('games.ohrwurm.nameTeam', { n: index + 1 })}
+              onShuffle={() => setTeamOf((previous) => shuffleTeams(named.map((player) => player.id), Math.random, previous))}
+              onMove={(id) => setTeamOf((previous) => flipTeam(previous, id))}
+              onRename={(index, name) => setTeamNames((previous) => previous.map((old, i) => i === index ? name : old))}
+              surface={CE.surface} elevated={CE.elevated} text={CE.text} muted={CE.dim}
+            />
+          </section>
+        )}
 
         {/* Modus */}
         <p
@@ -327,8 +356,14 @@ export function CloseEnoughSetup({
         </p>
 
         <button
+          data-testid="closeenough-start"
           disabled={!canStart}
-          onClick={() => onStart({ players: named, mode, categories: cats, rounds })}
+          onClick={() => onStart({
+            players: teamMode === 'groups'
+              ? teams.map((team) => ({ id: team.id, name: team.name, memberIds: team.members.map((member) => member.id), memberNames: team.members.map((member) => member.name) }))
+              : named,
+            mode, categories: cats, rounds,
+          })}
           className="mt-4 w-full h-14 rounded-2xl font-black disabled:opacity-40"
           style={{ background: CE.accent, color: CE.bg }}
         >

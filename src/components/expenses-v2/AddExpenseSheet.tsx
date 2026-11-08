@@ -292,8 +292,7 @@ export function AddExpenseSheet({
 
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
-      {/* [&>button]:hidden hides Radix's built-in close X (a direct child) —
-          this sheet has its own header with close + save buttons. */}
+      {/* [&>button]:hidden hides Radix's built-in close X (a direct child). */}
       <SheetContent
         side="bottom"
         className="bg-background border-t border-border text-foreground p-0 h-[92vh] max-h-[92vh] w-full max-w-full rounded-t-3xl flex flex-col overflow-hidden overscroll-contain [touch-action:pan-y] [&>button]:hidden"
@@ -317,21 +316,7 @@ export function AddExpenseSheet({
           <div className="flex-1 text-center">
             <h2 className="text-base font-bold text-foreground">{t("expenses.v2.add.title")}</h2>
           </div>
-          {step === "split" ? <Button
-            onClick={handleSave}
-            disabled={!canSave || !splitValid || addExpense.isPending}
-            size="sm"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {addExpense.isPending ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <>
-                <Save className="w-3.5 h-3.5 mr-1.5" />
-                {t("expenses.v2.common.save")}
-              </>
-            )}
-          </Button> : <span className="w-9" />}
+          <span className="w-9" aria-hidden="true" />
         </div>
 
         <div className="flex gap-1.5 px-5 pt-3" aria-label={t("expenses.v2.add.stepProgress", "Schritt {{step}} von 4", { step: stepIndex + 1 })}>
@@ -351,14 +336,14 @@ export function AddExpenseSheet({
           }}
         >
           {/* 1) Quick — amount + title */}
-          <div className="px-5 py-6">
+          {step !== "split" && <div className="px-5 py-6">
             {step === "amount" && <>
             {/* Big amount input */}
-            <div className="text-center mb-6">
-              <div className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-semibold mb-2">
+            <div className="flex min-h-[36vh] flex-col justify-center sm:min-h-[22rem]">
+              <div className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 {t("expenses.amount")}
               </div>
-              <div className="relative inline-flex items-baseline gap-1">
+              <div className="relative flex min-h-48 w-full items-center rounded-[2rem] border border-violet-400/35 bg-gradient-to-br from-violet-500/15 via-background to-cyan-500/10 px-5 shadow-[0_18px_48px_-32px_rgba(139,92,246,0.75)] transition-colors focus-within:border-violet-400/80 focus-within:ring-2 focus-within:ring-violet-400/20 sm:min-h-56 sm:px-8">
                 <input
                   type="text"
                   inputMode="decimal"
@@ -366,10 +351,11 @@ export function AddExpenseSheet({
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ""))}
                   placeholder={fmt.amountPlaceholder}
-                  className="w-64 max-w-full text-center text-6xl sm:text-7xl font-black bg-transparent border-0 outline-none text-foreground placeholder:text-muted-foreground tabular-nums tracking-tighter"
+                  className="expense-amount-input h-32 min-w-0 w-full bg-transparent text-center font-black leading-none tracking-tight text-foreground outline-none placeholder:text-muted-foreground/55 tabular-nums"
+                  style={{ fontSize: amount.replace(/\D/g, "").length > 7 ? "clamp(2.75rem, 11vw, 3.5rem)" : amount.replace(/\D/g, "").length > 4 ? "clamp(3.5rem, 15vw, 4.5rem)" : "clamp(5rem, 20vw, 6rem)" }}
                   aria-label={t("expenses.amount")}
                 />
-                <span className="text-2xl sm:text-3xl font-bold text-muted-foreground">
+                <span className="pointer-events-none absolute right-5 top-4 text-xl font-bold text-muted-foreground sm:right-8 sm:text-2xl">
                   {fmt.currencySymbol()}
                 </span>
               </div>
@@ -497,7 +483,6 @@ export function AddExpenseSheet({
 
             {step === "payer" && <>
             {/* Payer selector (single / multi) */}
-            <div className="mt-4">
               <PayerSelector
                 participants={participants}
                 amount={amountNum}
@@ -507,9 +492,8 @@ export function AddExpenseSheet({
                 multi={multiPayer}
                 onMultiChange={setMultiPayer}
               />
-            </div>
             </>}
-          </div>
+          </div>}
 
           {/* 2) Detail — expand */}
           <AnimatePresence initial={false}>
@@ -527,15 +511,18 @@ export function AddExpenseSheet({
                   <div className="mt-4 space-y-4">
                 {/* Date */}
                 <div>
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold mb-2 flex items-center gap-1.5">
-                    <Calendar className="w-3 h-3" /> {t("expenses.v2.common.date")}
+                  <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                    <Calendar className="h-4 w-4" /> {t("expenses.v2.common.date")}
                   </div>
-                  <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="date-input-left appearance-none block w-full min-w-0 h-11 px-3 rounded-xl bg-muted border border-border text-foreground text-sm text-left [color-scheme:light] dark:[color-scheme:dark] focus:outline-none focus:border-primary/40"
-                  />
+                  <div className="expense-date-shell flex h-16 min-w-0 w-full max-w-full items-center overflow-hidden rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-500/10 to-cyan-500/5 px-4 focus-within:border-violet-400/70 focus-within:ring-2 focus-within:ring-violet-400/20">
+                    <input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      aria-label={t("expenses.v2.common.date")}
+                      className="expense-date-input block h-full min-w-0 w-full max-w-full flex-1 bg-transparent text-center text-xl font-semibold tabular-nums text-foreground [color-scheme:light] focus:outline-none dark:[color-scheme:dark]"
+                    />
+                  </div>
                 </div>
 
                 {/* Notes */}

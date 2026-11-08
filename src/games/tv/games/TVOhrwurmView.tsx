@@ -16,6 +16,7 @@ interface TVPlayer { id: string; name: string; color: string; avatar?: string; s
 interface ViewState {
   partyNight?: PartyNightState;
   players?: TVPlayer[];
+  teams?: { id: string; name: string; players: string[] }[];
   activeName?: string;
   activeId?: string;
   phase?: string;
@@ -104,12 +105,13 @@ export default function TVOhrwurmView({ gameState }: { gameState: ViewState }) {
 
   const scorePlayers = useMemo(() => players.map((p) => ({
     id: p.id, name: p.name, color: p.color, avatar: p.avatar, score: p.score, subtitle: `${p.hooks} 🎣`,
-  })), [players]);
+    members: gameState?.teams?.find((team) => team.id === p.id)?.players,
+  })), [players, gameState?.teams]);
 
   if (phase === 'gameOver') {
     const winner = players.find((p) => p.name === winnerName);
     return (
-      <div className="relative flex h-screen flex-col items-center justify-center gap-[5vh] overflow-hidden px-[5vw] pb-[5vh] pt-[5vh]" style={{ background: OW.bg }}>
+      <div data-testid="tv-ohrwurm-view" className="relative flex h-screen flex-col items-center justify-center gap-[5vh] overflow-hidden px-[5vw] pb-[5vh] pt-[5vh]" style={{ background: OW.bg }}>
         <motion.div className="flex flex-col items-center gap-[2vh] text-center" variants={partyMotion('spotlight', reduced)} initial="initial" animate="animate">
           {winner && <TVPlayerAvatar id={winner.id} name={winner.name} avatar={winner.avatar} color={winner.color} size={lu(16)} active />}
           <div className="font-black" style={{ fontSize: tvType.display, color: OW.text }}>
@@ -130,7 +132,7 @@ export default function TVOhrwurmView({ gameState }: { gameState: ViewState }) {
         : { text: t('tvCinema.ohrwurm.listenPill', 'Hören'), color: OW.primary };
 
   return (
-    <div className="relative flex h-screen flex-col gap-[2.4vh] overflow-hidden px-[5vw] pb-[5vh] pt-[5vh]" style={{ background: OW.bg, color: OW.text }}>
+    <div data-testid="tv-ohrwurm-view" className="relative flex h-screen flex-col gap-[2.4vh] overflow-hidden px-[5vw] pb-[5vh] pt-[5vh]" style={{ background: OW.bg, color: OW.text }}>
       <audio ref={audioRef} src={previewUrl ?? undefined} preload="none" loop className="hidden" aria-hidden />
       {/* Markenschleier — statisch, keine Unschaerfe-Schleife. */}
       <div className="pointer-events-none absolute -left-24 -top-24 h-[34rem] w-[34rem] rounded-full blur-[90px]" style={{ background: 'rgba(255,46,136,0.10)' }} />

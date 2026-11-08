@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
-import { ExternalLink, Loader2, Music2, Plus, Users } from 'lucide-react';
+import { ChevronDown, ExternalLink, Loader2, Music2, Plus, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import type { Participant, PendingCounter, RoundResolution, Song } from './ohrwurm-engine';
@@ -26,6 +26,7 @@ export function Scoreboard({ participants, activeId, winTarget }: { participants
   // Mehr Plaetze als Breite: weich ausblenden + einrasten, damit klar ist, dass es weitergeht.
   const strip = useRef<HTMLDivElement>(null);
   const [overflows, setOverflows] = useState(false);
+  const [openTeamId, setOpenTeamId] = useState<string | null>(null);
   useEffect(() => {
     const el = strip.current;
     if (!el) return;
@@ -35,17 +36,22 @@ export function Scoreboard({ participants, activeId, winTarget }: { participants
     ro?.observe(el);
     return () => ro?.disconnect();
   }, [participants.length]);
+  const openTeam = participants.find((participant) => participant.id === openTeamId && participant.memberNames?.length);
   return (
-    <div ref={strip} className="relative z-10 flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 py-3 no-scrollbar rtl:[--ow-fade:left]"
+    <div className="relative z-10">
+    <div ref={strip} className="flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 py-3 no-scrollbar rtl:[--ow-fade:left]"
       style={overflows ? { maskImage: FADE, WebkitMaskImage: FADE } : undefined}>
       {participants.map((p) => {
         const isActive = p.id === activeId;
         return (
-          <div key={p.id}
+          <button type="button" key={p.id} disabled={!p.memberNames?.length}
+            onClick={() => setOpenTeamId((current) => current === p.id ? null : p.id)}
+            aria-expanded={p.memberNames?.length ? openTeamId === p.id : undefined}
+            aria-label={p.memberNames?.length ? `${p.name}: ${p.memberNames.join(', ')}` : undefined}
             className="shrink-0 snap-start flex items-center gap-2.5 rounded-2xl px-3 py-2 transition-all"
             style={{
               background: OW.surface,
-              border: `1.5px solid ${isActive ? p.color : 'transparent'}`,
+              border: `1.5px solid ${isActive || openTeamId === p.id ? p.color : 'transparent'}`,
               boxShadow: isActive ? `0 0 18px ${p.color}40` : 'none',
             }}>
             <Avatar p={p} size={30} />
@@ -55,9 +61,17 @@ export function Scoreboard({ participants, activeId, winTarget }: { participants
                 <span style={{ color: OW.secondary }}>{p.timeline.length}</span>/{winTarget} · {p.hooks} 🎣
               </div>
             </div>
-          </div>
+            {!!p.memberNames?.length && <ChevronDown className={`h-3.5 w-3.5 shrink-0 transition-transform ${openTeamId === p.id ? 'rotate-180' : ''}`} style={{ color: p.color }} />}
+          </button>
         );
       })}
+    </div>
+    {openTeam && (
+      <div role="region" aria-label={openTeam.name} className="mx-4 mb-2 rounded-xl px-3 py-2 text-xs leading-relaxed"
+        style={{ background: OW.surface, color: OW.dim, borderLeft: `3px solid ${openTeam.color}` }}>
+        <strong dir="auto" style={{ color: OW.text }}>{openTeam.name}:</strong> {openTeam.memberNames?.join(' · ')}
+      </div>
+    )}
     </div>
   );
 }

@@ -2,8 +2,8 @@
   "name": "EventBliss",
   "short_name": "EventBliss",
   "description": "Events planen, buchen & koordinieren.",
-  "theme_color": "#0a0612",
-  "background_color": "#0a0612",
+  "theme_color": "#1a1625",
+  "background_color": "#1a1625",
   "display": "standalone",
   "start_url": "/",
   "scope": "/",
@@ -18,13 +18,19 @@
       "src": "/pwa-192x192.png",
       "type": "image/png",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/pwa-512x512.png",
       "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     },
     {
       "src": "/apple-touch-icon.png",

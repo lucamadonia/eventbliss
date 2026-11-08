@@ -21,6 +21,7 @@ const games={
  'fake-or-fact':React.lazy(()=>import('@/games/fakeorfact/FakeOrFactGame')),
  flaschendrehen:React.lazy(()=>import('@/games/bottlespin/BottleSpinGame')),
  'this-or-that':React.lazy(()=>import('@/games/thisorthat/ThisOrThatGame')),
+ pixeljagd:React.lazy(()=>import('@/games/pixeljagd/PixeljagdGame')),
 };
 function GameRoute(){const {gameId:id}=useParams();const room=useGameRoom();const tv=useTVContext();useEffect(()=>{tv?.setOnlineRoom(room.room?.roomCode??null);},[room.room?.roomCode,tv]);const Game=games[id as keyof typeof games];return Game&&room.room?<OnlineGameWrapper key={`${id}:${room.room.sessionId}`} gameId={id!} roomCode={room.room.roomCode} playerName={window.controllerIdentity.user_metadata.display_name}>{online=><><ControllerGameControls/><Game online={online}/></>}</OnlineGameWrapper>:<p>Missing game</p>;}
 function RoutesUnderTest(){const room=useGameRoom();const navigate=useNavigate();const location=useLocation(); window.controllerQA={snapshot:gameRoomSession.getSnapshot,state:controller.getControllerState,navigate,ready:gameRoomSession.setReady,playlist:controller.setControllerPlaylist,start:controller.startControllerGame,retry:controller.retryControllerConnection,connection:()=>({online:navigator.onLine,socket:supabase.realtime?.connectionState(),disconnecting:supabase.realtime?.isDisconnecting(),channels:supabase.getChannels?.().map(channel=>({topic:channel.topic,state:channel.state,present:Object.keys(channel.presenceState())}))})};

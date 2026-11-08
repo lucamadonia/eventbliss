@@ -1374,7 +1374,7 @@ function PantomimeSetup({
             {t('games.pantomime.teamsTitle')}
           </p>
           <button
-            onClick={() => setTeamOf(shuffleTeams(list.map((p) => p.id)))}
+            onClick={() => setTeamOf((previous) => shuffleTeams(list.map((p) => p.id), Math.random, previous))}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold"
             style={{ background: PM.surface, color: PM.text }}
           >

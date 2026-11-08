@@ -34,6 +34,8 @@ export async function loadExtraSongs(language?: string): Promise<number> {
     const PAGE = 1000;
     const rows: Row[] = [];
     for (let from = 0; ; from += PAGE) {
+      // The table is not in the generated client types yet.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let q = (supabase.from as never as (t: string) => any)('ohrwurm_songs')
         .select('*')
         .eq('is_active', true)
@@ -43,7 +45,7 @@ export async function loadExtraSongs(language?: string): Promise<number> {
       // Array mit [aktuelle Sprache, '*'] überschneidet. '*' = überall.
       if (language) q = q.overlaps('languages', [language, '*']);
       const { data, error } = await q;
-      if (error || !data) break;
+      if (error || !data) throw error || new Error('Song query failed');
       rows.push(...(data as Row[]));
       if (data.length < PAGE) break;
     }
@@ -70,12 +72,13 @@ export async function loadExtraSongs(language?: string): Promise<number> {
       else extra.push(toSong(r, 'db-' + r.id));
     }
 
-    setBaseSongs(base.length > 0 ? base : null);
+    setBaseSongs(base);
     setExtraSongs(extra);
     return base.length + extra.length;
   } catch {
     // Datenbank nicht erreichbar → auf den Code-Bestand zurückfallen.
     setBaseSongs(null);
+    setExtraSongs([]);
     return 0;
   }
 }

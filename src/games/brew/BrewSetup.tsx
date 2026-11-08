@@ -13,7 +13,7 @@ import { BREW_PALETTES } from "./brew-palette";
 import type { RecipeLength, Skin } from "./brew-content";
 
 export function BrewSetup({ onStart, skin, onlinePlayers }: {
-  onStart: (cfg: { players: { id: string; name: string }[]; length: RecipeLength; withTray: boolean }) => void;
+  onStart: (cfg: { players: { id: string; name: string }[]; length: RecipeLength; withTray: boolean; withCounter: boolean }) => void;
   skin: Skin;
   onlinePlayers?: { id: string; name: string }[];
 }) {
@@ -33,6 +33,7 @@ export function BrewSetup({ onStart, skin, onlinePlayers }: {
   );
   const [length, setLength] = useState<RecipeLength>(5);
   const [withTray, setWithTray] = useState(true);
+  const [withCounter, setWithCounter] = useState(false);
 
   const isBrew = skin === "brew";
   const accent = theme.accent;
@@ -126,10 +127,29 @@ export function BrewSetup({ onStart, skin, onlinePlayers }: {
           ))}
         </div>
 
+        <p className="mt-7 mb-2 text-[13px] font-black" style={{ color: theme.dim }}>
+          {t("games.brew.counterOptionLabel", "Gemeinsame Theke")}
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          {([false, true] as const).map((enabled) => (
+            <button key={String(enabled)} type="button" data-testid={enabled ? "brew-with-counter" : "brew-without-counter"}
+              onClick={() => setWithCounter(enabled)} aria-pressed={withCounter === enabled}
+              className="min-h-24 rounded-2xl border p-3 text-start"
+              style={{ borderColor: withCounter === enabled ? accent : `${accent}44`, background: withCounter === enabled ? `${accent}22` : theme.surface }}>
+              <span className="block font-black">{t(enabled ? "games.brew.withCounter" : "games.brew.withoutCounter", enabled ? "Mit Theke" : "Ohne Theke")}</span>
+              <span className="mt-1 block text-xs leading-relaxed" style={{ color: theme.dim }}>
+                {t(enabled ? "games.brew.withCounterHint" : "games.brew.withoutCounterHint", enabled
+                  ? "Übrige Zutaten liegen offen für alle bereit."
+                  : "Übrige Zutaten gehen auf den Ablagestapel.")}
+              </span>
+            </button>
+          ))}
+        </div>
+
         <button
           data-testid="brew-start"
           disabled={!canStart}
-          onClick={() => onStart({ players: named, length, withTray })}
+          onClick={() => onStart({ players: named, length, withTray, withCounter })}
           className="mt-8 w-full h-14 rounded-2xl font-black disabled:opacity-40"
           style={{ background: accent, color: theme.bg }}
         >

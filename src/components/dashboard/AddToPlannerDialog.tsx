@@ -37,6 +37,7 @@ interface AddToPlannerDialogProps {
   onOpenChange: (open: boolean) => void;
   activity: ParsedActivity | null;
   eventId: string;
+  defaultDate?: string;
   onSuccess?: () => void;
 }
 
@@ -45,13 +46,14 @@ export const AddToPlannerDialog = ({
   onOpenChange,
   activity,
   eventId,
+  defaultDate,
   onSuccess,
 }: AddToPlannerDialogProps) => {
   const { t, i18n } = useTranslation();
   const locale = i18n.language === 'de' ? de : enUS;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(() => defaultDate ? new Date(`${defaultDate.slice(0, 10)}T12:00:00`) : undefined);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -120,8 +122,8 @@ export const AddToPlannerDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <DialogContent className="flex max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1rem)] max-w-[500px] flex-col gap-0 overflow-hidden rounded-3xl p-0 sm:max-h-[min(90dvh,820px)]">
+        <DialogHeader className="shrink-0 border-b border-border px-5 pb-4 pt-6 text-left">
           <DialogTitle className="flex items-center gap-2">
             <span className="text-2xl">{activity.emoji}</span>
             {t('dashboard.ai.addToPlanner', 'Zum Planer hinzufügen')}
@@ -131,7 +133,7 @@ export const AddToPlannerDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-5 py-4">
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">{t('planner.form.title')}</Label>
@@ -161,7 +163,7 @@ export const AddToPlannerDialog = ({
                   )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
+              <PopoverContent className="z-[70] w-auto p-0" align="start">
                 <CalendarComponent
                   mode="single"
                   selected={selectedDate}
@@ -174,8 +176,8 @@ export const AddToPlannerDialog = ({
           </div>
 
           {/* Time inputs */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="min-w-0 space-y-2">
               <Label htmlFor="start_time">
                 <Clock className="w-3 h-3 inline mr-1" />
                 {t('planner.form.startTime')}
@@ -183,15 +185,17 @@ export const AddToPlannerDialog = ({
               <Input
                 id="start_time"
                 type="time"
+                className="h-12 min-w-0 w-full text-center"
                 value={formData.start_time}
                 onChange={(e) => setFormData(prev => ({ ...prev, start_time: e.target.value }))}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="end_time">{t('planner.form.endTime')}</Label>
+            <div className="min-w-0 space-y-2">
+              <Label htmlFor="end_time">{t('planner.form.endTime')} <span className="font-normal text-muted-foreground">({t('common.optional', 'optional')})</span></Label>
               <Input
                 id="end_time"
                 type="time"
+                className="h-12 min-w-0 w-full text-center"
                 value={formData.end_time}
                 onChange={(e) => setFormData(prev => ({ ...prev, end_time: e.target.value }))}
               />
@@ -262,7 +266,7 @@ export const AddToPlannerDialog = ({
           </div>
         </div>
 
-        <div className="flex justify-end gap-2">
+        <div className="flex shrink-0 justify-end gap-2 border-t border-border bg-background px-5 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {t('common.cancel')}
           </Button>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, Loader2, Eye, EyeOff, CheckCircle, XCircle, User } from "lucide-react";
@@ -24,10 +24,22 @@ interface InviteData {
   already_claimed: boolean;
 }
 
+async function claimFailureMessage(error: unknown): Promise<string> {
+  const context = error && typeof error === "object" && "context" in error
+    ? (error as { context?: unknown }).context : null;
+  if (context instanceof Response && context.status < 500) {
+    try {
+      const body = await context.clone().json();
+      if (typeof body?.error === "string") return body.error;
+    } catch { /* An unreadable response still gets a useful fallback. */ }
+  }
+  return "Zugang konnte nicht aktiviert werden. Bitte versuche es erneut.";
+}
+
 const ClaimInvite = () => {
   const { slug, token } = useParams<{ slug: string; token: string }>();
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, session, user } = useAuth();
   const { t } = useTranslation();
 
   const registerSchema = z.object({
@@ -48,7 +60,13 @@ const ClaimInvite = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmationEmail, setConfirmationEmail] = useState<string | null>(null);
+  const [claimError, setClaimError] = useState<string | null>(null);
+  const [claimRetry, setClaimRetry] = useState(0);
+  const attemptedClaim = useRef<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const claimPath = `/e/${encodeURIComponent(slug ?? "")}/claim/${encodeURIComponent(token ?? "")}`;
+  const signInPath = `/auth?redirect=${encodeURIComponent(claimPath)}`;
 
   // Verify invite token on mount
   useEffect(() => {
@@ -87,27 +105,28 @@ const ClaimInvite = () => {
   // If user is already authenticated, try to claim directly
   useEffect(() => {
     const claimWithExistingUser = async () => {
-      if (isAuthenticated && user && inviteData && !inviteData.already_claimed) {
+      if (isAuthenticated && session && user && inviteData && !inviteData.already_claimed) {
+        const claimKey = `${token}:${user.id}`;
+        if (attemptedClaim.current === claimKey) return;
+        attemptedClaim.current = claimKey;
+        setClaimError(null);
         setIsSubmitting(true);
         try {
           const { data, error } = await supabase.functions.invoke("claim-invite", {
-            body: {
-              token,
-              user_id: user.id,
-            },
+            body: { token },
           });
 
           if (error) throw error;
 
-          if (data.success) {
+          if (data?.success) {
             toast.success("Dashboard-Zugang aktiviert!");
             navigate(`/e/${slug}/dashboard`);
           } else {
-            toast.error(data.error || "Fehler beim Aktivieren");
+            setClaimError(data?.error || "Zugang konnte nicht aktiviert werden. Bitte versuche es erneut.");
           }
         } catch (err) {
           console.error("Claim error:", err);
-          toast.error("Fehler beim Aktivieren des Zugangs");
+          setClaimError(await claimFailureMessage(err));
         } finally {
           setIsSubmitting(false);
         }
@@ -117,7 +136,7 @@ const ClaimInvite = () => {
     if (!isVerifying && inviteData) {
       claimWithExistingUser();
     }
-  }, [isAuthenticated, user, inviteData, isVerifying, token, slug, navigate]);
+  }, [isAuthenticated, session, user, inviteData, isVerifying, token, slug, navigate, claimRetry]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,14 +161,14 @@ const ClaimInvite = () => {
         email,
         password,
         options: {
-          emailRedirectTo: `${getBaseUrl()}/e/${slug}/dashboard`,
+          emailRedirectTo: `${getBaseUrl()}${claimPath}`,
         },
       });
 
       if (signUpError) {
         if (signUpError.message.includes("already registered")) {
           toast.error("Diese E-Mail ist bereits registriert. Bitte melde dich an.");
-          navigate("/auth");
+          navigate(signInPath);
         } else {
           toast.error(signUpError.message);
         }
@@ -161,25 +180,16 @@ const ClaimInvite = () => {
         return;
       }
 
-      // Then claim the invite
-      const { data: claimData, error: claimError } = await supabase.functions.invoke("claim-invite", {
-        body: {
-          token,
-          user_id: signUpData.user.id,
-        },
-      });
-
-      if (claimError) throw claimError;
-
-      if (claimData.success) {
-        toast.success("Account erstellt und Dashboard-Zugang aktiviert!");
-        navigate(`/e/${slug}/dashboard`);
-      } else {
-        toast.error(claimData.error || "Fehler beim Aktivieren");
+      // Confirmation-required signups have no session yet. The email returns
+      // to this invite route; the authenticated effect claims it after login.
+      if (!signUpData.session) {
+        setConfirmationEmail(email);
+        setPassword("");
+        setConfirmPassword("");
       }
     } catch (err) {
       console.error("Registration error:", err);
-      toast.error("Ein Fehler ist aufgetreten");
+      toast.error("Account konnte nicht erstellt werden. Bitte prüfe deine Verbindung und versuche es erneut.");
     } finally {
       setIsSubmitting(false);
     }
@@ -243,7 +253,7 @@ const ClaimInvite = () => {
                 Diese Einladung wurde bereits angenommen. Du kannst dich anmelden, um auf das Dashboard zuzugreifen.
               </p>
               <div className="space-y-3">
-                <GradientButton onClick={() => navigate("/auth")} className="w-full">
+                <GradientButton onClick={() => navigate(signInPath)} className="w-full">
                   Anmelden
                 </GradientButton>
                 <GradientButton
@@ -261,7 +271,24 @@ const ClaimInvite = () => {
     );
   }
 
-  if (isAuthenticated && isSubmitting) {
+  if (claimError && isAuthenticated) {
+    return (
+      <AnimatedBackground>
+        <div className="min-h-screen flex items-center justify-center px-4">
+          <GlassCard className="p-8 text-center max-w-md">
+            <XCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
+            <h1 className="font-display text-2xl font-bold mb-2">Zugang noch nicht aktiviert</h1>
+            <p className="text-muted-foreground mb-6">{claimError}</p>
+            <GradientButton onClick={() => { attemptedClaim.current = null; setClaimRetry((count) => count + 1); }} className="w-full">
+              Erneut versuchen
+            </GradientButton>
+          </GlassCard>
+        </div>
+      </AnimatedBackground>
+    );
+  }
+
+  if (isAuthenticated) {
     return (
       <AnimatedBackground>
         <div className="min-h-screen flex items-center justify-center">
@@ -273,6 +300,26 @@ const ClaimInvite = () => {
             <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
             <p className="text-muted-foreground">Dashboard-Zugang wird aktiviert...</p>
           </motion.div>
+        </div>
+      </AnimatedBackground>
+    );
+  }
+
+  if (confirmationEmail) {
+    return (
+      <AnimatedBackground>
+        <div className="min-h-screen flex items-center justify-center px-4">
+          <GlassCard className="p-8 text-center max-w-md">
+            <Mail className="w-16 h-16 text-primary mx-auto mb-4" />
+            <h1 className="font-display text-2xl font-bold mb-2">Bestätige deine E-Mail</h1>
+            <p className="text-muted-foreground mb-6">
+              Wir haben eine Bestätigungs-Mail an <strong>{confirmationEmail}</strong> gesendet.
+              Öffne den Link in der Mail. Danach wird dein Zugang zum Event aktiviert.
+            </p>
+            <GradientButton variant="outline" onClick={() => navigate(signInPath)} className="w-full">
+              Bereits bestätigt? Anmelden
+            </GradientButton>
+          </GlassCard>
         </div>
       </AnimatedBackground>
     );
@@ -373,14 +420,14 @@ const ClaimInvite = () => {
                 className="w-full"
                 icon={isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
               >
-                {isSubmitting ? "Wird erstellt..." : "Account erstellen & Zugang aktivieren"}
+                {isSubmitting ? "Wird erstellt..." : "Account erstellen & Zugang vorbereiten"}
               </GradientButton>
             </form>
 
             <p className="text-xs text-center text-muted-foreground mt-6">
               Bereits einen Account?{" "}
               <button
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate(signInPath)}
                 className="text-primary hover:underline"
               >
                 Anmelden

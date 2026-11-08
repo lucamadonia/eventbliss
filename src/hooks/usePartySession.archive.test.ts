@@ -11,11 +11,11 @@ function session() {
 }
 
 describe('archivePartyPlayer', () => {
-  it('moves a player with points into the archive and keeps them in the standings', () => {
+  it('keeps a departed player in history but removes them from current standings', () => {
     const next = archivePartyPlayer(session(), 'tom');
     expect(next.players.map(p => p.id)).toEqual(['lea', 'new']);
     expect(next.archivedPlayers?.map(p => [p.id, p.totalScore])).toEqual([['tom', 7]]);
-    expect(derivePartyStandings([...next.players, ...(next.archivedPlayers ?? [])], next.gameHistory).some(row => row.id === 'tom')).toBe(true);
+    expect(derivePartyStandings(next.players, next.gameHistory).some(row => row.id === 'tom')).toBe(false);
   });
 
   it('drops a player who never played', () => {

@@ -32,6 +32,7 @@ export interface TVLobbyPlayer { id: string; name: string; avatar: string; color
 export interface TVLobbyState {
   mode: 'controller-party' | 'local-party' | 'online-room';
   code: string;               // shown as text under the QR
+  tvCode?: string;            // pairing code may differ from the phone-join code
   joinUrl: string | null;     // QR target; null for local-party (no phone join)
   players: TVLobbyPlayer[];
   /** `unavailableReason`: already localised by the phone (from `gameAvailability`), shown subtly on the TV. */
@@ -125,6 +126,7 @@ export function controllerLobbyState(args: {
   return {
     mode: 'controller-party',
     code: data.party.code,
+    tvCode: data.party.tv_code || data.party.code,
     joinUrl: `${trimBase(baseUrl)}/party/join/${data.party.code}`,
     players,
     nextGame: withAvailability(nextGame, (id) => toWire(controllerGameAvailability(id, data), sittingOutNames(id, data))),
@@ -283,6 +285,7 @@ export function parseTVLobbyState(value: unknown): TVLobbyState | null {
   return {
     mode,
     code: asText(raw.code, 16),
+    ...(typeof raw.tvCode === 'string' && raw.tvCode ? { tvCode: asText(raw.tvCode, 16) } : {}),
     joinUrl: mode === 'local-party' ? null : safeJoinUrl(raw.joinUrl),
     players,
     nextGame,

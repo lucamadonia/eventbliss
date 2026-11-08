@@ -23,7 +23,20 @@ await test('server game limits and entitlement requirements match the complete c
     .map(([,game_id,min,max,tier])=>({game_id,min_players:Number(min),max_players:Number(max),premium:tier==='premium'}))
     .sort((a,b)=>a.game_id.localeCompare(b.game_id));
   const actual=(await db.query('SELECT * FROM public.controller_game_limits')).rows.sort((a,b)=>a.game_id.localeCompare(b.game_id));
-  assert.equal(expected.length,22); assert.deepEqual(actual,expected);
+  assert.equal(expected.length,23); assert.deepEqual(actual,expected);
+});
+await test('three-player controller parties can start Hochstapler', async () => {
+  await asUser(1);
+  let trio = await rpc('create', null, { player_id: player(1), name: 'Anna', host_plays: true });
+  await asUser(2);
+  trio = await rpc('join', trio.party.code, { player_id: player(2), name: 'Ben' });
+  await asUser(3);
+  trio = await rpc('join', trio.party.code, { player_id: player(3), name: 'Clara' });
+  await asUser(1);
+  trio = await rpc('start', trio.party.code, { game_id: 'hochstapler', participant_ids: [player(1), player(2), player(3)] });
+  assert.equal(trio.party.current_game_id, 'hochstapler');
+  assert.equal(trio.party.status, 'playing');
+  await rpc('abort', trio.party.code);
 });
 await test('anonymous callers and invalid identities cannot create parties', async () => {
   await asUser(null); await reject(() => rpc('create', null, { player_id: player(1), name: 'Host' }), /Account sign-in/);

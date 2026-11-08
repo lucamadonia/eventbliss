@@ -1,7 +1,7 @@
 import { createPrivateKey, sign } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.0.json', import.meta.url), 'utf8'));
+const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.2.json', import.meta.url), 'utf8'));
 if (!/^\d+\.\d+\.\d+$/.test(release.version) || !/^\d+$/.test(release.buildNumber) || !release.bundleId) {
   throw new Error('Invalid App Store release configuration.');
 }
@@ -78,7 +78,7 @@ if (!version) {
   version = created.data;
   console.log(`Created iOS App Store version ${release.version}.`);
 }
-if (version.attributes?.appVersionState !== 'PREPARE_FOR_SUBMISSION' && version.attributes?.appStoreState !== 'PREPARE_FOR_SUBMISSION') {
+if (!['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED'].includes(version.attributes?.appVersionState ?? version.attributes?.appStoreState)) {
   throw new Error(`iOS ${release.version} is not editable: ${version.attributes?.appVersionState ?? version.attributes?.appStoreState}.`);
 }
 

@@ -12,6 +12,7 @@ import { motion } from 'framer-motion';
 import { MapPin, Check, ChevronRight, Trophy, Timer, Share2, Crosshair } from 'lucide-react';
 import { APIProvider, Map, Marker, useMap } from '@vis.gl/react-google-maps';
 import { haversineKm } from '../engine/haversine';
+import { GUESS_MAP_STYLE } from './guess-map-style';
 import type { GeoLocation } from './geo-locations';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTranslation } from 'react-i18next';
@@ -20,11 +21,6 @@ const GMAP_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY || '';
 
 // Dark map style without labels
 // Normal map style — only hide city/place labels to make guessing harder
-const MAP_STYLE: google.maps.MapTypeStyle[] = [
-  { featureType: 'administrative.locality', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-  { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
-];
-
 type MapPhase = 'showing' | 'guessing' | 'handoff' | 'result';
 interface PlayerGuess { playerId: string; playerName: string; playerColor: string; lat: number; lng: number; distanceKm: number; }
 interface Player { id: string; name: string; color: string; avatar: string; score: number; correct: number; wrong: number; streak: number; bestStreak: number; fastestMs: number; }
@@ -53,12 +49,6 @@ function MapClickHandler({ onMapClick }: { onMapClick: (lat: number, lng: number
 }
 
 // Apply style — hide city labels but keep normal map appearance
-function MapStyler() {
-  const map = useMap();
-  useEffect(() => { if (map) map.setOptions({ styles: MAP_STYLE }); }, [map]);
-  return null;
-}
-
 const CSS = `.text-glow-primary{text-shadow:0 0 20px rgba(223,142,255,0.5)}.text-glow-cyan{text-shadow:0 0 20px rgba(143,245,255,0.5)}.glass-panel{background:rgba(21,26,33,0.4);backdrop-filter:blur(20px)}`;
 
 export default function MapRound({ location: promptLocation, players, roundNumber, totalRounds, timerSeconds, onRoundComplete, onExit, online, handover, onLocalSeat }: MapRoundProps) {
@@ -70,6 +60,7 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
   const [guesses, setGuesses] = useState<PlayerGuess[]>([]);
   const [pinPos, setPinPos] = useState<{ lat: number; lng: number } | null>(null);
   const [countdown, setCountdown] = useState(timerSeconds);
+  const [guessMapReady, setGuessMapReady] = useState(false);
   const [allDoneGuesses, setAllDoneGuesses] = useState<PlayerGuess[]>([]);
   const [myGuessPlaced, setMyGuessPlaced] = useState(false);
   const [waitingForResults, setWaitingForResults] = useState(false);
@@ -220,13 +211,13 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
   // Countdown (skip if online and already guessed)
   useEffect(() => {
     // Stands while the host phone travels and until input opens.
-    if (online?.isConnected === false || phase !== 'guessing' || paused || (online && !inputOpen)) return;
+    if (online?.isConnected === false || phase !== 'guessing' || !guessMapReady || paused || (online && !inputOpen)) return;
     if (online && myGuessPlaced) return;
     timerRef.current = setInterval(() => {
       setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
     }, 1000);
     return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
-  }, [phase, guessingPlayerIdx, confirmGuess, online, myGuessPlaced, paused, inputOpen, handover?.activeGuest]);
+  }, [phase, guessingPlayerIdx, confirmGuess, online, myGuessPlaced, guessMapReady, paused, inputOpen, handover?.activeGuest]);
 
   // Preserve the deadline across disconnects, even after this host submitted.
   usePausableTimeout(() => {
@@ -241,13 +232,13 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
     online?.broadcast('findit-map-results', { results: filled, roundNumber, location });
     setAllDoneGuesses(filled);
     setPhase('result');
-  }, online?.isHost && phase === 'guessing' ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
+  }, online?.isHost && phase === 'guessing' && guessMapReady ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
     if (online && (myGuessPlaced || paused || !inputOpen)) return;
     setPinPos({ lat, lng });
   }, [online, myGuessPlaced, roundNumber, paused, inputOpen]);
-  const handleHandoffReady = () => { setPhase('guessing'); setCountdown(timerSeconds); };
+  const handleHandoffReady = () => { setGuessMapReady(false); setPhase('guessing'); setCountdown(timerSeconds); };
   const handleNextRound = () => { onRoundComplete((allDoneGuesses.length ? allDoneGuesses : guesses).map(g => ({ playerId: g.playerId, distanceKm: g.distanceKm }))); };
   const sortedGuesses = [...allDoneGuesses].sort((a, b) => a.distanceKm - b.distanceKm);
   const winner = sortedGuesses[0];
@@ -280,18 +271,22 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
         {/* GUESSING */}
         {view === 'guessing' && (
           <div className="absolute inset-0">
-            <Map defaultCenter={{ lat: 20, lng: 10 }} defaultZoom={2}               style={{ width: '100%', height: '100%' }} gestureHandling="greedy"
+            <Map defaultCenter={{ lat: 20, lng: 10 }} defaultZoom={2} style={{ width: '100%', height: '100%' }} gestureHandling="greedy"
+              renderingType={'RASTER' as google.maps.RenderingType} styles={GUESS_MAP_STYLE}
+              onTilesLoaded={() => setGuessMapReady(true)}
               disableDefaultUI fullscreenControl={false} mapTypeControl={false} streetViewControl={false}>
-              <MapStyler />
               <MapClickHandler onMapClick={handleMapClick} />
               {pinPos && (
                 <Marker position={pinPos} label={{ text: currentPlayer.name.charAt(0), color: 'white', fontWeight: 'bold' }} />
               )}
             </Map>
+            {!guessMapReady && <div className="absolute inset-0 z-[5] flex items-center justify-center bg-[#14281f] text-white">{t('common.loading')}</div>}
 
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-[10]">
-              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced} guest={!!online && currentPlayer.id !== online.myPlayerId} />
+              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced}
+                host={!!online?.isHost && currentPlayer.id === online.myPlayerId}
+                status={myGuessPlaced ? 'waiting' : 'guess'} />
             </div>
             <div className="absolute top-4 right-4 z-[10]">
               <div className="glass-panel px-3 py-2 rounded-full border border-white/5">
@@ -377,7 +372,6 @@ export default function MapRound({ location: promptLocation, players, roundNumbe
               <div className="aspect-video rounded-xl border border-white/10 overflow-hidden mb-6">
                 <Map defaultCenter={{ lat: location.lat, lng: location.lng }} defaultZoom={3}
                   style={{ width: '100%', height: '100%' }} disableDefaultUI mapTypeControl={false}>
-                  <MapStyler />
                   {/* Target marker */}
                   <Marker position={{ lat: location.lat, lng: location.lng }} label={{ text: '★', color: '#8ff5ff', fontWeight: 'bold', fontSize: '16px' }} />
                   {/* Player markers */}

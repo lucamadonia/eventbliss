@@ -641,9 +641,8 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                   />
                 </div>
 
-                {/* Time range. Single column on narrow devices avoids the native
-                    WebKit time control overflowing its grid cell. */}
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {/* Keep the two times together as one compact range on phones. */}
+                <div className="grid grid-cols-2 gap-2.5">
                   <div className="min-w-0">
                     <label htmlFor="native-activity-start" className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
                       {t("planner.form.startTime", "Von")}
@@ -660,7 +659,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                           setFormEndTime(`${String(Math.min(hour + 1, 23)).padStart(2, "0")}:${String(minute).padStart(2, "0")}`);
                         }
                       }}
-                      className="block h-11 w-full min-w-0 max-w-full appearance-none rounded-xl border border-border/50 bg-muted/40 px-3 py-0 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                      className="native-activity-time block h-11 w-full min-w-0 appearance-none overflow-hidden rounded-xl border border-border/50 bg-muted/40 px-1 text-center text-base text-foreground focus:outline-none focus:ring-2 focus:ring-violet-500/40"
                     />
                   </div>
                   <div className="min-w-0">
@@ -673,11 +672,11 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                       min={formTime || undefined}
                       value={formEndTime}
                       onChange={(e) => setFormEndTime(e.target.value)}
-                      className="block h-11 w-full min-w-0 max-w-full appearance-none rounded-xl border border-border/50 bg-muted/40 px-3 py-0 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/40"
+                      className="native-activity-time block h-11 w-full min-w-0 appearance-none overflow-hidden rounded-xl border border-border/50 bg-muted/40 px-1 text-center text-base text-foreground focus:outline-none focus:ring-2 focus:ring-violet-500/40"
                     />
                   </div>
                   {formTime && formEndTime && formEndTime <= formTime && (
-                    <p className="text-xs text-destructive sm:col-span-2">{t("nativeSchedule.form.endAfterStart", "Die Endzeit muss nach der Startzeit liegen.")}</p>
+                    <p className="col-span-2 text-xs text-destructive">{t("nativeSchedule.form.endAfterStart", "Die Endzeit muss nach der Startzeit liegen.")}</p>
                   )}
                 </div>
 
@@ -686,7 +685,7 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                   <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
                     {t("nativeSchedule.form.category")}
                   </label>
-                  <div className="grid grid-cols-2 gap-2.5">
+                  <div className="grid grid-cols-4 gap-2">
                     {CATEGORY_OPTIONS.map((opt) => {
                       const active = formCategory === opt.value;
                       const meta = CATEGORY_META[opt.value];
@@ -696,15 +695,15 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                           type="button"
                           onClick={() => { haptics.light(); setFormCategory(opt.value); }}
                           className={cn(
-                            "flex min-h-[68px] min-w-0 items-center gap-2.5 rounded-2xl border px-3 py-3 text-left text-sm font-medium transition-all",
+                            "flex min-h-20 min-w-0 flex-col items-center justify-center gap-1.5 rounded-2xl border px-1.5 py-2 text-center text-[11px] font-medium transition-all",
                             active
                               ? "border-violet-400/60 bg-violet-500/15 text-foreground shadow-[inset_0_0_0_1px_rgba(167,139,250,0.18)]"
                               : "border-border/50 bg-muted/20 text-muted-foreground hover:border-violet-400/30 hover:bg-muted/40",
                           )}
                           aria-pressed={active}
                         >
-                          <span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-lg", meta.color)}>{meta.icon}</span>
-                          <span className="min-w-0 leading-tight">{t(opt.labelKey)}</span>
+                          <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-lg", meta.color)}>{meta.icon}</span>
+                          <span className="min-w-0 break-words leading-tight">{t(opt.labelKey)}</span>
                         </button>
                       );
                     })}

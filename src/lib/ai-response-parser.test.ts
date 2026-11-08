@@ -2,6 +2,12 @@ import { describe, expect, it } from "vitest";
 import { parseActivitiesExtended, parseDayPlan } from "./ai-response-parser";
 
 describe("planning response format", () => {
+  it("parses numbered day sections with a calendar icon and bold time blocks", () => {
+    const plan = parseDayPlan(`### 📅 Tag 1: Ankunft\n**09:00** Frühstück\n- **Experience:** Gemeinsam starten.\n**13:00** Stadtrundgang\n- **Experience:** Die Stadt entdecken.\n### 📅 Tag 2: Rückreise\n**10:00** Brunch\n**15:00** Heimfahrt`);
+    expect(plan.days).toHaveLength(2);
+    expect(plan.days.map((day) => day.timeBlocks.length)).toEqual([2, 2]);
+  });
+
   it("extracts days and timed blocks from the assistant prompt contract", () => {
     const plan = parseDayPlan(`## Freitag: Ankunft ✈️\n\n### 17:00 ✈️ Anreise\n📍 **Ort:** Bahnhof\n💰 **Kosten:** 20 €\n⏱️ **Dauer:** 1 Stunde\n📝 **Beschreibung:** Gemeinsam ankommen.\n\n---\n\n### 19:00 🍽️ Abendessen\n📝 **Beschreibung:** Zusammen essen.`);
     expect(plan.days).toHaveLength(1);

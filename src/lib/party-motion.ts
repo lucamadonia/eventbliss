@@ -282,7 +282,8 @@ export type PartyDevice = "tv" | "host" | "phone";
 /** Entspricht den Methoden von `useHaptics()`; `none` = bewusst still. */
 export type PartyHaptic = "none" | "light" | "medium" | "heavy" | "success" | "warning" | "select" | "countdown" | "celebrate";
 /** Entspricht `useTVAudio()`: chime→playChime usw. Nur am TV. */
-export type PartySound = "none" | "chime" | "tick" | "correct" | "wrong" | "fanfare" | "drumroll" | "reveal";
+export type PartySound = "none" | "chime" | "tick" | "correct" | "wrong" | "fanfare" | "drumroll" | "reveal"
+  | "buzzerTick" | "buzzerUrgent" | "buzzerTimeout";
 /** Name der Darstellung; `none` = Geraet ist an diesem Uebergang unbeteiligt. */
 export type PartyMotionToken =
   | PartyVariantName

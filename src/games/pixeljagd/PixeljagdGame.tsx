@@ -25,7 +25,7 @@ import { saveSnapshot, loadSnapshot, clearSnapshot } from '../ui/useGameSnapshot
 import { localSeats, type OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
 import { PixelCanvas } from './PixelCanvas';
-import { stepsFor, pointsAt, FINAL_STEP } from './pixelate';
+import { stepsFor, pointsAt, visibleStepForRound } from './pixelate';
 import { isCorrectAnswer } from './answer-match';
 import { recoverPixelRound, validPixelAnswerAction } from './recovery';
 import { dropPixelPlayers } from './removal';
@@ -78,8 +78,10 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
   const [contentReady, setContentReady] = useState(false);
   // Steht das Motiv schon auf der Zeichenflaeche? Die Runde darf erst dann
   // loslaufen — sonst tickt die Uhr gegen ein Bild, das noch niemand sieht.
-  const [imageReady, setImageReady] = useState(false);
+  const [readyImageKey, setReadyImageKey] = useState<string | null>(null);
   const [readyDevices, setReadyDevices] = useState<string[]>([]);
+  const imageKey = puzzle ? `${round}:${puzzle.id}:${imageAttempt}` : null;
+  const imageReady = imageKey !== null && readyImageKey === imageKey;
 
   // All devices + TV switch phase together; the reveal clock waits for the beat (design §9).
   const { phaseStartsAt, view, blocker, receive: receivePhaseStart } = useSyncedPhase(online, phase, [phase, round]);
@@ -118,9 +120,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
 
   const elapsed = Math.max(0, modeDef.duration - roundTimer.timeLeft);
   // In der Auflösung immer scharf zeigen.
-  const step = view === 'roundEnd'
-    ? FINAL_STEP
-    : (steps[Math.min(elapsed, steps.length - 1)] ?? FINAL_STEP);
+  const step = visibleStepForRound({ phase, view, imageReady, timeLeft: roundTimer.timeLeft, duration: modeDef.duration, steps });
   const livePoints = frozenPoints ?? pointsAt(elapsed, modeDef.duration);
 
   const beginRound = useCallback((d: PixelPuzzle[], idx: number, ps: Player[], duration = modeDef.duration) => {
@@ -133,7 +133,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     setSolutionShown(false);
     setPlayers(ps.map((p) => ({ ...p, locked: false })));
     roundTimerRef.current?.reset(duration);
-    setImageReady(false);
+    setReadyImageKey(null);
     setReadyDevices([]);
     setPhase('playing');
     // Kein start() hier: das uebernimmt der Effekt, sobald PixelCanvas
@@ -181,7 +181,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
     roundTimerRef.current?.start();
   }, [modeDef.penalty, haptics, flash, t, players, room]);
 
-  useEffect(() => { setImageFailed(false); setImageReady(false); }, [puzzle?.id]);
+  useEffect(() => { setImageFailed(false); }, [puzzle?.id]);
 
   const doJudge = useCallback((correct: boolean) => {
     if (!buzzedBy) return;
@@ -435,7 +435,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
           {puzzle ? (
             <div className="relative">
               <PixelCanvas
-                key={`${puzzle.id}-${imageAttempt}`}
+                key={imageKey ?? 'no-image'}
                 src={puzzle.image}
                 step={step}
                 className="w-full h-auto block"
@@ -448,7 +448,7 @@ export default function PixeljagdGame({ online }: { online?: OnlineGameProps } =
                   }
                 }}
                 onReady={() => {
-                  setImageReady(true);
+                  setReadyImageKey(imageKey);
                   if (isOnline && !isHost) online?.broadcast('pixeljagd-action', { type: 'image-ready', round, puzzleId: puzzle.id });
                   else if (myId) setReadyDevices(prev => prev.includes(myId) ? prev : [...prev, myId]);
                 }}

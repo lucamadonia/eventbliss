@@ -12,7 +12,7 @@ export function deepLinkTarget(url: string): string | null {
     // Legacy invitations without a game must reach the native game stack.
     const target = path === '/games' && parsed.searchParams.has('room') ? '/games/bomb' : path;
     const query = new URLSearchParams();
-    const keys = ['room', 'name', 'lang', 'party', 'type', 'redirect', ...(/^\/auth(?:\/|$)/.test(target) ? [] : ['code', 'token'])];
+    const keys = ['room', 'name', 'lang', 'party', 'type', 'redirect', 'source', 'tv', ...(/^\/auth(?:\/|$)/.test(target) ? [] : ['code', 'token'])];
     for (const key of keys) {
       const value = parsed.searchParams.get(key);
       if (value !== null) query.set(key, value);

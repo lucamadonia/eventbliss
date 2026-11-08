@@ -88,6 +88,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
   const gameChannelRef = useRef<RealtimeChannel | null>(null);
   const onlineChannelRef = useRef<RealtimeChannel | null>(null);
   const lastStateRef = useRef<Record<string, unknown> | null>(null);
+  const lastStateCodeRef = useRef<string | null>(null);
   const lastLeaderboardRef = useRef<Record<string, unknown> | null>(null);
   /** Buffered drawing segments (QuickDraw) so late-joining TVs don't see a blank canvas. */
   const drawingBufferRef = useRef<Record<string, unknown>[]>([]);
@@ -112,7 +113,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     lastReadyHandledAtRef.current = now;
     setLastTvReadyAt(now);
     const channels = [channelRef.current, gameChannelRef.current, onlineChannelRef.current];
-    if (lastStateRef.current) {
+    if (lastStateRef.current && lastStateCodeRef.current === tvCodeRef.current) {
       const syncPayload = { type: "broadcast" as const, event: "tv-state-sync", payload: lastStateRef.current };
       sendToDistinctChannels(channels, syncPayload);
     }
@@ -136,12 +137,22 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     }
   }, []);
 
+  const replayCurrentState = useCallback((channel: RealtimeChannel) => {
+    if (lastStateRef.current && lastStateCodeRef.current === tvCodeRef.current) {
+      void channel.send({ type: 'broadcast', event: 'tv-state-sync', payload: lastStateRef.current });
+    }
+  }, []);
+
   /** Kanaele fuer den aktuellen Code: tv-room immer; game-room nur fuer den eigenen Zufallscode oder geteilt. */
   const attachCodeChannels = useCallback(() => {
     const code = tvCodeRef.current;
+    if (lastStateCodeRef.current !== code) {
+      lastStateRef.current = null;
+      lastLeaderboardRef.current = null;
+    }
     const ch = supabase.channel(`tv-room:${code}`);
     ch.on("broadcast", { event: "tv-ready" }, handleTVReady);
-    ch.subscribe();
+    ch.subscribe((status) => { if (status === 'SUBSCRIBED') replayCurrentState(ch); });
     channelRef.current = ch;
 
     // Der Fernseher hoert auf beiden Praefixen; tv-room allein erreicht ihn.
@@ -159,7 +170,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
       gameChannelRef.current = null;
       gameChannelOwnedRef.current = false;
     }
-  }, [handleTVReady]);
+  }, [handleTVReady, replayCurrentState]);
 
   const detachCodeChannels = useCallback(() => {
     if (channelRef.current) { supabase.removeChannel(channelRef.current); channelRef.current = null; }
@@ -184,6 +195,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     if (!activatedRef.current) return;
     if ((channelRef.current as unknown as { topic?: string } | null)?.topic === `realtime:tv-room:${tvCode}`) return;
     detachCodeChannels();
+    setLastTvReadyAt(0);
     attachCodeChannels();
   }, [tvCode, attachCodeChannels, detachCodeChannels]);
 
@@ -195,6 +207,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
       onlineChannelOwnedRef.current = false;
     }
     lastStateRef.current = null;
+    lastStateCodeRef.current = null;
     lastLeaderboardRef.current = null;
     activatedRef.current = false;
     setOnlineCode(null);
@@ -250,9 +263,15 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
       [channelRef.current, gameChannelRef.current, onlineChannelRef.current],
       msg,
     );
-    if (event === "tv-state" || event === "game-start") {
+    if (event === "tv-state") {
       lastStateRef.current = wireData;
-      if (event === "game-start") drawingBufferRef.current = [];
+      lastStateCodeRef.current = tvCodeRef.current;
+      if (data.game === 'lobby') lastLeaderboardRef.current = null;
+    } else if (event === 'game-start') {
+      // Game-start is a cue, even when it carries a partial game picture.
+      // The last complete tv-state keeps the roster/QR for a late TV join.
+      if (typeof data.game === 'string') drawingBufferRef.current = [];
+      lastLeaderboardRef.current = null;
     } else if (event === "tv-leaderboard") {
       lastLeaderboardRef.current = wireData;
     } else if (event === "game-end") {
@@ -287,5 +306,7 @@ export function useTVBroadcast(sessionCode?: string): TVBroadcastAPI {
     };
   }, []);
 
-  return { tvCode, displayCode: onlineCode || tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom, lastTvReadyAt };
+  // A controller room may use a second join code, while the TV remains paired
+  // to the original PartySession code throughout the evening.
+  return { tvCode, displayCode: sessionCode || onlineCode || tvCode, isActive, activate, deactivate, broadcastTV, setOnlineRoom, lastTvReadyAt };
 }

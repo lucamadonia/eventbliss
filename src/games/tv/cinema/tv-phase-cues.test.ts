@@ -33,6 +33,19 @@ describe('phaseCueFor', () => {
     expect(phaseCueFor('thisorthat', { phase: 'reveal', round: 3 })).toMatchObject({ card: false, sound: 'reveal' });
   });
 
+  it('hitbuzzer shows a song-free round card and plays buzz/reveal cues', () => {
+    const loading = phaseCueFor('hitbuzzer', { phase: 'loading', round: 2, totalRounds: 15,
+      song: 'SECRET SONG', artist: 'SECRET ARTIST', previewUrl: 'PRIVATE URL' });
+    expect(loading).toMatchObject({ key: 'hitbuzzer:2:loading', card: true });
+    expect(JSON.stringify(loading)).not.toContain('SECRET');
+    expect(phaseCueFor('hitbuzzer', { phase: 'answering', round: 2, buzzedName: 'Mia', answerDeadline: 9000, answerLeft: 8 }))
+      .toMatchObject({ key: 'hitbuzzer:2:buzz:Mia:9000:8', card: false, sound: 'buzzerTick' });
+    expect(phaseCueFor('hitbuzzer', { phase: 'answering', round: 2, buzzedName: 'Mia', answerDeadline: 9000, answerLeft: 7 })?.key)
+      .toBe('hitbuzzer:2:buzz:Mia:9000:7');
+    expect(phaseCueFor('hitbuzzer', { phase: 'reveal', round: 2 }))
+      .toMatchObject({ key: 'hitbuzzer:2:reveal', card: false, sound: 'reveal' });
+  });
+
   it('ignores other games and empty states', () => {
     expect(phaseCueFor('bomb', { phase: 'voting' })).toBeNull();
     expect(phaseCueFor('impostor', null)).toBeNull();
