@@ -4294,7 +4294,8 @@
     "legal": {
       "terms": "Termos de Utilização (EULA)",
       "privacy": "Privacidade",
-      "autoRenew": "As subscrições renovam-se automaticamente pelo período escolhido, salvo cancelamento com pelo menos 24 horas de antecedência face ao fim do período atual. O pagamento é cobrado na tua conta App Store. Podes gerir ou cancelar as subscrições a qualquer momento nas definições da tua conta App Store. Lifetime é um pagamento único."
+      "autoRenew": "As subscrições renovam-se automaticamente pelo período escolhido, salvo cancelamento com pelo menos 24 horas de antecedência face ao fim do período atual. O pagamento é cobrado na tua conta App Store. Podes gerir ou cancelar as subscrições a qualquer momento nas definições da tua conta App Store. Lifetime é um pagamento único.",
+      "autoRenewWeb": "As subscrições renovam-se automaticamente pelo período escolhido até as cancelares. Os pagamentos são processados de forma segura pela Stripe. Podes gerir ou cancelar a tua subscrição a qualquer momento nesta página – mantém-se ativa até ao fim do período pago. Lifetime é um pagamento único."
     },
     "native": {
       "securePayment": "Pagamento seguro através da App Store ou do Google Play. Cancela quando quiseres.",

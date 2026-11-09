@@ -4244,7 +4244,8 @@
     "legal": {
       "terms": "Conditions d'utilisation (EULA)",
       "privacy": "Confidentialité",
-      "autoRenew": "Les abonnements se renouvellent automatiquement pour la période choisie, sauf résiliation au moins 24 heures avant la fin de la période en cours. Le paiement est débité de votre compte App Store. Vous pouvez gérer ou résilier vos abonnements à tout moment dans les réglages de votre compte App Store. Lifetime est un paiement unique."
+      "autoRenew": "Les abonnements se renouvellent automatiquement pour la période choisie, sauf résiliation au moins 24 heures avant la fin de la période en cours. Le paiement est débité de votre compte App Store. Vous pouvez gérer ou résilier vos abonnements à tout moment dans les réglages de votre compte App Store. Lifetime est un paiement unique.",
+      "autoRenewWeb": "Les abonnements se renouvellent automatiquement pour la période choisie jusqu'à résiliation. Les paiements sont traités en toute sécurité par Stripe. Tu peux gérer ou résilier ton abonnement à tout moment sur cette page – il reste actif jusqu'à la fin de la période payée. Lifetime est un paiement unique."
     },
     "native": {
       "securePayment": "Paiement sécurisé via l'App Store ou Google Play. Résiliable à tout moment.",

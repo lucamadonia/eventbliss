@@ -4220,7 +4220,8 @@
     "legal": {
       "terms": "Nutzungsbedingungen (EULA)",
       "privacy": "Datenschutz",
-      "autoRenew": "Abos verlängern sich automatisch um den gewählten Zeitraum, sofern sie nicht mindestens 24 Stunden vor Ablauf gekündigt werden. Die Zahlung wird über deinen App-Store-Account abgebucht. Du kannst Abos jederzeit in den Einstellungen deines App-Store-Accounts verwalten oder kündigen. Lifetime ist eine einmalige Zahlung."
+      "autoRenew": "Abos verlängern sich automatisch um den gewählten Zeitraum, sofern sie nicht mindestens 24 Stunden vor Ablauf gekündigt werden. Die Zahlung wird über deinen App-Store-Account abgebucht. Du kannst Abos jederzeit in den Einstellungen deines App-Store-Accounts verwalten oder kündigen. Lifetime ist eine einmalige Zahlung.",
+      "autoRenewWeb": "Abos verlängern sich automatisch um den gewählten Zeitraum, bis du sie kündigst. Die Zahlung erfolgt sicher über Stripe. Du kannst dein Abo jederzeit hier auf dieser Seite verwalten oder kündigen – es läuft dann bis zum Ende des bezahlten Zeitraums. Lifetime ist eine einmalige Zahlung."
     },
     "native": {
       "securePayment": "Sichere Zahlung über den App Store bzw. Google Play. Jederzeit kündbar.",

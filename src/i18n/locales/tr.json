@@ -4294,7 +4294,8 @@
     "legal": {
       "terms": "Kullanım Koşulları (EULA)",
       "privacy": "Gizlilik",
-      "autoRenew": "Abonelikler, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece seçilen süre için otomatik olarak yenilenir. Ödeme App Store hesabınızdan tahsil edilir. Abonelikleri istediğiniz zaman App Store hesap ayarlarınızdan yönetebilir veya iptal edebilirsiniz. Lifetime tek seferlik bir satın almadır."
+      "autoRenew": "Abonelikler, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece seçilen süre için otomatik olarak yenilenir. Ödeme App Store hesabınızdan tahsil edilir. Abonelikleri istediğiniz zaman App Store hesap ayarlarınızdan yönetebilir veya iptal edebilirsiniz. Lifetime tek seferlik bir satın almadır.",
+      "autoRenewWeb": "Abonelikler, iptal edene kadar seçilen süre için otomatik olarak yenilenir. Ödemeler Stripe tarafından güvenle işlenir. Aboneliğini istediğin zaman bu sayfadan yönetebilir veya iptal edebilirsin – ödenen dönemin sonuna kadar aktif kalır. Lifetime tek seferlik bir satın almadır."
     },
     "native": {
       "securePayment": "App Store veya Google Play üzerinden güvenli ödeme. İstediğin zaman iptal edebilirsin.",

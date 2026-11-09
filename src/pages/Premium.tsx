@@ -841,7 +841,7 @@ export default function Premium() {
             subscription auto-renew disclosure + functional links to EULA & privacy. */}
         <div className="mt-10 max-w-xl mx-auto text-center space-y-3">
           <p className="text-[11px] leading-relaxed text-muted-foreground">
-            {t("premium.legal.autoRenew")}
+            {native ? t("premium.legal.autoRenew") : t("premium.legal.autoRenewWeb")}
           </p>
           <div className="flex items-center justify-center gap-4 text-xs">
             <button
