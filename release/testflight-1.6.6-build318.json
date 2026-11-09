@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Hit-Buzzer hat jetzt eine überarbeitete Spieleinrichtung mit größerem Titelbild, Genre-Bildkarten, klarer Spieler- und Teamwahl sowie übersichtlichen Spielzielen. Der einzelne Buzzer ist im Titelbild auch auf kleinen Bildschirmen sichtbar. Im Spiel haben alle Teilnehmenden einen großen, direkt drückbaren Buzzer; die Host-Bewertung ist auf dem Handy besser lesbar. Die Lieder kommen weiterhin aus dem Ohrwurm-Pool.\n\nBitte testen: Einrichtung und Genre-Wechsel auf kleinen und großen iPhones, Einzel- und Teamspiel, eigene Buzzer im Joystick-Modus sowie mehrere Buzzer auf einem Pass-&-Play-Gerät. Nach dem Buzzern richtige, falsche und nicht wertbare Antworten prüfen. Bei Problemen Build 318, Geräte, Rollen und genaue Schritte angeben.",
+    "en-US": "Hit-Buzzer now has a redesigned setup with a larger cover image, illustrated genre choices, clearer player and team selection, and easy-to-scan game goals. The single buzzer in the cover stays visible on small screens. Every participant now gets a large, pressable buzzer during play, and the host's judging controls are easier to read on phones. Songs still come from Ohrwurm's pool.\n\nPlease test: setup and genre changes on small and large iPhones, individual and team play, personal buzzers in controller mode, and multiple buzzers on one pass-and-play device. After buzzing, check correct, incorrect, and void judgments. For issues, include build 318, devices, roles, and exact steps."
+  }
+}

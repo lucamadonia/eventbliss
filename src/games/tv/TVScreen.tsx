@@ -47,6 +47,7 @@ const TVTabooView = lazy(() => import('./games/TVTabooView'));
 const TVCategoryView = lazy(() => import('./games/TVCategoryView'));
 const TVImpostorView = lazy(() => import('./games/TVImpostorView'));
 const TVOhrwurmView = lazy(() => import('./games/TVOhrwurmView'));
+const TVHitBuzzerView = lazy(() => import('./games/TVHitBuzzerView'));
 const TVPixeljagdView = lazy(() => import('./games/TVPixeljagdView'));
 const TVCloseEnoughView = lazy(() => import('./games/TVCloseEnoughView'));
 const TVPantomimeView = lazy(() => import('./games/TVPantomimeView'));
@@ -90,6 +91,7 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
       {game === 'category' && <TVCategoryView {...props} />}
       {game === 'impostor' && <TVImpostorView {...props} />}
       {game === 'ohrwurm' && <TVOhrwurmView {...props} />}
+      {game === 'hitbuzzer' && <TVHitBuzzerView {...props} />}
       {game === 'pixeljagd' && <TVPixeljagdView {...props} />}
       {game === 'closeenough' && <TVCloseEnoughView {...props} />}
       {game === 'pantomime' && <TVPantomimeView {...props} />}
@@ -100,7 +102,7 @@ function GameView({ gameState, drawing }: { gameState: any; drawing: unknown[] }
       {game === 'wordpress' && <TVWordPressView {...props} />}
       {game === 'findit' && <TVFindItView {...props} />}
       {/* Smart fallback for games without specific TV view */}
-      {!['bomb', 'headup', 'quickdraw', 'draw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'bottlespin', 'this-or-that', 'thisorthat', 'story-builder', 'storybuilder', 'taboo', 'category', 'impostor', 'ohrwurm', 'pixeljagd', 'closeenough', 'pantomime', 'brew', 'emojiguess', 'truthdare', 'whoami', 'wordpress', 'findit'].includes(game) && (
+      {!['bomb', 'headup', 'quickdraw', 'draw', 'quiz', 'splitquiz', 'fakeorfact', 'sharedquiz', 'flaschendrehen', 'bottlespin', 'this-or-that', 'thisorthat', 'story-builder', 'storybuilder', 'taboo', 'category', 'impostor', 'ohrwurm', 'hitbuzzer', 'pixeljagd', 'closeenough', 'pantomime', 'brew', 'emojiguess', 'truthdare', 'whoami', 'wordpress', 'findit'].includes(game) && (
         <TVSmartFallback gameState={gameState} />
       )}
     </Suspense>
@@ -139,6 +141,14 @@ export default function TVScreen() {
    * jede Eingabe am Fernseher sofort wieder ueberfahren.
    */
   const [localView, setLocalView] = useState<PartyNightState['phase'] | null>(null);
+  // A single game can request the same shared TVRules scene without a Party
+  // Night playlist. A selection on the TV itself can still dismiss it.
+  const hostWantsHitBuzzerRules = gameState?.game === 'hitbuzzer' && gameState?.rulesOnTv === true;
+  const [localRulesDismissed, setLocalRulesDismissed] = useState(false);
+  useEffect(() => {
+    if (!hostWantsHitBuzzerRules) setLocalRulesDismissed(false);
+  }, [hostWantsHitBuzzerRules]);
+  const showExplicitRules = hostWantsHitBuzzerRules && !localRulesDismissed;
 
   const scores = useMemo(() => {
     if (gameState?.game === 'quickdraw' && gameState?.teamMode === 'groups' && Array.isArray(gameState?.teams)) {
@@ -295,7 +305,7 @@ export default function TVScreen() {
   // Toene + Titelkarten (Wartebereich, Szenen-Cues der Pilotspiele) — cinema/useTVCinema.
   // Phasenwechsel zur geplanten gemeinsamen Zeit (phaseStartsAt) — wie Host und Handys.
   const gatedGameState = useTVPhaseGate(gameState);
-  const { playSound: playLobbySound, cueApi, phaseCue, phaseStartsAt, cueGame } = useTVCinema(audio, gatedGameState, !!showGame);
+  const { playSound: playLobbySound, cueApi, phaseCue, phaseStartsAt, cueGame } = useTVCinema(audio, gatedGameState, !!showGame && !showExplicitRules);
   const prevPhaseRef = useRef<string>('');
   const prevBrewCueRef = useRef<number | null>(null);
 
@@ -382,8 +392,8 @@ export default function TVScreen() {
       */}
       <TVViewBar
         enabled={partyActive}
-        current={effectiveView}
-        onSelect={setLocalView}
+        current={showExplicitRules ? 'rules' : effectiveView}
+        onSelect={view => { setLocalView(view); if (showExplicitRules && view !== 'rules') setLocalRulesDismissed(true); }}
         /*
          * Vor dem ersten Spiel gibt es nichts zu feiern — eine Siegerehrung
          * ueber eine leere Tabelle waere Hohn (dieselbe Regel wie beim
@@ -397,16 +407,16 @@ export default function TVScreen() {
       />
       <TVParticles mood={particleMood} />
       <TVGlowFrame color={glowColor || '#df8eff'} intensity={glowIntensity} rainbow={glowRainbow} />
-      <TVVFXLayer gameState={gameState} />
-      <TVSceneCountdown scene={wireScene} />
+      {!showExplicitRules && <TVVFXLayer gameState={gameState} />}
+      {!showExplicitRules && <TVSceneCountdown scene={wireScene} />}
       {/* T07: Gast am Host-Handy — generisch fuer jedes Spiel, das `handover` sendet. */}
       {/* T07: mit Fortschritt die Buehne (Design §9.3), sonst das schmale Band. */}
-      <TVHandoverStage handover={handover?.progress ? handover : null} onCue={audio.playChime} />
-      <TVHandoverBanner handover={handover && !handover.progress ? handover : null} onCue={audio.playChime} />
+      {!showExplicitRules && <TVHandoverStage handover={handover?.progress ? handover : null} onCue={audio.playChime} />}
+      {!showExplicitRules && <TVHandoverBanner handover={handover && !handover.progress ? handover : null} onCue={audio.playChime} />}
       <TVCueContext.Provider value={cueApi}>
-        <TVPhaseCard cue={phaseCue} phaseStartsAt={phaseStartsAt} />
+        {!showExplicitRules && <TVPhaseCard cue={phaseCue} phaseStartsAt={phaseStartsAt} />}
       </TVCueContext.Provider>
-      {latecomerJoin && !showLobbyScene && !showPartyFinale && (
+      {latecomerJoin && !showExplicitRules && !showLobbyScene && !showPartyFinale && (
         <TVLatecomerQR
           url={latecomerJoin.url}
           code={latecomerJoin.code}
@@ -425,7 +435,7 @@ export default function TVScreen() {
           optional partyRank/partyPoints props on that same TVScoreboard, and
           the only extra chrome is the hairline strip below — a single
           text-height row inside the padding every view already reserves. */}
-      {partyActive && !showPartyStandings && !showPartyFinale && !showPartyMap && !showPartyIntro && !showPartyRules && !showPartyReady && (
+      {partyActive && !showExplicitRules && !showPartyStandings && !showPartyFinale && !showPartyMap && !showPartyIntro && !showPartyRules && !showPartyReady && (
         <TVPartyProgressStrip playlist={partyNight!.playlist} index={partyNight!.index} />
       )}
 
@@ -443,7 +453,7 @@ export default function TVScreen() {
             : showPartyReady ? 'partyReady'
             // Vom Gastgeber gerufenes Startbild — dieselbe Lobby wie am Anfang
             // des Abends, damit ein Nachzuegler den Raumcode wiederfindet.
-            : showPartyRules ? 'partyRules'
+            : showExplicitRules || showPartyRules ? 'partyRules'
             : showPartyIntro ? 'lobby'
             : showGameOver ? 'gameover'
             : showLeaderboard ? 'leaderboard'
@@ -458,7 +468,9 @@ export default function TVScreen() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         >
-          {showPartyFinale ? (
+          {showExplicitRules ? (
+            <Suspense fallback={TVFallback}><TVRules gameId="hitbuzzer" /></Suspense>
+          ) : showPartyFinale ? (
             <Suspense fallback={TVFallback}><TVPartyFinale key={finaleStartsRef.current ?? 'local'} party={partyNight!} startsAt={finaleStartsRef.current} /></Suspense>
           ) : showPartyStandings ? (
             <Suspense fallback={TVFallback}><TVPartyStandings party={partyNight!} /></Suspense>

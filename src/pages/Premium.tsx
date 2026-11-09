@@ -21,9 +21,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { extractErrorCode, readFunctionError } from "@/lib/function-error";
 import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
 import { useAICredits } from "@/hooks/useAICredits";
+import { usePlanConfigs } from "@/hooks/usePlanConfigs";
 import { toast } from "sonner";
 import { AI_CREDIT_LIMITS } from "@/lib/ai-credits";
 import { isNative, isIOS } from "@/lib/platform";
@@ -40,6 +42,15 @@ import type { PurchasesOffering } from "@revenuecat/purchases-capacitor";
 const STORE_SUBSCRIPTIONS_URL_IOS = "https://apps.apple.com/account/subscriptions";
 const STORE_SUBSCRIPTIONS_URL_ANDROID = "https://play.google.com/store/account/subscriptions";
 
+/** redeem-voucher error codes with a localized message (premium.voucher.errors.*). */
+const VOUCHER_ERROR_CODES = new Set([
+  "ALREADY_LIFETIME",
+  "ACTIVE_PAID_SUBSCRIPTION",
+  "MAX_REDEMPTIONS",
+  "UNSUPPORTED_VOUCHER",
+  "ALREADY_REDEEMED",
+]);
+
 export default function Premium() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -47,6 +58,7 @@ export default function Premium() {
   const { user } = useAuth();
   const { isPremium, loading: premiumLoading, subscription, subscriptionEnd, planType, cancelAtPeriodEnd, checkSubscription } = usePremium();
   const { remaining: creditsRemaining, limit: creditsLimit, loading: creditsLoading } = useAICredits();
+  const { data: planConfigs } = usePlanConfigs();
   const [checkoutLoading, setCheckoutLoading] = useState<"monthly" | "yearly" | "lifetime" | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [cancelLoading, setCancelLoading] = useState(false);
@@ -338,22 +350,33 @@ export default function Premium() {
       const { data, error } = await supabase.functions.invoke("redeem-voucher", {
         body: { code: voucherCode.trim().toUpperCase() }
       });
-      
-      if (error) throw error;
-      
-      if (!data?.success) {
-        const errorMessage = data?.error || "";
-        
-        // Check if it's a discount voucher that should be used in checkout
-        if (errorMessage.startsWith("DISCOUNT_VOUCHER:")) {
+
+      // redeem-voucher answers 400/409 with { success:false, error:"CODE:text" }
+      // or { code }. invoke() hides that body behind a generic error, so read it.
+      let failure: Record<string, unknown> | null = null;
+      if (error) {
+        const info = await readFunctionError(error);
+        if (!info.body) throw error;
+        failure = info.body;
+      } else if (!data?.success) {
+        failure = (data ?? {}) as Record<string, unknown>;
+      }
+
+      if (failure) {
+        const code = extractErrorCode(failure);
+        if (code === "DISCOUNT_VOUCHER") {
           toast.info(t("premium.voucher.discountHint"), {
             description: t("premium.voucher.discountHintDesc"),
             duration: 6000,
           });
           return;
         }
-        
-        throw new Error(errorMessage || t("premium.voucher.error"));
+        if (code && VOUCHER_ERROR_CODES.has(code)) {
+          toast.error(t(`premium.voucher.errors.${code}`));
+          return;
+        }
+        const rawMessage = typeof failure.error === "string" ? failure.error : "";
+        throw new Error(rawMessage || t("premium.voucher.error"));
       }
       
       toast.success(data.message || t("premium.voucher.success"));
@@ -372,7 +395,8 @@ export default function Premium() {
         return;
       }
       
-      toast.error(errorMessage || t("premium.voucher.error"));
+      // Never surface supabase-js' generic "non-2xx status code" text.
+      toast.error(errorMessage && !errorMessage.includes("non-2xx") ? errorMessage : t("premium.voucher.error"));
     } finally {
       setVoucherLoading(false);
     }
@@ -391,6 +415,11 @@ export default function Premium() {
   const isYearlyActive = isPremium && planType === "yearly";
   const isLifetimeActive = isPremium && planType === "lifetime";
   const hasRecurringSubscription = isMonthlyActive || isYearlyActive;
+
+  // Credit counts come from plan_configs (admin-editable) — the same source
+  // useAICredits enforces — so the cards never promise a different number.
+  const planCredits = (plan: PremiumPlan, fallback: number): number =>
+    planConfigs?.find((c) => c.plan_key === plan)?.ai_credits_monthly ?? fallback;
 
   return (
     <div className="min-h-screen bg-background">
@@ -483,7 +512,7 @@ export default function Premium() {
                     <div className="rounded-full bg-primary/10 p-2">
                       <Sparkles className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm">{t("premium.credits.monthly", "50 AI-Credits/Monat")}</span>
+                    <span className="text-sm">{t("premium.credits.monthly", "{{count}} AI-Credits/Monat", { count: planCredits("monthly", 50) })}</span>
                   </div>
                 </div>
 
@@ -503,8 +532,10 @@ export default function Premium() {
                 ) : isMonthlyActive ? (
                   renderManageSubscription()
                 ) : isPremium ? (
+                  // Premium via another plan (yearly/lifetime/voucher): don't label
+                  // the monthly card as the user's current plan.
                   <Button className="w-full" size="lg" disabled variant="outline">
-                    {t("premium.currentPlan")}
+                    {isLifetimeActive ? t("premium.lifetimeActive") : t("premium.active")}
                   </Button>
                 ) : (
                   <Button 
@@ -584,7 +615,7 @@ export default function Premium() {
                     <div className="rounded-full bg-primary/10 p-2">
                       <Sparkles className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm font-medium">{t("premium.credits.yearly", "100 AI-Credits/Monat")}</span>
+                    <span className="text-sm font-medium">{t("premium.credits.yearly", "{{count}} AI-Credits/Monat", { count: planCredits("yearly", 100) })}</span>
                   </div>
                 </div>
 
@@ -672,7 +703,7 @@ export default function Premium() {
                     <div className="rounded-full bg-primary/10 p-2">
                       <Sparkles className="h-4 w-4 text-primary" />
                     </div>
-                    <span className="text-sm">{t("premium.credits.lifetime", "75 AI-Credits/Monat")}</span>
+                    <span className="text-sm">{t("premium.credits.lifetime", "{{count}} AI-Credits/Monat", { count: planCredits("lifetime", 75) })}</span>
                   </div>
                   {/* Extra lifetime benefit */}
                   <div className="flex items-center gap-3">
@@ -810,7 +841,7 @@ export default function Premium() {
             subscription auto-renew disclosure + functional links to EULA & privacy. */}
         <div className="mt-10 max-w-xl mx-auto text-center space-y-3">
           <p className="text-[11px] leading-relaxed text-muted-foreground">
-            {t("premium.legal.autoRenew")}
+            {native ? t("premium.legal.autoRenew") : t("premium.legal.autoRenewWeb")}
           </p>
           <div className="flex items-center justify-center gap-4 text-xs">
             <button

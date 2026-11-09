@@ -17,6 +17,7 @@ const spring = { type: 'spring' as const, stiffness: 225, damping: 23, mass: 0.8
 const THEMES: Record<string, { accent: string; secondary: string; warm: string; background: string }> = {
   brew: { accent: '#df8eff', secondary: '#8ff5ff', warm: '#FFD75E', background: '#070812' },
   pixeljagd: { accent: '#38BDF8', secondary: '#FDE047', warm: '#FB7185', background: '#07101e' },
+  hitbuzzer: { accent: '#df8eff', secondary: '#8ff5ff', warm: '#ff2e88', background: '#060810' },
   closeenough: { accent: '#A78BFA', secondary: '#22D3EE', warm: '#FBBF24', background: '#090b19' },
   bomb: { accent: '#FB7185', secondary: '#F59E0B', warm: '#A78BFA', background: '#12070d' },
 };

@@ -48,6 +48,7 @@ const GAME_ICONS: Record<string, string> = {
   "story-builder": "📖",
   "ohrwurm": "🎵",
   "pixeljagd": "🔍",
+  "hitbuzzer": "🔔",
   "closeenough": "🎯",
   "pantomime": "🎭",
   "brew": "🧪",

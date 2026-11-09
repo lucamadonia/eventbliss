@@ -41,6 +41,7 @@ const GAME_MINUTES: Record<string, number> = {
   "wo-ist-was": 8,
   "drueck-das-wort": 6,
   ohrwurm: 10,
+  hitbuzzer: 12,
   pixeljagd: 7,
   closeenough: 7,
   pantomime: 8,

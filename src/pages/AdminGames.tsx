@@ -354,7 +354,7 @@ export default function AdminGames() {
                 eigenen Einstieg. */}
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate('/admin/ohrwurm-songs')}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-gradient-to-r from-[#FF2E88] to-[#d779ff] text-white">
-              🎵 OHRWURM Songs
+              🎵 Ohrwurm + Hit-Buzzer Songs
             </motion.button>
             <motion.button whileTap={{ scale: 0.95 }} onClick={() => navigate('/admin/pixel-images')}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-[11px] font-bold bg-gradient-to-r from-[#38BDF8] to-[#A78BFA] text-[#0B1120]">
@@ -397,6 +397,30 @@ export default function AdminGames() {
         </div>
       </div>
 
+      <section aria-labelledby="hit-buzzer-admin-title" className="mx-4 mt-4 flex flex-col gap-4 rounded-[28px] border border-white/[0.08] bg-[#16101f] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] sm:mx-6 sm:flex-row sm:items-center">
+        <img src="/images/games/hit-buzzer.webp" alt="Vier Freunde greifen nach dem Buzzer in der Tischmitte" className="h-28 w-28 rounded-[20px] object-cover sm:h-24 sm:w-24" />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 id="hit-buzzer-admin-title" className="font-game text-lg font-black text-white">Hit-Buzzer</h2>
+            <span className="rounded-full border border-[#df8eff]/30 bg-[#df8eff]/10 px-2.5 py-1 text-xs font-bold text-[#df8eff]">Neuer Spielmodus</span>
+          </div>
+          <p className="mt-1 text-sm leading-relaxed text-[#b3a8c9]">
+            Musik schnell erkennen und buzzern. Hit-Buzzer verwendet direkt die Ohrwurm-Songbibliothek:
+            neue Songs, Sprachzuordnung und Aktivierung werden nur einmal gepflegt.
+          </p>
+        </div>
+        <div className="flex shrink-0 flex-col gap-2">
+          <button type="button" onClick={() => navigate('/games/hitbuzzer')}
+            className="min-h-12 rounded-2xl bg-[#df8eff] px-4 text-sm font-bold text-[#16101f] transition-colors hover:bg-[#e8adff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8ff5ff]">
+            Hit-Buzzer öffnen
+          </button>
+          <button type="button" onClick={() => navigate('/admin/ohrwurm-songs')}
+            className="min-h-12 rounded-2xl border border-[#df8eff]/30 px-4 text-sm font-bold text-[#df8eff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8ff5ff]">
+            Gemeinsame Songs verwalten
+          </button>
+        </div>
+      </section>
+
       <div className="flex">
         {/* Sidebar */}
         <div className="w-72 border-r border-white/5 p-3 space-y-1 overflow-y-auto max-h-[calc(100vh-140px)] bg-[#151a21]">
@@ -415,6 +439,19 @@ export default function AdminGames() {
               </button>
             );
           })}
+          <div className="border-t border-white/10 pt-3">
+            <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-[#a8abb3]">Eigene Spielbibliotheken</p>
+            {[
+              { name: 'Ohrwurm', detail: 'Gemeinsame Songs', icon: '🎵', path: '/admin/ohrwurm-songs' },
+              { name: 'Hit-Buzzer', detail: 'Gemeinsame Songs', icon: '🔔', path: '/admin/ohrwurm-songs' },
+              { name: 'Pixeljagd', detail: 'Bilder', icon: '🔍', path: '/admin/pixel-images' },
+              { name: 'Nah Dran', detail: 'Fragen', icon: '🎯', path: '/admin/closeenough-questions' },
+            ].map(game => <button key={game.name} type="button" onClick={() => navigate(game.path)}
+              className="flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-left text-sm text-[#a8abb3] transition-colors hover:border-white/10 hover:bg-white/[0.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#8ff5ff]">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#281d35] text-lg">{game.icon}</span>
+              <span className="min-w-0"><span className="block truncate font-semibold">{game.name}</span><span className="block text-[10px] text-[#a8abb3]/60">{game.detail}</span></span>
+            </button>)}
+          </div>
         </div>
 
         {/* Main */}

@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Der EventBliss-Start hat eine neue Choreografie: Das Logo geht vom nativen Startbild in einen kurzen Linien- und Lichtimpuls über, danach erscheinen Wortmarke und Leitsatz, bevor die App öffnet. Die Größen sind für iPhone und iPad abgestimmt; bei reduzierter Bewegung bleibt der Übergang ruhig.\n\nBitte testen: App aus geschlossenem Zustand starten und den gesamten Übergang auf iPhone und iPad prüfen, jeweils im hellen und dunklen Erscheinungsbild. Aktiviert zusätzlich „Bewegung reduzieren“ und achtet auf einen ruhigen Start ohne Sprung, Flackern, abgeschnittenen Text oder Wartebild. Bei Problemen bitte Build 324, Gerät, iOS-Version, Erscheinungsbild und möglichst eine Bildschirmaufnahme angeben.",
+    "en-US": "EventBliss has a new launch choreography. The mark flows from the native launch image into a brief line and light accent, followed by the wordmark and tagline before the app opens. Sizing is tuned for iPhone and iPad, with a calmer transition when Reduce Motion is enabled.\n\nPlease test a cold launch on iPhone and iPad in both light and dark appearance. Also enable Reduce Motion and check for a smooth start without a jump, flicker, clipped text, or a blank waiting frame. For issues, include build 324, device, iOS version, appearance setting, and a screen recording if possible."
+  }
+}

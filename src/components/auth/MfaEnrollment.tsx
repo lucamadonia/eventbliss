@@ -127,8 +127,21 @@ export function MfaEnrollment() {
       // Code-Eingabe ab, bleibt er unverifiziert liegen und zählt gegen das
       // Faktor-Limit des Kontos.
       const stale = allFactors.filter((f) => f.status !== "verified");
+      let staleCleanupFailed = false;
       for (const f of stale) {
-        await supabase.auth.mfa.unenroll({ factorId: f.id }).catch(() => {});
+        // supabase-js reports failures via `error`, not by throwing — check both.
+        try {
+          const { error: unenrollErr } = await supabase.auth.mfa.unenroll({ factorId: f.id });
+          if (unenrollErr) throw unenrollErr;
+        } catch (unenrollErr) {
+          staleCleanupFailed = true;
+          console.warn("[MfaEnrollment] could not remove stale factor", f.id, unenrollErr);
+        }
+      }
+      if (staleCleanupFailed) {
+        // Continue: enrollment may still succeed. If the factor limit is hit,
+        // the enroll error below tells the user why.
+        toast.error("Alte, unbestätigte MFA-Faktoren konnten nicht entfernt werden.");
       }
 
       const { data, error } = await supabase.auth.mfa.enroll({

@@ -224,7 +224,9 @@
       "food": "Food & Drink",
       "chill": "Relaxation",
       "mixed": "Other"
-    }
+    },
+    "responseExists": "There are already answers for this name – please edit them on the same device or ask the organizer.",
+    "answersTooLarge": "Your answers are too long. Please shorten the free-text answers and try again."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4218,7 +4220,8 @@
     "legal": {
       "terms": "Terms of Use (EULA)",
       "privacy": "Privacy Policy",
-      "autoRenew": "Subscriptions renew automatically for the selected period unless cancelled at least 24 hours before the end of the current period. Payment is charged to your App Store account. You can manage or cancel subscriptions anytime in your App Store account settings. Lifetime is a one-time purchase."
+      "autoRenew": "Subscriptions renew automatically for the selected period unless cancelled at least 24 hours before the end of the current period. Payment is charged to your App Store account. You can manage or cancel subscriptions anytime in your App Store account settings. Lifetime is a one-time purchase.",
+      "autoRenewWeb": "Subscriptions renew automatically for the selected period until you cancel. Payments are processed securely by Stripe. You can manage or cancel your subscription anytime on this page – it stays active until the end of the paid period. Lifetime is a one-time purchase."
     },
     "native": {
       "securePayment": "Secure payment via the App Store or Google Play. Cancel anytime.",
@@ -4294,7 +4297,14 @@
       "success": "Voucher redeemed successfully!",
       "error": "Invalid voucher code",
       "discountHint": "This code gives you a discount!",
-      "discountHintDesc": "Click 'Buy' or 'Subscribe' and enter the code in the checkout."
+      "discountHintDesc": "Click 'Buy' or 'Subscribe' and enter the code in the checkout.",
+      "errors": {
+        "ALREADY_REDEEMED": "You have already redeemed this voucher.",
+        "ALREADY_LIFETIME": "You already have unlimited Premium access.",
+        "ACTIVE_PAID_SUBSCRIPTION": "You already have an active paid subscription. Cancel it first or redeem the voucher after it ends.",
+        "MAX_REDEMPTIONS": "This voucher has reached its maximum number of redemptions.",
+        "UNSUPPORTED_VOUCHER": "This voucher can't be redeemed here."
+      }
     },
     "paywall": {
       "title": "Premium Feature",
@@ -4314,10 +4324,10 @@
     },
     "subscribe": "Upgrade Now",
     "credits": {
-      "monthly": "50 AI credits/month",
+      "monthly": "{{count}} AI credits/month",
       "remaining": "{{remaining}} of {{limit}} credits remaining",
-      "yearly": "100 AI credits/month",
-      "lifetime": "75 AI credits/month"
+      "yearly": "{{count}} AI credits/month",
+      "lifetime": "{{count}} AI credits/month"
     }
   },
   "admin": {
@@ -8053,6 +8063,7 @@
       "woIstWas": "Where Is It?",
       "drueckDasWort": "Press the Word",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Close Enough",
       "pantomime": "No Words",
       "brew": "Brew"
@@ -8077,6 +8088,7 @@
       "woIstWas": "Find the place",
       "drueckDasWort": "Type fast, think fast",
       "ohrwurm": "Hear the song, place the year",
+      "hitbuzzer": "Recognize the song and buzz first",
       "closeenough": "Estimation questions with a number as the answer — closest guess wins",
       "pantomime": "Act it out in silence, your team guesses — with challenges for double points",
       "brew": "Collect ingredients without losing the tray — first to finish their recipe wins"
@@ -8358,7 +8370,7 @@
       "slide3Subtitle": "Discover venues, catering and experiences nearby and keep every enquiry in one place.",
       "slide4Title": "Every expense. Every share. Sorted.",
       "slide4Subtitle": "EventBliss splits costs transparently, tracks open balances and saves you from chasing payments.",
-      "slide5Title": "22 games. One connected party night.",
+      "slide5Title": "23 games. One connected party night.",
       "slide5Subtitle": "Build your set list, collect points across games and turn every phone into a controller.",
       "slide6Title": "Your TV becomes a game-show stage",
       "slide6Subtitle": "The route, scores and big moments appear live on TV while everyone plays from their phone.",
@@ -8943,6 +8955,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Recognize the song before everyone else.",
+      "step1": "The host starts a 30-second clip.",
+      "step2": "Press your own buzzer as soon as you know the song.",
+      "step3": "Before play, choose whether the title, artist or both must match. The player who buzzes says the answer aloud and taps “Answer spoken” before time runs out. Only then do title and artist appear on their own device.",
+      "step4": "A correct answer earns speed points. A wrong answer costs the chosen penalty, locks your team for this song, and reopens the other buzzers.",
+      "step5": "The highest score wins after the chosen rounds or when the target score is reached.",
+      "tip": "The required part is highlighted during the private check. Correct reveals the answer to everyone; Wrong keeps it hidden and lets others buzz."
+    },
     "pixeljagd": {
       "title": "Pixel Hunt",
       "tagline": "First a blur of colour, then a picture — but waiting costs you points.",

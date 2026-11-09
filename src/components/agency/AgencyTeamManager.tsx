@@ -157,7 +157,12 @@ export function AgencyTeamManager() {
 
   const handleDeactivate = async (member: AgencyMember) => {
     if (member.role === "owner") return;
-    await removeMember(member.id);
+    try {
+      await removeMember(member.id);
+    } catch (err) {
+      console.error("[AgencyTeamManager] remove member failed:", err);
+      toast.error("Mitglied konnte nicht entfernt werden");
+    }
   };
 
   if (isLoading) {
@@ -298,7 +303,7 @@ export function AgencyTeamManager() {
         {members.map((member) => {
           const RoleIcon = roleIcons[member.role];
           const isOwner = member.role === "owner";
-          const isInactive = member.status === "removed";
+          const isInactive = member.status === "deactivated";
 
           return (
             <div
@@ -369,7 +374,7 @@ export function AgencyTeamManager() {
                 )}
 
                 {/* Deactivate button (not for owner) */}
-                {!isOwner && member.status !== "removed" && (
+                {!isOwner && member.status !== "deactivated" && (
                   <Button
                     variant="ghost"
                     size="icon"

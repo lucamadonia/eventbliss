@@ -7,6 +7,13 @@ import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeadersWithStripe } from "../_shared/cors.ts";
 import { classifyStripeProject, getStripeProject } from "../_shared/stripe-project.ts";
+import {
+  getInvoiceSubscriptionId,
+  getPeriodEnd,
+  isCheckoutSessionPaid,
+  isUniqueViolation,
+  unixToIso,
+} from "../_shared/stripe-compat.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -20,21 +27,27 @@ async function trackAffiliateCommission(
   stripe: Stripe
 ) {
   try {
-    // Check if a discount/coupon was applied
-    const discounts = session.total_details?.breakdown?.discounts || [];
-    if (discounts.length === 0) {
+    // Webhook payloads carry `session.discounts[]` ({ coupon, promotion_code },
+    // coupon as an id string unless expanded). `total_details.breakdown` is
+    // only present when explicitly expanded, so it is a secondary source.
+    // deno-lint-ignore no-explicit-any
+    const s = session as any;
+    // deno-lint-ignore no-explicit-any
+    const sessionDiscounts: any[] = Array.isArray(s.discounts) ? s.discounts : [];
+    // deno-lint-ignore no-explicit-any
+    const breakdownDiscounts: any[] = s.total_details?.breakdown?.discounts || [];
+    if (sessionDiscounts.length === 0 && breakdownDiscounts.length === 0) {
       logStep("No discounts applied to session");
       return;
     }
 
-    // Get the coupon ID from the discount
-    let stripeCouponId: string | null = null;
-    
-    if (session.discount?.coupon) {
-      stripeCouponId = session.discount.coupon.id;
-    } else if (discounts[0]?.discount?.coupon) {
-      stripeCouponId = discounts[0].discount.coupon.id;
-    }
+    const couponRef =
+      sessionDiscounts[0]?.coupon ??
+      breakdownDiscounts[0]?.discount?.coupon ??
+      breakdownDiscounts[0]?.discount?.source?.coupon ??
+      null;
+    const stripeCouponId: string | null =
+      typeof couponRef === "string" ? couponRef : couponRef?.id ?? null;
 
     if (!stripeCouponId) {
       logStep("No coupon ID found in session");
@@ -220,16 +233,30 @@ serve(async (req) => {
       });
     }
 
-    // Record this event as being processed
-    await supabaseClient.from("processed_webhook_events").insert({
-      stripe_event_id: event.id,
-      event_type: event.type,
-    });
+    // The processed marker is written only AFTER the handler succeeded (end
+    // of try). A failing handler throws → 500 → Stripe retries. Previously the
+    // marker was written first, so a failed run swallowed every retry.
 
     switch (event.type) {
-      case "checkout.session.completed": {
+      case "checkout.session.completed":
+      case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
-        logStep("Checkout completed", { sessionId: session.id, customerId: session.customer });
+        logStep("Checkout completed", {
+          eventType: event.type,
+          sessionId: session.id,
+          customerId: session.customer,
+          paymentStatus: session.payment_status,
+        });
+
+        // Delayed payment methods (SEPA, Sofort, …) complete the session with
+        // payment_status "unpaid"; access follows on async_payment_succeeded.
+        if (!isCheckoutSessionPaid(session)) {
+          logStep("Checkout session not paid yet, no access granted", {
+            sessionId: session.id,
+            paymentStatus: session.payment_status,
+          });
+          break;
+        }
 
         // Shared Stripe account: ignore sessions created by other apps.
         const ownership = classifyStripeProject(session.metadata);
@@ -245,7 +272,7 @@ serve(async (req) => {
         // subscription flow. This makes a SINGLE Stripe Dashboard endpoint
         // work for both worlds — if the user also has a dedicated
         // marketplace-webhook endpoint, that one processes it independently
-        // (both are idempotent via processed_webhook_events).
+        // (separate idempotency keys; the booking update is guarded by status = pending_payment).
         const isMarketplace =
           session.metadata?.source === "marketplace" ||
           !!session.metadata?.booking_id;
@@ -284,15 +311,25 @@ serve(async (req) => {
             };
             if (newStatus === "confirmed") update.confirmed_at = new Date().toISOString();
 
-            const { error: updateError } = await supabaseClient
+            // Only advance a booking still waiting for payment —
+            // marketplace-verify-payment / marketplace-webhook may already
+            // have moved it on; a late duplicate must not reset it.
+            const { data: updatedRows, error: updateError } = await supabaseClient
               .from("marketplace_bookings")
               .update(update)
-              .eq("id", bookingId);
+              .eq("id", bookingId)
+              .eq("status", "pending_payment")
+              .select("id");
             if (updateError) {
               logStep("ERROR updating marketplace booking", { bookingId, error: updateError });
-            } else {
-              logStep("Marketplace booking updated via stripe-webhook", { bookingId, newStatus });
+              throw new Error(`Marketplace booking update failed: ${updateError.message}`);
             }
+            logStep(
+              updatedRows && updatedRows.length > 0
+                ? "Marketplace booking updated via stripe-webhook"
+                : "Marketplace booking not in pending_payment, left unchanged",
+              { bookingId, newStatus },
+            );
           }
           break;
         }
@@ -338,21 +375,33 @@ serve(async (req) => {
             break;
           }
           const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-          await supabaseClient
+          const agencyExpiresAt = unixToIso(getPeriodEnd(subscription));
+          const agencyRow: Record<string, unknown> = {
+            agency_id: agencyId,
+            tier,
+            stripe_subscription_id: subscriptionId,
+            stripe_customer_id: customerId,
+            started_at: unixToIso(subscription.start_date) ?? new Date().toISOString(),
+            is_active: true,
+          };
+          if (agencyExpiresAt) {
+            agencyRow.expires_at = agencyExpiresAt;
+          } else {
+            logStep("WARN agency subscription has no period end, expires_at left unset", { subscriptionId });
+          }
+          const { error: agencyUpsertError } = await supabaseClient
             .from("agency_marketplace_subscriptions")
-            .upsert({
-              agency_id: agencyId,
-              tier,
-              stripe_subscription_id: subscriptionId,
-              stripe_customer_id: customerId,
-              started_at: new Date(subscription.start_date * 1000).toISOString(),
-              expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
-              is_active: true,
-            }, { onConflict: "agency_id" });
-          await supabaseClient
+            .upsert(agencyRow, { onConflict: "agency_id" });
+          if (agencyUpsertError) {
+            throw new Error(`Agency subscription upsert failed: ${agencyUpsertError.message}`);
+          }
+          const { error: agencyTierError } = await supabaseClient
             .from("agencies")
             .update({ marketplace_tier: tier })
             .eq("id", agencyId);
+          if (agencyTierError) {
+            throw new Error(`Agency tier update failed: ${agencyTierError.message}`);
+          }
           logStep("Agency tier subscription created", { agencyId, tier, subscriptionId });
           break;
         }
@@ -367,7 +416,7 @@ serve(async (req) => {
           // Lifetime purchase - no expiration
           logStep("Processing lifetime purchase", { userId, customerId });
           
-          await supabaseClient
+          const { error: lifetimeError } = await supabaseClient
             .from("subscriptions")
             .upsert({
               user_id: userId,
@@ -381,7 +430,10 @@ serve(async (req) => {
               expires_at: null, // Lifetime = no expiration
               started_at: new Date().toISOString(),
             }, { onConflict: "user_id" });
-          
+          if (lifetimeError) {
+            throw new Error(`Lifetime subscription upsert failed: ${lifetimeError.message}`);
+          }
+
           logStep("Lifetime subscription created", { userId });
         } else if (session.subscription) {
           // Monthly subscription
@@ -390,7 +442,13 @@ serve(async (req) => {
           
           logStep("Processing monthly subscription", { userId, subscriptionId });
           
-          await supabaseClient
+          const periodEndIso = unixToIso(getPeriodEnd(subscription));
+          if (!periodEndIso) {
+            // expires_at: null would read as LIFETIME premium — fail loudly so
+            // Stripe retries and the log shows the payload gap.
+            throw new Error(`Subscription ${subscriptionId} has no current_period_end`);
+          }
+          const { error: subUpsertError } = await supabaseClient
             .from("subscriptions")
             .upsert({
               user_id: userId,
@@ -400,12 +458,30 @@ serve(async (req) => {
               product_id: subscription.items.data[0]?.price?.id ?? null,
               stripe_customer_id: customerId,
               stripe_subscription_id: subscriptionId,
-              expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
-              started_at: new Date(subscription.start_date * 1000).toISOString(),
+              expires_at: periodEndIso,
+              started_at: unixToIso(subscription.start_date) ?? new Date().toISOString(),
             }, { onConflict: "user_id" });
+          if (subUpsertError) {
+            throw new Error(`Subscription upsert failed: ${subUpsertError.message}`);
+          }
           
           logStep("Monthly subscription created", { userId, subscriptionId });
         }
+        break;
+      }
+
+      case "checkout.session.async_payment_failed": {
+        const session = event.data.object as Stripe.Checkout.Session;
+        // No access was granted for the unpaid session, so nothing to revoke.
+        // Marketplace bookings stay in pending_payment (the booking_status
+        // enum has no payment_failed value).
+        logStep("Async checkout payment failed", {
+          sessionId: session.id,
+          customerId: session.customer,
+          bookingId: session.metadata?.booking_id ?? null,
+          userId: session.metadata?.user_id ?? null,
+          planType: session.metadata?.plan_type ?? null,
+        });
         break;
       }
 
@@ -471,13 +547,20 @@ serve(async (req) => {
 
         if (agencySub) {
           const isActive = subscription.status === "active" || subscription.status === "trialing";
-          await supabaseClient
+          const agencyUpdate: Record<string, unknown> = { is_active: isActive };
+          const agencyExpiresAt = unixToIso(getPeriodEnd(subscription));
+          if (agencyExpiresAt) {
+            agencyUpdate.expires_at = agencyExpiresAt;
+          } else {
+            logStep("WARN no period end on agency subscription, expires_at unchanged", { subscriptionId: subscription.id });
+          }
+          const { error: agencyUpdateError } = await supabaseClient
             .from("agency_marketplace_subscriptions")
-            .update({
-              is_active: isActive,
-              expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
-            })
+            .update(agencyUpdate)
             .eq("stripe_subscription_id", subscription.id);
+          if (agencyUpdateError) {
+            throw new Error(`Agency subscription update failed: ${agencyUpdateError.message}`);
+          }
           if (!isActive) {
             await supabaseClient
               .from("agencies")
@@ -497,13 +580,20 @@ serve(async (req) => {
 
         if (existingSub) {
           if (subscription.status === "active") {
-            await supabaseClient
+            const renewUpdate: Record<string, unknown> = { plan: "premium" };
+            const renewExpiresAt = unixToIso(getPeriodEnd(subscription));
+            if (renewExpiresAt) {
+              renewUpdate.expires_at = renewExpiresAt;
+            } else {
+              logStep("WARN no period end on subscription, expires_at unchanged", { subscriptionId: subscription.id });
+            }
+            const { error: renewError } = await supabaseClient
               .from("subscriptions")
-              .update({
-                plan: "premium",
-                expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
-              })
+              .update(renewUpdate)
               .eq("stripe_subscription_id", subscription.id);
+            if (renewError) {
+              throw new Error(`Subscription renew update failed: ${renewError.message}`);
+            }
             
             logStep("Subscription renewed", { userId: existingSub.user_id });
           } else if (subscription.status === "canceled" || subscription.status === "unpaid") {
@@ -568,26 +658,35 @@ serve(async (req) => {
 
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        if (invoice.subscription) {
-          const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
+        // Basil: invoice.subscription moved to invoice.parent.subscription_details.subscription
+        const invoiceSubscriptionId = getInvoiceSubscriptionId(invoice);
+        if (!invoiceSubscriptionId) {
+          logStep("Invoice not linked to a subscription, ignoring", { invoiceId: invoice.id });
+          break;
+        }
+        const subscription = await stripe.subscriptions.retrieve(invoiceSubscriptionId);
+        if (classifyStripeProject(subscription.metadata) === "foreign") {
+          logStep("Ignoring invoice of foreign subscription", {
+            subscriptionId: subscription.id,
+            project: getStripeProject(subscription.metadata),
+          });
+          break;
+        }
+        const invoiceExpiresAt = unixToIso(getPeriodEnd(subscription));
 
-          if (classifyStripeProject(subscription.metadata) === "foreign") {
-            logStep("Ignoring invoice of foreign subscription", {
-              subscriptionId: subscription.id,
-              project: getStripeProject(subscription.metadata),
-            });
-            break;
-          }
+        logStep("Invoice paid, updating subscription", { subscriptionId: subscription.id });
 
-          logStep("Invoice paid, updating subscription", { subscriptionId: subscription.id });
-          
-          await supabaseClient
-            .from("subscriptions")
-            .update({
-              plan: "premium",
-              expires_at: new Date(subscription.current_period_end * 1000).toISOString(),
-            })
-            .eq("stripe_subscription_id", subscription.id);
+        if (!invoiceExpiresAt) {
+          logStep("WARN no period end on subscription, skipping expires_at update", { subscriptionId: subscription.id });
+          break;
+        }
+
+        const { error: invoiceUpdateError } = await supabaseClient
+          .from("subscriptions")
+          .update({ plan: "premium", expires_at: invoiceExpiresAt })
+          .eq("stripe_subscription_id", subscription.id);
+        if (invoiceUpdateError) {
+          throw new Error(`Invoice subscription update failed: ${invoiceUpdateError.message}`);
         }
         break;
       }
@@ -601,6 +700,17 @@ serve(async (req) => {
 
       default:
         logStep("Unhandled event type", { type: event.type });
+    }
+
+    // Mark as processed only after success. A unique violation means a
+    // concurrent delivery of the same event finished first — still success.
+    const { error: markError } = await supabaseClient
+      .from("processed_webhook_events")
+      .insert({ stripe_event_id: event.id, event_type: event.type });
+    if (markError && !isUniqueViolation(markError)) {
+      // Processing already succeeded and the handlers are idempotent, so a
+      // redelivery is harmless — log instead of failing the delivery.
+      logStep("WARN could not record processed event", { eventId: event.id, error: markError.message });
     }
 
     return new Response(JSON.stringify({ received: true }), {

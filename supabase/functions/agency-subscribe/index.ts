@@ -8,6 +8,7 @@ import {
   loadUserStripeCustomerIds,
   resolveOwnStripeCustomer,
 } from "../_shared/stripe-customer.ts";
+import { resolveReturnOrigin } from "../_shared/edge-guards.ts";
 
 const AGENCY_PRICE_IDS = {
   professional: Deno.env.get("STRIPE_PRICE_AGENCY_PROFESSIONAL") ?? "",
@@ -47,7 +48,8 @@ serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const tier = body.tier as AgencyTier;
     const locale = (body.locale as string) || "de";
-    const returnOrigin = (body.return_origin as string) || req.headers.get("origin") || "https://event-bliss.com";
+    // Only our own hosts are honoured for Stripe redirects (see edge-guards).
+    const returnOrigin = resolveReturnOrigin(req, body.return_origin);
 
     if (tier !== "professional" && tier !== "enterprise") {
       throw new Error(`Invalid tier "${tier}". Must be "professional" or "enterprise".`);

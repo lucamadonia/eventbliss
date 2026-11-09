@@ -140,34 +140,34 @@ async function fetchAgencySlugs(
 }
 
 // ---------------------------------------------------------------------------
-// Admin actions (stubbed via edge function invocation).
-// The backing `marketplace_admin_actions` table is intentionally deferred —
-// the caller only needs to know the event was accepted. See follow-up in the
-// final report.
+// Admin actions
+//
+// There is no `admin-action` edge function and no audit table, so nothing here
+// may pretend a server-side action happened:
+// - warn:            opens the admin's own mail client (mailto) with the draft.
+// - pause_services:  real write — "Admins manage all services" (FOR ALL,
+//                    has_role(admin)) lets admins set approved services to
+//                    'suspended'; the public SELECT policy only shows
+//                    'approved', so they disappear from the marketplace.
+// - suspend_listing: NOT available — public.agencies has no admin UPDATE
+//                    policy, so is_active cannot be flipped from the client.
+//                    The menu item is disabled until a migration adds one.
 // ---------------------------------------------------------------------------
-type AdminActionKind = "warn" | "pause_services" | "suspend_listing";
+const SUSPEND_LISTING_AVAILABLE = false;
 
-interface AdminActionPayload {
-  kind: AdminActionKind;
-  agency_id: string;
-  note?: string;
-  email_subject?: string;
-  email_body?: string;
+async function pauseAgencyServices(agencyId: string): Promise<number> {
+  const { data, error } = await supabase
+    .from("marketplace_services")
+    .update({ status: "suspended" })
+    .eq("agency_id", agencyId)
+    .eq("status", "approved")
+    .select("id");
+  if (error) throw error;
+  return data?.length ?? 0;
 }
 
-async function logAdminAction(payload: AdminActionPayload): Promise<void> {
-  try {
-    const { error } = await supabase.functions.invoke("admin-action", {
-      body: payload,
-    });
-    if (error) {
-      // Don't throw — UI must still confirm the admin's intent even if the
-      // audit path is not yet wired up on the backend.
-      console.warn("[AgencyRiskMonitor] admin-action stub failed:", error);
-    }
-  } catch (err) {
-    console.warn("[AgencyRiskMonitor] admin-action invocation error:", err);
-  }
+function buildMailto(subject: string, body: string): string {
+  return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -269,63 +269,39 @@ export function AgencyRiskMonitor() {
     );
   };
 
-  const submitWarn = async () => {
+  const submitWarn = () => {
     if (!warnTarget) return;
-    setIsSubmitting(true);
-    await logAdminAction({
-      kind: "warn",
-      agency_id: warnTarget.agency_id,
-      email_subject: warnSubject,
-      email_body: warnBody,
-    });
-    setIsSubmitting(false);
-    toast.success(`Warnung an ${warnTarget.agency_name} vorgemerkt`);
+    // No server-side mailer exists yet: hand the draft to the admin's mail app.
+    window.location.href = buildMailto(warnSubject, warnBody);
+    toast.info(`E-Mail-Entwurf für ${warnTarget.agency_name} im Mailprogramm geöffnet`);
     setWarnTarget(null);
   };
 
   const submitPause = async () => {
     if (!pauseTarget) return;
     setIsSubmitting(true);
-    // TODO(storno-audit): This should flip marketplace_services.status to
-    // 'paused' for every row where agency_id = pauseTarget.agency_id.
-    // The migration does not yet include a `status` column on
-    // marketplace_services; once it does, replace this stub with a direct
-    // .update({ status: "paused" }).eq("agency_id", ...). For now we only
-    // record the intent via the admin-action stub.
-    await logAdminAction({
-      kind: "pause_services",
-      agency_id: pauseTarget.agency_id,
-      note:
-        "marketplace_services.status column missing — action recorded only; manual DB update required",
-    });
-    setIsSubmitting(false);
-    toast.success(
-      `Services von ${pauseTarget.agency_name} zur Pausierung vorgemerkt (manueller DB-Schritt nötig)`,
-    );
-    setPauseTarget(null);
+    try {
+      const count = await pauseAgencyServices(pauseTarget.agency_id);
+      toast.success(
+        count > 0
+          ? `${count} Service(s) von ${pauseTarget.agency_name} pausiert`
+          : `${pauseTarget.agency_name} hat keine aktiven Services`,
+      );
+      setPauseTarget(null);
+      refetch();
+    } catch (err) {
+      console.error("[AgencyRiskMonitor] pause services failed:", err);
+      toast.error(`Services von ${pauseTarget.agency_name} konnten nicht pausiert werden`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const submitSuspend = async () => {
-    if (!suspendTarget) return;
-    setIsSubmitting(true);
-    // TODO(storno-audit): Set agencies.marketplace_tier = 'suspended' — the
-    // tier enum currently does not include 'suspended'. Until the enum /
-    // constraint is widened, we only log the action. A migration must add
-    // either a `marketplace_suspended BOOLEAN` column or extend the tier
-    // enum; AgencyCard / MarketplaceAgency must then treat suspended = 404.
-    await logAdminAction({
-      kind: "suspend_listing",
-      agency_id: suspendTarget.agency_id,
-      note:
-        "marketplace_tier suspended-state not yet in schema — action recorded only",
-    });
-    setIsSubmitting(false);
-    toast.success(
-      `Listing ${suspendTarget.agency_name} zur Deaktivierung vorgemerkt`,
-    );
+  const submitSuspend = () => {
+    // Guarded by SUSPEND_LISTING_AVAILABLE — see the comment at pauseAgencyServices.
+    toast.error("Listing-Deaktivierung ist noch nicht verfügbar");
     setSuspendTarget(null);
     setSuspendConfirmText("");
-    refetch();
   };
 
   // ---------------- Render ----------------
@@ -549,10 +525,18 @@ export function AgencyRiskMonitor() {
                               </DropdownMenuItem>
                               <DropdownMenuItem
                                 className="text-red-600 focus:text-red-600"
+                                disabled={!SUSPEND_LISTING_AVAILABLE}
                                 onClick={() => setSuspendTarget(agency)}
                               >
                                 <Ban className="h-4 w-4 mr-2" />
-                                Listing deaktivieren
+                                <span className="flex flex-col">
+                                  Listing deaktivieren
+                                  {!SUSPEND_LISTING_AVAILABLE && (
+                                    <span className="text-[11px] font-normal text-muted-foreground">
+                                      Noch nicht verfügbar
+                                    </span>
+                                  )}
+                                </span>
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -579,7 +563,7 @@ export function AgencyRiskMonitor() {
             <DialogTitle>Warnung senden</DialogTitle>
             <DialogDescription>
               {warnTarget
-                ? `Vorformulierte E-Mail an ${warnTarget.agency_name}. Text vor dem Senden gerne anpassen.`
+                ? `Vorformulierte E-Mail an ${warnTarget.agency_name}. Wird in deinem Mailprogramm geöffnet — Empfänger dort eintragen.`
                 : null}
             </DialogDescription>
           </DialogHeader>
@@ -606,13 +590,9 @@ export function AgencyRiskMonitor() {
             <Button variant="outline" onClick={() => setWarnTarget(null)} disabled={isSubmitting}>
               Abbrechen
             </Button>
-            <Button onClick={submitWarn} disabled={isSubmitting || !warnSubject.trim()}>
-              {isSubmitting ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Mail className="h-4 w-4 mr-2" />
-              )}
-              Senden
+            <Button onClick={submitWarn} disabled={!warnSubject.trim()}>
+              <Mail className="h-4 w-4 mr-2" />
+              Im Mailprogramm öffnen
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -632,7 +612,7 @@ export function AgencyRiskMonitor() {
               {pauseTarget ? (
                 <>
                   Alle Marketplace-Services von <strong>{pauseTarget.agency_name}</strong>{" "}
-                  werden auf <code>paused</code> gesetzt. Die Agentur ist weiterhin
+                  werden auf <code>suspended</code> gesetzt. Die Agentur ist weiterhin
                   im System, aber ihre Services sind für Neubuchungen nicht mehr sichtbar.
                   Bestehende Buchungen bleiben unberührt.
                 </>

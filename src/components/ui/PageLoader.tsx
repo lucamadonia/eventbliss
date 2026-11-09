@@ -1,8 +1,20 @@
+import { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import Lottie from "lottie-react";
 import loaderIcon from "@/assets/eventbliss-loader-icon.png";
-import loadingAnimation from "@/assets/animations/loading.json";
+
+// PageLoader sits in the entry chunk (App, ProtectedRoute, AdminRoute), so the
+// lottie player + animation JSON are loaded on demand only — a static import
+// put the whole lottie player into every first page load.
+const LottieAnimation = lazy(async () => {
+  const [{ default: Lottie }, { default: animationData }] = await Promise.all([
+    import("lottie-react"),
+    import("@/assets/animations/loading.json"),
+  ]);
+  return {
+    default: () => <Lottie animationData={animationData} loop style={{ width: 160, height: 160 }} />,
+  };
+});
 
 interface PageLoaderProps {
   variant?: "logo" | "lottie";
@@ -25,7 +37,9 @@ export const PageLoader = ({ variant = "logo" }: PageLoaderProps) => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <Lottie animationData={loadingAnimation} loop style={{ width: 160, height: 160 }} />
+          <Suspense fallback={<div style={{ width: 160, height: 160 }} />}>
+            <LottieAnimation />
+          </Suspense>
         </motion.div>
         <p className="mt-6 text-sm font-medium text-muted-foreground">
           {t("common.loading", "Loading...")}

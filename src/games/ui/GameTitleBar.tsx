@@ -25,6 +25,7 @@ const GAME_NAMES: Record<string, string> = {
   'story-builder': 'Story Builder',
   flaschendrehen: 'Flaschendrehen',
   ohrwurm: 'Ohrwurm',
+  hitbuzzer: 'Hit-Buzzer',
   pixeljagd: 'Pixeljagd',
   closeenough: 'Nah Dran',
   pantomime: 'Ohne Worte',
@@ -37,7 +38,7 @@ const GAME_ICONS: Record<string, string> = {
   'split-quiz': '🧩', 'geteilt-gequizzt': '🔗', schnellzeichner: '🎨',
   'wahrheit-pflicht': '❤️', 'this-or-that': '↔️', 'wer-bin-ich': '❓',
   'emoji-raten': '😀', 'fake-or-fact': '🎲', 'story-builder': '📖',
-  flaschendrehen: '🍾', ohrwurm: '🎵', pixeljagd: '🔍',
+  flaschendrehen: '🍾', ohrwurm: '🎵', hitbuzzer: '🔔', pixeljagd: '🔍',
   closeenough: '🎯', pantomime: '🎭', brew: '🧪',
 };
 

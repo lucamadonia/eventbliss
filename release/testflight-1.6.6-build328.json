@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Hit-Buzzer hat einen einfacheren Antwortablauf: Wer buzzert, nennt Interpret und Titel laut und wählt auf dem eigenen Handy selbst „Richtig“ oder „Falsch“. Ein Countdown mit Signalton zeigt die verbleibende Antwortzeit. Bei „Falsch“ bleibt die Lösung verborgen und die anderen können denselben Song weiter erraten. Bei „Richtig“ erscheint die Lösung für alle. Nach jeder Runde zeigt der Verlauf Song, Spieler, Bewertung und Punkte.\n\nBitte testen: Spielt im Joystick-Modus und online mit Host als Mitspieler, einmal mit TV und einmal ohne TV. Prüft richtige, falsche und abgelaufene Antworten, Team-Sperren sowie den Rundenverlauf. Nennt bei Problemen Build 328, Gerät, iOS-Version und den genauen Schritt.",
+    "en-US": "Hit-Buzzer has a simpler answer flow: the player who buzzes says the artist and title aloud, then selects Correct or Wrong on their own phone. A countdown with a sound cue shows the remaining answer time. Wrong keeps the song hidden and lets others guess the same song. Correct reveals it to everyone. After each round, the history shows the song, player, outcome and points.\n\nPlease test controller and online play with the host also playing, both with and without a TV. Check correct, wrong and timed-out answers, team lockouts and round history. If anything fails, include build 328, device, iOS version and the exact step."
+  }
+}

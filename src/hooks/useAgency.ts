@@ -14,7 +14,8 @@ export interface Agency {
 }
 
 export type AgencyRole = "owner" | "admin" | "member" | "viewer";
-export type AgencyMemberStatus = "active" | "invited" | "removed";
+// Mirrors the agency_members.status CHECK constraint (invited/active/deactivated).
+export type AgencyMemberStatus = "active" | "invited" | "deactivated";
 
 export interface AgencyMember {
   id: string;
@@ -115,7 +116,7 @@ export function useAgency(): UseAgencyResult {
         .from("agency_members" as any)
         .select("*")
         .eq("agency_id", memberRow.agency_id)
-        .neq("status", "removed")
+        .neq("status", "deactivated")
         .order("invited_at", { ascending: true }) as any);
 
       // Fetch task counts for members with user_ids
@@ -230,10 +231,13 @@ export function useAgency(): UseAgencyResult {
   const removeMember = useCallback(
     async (memberId: string) => {
       if (!agency) return;
-      await (supabase
+      // 'removed' is not allowed by the CHECK constraint — every removal used
+      // to fail silently. 'deactivated' is the schema's "no longer a member".
+      const { error } = await (supabase
         .from("agency_members" as any)
-        .update({ status: "removed" } as any)
+        .update({ status: "deactivated" } as any)
         .eq("id", memberId) as any);
+      if (error) throw error;
       await fetchAgency();
     },
     [agency, fetchAgency]

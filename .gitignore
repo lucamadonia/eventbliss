@@ -43,3 +43,11 @@ appstore/
 scripts/_*
 scripts/tmp/
 .brew-src/
+# Release binaries, worktrees and local scratch
+*.aab
+*.apk
+*-worktree/
+.android-release-*/
+artifacts/
+/tmp/
+supabase/.temp/

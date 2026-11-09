@@ -11,6 +11,9 @@
 
 import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { serviceClient } from "../_shared/authz.ts";
+import { checkRateLimit, getClientIp, rateLimitResponse } from "../_shared/rate-limit.ts";
+import { timingSafeEqual } from "../_shared/edge-guards.ts";
 
 const SITE_URL = "https://event-bliss.com";
 const FROM_NAME = "EventBliss";
@@ -140,12 +143,43 @@ Deno.serve(async (req) => {
   }
 
   try {
+    if (!checkRateLimit("newsletter-confirm-ip", getClientIp(req), 5, 60 * 60_000)) {
+      return rateLimitResponse(corsHeaders, 3600);
+    }
+
     const body = await req.json();
     const email = String(body?.email ?? "").trim().toLowerCase();
     const token = String(body?.token ?? "");
     const lang: Lang = (TEMPLATES[body?.locale as Lang] ? body.locale : "de") as Lang;
 
-    if (!email || !token || token.length < 32) {
+    if (!email || email.length > 255 || !token || token.length < 32 || token.length > 128) {
+      return new Response(JSON.stringify({ error: "invalid_input" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (!checkRateLimit("newsletter-confirm-email", email, 3, 60 * 60_000)) {
+      return rateLimitResponse(corsHeaders, 3600);
+    }
+
+    // Only mail addresses that actually signed up: the row must exist with
+    // exactly this (unconsumed) token and still be unconfirmed/subscribed.
+    // Otherwise this endpoint would be an open relay for our sender domain.
+    const { data: subscriber, error: lookupError } = await serviceClient()
+      .from("newsletter_subscribers")
+      .select("id, confirmation_token, confirmed_at, unsubscribed_at")
+      .eq("email", email)
+      .maybeSingle();
+    if (
+      lookupError ||
+      !subscriber ||
+      subscriber.confirmed_at ||
+      subscriber.unsubscribed_at ||
+      typeof subscriber.confirmation_token !== "string" ||
+      !timingSafeEqual(subscriber.confirmation_token, token)
+    ) {
+      // Uniform answer — don't reveal whether an address is subscribed.
       return new Response(JSON.stringify({ error: "invalid_input" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

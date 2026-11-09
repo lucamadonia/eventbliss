@@ -224,7 +224,9 @@
       "food": "Yeme ve içme",
       "chill": "Rahatlama",
       "mixed": "Diğer"
-    }
+    },
+    "responseExists": "Bu isim için zaten yanıtlar var – lütfen aynı cihazdan düzenle veya organizatöre sor.",
+    "answersTooLarge": "Yanıtların çok uzun. Lütfen serbest metinleri kısaltıp tekrar dene."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4292,7 +4294,8 @@
     "legal": {
       "terms": "Kullanım Koşulları (EULA)",
       "privacy": "Gizlilik",
-      "autoRenew": "Abonelikler, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece seçilen süre için otomatik olarak yenilenir. Ödeme App Store hesabınızdan tahsil edilir. Abonelikleri istediğiniz zaman App Store hesap ayarlarınızdan yönetebilir veya iptal edebilirsiniz. Lifetime tek seferlik bir satın almadır."
+      "autoRenew": "Abonelikler, mevcut dönemin bitiminden en az 24 saat önce iptal edilmediği sürece seçilen süre için otomatik olarak yenilenir. Ödeme App Store hesabınızdan tahsil edilir. Abonelikleri istediğiniz zaman App Store hesap ayarlarınızdan yönetebilir veya iptal edebilirsiniz. Lifetime tek seferlik bir satın almadır.",
+      "autoRenewWeb": "Abonelikler, iptal edene kadar seçilen süre için otomatik olarak yenilenir. Ödemeler Stripe tarafından güvenle işlenir. Aboneliğini istediğin zaman bu sayfadan yönetebilir veya iptal edebilirsin – ödenen dönemin sonuna kadar aktif kalır. Lifetime tek seferlik bir satın almadır."
     },
     "native": {
       "securePayment": "App Store veya Google Play üzerinden güvenli ödeme. İstediğin zaman iptal edebilirsin.",
@@ -4368,7 +4371,14 @@
       "success": "Kupon başarıyla kullanıldı!",
       "error": "Geçersiz kupon kodu",
       "discountHint": "Bu kod size indirim sağlar!",
-      "discountHintDesc": "'Satın al' veya 'Abone ol'a tıklayın ve kodu ödeme ekranında girin."
+      "discountHintDesc": "'Satın al' veya 'Abone ol'a tıklayın ve kodu ödeme ekranında girin.",
+      "errors": {
+        "ALREADY_REDEEMED": "Bu kuponu zaten kullandın.",
+        "ALREADY_LIFETIME": "Zaten sınırsız Premium erişimin var.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Zaten aktif bir ücretli aboneliğin var. Önce iptal et ya da kuponu abonelik bittikten sonra kullan.",
+        "MAX_REDEMPTIONS": "Bu kupon maksimum kullanım sayısına ulaştı.",
+        "UNSUPPORTED_VOUCHER": "Bu kupon burada kullanılamaz."
+      }
     },
     "paywall": {
       "title": "Premium Özellik",
@@ -4388,10 +4398,10 @@
     },
     "subscribe": "Şimdi Yükselt",
     "credits": {
-      "monthly": "Aylık 50 AI kredisi",
+      "monthly": "Aylık {{count}} AI kredisi",
       "remaining": "{{limit}} kredinin {{remaining}} tanesi kaldı",
-      "yearly": "Aylık 100 AI kredisi",
-      "lifetime": "Aylık 75 AI kredisi"
+      "yearly": "Aylık {{count}} AI kredisi",
+      "lifetime": "Aylık {{count}} AI kredisi"
     }
   },
   "admin": {
@@ -8127,6 +8137,7 @@
       "woIstWas": "Nerede?",
       "drueckDasWort": "Kelimeye Bas",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Yaklaştın",
       "pantomime": "Tek Kelime Yok",
       "brew": "Karışım"
@@ -8151,6 +8162,7 @@
       "woIstWas": "Yeri bul",
       "drueckDasWort": "Hızlı yaz, hızlı düşün",
       "ohrwurm": "Şarkıyı dinle, yılını tahmin et",
+      "hitbuzzer": "Şarkıyı tanı ve ilk sen bas",
       "closeenough": "Cevabı sayı olan tahmin soruları — en yakın tahmin kazanır",
       "pantomime": "Sessizce canlandır, takımın bilsin — çift puan için meydan okumalarla",
       "brew": "Tepsiyi devirmeden malzeme topla — tarifini ilk tamamlayan kazanır"
@@ -8435,7 +8447,7 @@
       "skip": "Atla",
       "next": "İleri",
       "getStarted": "İlk etkinliğimi oluştur",
-      "slide5Title": "22 oyun. Birlikte yaşanan tek parti gecesi.",
+      "slide5Title": "23 oyun. Birlikte yaşanan tek parti gecesi.",
       "slide5Subtitle": "Oyun listenizi oluşturun, oyunlar boyunca puan toplayın ve her telefonu bir kumandaya dönüştürün.",
       "slide6Title": "Televizyonunuz bir yarışma sahnesine dönüşür",
       "slide6Subtitle": "Rota, skorlar ve büyük anlar siz telefonlarınızdan oynarken TV’de canlı görünür.",
@@ -9017,6 +9029,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Şarkıyı herkesten önce tanı.",
+      "step1": "Sunucu 30 saniyelik parçayı başlatır.",
+      "step2": "Şarkıyı tanıyınca kendi butonuna bas.",
+      "step3": "Oyundan önce şarkı adının, sanatçının veya ikisinin de doğru olması gerektiğini seç. Butona basan kişi yanıtı yüksek sesle söyler ve süre dolmadan onaylar. Ancak bundan sonra şarkı ve sanatçı kendi cihazında görünür.",
+      "step4": "Doğru cevap hıza göre puan kazandırır. Yanlış cevap ceza getirir, takımını bu şarkıda kilitler ve diğer butonları yeniden açar.",
+      "step5": "Seçilen turlardan sonra veya hedef puana ulaşınca en yüksek puan kazanır.",
+      "tip": "Gerekli bölüm özel kontrolde vurgulanır. Doğru yanıt çözümü herkese gösterir; yanlış yanıt gizli tutar."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Önce bir renk lekesi, sonra bir resim — ama bekleyen daha az puan alır.",

@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
-import { createClient, type User } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { createClient, type SupabaseClient, type User } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 import { getSafeOrigin } from "../_shared/origin.ts";
 import { STRIPE_PROJECT } from "../_shared/stripe-project.ts";
@@ -27,7 +27,7 @@ function cleanText(value: unknown, maxLength: number): string {
 
 async function optionalUser(
   req: Request,
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: SupabaseClient,
 ): Promise<User | null> {
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) return null;

@@ -224,7 +224,9 @@
       "food": "Essen & Trinken",
       "chill": "Entspannung",
       "mixed": "Sonstiges"
-    }
+    },
+    "responseExists": "Für diesen Namen gibt es schon Antworten – bitte auf demselben Gerät bearbeiten oder den Organisator fragen.",
+    "answersTooLarge": "Deine Antworten sind zu lang. Bitte kürze die Freitexte und versuche es erneut."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4218,7 +4220,8 @@
     "legal": {
       "terms": "Nutzungsbedingungen (EULA)",
       "privacy": "Datenschutz",
-      "autoRenew": "Abos verlängern sich automatisch um den gewählten Zeitraum, sofern sie nicht mindestens 24 Stunden vor Ablauf gekündigt werden. Die Zahlung wird über deinen App-Store-Account abgebucht. Du kannst Abos jederzeit in den Einstellungen deines App-Store-Accounts verwalten oder kündigen. Lifetime ist eine einmalige Zahlung."
+      "autoRenew": "Abos verlängern sich automatisch um den gewählten Zeitraum, sofern sie nicht mindestens 24 Stunden vor Ablauf gekündigt werden. Die Zahlung wird über deinen App-Store-Account abgebucht. Du kannst Abos jederzeit in den Einstellungen deines App-Store-Accounts verwalten oder kündigen. Lifetime ist eine einmalige Zahlung.",
+      "autoRenewWeb": "Abos verlängern sich automatisch um den gewählten Zeitraum, bis du sie kündigst. Die Zahlung erfolgt sicher über Stripe. Du kannst dein Abo jederzeit hier auf dieser Seite verwalten oder kündigen – es läuft dann bis zum Ende des bezahlten Zeitraums. Lifetime ist eine einmalige Zahlung."
     },
     "native": {
       "securePayment": "Sichere Zahlung über den App Store bzw. Google Play. Jederzeit kündbar.",
@@ -4294,7 +4297,14 @@
       "success": "Gutschein erfolgreich eingelöst!",
       "error": "Ungültiger Gutscheincode",
       "discountHint": "Dieser Code gibt dir einen Rabatt!",
-      "discountHintDesc": "Klicke auf 'Kaufen' oder 'Abonnieren' und gib den Code im Checkout ein."
+      "discountHintDesc": "Klicke auf 'Kaufen' oder 'Abonnieren' und gib den Code im Checkout ein.",
+      "errors": {
+        "ALREADY_REDEEMED": "Du hast diesen Gutschein bereits eingelöst.",
+        "ALREADY_LIFETIME": "Du hast bereits unbegrenzten Premium-Zugang.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Du hast bereits ein aktives bezahltes Abo. Kündige es zuerst oder löse den Gutschein nach dessen Ablauf ein.",
+        "MAX_REDEMPTIONS": "Dieser Gutschein wurde bereits zu oft eingelöst.",
+        "UNSUPPORTED_VOUCHER": "Dieser Gutschein kann hier nicht eingelöst werden."
+      }
     },
     "paywall": {
       "title": "Premium-Funktion",
@@ -4314,10 +4324,10 @@
     },
     "subscribe": "Jetzt upgraden",
     "credits": {
-      "monthly": "50 KI-Credits/Monat",
+      "monthly": "{{count}} KI-Credits/Monat",
       "remaining": "{{remaining}} von {{limit}} Credits übrig",
-      "yearly": "100 KI-Credits/Monat",
-      "lifetime": "75 KI-Credits/Monat"
+      "yearly": "{{count}} KI-Credits/Monat",
+      "lifetime": "{{count}} KI-Credits/Monat"
     }
   },
   "admin": {
@@ -8053,6 +8063,7 @@
       "woIstWas": "Wo ist was?",
       "drueckDasWort": "Drück das Wort",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Nah Dran",
       "pantomime": "Ohne Worte",
       "brew": "Gebräu"
@@ -8077,6 +8088,7 @@
       "woIstWas": "Finde den Ort",
       "drueckDasWort": "Schnell tippen, schnell denken",
       "ohrwurm": "Song hören, Jahr einordnen",
+      "hitbuzzer": "Song erkennen und als Erste buzzern",
       "closeenough": "Schätzfragen mit einer Zahl als Antwort — wer am nächsten dran liegt, gewinnt",
       "pantomime": "Stumm vormachen, das Team rät — mit Herausforderungen für doppelte Punkte",
       "brew": "Zutaten sammeln, ohne dass das Tablett kippt — wer sein Rezept zuerst vollhat, gewinnt"
@@ -8358,7 +8370,7 @@
       "slide3Subtitle": "Entdecke Locations, Catering und Erlebnisse in deiner Nähe und behalte jede Anfrage an einem Ort.",
       "slide4Title": "Jeder Betrag. Jeder Anteil. Geklärt.",
       "slide4Subtitle": "EventBliss verteilt Kosten nachvollziehbar, zeigt offene Beträge und erspart dir das Hinterherlaufen.",
-      "slide5Title": "22 Spiele. Eine gemeinsame Partynacht.",
+      "slide5Title": "23 Spiele. Eine gemeinsame Partynacht.",
       "slide5Subtitle": "Stellt eure Set-Liste zusammen, sammelt spielübergreifend Punkte und macht jedes Handy zum Controller.",
       "slide6Title": "Euer Fernseher wird zur Gameshow-Bühne",
       "slide6Subtitle": "Route, Spielstände und große Momente erscheinen live auf dem TV — während ihr mit den Handys spielt.",
@@ -8943,6 +8955,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Erkenne den Song schneller als die anderen.",
+      "step1": "Der Host startet einen 30-Sekunden-Ausschnitt.",
+      "step2": "Drücke deinen eigenen Buzzer, sobald du den Song erkennst.",
+      "step3": "Vor dem Spiel wird gewählt, ob Songtitel, Interpret oder beides stimmen muss. Wer buzzert, nennt die Antwort laut und tippt vor Ablauf der Zeit auf „Antwort gesagt“. Erst danach erscheinen Titel und Interpret nur auf dem eigenen Gerät.",
+      "step4": "Richtig bringt je nach Tempo Punkte. Falsch kostet Strafpunkte, sperrt dein Team für diesen Song und gibt die anderen Buzzer wieder frei.",
+      "step5": "Nach der gewählten Rundenzahl oder beim Punktziel gewinnt die höchste Punktzahl.",
+      "tip": "Der gewählte Teil ist beim privaten Abgleich markiert. Bei „Richtig“ sehen alle die Lösung; bei „Falsch“ bleibt sie verborgen und die anderen können weiterbuzzern."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Erst ein Farbklecks, dann ein Bild — aber wer wartet, bekommt weniger Punkte.",

@@ -1,11 +1,36 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { isUniqueViolation, planVoucherGrant } from "../_shared/stripe-compat.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : "";
   console.log(`[REDEEM-VOUCHER] ${step}${detailsStr}`);
 };
+
+/**
+ * Compensates a claimed slot when the grant fails. There is no decrement RPC,
+ * so this uses an optimistic compare-and-set on used_count (best effort).
+ */
+// deno-lint-ignore no-explicit-any
+async function releaseVoucherSlot(db: any, voucherId: string): Promise<void> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { data, error } = await db
+      .from("vouchers")
+      .select("used_count")
+      .eq("id", voucherId)
+      .maybeSingle();
+    if (error || !data || !(data.used_count > 0)) break;
+    const { data: updated, error: updError } = await db
+      .from("vouchers")
+      .update({ used_count: data.used_count - 1 })
+      .eq("id", voucherId)
+      .eq("used_count", data.used_count)
+      .select("id");
+    if (!updError && updated && updated.length > 0) return;
+  }
+  logStep("WARN could not release voucher slot after failed grant", { voucherId });
+}
 
 serve(async (req) => {
   const corsHeaders = getCorsHeaders(req.headers.get("origin"));
@@ -71,90 +96,117 @@ serve(async (req) => {
       throw new Error("You have already redeemed this voucher");
     }
 
-    // Process based on voucher type
-    let subscriptionId = null;
-
     // Percentage and fixed discount vouchers must be used in Stripe checkout
     if (voucher.discount_type === "percentage" || voucher.discount_type === "fixed") {
       throw new Error("DISCOUNT_VOUCHER:This voucher code gives you a discount. Please click 'Subscribe' or 'Buy once' and enter the code in the Stripe checkout.");
     }
-
-    if (voucher.discount_type === "lifetime") {
-      // Create or update subscription to lifetime
-      const { data: existingSub } = await supabaseClient
-        .from("subscriptions")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      // "lifetime" ist KEIN gueltiger Plan-Wert: die Tabelle laesst nur
-      // free/premium zu (CHECK in Migration 20251229122020). Unbegrenzt heisst
-      // hier `premium` OHNE Ablaufdatum — genau das drueckt `expires_at: null`
-      // aus. Vorher lief jede Lifetime-Einloesung in den Constraint.
-      if (existingSub) {
-        const { error } = await supabaseClient
-          .from("subscriptions")
-          .update({ plan: "premium", expires_at: null })
-          .eq("id", existingSub.id);
-        if (error) throw error;
-        subscriptionId = existingSub.id;
-      } else {
-        const { data: newSub, error } = await supabaseClient
-          .from("subscriptions")
-          .insert({ user_id: user.id, plan: "premium", expires_at: null })
-          .select()
-          .single();
-        if (error) throw error;
-        subscriptionId = newSub.id;
-      }
-      logStep("Lifetime subscription granted");
-    } else if (voucher.discount_type === "free_trial") {
-      // Create subscription with trial period
-      const trialDays = voucher.discount_value || 30;
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + trialDays);
-
-      const { data: existingSub } = await supabaseClient
-        .from("subscriptions")
-        .select("id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (existingSub) {
-        const { error } = await supabaseClient
-          .from("subscriptions")
-          .update({ plan: "premium", expires_at: expiresAt.toISOString() })
-          .eq("id", existingSub.id);
-        if (error) throw error;
-        subscriptionId = existingSub.id;
-      } else {
-        const { data: newSub, error } = await supabaseClient
-          .from("subscriptions")
-          .insert({ user_id: user.id, plan: "premium", expires_at: expiresAt.toISOString() })
-          .select()
-          .single();
-        if (error) throw error;
-        subscriptionId = newSub.id;
-      }
-      logStep("Free trial granted", { days: trialDays });
+    if (voucher.discount_type !== "lifetime" && voucher.discount_type !== "free_trial") {
+      throw new Error("UNSUPPORTED_VOUCHER:This voucher type cannot be redeemed here.");
     }
 
-    // Record the redemption
-    const { error: redemptionError } = await supabaseClient.from("voucher_redemptions").insert({
-      voucher_id: voucher.id,
-      user_id: user.id,
-      subscription_id: subscriptionId,
-    });
-    if (redemptionError) throw redemptionError;
+    // Decide BEFORE claiming a slot whether the grant is allowed at all —
+    // a voucher must never shorten or silently replace a paid / lifetime /
+    // longer subscription (see planVoucherGrant).
+    const { data: existingSub, error: existingSubError } = await supabaseClient
+      .from("subscriptions")
+      .select("id, plan, provider, plan_type, expires_at, stripe_subscription_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (existingSubError) throw existingSubError;
 
-    // Atomically increment used_count
+    const plan = planVoucherGrant(
+      existingSub,
+      voucher.discount_type,
+      Number(voucher.discount_value) || 30,
+      Date.now(),
+    );
+    if (plan.action === "reject") {
+      logStep("Grant rejected", { code: plan.code });
+      throw new Error(
+        plan.code === "ALREADY_LIFETIME"
+          ? "ALREADY_LIFETIME:You already have unlimited Premium access."
+          : "ACTIVE_PAID_SUBSCRIPTION:You already have an active paid subscription. Please cancel it first or redeem the voucher after it ends.",
+      );
+    }
+
+    // 1) Atomically claim a redemption slot FIRST. The RPC raises when
+    //    used_count >= max_uses, so concurrent redemptions cannot overshoot.
     const { error: incrementError } = await supabaseClient.rpc("increment_voucher_used_count", {
       p_voucher_id: voucher.id,
       p_max_uses: voucher.max_uses || 999999,
     });
     if (incrementError) {
-      throw new Error("Voucher has reached maximum redemptions");
+      throw new Error("MAX_REDEMPTIONS:Voucher has reached maximum redemptions");
     }
+
+    // 2) Record the redemption BEFORE granting. UNIQUE (voucher_id, user_id)
+    //    (migration 20261108120000) makes a concurrent double-redeem by the
+    //    same user fail here with 23505 instead of granting twice.
+    const { data: redemption, error: redemptionError } = await supabaseClient
+      .from("voucher_redemptions")
+      .insert({ voucher_id: voucher.id, user_id: user.id, subscription_id: existingSub?.id ?? null })
+      .select("id")
+      .single();
+    if (redemptionError) {
+      await releaseVoucherSlot(supabaseClient, voucher.id);
+      if (isUniqueViolation(redemptionError)) {
+        logStep("Duplicate redemption blocked by unique constraint");
+        return new Response(
+          JSON.stringify({
+            success: false,
+            code: "ALREADY_REDEEMED",
+            error: "ALREADY_REDEEMED:You have already redeemed this voucher",
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 409 },
+        );
+      }
+      throw redemptionError;
+    }
+
+    // 3) Grant premium. On failure undo the redemption row and the slot.
+    const grant: Record<string, unknown> = {
+      plan: "premium",
+      provider: "manual",
+      is_manual: true,
+      plan_type: plan.planType,
+      expires_at: plan.expiresAt,
+      // Only inactive Stripe rows can reach this point; drop the stale link
+      // so old Stripe webhooks no longer address this row.
+      stripe_subscription_id: null,
+    };
+    try {
+      if (existingSub) {
+        const { error } = await supabaseClient
+          .from("subscriptions")
+          .update(grant)
+          .eq("id", existingSub.id);
+        if (error) throw error;
+      } else {
+        const { data: newSub, error } = await supabaseClient
+          .from("subscriptions")
+          .insert({ user_id: user.id, ...grant })
+          .select("id")
+          .single();
+        if (error) throw error;
+        // Link the new subscription; failure here is cosmetic only.
+        const { error: linkError } = await supabaseClient
+          .from("voucher_redemptions")
+          .update({ subscription_id: newSub.id })
+          .eq("id", redemption.id);
+        if (linkError) logStep("WARN could not link redemption to subscription", { error: linkError.message });
+      }
+    } catch (grantError) {
+      const { error: deleteError } = await supabaseClient
+        .from("voucher_redemptions")
+        .delete()
+        .eq("id", redemption.id);
+      if (deleteError) logStep("WARN could not delete redemption after failed grant", { error: deleteError.message });
+      await releaseVoucherSlot(supabaseClient, voucher.id);
+      throw grantError;
+    }
+    logStep(voucher.discount_type === "lifetime" ? "Lifetime subscription granted" : "Free trial granted", {
+      expiresAt: plan.expiresAt,
+    });
 
     logStep("Voucher redeemed successfully");
 

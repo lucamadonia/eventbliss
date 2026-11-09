@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { checkRateLimit, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 const MISTRAL_API_URL = "https://api.mistral.ai/v1/audio/speech";
 
@@ -40,6 +41,16 @@ serve(async (req) => {
         JSON.stringify({ error: "Nicht autorisiert" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
+    }
+
+    // Per-user throttle on the paid Mistral TTS call. Not tied to the monthly
+    // AI-credit pool (ai_usage) on purpose: game narration fires many short
+    // clips and would drain premium users' chat credits.
+    if (
+      !checkRateLimit("voxtral-tts-min", user.id, 30, 60_000) ||
+      !checkRateLimit("voxtral-tts-hour", user.id, 400, 60 * 60_000)
+    ) {
+      return rateLimitResponse(corsHeaders);
     }
 
     const { text, voice, language, speed } = await req.json() as TTSRequest;

@@ -20,6 +20,15 @@ if (Capacitor.isNativePlatform()) {
   );
 }
 
+// Start fetching the landing chunk in parallel with the locale chunk instead
+// of after the first render — otherwise the prerendered page is replaced by
+// the full-screen route loader until the waterfall (index → locale → React →
+// Landing) finishes. Same specifier as the lazy() in App.tsx, so the module
+// is fetched once and the Suspense boundary resolves immediately.
+if (window.location.pathname === "/") {
+  void import("./pages/Landing");
+}
+
 // Wait for i18n to be fully initialized before rendering
 i18nInitPromise.then(() => {
   createRoot(document.getElementById("root")!).render(<App />);

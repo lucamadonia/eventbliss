@@ -2,6 +2,17 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "../_shared/rate-limit.ts";
+import { getUserId, isEventOrganizer } from "../_shared/authz.ts";
+import { sha256Hex, timingSafeEqual } from "../_shared/edge-guards.ts";
+
+// Upper bound for the serialized custom_answers JSON (stored in responses.meta).
+const MAX_CUSTOM_ANSWERS_BYTES = 32 * 1024;
+
+function newEditToken(): string {
+  const bytes = new Uint8Array(24);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
 
 // Simple validation helpers
 function isValidString(value: unknown, maxLength = 500): value is string {
@@ -109,6 +120,13 @@ serve(async (req) => {
     const custom_answers = typeof rawBody.custom_answers === 'object' && rawBody.custom_answers !== null 
       ? rawBody.custom_answers as Record<string, unknown>
       : {};
+    if (new TextEncoder().encode(JSON.stringify(custom_answers)).length > MAX_CUSTOM_ANSWERS_BYTES) {
+      return new Response(
+        JSON.stringify({ success: false, error: "Answers too large" }),
+        { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    const editToken = typeof rawBody.edit_token === "string" ? rawBody.edit_token.slice(0, 128) : "";
 
     // Fetch event to validate access code
     const { data: event, error: eventError } = await supabase
@@ -145,10 +163,49 @@ serve(async (req) => {
     // Check if participant already submitted - upsert logic
     const { data: existingResponse } = await supabase
       .from("responses")
-      .select("id")
+      .select("id, meta")
       .eq("event_id", event_id)
       .eq("participant", participant)
       .maybeSingle();
+
+    // Overwriting an existing answer needs proof that the caller IS that
+    // participant — the access code alone is shared by the whole group and
+    // participant names are public. Accepted proofs:
+    //  1. the edit_token handed out on the first submission,
+    //  2. a JWT of the user linked to that participant seat,
+    //  3. a JWT of the event's organizer.
+    const existingMeta = (existingResponse?.meta ?? {}) as Record<string, unknown>;
+    const storedHash = typeof existingMeta.edit_token_hash === "string" ? existingMeta.edit_token_hash : "";
+    if (existingResponse) {
+      let mayOverwrite = false;
+      if (editToken && storedHash) {
+        mayOverwrite = timingSafeEqual(await sha256Hex(editToken), storedHash);
+      }
+      if (!mayOverwrite) {
+        const callerId = await getUserId(req, supabase);
+        if (callerId) {
+          const { data: seat } = await supabase
+            .from("participants")
+            .select("id")
+            .eq("event_id", event_id)
+            .eq("name", participant)
+            .eq("user_id", callerId)
+            .limit(1)
+            .maybeSingle();
+          mayOverwrite = !!seat || await isEventOrganizer(supabase, event_id, callerId);
+        }
+      }
+      if (!mayOverwrite) {
+        return new Response(
+          JSON.stringify({ success: false, error: "RESPONSE_EXISTS", message: "A response for this participant already exists." }),
+          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    // Fresh edit token on every successful save; only its hash is stored.
+    const issuedEditToken = newEditToken();
+    const issuedEditTokenHash = await sha256Hex(issuedEditToken);
 
     // Normalize budget/destination/duration - can be string or array
     const budgetChoices = Array.isArray(budget) 
@@ -186,6 +243,7 @@ serve(async (req) => {
         destination_choices: destinationChoices,
         duration_choices: durationChoices,
         custom_answers: custom_answers,
+        edit_token_hash: issuedEditTokenHash,
       },
     };
 
@@ -233,11 +291,18 @@ serve(async (req) => {
       .eq("event_id", event_id)
       .eq("name", participant);
 
+    // Never echo the token hash back.
+    const savedMeta = { ...((result.data?.meta ?? {}) as Record<string, unknown>) };
+    delete savedMeta.edit_token_hash;
+
     return new Response(
       JSON.stringify({ 
         success: true, 
-        response: result.data,
-        updated: !!existingResponse 
+        response: { ...result.data, meta: savedMeta },
+        updated: !!existingResponse,
+        // Client should keep this (per event+participant) and send it back as
+        // `edit_token` to change the answer later without logging in.
+        edit_token: issuedEditToken,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );

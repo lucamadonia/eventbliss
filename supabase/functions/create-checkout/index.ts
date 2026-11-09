@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 import { withStripeProject } from "../_shared/stripe-project.ts";
 import { loadUserStripeCustomerIds, resolveOwnStripeCustomer } from "../_shared/stripe-customer.ts";
+import { resolveReturnOrigin } from "../_shared/edge-guards.ts";
 
 // Price IDs are configured via Supabase secrets (no hardcoded fallbacks —
 // the function fails loudly if a price is not configured for the current
@@ -113,7 +114,9 @@ serve(async (req) => {
       logStep("Created customer", { customerId });
     }
 
-    const origin = returnOrigin || req.headers.get("origin") || "https://event-bliss.com";
+    // Never trust a raw body origin for Stripe redirects (open redirect /
+    // phishing via our checkout). Only our own hosts are honoured.
+    const origin = resolveReturnOrigin(req, returnOrigin);
     const priceId = getPriceId(planType);
     const mode = planType === "lifetime" ? "payment" : "subscription";
     

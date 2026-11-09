@@ -224,7 +224,9 @@
       "food": "Comida e bebida",
       "chill": "Relaxamento",
       "mixed": "Outros"
-    }
+    },
+    "responseExists": "Já existem respostas para este nome – edita-as no mesmo dispositivo ou pergunta ao organizador.",
+    "answersTooLarge": "As tuas respostas são demasiado longas. Encurta os textos livres e tenta novamente."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4292,7 +4294,8 @@
     "legal": {
       "terms": "Termos de Utilização (EULA)",
       "privacy": "Privacidade",
-      "autoRenew": "As subscrições renovam-se automaticamente pelo período escolhido, salvo cancelamento com pelo menos 24 horas de antecedência face ao fim do período atual. O pagamento é cobrado na tua conta App Store. Podes gerir ou cancelar as subscrições a qualquer momento nas definições da tua conta App Store. Lifetime é um pagamento único."
+      "autoRenew": "As subscrições renovam-se automaticamente pelo período escolhido, salvo cancelamento com pelo menos 24 horas de antecedência face ao fim do período atual. O pagamento é cobrado na tua conta App Store. Podes gerir ou cancelar as subscrições a qualquer momento nas definições da tua conta App Store. Lifetime é um pagamento único.",
+      "autoRenewWeb": "As subscrições renovam-se automaticamente pelo período escolhido até as cancelares. Os pagamentos são processados de forma segura pela Stripe. Podes gerir ou cancelar a tua subscrição a qualquer momento nesta página – mantém-se ativa até ao fim do período pago. Lifetime é um pagamento único."
     },
     "native": {
       "securePayment": "Pagamento seguro através da App Store ou do Google Play. Cancela quando quiseres.",
@@ -4368,7 +4371,14 @@
       "success": "Voucher resgatado com sucesso!",
       "error": "Código de voucher inválido",
       "discountHint": "Este código dá-lhe um desconto!",
-      "discountHintDesc": "Clique em 'Comprar' ou 'Subscrever' e introduza o código no checkout."
+      "discountHintDesc": "Clique em 'Comprar' ou 'Subscrever' e introduza o código no checkout.",
+      "errors": {
+        "ALREADY_REDEEMED": "Já resgataste este voucher.",
+        "ALREADY_LIFETIME": "Já tens acesso Premium ilimitado.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Já tens uma subscrição paga ativa. Cancela-a primeiro ou resgata o voucher quando terminar.",
+        "MAX_REDEMPTIONS": "Este voucher já atingiu o número máximo de resgates.",
+        "UNSUPPORTED_VOUCHER": "Este voucher não pode ser resgatado aqui."
+      }
     },
     "paywall": {
       "title": "Funcionalidade Premium",
@@ -4388,10 +4398,10 @@
     },
     "subscribe": "Atualizar Agora",
     "credits": {
-      "monthly": "50 créditos de IA/mês",
+      "monthly": "{{count}} créditos de IA/mês",
       "remaining": "{{remaining}} de {{limit}} créditos restantes",
-      "yearly": "100 créditos de IA/mês",
-      "lifetime": "75 créditos de IA/mês"
+      "yearly": "{{count}} créditos de IA/mês",
+      "lifetime": "{{count}} créditos de IA/mês"
     }
   },
   "admin": {
@@ -8127,6 +8137,7 @@
       "woIstWas": "Onde é?",
       "drueckDasWort": "Prime a Palavra",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Quase Lá",
       "pantomime": "Sem Palavras",
       "brew": "Beberagem"
@@ -8151,6 +8162,7 @@
       "woIstWas": "Encontra o lugar",
       "drueckDasWort": "Digita rápido, pensa rápido",
       "ohrwurm": "Ouve a música, acerta no ano",
+      "hitbuzzer": "Reconhece a música e carrega primeiro",
       "closeenough": "Perguntas de estimativa com um número por resposta — ganha quem chegar mais perto",
       "pantomime": "Representa em silêncio, a equipa adivinha — com desafios para pontos a dobrar",
       "brew": "Junta ingredientes sem entornar o tabuleiro — ganha quem completar a receita primeiro"
@@ -8435,7 +8447,7 @@
       "skip": "Saltar",
       "next": "Seguinte",
       "getStarted": "Criar o meu primeiro evento",
-      "slide5Title": "22 jogos. Uma noite de festa partilhada.",
+      "slide5Title": "23 jogos. Uma noite de festa partilhada.",
       "slide5Subtitle": "Criem a vossa lista, acumulem pontos entre jogos e transformem cada telemóvel num comando.",
       "slide6Title": "A vossa TV torna-se um palco de concurso",
       "slide6Subtitle": "O percurso, as pontuações e os grandes momentos aparecem em direto na TV enquanto todos jogam no telemóvel.",
@@ -9017,6 +9029,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Reconhece a música antes dos outros.",
+      "step1": "O anfitrião inicia um excerto de 30 segundos.",
+      "step2": "Carrega no teu botão assim que reconheceres a música.",
+      "step3": "Antes de jogar, escolhe se é preciso acertar o título, o artista ou ambos. Quem carrega no buzzer responde em voz alta e confirma antes de o tempo acabar. Só depois vê título e artista no seu dispositivo.",
+      "step4": "Certo dá pontos pela rapidez. Errado custa a penalização, bloqueia a tua equipa nesta música e reativa os outros botões.",
+      "step5": "Ganha a maior pontuação após as rondas escolhidas ou ao atingir o objetivo.",
+      "tip": "A parte exigida fica destacada na verificação privada. Uma resposta certa revela a solução a todos; uma errada mantém-na oculta."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Primeiro uma mancha de cor, depois uma imagem — mas quem espera recebe menos pontos.",

@@ -7,6 +7,16 @@ import { marketplaceFunctionErrorMessage } from "@/lib/marketplace-function-erro
 
 const SUPPORTED_LOCALES = ["de", "en", "es", "fr", "it", "nl", "pl", "pt", "tr", "ar"] as const;
 
+/** Extracts the booking public token from a guest publicPath like `/booking/abc?t=TOKEN`. */
+export function publicTokenFromPath(publicPath: unknown): string | undefined {
+  if (typeof publicPath !== "string" || !publicPath) return undefined;
+  try {
+    return new URL(publicPath, "https://event-bliss.com").searchParams.get("t") || undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function resolvePreferredLocale(lang: string | undefined): string {
   // Embed URL ?lang= wins over i18n.language (initial render before changeLanguage settles)
   if (typeof window !== "undefined") {
@@ -384,8 +394,15 @@ export function useCreateBooking() {
         }
 
         try {
+          // Guests have no session: booking-notify only sends the confirmation
+          // when it gets the booking's public token (the `?t=` of publicPath).
           await supabase.functions.invoke("booking-notify", {
-            body: { type: "confirmation", booking_id: guestData.id, locale },
+            body: {
+              type: "confirmation",
+              booking_id: guestData.id,
+              locale,
+              public_token: publicTokenFromPath(guestData.publicPath),
+            },
           });
         } catch {
           // E-Mail-Ausfall darf die bereits erstellte Buchung nicht zurückrollen.

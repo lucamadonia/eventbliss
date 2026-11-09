@@ -46,19 +46,20 @@ export function useAutoShowRules(gameId: string) {
   const nid = normalizeGameId(gameId);
   const key = `eb.rules-seen.${nid}`;
 
-  // Check synchronously if we should auto-show
-  const shouldAutoShow = (() => {
-    if (!nid) return false;
-    try { return !sessionStorage.getItem(key); } catch { return false; }
-  })();
-
-  const [show, setShow] = useState(shouldAutoShow);
+  const unseen = (id: string) => {
+    if (!id) return false;
+    try { return !sessionStorage.getItem(`eb.rules-seen.${id}`); } catch { return false; }
+  };
+  // GamesHub stays mounted while /games changes to /games/:id. Keep the
+  // visibility tied to the current game so first-play rules appear there too.
+  const [visibility, setVisibility] = useState(() => ({ id: nid, show: unseen(nid) }));
+  const show = visibility.id === nid ? visibility.show : unseen(nid);
 
   return {
     showRules: show,
-    openRules: () => setShow(true),
+    openRules: () => setVisibility({ id: nid, show: true }),
     closeRules: () => {
-      setShow(false);
+      setVisibility({ id: nid, show: false });
       try { sessionStorage.setItem(key, "1"); } catch { /* private mode */ }
     },
   };

@@ -59,8 +59,10 @@ serve(async (req: Request): Promise<Response> => {
       );
     }
 
-    // Update participant with user_id and mark as claimed
-    const { error: updateError } = await supabase
+    // Update participant with user_id and mark as claimed. The
+    // invite_claimed_at IS NULL guard makes the claim atomic: of two
+    // concurrent claims only one matches a row, the other gets 0 rows.
+    const { data: claimed, error: updateError } = await supabase
       .from("participants")
       .update({
         user_id: user_id,
@@ -68,7 +70,17 @@ serve(async (req: Request): Promise<Response> => {
         can_access_dashboard: true,
         status: "confirmed",
       })
-      .eq("id", participant.id);
+      .eq("id", participant.id)
+      .is("invite_claimed_at", null)
+      .select("id");
+
+    if (!updateError && (!claimed || claimed.length === 0)) {
+      console.log("Invite already claimed (concurrent claim)");
+      return new Response(
+        JSON.stringify({ success: false, error: "Diese Einladung wurde bereits angenommen" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     if (updateError) {
       console.error("Error updating participant:", updateError);

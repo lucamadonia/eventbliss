@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
+import { timingSafeEqual } from "../_shared/edge-guards.ts";
 
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
@@ -47,8 +48,11 @@ async function validateCalendlyWebhook(
 
   const timestamp = tPart.slice(2);
   const expectedSig = vPart.slice(3);
+  // Replay protection: Calendly signs the timestamp; reject stale deliveries.
+  const tsSeconds = Number(timestamp);
+  if (!Number.isFinite(tsSeconds) || Math.abs(Date.now() / 1000 - tsSeconds) > 5 * 60) return null;
   const computed = await hmacSha256(secret, `${timestamp}.${body}`);
-  if (computed !== expectedSig) return null;
+  if (!timingSafeEqual(computed, expectedSig.toLowerCase())) return null;
 
   const payload = JSON.parse(body);
   const typeMap: Record<string, WebhookEvent['type']> = {
@@ -75,7 +79,7 @@ async function validateCalcomWebhook(
   if (!signature) return null;
 
   const computed = await hmacSha256(secret, body);
-  if (computed !== signature) return null;
+  if (!timingSafeEqual(computed, signature.trim().toLowerCase())) return null;
 
   const payload = JSON.parse(body);
   const typeMap: Record<string, WebhookEvent['type']> = {
@@ -104,7 +108,7 @@ async function validateCustomApiWebhook(
   if (!signature) return null;
 
   const computed = await hmacSha256(secret, body);
-  if (computed !== signature) return null;
+  if (!timingSafeEqual(computed, signature.trim().toLowerCase())) return null;
 
   const payload = JSON.parse(body);
   const eventType: string = payload.type || payload.event || payload.eventType || '';
@@ -136,6 +140,29 @@ const validators: Record<string, WebhookValidator> = {
   cal_com: validateCalcomWebhook,
   custom_api: validateCustomApiWebhook,
 };
+
+// ---- External booking id lookup ----
+// The external id is persisted at the END of customer_notes
+// ("… | ID: <externalId>"). Match that suffix exactly, with LIKE wildcards
+// escaped, so an id like "%" or an empty id can never match other bookings.
+function externalIdPattern(externalId: string): string {
+  const escaped = externalId.replace(/[\\%_]/g, (c) => `\\${c}`);
+  return `%| ID: ${escaped}`;
+}
+
+async function findExternalBooking(
+  supabaseClient: any,
+  serviceId: string,
+  externalId: string,
+): Promise<{ id: string } | null> {
+  const { data } = await supabaseClient
+    .from('marketplace_bookings')
+    .select('id')
+    .eq('service_id', serviceId)
+    .like('customer_notes', externalIdPattern(externalId))
+    .limit(1);
+  return data && data.length > 0 ? data[0] : null;
+}
 
 // ---- Generate booking number ----
 
@@ -189,7 +216,7 @@ serve(async (req) => {
 
     const { data: services, error: serviceError } = await supabaseClient
       .from('marketplace_services')
-      .select('id, external_provider_config')
+      .select('id, external_provider_config, price_cents, price_type')
       .eq('agency_id', agencyId)
       .eq('external_provider', provider)
       .limit(1);
@@ -235,17 +262,39 @@ serve(async (req) => {
 
     logStep('Webhook-Event empfangen', { type: event.type, externalId: event.externalBookingId });
 
+    // Without a stable external id we can neither dedupe nor match later
+    // cancel/reschedule events (an empty id would LIKE-match every booking).
+    const externalId = String(event.externalBookingId ?? '').trim();
+    if (!externalId || externalId.length > 200) {
+      logStep('FEHLER: Externe Buchungs-ID fehlt', { provider });
+      return new Response(
+        JSON.stringify({ error: 'Externe Buchungs-ID fehlt' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
+    }
+
     // Process event based on type
     switch (event.type) {
       case 'booking_created': {
-        logStep('Neue Buchung wird angelegt', { externalId: event.externalBookingId });
+        logStep('Neue Buchung wird angelegt', { externalId });
+
+        // Providers retry deliveries — never create the same booking twice.
+        const existing = await findExternalBooking(supabaseClient, service.id, externalId);
+        if (existing) {
+          logStep('Buchung existiert bereits, Duplikat ignoriert', { bookingId: existing.id });
+          return new Response(
+            JSON.stringify({ received: true, duplicate: true }),
+            { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+          );
+        }
 
         const customerName = event.data.name || event.data.invitee?.name || 'Unbekannt';
         const customerEmail = event.data.email || event.data.invitee?.email || '';
         const customerPhone = event.data.phone || event.data.invitee?.phone || null;
         const bookingDate = event.data.date || event.data.scheduled_event?.start_time?.split('T')[0] || new Date().toISOString().split('T')[0];
         const bookingTime = event.data.time || event.data.scheduled_event?.start_time?.slice(11, 16) || '00:00';
-        const participantCount = event.data.participantCount || event.data.participant_count || 1;
+        const rawCount = Number(event.data.participantCount || event.data.participant_count || 1);
+        const participantCount = Number.isInteger(rawCount) && rawCount >= 1 && rawCount <= 500 ? rawCount : 1;
 
         // Pull the service's actual price so the external booking isn't
         // stored as a 0 € row (which would then surface as a fake 0 € on
@@ -265,9 +314,10 @@ serve(async (req) => {
             booking_number: generateBookingNumber(),
             service_id: service.id,
             agency_id: agencyId,
-            // Use a system/placeholder customer_id for external bookings;
-            // the real customer may not have an EventBliss account.
-            customer_id: agencyId, // Agency acts as placeholder
+            // customer_id references auth.users (nullable since the manual
+            // bookings migration). External customers have no EventBliss
+            // account, so leave it NULL — the agency id is not a user id.
+            customer_id: null,
             status: 'confirmed',
             booking_date: bookingDate,
             booking_time: bookingTime,
@@ -279,7 +329,7 @@ serve(async (req) => {
             customer_name: customerName,
             customer_email: customerEmail,
             customer_phone: customerPhone,
-            customer_notes: `Externe Buchung via ${provider} | ID: ${event.externalBookingId}`,
+            customer_notes: `Externe Buchung via ${provider} | ID: ${externalId}`,
             confirmed_at: new Date().toISOString(),
           });
 
@@ -299,12 +349,8 @@ serve(async (req) => {
         logStep('Buchung wird storniert', { externalId: event.externalBookingId });
 
         // Find the booking by external ID stored in customer_notes
-        const { data: bookings } = await supabaseClient
-          .from('marketplace_bookings')
-          .select('id')
-          .eq('service_id', service.id)
-          .like('customer_notes', `%${event.externalBookingId}%`)
-          .limit(1);
+        const match = await findExternalBooking(supabaseClient, service.id, externalId);
+        const bookings = match ? [match] : [];
 
         if (bookings && bookings.length > 0) {
           const { error: updateError } = await supabaseClient
@@ -333,12 +379,8 @@ serve(async (req) => {
         const newDate = event.data.date || event.data.new_start_time?.split('T')[0];
         const newTime = event.data.time || event.data.new_start_time?.slice(11, 16);
 
-        const { data: bookings } = await supabaseClient
-          .from('marketplace_bookings')
-          .select('id')
-          .eq('service_id', service.id)
-          .like('customer_notes', `%${event.externalBookingId}%`)
-          .limit(1);
+        const match = await findExternalBooking(supabaseClient, service.id, externalId);
+        const bookings = match ? [match] : [];
 
         if (bookings && bookings.length > 0) {
           const updateData: Record<string, any> = {};
@@ -366,12 +408,8 @@ serve(async (req) => {
       case 'booking_completed': {
         logStep('Buchung als abgeschlossen markiert', { externalId: event.externalBookingId });
 
-        const { data: bookings } = await supabaseClient
-          .from('marketplace_bookings')
-          .select('id')
-          .eq('service_id', service.id)
-          .like('customer_notes', `%${event.externalBookingId}%`)
-          .limit(1);
+        const match = await findExternalBooking(supabaseClient, service.id, externalId);
+        const bookings = match ? [match] : [];
 
         if (bookings && bookings.length > 0) {
           const { error: updateError } = await supabaseClient

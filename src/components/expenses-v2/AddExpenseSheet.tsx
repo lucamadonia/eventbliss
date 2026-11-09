@@ -292,8 +292,7 @@ export function AddExpenseSheet({
 
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
-      {/* [&>button]:hidden hides Radix's built-in close X (a direct child) —
-          this sheet has its own header with close + save buttons. */}
+      {/* [&>button]:hidden hides Radix's built-in close X (a direct child). */}
       <SheetContent
         side="bottom"
         className="bg-background border-t border-border text-foreground p-0 h-[92vh] max-h-[92vh] w-full max-w-full rounded-t-3xl flex flex-col overflow-hidden overscroll-contain [touch-action:pan-y] [&>button]:hidden"
@@ -317,21 +316,7 @@ export function AddExpenseSheet({
           <div className="flex-1 text-center">
             <h2 className="text-base font-bold text-foreground">{t("expenses.v2.add.title")}</h2>
           </div>
-          {step === "split" ? <Button
-            onClick={handleSave}
-            disabled={!canSave || !splitValid || addExpense.isPending}
-            size="sm"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            {addExpense.isPending ? (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            ) : (
-              <>
-                <Save className="w-3.5 h-3.5 mr-1.5" />
-                {t("expenses.v2.common.save")}
-              </>
-            )}
-          </Button> : <span className="w-9" />}
+          <span className="w-9" aria-hidden="true" />
         </div>
 
         <div className="flex gap-1.5 px-5 pt-3" aria-label={t("expenses.v2.add.stepProgress", "Schritt {{step}} von 4", { step: stepIndex + 1 })}>
@@ -351,10 +336,10 @@ export function AddExpenseSheet({
           }}
         >
           {/* 1) Quick — amount + title */}
-          <div className="px-5 py-6">
+          {step !== "split" && <div className="px-5 py-6">
             {step === "amount" && <>
             {/* Big amount input */}
-            <div className="flex min-h-[48vh] flex-col justify-center sm:min-h-[22rem]">
+            <div className="flex min-h-[36vh] flex-col justify-center sm:min-h-[22rem]">
               <div className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                 {t("expenses.amount")}
               </div>
@@ -498,7 +483,6 @@ export function AddExpenseSheet({
 
             {step === "payer" && <>
             {/* Payer selector (single / multi) */}
-            <div className="flex min-h-[48vh] flex-col justify-center sm:min-h-[22rem]">
               <PayerSelector
                 participants={participants}
                 amount={amountNum}
@@ -508,9 +492,8 @@ export function AddExpenseSheet({
                 multi={multiPayer}
                 onMultiChange={setMultiPayer}
               />
-            </div>
             </>}
-          </div>
+          </div>}
 
           {/* 2) Detail — expand */}
           <AnimatePresence initial={false}>
@@ -531,12 +514,15 @@ export function AddExpenseSheet({
                   <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                     <Calendar className="h-4 w-4" /> {t("expenses.v2.common.date")}
                   </div>
-                  <input
-                    type="date"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="expense-date-input block h-20 w-full min-w-0 rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-500/10 to-cyan-500/5 px-4 text-center text-xl font-semibold tabular-nums text-foreground [color-scheme:light] focus:border-violet-400/70 focus:outline-none focus:ring-2 focus:ring-violet-400/20 dark:[color-scheme:dark]"
-                  />
+                  <div className="expense-date-shell flex h-16 min-w-0 w-full max-w-full items-center overflow-hidden rounded-2xl border border-violet-400/30 bg-gradient-to-br from-violet-500/10 to-cyan-500/5 px-4 focus-within:border-violet-400/70 focus-within:ring-2 focus-within:ring-violet-400/20">
+                    <input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      aria-label={t("expenses.v2.common.date")}
+                      className="expense-date-input block h-full min-w-0 w-full max-w-full flex-1 bg-transparent text-center text-xl font-semibold tabular-nums text-foreground [color-scheme:light] focus:outline-none dark:[color-scheme:dark]"
+                    />
+                  </div>
                 </div>
 
                 {/* Notes */}

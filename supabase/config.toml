@@ -118,3 +118,12 @@ verify_jwt = false
 
 [functions.ohrwurm-spotify-track]
 verify_jwt = false
+
+# Kalender-Abo (webcal): Google/Apple/Outlook senden kein JWT. Zugriff ist über
+# den 64-hex-Token in ?token= abgesichert (calendar_tokens, is_active).
+[functions.ical-feed]
+verify_jwt = false
+
+# Double-Opt-In-Link aus der Mail: kein Login. Validiert confirmation_token selbst.
+[functions.newsletter-confirm]
+verify_jwt = false

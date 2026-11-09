@@ -16,7 +16,9 @@ describe('localized content module contracts', () => {
     expect(questions.length).toBeGreaterThan(0);
     expect(getSTORY_STARTERS().length).toBeGreaterThan(0);
     expect(getSTORY_PROMPTS().length).toBeGreaterThan(0);
-  });
+    // Each language lazily imports several large content modules; on a cold
+    // transform cache under a parallel full-suite run that exceeds the 5s default.
+  }, 30_000);
 });
 
 describe('Unicode emoji in AI content', () => {

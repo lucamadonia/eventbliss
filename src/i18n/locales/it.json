@@ -224,7 +224,9 @@
       "food": "Cibo e bevande",
       "chill": "Relax",
       "mixed": "Altro"
-    }
+    },
+    "responseExists": "Esistono già risposte per questo nome: modificale dallo stesso dispositivo o chiedi all'organizzatore.",
+    "answersTooLarge": "Le tue risposte sono troppo lunghe. Accorcia i testi liberi e riprova."
   },
   "designTemplates": {
     "jga-classic": {
@@ -4242,7 +4244,8 @@
     "legal": {
       "terms": "Termini di utilizzo (EULA)",
       "privacy": "Privacy",
-      "autoRenew": "Gli abbonamenti si rinnovano automaticamente per il periodo scelto salvo disdetta almeno 24 ore prima della fine del periodo in corso. Il pagamento viene addebitato sul tuo account App Store. Puoi gestire o annullare gli abbonamenti in qualsiasi momento nelle impostazioni del tuo account App Store. Lifetime è un pagamento una tantum."
+      "autoRenew": "Gli abbonamenti si rinnovano automaticamente per il periodo scelto salvo disdetta almeno 24 ore prima della fine del periodo in corso. Il pagamento viene addebitato sul tuo account App Store. Puoi gestire o annullare gli abbonamenti in qualsiasi momento nelle impostazioni del tuo account App Store. Lifetime è un pagamento una tantum.",
+      "autoRenewWeb": "Gli abbonamenti si rinnovano automaticamente per il periodo scelto fino alla disdetta. I pagamenti sono elaborati in modo sicuro da Stripe. Puoi gestire o annullare l'abbonamento in qualsiasi momento da questa pagina: resta attivo fino alla fine del periodo pagato. Lifetime è un pagamento una tantum."
     },
     "native": {
       "securePayment": "Pagamento sicuro tramite App Store o Google Play. Disdici quando vuoi.",
@@ -4318,7 +4321,14 @@
       "success": "Voucher riscattato con successo!",
       "error": "Codice voucher non valido",
       "discountHint": "Questo codice ti dà uno sconto!",
-      "discountHintDesc": "Clicca su 'Acquista' o 'Abbonati' e inserisci il codice al checkout."
+      "discountHintDesc": "Clicca su 'Acquista' o 'Abbonati' e inserisci il codice al checkout.",
+      "errors": {
+        "ALREADY_REDEEMED": "Hai già riscattato questo buono.",
+        "ALREADY_LIFETIME": "Hai già l'accesso Premium illimitato.",
+        "ACTIVE_PAID_SUBSCRIPTION": "Hai già un abbonamento a pagamento attivo. Annullalo prima o riscatta il buono quando scade.",
+        "MAX_REDEMPTIONS": "Questo buono ha raggiunto il numero massimo di utilizzi.",
+        "UNSUPPORTED_VOUCHER": "Questo buono non può essere riscattato qui."
+      }
     },
     "paywall": {
       "title": "Funzionalità Premium",
@@ -4338,10 +4348,10 @@
     },
     "subscribe": "Passa a Premium",
     "credits": {
-      "monthly": "50 crediti AI/mese",
+      "monthly": "{{count}} crediti AI/mese",
       "remaining": "{{remaining}} di {{limit}} crediti rimanenti",
-      "yearly": "100 crediti AI/mese",
-      "lifetime": "75 crediti AI/mese"
+      "yearly": "{{count}} crediti AI/mese",
+      "lifetime": "{{count}} crediti AI/mese"
     }
   },
   "admin": {
@@ -8077,6 +8087,7 @@
       "woIstWas": "Dov'è?",
       "drueckDasWort": "Premi la Parola",
       "ohrwurm": "Ohrwurm",
+      "hitbuzzer": "Hit-Buzzer",
       "closeenough": "Quasi Quasi",
       "pantomime": "Senza parole",
       "brew": "Intruglio"
@@ -8101,6 +8112,7 @@
       "woIstWas": "Trova il posto",
       "drueckDasWort": "Digita veloce, pensa veloce",
       "ohrwurm": "Ascolta il brano, indovina l'anno",
+      "hitbuzzer": "Riconosci il brano e premi per primo",
       "closeenough": "Domande di stima con un numero per risposta: vince chi si avvicina di più",
       "pantomime": "Mima in silenzio, la squadra indovina — con sfide per punti doppi",
       "brew": "Raccogli ingredienti senza rovesciare il vassoio: vince chi completa la ricetta per primo"
@@ -8385,7 +8397,7 @@
       "skip": "Salta",
       "next": "Avanti",
       "getStarted": "Crea il mio primo evento",
-      "slide5Title": "22 giochi. Un’unica serata insieme.",
+      "slide5Title": "23 giochi. Un’unica serata insieme.",
       "slide5Subtitle": "Create la vostra scaletta, accumulate punti tra un gioco e l’altro e trasformate ogni telefono in un controller.",
       "slide6Title": "La TV diventa il palco di un game show",
       "slide6Subtitle": "Percorso, punteggi e momenti più belli appaiono in diretta sulla TV mentre tutti giocano dal telefono.",
@@ -8967,6 +8979,16 @@
     }
   },
   "gameRules": {
+    "hitbuzzer": {
+      "title": "Hit-Buzzer",
+      "tagline": "Riconosci la canzone prima degli altri.",
+      "step1": "L’host avvia un estratto di 30 secondi.",
+      "step2": "Premi il tuo pulsante appena riconosci la canzone.",
+      "step3": "Prima di giocare, scegli se devono essere giusti il titolo, l’artista o entrambi. Chi preme il buzzer risponde ad alta voce e conferma entro il tempo. Solo dopo vede titolo e artista sul proprio dispositivo.",
+      "step4": "Una risposta giusta dà punti in base alla velocità. Una risposta errata costa la penalità, blocca la squadra per questo brano e riapre gli altri pulsanti.",
+      "step5": "Vince il punteggio più alto dopo i round scelti o al raggiungimento dell’obiettivo.",
+      "tip": "La parte richiesta è evidenziata nella verifica privata. Una risposta giusta rivela la soluzione a tutti; una sbagliata la lascia nascosta."
+    },
     "pixeljagd": {
       "title": "Pixeljagd",
       "tagline": "Prima una macchia di colore, poi un'immagine — ma chi aspetta prende meno punti.",
