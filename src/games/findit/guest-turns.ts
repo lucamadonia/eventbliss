@@ -1,7 +1,7 @@
 /**
  * WO IST WAS mit 🔁-Gaesten am Host-Handy (guestPolicy 'sequential').
  *
- * - Karte / Street View: Alle mit eigenem Handy setzen ihren Pin gleichzeitig.
+ * - Karte / Street View: Jedes Geraet setzt seinen Pin nacheinander.
  *   Am Host-Handy setzt zuerst der Host, dann jeder Gast nach einer verdeckten
  *   Weitergabe — jeder mit voller eigener Zeit, die Uhr steht, solange das
  *   Handy wandert. Pins bleiben bis zur Aufloesung verborgen (Handy und TV),
