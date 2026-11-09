@@ -4294,7 +4294,8 @@
     "legal": {
       "terms": "Gebruiksvoorwaarden (EULA)",
       "privacy": "Privacy",
-      "autoRenew": "Abonnementen worden automatisch verlengd voor de gekozen periode, tenzij ze minstens 24 uur voor het einde van de huidige periode worden opgezegd. De betaling wordt afgeschreven van je App Store-account. Je kunt abonnementen op elk moment beheren of opzeggen in de instellingen van je App Store-account. Lifetime is een eenmalige aankoop."
+      "autoRenew": "Abonnementen worden automatisch verlengd voor de gekozen periode, tenzij ze minstens 24 uur voor het einde van de huidige periode worden opgezegd. De betaling wordt afgeschreven van je App Store-account. Je kunt abonnementen op elk moment beheren of opzeggen in de instellingen van je App Store-account. Lifetime is een eenmalige aankoop.",
+      "autoRenewWeb": "Abonnementen worden automatisch verlengd voor de gekozen periode totdat je opzegt. Betalingen worden veilig verwerkt door Stripe. Je kunt je abonnement op elk moment op deze pagina beheren of opzeggen – het blijft actief tot het einde van de betaalde periode. Lifetime is een eenmalige aankoop."
     },
     "native": {
       "securePayment": "Veilig betalen via de App Store of Google Play. Altijd opzegbaar.",
@@ -4397,10 +4398,10 @@
     },
     "subscribe": "Nu Upgraden",
     "credits": {
-      "monthly": "50 AI-credits/maand",
+      "monthly": "{{count}} AI-credits/maand",
       "remaining": "{{remaining}} van {{limit}} credits over",
-      "yearly": "100 AI-credits/maand",
-      "lifetime": "75 AI-credits/maand"
+      "yearly": "{{count}} AI-credits/maand",
+      "lifetime": "{{count}} AI-credits/maand"
     }
   },
   "admin": {
