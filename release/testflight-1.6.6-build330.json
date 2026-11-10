@@ -1,0 +1,8 @@
+{
+  "version": "1.6.6",
+  "bundleId": "app.eventbliss",
+  "localizations": {
+    "de-DE": "Joystick-Modus: Abgelaufene Partys werden beim Wiederöffnen, Verlassen und Beenden entfernt. Der Spieleinstieg führt wieder zur richtigen Joystick-Lobby; alte Mitglieder und QR-Codes erscheinen nicht mehr als neue Party. Ein Neustart erstellt einen frischen Beitrittscode.\n\nBitte testen: Party beenden und neu starten, QR-Code mit einem zweiten iPhone scannen, TV verbinden, Ohrwurm starten und die App während einer Runde neu öffnen. Prüft, dass ein alter Code nicht erneut angezeigt wird. Bei Problemen bitte Build 330, Geräte, iOS-Version und genaue Schritte nennen.",
+    "en-US": "Joystick mode: Expired parties are cleared when reopened, left or ended. The Games entry opens the correct controller lobby; old members and QR codes no longer appear as a new party. Starting again creates a fresh join code.\n\nPlease test: end a party and start another one, scan its QR code with a second iPhone, connect the TV, start Ohrwurm and reopen the app during a round. Check that the old code does not return. For issues, include build 330, devices, iOS version and exact steps."
+  }
+}
