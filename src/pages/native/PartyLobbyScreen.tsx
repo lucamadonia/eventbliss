@@ -75,6 +75,12 @@ export default function PartyLobbyScreen() {
   const startSession = party.startSession;
   const isPartyActive = party.isPartyActive;
 
+  // A restored joystick snapshot is server-owned. Opening the local-party
+  // route must not present its old members and TV code as a fresh local party.
+  useEffect(() => {
+    if (party.session?.playMode === 'controllers') navigate('/party/controllers', { replace: true });
+  }, [party.session?.playMode, navigate]);
+
   /**
    * Zurueck fuehrt hier bewusst zur Spieleuebersicht statt navigate(-1) in die
    * Verlaufsgeschichte: Die Lobby wird aus Spielen heraus wieder betreten
@@ -103,7 +109,7 @@ export default function PartyLobbyScreen() {
   // A local party already owns a TV code. Start its channel before anyone
   // opens the TV URL, so the first ready heartbeat can receive the lobby.
   useEffect(() => {
-    if (session) tv?.activate();
+    if (session?.playMode === 'local') tv?.activate();
   }, [session, tv]);
   const players = useMemo(() => session?.players ?? [], [session]);
   const editingPlayer = players.find(player => player.id === editingPlayerId);
@@ -149,7 +155,7 @@ export default function PartyLobbyScreen() {
    * deshalb kam der fruehere Karten-Impuls nie verlaesslich am TV an.
    */
   const broadcastLobby = useCallback((view = tvView) => {
-    if (!tv?.isActive || !session) return;
+    if (!tv?.isActive || session?.playMode !== 'local') return;
     const nameFor = (id: string) => {
       const game = playableGames.find((entry) => entry.id === id);
       return t(game?.nameKey ?? id);

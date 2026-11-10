@@ -10609,7 +10609,7 @@
       "removed": "You're no longer in this party.",
       "seat_taken": "Someone else just took this spot. The list has been updated.",
       "ended": "This party is over.",
-      "not_found": "This party doesn't exist. Check the code."
+      "not_found": "This party is no longer available. Scan the current QR code or start a new party."
     },
     "kick": {
       "ban": "Remove and block",
