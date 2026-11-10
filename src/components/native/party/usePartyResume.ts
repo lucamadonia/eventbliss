@@ -49,7 +49,7 @@ export function usePartyResumeState(): PartyResumeState {
 
   const token = session ? `${session.id}:${session.playlistIndex}` : null;
   const gameId =
-    session && session.playlistActive ? session.playlist[session.playlistIndex] ?? null : null;
+    session?.playMode !== 'controllers' && session?.playlistActive ? session.playlist[session.playlistIndex] ?? null : null;
 
   const dismiss = useCallback(() => {
     if (!token) return;

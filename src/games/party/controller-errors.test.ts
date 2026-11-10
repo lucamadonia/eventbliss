@@ -15,6 +15,7 @@ describe('controllerErrorCode', () => {
     expect(controllerErrorCode('Host action required')).toBe('host_required');
     expect(controllerErrorCode('Party has ended')).toBe('ended');
     expect(controllerErrorCode('Party not found')).toBe('not_found');
+    expect(controllerErrorCode('Party unavailable or expired')).toBe('not_found');
   });
 
   it('has a German text for every code', () => {

@@ -14,7 +14,7 @@ vi.mock('@/games/multiplayer/useGameRoom', () => ({ gameRoomSession: {
   onBroadcast: () => () => {}, broadcast: () => {}, kickPlayer: () => {}, dropParticipant: () => {}, reconnect: async () => {},
 } }));
 vi.mock('@/hooks/usePartySession', () => ({ replaceControllerPartySession: vi.fn() }));
-import { abortControllerGame, controllerPartySession, getControllerState, openControllerParty, recordControllerResult, startControllerGame, stopControllerParty } from '@/games/party/controller-session';
+import { abortControllerGame, controllerPartySession, endControllerParty, getControllerState, leaveControllerParty, openControllerParty, recordControllerResult, startControllerGame, stopControllerParty } from '@/games/party/controller-session';
 import { readControllerResults, writeControllerResults } from '@/games/party/controller-outbox';
 import { controllerScores } from '@/games/party/controller-result';
 import { personalResult } from '@/games/social/result';
@@ -39,6 +39,41 @@ const playing = (): ControllerPartyData => ({ ...data(), party: { ...data().part
 const resultPayload = { match_id: 'm1', game_id: 'bomb', scores: { p1: 1, p2: 0 }, scored: true };
 
 describe('controller party consistency', () => {
+  it('clears an expired restored party so its old code and roster cannot return', async () => {
+    localStorage.setItem('controller_party:u1', 'ABCDEF');
+    fixture.request.mockRejectedValue(new Error('Party unavailable or expired'));
+    await expect(openControllerParty('u1', 'Alex', 'ABCDEF', true, { resume: true })).rejects.toThrow('expired');
+    expect(getControllerState().data).toBeNull();
+    expect(localStorage.getItem('controller_party:u1')).toBeNull();
+    expect(getControllerState().error).toBe('Party unavailable or expired');
+  });
+  it('drops an expired live party when its next server refresh rejects it', async () => {
+    fixture.request.mockImplementation((action: string) => action === 'read'
+      ? Promise.reject(new Error('Party unavailable or expired')) : Promise.resolve(data()));
+    await openControllerParty('u1', 'Alex');
+    expect(getControllerState().data?.party.code).toBe('ABCDEF');
+    await vi.advanceTimersByTimeAsync(4000);
+    expect(getControllerState().data).toBeNull();
+    expect(localStorage.getItem('controller_party:u1')).toBeNull();
+  });
+  it('keeps a live party when a refresh only loses network access', async () => {
+    fixture.request.mockImplementation((action: string) => action === 'read'
+      ? Promise.reject(new Error('Failed to fetch')) : Promise.resolve(data()));
+    await openControllerParty('u1', 'Alex');
+    await vi.advanceTimersByTimeAsync(4000);
+    expect(getControllerState().data?.party.code).toBe('ABCDEF');
+    expect(localStorage.getItem('controller_party:u1')).toBe('ABCDEF');
+  });
+  it('lets the host and guest close a party that already expired on the server', async () => {
+    fixture.request.mockImplementation((action: string) => action === 'end' || action === 'leave'
+      ? Promise.reject(new Error('Party unavailable or expired')) : Promise.resolve(data()));
+    await openControllerParty('u1', 'Alex');
+    await expect(endControllerParty()).resolves.toBeUndefined();
+    expect(getControllerState().data).toBeNull();
+    await openControllerParty('u1', 'Alex');
+    await expect(leaveControllerParty()).resolves.toBeUndefined();
+    expect(getControllerState().data).toBeNull();
+  });
   it('keeps departed standings separate from active game slots and stable across polling', () => {
     const snapshot = data();
     snapshot.party.created_at = '2026-09-23T07:00:00Z';

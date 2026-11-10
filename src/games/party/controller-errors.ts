@@ -32,7 +32,7 @@ const DEFAULTS: Record<ControllerErrorCode, string> = {
   host_required: 'Das darf nur der Host.',
   removed: 'Du bist nicht mehr in dieser Party.',
   ended: 'Diese Party ist vorbei.',
-  not_found: 'Diese Party gibt es nicht. Prüfe den Code.',
+  not_found: 'Diese Party ist nicht mehr verfügbar. Scanne den aktuellen QR-Code oder starte eine neue Party.',
 };
 
 /** Extracts a known code from a raw RPC error message (codes may be wrapped in prose). */
@@ -44,7 +44,7 @@ export function controllerErrorCode(message: string | null | undefined): Control
   if (/party is full/i.test(message)) return 'party_full';
   if (/host action required/i.test(message)) return 'host_required';
   if (/party (has )?ended|party_ended|party (has )?expired/i.test(message)) return 'ended';
-  if (/party not found|unknown party|invalid (party )?code/i.test(message)) return 'not_found';
+  if (/party unavailable(?: or expired)?|party not found|unknown party|invalid (party )?code/i.test(message)) return 'not_found';
   return null;
 }
 

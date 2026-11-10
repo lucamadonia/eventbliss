@@ -10610,7 +10610,7 @@
       "removed": "Du bist nicht mehr in dieser Party.",
       "seat_taken": "Diesen Platz hat gerade jemand anderes übernommen. Die Liste ist aktualisiert.",
       "ended": "Diese Party ist vorbei.",
-      "not_found": "Diese Party gibt es nicht. Prüfe den Code."
+      "not_found": "Diese Party ist nicht mehr verfügbar. Scanne den aktuellen QR-Code oder starte eine neue Party."
     },
     "kick": {
       "ban": "Entfernen und sperren",

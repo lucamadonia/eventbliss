@@ -130,6 +130,10 @@ async function refresh(): Promise<ControllerPartyData> {
     // A kicked or banned account can no longer read the party: leave cleanly instead of polling forever.
     if (current === generation && (reason === 'removed' || reason === 'banned' || reason === 'recalled')) {
       stopControllerParty(null, { code, banned: reason === 'banned', recalled: reason === 'recalled' });
+    } else if (current === generation && reason === 'not_found') {
+      // The server has expired or removed this room. Never keep its roster or QR
+      // in the local session while polling the same unusable code forever.
+      stopControllerParty(error instanceof Error ? error.message : String(error));
     }
     throw error;
   }).then(data => {
@@ -233,7 +237,7 @@ export async function openControllerParty(userId: string, name: string, code?: s
   if (state.busy) return;
   const current = ++generation;
   publish({ removed: null, onboarding: false });
-  await run(async () => {
+  try { await run(async () => {
     accountId = userId;
     const playerId = await gameRoomSession.prepareAccountIdentity(userId);
     devicePlayerId = playerId;
@@ -249,7 +253,12 @@ export async function openControllerParty(userId: string, name: string, code?: s
     }
     publish({ onboarding: !!code && !options.resume && data.party.host_user_id !== userId });
     await connect(data, ownMember(data, userId)?.name ?? name, current);
-  });
+  }); } catch (error) {
+    if (options.resume && current === generation && controllerErrorCode(error instanceof Error ? error.message : String(error)) === 'not_found') {
+      stopControllerParty(error instanceof Error ? error.message : String(error));
+    }
+    throw error;
+  }
 }
 
 /** One action for the Host: keep the current evening while enabling phone seats. */
@@ -468,7 +477,7 @@ export async function abortControllerGame() {
 export async function endControllerParty() {
   if (!state.data) return;
   const current = generation, code = state.data.party.code;
-  await run(async () => {
+  try { await run(async () => {
     const data = await controllerRequest('end', code);
     if (current !== generation) return;
     accept(data);
@@ -482,18 +491,30 @@ export async function endControllerParty() {
     // so it is announced once the round-end scene has fired on every device).
     const finale = chainedFinale(roundEnd);
     setTimeout(() => { if (current === generation) announceScene(finale); }, Math.max(0, sceneLocalTime(roundEnd.startsAt) - Date.now()) + 50);
-  });
+  }); } catch (error) {
+    if (current === generation && controllerErrorCode(error instanceof Error ? error.message : String(error)) === 'not_found') {
+      stopControllerParty(error instanceof Error ? error.message : String(error));
+      return;
+    }
+    throw error;
+  }
 }
 /** Leave a finished party on this device only (nothing left to tell the server). */
 export function closeControllerParty() {
   pendingResults.clear(); persistResults(); stopControllerParty();
 }
 export async function leaveControllerParty(end = false) {
-  await run(async () => {
-    const current = generation;
+  const current = generation;
+  try { await run(async () => {
     if (state.data) await controllerRequest(end ? 'end' : 'leave', state.data.party.code);
     if (current === generation) { pendingResults.clear(); persistResults(); stopControllerParty(); }
-  });
+  }); } catch (error) {
+    if (current === generation && controllerErrorCode(error instanceof Error ? error.message : String(error)) === 'not_found') {
+      stopControllerParty();
+      return;
+    }
+    throw error;
+  }
 }
 export async function retryControllerConnection() {
   if (!state.data) return;

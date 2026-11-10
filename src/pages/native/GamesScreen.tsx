@@ -127,14 +127,14 @@ export default function GamesScreen() {
             gameId={partyResume.gameId}
             onResume={handleResumeParty}
             onDismiss={partyResume.dismiss}
-            onOpenLobby={() => { haptics.light(); navigate("/party"); }}
+            onOpenLobby={() => { haptics.light(); navigate(party.session?.playMode === 'controllers' ? '/party/controllers' : '/party'); }}
           />
         ) : (
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => {
             haptics.medium();
-            navigate("/party");
+            navigate(party.session?.playMode === 'controllers' ? '/party/controllers' : '/party');
           }}
           className="w-full relative overflow-hidden rounded-2xl p-4 bg-gradient-to-r from-[#df8eff]/15 via-[#ff6b98]/10 to-[#f9ca24]/15 border border-[#df8eff]/25 flex items-center gap-3 text-left group"
         >
