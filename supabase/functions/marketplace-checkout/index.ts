@@ -1,8 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0?target=deno";
-import { createClient, type User } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { createClient, type SupabaseClient, type User } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { getCorsHeaders } from "../_shared/cors.ts";
 import { getSafeOrigin } from "../_shared/origin.ts";
+import { STRIPE_PROJECT } from "../_shared/stripe-project.ts";
 import { checkRateLimit, getClientIp, rateLimitResponse } from "../_shared/rate-limit.ts";
 
 const logStep = (step: string, details?: unknown) => {
@@ -26,7 +27,7 @@ function cleanText(value: unknown, maxLength: number): string {
 
 async function optionalUser(
   req: Request,
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: SupabaseClient,
 ): Promise<User | null> {
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) return null;
@@ -262,6 +263,8 @@ serve(async (req) => {
       platform_fee_cents: String(booking.platform_fee_cents ?? ""),
       agency_payout_cents: String(booking.agency_payout_cents ?? ""),
       source: user ? "marketplace" : "marketplace_guest",
+      // Shared Stripe account: webhooks only process project=EVENT objects.
+      project: STRIPE_PROJECT,
     };
 
     const successPath = guestPublicPath ?? `/booking-success?booking=${encodeURIComponent(booking.id)}`;
@@ -279,7 +282,11 @@ serve(async (req) => {
           product_data: {
             name: serviceTitle,
             description: `Buchung ${booking.booking_number} · ${agencyName}`,
-            metadata: { booking_id: String(booking.id), agency_id: String(booking.agency_id) },
+            metadata: {
+              booking_id: String(booking.id),
+              agency_id: String(booking.agency_id),
+              project: STRIPE_PROJECT,
+            },
           },
           unit_amount: booking.total_price_cents,
         },
