@@ -1,6 +1,25 @@
 import { haversineKm } from '../engine/haversine';
 
 export interface OnlineGuess { playerId: string; playerName: string; playerColor: string; lat: number; lng: number; distanceKm: number }
+
+/** Host and seats on the host phone go first, then the other phones in room order. */
+export function geoTurnOrder(players: readonly { id: string }[], room: readonly { id: string; controlledBy?: string }[], hostId?: string): string[] {
+  const hostSeats = players.filter(player => player.id === hostId || room.some(seat => seat.id === player.id && seat.controlledBy === hostId));
+  const hostSeatIds = new Set(hostSeats.map(player => player.id));
+  return [...hostSeats, ...players.filter(player => !hostSeatIds.has(player.id))].map(player => player.id);
+}
+
+export function nextGeoGuesser(players: readonly { id: string }[], room: readonly { id: string; controlledBy?: string }[], hostId: string | undefined, submittedIds: readonly string[]): string | null {
+  const submitted = new Set(submittedIds);
+  return geoTurnOrder(players, room, hostId).find(id => !submitted.has(id)) ?? null;
+}
+
+/** Ignore stale and early packets; only the seat currently on turn can lock a pin. */
+export function appendGeoTurnGuess(previous: OnlineGuess[], players: { id: string; name: string; color: string }[], room: readonly { id: string; controlledBy?: string }[], hostId: string | undefined,
+  playerId: string, lat: number, lng: number, target: { lat: number; lng: number }, submitted = true): OnlineGuess[] {
+  if (playerId !== nextGeoGuesser(players, room, hostId, previous.map(guess => guess.playerId))) return previous;
+  return appendOnlineGuess(previous, players, playerId, lat, lng, target, submitted);
+}
 /** First valid submission wins, identically for the host and guests. */
 export function appendOnlineGuess(previous: OnlineGuess[], players: { id: string; name: string; color: string }[], playerId: string, lat: number, lng: number, target: { lat: number; lng: number }, submitted = true): OnlineGuess[] {
   if (!Number.isFinite(lat) || !Number.isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return previous;

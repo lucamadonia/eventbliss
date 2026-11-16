@@ -1,7 +1,6 @@
 import './expedition.css';
-import { usePausableTimeout } from '../engine/TimerSystem';
-import { appendOnlineGuess, publicGuessRound, settleGuessesAfterRemoval } from './online-guesses';
-import { fillMissingGuesses } from './guest-turns';
+import { appendGeoTurnGuess, nextGeoGuesser, publicGuessRound, settleGuessesAfterRemoval } from './online-guesses';
+import { GeoTurnCurtain } from './GeoTurnCurtain';
 import { useGuestGuesser } from './useGuestGuesser';
 import { GuessSeatChip } from './GuessSeatChip';
 import { useSyncedPhase } from '../multiplayer/useSyncedPhase';
@@ -99,42 +98,22 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   const [panoError, setPanoError] = useState(false);
   const [panoAttempt, setPanoAttempt] = useState(0);
   const [guessMapReady, setGuessMapReady] = useState(false);
+  const [readySeatId, setReadySeatId] = useState<string | null>(null);
   const [readyIds, setReadyIds] = useState<string[]>([]);
   const panoStatus = useCallback((ready: boolean) => { setPanoReady(ready); setPanoError(!ready); }, []);
-  useEffect(() => {
-    if (panoReady || panoError) return;
-    const timeout = window.setTimeout(() => setPanoError(true), 20000);
-    return () => window.clearTimeout(timeout);
-  }, [panoReady, panoError, panoAttempt, location.lat, location.lng]);
   const retryPanorama = () => {
     setPanoReady(false);
     setPanoError(false);
     setPanoAttempt(attempt => attempt + 1);
   };
-  useEffect(() => {
-    if (!online || !panoReady) return;
-    if (online.isHost) setReadyIds(ids => ids.includes(online.myPlayerId) ? ids : [...ids, online.myPlayerId]);
-    else {
-      online.broadcast('findit-sv-ready', { roundNumber });
-      const id = window.setInterval(() => online.broadcast('findit-sv-ready', { roundNumber }), 1500);
-      return () => window.clearInterval(id);
-    }
-  }, [online, panoReady, roundNumber]);
-  useEffect(() => {
-    if (!online?.isHost) return;
-    return online.onBroadcast('findit-sv-ready', data => {
-      if (data.roundNumber !== roundNumber || !players.some(p => p.id === data.__senderId)) return;
-      setReadyIds(ids => ids.includes(String(data.__senderId)) ? ids : [...ids, String(data.__senderId)]);
-    });
-  }, [online, players, roundNumber]);
-  const allPanosReady = panoReady && (!online || players.every(p => readyIds.includes(p.id)));
-
   const [playerIdx, setPlayerIdx] = useState(0);
   const [guesses, setGuesses] = useState<{ playerId: string; playerName: string; playerColor: string; lat: number; lng: number; distanceKm: number }[]>([]);
   const [pinPos, setPinPos] = useState<{ lat: number; lng: number } | null>(null);
   const [countdown, setCountdown] = useState(timerSeconds);
   const [exploreTime, setExploreTime] = useState(20); // 20s to explore
   const [myGuessPlaced, setMyGuessPlaced] = useState(false);
+  const [submittedIds, setSubmittedIds] = useState<string[]>([]);
+  const remotePhaseRef = useRef<Phase>('explore');
   const [waitingForResults, setWaitingForResults] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const guessesRef = useRef(guesses);
@@ -149,12 +128,56 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   const view = sync.view, inputOpen = sync.blocker === null;
   const paused = !!handover?.isPaused;
   // Host phone: own seat first, then each 🔁 guest after a handover (guest-turns.ts).
-  const guesser = useGuestGuesser(online, phase === 'guess', players, guesses, onLocalSeat);
+  const guesser = useGuestGuesser(online, phase === 'explore' || phase === 'guess', players, guesses, onLocalSeat);
   const guesserRef = useRef(guesser);
   guesserRef.current = guesser;
   // In online mode, "currentPlayer" is THIS device's seat (or the guest holding the host phone)
   const myPlayer = online ? players.find(p => p.id === (guesser ?? online.myPlayerId)) || players.find(p => p.id === online.myPlayerId) || players[0] : null;
   const currentPlayer = online ? myPlayer! : players[playerIdx % players.length];
+  const hostId = online?.hostPlayerId ?? (online?.isHost ? online.myPlayerId : players[0]?.id);
+  const turnId = online ? nextGeoGuesser(players, online.players, hostId,
+    online.isHost ? guesses.map(guess => guess.playerId) : submittedIds) : null;
+  const turnPlayer = online ? players.find(player => player.id === turnId) ?? null : currentPlayer;
+  const canGuess = !online || (!!turnId && localSeats(online).includes(turnId) && !myGuessPlaced);
+  const previousTurnIdRef = useRef<string | null>(turnId);
+  const restartingTurnIdRef = useRef<string | null>(null);
+  // A removed active player gives the next phone a fresh panorama and a full turn.
+  useEffect(() => {
+    const previousTurnId = previousTurnIdRef.current;
+    previousTurnIdRef.current = turnId;
+    if (!online?.isHost || phase === 'result' || !previousTurnId || players.some(player => player.id === previousTurnId)) return;
+    restartingTurnIdRef.current = turnId;
+    setPanoReady(false);
+    setPanoError(false);
+    setReadyIds([]);
+    setReadySeatId(null);
+    setGuessMapReady(false);
+    setPinPos(null);
+    setExploreTime(20);
+    setCountdown(timerSeconds);
+    setPhase('explore');
+  }, [online?.isHost, phase, players, timerSeconds, turnId]);
+  useEffect(() => {
+    if (!online || online.isHost || phase !== 'explore' || !canGuess || !panoReady) return;
+    const announce = () => online.broadcast('findit-sv-ready', { roundNumber, turnId });
+    announce();
+    const timer = window.setInterval(announce, 1500);
+    return () => window.clearInterval(timer);
+  }, [online, phase, canGuess, panoReady, roundNumber, turnId]);
+  useEffect(() => {
+    if (!online?.isHost) return;
+    return online.onBroadcast('findit-sv-ready', data => {
+      if (data.roundNumber !== roundNumber || data.turnId !== turnId || data.__senderId !== turnId) return;
+      setReadyIds(ids => ids.includes(turnId!) ? ids : [...ids, turnId!]);
+    });
+  }, [online, roundNumber, turnId]);
+  const activePanoReady = !online ? panoReady
+    : !!turnId && (localSeats(online).includes(turnId) ? panoReady : readyIds.includes(turnId));
+  useEffect(() => {
+    if (phase !== 'explore' || !canGuess || paused || panoReady || panoError) return;
+    const timeout = window.setTimeout(() => setPanoError(true), 20000);
+    return () => window.clearTimeout(timeout);
+  }, [phase, canGuess, paused, panoReady, panoError, panoAttempt, location.lat, location.lng]);
   const currentPlayerRef = useRef(currentPlayer);
   useEffect(() => { currentPlayerRef.current = currentPlayer; }, [currentPlayer]);
 
@@ -164,20 +187,29 @@ export default function StreetViewRound({ location: promptLocation, players, rou
   // Broadcast has no self echo: apply the host's guess locally.
   const receiveGuess = useCallback((playerId: string, lat: number, lng: number, submitted = true) => {
     if (!online?.isHost || phase !== 'guess') return;
-    const updated = appendOnlineGuess(guessesRef.current, players, playerId, lat, lng, location, submitted);
+    const updated = appendGeoTurnGuess(guessesRef.current, players, online.players, hostId, playerId, lat, lng, location, submitted);
     if (updated === guessesRef.current) return;
     guessesRef.current = updated;
     setGuesses(updated);
+    setPinPos(null);
     if (updated.length >= players.length) {
       online.broadcast('findit-sv-results', { results: updated, roundNumber, location });
 
       setWaitingForResults(false);
       setPhase('result');
+    } else {
+      setPanoReady(false);
+      setPanoError(false);
+      setReadyIds([]);
+      setPhase('explore');
+      setExploreTime(20);
+      setCountdown(timerSeconds);
+      setGuessMapReady(false);
     }
-  }, [online, phase, players, location, roundNumber]);
+  }, [online, phase, players, hostId, location, roundNumber, timerSeconds]);
   // Host: a kicked/left player no longer holds the round open (G7).
   useEffect(() => {
-    if (!online?.isHost || phase !== 'guess') return;
+    if (!online?.isHost || phase === 'result') return;
     const settled = settleGuessesAfterRemoval(guessesRef.current, players);
     if (!settled) return;
     guessesRef.current = settled.guesses;
@@ -195,6 +227,19 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     });
   }, [online, receiveGuess, roundNumber]);
   useEffect(() => {
+    if (!online || online.isHost || !canGuess || phase !== 'guess' || !guessMapReady || !inputOpen) return;
+    const announce = () => online.broadcast('findit-sv-turn-ready', { roundNumber, turnId });
+    announce();
+    const timer = window.setInterval(announce, 1500);
+    return () => window.clearInterval(timer);
+  }, [online, canGuess, phase, guessMapReady, inputOpen, roundNumber, turnId]);
+  useEffect(() => {
+    if (!online?.isHost) return;
+    return online.onBroadcast('findit-sv-turn-ready', data => {
+      if (data.roundNumber === roundNumber && data.turnId === turnId && data.__senderId === turnId) setReadySeatId(turnId);
+    });
+  }, [online, roundNumber, turnId]);
+  useEffect(() => {
     if (!online?.isHost) return;
     online.broadcast('findit-sv-state', { ...publicGuessRound({ roundNumber, phase, countdown, guesses, location, exploreTime }), phaseStartsAt: sync.phaseStartsAt });
   }, [online, roundNumber, phase, countdown, guesses, exploreTime, location, sync.phaseStartsAt]);
@@ -204,11 +249,21 @@ export default function StreetViewRound({ location: promptLocation, players, rou
       if (data.roundNumber !== roundNumber) return;
       if (data.location) setRevealedLocation(data.location as StreetViewLocation);
       sync.receive(data.phaseStartsAt);
-      setPhase(data.phase as Phase);
+      const nextPhase = data.phase as Phase;
+      if (nextPhase === 'explore' && remotePhaseRef.current !== 'explore') {
+        setPanoReady(false);
+        setPanoError(false);
+        setReadyIds([]);
+      }
+      remotePhaseRef.current = nextPhase;
+      setPhase(nextPhase);
       setCountdown(data.countdown as number);
       const incoming = data.guesses as typeof guesses;
       setGuesses(incoming);
-      setMyGuessPlaced((data.submittedIds as string[]).includes(online.myPlayerId));
+      if (data.phase === 'explore') setGuessMapReady(false);
+      const submitted = Array.isArray(data.submittedIds) ? data.submittedIds as string[] : [];
+      setSubmittedIds(submitted);
+      setMyGuessPlaced(submitted.includes(online.myPlayerId));
       if (data.phase === 'result') {  setWaitingForResults(false); }
       setExploreTime(data.exploreTime as number);
     });
@@ -263,9 +318,23 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     return unsub;
   }, [online, myGuessPlaced, roundNumber, paused, inputOpen]);
 
+  const skipExplore = useCallback(() => {
+    if (online && !canGuess) return;
+    if (online && !online.isHost) online.broadcast('findit-sv-skip-explore', { roundNumber });
+    else { setPhase('guess'); setCountdown(timerSeconds); }
+  }, [online, canGuess, roundNumber, timerSeconds]);
+  useEffect(() => {
+    if (!online?.isHost) return;
+    return online.onBroadcast('findit-sv-skip-explore', data => {
+      if (phase !== 'explore' || data.roundNumber !== roundNumber || data.__senderId !== turnId) return;
+      setPhase('guess');
+      setCountdown(timerSeconds);
+    });
+  }, [online, phase, roundNumber, turnId, timerSeconds]);
+
   // Explore countdown
   useEffect(() => {
-    if (online?.isConnected === false || phase !== 'explore' || !allPanosReady || (online && !inputOpen)) return;
+    if (online?.isConnected === false || phase !== 'explore' || !activePanoReady || paused || (online && !inputOpen)) return;
     // In online mode, only host runs the timer
     if (online && !online.isHost) return;
     const t = setInterval(() => {
@@ -275,9 +344,10 @@ export default function StreetViewRound({ location: promptLocation, players, rou
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [phase, timerSeconds, playerIdx, online, allPanosReady, inputOpen]);
+  }, [phase, timerSeconds, playerIdx, online, activePanoReady, paused, inputOpen, turnId]);
 
   const confirmGuess = useCallback(() => {
+    if (online && !canGuess) return;
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     const pos = pinPosRef.current;
     const lat = pos?.lat ?? 0, lng = pos?.lng ?? 0;
@@ -305,39 +375,32 @@ export default function StreetViewRound({ location: promptLocation, players, rou
     const nextIdx = playerIdxRef.current + 1;
     if (nextIdx >= players.length) { setPhase('result'); }
     else { setPlayerIdx(nextIdx); setGuessMapReady(false); setPhase('explore'); setExploreTime(20); }
-  }, [location, players.length, online, receiveGuess, roundNumber, timerSeconds]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [location, players.length, online, canGuess, receiveGuess, roundNumber, timerSeconds]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Guess countdown
+  // The host owns one deadline per seat, even while another phone is guessing.
   useEffect(() => {
-    // Stands while the host phone travels and until input opens.
-    if (online?.isConnected === false || phase !== 'guess' || !guessMapReady || paused || (online && !inputOpen)) return;
-    // In online mode, skip timer if already guessed
-    if (online && myGuessPlaced) return;
+    if (online?.isConnected === false || phase !== 'guess' || paused || (online && !inputOpen)) return;
+    if (online && (!online.isHost || !turnId)) return;
+    if (online && !(localSeats(online).includes(turnId!) ? guessMapReady : readySeatId === turnId)) return;
+    if (!online && !guessMapReady) return;
     timerRef.current = setInterval(() => {
-      setCountdown(prev => { if (prev <= 1) { clearInterval(timerRef.current!); timerRef.current = null; confirmGuess(); return 0; } return prev - 1; });
+      setCountdown(prev => Math.max(0, prev - 1));
     }, 1000);
     return () => { if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; } };
-  }, [phase, playerIdx, confirmGuess, online, myGuessPlaced, guessMapReady, paused, inputOpen, handover?.activeGuest]);
+  }, [phase, playerIdx, online, turnId, guessMapReady, readySeatId, paused, inputOpen, handover?.activeGuest]);
 
-  // Preserve the deadline across disconnects, even after this host submitted.
-  usePausableTimeout(() => {
-    const previous = guessesRef.current;
-    if (previous.length >= players.length) return;
-    // Seats still queued on the host phone keep their own full clock (guest-turns.ts).
-    const { guesses: filled, complete } = fillMissingGuesses(previous, players, pendingLocal(previous),
-      p => ({ playerId: p.id, playerName: p.name, playerColor: p.color, lat: 0, lng: 0, distanceKm: 20000 }));
-    guessesRef.current = filled;
-    setGuesses(filled);
-    if (!complete) return;
-    online?.broadcast('findit-sv-results', { results: filled, roundNumber, location });
-
-    setPhase('result');
-  }, online?.isHost && phase === 'guess' && guessMapReady ? (timerSeconds + 2) * 1000 : null, online?.isConnected !== false);
+  useEffect(() => {
+    if (countdown > 0) restartingTurnIdRef.current = null;
+    if (phase !== 'guess' || countdown !== 0) return;
+    if (online?.isHost && restartingTurnIdRef.current === turnId) return;
+    if (online?.isHost && turnId) receiveGuess(turnId, 0, 0, false);
+    else if (!online) confirmGuess();
+  }, [phase, countdown, online, turnId, receiveGuess, confirmGuess]);
 
   const handleMapClick = useCallback((lat: number, lng: number) => {
-    if (online && (myGuessPlaced || paused || !inputOpen)) return; // can't change after confirming
+    if (online && (!canGuess || paused || !inputOpen)) return;
     setPinPos({ lat, lng });
-  }, [online, myGuessPlaced, roundNumber, paused, inputOpen]);
+  }, [online, canGuess, roundNumber, paused, inputOpen]);
   const sorted = [...guesses].sort((a, b) => a.distanceKm - b.distanceKm);
   const winner = sorted[0];
 
@@ -349,12 +412,13 @@ export default function StreetViewRound({ location: promptLocation, players, rou
         {/* EXPLORE PHASE — Street View Panorama */}
         {view === 'explore' && (
           <div className="absolute inset-0">
-            <StreetViewPano key={panoAttempt} lat={location.lat} lng={location.lng} onStatus={panoStatus} />
-            {!panoReady && <div className="absolute inset-0 z-20 bg-black/70 flex flex-col items-center justify-center gap-4 p-6 text-white text-center"><p>{t(panoError ? 'games.findit.panoramaError' : 'games.findit.panoramaLoading')}</p>{panoError && <><button onClick={retryPanorama} className="min-h-12 px-6 rounded-xl bg-[#df8eff] text-[#4f006d] font-bold">{t('partyControllers.retry', 'Erneut versuchen')}</button><button onClick={onExit} className="min-h-12 px-6 rounded-xl bg-white/15">{t('games.results.otherGame')}</button></>}</div>}
+            {canGuess && <StreetViewPano key={panoAttempt} lat={location.lat} lng={location.lng} onStatus={panoStatus} />}
+            {canGuess && !panoReady && <div className="absolute inset-0 z-20 bg-black/70 flex flex-col items-center justify-center gap-4 p-6 text-white text-center"><p>{t(panoError ? 'games.findit.panoramaError' : 'games.findit.panoramaLoading')}</p>{panoError && <><button onClick={retryPanorama} className="min-h-12 px-6 rounded-xl bg-[#df8eff] text-[#4f006d] font-bold">{t('partyControllers.retry', 'Erneut versuchen')}</button><button onClick={onExit} className="min-h-12 px-6 rounded-xl bg-white/15">{t('games.results.otherGame')}</button></>}</div>}
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-10">
-              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced}
-                host={!!online?.isHost && currentPlayer.id === online.myPlayerId} status="explore" />
+              <GuessSeatChip player={turnPlayer ?? currentPlayer} lit={!!online && canGuess}
+                host={!!online?.isHost && turnId === online.myPlayerId}
+                status={canGuess ? 'explore' : 'waiting'} />
             </div>
             <div className="absolute top-4 right-4 z-10">
               <div className="glass-panel px-3 py-2 rounded-full border border-white/5">
@@ -368,8 +432,8 @@ export default function StreetViewRound({ location: promptLocation, players, rou
                 <span className="text-lg font-black text-white tabular-nums">{exploreTime}s</span>
               </div>
             </div>
-            {(!online || online.isHost) && <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center">
-              <motion.button onClick={() => { setPhase('guess'); setCountdown(timerSeconds); }}
+            {canGuess && <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center">
+              <motion.button onClick={skipExplore}
                 className="px-10 py-4 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)]"
                 whileTap={{ scale: 0.95 }}>
                 <span className="flex items-center gap-2">
@@ -378,6 +442,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
                 </span>
               </motion.button>
             </div>}
+            {online && !canGuess && <GeoTurnCurtain player={turnPlayer} />}
           </div>
         )}
 
@@ -395,9 +460,9 @@ export default function StreetViewRound({ location: promptLocation, players, rou
             {!guessMapReady && <div className="absolute inset-0 z-[5] flex items-center justify-center bg-[#14281f] text-white">{t('common.loading')}</div>}
             {/* Overlays */}
             <div className="absolute top-4 left-4 z-10">
-              <GuessSeatChip player={currentPlayer} lit={!!online && !myGuessPlaced}
-                host={!!online?.isHost && currentPlayer.id === online.myPlayerId}
-                status={myGuessPlaced ? 'waiting' : 'guess'} />
+              <GuessSeatChip player={turnPlayer ?? currentPlayer} lit={!!online && canGuess}
+                host={!!online?.isHost && turnId === online.myPlayerId}
+                status={canGuess ? 'guess' : 'waiting'} />
             </div>
             <div className="absolute top-16 left-0 right-0 z-10 px-4 mt-2">
               <div className="max-w-2xl mx-auto bg-[#151a21]/80 backdrop-blur-2xl p-1 rounded-full shadow-[0_16px_48px_-12px_rgba(0,0,0,0.5)] border border-white/5">
@@ -427,7 +492,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
                 </div>
               </div>
             )}
-            {!waitingForResults && (
+            {!waitingForResults && canGuess && (
             <div className="absolute bottom-6 left-0 right-0 z-10 flex justify-center px-4">
               <motion.button onClick={confirmGuess} disabled={!pinPos}
                 className="px-12 py-5 rounded-full bg-gradient-to-r from-[#df8eff] to-[#d779ff] shadow-[0_20px_40px_-10px_rgba(223,142,255,0.4)] disabled:opacity-30 disabled:shadow-none"
@@ -439,6 +504,7 @@ export default function StreetViewRound({ location: promptLocation, players, rou
               </motion.button>
             </div>
             )}
+            {online && !canGuess && <GeoTurnCurtain player={turnPlayer} />}
           </div>
         )}
 

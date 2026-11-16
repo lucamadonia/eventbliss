@@ -1,7 +1,26 @@
 import { describe, expect, it } from 'vitest';
-import { appendOnlineGuess, publicGuessRound, settleGuessesAfterRemoval } from './online-guesses';
+import { appendGeoTurnGuess, appendOnlineGuess, geoTurnOrder, nextGeoGuesser, publicGuessRound, settleGuessesAfterRemoval } from './online-guesses';
 const players = [{ id: 'host', name: 'Host', color: 'red' }, { id: 'guest', name: 'Guest', color: 'blue' }];
 const target = { lat: 47, lng: 8 };
+it('gives each device a turn, keeping guests on the host phone together', () => {
+  const seats = [{ id: 'host' }, { id: 'remote' }, { id: 'guest', controlledBy: 'host' }];
+  expect(geoTurnOrder(seats, seats, 'host')).toEqual(['host', 'guest', 'remote']);
+  expect(nextGeoGuesser(seats, seats, 'host', [])).toBe('host');
+  expect(nextGeoGuesser(seats, seats, 'host', ['host'])).toBe('guest');
+  expect(nextGeoGuesser(seats, seats, 'host', ['host', 'guest'])).toBe('remote');
+  expect(nextGeoGuesser(seats, seats, 'host', ['host', 'guest', 'remote'])).toBeNull();
+  expect(nextGeoGuesser(seats.slice(0, 2), seats, 'host', ['host'])).toBe('remote');
+});
+it('rejects early and late packets after a device turn has moved on', () => {
+  const seats = [{ id: 'host', name: 'Host', color: 'red' }, { id: 'remote', name: 'Remote', color: 'blue' }];
+  const guess = (previous: ReturnType<typeof appendOnlineGuess>, id: string) => appendGeoTurnGuess(previous, seats, seats, 'host', id, 47, 8, target);
+  expect(guess([], 'remote')).toEqual([]);
+  const first = guess([], 'host');
+  expect(guess(first, 'host')).toBe(first);
+  const second = guess(first, 'remote');
+  expect(second).toHaveLength(2);
+  expect(guess(second, 'host')).toBe(second);
+});
 describe('online map guesses without broadcast self echo', () => {
   it('records the local host and remote guest exactly once in either arrival order', () => {
     for (const ids of [['host', 'guest'], ['guest', 'host']]) {
