@@ -31,7 +31,12 @@ async function api(path, method = 'GET', data) {
   });
   const result = response.status === 204 ? {} : await response.json().catch(() => ({}));
   if (!response.ok) {
-    const details = result.errors?.map(({ code, detail }) => `${code}: ${detail}`).join('; ') || response.statusText;
+    // "This resource cannot be reviewed" only names the real cause in meta.associatedErrors.
+    const details = result.errors?.map(({ code, detail, meta }) => {
+      const associated = Object.entries(meta?.associatedErrors ?? {})
+        .flatMap(([resource, errors]) => (errors ?? []).map((error) => `${resource} → ${error.code}: ${error.detail}`));
+      return `${code}: ${detail}${associated.length ? ` [${associated.join(' | ')}]` : ''}`;
+    }).join('; ') || response.statusText;
     throw new Error(`App Store Connect ${method} ${path.split('?')[0]}: HTTP ${response.status} ${details}`);
   }
   return result;
