@@ -91,6 +91,32 @@ if (release.releaseType && version.attributes?.releaseType !== release.releaseTy
   console.log(`Release type set to ${release.releaseType}.`);
 }
 
+// Answer age rating questions Apple added since the last release. Only fills
+// unanswered (null) questions; existing answers are never overwritten.
+if (release.ageRating && Object.keys(release.ageRating).length) {
+  const appInfos = await api(`apps/${appId}/appInfos?limit=10`);
+  const editableInfos = (appInfos.data ?? []).filter(({ attributes }) => ['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED', 'REJECTED'].includes(attributes?.state ?? attributes?.appStoreState));
+  if (editableInfos.length !== 1) throw new Error(`Expected one editable app info, found ${editableInfos.length}.`);
+  const declaration = await api(`appInfos/${editableInfos[0].id}/ageRatingDeclaration`);
+  const current = declaration.data?.attributes ?? {};
+  const missing = {};
+  for (const [key, value] of Object.entries(release.ageRating)) {
+    if (!(key in current)) throw new Error(`Unknown age rating question ${key}.`);
+    if (current[key] == null) missing[key] = value;
+    else if (current[key] !== value) throw new Error(`Age rating ${key} is already ${current[key]}; refusing to change it to ${value}.`);
+  }
+  if (Object.keys(missing).length) {
+    await api(`ageRatingDeclarations/${declaration.data.id}`, 'PATCH', {
+      data: { type: 'ageRatingDeclarations', id: declaration.data.id, attributes: missing },
+    });
+    const verified = await api(`appInfos/${editableInfos[0].id}/ageRatingDeclaration`);
+    for (const [key, value] of Object.entries(missing)) {
+      if (verified.data?.attributes?.[key] !== value) throw new Error(`Could not verify age rating ${key}.`);
+    }
+    console.log(`Age rating answered: ${Object.entries(missing).map(([key, value]) => `${key}=${value}`).join(', ')}.`);
+  }
+}
+
 const attached = await api(`appStoreVersions/${version.id}/build`);
 if (attached.data?.id !== build.id) {
   await api(`appStoreVersions/${version.id}/relationships/build`, 'PATCH', { data: { type: 'builds', id: build.id } });
