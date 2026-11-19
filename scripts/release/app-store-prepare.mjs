@@ -1,7 +1,7 @@
 import { createPrivateKey, sign } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.2.json', import.meta.url), 'utf8'));
+const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.6.json', import.meta.url), 'utf8'));
 if (!/^\d+\.\d+\.\d+$/.test(release.version) || !/^\d+$/.test(release.buildNumber) || !release.bundleId) {
   throw new Error('Invalid App Store release configuration.');
 }
@@ -70,7 +70,7 @@ const matches = iosVersions.filter((entry) => entry.attributes?.versionString ==
 if (matches.length > 1) throw new Error(`More than one iOS ${release.version} App Store version exists.`);
 let version = matches[0];
 if (!version) {
-  const attributes = { platform: 'IOS', versionString: release.version, releaseType: 'MANUAL' };
+  const attributes = { platform: 'IOS', versionString: release.version, releaseType: release.releaseType ?? 'MANUAL' };
   if (previous.attributes?.copyright) attributes.copyright = previous.attributes.copyright;
   const created = await api('appStoreVersions', 'POST', {
     data: { type: 'appStoreVersions', attributes, relationships: { app: { data: { type: 'apps', id: appId } } } },
@@ -80,6 +80,15 @@ if (!version) {
 }
 if (!['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED'].includes(version.attributes?.appVersionState ?? version.attributes?.appStoreState)) {
   throw new Error(`iOS ${release.version} is not editable: ${version.attributes?.appVersionState ?? version.attributes?.appStoreState}.`);
+}
+
+if (release.releaseType && version.attributes?.releaseType !== release.releaseType) {
+  await api(`appStoreVersions/${version.id}`, 'PATCH', {
+    data: { type: 'appStoreVersions', id: version.id, attributes: { releaseType: release.releaseType } },
+  });
+  const refreshed = await api(`appStoreVersions/${version.id}`);
+  if (refreshed.data?.attributes?.releaseType !== release.releaseType) throw new Error(`Could not verify release type ${release.releaseType}.`);
+  console.log(`Release type set to ${release.releaseType}.`);
 }
 
 const attached = await api(`appStoreVersions/${version.id}/build`);
