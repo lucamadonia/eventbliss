@@ -1,7 +1,7 @@
 import { createPrivateKey, sign } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.2.json', import.meta.url), 'utf8'));
+const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.6.json', import.meta.url), 'utf8'));
 const { bundleId, version: targetVersion, buildNumber, whatsNew } = release;
 if (!bundleId || !/^\d+\.\d+\.\d+$/.test(targetVersion) || !/^\d+$/.test(buildNumber) || !Object.keys(whatsNew).length) {
   throw new Error('Invalid App Store release configuration.');
@@ -31,7 +31,12 @@ async function api(path, method = 'GET', data) {
   });
   const result = response.status === 204 ? {} : await response.json().catch(() => ({}));
   if (!response.ok) {
-    const details = result.errors?.map(({ code, detail }) => `${code}: ${detail}`).join('; ') || response.statusText;
+    // "This resource cannot be reviewed" only names the real cause in meta.associatedErrors.
+    const details = result.errors?.map(({ code, detail, meta }) => {
+      const associated = Object.entries(meta?.associatedErrors ?? {})
+        .flatMap(([resource, errors]) => (errors ?? []).map((error) => `${resource} → ${error.code}: ${error.detail}`));
+      return `${code}: ${detail}${associated.length ? ` [${associated.join(' | ')}]` : ''}`;
+    }).join('; ') || response.statusText;
     throw new Error(`App Store Connect ${method} ${path.split('?')[0]}: HTTP ${response.status} ${details}`);
   }
   return result;
@@ -79,6 +84,7 @@ const activeStates = new Set(['READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVI
 const reviews = await api(`apps/${appId}/reviewSubmissions?limit=200`);
 let submission;
 let versionItem;
+let emptyDraft;
 for (const candidate of reviews.data ?? []) {
   if (!activeStates.has(candidate.attributes?.state)) continue;
   const items = await api(`reviewSubmissions/${candidate.id}/items?limit=200&include=appStoreVersion`);
@@ -87,7 +93,14 @@ for (const candidate of reviews.data ?? []) {
     if (submission) throw new Error(`Multiple active review submissions contain iOS ${targetVersion}.`);
     submission = candidate;
     versionItem = item;
+  } else if (!items.data?.length && candidate.attributes?.state === 'READY_FOR_REVIEW' && candidate.attributes?.platform === 'IOS') {
+    // Left behind when an earlier run created the submission but could not add the version.
+    emptyDraft = candidate;
   }
+}
+if (!submission && emptyDraft) {
+  submission = emptyDraft;
+  console.log(`Reusing empty App Review submission ${submission.id}.`);
 }
 if (submission?.attributes?.state === 'WAITING_FOR_REVIEW' || submission?.attributes?.state === 'IN_REVIEW') {
   console.log(`iOS ${targetVersion} is already in App Review: ${submission.attributes.state}.`);
