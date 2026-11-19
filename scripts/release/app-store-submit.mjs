@@ -79,6 +79,7 @@ const activeStates = new Set(['READY_FOR_REVIEW', 'WAITING_FOR_REVIEW', 'IN_REVI
 const reviews = await api(`apps/${appId}/reviewSubmissions?limit=200`);
 let submission;
 let versionItem;
+let emptyDraft;
 for (const candidate of reviews.data ?? []) {
   if (!activeStates.has(candidate.attributes?.state)) continue;
   const items = await api(`reviewSubmissions/${candidate.id}/items?limit=200&include=appStoreVersion`);
@@ -87,7 +88,14 @@ for (const candidate of reviews.data ?? []) {
     if (submission) throw new Error(`Multiple active review submissions contain iOS ${targetVersion}.`);
     submission = candidate;
     versionItem = item;
+  } else if (!items.data?.length && candidate.attributes?.state === 'READY_FOR_REVIEW' && candidate.attributes?.platform === 'IOS') {
+    // Left behind when an earlier run created the submission but could not add the version.
+    emptyDraft = candidate;
   }
+}
+if (!submission && emptyDraft) {
+  submission = emptyDraft;
+  console.log(`Reusing empty App Review submission ${submission.id}.`);
 }
 if (submission?.attributes?.state === 'WAITING_FOR_REVIEW' || submission?.attributes?.state === 'IN_REVIEW') {
   console.log(`iOS ${targetVersion} is already in App Review: ${submission.attributes.state}.`);
