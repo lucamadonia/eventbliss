@@ -4294,7 +4294,8 @@
     "legal": {
       "terms": "Warunki korzystania (EULA)",
       "privacy": "Prywatność",
-      "autoRenew": "Subskrypcje odnawiają się automatycznie na wybrany okres, o ile nie zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Płatność jest pobierana z konta App Store. Subskrypcjami możesz w każdej chwili zarządzać lub je anulować w ustawieniach konta App Store. Lifetime to płatność jednorazowa."
+      "autoRenew": "Subskrypcje odnawiają się automatycznie na wybrany okres, o ile nie zostaną anulowane co najmniej 24 godziny przed końcem bieżącego okresu. Płatność jest pobierana z konta App Store. Subskrypcjami możesz w każdej chwili zarządzać lub je anulować w ustawieniach konta App Store. Lifetime to płatność jednorazowa.",
+      "autoRenewWeb": "Subskrypcje odnawiają się automatycznie na wybrany okres, dopóki ich nie anulujesz. Płatności są bezpiecznie obsługiwane przez Stripe. Subskrypcją możesz w każdej chwili zarządzać lub ją anulować na tej stronie – pozostaje aktywna do końca opłaconego okresu. Lifetime to płatność jednorazowa."
     },
     "native": {
       "securePayment": "Bezpieczna płatność przez App Store lub Google Play. Anuluj w dowolnym momencie.",
@@ -4397,10 +4398,10 @@
     },
     "subscribe": "Ulepsz Teraz",
     "credits": {
-      "monthly": "50 kredytów AI/miesiąc",
+      "monthly": "{{count}} kredytów AI/miesiąc",
       "remaining": "Pozostało {{remaining}} z {{limit}} kredytów",
-      "yearly": "100 kredytów AI/miesiąc",
-      "lifetime": "75 kredytów AI/miesiąc"
+      "yearly": "{{count}} kredytów AI/miesiąc",
+      "lifetime": "{{count}} kredytów AI/miesiąc"
     }
   },
   "admin": {

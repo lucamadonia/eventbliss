@@ -4244,7 +4244,8 @@
     "legal": {
       "terms": "Termini di utilizzo (EULA)",
       "privacy": "Privacy",
-      "autoRenew": "Gli abbonamenti si rinnovano automaticamente per il periodo scelto salvo disdetta almeno 24 ore prima della fine del periodo in corso. Il pagamento viene addebitato sul tuo account App Store. Puoi gestire o annullare gli abbonamenti in qualsiasi momento nelle impostazioni del tuo account App Store. Lifetime è un pagamento una tantum."
+      "autoRenew": "Gli abbonamenti si rinnovano automaticamente per il periodo scelto salvo disdetta almeno 24 ore prima della fine del periodo in corso. Il pagamento viene addebitato sul tuo account App Store. Puoi gestire o annullare gli abbonamenti in qualsiasi momento nelle impostazioni del tuo account App Store. Lifetime è un pagamento una tantum.",
+      "autoRenewWeb": "Gli abbonamenti si rinnovano automaticamente per il periodo scelto fino alla disdetta. I pagamenti sono elaborati in modo sicuro da Stripe. Puoi gestire o annullare l'abbonamento in qualsiasi momento da questa pagina: resta attivo fino alla fine del periodo pagato. Lifetime è un pagamento una tantum."
     },
     "native": {
       "securePayment": "Pagamento sicuro tramite App Store o Google Play. Disdici quando vuoi.",
@@ -4347,10 +4348,10 @@
     },
     "subscribe": "Passa a Premium",
     "credits": {
-      "monthly": "50 crediti AI/mese",
+      "monthly": "{{count}} crediti AI/mese",
       "remaining": "{{remaining}} di {{limit}} crediti rimanenti",
-      "yearly": "100 crediti AI/mese",
-      "lifetime": "75 crediti AI/mese"
+      "yearly": "{{count}} crediti AI/mese",
+      "lifetime": "{{count}} crediti AI/mese"
     }
   },
   "admin": {

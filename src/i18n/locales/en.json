@@ -4220,7 +4220,8 @@
     "legal": {
       "terms": "Terms of Use (EULA)",
       "privacy": "Privacy Policy",
-      "autoRenew": "Subscriptions renew automatically for the selected period unless cancelled at least 24 hours before the end of the current period. Payment is charged to your App Store account. You can manage or cancel subscriptions anytime in your App Store account settings. Lifetime is a one-time purchase."
+      "autoRenew": "Subscriptions renew automatically for the selected period unless cancelled at least 24 hours before the end of the current period. Payment is charged to your App Store account. You can manage or cancel subscriptions anytime in your App Store account settings. Lifetime is a one-time purchase.",
+      "autoRenewWeb": "Subscriptions renew automatically for the selected period until you cancel. Payments are processed securely by Stripe. You can manage or cancel your subscription anytime on this page – it stays active until the end of the paid period. Lifetime is a one-time purchase."
     },
     "native": {
       "securePayment": "Secure payment via the App Store or Google Play. Cancel anytime.",
@@ -4323,10 +4324,10 @@
     },
     "subscribe": "Upgrade Now",
     "credits": {
-      "monthly": "50 AI credits/month",
+      "monthly": "{{count}} AI credits/month",
       "remaining": "{{remaining}} of {{limit}} credits remaining",
-      "yearly": "100 AI credits/month",
-      "lifetime": "75 AI credits/month"
+      "yearly": "{{count}} AI credits/month",
+      "lifetime": "{{count}} AI credits/month"
     }
   },
   "admin": {
