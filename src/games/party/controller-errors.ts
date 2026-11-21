@@ -43,6 +43,7 @@ export function controllerErrorCode(message: string | null | undefined): Control
   if (/party membership required/i.test(message)) return 'removed';
   if (/party is full/i.test(message)) return 'party_full';
   if (/host action required/i.test(message)) return 'host_required';
+  if (/wait for the host to finish/i.test(message)) return 'locked_in_game';
   if (/party (has )?ended|party_ended|party (has )?expired/i.test(message)) return 'ended';
   if (/party unavailable(?: or expired)?|party not found|unknown party|invalid (party )?code/i.test(message)) return 'not_found';
   return null;

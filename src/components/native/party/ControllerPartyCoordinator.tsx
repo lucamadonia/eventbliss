@@ -104,7 +104,8 @@ export function ControllerPartyCoordinator() {
     if (routedPhase.current === phase) {
       // A game screen can be replaced by an app transition after our first
       // navigation. Recover once, without a replaceState loop on WebKit.
-      if (playing && (active || isHost) && location.pathname === '/party/controllers'
+      // The invitation route of this very party is the same lobby (a re-scanned QR).
+      if (playing && (active || isHost) && (location.pathname === '/party/controllers' || !!invitation)
         && retriedLobbyPhase.current !== phase) {
         retriedLobbyPhase.current = phase;
         navigate(path, { replace: true });

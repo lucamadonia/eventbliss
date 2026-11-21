@@ -74,6 +74,22 @@ describe('controller party consistency', () => {
     await expect(leaveControllerParty()).resolves.toBeUndefined();
     expect(getControllerState().data).toBeNull();
   });
+  it.each(['Wait for the host to finish or abort the current match', 'Failed to fetch'])('always lets a guest out on this device when the server answers %j', async reason => {
+    fixture.request.mockImplementation((action: string) => action === 'leave'
+      ? Promise.reject(new Error(reason)) : Promise.resolve(data()));
+    await openControllerParty('u1', 'Alex');
+    expect(localStorage.getItem('controller_party:u1')).toBe('ABCDEF');
+    await expect(leaveControllerParty()).resolves.toBeUndefined();
+    expect(getControllerState().data).toBeNull();
+    expect(localStorage.getItem('controller_party:u1')).toBeNull();
+  });
+  it('keeps the party when the Host cannot end it for everyone', async () => {
+    fixture.request.mockImplementation((action: string) => action === 'end'
+      ? Promise.reject(new Error('Failed to fetch')) : Promise.resolve(data()));
+    await openControllerParty('u1', 'Alex');
+    await expect(leaveControllerParty(true)).rejects.toThrow('Failed to fetch');
+    expect(getControllerState().data?.party.code).toBe('ABCDEF');
+  });
   it('keeps departed standings separate from active game slots and stable across polling', () => {
     const snapshot = data();
     snapshot.party.created_at = '2026-09-23T07:00:00Z';

@@ -187,7 +187,7 @@ export default function ControllerPartyLobby() {
     <PartyPopper className="mx-auto h-10 w-10 text-[#df8eff]" aria-hidden />
     <h1 className="text-2xl font-black">{t('partyPlay.ended.title', 'Diese Party ist vorbei')}</h1>
     <p className="text-white/60">{t('partyPlay.ended.body', 'Danke fürs Mitspielen! Starte einfach deine eigene Party.')}</p>
-    <button className={`${button} w-full bg-[#df8eff] text-[#0a0e14]`} onClick={() => { dismissControllerRemoval(); navigate('/party/controllers', { replace: true }); }}>{t('partyPlay.removed.startOwn', 'Eigene Party starten')}</button>
+    <button className={`${button} w-full bg-[#df8eff] text-[#0a0e14]`} onClick={() => { closeControllerParty(); navigate('/party/controllers', { replace: true }); }}>{t('partyPlay.removed.startOwn', 'Eigene Party starten')}</button>
   </section>);
   if (needsClientUpdate(data)) return shell(<section data-testid="update-required" role="alert" className="space-y-4 pt-10 text-center">
     <Download className="mx-auto h-10 w-10 text-[#8ff5ff]" aria-hidden />
@@ -264,7 +264,7 @@ export default function ControllerPartyLobby() {
       title={t(isHost ? 'partyControllers.end' : 'partyControllers.leave')}
       body={isHost ? t('partyPlay.end.body', 'Für alle endet die Party. Die Wertung bleibt sichtbar.') : t('partyPlay.leave.body', 'Deine Punkte bleiben in der Wertung.')}
       confirmLabel={t(isHost ? 'partyControllers.end' : 'partyControllers.leave')}
-      onConfirm={() => { setConfirmLeave(false); act(isHost ? endControllerParty() : leaveControllerParty(false).then(() => navigate('/party'))); }} />
+      onConfirm={() => { setConfirmLeave(false); act(isHost ? endControllerParty() : leaveControllerParty(false).then(() => navigate('/games', { replace: true }))); }} />
     <PartyConfirmSheet open={!!switchDevice} busy={controller.busy} testId="switch-device-prompt" confirmTestId="switch-device-confirm"
       title={t('partyPlay.switchDevice.title', 'Auf dieses Handy wechseln?')}
       body={t('partyPlay.switchDevice.body', 'Du spielst in dieser Party schon auf einem anderen Handy. Deine Punkte kommen mit, das andere Handy gibt den Platz ab.')}

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -98,9 +98,13 @@ const queryClient = new QueryClient({
 
 const DeepLinkHandler = () => {
   const navigate = useNavigate();
+  // `navigate` is a new function after every pathname change. One listener must
+  // live for the whole app run; re-initialising replayed the launch link.
+  const navigateRef = useRef(navigate);
+  navigateRef.current = navigate;
   useEffect(() => {
-    return initDeepLinks(navigate);
-  }, [navigate]);
+    return initDeepLinks(path => navigateRef.current(path));
+  }, []);
   return null;
 };
 

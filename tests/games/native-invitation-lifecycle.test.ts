@@ -4,10 +4,11 @@ import { getSafeAuthRedirect } from '@/lib/auth-redirect';
 const native = vi.hoisted(() => ({ addListener: vi.fn(), getLaunchUrl: vi.fn(), remove: vi.fn(), isNative: vi.fn(() => true) }));
 vi.mock('@capacitor/app', () => ({ App: native }));
 vi.mock('@/lib/platform', () => ({ isNative: native.isNative }));
-import { initDeepLinks } from '@/lib/deep-links';
+import { initDeepLinks, resetDeepLinksForTests } from '@/lib/deep-links';
 
 beforeEach(() => {
   vi.clearAllMocks();
+  resetDeepLinksForTests();
   native.isNative.mockReturnValue(true);
   native.addListener.mockResolvedValue({ remove: native.remove });
 });
@@ -33,6 +34,29 @@ describe('native invitation delivery', () => {
     native.getLaunchUrl.mockResolvedValue({ url: 'eventbliss://party/join/COLD01' });
     const navigate = vi.fn(); const dispose = initDeepLinks(navigate); dispose();
     await Promise.resolve(); expect(navigate).not.toHaveBeenCalled();
+  });
+  it('never replays the launch invitation when the handler is set up again', async () => {
+    native.getLaunchUrl.mockResolvedValue({ url: 'eventbliss://party/join/COLD01' });
+    const first = vi.fn(); const disposeFirst = initDeepLinks(first);
+    await Promise.resolve();
+    expect(first).toHaveBeenCalledOnce();
+    disposeFirst();
+    // A route change used to re-run the setup and throw the guest back onto the invitation.
+    const second = vi.fn(); const disposeSecond = initDeepLinks(second);
+    await Promise.resolve();
+    expect(second).not.toHaveBeenCalled();
+    expect(native.getLaunchUrl).toHaveBeenCalledOnce();
+    native.addListener.mock.calls[1][1]({ url: 'eventbliss://party/join/WARM02' });
+    expect(second).toHaveBeenCalledWith('/party/join/WARM02');
+    disposeSecond();
+  });
+  it('leaves the launch invitation to the next handler when the first one unmounted early', async () => {
+    native.getLaunchUrl.mockResolvedValue({ url: 'eventbliss://party/join/COLD01' });
+    initDeepLinks(vi.fn())();
+    await Promise.resolve();
+    const navigate = vi.fn(); const dispose = initDeepLinks(navigate);
+    await Promise.resolve();
+    expect(navigate).toHaveBeenCalledWith('/party/join/COLD01'); dispose();
   });
   it('does not subscribe to native events on web', () => {
     native.isNative.mockReturnValue(false); initDeepLinks(vi.fn())();

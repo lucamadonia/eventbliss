@@ -509,7 +509,10 @@ export async function leaveControllerParty(end = false) {
     if (state.data) await controllerRequest(end ? 'end' : 'leave', state.data.party.code);
     if (current === generation) { pendingResults.clear(); persistResults(); stopControllerParty(); }
   }); } catch (error) {
-    if (current === generation && controllerErrorCode(error instanceof Error ? error.message : String(error)) === 'not_found') {
+    // A guest always gets out on this device, whatever the server answered
+    // (offline, running match on an older server, expired party). The Host
+    // still needs the server to end the party for everyone.
+    if (current === generation && (!end || controllerErrorCode(error instanceof Error ? error.message : String(error)) === 'not_found')) {
       stopControllerParty();
       return;
     }

@@ -21,6 +21,16 @@ export function deepLinkTarget(url: string): string | null {
   } catch { return null; }
 }
 
+/**
+ * The link that opened the app is delivered at most once per app process.
+ * The OS keeps reporting it for as long as the process lives (iOS: the last
+ * opened URL), so asking again after a route change threw a guest back onto
+ * `/party/join/<code>` every time they entered a game or left the party.
+ */
+let launchUrlSettled = false;
+/** Tests only: a fresh app process. */
+export function resetDeepLinksForTests(): void { launchUrlSettled = false; }
+
 export function initDeepLinks(navigate: (path: string) => void): () => void {
   if (!isNative()) return () => {};
   let disposed = false;
@@ -41,7 +51,12 @@ export function initDeepLinks(navigate: (path: string) => void): () => void {
     if (!disposed && target) navigate(target);
     return true;
   };
-  const subscription = App.addListener('appUrlOpen', ({ url }) => { if (handle(url)) receivedWarmLink = true; });
-  void App.getLaunchUrl().then(result => { if (!receivedWarmLink && result?.url) handle(result.url); }).catch(() => { /* A launch without a URL must not prevent app startup. */ });
+  const subscription = App.addListener('appUrlOpen', ({ url }) => { if (handle(url)) { receivedWarmLink = true; launchUrlSettled = true; } });
+  if (!launchUrlSettled) void App.getLaunchUrl().then(result => {
+    // An unmounted handler (StrictMode remount) leaves the launch link to its successor.
+    if (disposed || launchUrlSettled) return;
+    launchUrlSettled = true;
+    if (!receivedWarmLink && result?.url) handle(result.url);
+  }).catch(() => { /* A launch without a URL must not prevent app startup. */ });
   return () => { disposed = true; void subscription.then(listener => listener.remove()).catch(() => {}); };
 }

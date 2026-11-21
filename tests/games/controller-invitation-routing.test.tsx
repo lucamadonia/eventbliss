@@ -3,11 +3,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const state = vi.hoisted(() => ({
   effects: [] as Array<() => void>, navigate: vi.fn(), open: vi.fn(), stop: vi.fn(),
   pathname: '/party/join/BCDEFG', code: 'ABCDEF', playing: true, restored: true, serverPlaying: null as boolean | null,
+  keepRefs: false, refs: [] as Array<{ current: unknown }>, refIndex: 0,
 }));
 vi.mock('react', async importOriginal => ({
   ...await importOriginal<typeof import('react')>(),
   useEffect: (effect: () => void) => { state.effects.push(effect); },
-  useRef: <T,>(initial: T) => ({ current: initial }),
+  // `keepRefs` lets one coordinator instance live across several renders.
+  useRef: <T,>(initial: T) => state.keepRefs ? (state.refs[state.refIndex++] ??= { current: initial }) : { current: initial },
   // The coordinator renders outside React here: plain stand-ins for its local state.
   useState: <T,>(initial: T) => [initial, () => {}],
   useCallback: <T,>(fn: T) => fn,
@@ -27,7 +29,7 @@ vi.mock('@/games/multiplayer/useGameRoom', () => ({ useGameRoom: () => ({ myPlay
 import { ControllerPartyCoordinator } from '@/components/native/party/ControllerPartyCoordinator';
 
 function renderAndRunEffects() {
-  state.effects = [];
+  state.effects = []; state.refIndex = 0;
   // Execute the actual coordinator against controlled hooks, then flush its
   // effects. No renderer/React singleton mixing or simulated routing policy.
   ControllerPartyCoordinator();
@@ -35,6 +37,7 @@ function renderAndRunEffects() {
 }
 beforeEach(() => {
   vi.clearAllMocks(); state.pathname = '/party/join/BCDEFG'; state.code = 'ABCDEF'; state.playing = true; state.restored = true; state.serverPlaying = null;
+  state.keepRefs = false; state.refs = [];
 });
 describe('actual coordinator invitation routing effects', () => {
   it('does not redirect a warm B invitation into the active A game', () => {
@@ -56,6 +59,16 @@ describe('actual coordinator invitation routing effects', () => {
   it('resumes the current game when the invitation targets that same party', () => {
     state.pathname = '/party/join/abcdef'; renderAndRunEffects();
     expect(state.navigate).toHaveBeenCalledWith('/games/bomb?room=ABCDEF&party=true', { replace: true });
+  });
+  it('brings a guest bounced back onto its own invitation into the game once more, then stops', () => {
+    state.keepRefs = true; state.pathname = '/party/controllers'; renderAndRunEffects();
+    expect(state.navigate).toHaveBeenCalledOnce();
+    // Something replaced the game screen with the invitation route of this same party.
+    state.navigate.mockClear(); state.pathname = '/party/join/ABCDEF'; renderAndRunEffects();
+    expect(state.navigate).toHaveBeenCalledWith('/games/bomb?room=ABCDEF&party=true', { replace: true });
+    // One recovery per phase: no replaceState tug-of-war.
+    state.navigate.mockClear(); renderAndRunEffects();
+    expect(state.navigate).not.toHaveBeenCalled();
   });
   it('returns to A when the user cancels the replacement invitation', () => {
     state.pathname = '/party/controllers'; renderAndRunEffects();
