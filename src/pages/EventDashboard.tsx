@@ -102,7 +102,7 @@ const EventDashboard = () => {
   const { t, i18n } = useTranslation();
   const { event, participants, responseCount, isLoading, error, refetch } = useEvent(slug);
   const { user } = useAuthContext();
-  const { allowedTabs } = useParticipantPermissions(event, participants);
+  const { allowedTabs, isOrganizer } = useParticipantPermissions(event, participants);
   const { enabled: expensesV2Off } = useFeatureFlag("expenses_v2_off");
   const qc = useQueryClient();
   // Warm the expenses caches as soon as the event id is known so the tab and
@@ -217,7 +217,7 @@ const EventDashboard = () => {
       case "ideas":
         return <IdeasTab responses={responses} isLoading={statsLoading} />;
       case "planner":
-        return <PlannerTab event={event} participants={participants} />;
+        return <PlannerTab event={event} participants={participants} canManage={isOrganizer} />;
       case "agencies":
         return <AgenciesTab event={event} participants={participants} />;
       case "ai":

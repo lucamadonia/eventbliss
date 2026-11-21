@@ -7,15 +7,16 @@ import { useCallback, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
-import { Calendar, ChevronDown, Clock, MapPin, Pencil, Plus, User, WifiOff } from "lucide-react";
+import { AlertTriangle, Calendar, ChevronDown, Clock, MapPin, Pencil, Plus, User, WifiOff } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, duration, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import NativeScheduleActivityForm, {
-  CATEGORY_META, activityCategory, type ActivityDraft, type ScheduleActivity,
-} from "./NativeScheduleActivityForm";
+import {
+  CATEGORY_META, activityCategory, computeDuration, dayAfter, formatDayLabel, formatMoney, hhmm, isoDay, overlappingIds,
+} from "@/lib/schedule-utils";
+import NativeScheduleActivityForm, { type ActivityDraft, type ScheduleActivity } from "./NativeScheduleActivityForm";
 
 interface NativeEventScheduleProps {
   eventSlug: string;
@@ -24,45 +25,6 @@ interface NativeEventScheduleProps {
   participants: { id: string; name: string }[];
   /** The event's currency for new activities. */
   currency: string;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Helpers                                                            */
-/* ------------------------------------------------------------------ */
-
-const hhmm = (time: string | null): string | null => (time ? time.slice(0, 5) : null);
-
-/** Local calendar day as YYYY-MM-DD (never shifted by the UTC offset). */
-function isoDay(date: Date): string {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-}
-
-function dayAfter(day: string): string {
-  const date = new Date(`${day}T00:00:00`);
-  date.setDate(date.getDate() + 1);
-  return isoDay(date);
-}
-
-function formatDayLabel(day: string, locale: string): string {
-  return new Date(`${day}T00:00:00`).toLocaleDateString(locale, { weekday: "short", day: "2-digit", month: "2-digit" });
-}
-
-function computeDuration(startTime: string | null, endTime: string | null): string {
-  if (!startTime || !endTime) return "";
-  const diffMs = new Date(`2000-01-01T${endTime}`).getTime() - new Date(`2000-01-01T${startTime}`).getTime();
-  if (diffMs <= 0) return "";
-  const hours = diffMs / 3_600_000;
-  if (hours >= 1) return `${Math.round(hours * 10) / 10}h`;
-  return `${Math.round(diffMs / 60_000)}min`;
-}
-
-function formatMoney(amount: number, currency: string, locale: string): string {
-  try {
-    return new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 2 }).format(amount);
-  } catch {
-    // An unknown currency code must not take the whole tab down.
-    return `${amount} ${currency}`;
-  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -173,6 +135,7 @@ export default function NativeEventSchedule({ eventSlug, canManage, participants
     : eventDate && dayDates.includes(eventDate) ? eventDate
     : dayDates[0] ?? null;
   const activities = useMemo(() => allActivities.filter((activity) => activity.dayDate === activeDate), [allActivities, activeDate]);
+  const overlapping = useMemo(() => overlappingIds(activities), [activities]);
   const personName = useCallback((id: string | null) => participants.find((person) => person.id === id)?.name ?? null, [participants]);
 
   const toggleExpand = (id: string) => {
@@ -440,6 +403,12 @@ export default function NativeEventSchedule({ eventSlug, canManage, participants
                               {act.startTime}–{act.endTime}{activityDuration && ` · ${activityDuration}`}
                             </span>
                           )}
+                          {overlapping.has(act.id) && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-500 text-[11px] font-medium">
+                              <AlertTriangle className="w-3 h-3" />
+                              {t("nativeSchedule.overlap")}
+                            </span>
+                          )}
                           {money && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 text-[11px] font-medium tabular-nums">
                               {act.costPerPerson ? t("nativeSchedule.perPersonAmount", { amount: money }) : money}
@@ -523,6 +492,7 @@ export default function NativeEventSchedule({ eventSlug, canManage, participants
         open={formFor !== null}
         activity={editing}
         defaultDate={formDate || newActivityDate}
+        eventDate={eventDate}
         people={participants}
         currency={currency}
         busy={busy}

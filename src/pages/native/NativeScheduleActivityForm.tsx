@@ -9,26 +9,7 @@ import { Loader2, Trash2, X } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, duration, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-
-export type ActivityCategory =
-  | "food" | "activity" | "transport" | "party"
-  | "sightseeing" | "accommodation" | "relaxation" | "other";
-
-export const CATEGORY_META: Record<ActivityCategory, { icon: string; color: string }> = {
-  food:          { icon: "🍕", color: "from-orange-500 to-amber-400" },
-  activity:      { icon: "🎯", color: "from-violet-500 to-purple-500" },
-  transport:     { icon: "🚐", color: "from-blue-500 to-cyan-400" },
-  party:         { icon: "🎉", color: "from-pink-500 to-rose-400" },
-  sightseeing:   { icon: "🗺", color: "from-emerald-500 to-teal-400" },
-  accommodation: { icon: "🏨", color: "from-indigo-500 to-blue-400" },
-  relaxation:    { icon: "💆", color: "from-cyan-400 to-sky-300" },
-  other:         { icon: "📌", color: "from-gray-500 to-slate-400" },
-};
-
-const CATEGORIES = Object.keys(CATEGORY_META) as ActivityCategory[];
-
-export const activityCategory = (value: string | null | undefined): ActivityCategory =>
-  CATEGORIES.includes(value as ActivityCategory) ? (value as ActivityCategory) : "other";
+import { ACTIVITY_CATEGORIES, CATEGORY_META, isFarFromEvent, parseCost, type ActivityCategory } from "@/lib/schedule-utils";
 
 /** One row of `schedule_activities`, as the schedule tab shows it. */
 export interface ScheduleActivity {
@@ -68,6 +49,8 @@ interface Props {
   activity: ScheduleActivity | null;
   /** Day a new activity starts on (the day the user is looking at). */
   defaultDate: string;
+  /** The event's own day, to catch a date picked in the wrong month. */
+  eventDate: string | null;
   people: { id: string; name: string }[];
   currency: string;
   busy: boolean;
@@ -91,15 +74,7 @@ const sheetVariant = {
 const label = "block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5";
 const field = "w-full px-3.5 h-11 rounded-xl bg-muted/40 border border-border/50 text-foreground text-base placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/40 transition-all";
 
-/** "12,50" and "12.50" both mean twelve fifty; empty means no cost. */
-function parseCost(text: string): number | null | "invalid" {
-  const trimmed = text.trim();
-  if (!trimmed) return null;
-  const value = Number(trimmed.replace(",", "."));
-  return Number.isFinite(value) && value >= 0 && value < 100_000_000 ? Math.round(value * 100) / 100 : "invalid";
-}
-
-export default function NativeScheduleActivityForm({ open, activity, defaultDate, people, currency, busy, onClose, onSave, onDelete }: Props) {
+export default function NativeScheduleActivityForm({ open, activity, defaultDate, eventDate, people, currency, busy, onClose, onSave, onDelete }: Props) {
   const { t } = useTranslation();
   const haptics = useHaptics();
   const [title, setTitle] = useState("");
@@ -212,6 +187,10 @@ export default function NativeScheduleActivityForm({ open, activity, defaultDate
                   onChange={(e) => setDayDate(e.target.value)}
                   className={cn(field, "appearance-none")}
                 />
+                {/* A hint, not a block: some plans really do start weeks earlier. */}
+                {isFarFromEvent(dayDate, eventDate) && (
+                  <p role="status" className="mt-1.5 text-xs text-amber-500">{t("nativeSchedule.farFromEvent")}</p>
+                )}
               </div>
 
               {/* Keep the two times together as one compact range on phones. */}
@@ -252,7 +231,7 @@ export default function NativeScheduleActivityForm({ open, activity, defaultDate
               <div>
                 <span className={label}>{t("nativeSchedule.form.category")}</span>
                 <div className="grid grid-cols-4 gap-2">
-                  {CATEGORIES.map((value) => {
+                  {ACTIVITY_CATEGORIES.map((value) => {
                     const active = category === value;
                     const meta = CATEGORY_META[value];
                     return (

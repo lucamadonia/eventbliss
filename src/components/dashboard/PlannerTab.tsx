@@ -99,6 +99,8 @@ interface PlannerTabProps {
     currency?: string;
   };
   participants: Participant[];
+  /** Organisers plan; everyone else reads and comments. The database enforces the same rule. */
+  canManage?: boolean;
 }
 
 const localeMap: Record<string, Locale> = {
@@ -126,7 +128,7 @@ const categoryToExpenseCategory: Record<string, string> = {
   other: 'other',
 };
 
-export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
+export const PlannerTab = ({ event, participants, canManage = false }: PlannerTabProps) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
@@ -245,12 +247,15 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
       let savedActivityId: string | null = null;
 
       if (editingActivity) {
-        const { error } = await supabase
+        const { data: updated, error } = await supabase
           .from("schedule_activities")
           .update(activityData)
-          .eq("id", editingActivity.id);
+          .eq("id", editingActivity.id)
+          .select("id");
 
         if (error) throw error;
+        // A write the database refused (no permission) comes back empty and must not look saved.
+        if (!updated?.length) throw new Error("row-level security: update refused");
         savedActivityId = editingActivity.id;
         toast({ title: t('common.success'), description: t('planner.activityUpdated') });
       } else {
@@ -304,12 +309,14 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
 
   const handleDeleteActivity = async (activityId: string) => {
     try {
-      const { error } = await supabase
+      const { data: removed, error } = await supabase
         .from("schedule_activities")
         .delete()
-        .eq("id", activityId);
+        .eq("id", activityId)
+        .select("id");
 
       if (error) throw error;
+      if (!removed?.length) throw new Error("delete refused");
       toast({ title: t('common.success'), description: t('planner.activityDeleted') });
       fetchActivities();
     } catch (error) {
@@ -450,15 +457,17 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
           
-          <GradientButton
-            onClick={() => {
-              setEditingActivity(null);
-              setShowForm(true);
-            }}
-            icon={<Plus className="w-4 h-4" />}
-          >
-            {t('planner.addActivity')}
-          </GradientButton>
+          {canManage && (
+            <GradientButton
+              onClick={() => {
+                setEditingActivity(null);
+                setShowForm(true);
+              }}
+              icon={<Plus className="w-4 h-4" />}
+            >
+              {t('planner.addActivity')}
+            </GradientButton>
+          )}
         </div>
       </div>
 
@@ -470,6 +479,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
           participants={participants}
           currency={event.currency || 'EUR'}
           onActivityClick={(activity) => {
+            if (!canManage) return;
             const fullActivity = activities.find(a => a.id === activity.id);
             if (fullActivity) {
               setEditingActivity(fullActivity);
@@ -477,6 +487,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
             }
           }}
           onTimeSlotClick={(date, timeData) => {
+            if (!canManage) return;
             setSelectedDate(date);
             // Parse time data (format: "HH:MM|HH:MM" for start|end)
             if (timeData.includes('|')) {
@@ -489,17 +500,20 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
             setShowForm(true);
           }}
           onActivityMove={async (activityId, newDate, newStartTime, newEndTime) => {
+            if (!canManage) return;
             try {
-              const { error } = await supabase
+              const { data: moved, error } = await supabase
                 .from("schedule_activities")
                 .update({
                   day_date: newDate,
                   start_time: newStartTime,
                   end_time: newEndTime,
                 })
-                .eq("id", activityId);
+                .eq("id", activityId)
+                .select("id");
 
               if (error) throw error;
+              if (!moved?.length) throw new Error("move refused");
               
               // Update local state
               setActivities(prev => prev.map(a => 
@@ -622,16 +636,18 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
                     <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                     <h3 className="font-bold text-lg mb-2">{t('planner.noActivities')}</h3>
                     <p className="text-muted-foreground mb-4">{t('planner.noActivitiesHint')}</p>
-                    <GradientButton
-                      size="sm"
-                      onClick={() => {
-                        setEditingActivity(null);
-                        setShowForm(true);
-                      }}
-                      icon={<Plus className="w-4 h-4" />}
-                    >
-                      {t('planner.addFirst')}
-                    </GradientButton>
+                    {canManage && (
+                      <GradientButton
+                        size="sm"
+                        onClick={() => {
+                          setEditingActivity(null);
+                          setShowForm(true);
+                        }}
+                        icon={<Plus className="w-4 h-4" />}
+                      >
+                        {t('planner.addFirst')}
+                      </GradientButton>
+                    )}
                   </GlassCard>
                 ) : (
                   <>
@@ -650,6 +666,7 @@ export const PlannerTab = ({ event, participants }: PlannerTabProps) => {
                             handleAddComment(activity.id, content, participantId)
                           }
                           index={index}
+                          canManage={canManage}
                         />
                       ))}
 

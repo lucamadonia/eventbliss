@@ -8944,7 +8944,9 @@
     "noActivitiesDay": "Niente in programma per questo giorno",
     "noActivitiesGuest": "Appena l'host pianifica qualcosa, lo vedrai qui.",
     "noResponsible": "Nessuno",
-    "perPersonAmount": "{{amount}} a persona"
+    "perPersonAmount": "{{amount}} a persona",
+    "overlap": "Sovrapposizione",
+    "farFromEvent": "Questa data è a più di una settimana dall'evento."
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

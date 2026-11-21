@@ -9859,7 +9859,9 @@
     "noActivitiesDay": "لا يوجد شيء مخطط لهذا اليوم بعد",
     "noActivitiesGuest": "عندما يخطط المضيف لشيء ستراه هنا.",
     "noResponsible": "لا أحد",
-    "perPersonAmount": "{{amount}} للشخص"
+    "perPersonAmount": "{{amount}} للشخص",
+    "overlap": "تداخل",
+    "farFromEvent": "هذا التاريخ يبعد أكثر من أسبوع عن الفعالية."
   },
   "whoami": {
     "setup": {

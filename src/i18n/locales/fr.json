@@ -8944,7 +8944,9 @@
     "noActivitiesDay": "Rien de prévu pour ce jour",
     "noActivitiesGuest": "Dès que l'hôte planifie quelque chose, tu le verras ici.",
     "noResponsible": "Personne",
-    "perPersonAmount": "{{amount}} par personne"
+    "perPersonAmount": "{{amount}} par personne",
+    "overlap": "Chevauchement",
+    "farFromEvent": "Cette date est à plus d'une semaine de l'événement."
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

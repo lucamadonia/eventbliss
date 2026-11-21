@@ -8920,7 +8920,9 @@
     "noActivitiesDay": "Für diesen Tag ist noch nichts geplant",
     "noActivitiesGuest": "Sobald der Host etwas plant, siehst du es hier.",
     "noResponsible": "Niemand",
-    "perPersonAmount": "{{amount}} pro Person"
+    "perPersonAmount": "{{amount}} pro Person",
+    "overlap": "Überschneidung",
+    "farFromEvent": "Dieses Datum liegt mehr als eine Woche vom Event entfernt."
   },
   "nativeJoinRoom": {
     "title": "Raum beitreten",

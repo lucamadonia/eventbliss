@@ -8994,7 +8994,9 @@
     "noActivitiesDay": "Bu gün için henüz bir şey planlanmadı",
     "noActivitiesGuest": "Ev sahibi bir şey planladığında burada göreceksin.",
     "noResponsible": "Kimse",
-    "perPersonAmount": "Kişi başı {{amount}}"
+    "perPersonAmount": "Kişi başı {{amount}}",
+    "overlap": "Çakışıyor",
+    "farFromEvent": "Bu tarih etkinlikten bir haftadan fazla uzakta."
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

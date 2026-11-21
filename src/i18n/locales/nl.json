@@ -8994,7 +8994,9 @@
     "noActivitiesDay": "Voor deze dag is nog niets gepland",
     "noActivitiesGuest": "Zodra de host iets plant, zie je het hier.",
     "noResponsible": "Niemand",
-    "perPersonAmount": "{{amount}} per persoon"
+    "perPersonAmount": "{{amount}} per persoon",
+    "overlap": "Overlapt",
+    "farFromEvent": "Deze datum ligt meer dan een week van het evenement."
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

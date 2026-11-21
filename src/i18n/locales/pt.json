@@ -8994,7 +8994,9 @@
     "noActivitiesDay": "Ainda não há nada planeado para este dia",
     "noActivitiesGuest": "Quando o anfitrião planear algo, vais ver aqui.",
     "noResponsible": "Ninguém",
-    "perPersonAmount": "{{amount}} por pessoa"
+    "perPersonAmount": "{{amount}} por pessoa",
+    "overlap": "Sobreposição",
+    "farFromEvent": "Esta data está a mais de uma semana do evento."
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",
