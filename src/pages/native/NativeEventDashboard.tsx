@@ -26,6 +26,7 @@ import {
   Users,
   Calendar,
   Wallet,
+  HelpCircle,
   Sparkles,
   Settings,
   Check,
@@ -231,12 +232,25 @@ function ProgressRing({ progress, size = 72, stroke = 5 }: { progress: number; s
 /*  Overview Tab (inline)                                              */
 /* ------------------------------------------------------------------ */
 
+/** Whole days until the event: negative once it has passed, null without a date. */
+function daysUntil(eventDate: string | null | undefined): number | null {
+  if (!eventDate) return null;
+  return Math.ceil((new Date(eventDate).getTime() - Date.now()) / 86400000);
+}
+
+/** "Today" is only said about today: a past event and a missing date have their own words. */
+function countdownLabel(days: number | null, t: (key: string, opts?: Record<string, unknown>) => string): string {
+  if (days === null) return t("nativeDashboard.noDate");
+  if (days < 0) return t("nativeDashboard.countdown.past");
+  if (days === 0) return t("nativeDashboard.countdown.today");
+  if (days === 1) return t("nativeDashboard.countdown.tomorrow");
+  return t("nativeDashboard.countdown.inDays", { count: days });
+}
+
 function OverviewTab({ event, participants, activities, onSwitchTab }: { event: EventData; participants: Participant[]; activities: ActivityEntry[]; onSwitchTab: (tab: TabId) => void }) {
   const { t } = useTranslation();
   const haptics = useHaptics();
-  const days = event.event_date
-    ? Math.max(0, Math.ceil((new Date(event.event_date).getTime() - Date.now()) / 86400000))
-    : 0;
+  const days = daysUntil(event.event_date);
   const typeMeta = EVENT_TYPE_META[event.event_type] || EVENT_TYPE_META.other;
   const yesCount = participants.filter(p => p.status === "confirmed").length;
   const maybeCount = participants.filter(p => p.status === "maybe").length;
@@ -319,10 +333,10 @@ function OverviewTab({ event, participants, activities, onSwitchTab }: { event: 
           <p className="text-[10px] text-muted-foreground leading-tight">{t("nativeDashboard.confirmed")}</p>
         </div>
 
-        {/* Budget */}
+        {/* Vielleicht */}
         <div className="rounded-2xl bg-gradient-to-br from-foreground/[0.08] to-foreground/5 backdrop-blur border border-border p-3 text-center space-y-1">
           <div className="mx-auto w-8 h-8 rounded-xl bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center">
-            <Wallet className="w-4 h-4 text-white" />
+            <HelpCircle className="w-4 h-4 text-white" />
           </div>
           <p className="text-lg font-display font-bold text-foreground">{maybeCount}</p>
           <p className="text-[10px] text-muted-foreground leading-tight">{t("nativeDashboard.maybe")}</p>
@@ -338,18 +352,19 @@ function OverviewTab({ event, participants, activities, onSwitchTab }: { event: 
           <ProgressRing progress={responseProgress} />
           <div className="absolute inset-0 flex items-center justify-center">
             <motion.span
-              className="text-xl font-display font-bold text-foreground"
+              className="text-base font-display font-bold text-foreground tabular-nums"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={spring.bouncy}
             >
-              {days}
+              {/* The ring fills by response rate, so it says the response rate. */}
+              {Math.round(responseProgress * 100)}%
             </motion.span>
           </div>
         </div>
         <div className="space-y-1">
           <p className="text-base font-display font-semibold text-foreground">
-            {days === 0 ? t("nativeDashboard.countdown.today") : days === 1 ? t("nativeDashboard.countdown.tomorrow") : t("nativeDashboard.countdown.inDays", { count: days })}
+            {countdownLabel(days, t)}
           </p>
           <p className="text-sm text-muted-foreground">
             {t("nativeDashboard.confirmedOf", { yes: yesCount, total: participantCount })}
@@ -731,7 +746,7 @@ export default function NativeEventDashboard() {
   // feature_flags row = studio on). Legacy FormBuilderTab stays one flag
   // away as the emergency fallback.
   const { enabled: formStudioOff } = useFeatureFlag("form_studio_off");
-  const { event, participants, responseCount, isLoading, refetch } = useEvent(slug);
+  const { event, participants, responseCount, isLoading, errorKind, refetch } = useEvent(slug);
   const activities = useEventActivities(event?.id, t);
 
   // Warm expenses caches once the event id is known (instant tab + picker).
@@ -742,9 +757,7 @@ export default function NativeEventDashboard() {
   // Build stats from responses — for now pass null, AI will work with basic context
   const stats = null;
 
-  const daysUntilEvent = event?.event_date
-    ? Math.max(0, Math.ceil((new Date(event.event_date).getTime() - Date.now()) / 86400000))
-    : 0;
+  const daysUntilEvent = daysUntil(event?.event_date);
 
   const statusBadge = useMemo(() => {
     switch (event?.status) {
@@ -764,6 +777,27 @@ export default function NativeEventDashboard() {
       <div className="relative h-full flex flex-col items-center justify-center bg-background safe-top">
         <Loader2 className="w-10 h-10 animate-spin text-violet-500 mb-3" />
         <p className="text-sm text-muted-foreground">{t("nativeDashboard.loading")}</p>
+      </div>
+    );
+  }
+
+  // A failed connection is not a missing event: say so and offer another try.
+  if (!event && errorKind === "network") {
+    return (
+      <div className="relative h-full flex flex-col items-center justify-center bg-background safe-top px-6">
+        <AlertCircle className="w-12 h-12 text-amber-500 mb-4" />
+        <h2 className="text-lg font-display font-bold text-foreground mb-1">{t("nativeDashboard.loadError")}</h2>
+        <p className="text-sm text-muted-foreground text-center mb-6">{t("nativeDashboard.loadErrorDesc")}</p>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { haptics.select(); void refetch(); }}
+          className="px-5 h-11 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-medium"
+        >
+          {t("nativeDashboard.retry")}
+        </motion.button>
+        <button onClick={() => navigate(-1)} className="mt-3 h-11 px-5 text-sm text-muted-foreground">
+          {t("nativeDashboard.back")}
+        </button>
       </div>
     );
   }
@@ -855,7 +889,7 @@ export default function NativeEventDashboard() {
         {/* Countdown chip */}
         <div className="flex items-center gap-1.5 px-3 h-7 rounded-full bg-foreground/5 border border-border text-xs text-muted-foreground">
           <Clock className="w-3 h-3" />
-          {daysUntilEvent === 0 ? t("nativeDashboard.countdown.today") : daysUntilEvent === 1 ? t("nativeDashboard.countdown.tomorrow") : t("nativeDashboard.countdown.inDays", { count: daysUntilEvent })}
+          {countdownLabel(daysUntilEvent, t)}
         </div>
 
         {/* Status badge */}

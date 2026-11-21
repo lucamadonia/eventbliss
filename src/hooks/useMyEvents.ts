@@ -21,7 +21,7 @@ export interface EventWithParticipants {
 async function fetchMyEvents(userId: string): Promise<EventWithParticipants[]> {
   try {
     // Get events where user is a participant
-    const { data: participantEvents, error: participantError } = await supabase
+    const participantRequest = supabase
       .from("participants")
       .select(`
         event_id,
@@ -41,14 +41,16 @@ async function fetchMyEvents(userId: string): Promise<EventWithParticipants[]> {
       `)
       .eq("user_id", userId);
 
-    if (participantError) throw participantError;
-
     // Get events created by user (includes archived/deleted that RLS may hide from participants)
-    const { data: createdEvents, error: createdError } = await supabase
+    const createdRequest = supabase
       .from("events")
       .select("id, name, slug, event_type, event_date, status, honoree_name, created_at, archived_at, deleted_at")
       .eq("created_by", userId);
 
+    // The two lists do not depend on each other: ask for both at once.
+    const [{ data: participantEvents, error: participantError }, { data: createdEvents, error: createdError }] =
+      await Promise.all([participantRequest, createdRequest]);
+    if (participantError) throw participantError;
     if (createdError) throw createdError;
 
     // Merge and deduplicate
@@ -139,5 +141,5 @@ export function useMyEvents() {
     await queryRefetch();
   }, [queryRefetch]);
 
-  return { events, archivedEvents, deletedEvents, isLoading: query.isPending, refetch };
+  return { events, archivedEvents, deletedEvents, isLoading: query.isPending, isError: query.isError, refetch };
 }

@@ -8027,7 +8027,10 @@
       "noEventsDesc": "خطّط حدثك الأول وادعُ أصدقاءك.",
       "noArchivedDesc": "ستظهر الأحداث المؤرشفة هنا.",
       "createEvent": "إنشاء حدث",
-      "forHonoree": "لـ {{name}}"
+      "forHonoree": "لـ {{name}}",
+      "loadError": "تعذّر تحميل فعالياتك",
+      "loadErrorDesc": "تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.",
+      "retry": "حاول مرة أخرى"
     },
     "ideas": {
       "subtitle": "إلهام",
@@ -9727,7 +9730,8 @@
     "countdown": {
       "today": "اليوم!",
       "tomorrow": "غدًا!",
-      "inDays": "بعد {{count}} يوم"
+      "inDays": "بعد {{count}} يوم",
+      "past": "انتهى بالفعل"
     },
     "confirmedOf": "أكّد {{yes}} من {{total}}",
     "recentActivity": "أحدث الأنشطة",
@@ -9782,7 +9786,10 @@
       "budgetUpdated": "تم تحديث الميزانية",
       "guestInvited": "تمت دعوة {{name}}",
       "scheduleUpdated": "تم تحديث الجدول الزمني"
-    }
+    },
+    "loadError": "تعذّر تحميل الفعالية",
+    "loadErrorDesc": "تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.",
+    "retry": "حاول مرة أخرى"
   },
   "nativeGuests": {
     "organizer": "المنظِّم",

@@ -8113,7 +8113,10 @@
       "noEventsDesc": "Plan dein erstes Event und lade Freunde ein.",
       "noArchivedDesc": "Archivierte Events erscheinen hier.",
       "createEvent": "Event erstellen",
-      "forHonoree": "für {{name}}"
+      "forHonoree": "für {{name}}",
+      "loadError": "Events konnten nicht geladen werden",
+      "loadErrorDesc": "Prüfe deine Internetverbindung und versuche es erneut.",
+      "retry": "Erneut versuchen"
     },
     "ideas": {
       "subtitle": "Inspiration",
@@ -8799,7 +8802,8 @@
     "countdown": {
       "today": "Heute!",
       "tomorrow": "Morgen!",
-      "inDays": "In {{count}} Tagen"
+      "inDays": "In {{count}} Tagen",
+      "past": "Bereits vorbei"
     },
     "confirmedOf": "{{yes}} von {{total}} haben zugesagt",
     "quickActions": {
@@ -8843,7 +8847,10 @@
       "statusConfirmed": "Bestätigt",
       "statusCompleted": "Abgeschlossen",
       "statusCancelled": "Storniert"
-    }
+    },
+    "loadError": "Event konnte nicht geladen werden",
+    "loadErrorDesc": "Prüfe deine Internetverbindung und versuche es erneut.",
+    "retry": "Erneut versuchen"
   },
   "nativeGuests": {
     "status": {

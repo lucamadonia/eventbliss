@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { PartyPopper, Users, Calendar, Plus, Archive, ArchiveRestore, Search, MoreVertical, Trash2, Loader2, X } from "lucide-react";
+import { PartyPopper, Users, Calendar, Plus, Archive, ArchiveRestore, Search, MoreVertical, Trash2, Loader2, X, WifiOff } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { useMyEvents, type MyEvent } from "@/hooks/useMyEvents";
@@ -22,7 +22,7 @@ export default function EventsScreen() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
-  const { events = [], archivedEvents = [], isLoading, refetch } = useMyEvents();
+  const { events = [], archivedEvents = [], isLoading, isError, refetch } = useMyEvents();
   const { containerRef, PullIndicator } = usePullToRefresh({
     onRefresh: async () => { await refetch(); },
   });
@@ -130,6 +130,22 @@ export default function EventsScreen() {
                 className="h-24 rounded-2xl bg-foreground/5 border border-border/50 animate-pulse"
               />
             ))}
+          </div>
+        ) : isError && events.length === 0 && archivedEvents.length === 0 ? (
+          // A failed load must not look like "you have no events".
+          <div className="px-5 pt-10 text-center" role="alert">
+            <div className="w-20 h-20 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+              <WifiOff className="w-10 h-10 text-amber-500" />
+            </div>
+            <h2 className="text-lg font-display font-bold text-foreground mb-1">{t('native.events.loadError')}</h2>
+            <p className="text-sm text-muted-foreground mb-6">{t('native.events.loadErrorDesc')}</p>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => { haptics.select(); void refetch(); }}
+              className="px-5 h-11 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white text-sm font-medium"
+            >
+              {t('native.events.retry')}
+            </motion.button>
           </div>
         ) : filtered.length === 0 ? (
           <div className="px-5 pt-10 text-center">

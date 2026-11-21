@@ -8137,7 +8137,10 @@
       "noEventsDesc": "Planea tu primer evento e invita a tus amigos.",
       "noArchivedDesc": "Los eventos archivados aparecerán aquí.",
       "createEvent": "Crear Evento",
-      "forHonoree": "para {{name}}"
+      "forHonoree": "para {{name}}",
+      "loadError": "No se pudieron cargar tus eventos",
+      "loadErrorDesc": "Comprueba tu conexión a internet e inténtalo de nuevo.",
+      "retry": "Reintentar"
     },
     "ideas": {
       "subtitle": "Inspiración",
@@ -8856,7 +8859,8 @@
     "countdown": {
       "today": "¡Hoy!",
       "tomorrow": "¡Mañana!",
-      "inDays": "En {{count}} días"
+      "inDays": "En {{count}} días",
+      "past": "Ya ha pasado"
     },
     "confirmedOf": "{{yes}} de {{total}} confirmados",
     "quickActions": {
@@ -8900,7 +8904,10 @@
       "statusConfirmed": "Confirmado",
       "statusCompleted": "Completado",
       "statusCancelled": "Cancelado"
-    }
+    },
+    "loadError": "No se pudo cargar el evento",
+    "loadErrorDesc": "Comprueba tu conexión a internet e inténtalo de nuevo.",
+    "retry": "Reintentar"
   },
   "nativeGuests": {
     "status": {

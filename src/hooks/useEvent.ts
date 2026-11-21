@@ -1,5 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthContext } from "@/components/auth/AuthProvider";
 import { type EventSettings } from "@/lib/survey-config";
 
 export interface EventData {
@@ -46,89 +48,101 @@ export interface Participant {
   user_id?: string | null;
 }
 
+/** 'network': the request itself failed (offline, server down) — worth a retry. */
+export type EventErrorKind = "network" | "not_found";
+
 export interface UseEventResult {
   event: EventData | null;
   participants: Participant[];
   responseCount: number;
   isLoading: boolean;
   error: string | null;
+  errorKind: EventErrorKind | null;
   refetch: () => Promise<void>;
 }
 
-export function useEvent(slug: string | undefined): UseEventResult {
-  const [event, setEvent] = useState<EventData | null>(null);
-  const [participants, setParticipants] = useState<Participant[]>([]);
-  const [responseCount, setResponseCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  // The full-screen loader may only show on the FIRST load. Refetches (e.g.
-  // Form Studio autosave → onUpdate) must run silently in the background,
-  // otherwise every keystroke re-shows "Dashboard wird geladen…" and the
-  // editor remounts → flicker/refresh loop.
-  const initialLoadDone = useRef(false);
+class EventFetchError extends Error {
+  constructor(message: string, readonly kind: EventErrorKind) { super(message); }
+}
 
-  const fetchEvent = async () => {
-    if (!slug) {
-      setError("No event slug provided");
-      setIsLoading(false);
-      return;
-    }
+interface EventPayload { event: EventData; participants: Participant[]; responseCount: number }
 
-    // Validate slug format - reject placeholder patterns
-    if (slug.startsWith(':') || slug === 'slug' || slug.length < 3) {
-      setError("Invalid event link. Please use a valid event URL or access code.");
-      setIsLoading(false);
-      return;
-    }
+/** Stable empty list: a new array per render would retrigger consumers' effects. */
+const NO_PARTICIPANTS: Participant[] = [];
 
-    if (!initialLoadDone.current) setIsLoading(true);
-    setError(null);
+/** Placeholder patterns from unresolved route templates are not event links. */
+const isInvalidSlug = (slug: string) => slug.startsWith(":") || slug === "slug" || slug.length < 3;
 
-    try {
-      // Get auth token if available
-      const { data: { session } } = await supabase.auth.getSession();
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-        "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-      };
-      if (session?.access_token) {
-        headers["Authorization"] = `Bearer ${session.access_token}`;
-      }
+/** The answer depends on who asks (permissions), so the account is part of the key. */
+export const eventQueryKey = (slug: string | undefined, userId: string | null | undefined) =>
+  ["event", slug, userId ?? "anon"] as const;
 
-      const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-event?slug=${slug}`,
-        { method: "GET", headers }
-      );
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || "Failed to fetch event");
-      }
-
-      setEvent(result.event);
-      setParticipants(result.participants || []);
-      setResponseCount(result.response_count || 0);
-    } catch (err) {
-      console.error("Error fetching event:", err);
-      setError(err instanceof Error ? err.message : "Failed to fetch event");
-    } finally {
-      setIsLoading(false);
-      initialLoadDone.current = true;
-    }
+async function fetchEvent(slug: string): Promise<EventPayload> {
+  const { data: { session } } = await supabase.auth.getSession();
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
   };
+  if (session?.access_token) headers["Authorization"] = `Bearer ${session.access_token}`;
 
-  useEffect(() => {
-    initialLoadDone.current = false; // new slug → allow the loader once more
-    fetchEvent();
-  }, [slug]);
+  let response: Response;
+  try {
+    response = await fetch(
+      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-event?slug=${encodeURIComponent(slug)}`,
+      { method: "GET", headers },
+    );
+  } catch {
+    throw new EventFetchError("Network request failed", "network");
+  }
+
+  let result: { success?: boolean; error?: string; event?: EventData; participants?: Participant[]; response_count?: number } | null = null;
+  try { result = await response.json(); } catch { /* A gateway or offline page is not JSON. */ }
+
+  if (!result?.success || !result.event) {
+    throw new EventFetchError(result?.error || "Failed to fetch event",
+      !result || response.status >= 500 ? "network" : "not_found");
+  }
+  return { event: result.event, participants: result.participants || NO_PARTICIPANTS, responseCount: result.response_count || 0 };
+}
+
+/**
+ * One event with its participants. Cached per event and account: reopening an
+ * event shows it at once and refreshes in the background. Refetches (e.g. Form
+ * Studio autosave → onUpdate) never bring the full-screen loader back, because
+ * `isLoading` is only true while there is nothing to show yet.
+ */
+export function useEvent(slug: string | undefined): UseEventResult {
+  const auth = useAuthContext();
+  const valid = !!slug && !isInvalidSlug(slug);
+  const query = useQuery({
+    queryKey: eventQueryKey(slug, auth.user?.id),
+    // Wait for the restored session: an anonymous first request would answer
+    // "not found" for a private event and flash the wrong screen.
+    enabled: valid && !auth.isLoading,
+    queryFn: () => fetchEvent(slug!),
+    // "Not found" is final; a failed connection gets one more try.
+    retry: (failures, error) => error instanceof EventFetchError && error.kind === "network" && failures < 1,
+  });
+
+  const queryRefetch = query.refetch;
+  const refetch = useCallback(async () => { await queryRefetch(); }, [queryRefetch]);
+
+  const failure = query.error;
+  const error = !slug ? "No event slug provided"
+    : !valid ? "Invalid event link. Please use a valid event URL or access code."
+    : failure ? (failure instanceof Error ? failure.message : "Failed to fetch event")
+    : null;
+  const errorKind: EventErrorKind | null = !valid ? "not_found"
+    : failure ? (failure instanceof EventFetchError ? failure.kind : "network")
+    : null;
 
   return {
-    event,
-    participants,
-    responseCount,
-    isLoading,
+    event: query.data?.event ?? null,
+    participants: query.data?.participants ?? NO_PARTICIPANTS,
+    responseCount: query.data?.responseCount ?? 0,
+    isLoading: valid && query.isPending,
     error,
-    refetch: fetchEvent,
+    errorKind,
+    refetch,
   };
 }

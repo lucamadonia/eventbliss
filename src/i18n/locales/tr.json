@@ -8187,7 +8187,10 @@
       "noEventsDesc": "İlk etkinliğini planla ve arkadaşlarını davet et.",
       "noArchivedDesc": "Arşivlenmiş etkinlikler burada görünecek.",
       "createEvent": "Etkinlik Oluştur",
-      "forHonoree": "{{name}} için"
+      "forHonoree": "{{name}} için",
+      "loadError": "Etkinliklerin yüklenemedi",
+      "loadErrorDesc": "İnternet bağlantını kontrol edip tekrar dene.",
+      "retry": "Tekrar dene"
     },
     "ideas": {
       "subtitle": "İlham",
@@ -8873,7 +8876,8 @@
     "countdown": {
       "today": "Bugün!",
       "tomorrow": "Yarın!",
-      "inDays": "{{count}} gün kaldı"
+      "inDays": "{{count}} gün kaldı",
+      "past": "Etkinlik geçti"
     },
     "confirmedOf": "{{total}} kişiden {{yes}} tanesi onayladı",
     "quickActions": {
@@ -8917,7 +8921,10 @@
       "statusConfirmed": "Onaylandı",
       "statusCompleted": "Tamamlandı",
       "statusCancelled": "İptal edildi"
-    }
+    },
+    "loadError": "Etkinlik yüklenemedi",
+    "loadErrorDesc": "İnternet bağlantını kontrol edip tekrar dene.",
+    "retry": "Tekrar dene"
   },
   "nativeGuests": {
     "status": {

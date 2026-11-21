@@ -8187,7 +8187,10 @@
       "noEventsDesc": "Plan je eerste evenement en nodig vrienden uit.",
       "noArchivedDesc": "Gearchiveerde evenementen verschijnen hier.",
       "createEvent": "Evenement Maken",
-      "forHonoree": "voor {{name}}"
+      "forHonoree": "voor {{name}}",
+      "loadError": "Je evenementen konden niet worden geladen",
+      "loadErrorDesc": "Controleer je internetverbinding en probeer het opnieuw.",
+      "retry": "Opnieuw proberen"
     },
     "ideas": {
       "subtitle": "Inspiratie",
@@ -8873,7 +8876,8 @@
     "countdown": {
       "today": "Vandaag!",
       "tomorrow": "Morgen!",
-      "inDays": "Over {{count}} dagen"
+      "inDays": "Over {{count}} dagen",
+      "past": "Al voorbij"
     },
     "confirmedOf": "{{yes}} van {{total}} hebben toegezegd",
     "quickActions": {
@@ -8917,7 +8921,10 @@
       "statusConfirmed": "Bevestigd",
       "statusCompleted": "Voltooid",
       "statusCancelled": "Geannuleerd"
-    }
+    },
+    "loadError": "Evenement kon niet worden geladen",
+    "loadErrorDesc": "Controleer je internetverbinding en probeer het opnieuw.",
+    "retry": "Opnieuw proberen"
   },
   "nativeGuests": {
     "status": {

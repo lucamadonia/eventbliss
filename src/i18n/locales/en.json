@@ -8113,7 +8113,10 @@
       "noEventsDesc": "Plan your first event and invite friends.",
       "noArchivedDesc": "Archived events will appear here.",
       "createEvent": "Create Event",
-      "forHonoree": "for {{name}}"
+      "forHonoree": "for {{name}}",
+      "loadError": "Couldn't load your events",
+      "loadErrorDesc": "Check your internet connection and try again.",
+      "retry": "Try again"
     },
     "ideas": {
       "subtitle": "Inspiration",
@@ -8799,7 +8802,8 @@
     "countdown": {
       "today": "Today!",
       "tomorrow": "Tomorrow!",
-      "inDays": "In {{count}} days"
+      "inDays": "In {{count}} days",
+      "past": "Already over"
     },
     "confirmedOf": "{{yes}} of {{total}} confirmed",
     "quickActions": {
@@ -8843,7 +8847,10 @@
       "statusConfirmed": "Confirmed",
       "statusCompleted": "Completed",
       "statusCancelled": "Cancelled"
-    }
+    },
+    "loadError": "Couldn't load this event",
+    "loadErrorDesc": "Check your internet connection and try again.",
+    "retry": "Try again"
   },
   "nativeGuests": {
     "status": {
