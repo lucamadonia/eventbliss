@@ -8996,7 +8996,9 @@
     "noResponsible": "Ninguém",
     "perPersonAmount": "{{amount}} por pessoa",
     "overlap": "Sobreposição",
-    "farFromEvent": "Esta data está a mais de uma semana do evento."
+    "farFromEvent": "Esta data está a mais de uma semana do evento.",
+    "recordExpense": "Registar como despesa",
+    "plannedTotal": "Custos previstos"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

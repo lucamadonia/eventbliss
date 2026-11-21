@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { edgeHeaders } from "@/lib/edge";
 import { useTranslation } from "react-i18next";
+import { formatMoney } from "@/lib/schedule-utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, parseISO, addDays, isValid } from "date-fns";
 import { de, enUS, es, fr, it, nl, pt, pl, tr, ar, Locale } from "date-fns/locale";
@@ -117,17 +118,6 @@ const localeMap: Record<string, Locale> = {
 };
 
 // Map activity category to expense category
-const categoryToExpenseCategory: Record<string, string> = {
-  activity: 'activities',
-  food: 'food',
-  transport: 'transport',
-  accommodation: 'accommodation',
-  party: 'drinks',
-  sightseeing: 'activities',
-  relaxation: 'activities',
-  other: 'other',
-};
-
 export const PlannerTab = ({ event, participants, canManage = false }: PlannerTabProps) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -269,20 +259,8 @@ export const PlannerTab = ({ event, participants, canManage = false }: PlannerTa
         savedActivityId = insertedData?.id;
         toast({ title: t('common.success'), description: t('planner.activityCreated') });
 
-        if (activityData.estimated_cost && activityData.estimated_cost > 0 && savedActivityId) {
-          const expenseCategory = categoryToExpenseCategory[activityData.category || 'other'] || 'other';
-
-          await supabase
-            .from("expenses")
-            .insert([{
-              event_id: event.id,
-              description: `${t('planner.activity')}: ${activityData.title}`,
-              amount: activityData.estimated_cost,
-              category: expenseCategory as any,
-              currency: activityData.currency || event.currency || 'EUR',
-              expense_date: activityData.day_date,
-            }]);
-        }
+        // A planned cost is an estimate. It is not written to the expenses:
+        // those hold what somebody really paid (entered in the expenses tab).
       }
 
       setShowForm(false);
@@ -384,8 +362,9 @@ export const PlannerTab = ({ event, participants, canManage = false }: PlannerTa
     ? activities.filter((a) => a.day_date === selectedDate)
     : [];
 
+  // A per-person price counts once per head; a flat price once.
   const totalCostForDate = allActivitiesForDate.reduce((sum, a) => {
-    return sum + (a.estimated_cost || 0);
+    return sum + (a.estimated_cost || 0) * (a.cost_per_person ? Math.max(1, participants.length) : 1);
   }, 0);
 
   if (isLoading) {
@@ -677,7 +656,7 @@ export const PlannerTab = ({ event, participants, canManage = false }: PlannerTa
                           {t('planner.totalForDay')}
                         </span>
                         <span className="font-bold text-lg">
-                          {totalCostForDate.toFixed(2)} €
+                          {formatMoney(totalCostForDate, event.currency || 'EUR', i18n.language)}
                         </span>
                       </div>
                     </GlassCard>

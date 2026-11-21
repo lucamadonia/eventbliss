@@ -78,6 +78,28 @@ export function parseCost(text: string): number | null | "invalid" {
   return Number.isFinite(value) && value < 100_000_000 ? Math.round(value * 100) / 100 : "invalid";
 }
 
+interface Costed { estimatedCost: number | null; costPerPerson: boolean; currency: string }
+
+/** What the whole group pays for one activity: a per-person price counts once per head. */
+export function groupCost(activity: Costed, headcount: number): number {
+  const cost = activity.estimatedCost ?? 0;
+  return Math.round(cost * (activity.costPerPerson ? Math.max(1, headcount) : 1) * 100) / 100;
+}
+
+/**
+ * Sum of the planned costs — an estimate, never an expense. Null when nothing
+ * has a cost, or when currencies differ (amounts in different currencies are
+ * not added up).
+ */
+export function plannedTotal(activities: Costed[], headcount: number): { amount: number; currency: string } | null {
+  const costed = activities.filter((activity) => (activity.estimatedCost ?? 0) > 0);
+  if (!costed.length) return null;
+  const currency = costed[0].currency;
+  if (costed.some((activity) => activity.currency !== currency)) return null;
+  const amount = costed.reduce((sum, activity) => sum + groupCost(activity, headcount), 0);
+  return { amount: Math.round(amount * 100) / 100, currency };
+}
+
 interface Timed { id: string; dayDate: string; startTime: string | null; endTime: string | null }
 
 /**

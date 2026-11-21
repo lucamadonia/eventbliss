@@ -8996,7 +8996,9 @@
     "noResponsible": "Kimse",
     "perPersonAmount": "Kişi başı {{amount}}",
     "overlap": "Çakışıyor",
-    "farFromEvent": "Bu tarih etkinlikten bir haftadan fazla uzakta."
+    "farFromEvent": "Bu tarih etkinlikten bir haftadan fazla uzakta.",
+    "recordExpense": "Gider olarak kaydet",
+    "plannedTotal": "Planlanan maliyet"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

@@ -8946,7 +8946,9 @@
     "noResponsible": "Personne",
     "perPersonAmount": "{{amount}} par personne",
     "overlap": "Chevauchement",
-    "farFromEvent": "Cette date est à plus d'une semaine de l'événement."
+    "farFromEvent": "Cette date est à plus d'une semaine de l'événement.",
+    "recordExpense": "Enregistrer comme dépense",
+    "plannedTotal": "Coûts prévus"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

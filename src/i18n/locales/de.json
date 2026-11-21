@@ -8922,7 +8922,9 @@
     "noResponsible": "Niemand",
     "perPersonAmount": "{{amount}} pro Person",
     "overlap": "Überschneidung",
-    "farFromEvent": "Dieses Datum liegt mehr als eine Woche vom Event entfernt."
+    "farFromEvent": "Dieses Datum liegt mehr als eine Woche vom Event entfernt.",
+    "recordExpense": "Als Ausgabe erfassen",
+    "plannedTotal": "Geplante Kosten"
   },
   "nativeJoinRoom": {
     "title": "Raum beitreten",

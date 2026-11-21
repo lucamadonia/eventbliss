@@ -746,7 +746,7 @@ export default function NativeEventDashboard() {
   const { event, participants, responseCount, isLoading, errorKind, refetch } = useEvent(slug);
   const activities = useEventActivities(event?.id, t);
   // Same rules as the web dashboard: organiser tools only for those who may use them.
-  const { isOrganizer, permissions } = useParticipantPermissions(event, participants);
+  const { isOrganizer, permissions, currentParticipant } = useParticipantPermissions(event, participants);
   const visibleTabs = useMemo(() => TABS.filter(tab => {
     if (isOrganizer) return true;
     if (tab.id === "formular" || tab.id === "einstellungen") return permissions.can_edit_settings;
@@ -833,7 +833,8 @@ export default function NativeEventDashboard() {
       case "gaeste":
         return <NativeEventGuests eventSlug={slug!} participants={participants} accessCode={event?.access_code} onRefetch={refetch} />;
       case "zeitplan":
-        return <NativeEventSchedule eventSlug={slug!} canManage={isOrganizer} participants={participants} currency={event.currency || "EUR"} />;
+        return <NativeEventSchedule eventSlug={slug!} canManage={isOrganizer} participants={participants} currency={event.currency || "EUR"}
+          canRecordExpense={!expensesV2Off && (isOrganizer || permissions.can_add_expenses)} currentParticipantId={currentParticipant?.id} />;
       case "ideenboard":
         return event ? <IdeaBoardTab event={event} /> : null;
       case "ausgaben":

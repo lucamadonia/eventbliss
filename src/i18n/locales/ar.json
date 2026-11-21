@@ -9861,7 +9861,9 @@
     "noResponsible": "لا أحد",
     "perPersonAmount": "{{amount}} للشخص",
     "overlap": "تداخل",
-    "farFromEvent": "هذا التاريخ يبعد أكثر من أسبوع عن الفعالية."
+    "farFromEvent": "هذا التاريخ يبعد أكثر من أسبوع عن الفعالية.",
+    "recordExpense": "تسجيل كمصروف",
+    "plannedTotal": "التكاليف المخططة"
   },
   "whoami": {
     "setup": {

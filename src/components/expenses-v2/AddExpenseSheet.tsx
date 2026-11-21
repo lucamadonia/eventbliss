@@ -37,6 +37,8 @@ interface AddExpenseSheetProps {
   participants: Participant[];
   currency?: string;
   defaultPayerId?: string;
+  /** Start from a planned cost (schedule → "record as expense"); everything stays editable. */
+  prefill?: { amount: number; description: string; date?: string };
 }
 
 /**
@@ -56,6 +58,7 @@ export function AddExpenseSheet({
   participants,
   currency = "EUR",
   defaultPayerId,
+  prefill,
 }: AddExpenseSheetProps) {
   const { t } = useTranslation();
   const fmt = useExpenseFormat(currency);
@@ -111,13 +114,13 @@ export function AddExpenseSheet({
     const justOpened = open && !prevOpenRef.current;
     prevOpenRef.current = open;
     if (!justOpened) return;
-    setAmount("");
-    setDescription("");
+    setAmount(prefill ? String(prefill.amount) : "");
+    setDescription(prefill?.description ?? "");
     setPayers(defaultPayerId ? [] : []); // seeded below once amount is known
     setMultiPayer(false);
     const firstPayer = defaultPayerId ?? (participants[0]?.id ?? "");
     setPayers(firstPayer ? [{ participant_id: firstPayer, amount: 0 }] : []);
-    setDate(new Date().toISOString().slice(0, 10));
+    setDate(prefill?.date ?? new Date().toISOString().slice(0, 10));
     setNotes("");
     setCategoryId(null);
     setEmoji(null);

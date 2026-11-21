@@ -8922,7 +8922,9 @@
     "noResponsible": "Nobody",
     "perPersonAmount": "{{amount}} per person",
     "overlap": "Overlap",
-    "farFromEvent": "This date is more than a week away from the event."
+    "farFromEvent": "This date is more than a week away from the event.",
+    "recordExpense": "Record as expense",
+    "plannedTotal": "Planned costs"
   },
   "nativeJoinRoom": {
     "title": "Join Room",

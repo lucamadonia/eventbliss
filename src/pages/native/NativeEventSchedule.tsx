@@ -7,15 +7,16 @@ import { useCallback, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertTriangle, Calendar, ChevronDown, Clock, MapPin, Pencil, Plus, User, WifiOff } from "lucide-react";
+import { AlertTriangle, Calendar, ChevronDown, Clock, MapPin, Pencil, Plus, Receipt, User, WifiOff } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, stagger, duration, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
-  CATEGORY_META, activityCategory, computeDuration, dayAfter, formatDayLabel, formatMoney, hhmm, isoDay, overlappingIds,
+  CATEGORY_META, activityCategory, computeDuration, dayAfter, formatDayLabel, formatMoney, groupCost, hhmm, isoDay, overlappingIds, plannedTotal,
 } from "@/lib/schedule-utils";
+import { AddExpenseSheet } from "@/components/expenses-v2/AddExpenseSheet";
 import NativeScheduleActivityForm, { type ActivityDraft, type ScheduleActivity } from "./NativeScheduleActivityForm";
 
 interface NativeEventScheduleProps {
@@ -25,6 +26,10 @@ interface NativeEventScheduleProps {
   participants: { id: string; name: string }[];
   /** The event's currency for new activities. */
   currency: string;
+  /** May this person enter expenses? Then a planned cost can be recorded as a real one. */
+  canRecordExpense: boolean;
+  /** This person's own participant row: the default payer of a recorded expense. */
+  currentParticipantId?: string;
 }
 
 /* ------------------------------------------------------------------ */
@@ -66,7 +71,7 @@ const fabVariant = {
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
-export default function NativeEventSchedule({ eventSlug, canManage, participants, currency }: NativeEventScheduleProps) {
+export default function NativeEventSchedule({ eventSlug, canManage, participants, currency, canRecordExpense, currentParticipantId }: NativeEventScheduleProps) {
   const { t, i18n } = useTranslation();
   const haptics = useHaptics();
   const queryClient = useQueryClient();
@@ -76,6 +81,8 @@ export default function NativeEventSchedule({ eventSlug, canManage, participants
   const [formFor, setFormFor] = useState<ScheduleActivity | "new" | null>(null);
   const [formDate, setFormDate] = useState("");
   const [busy, setBusy] = useState(false);
+  /** Planned cost being turned into a real expense; the estimate itself is never an expense. */
+  const [expenseFor, setExpenseFor] = useState<ScheduleActivity | null>(null);
 
   const queryKey = useMemo(() => ["native-schedule", eventSlug], [eventSlug]);
   const { data: scheduleData, isPending: loading, isError, refetch } = useQuery({
@@ -136,6 +143,12 @@ export default function NativeEventSchedule({ eventSlug, canManage, participants
     : dayDates[0] ?? null;
   const activities = useMemo(() => allActivities.filter((activity) => activity.dayDate === activeDate), [allActivities, activeDate]);
   const overlapping = useMemo(() => overlappingIds(activities), [activities]);
+  const dayTotal = useMemo(() => plannedTotal(activities, participants.length), [activities, participants.length]);
+  const expensePrefill = useMemo(() => expenseFor ? {
+    amount: groupCost(expenseFor, participants.length),
+    description: expenseFor.title,
+    date: expenseFor.dayDate,
+  } : undefined, [expenseFor, participants.length]);
   const personName = useCallback((id: string | null) => participants.find((person) => person.id === id)?.name ?? null, [participants]);
 
   const toggleExpand = (id: string) => {
@@ -429,7 +442,7 @@ export default function NativeEventSchedule({ eventSlug, canManage, participants
                         </div>
 
                         <AnimatePresence>
-                          {isExpanded && (details || act.location || canManage) && (
+                          {isExpanded && (details || act.location || canManage || (canRecordExpense && money)) && (
                             <motion.div variants={expandVariant} initial="initial" animate="animate" exit="exit" className="overflow-hidden">
                               <div className="pt-3 mt-3 border-t border-border/40 space-y-2.5">
                                 {details && (
@@ -446,6 +459,16 @@ export default function NativeEventSchedule({ eventSlug, canManage, participants
                                     <MapPin className="w-3.5 h-3.5 shrink-0" />
                                     <span className="underline underline-offset-2">{act.location}</span>
                                   </a>
+                                )}
+                                {canRecordExpense && money && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); haptics.light(); setExpenseFor(act); }}
+                                    className="mr-2 inline-flex items-center gap-1.5 h-11 px-4 -ml-1 rounded-xl bg-emerald-500/10 text-sm font-semibold text-emerald-500 active:bg-emerald-500/20"
+                                  >
+                                    <Receipt className="w-3.5 h-3.5" aria-hidden />
+                                    {t("nativeSchedule.recordExpense")}
+                                  </button>
                                 )}
                                 {canManage && (
                                   <button
@@ -467,6 +490,14 @@ export default function NativeEventSchedule({ eventSlug, canManage, participants
                 );
               })}
             </motion.div>
+
+            {/* An estimate for the day — real spending lives in the expenses tab. */}
+            {dayTotal && (
+              <div className="mt-2 ml-[68px] flex items-center justify-between rounded-2xl border border-border/50 bg-card/60 px-4 py-3">
+                <span className="text-sm text-muted-foreground">{t("nativeSchedule.plannedTotal")}</span>
+                <span className="text-base font-bold text-foreground tabular-nums">{formatMoney(dayTotal.amount, dayTotal.currency, i18n.language)}</span>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -486,6 +517,18 @@ export default function NativeEventSchedule({ eventSlug, canManage, participants
         >
           <Plus className="w-6 h-6 text-white" />
         </motion.button>
+      )}
+
+      {eventId && (
+        <AddExpenseSheet
+          open={expenseFor !== null}
+          onClose={() => setExpenseFor(null)}
+          eventId={eventId}
+          participants={participants}
+          currency={expenseFor?.currency ?? currency}
+          defaultPayerId={currentParticipantId}
+          prefill={expensePrefill}
+        />
       )}
 
       <NativeScheduleActivityForm

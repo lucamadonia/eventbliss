@@ -8996,7 +8996,9 @@
     "noResponsible": "Niemand",
     "perPersonAmount": "{{amount}} per persoon",
     "overlap": "Overlapt",
-    "farFromEvent": "Deze datum ligt meer dan een week van het evenement."
+    "farFromEvent": "Deze datum ligt meer dan een week van het evenement.",
+    "recordExpense": "Als uitgave vastleggen",
+    "plannedTotal": "Geplande kosten"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

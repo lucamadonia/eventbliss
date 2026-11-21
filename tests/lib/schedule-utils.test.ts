@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   activityCategory, computeDuration, dayAfter, daysBetween, formatMoney, hhmm, isFarFromEvent, isoDay,
-  overlappingIds, parseCost,
+  groupCost, overlappingIds, parseCost, plannedTotal,
 } from '../../src/lib/schedule-utils';
 
 const slot = (id: string, dayDate: string, startTime: string | null, endTime: string | null) => ({ id, dayDate, startTime, endTime });
@@ -69,6 +69,21 @@ describe('schedule money and categories', () => {
     expect(formatMoney(12.5, 'EUR', 'en')).toContain('12.50');
     expect(formatMoney(12.5, 'EUR', 'de')).toContain('12,50');
     expect(formatMoney(5, 'not-a-currency', 'en')).toBe('5 not-a-currency');
+  });
+  it('counts a per-person price once per head and a flat price once', () => {
+    const perHead = { estimatedCost: 25, costPerPerson: true, currency: 'EUR' };
+    const flat = { estimatedCost: 120, costPerPerson: false, currency: 'EUR' };
+    expect(groupCost(perHead, 8)).toBe(200);
+    expect(groupCost(perHead, 0)).toBe(25);  // nobody invited yet: at least the organiser
+    expect(groupCost(flat, 8)).toBe(120);
+    expect(plannedTotal([perHead, flat, { estimatedCost: null, costPerPerson: true, currency: 'EUR' }], 8)).toEqual({ amount: 320, currency: 'EUR' });
+  });
+  it('gives no total without costs or across currencies', () => {
+    expect(plannedTotal([{ estimatedCost: null, costPerPerson: true, currency: 'EUR' }], 4)).toBeNull();
+    expect(plannedTotal([
+      { estimatedCost: 10, costPerPerson: false, currency: 'EUR' },
+      { estimatedCost: 10, costPerPerson: false, currency: 'CHF' },
+    ], 4)).toBeNull();
   });
   it('maps unknown categories to "other"', () => {
     expect(activityCategory('party')).toBe('party');
