@@ -8984,7 +8984,17 @@
       "responsible": "Verantwoordelijke",
       "add": "Toevoegen",
       "titlePlaceholder": "bijv. Ontbijt in het hotel"
-    }
+    },
+    "editActivity": "Activiteit bewerken",
+    "addDay": "Dag toevoegen",
+    "deleteConfirm": "Echt verwijderen?",
+    "deleted": "Activiteit verwijderd",
+    "deleteFailed": "Activiteit kon niet worden verwijderd",
+    "loadError": "Planning kon niet worden geladen",
+    "noActivitiesDay": "Voor deze dag is nog niets gepland",
+    "noActivitiesGuest": "Zodra de host iets plant, zie je het hier.",
+    "noResponsible": "Niemand",
+    "perPersonAmount": "{{amount}} per persoon"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

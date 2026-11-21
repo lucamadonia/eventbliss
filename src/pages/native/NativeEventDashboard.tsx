@@ -833,7 +833,7 @@ export default function NativeEventDashboard() {
       case "gaeste":
         return <NativeEventGuests eventSlug={slug!} participants={participants} accessCode={event?.access_code} onRefetch={refetch} />;
       case "zeitplan":
-        return <NativeEventSchedule eventSlug={slug!} />;
+        return <NativeEventSchedule eventSlug={slug!} canManage={isOrganizer} participants={participants} currency={event.currency || "EUR"} />;
       case "ideenboard":
         return event ? <IdeaBoardTab event={event} /> : null;
       case "ausgaben":

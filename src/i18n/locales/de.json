@@ -8910,7 +8910,17 @@
       "responsible": "Zuständig",
       "add": "Hinzufügen",
       "titlePlaceholder": "z.B. Frühstück im Hotel"
-    }
+    },
+    "editActivity": "Aktivität bearbeiten",
+    "addDay": "Tag hinzufügen",
+    "deleteConfirm": "Wirklich löschen?",
+    "deleted": "Aktivität gelöscht",
+    "deleteFailed": "Aktivität konnte nicht gelöscht werden",
+    "loadError": "Zeitplan konnte nicht geladen werden",
+    "noActivitiesDay": "Für diesen Tag ist noch nichts geplant",
+    "noActivitiesGuest": "Sobald der Host etwas plant, siehst du es hier.",
+    "noResponsible": "Niemand",
+    "perPersonAmount": "{{amount}} pro Person"
   },
   "nativeJoinRoom": {
     "title": "Raum beitreten",

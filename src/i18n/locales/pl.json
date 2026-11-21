@@ -9008,7 +9008,17 @@
       "responsible": "Odpowiedzialny",
       "add": "Dodaj",
       "titlePlaceholder": "np. Śniadanie w hotelu"
-    }
+    },
+    "editActivity": "Edytuj aktywność",
+    "addDay": "Dodaj dzień",
+    "deleteConfirm": "Na pewno usunąć?",
+    "deleted": "Aktywność usunięta",
+    "deleteFailed": "Nie udało się usunąć aktywności",
+    "loadError": "Nie udało się wczytać harmonogramu",
+    "noActivitiesDay": "Na ten dzień nic jeszcze nie zaplanowano",
+    "noActivitiesGuest": "Gdy gospodarz coś zaplanuje, zobaczysz to tutaj.",
+    "noResponsible": "Nikt",
+    "perPersonAmount": "{{amount}} za osobę"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

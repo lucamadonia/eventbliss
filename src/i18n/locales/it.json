@@ -8934,7 +8934,17 @@
       "responsible": "Responsabile",
       "add": "Aggiungi",
       "titlePlaceholder": "es. Colazione in hotel"
-    }
+    },
+    "editActivity": "Modifica attività",
+    "addDay": "Aggiungi giorno",
+    "deleteConfirm": "Eliminare davvero?",
+    "deleted": "Attività eliminata",
+    "deleteFailed": "Impossibile eliminare l'attività",
+    "loadError": "Impossibile caricare il programma",
+    "noActivitiesDay": "Niente in programma per questo giorno",
+    "noActivitiesGuest": "Appena l'host pianifica qualcosa, lo vedrai qui.",
+    "noResponsible": "Nessuno",
+    "perPersonAmount": "{{amount}} a persona"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

@@ -1,127 +1,68 @@
 /**
  * NativeEventSchedule — "Zeitplan" tab for the Event Dashboard.
- * Vertical timeline with animated connecting lines, stagger reveal,
- * expand-on-tap activity cards, day selector, and Add Activity FAB.
+ * Vertical timeline per day with expand-on-tap cards. Organisers add, edit
+ * and delete activities on any day; everyone else reads the plan.
  */
 import { useCallback, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Calendar,
-  ChevronDown,
-  Clock,
-  MapPin,
-  Plus,
-  User,
-  X,
-} from "lucide-react";
+import { Calendar, ChevronDown, Clock, MapPin, Pencil, Plus, User, WifiOff } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
-import { spring, stagger, staggerItem, duration, ease } from "@/lib/motion";
+import { spring, stagger, duration, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-/* ------------------------------------------------------------------ */
-/*  Types                                                              */
-/* ------------------------------------------------------------------ */
+import NativeScheduleActivityForm, {
+  CATEGORY_META, activityCategory, type ActivityDraft, type ScheduleActivity,
+} from "./NativeScheduleActivityForm";
 
 interface NativeEventScheduleProps {
   eventSlug: string;
+  /** Organisers plan; guests read. The database enforces the same rule. */
+  canManage: boolean;
+  participants: { id: string; name: string }[];
+  /** The event's currency for new activities. */
+  currency: string;
 }
-
-type ActivityCategory =
-  | "food"
-  | "activity"
-  | "transport"
-  | "party"
-  | "sightseeing"
-  | "accommodation"
-  | "relaxation"
-  | "other";
-
-interface Activity {
-  id: string;
-  time: string;
-  endTime: string | null;
-  title: string;
-  description?: string;
-  category: ActivityCategory;
-  duration: string;
-  cost: string | null;
-  location?: string;
-  emoji: string;
-  responsible?: string;
-  dayDate: string;
-}
-
-interface DayTab {
-  label: string;
-  date: string; // ISO
-  activities: Activity[];
-}
-
-/* ------------------------------------------------------------------ */
-/*  Category config                                                    */
-/* ------------------------------------------------------------------ */
-
-const CATEGORY_META: Record<ActivityCategory, { icon: string; color: string }> = {
-  food:          { icon: "\uD83C\uDF55", color: "from-orange-500 to-amber-400" },
-  activity:      { icon: "\uD83C\uDFAF", color: "from-violet-500 to-purple-500" },
-  transport:     { icon: "\uD83D\uDE90", color: "from-blue-500 to-cyan-400" },
-  party:         { icon: "\uD83C\uDF89", color: "from-pink-500 to-rose-400" },
-  sightseeing:   { icon: "\uD83D\uDDFA", color: "from-emerald-500 to-teal-400" },
-  accommodation: { icon: "\uD83C\uDFE8", color: "from-indigo-500 to-blue-400" },
-  relaxation:    { icon: "\uD83D\uDC86", color: "from-cyan-400 to-sky-300" },
-  other:         { icon: "\uD83D\uDCCC", color: "from-gray-500 to-slate-400" },
-};
-
-const CATEGORY_OPTIONS: { value: ActivityCategory; labelKey: string }[] = [
-  { value: "food", labelKey: "nativeSchedule.categories.food" },
-  { value: "activity", labelKey: "nativeSchedule.categories.activity" },
-  { value: "transport", labelKey: "nativeSchedule.categories.transport" },
-  { value: "party", labelKey: "nativeSchedule.categories.party" },
-  { value: "sightseeing", labelKey: "nativeSchedule.categories.sightseeing" },
-  { value: "accommodation", labelKey: "nativeSchedule.categories.accommodation" },
-  { value: "relaxation", labelKey: "nativeSchedule.categories.relaxation" },
-  { value: "other", labelKey: "nativeSchedule.categories.other" },
-];
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
-function getCategoryEmoji(cat: string | null): string {
-  const map: Record<string, string> = {
-    food: "\uD83C\uDF55",
-    activity: "\uD83C\uDFAF",
-    transport: "\uD83D\uDE90",
-    accommodation: "\uD83C\uDFE8",
-    party: "\uD83C\uDF89",
-    sightseeing: "\uD83D\uDDFA",
-    relaxation: "\uD83D\uDC86",
-    other: "\uD83D\uDCCC",
-  };
-  return map[cat || "other"] || "\uD83D\uDCCC";
+const hhmm = (time: string | null): string | null => (time ? time.slice(0, 5) : null);
+
+/** Local calendar day as YYYY-MM-DD (never shifted by the UTC offset). */
+function isoDay(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
-function formatDayLabel(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
-  const weekday = d.toLocaleDateString("de-DE", { weekday: "short" });
-  const day = String(d.getDate()).padStart(2, "0");
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  return `${weekday} ${day}.${month}`;
+function dayAfter(day: string): string {
+  const date = new Date(`${day}T00:00:00`);
+  date.setDate(date.getDate() + 1);
+  return isoDay(date);
+}
+
+function formatDayLabel(day: string, locale: string): string {
+  return new Date(`${day}T00:00:00`).toLocaleDateString(locale, { weekday: "short", day: "2-digit", month: "2-digit" });
 }
 
 function computeDuration(startTime: string | null, endTime: string | null): string {
   if (!startTime || !endTime) return "";
-  const start = new Date(`2000-01-01T${startTime}`);
-  const end = new Date(`2000-01-01T${endTime}`);
-  const diffMs = end.getTime() - start.getTime();
+  const diffMs = new Date(`2000-01-01T${endTime}`).getTime() - new Date(`2000-01-01T${startTime}`).getTime();
   if (diffMs <= 0) return "";
   const hours = diffMs / 3_600_000;
   if (hours >= 1) return `${Math.round(hours * 10) / 10}h`;
   return `${Math.round(diffMs / 60_000)}min`;
+}
+
+function formatMoney(amount: number, currency: string, locale: string): string {
+  try {
+    return new Intl.NumberFormat(locale, { style: "currency", currency, maximumFractionDigits: 2 }).format(amount);
+  } catch {
+    // An unknown currency code must not take the whole tab down.
+    return `${amount} ${currency}`;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -130,38 +71,22 @@ function computeDuration(startTime: string | null, endTime: string | null): stri
 
 const timelineLineVariant = {
   initial: { scaleY: 0, originY: 0 },
-  animate: {
-    scaleY: 1,
-    transition: { duration: duration.dramatic, ease: ease.out, delay: 0.15 },
-  },
+  animate: { scaleY: 1, transition: { duration: duration.dramatic, ease: ease.out, delay: 0.15 } },
 };
 
 const dotVariant = {
   initial: { scale: 0, opacity: 0 },
-  animate: (i: number) => ({
-    scale: 1,
-    opacity: 1,
-    transition: { ...spring.bouncy, delay: 0.2 + i * 0.08 },
-  }),
+  animate: (i: number) => ({ scale: 1, opacity: 1, transition: { ...spring.bouncy, delay: 0.2 + i * 0.08 } }),
 };
 
 const cardVariant = {
   initial: { opacity: 0, x: 24, scale: 0.95 },
-  animate: (i: number) => ({
-    opacity: 1,
-    x: 0,
-    scale: 1,
-    transition: { ...spring.soft, delay: 0.25 + i * 0.08 },
-  }),
+  animate: (i: number) => ({ opacity: 1, x: 0, scale: 1, transition: { ...spring.soft, delay: 0.25 + i * 0.08 } }),
 };
 
 const timeVariant = {
   initial: { opacity: 0, x: -12 },
-  animate: (i: number) => ({
-    opacity: 1,
-    x: 0,
-    transition: { ...spring.snappy, delay: 0.2 + i * 0.08 },
-  }),
+  animate: (i: number) => ({ opacity: 1, x: 0, transition: { ...spring.snappy, delay: 0.2 + i * 0.08 } }),
 };
 
 const expandVariant = {
@@ -175,163 +100,166 @@ const fabVariant = {
   animate: { scale: 1, rotate: 0, transition: { ...spring.bouncy, delay: 0.5 } },
 };
 
-const overlayVariant = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { duration: duration.quick } },
-  exit: { opacity: 0, transition: { duration: duration.instant } },
-};
-
-const formVariant = {
-  initial: { y: "100%", opacity: 0 },
-  animate: { y: 0, opacity: 1, transition: spring.slow },
-  exit: { y: "100%", opacity: 0, transition: { duration: duration.smooth, ease: ease.in } },
-};
-
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
 /* ------------------------------------------------------------------ */
 
-export default function NativeEventSchedule({ eventSlug }: NativeEventScheduleProps) {
-  const { t } = useTranslation();
+export default function NativeEventSchedule({ eventSlug, canManage, participants, currency }: NativeEventScheduleProps) {
+  const { t, i18n } = useTranslation();
   const haptics = useHaptics();
   const queryClient = useQueryClient();
-  const [selectedDay, setSelectedDay] = useState(0);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  /** null = closed; "new" = add on `formDate`; otherwise the activity being edited. */
+  const [formFor, setFormFor] = useState<ScheduleActivity | "new" | null>(null);
+  const [formDate, setFormDate] = useState("");
+  const [busy, setBusy] = useState(false);
 
-  // Form state
-  const [formTitle, setFormTitle] = useState("");
-  const [formTime, setFormTime] = useState("12:00");
-  const [formEndTime, setFormEndTime] = useState("13:00");
-  const [formCategory, setFormCategory] = useState<ActivityCategory>("activity");
-  const [formNotes, setFormNotes] = useState("");
-
-  /* ---------- Fetch real data from Supabase (cached via TanStack Query) ---------- */
-  const { data: scheduleData, isLoading: loading } = useQuery({
-    queryKey: ["native-schedule", eventSlug],
+  const queryKey = useMemo(() => ["native-schedule", eventSlug], [eventSlug]);
+  const { data: scheduleData, isPending: loading, isError, refetch } = useQuery({
+    queryKey,
     queryFn: async () => {
-      const { data: eventData } = await supabase
+      const { data: eventData, error: eventError } = await supabase
         .from("events")
         .select("id, event_date")
         .eq("slug", eventSlug)
-        .single();
+        .maybeSingle();
+      // A failed request is an error, not an empty schedule.
+      if (eventError) throw eventError;
+      if (!eventData) return { eventId: null as string | null, eventDate: null as string | null, activities: [] as ScheduleActivity[] };
 
-      if (!eventData) {
-        return { eventId: null as string | null, eventDate: null as string | null, activities: [] as Activity[] };
-      }
-
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("schedule_activities")
         .select("*")
         .eq("event_id", eventData.id)
         .order("day_date", { ascending: true })
         .order("start_time", { ascending: true });
+      if (error) throw error;
 
-      const activities: Activity[] = (data || []).map((a) => ({
+      const activities: ScheduleActivity[] = (data || []).map((a) => ({
         id: a.id,
-        time: a.start_time?.slice(0, 5) || "00:00",
-        endTime: a.end_time?.slice(0, 5) || null,
-        title: a.title,
-        category: (a.category as ActivityCategory) || "other",
-        duration: computeDuration(a.start_time, a.end_time),
-        cost: a.estimated_cost
-          ? `${a.estimated_cost}\u20AC${a.cost_per_person ? "/P" : ""}`
-          : null,
-        location: a.location || "",
-        emoji: getCategoryEmoji(a.category),
-        description: a.description || "",
         dayDate: a.day_date,
+        startTime: hhmm(a.start_time),
+        endTime: hhmm(a.end_time),
+        title: a.title,
+        category: activityCategory(a.category),
+        description: a.description || "",
+        notes: a.notes || "",
+        location: a.location || "",
+        estimatedCost: a.estimated_cost != null ? Number(a.estimated_cost) : null,
+        costPerPerson: a.cost_per_person ?? true,
+        currency: a.currency || "EUR",
+        responsibleId: a.responsible_participant_id ?? null,
       }));
 
-      return { eventId: eventData.id as string | null, eventDate: eventData.event_date as string | null, activities };
+      return { eventId: eventData.id as string | null, eventDate: (eventData.event_date as string | null)?.slice(0, 10) ?? null, activities };
     },
   });
 
   const eventId = scheduleData?.eventId ?? null;
+  const eventDate = scheduleData?.eventDate ?? null;
   const allActivities = useMemo(() => scheduleData?.activities ?? [], [scheduleData]);
 
-  /* ---------- Group activities by day ---------- */
-  const days: DayTab[] = useMemo(() => {
-    const dayMap = new Map<string, Activity[]>();
-    allActivities.forEach((a) => {
-      const day = a.dayDate || "unknown";
-      dayMap.set(day, [...(dayMap.get(day) || []), a]);
-    });
-    // Sort dates ascending
-    const sorted = [...dayMap.entries()].sort(([a], [b]) => a.localeCompare(b));
-    return sorted.map(([date, acts]) => ({
-      label: formatDayLabel(date),
-      date,
-      activities: acts,
-    }));
-  }, [allActivities]);
+  /* ---------- Days: the event day plus every day that has an activity ---------- */
+  const dayDates = useMemo(() => {
+    const days = new Set(allActivities.map((activity) => activity.dayDate));
+    if (eventDate) days.add(eventDate);
+    return [...days].sort();
+  }, [allActivities, eventDate]);
 
-  const activities = useMemo(() => days[selectedDay]?.activities ?? [], [days, selectedDay]);
+  const today = isoDay(new Date());
+  const activeDate = selectedDate && dayDates.includes(selectedDate) ? selectedDate
+    : dayDates.includes(today) ? today
+    : eventDate && dayDates.includes(eventDate) ? eventDate
+    : dayDates[0] ?? null;
+  const activities = useMemo(() => allActivities.filter((activity) => activity.dayDate === activeDate), [allActivities, activeDate]);
+  const personName = useCallback((id: string | null) => participants.find((person) => person.id === id)?.name ?? null, [participants]);
 
-  const toggleExpand = useCallback(
-    (id: string) => {
-      haptics.light();
-      setExpandedId((prev) => (prev === id ? null : id));
-    },
-    [haptics],
-  );
+  const toggleExpand = (id: string) => {
+    haptics.light();
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
 
-  const handleDaySelect = useCallback(
-    (idx: number) => {
-      haptics.light();
-      setSelectedDay(idx);
-      setExpandedId(null);
-    },
-    [haptics],
-  );
-
-  const handleAddActivity = useCallback(async () => {
+  const openCreate = (day: string) => {
     haptics.medium();
-    if (!eventId || !formTitle.trim()) return;
-    if (formTime && formEndTime && formEndTime <= formTime) return;
+    setFormDate(day);
+    setFormFor("new");
+  };
 
-    const targetDay = days[selectedDay]?.date || scheduleData?.eventDate || new Date().toISOString().slice(0, 10);
+  const editing = formFor && formFor !== "new" ? formFor : null;
 
-    const { error } = await supabase.from("schedule_activities").insert({
-      event_id: eventId,
-      title: formTitle.trim(),
-      start_time: formTime || null,
-      end_time: formEndTime || null,
-      category: formCategory,
-      notes: formNotes || null,
-      day_date: targetDay,
-    });
-    if (error) {
-      toast.error(t("nativeSchedule.saveFailed", "Aktivität konnte nicht gespeichert werden"));
+  const handleSave = async (draft: ActivityDraft) => {
+    if (!eventId || busy) return;
+    setBusy(true);
+    const row = {
+      title: draft.title,
+      day_date: draft.dayDate,
+      start_time: draft.startTime || null,
+      end_time: draft.endTime || null,
+      category: draft.category,
+      notes: draft.notes || null,
+      location: draft.location || null,
+      estimated_cost: draft.estimatedCost,
+      cost_per_person: draft.costPerPerson,
+      currency: editing?.currency ?? currency,
+      responsible_participant_id: draft.responsibleId,
+    };
+    // `.select` returns the written rows: a write the database silently
+    // refused (no permission) comes back empty and must not look saved.
+    const { data, error } = editing
+      ? await supabase.from("schedule_activities").update(row).eq("id", editing.id).select("id")
+      : await supabase.from("schedule_activities").insert({ event_id: eventId, ...row }).select("id");
+    if (error || !data?.length) {
+      setBusy(false);
+      haptics.warning();
+      toast.error(t("nativeSchedule.saveFailed"));
       return;
     }
+    await queryClient.invalidateQueries({ queryKey });
+    setBusy(false);
+    haptics.success();
+    setSelectedDate(draft.dayDate);
+    setFormFor(null);
+  };
 
-    setShowForm(false);
-    setFormTitle("");
-    setFormTime("12:00");
-    setFormEndTime("13:00");
-    setFormCategory("activity");
-    setFormNotes("");
-    // Refetch to show the new activity
-    queryClient.invalidateQueries({ queryKey: ["native-schedule", eventSlug] });
-  }, [haptics, eventId, formTitle, formTime, formEndTime, formCategory, formNotes, days, selectedDay, scheduleData?.eventDate, queryClient, eventSlug, t]);
+  const handleDelete = async () => {
+    if (!editing || busy) return;
+    setBusy(true);
+    const { data, error } = await supabase.from("schedule_activities").delete().eq("id", editing.id).select("id");
+    if (error || !data?.length) {
+      setBusy(false);
+      haptics.warning();
+      toast.error(t("nativeSchedule.deleteFailed"));
+      return;
+    }
+    await queryClient.invalidateQueries({ queryKey });
+    setBusy(false);
+    setExpandedId(null);
+    setFormFor(null);
+    toast.success(t("nativeSchedule.deleted"));
+  };
 
   /* ---------------------------------------------------------------- */
   /*  Render                                                           */
   /* ---------------------------------------------------------------- */
 
+  const showDays = !loading && !isError && (dayDates.length > 1 || (canManage && dayDates.length > 0));
+  const newActivityDate = activeDate ?? eventDate ?? today;
+
   return (
     <div className="relative flex flex-col h-full bg-background">
       {/* ------- Day Selector ------- */}
-      {!loading && days.length > 1 && (
+      {showDays && (
         <div className="flex items-center gap-2 px-5 pt-4 pb-2 overflow-x-auto no-scrollbar">
-          {days.map((day, idx) => {
-            const active = idx === selectedDay;
+          {dayDates.map((day) => {
+            const active = day === activeDate;
             return (
               <button
-                key={day.date}
-                onClick={() => handleDaySelect(idx)}
-                className="relative shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold transition-colors"
+                key={day}
+                type="button"
+                aria-pressed={active}
+                onClick={() => { haptics.light(); setSelectedDate(day); setExpandedId(null); }}
+                className="relative shrink-0 h-9 px-4 rounded-full text-sm font-semibold transition-colors"
               >
                 {active && (
                   <motion.span
@@ -341,19 +269,30 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                   />
                 )}
                 <span className={cn("relative z-10", active ? "text-white" : "text-muted-foreground")}>
-                  {day.label}
+                  {formatDayLabel(day, i18n.language)}
                 </span>
               </button>
             );
           })}
+          {/* Another day: the form opens on the day after the last one; the date stays editable there. */}
+          {canManage && (
+            <button
+              type="button"
+              aria-label={t("nativeSchedule.addDay")}
+              onClick={() => openCreate(dayAfter(dayDates[dayDates.length - 1]))}
+              className="shrink-0 inline-flex items-center gap-1 h-9 px-3 rounded-full border border-dashed border-border text-sm font-medium text-muted-foreground active:bg-foreground/5"
+            >
+              <Plus className="h-4 w-4" aria-hidden />
+              {t("nativeSchedule.addDay")}
+            </button>
+          )}
         </div>
       )}
 
       {/* ------- Timeline ------- */}
       <div className="flex-1 overflow-y-auto native-scroll px-5 pb-28 pt-4">
         {loading ? (
-          /* ---------- Loading Skeleton ---------- */
-          <div className="flex flex-col gap-4 pt-2">
+          <div className="flex flex-col gap-4 pt-2" aria-busy="true">
             {[0, 1, 2, 3].map((i) => (
               <div key={i} className="flex items-start gap-0 animate-pulse">
                 <div className="w-[42px] shrink-0 pt-3 text-right">
@@ -380,8 +319,24 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
               </div>
             ))}
           </div>
+        ) : isError ? (
+          <div role="alert" className="flex flex-col items-center justify-center gap-4 py-20 text-center">
+            <div className="flex items-center justify-center w-20 h-20 rounded-2xl bg-amber-500/10 border border-amber-500/20">
+              <WifiOff className="w-10 h-10 text-amber-500" />
+            </div>
+            <div>
+              <p className="text-lg font-semibold text-foreground">{t("nativeSchedule.loadError")}</p>
+              <p className="text-sm text-muted-foreground mt-1">{t("nativeDashboard.loadErrorDesc")}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => { haptics.select(); void refetch(); }}
+              className="mt-2 h-11 px-6 rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold active:scale-95 transition-transform"
+            >
+              {t("nativeDashboard.retry")}
+            </button>
+          </div>
         ) : activities.length === 0 ? (
-          /* ---------- Empty State ---------- */
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -392,20 +347,25 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
               <Calendar className="w-10 h-10 text-violet-400" />
             </div>
             <div>
-              <p className="text-lg font-semibold text-foreground">{t("nativeSchedule.noActivities")}</p>
-              <p className="text-sm text-muted-foreground mt-1">Plane den perfekten Ablauf fuer euer Event</p>
+              <p className="text-lg font-semibold text-foreground">
+                {t(allActivities.length > 0 ? "nativeSchedule.noActivitiesDay" : "nativeSchedule.noActivities")}
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t(canManage ? "nativeSchedule.noActivitiesDesc" : "nativeSchedule.noActivitiesGuest")}
+              </p>
             </div>
-            <button
-              onClick={() => { haptics.medium(); setShowForm(true); }}
-              className="mt-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold shadow-lg shadow-violet-500/30 active:scale-95 transition-transform"
-            >
-              {t("nativeSchedule.addActivity")}
-            </button>
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => openCreate(newActivityDate)}
+                className="mt-2 h-11 px-6 rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 text-white text-sm font-semibold shadow-lg shadow-violet-500/30 active:scale-95 transition-transform"
+              >
+                {t("nativeSchedule.addActivity")}
+              </button>
+            )}
           </motion.div>
         ) : (
-          /* ---------- Activity Timeline ---------- */
-          <div className="relative">
-            {/* Vertical connecting line */}
+          <div className="relative" key={activeDate}>
             <motion.div
               variants={timelineLineVariant}
               initial="initial"
@@ -414,40 +374,25 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
               style={{ transformOrigin: "top" }}
             />
 
-            {/* Activity rows */}
-            <motion.div
-              variants={stagger}
-              initial="initial"
-              animate="animate"
-              className="flex flex-col gap-1"
-            >
+            <motion.div variants={stagger} initial="initial" animate="animate" className="flex flex-col gap-1">
               {activities.map((act, i) => {
                 const isExpanded = expandedId === act.id;
                 const catMeta = CATEGORY_META[act.category];
+                const details = [act.description, act.notes].filter(Boolean).join("\n\n");
+                const activityDuration = computeDuration(act.startTime, act.endTime);
+                const responsible = personName(act.responsibleId);
+                const money = act.estimatedCost != null && act.estimatedCost > 0
+                  ? formatMoney(act.estimatedCost, act.currency, i18n.language) : null;
 
                 return (
                   <div key={act.id} className="relative flex items-start gap-0">
-                    {/* Time */}
-                    <motion.div
-                      custom={i}
-                      variants={timeVariant}
-                      initial="initial"
-                      animate="animate"
-                      className="w-[42px] shrink-0 pt-3 text-right"
-                    >
+                    <motion.div custom={i} variants={timeVariant} initial="initial" animate="animate" className="w-[42px] shrink-0 pt-3 text-right">
                       <span className="text-sm font-bold text-foreground font-mono tracking-tight">
-                        {act.time}
+                        {act.startTime ?? "–"}
                       </span>
                     </motion.div>
 
-                    {/* Dot */}
-                    <motion.div
-                      custom={i}
-                      variants={dotVariant}
-                      initial="initial"
-                      animate="animate"
-                      className="relative shrink-0 w-[26px] flex justify-center pt-3.5 z-10"
-                    >
+                    <motion.div custom={i} variants={dotVariant} initial="initial" animate="animate" className="relative shrink-0 w-[26px] flex justify-center pt-3.5 z-10">
                       <div
                         className={cn(
                           "w-3 h-3 rounded-full bg-gradient-to-br shadow-lg",
@@ -457,94 +402,69 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                       />
                     </motion.div>
 
-                    {/* Card */}
-                    <motion.div
-                      custom={i}
-                      variants={cardVariant}
-                      initial="initial"
-                      animate="animate"
-                      className="flex-1 min-w-0 pb-3"
-                    >
-                      <motion.button
+                    <motion.div custom={i} variants={cardVariant} initial="initial" animate="animate" className="flex-1 min-w-0 pb-3">
+                      {/* A div, not a button: the expanded card holds a link and an edit button of its own. */}
+                      <motion.div
+                        role="button"
+                        tabIndex={0}
+                        aria-expanded={isExpanded}
                         onClick={() => toggleExpand(act.id)}
+                        onKeyDown={(e) => { if (e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); toggleExpand(act.id); } }}
                         whileTap={{ scale: 0.98 }}
                         className={cn(
-                          "w-full text-left rounded-2xl p-3.5 border transition-colors",
+                          "w-full cursor-pointer text-left rounded-2xl p-3.5 border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/50",
                           isExpanded
                             ? "bg-card/90 border-violet-500/30 shadow-lg shadow-violet-500/10"
-                            : "bg-card/60 border-border/50 hover:border-violet-500/20",
+                            : "bg-card/60 border-border/50",
                         )}
                       >
-                        {/* Top row */}
                         <div className="flex items-center gap-2.5">
-                          <div
-                            className={cn(
-                              "flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br text-lg shrink-0",
-                              catMeta.color,
-                            )}
-                          >
-                            {act.emoji}
+                          <div className={cn("flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br text-lg shrink-0", catMeta.color)}>
+                            {catMeta.icon}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[15px] font-semibold text-foreground truncate">
-                              {act.title}
-                            </p>
-                            {act.description && !isExpanded && (
-                              <p className="text-xs text-muted-foreground truncate mt-0.5">
-                                {act.description}
-                              </p>
+                            <p className="text-[15px] font-semibold text-foreground truncate">{act.title}</p>
+                            {details && !isExpanded && (
+                              <p className="text-xs text-muted-foreground truncate mt-0.5">{details}</p>
                             )}
                           </div>
-                          <motion.div
-                            animate={{ rotate: isExpanded ? 180 : 0 }}
-                            transition={spring.snappy}
-                          >
+                          <motion.div animate={{ rotate: isExpanded ? 180 : 0 }} transition={spring.snappy}>
                             <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />
                           </motion.div>
                         </div>
 
-                        {/* Badges row */}
-                        <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-                          {act.endTime && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-300 text-[11px] font-medium">
-                            <Clock className="w-3 h-3" />
-                            {act.time}–{act.endTime}
-                          </span>
-                          )}
-                          {act.duration && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-300 text-[11px] font-medium">
-                            <Clock className="w-3 h-3" />
-                            {act.duration}
-                          </span>
-                          )}
-                          {act.cost && (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 text-[11px] font-medium">
-                              {act.cost}
+                        <div className="flex flex-wrap items-center gap-1.5 mt-2.5 empty:hidden">
+                          {act.startTime && act.endTime && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-violet-500/10 text-violet-300 text-[11px] font-medium tabular-nums">
+                              <Clock className="w-3 h-3" />
+                              {act.startTime}–{act.endTime}{activityDuration && ` · ${activityDuration}`}
                             </span>
                           )}
-                          {act.responsible && (
+                          {money && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 text-[11px] font-medium tabular-nums">
+                              {act.costPerPerson ? t("nativeSchedule.perPersonAmount", { amount: money }) : money}
+                            </span>
+                          )}
+                          {responsible && (
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-300 text-[11px] font-medium">
                               <User className="w-3 h-3" />
-                              {act.responsible}
+                              {responsible}
+                            </span>
+                          )}
+                          {act.location && !isExpanded && (
+                            <span className="inline-flex min-w-0 items-center gap-1 px-2 py-0.5 rounded-md bg-foreground/5 text-muted-foreground text-[11px] font-medium">
+                              <MapPin className="w-3 h-3 shrink-0" />
+                              <span className="truncate max-w-[10rem]">{act.location}</span>
                             </span>
                           )}
                         </div>
 
-                        {/* Expanded details */}
                         <AnimatePresence>
-                          {isExpanded && (
-                            <motion.div
-                              variants={expandVariant}
-                              initial="initial"
-                              animate="animate"
-                              exit="exit"
-                              className="overflow-hidden"
-                            >
+                          {isExpanded && (details || act.location || canManage) && (
+                            <motion.div variants={expandVariant} initial="initial" animate="animate" exit="exit" className="overflow-hidden">
                               <div className="pt-3 mt-3 border-t border-border/40 space-y-2.5">
-                                {act.description && (
-                                  <p className="text-sm text-muted-foreground leading-relaxed">
-                                    {act.description}
-                                  </p>
+                                {details && (
+                                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{details}</p>
                                 )}
                                 {act.location && (
                                   <a
@@ -552,17 +472,27 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="flex items-center gap-1.5 text-sm text-violet-400 hover:text-violet-300 transition-colors"
+                                    className="flex items-center gap-1.5 text-sm text-violet-400"
                                   >
                                     <MapPin className="w-3.5 h-3.5 shrink-0" />
                                     <span className="underline underline-offset-2">{act.location}</span>
                                   </a>
                                 )}
+                                {canManage && (
+                                  <button
+                                    type="button"
+                                    onClick={(e) => { e.stopPropagation(); haptics.light(); setFormFor(act); }}
+                                    className="inline-flex items-center gap-1.5 h-11 px-4 -ml-1 rounded-xl bg-foreground/5 text-sm font-semibold text-foreground active:bg-foreground/10"
+                                  >
+                                    <Pencil className="w-3.5 h-3.5" aria-hidden />
+                                    {t("common.edit")}
+                                  </button>
+                                )}
                               </div>
                             </motion.div>
                           )}
                         </AnimatePresence>
-                      </motion.button>
+                      </motion.div>
                     </motion.div>
                   </div>
                 );
@@ -572,176 +502,34 @@ export default function NativeEventSchedule({ eventSlug }: NativeEventSchedulePr
         )}
       </div>
 
-      {/* ------- FAB ------- */}
-      <motion.button
-        variants={fabVariant}
-        initial="initial"
-        animate="animate"
-        whileTap={{ scale: 0.9 }}
-        onClick={() => { haptics.medium(); setShowForm(true); }}
-        className="fixed bottom-24 right-5 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-violet-600 to-purple-700 shadow-xl shadow-violet-600/40"
-        style={{
-          boxShadow: "0 0 24px rgba(139,92,246,0.4), 0 8px 32px rgba(139,92,246,0.25)",
-        }}
-      >
-        <Plus className="w-6 h-6 text-white" />
-      </motion.button>
+      {/* ------- FAB (organisers only) ------- */}
+      {canManage && !loading && !isError && (
+        <motion.button
+          type="button"
+          variants={fabVariant}
+          initial="initial"
+          animate="animate"
+          whileTap={{ scale: 0.9 }}
+          aria-label={t("nativeSchedule.addActivity")}
+          onClick={() => openCreate(newActivityDate)}
+          className="fixed bottom-24 right-5 z-40 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-br from-violet-600 to-purple-700"
+          style={{ boxShadow: "0 0 24px rgba(139,92,246,0.4), 0 8px 32px rgba(139,92,246,0.25)" }}
+        >
+          <Plus className="w-6 h-6 text-white" />
+        </motion.button>
+      )}
 
-      {/* ------- Add Activity Form (bottom sheet) ------- */}
-      <AnimatePresence>
-        {showForm && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              variants={overlayVariant}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              onClick={() => setShowForm(false)}
-              className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
-            />
-
-            {/* Sheet */}
-            <motion.div
-              variants={formVariant}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="fixed inset-x-0 bottom-0 z-50 rounded-t-3xl bg-card border-t border-border/50 p-5 pb-8 safe-bottom max-h-[80vh] overflow-y-auto native-scroll"
-            >
-              {/* Handle */}
-              <div className="flex justify-center mb-4">
-                <div className="w-10 h-1 rounded-full bg-border/60" />
-              </div>
-
-              {/* Header */}
-              <div className="flex items-center justify-between mb-5">
-                <h3 className="text-lg font-bold text-foreground">{t("nativeSchedule.addActivity")}</h3>
-                <button
-                  onClick={() => setShowForm(false)}
-                  className="p-1.5 rounded-full bg-muted/50 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-
-              {/* Form fields */}
-              <div className="space-y-4">
-                {/* Title */}
-                <div>
-                  <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    {t("nativeSchedule.form.title")}
-                  </label>
-                  <input
-                    type="text"
-                    value={formTitle}
-                    onChange={(e) => setFormTitle(e.target.value)}
-                    placeholder="z.B. Escape Room, Abendessen..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-muted/40 border border-border/50 text-foreground text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/40 transition-all"
-                  />
-                </div>
-
-                {/* Keep the two times together as one compact range on phones. */}
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div className="min-w-0">
-                    <label htmlFor="native-activity-start" className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                      {t("planner.form.startTime", "Von")}
-                    </label>
-                    <input
-                      id="native-activity-start"
-                      type="time"
-                      value={formTime}
-                      onChange={(e) => {
-                        const start = e.target.value;
-                        setFormTime(start);
-                        if (start && formEndTime <= start) {
-                          const [hour, minute] = start.split(":").map(Number);
-                          setFormEndTime(`${String(Math.min(hour + 1, 23)).padStart(2, "0")}:${String(minute).padStart(2, "0")}`);
-                        }
-                      }}
-                      className="native-activity-time block h-11 w-full min-w-0 appearance-none overflow-hidden rounded-xl border border-border/50 bg-muted/40 px-1 text-center text-base text-foreground focus:outline-none focus:ring-2 focus:ring-violet-500/40"
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <label htmlFor="native-activity-end" className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                      {t("planner.form.endTime", "Bis")}
-                    </label>
-                    <input
-                      id="native-activity-end"
-                      type="time"
-                      min={formTime || undefined}
-                      value={formEndTime}
-                      onChange={(e) => setFormEndTime(e.target.value)}
-                      className="native-activity-time block h-11 w-full min-w-0 appearance-none overflow-hidden rounded-xl border border-border/50 bg-muted/40 px-1 text-center text-base text-foreground focus:outline-none focus:ring-2 focus:ring-violet-500/40"
-                    />
-                  </div>
-                  {formTime && formEndTime && formEndTime <= formTime && (
-                    <p className="col-span-2 text-xs text-destructive">{t("nativeSchedule.form.endAfterStart", "Die Endzeit muss nach der Startzeit liegen.")}</p>
-                  )}
-                </div>
-
-                {/* Category */}
-                <div>
-                  <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    {t("nativeSchedule.form.category")}
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {CATEGORY_OPTIONS.map((opt) => {
-                      const active = formCategory === opt.value;
-                      const meta = CATEGORY_META[opt.value];
-                      return (
-                        <button
-                          key={opt.value}
-                          type="button"
-                          onClick={() => { haptics.light(); setFormCategory(opt.value); }}
-                          className={cn(
-                            "flex min-h-20 min-w-0 flex-col items-center justify-center gap-1.5 rounded-2xl border px-1.5 py-2 text-center text-[11px] font-medium transition-all",
-                            active
-                              ? "border-violet-400/60 bg-violet-500/15 text-foreground shadow-[inset_0_0_0_1px_rgba(167,139,250,0.18)]"
-                              : "border-border/50 bg-muted/20 text-muted-foreground hover:border-violet-400/30 hover:bg-muted/40",
-                          )}
-                          aria-pressed={active}
-                        >
-                          <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-lg", meta.color)}>{meta.icon}</span>
-                          <span className="min-w-0 break-words leading-tight">{t(opt.labelKey)}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Notes */}
-                <div>
-                  <label className="block text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5">
-                    {t("nativeSchedule.form.notes")}
-                  </label>
-                  <textarea
-                    value={formNotes}
-                    onChange={(e) => setFormNotes(e.target.value)}
-                    placeholder="Optionale Details..."
-                    rows={3}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-muted/40 border border-border/50 text-foreground text-sm placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-violet-500/40 focus:border-violet-500/40 transition-all resize-none"
-                  />
-                </div>
-
-                {/* Submit */}
-                <button
-                  onClick={handleAddActivity}
-                  disabled={!formTitle.trim() || (!!formTime && !!formEndTime && formEndTime <= formTime)}
-                  className={cn(
-                    "w-full py-3 rounded-2xl text-sm font-bold transition-all",
-                    formTitle.trim() && (!formTime || !formEndTime || formEndTime > formTime)
-                      ? "bg-gradient-to-r from-violet-600 to-cyan-500 text-white shadow-lg shadow-violet-500/30 active:scale-[0.98]"
-                      : "bg-muted/50 text-muted-foreground cursor-not-allowed",
-                  )}
-                >
-                  {t("nativeSchedule.form.add")}
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <NativeScheduleActivityForm
+        open={formFor !== null}
+        activity={editing}
+        defaultDate={formDate || newActivityDate}
+        people={participants}
+        currency={currency}
+        busy={busy}
+        onClose={() => setFormFor(null)}
+        onSave={handleSave}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

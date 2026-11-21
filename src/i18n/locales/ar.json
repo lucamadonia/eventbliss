@@ -9849,7 +9849,17 @@
       "other": "أخرى"
     },
     "noActivitiesDesc": "خطط للبرنامج المثالي لحدثك",
-    "day": "اليوم {{num}}"
+    "day": "اليوم {{num}}",
+    "editActivity": "تعديل النشاط",
+    "addDay": "إضافة يوم",
+    "deleteConfirm": "هل تريد الحذف فعلًا؟",
+    "deleted": "تم حذف النشاط",
+    "deleteFailed": "تعذّر حذف النشاط",
+    "loadError": "تعذّر تحميل الجدول",
+    "noActivitiesDay": "لا يوجد شيء مخطط لهذا اليوم بعد",
+    "noActivitiesGuest": "عندما يخطط المضيف لشيء ستراه هنا.",
+    "noResponsible": "لا أحد",
+    "perPersonAmount": "{{amount}} للشخص"
   },
   "whoami": {
     "setup": {

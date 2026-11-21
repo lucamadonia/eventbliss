@@ -8910,7 +8910,17 @@
       "responsible": "Responsible",
       "add": "Add",
       "titlePlaceholder": "e.g. Breakfast at hotel"
-    }
+    },
+    "editActivity": "Edit activity",
+    "addDay": "Add day",
+    "deleteConfirm": "Really delete?",
+    "deleted": "Activity deleted",
+    "deleteFailed": "Couldn't delete the activity",
+    "loadError": "Couldn't load the schedule",
+    "noActivitiesDay": "Nothing planned for this day yet",
+    "noActivitiesGuest": "Once the host plans something, you'll see it here.",
+    "noResponsible": "Nobody",
+    "perPersonAmount": "{{amount}} per person"
   },
   "nativeJoinRoom": {
     "title": "Join Room",

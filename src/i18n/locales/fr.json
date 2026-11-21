@@ -8934,7 +8934,17 @@
       "responsible": "Responsable",
       "add": "Ajouter",
       "titlePlaceholder": "p. ex. petit-déjeuner à l'hôtel"
-    }
+    },
+    "editActivity": "Modifier l'activité",
+    "addDay": "Ajouter un jour",
+    "deleteConfirm": "Vraiment supprimer ?",
+    "deleted": "Activité supprimée",
+    "deleteFailed": "Impossible de supprimer l'activité",
+    "loadError": "Impossible de charger le programme",
+    "noActivitiesDay": "Rien de prévu pour ce jour",
+    "noActivitiesGuest": "Dès que l'hôte planifie quelque chose, tu le verras ici.",
+    "noResponsible": "Personne",
+    "perPersonAmount": "{{amount}} par personne"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

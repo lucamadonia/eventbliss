@@ -8967,7 +8967,17 @@
       "responsible": "Responsable",
       "add": "Añadir",
       "titlePlaceholder": "p.ej. Desayuno"
-    }
+    },
+    "editActivity": "Editar actividad",
+    "addDay": "Añadir día",
+    "deleteConfirm": "¿Eliminar de verdad?",
+    "deleted": "Actividad eliminada",
+    "deleteFailed": "No se pudo eliminar la actividad",
+    "loadError": "No se pudo cargar el horario",
+    "noActivitiesDay": "Aún no hay nada planeado para este día",
+    "noActivitiesGuest": "Cuando el anfitrión planifique algo, lo verás aquí.",
+    "noResponsible": "Nadie",
+    "perPersonAmount": "{{amount}} por persona"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",

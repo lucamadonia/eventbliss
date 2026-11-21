@@ -8984,7 +8984,17 @@
       "responsible": "Sorumlu",
       "add": "Ekle",
       "titlePlaceholder": "örn. Otelde kahvaltı"
-    }
+    },
+    "editActivity": "Aktiviteyi düzenle",
+    "addDay": "Gün ekle",
+    "deleteConfirm": "Gerçekten silinsin mi?",
+    "deleted": "Aktivite silindi",
+    "deleteFailed": "Aktivite silinemedi",
+    "loadError": "Program yüklenemedi",
+    "noActivitiesDay": "Bu gün için henüz bir şey planlanmadı",
+    "noActivitiesGuest": "Ev sahibi bir şey planladığında burada göreceksin.",
+    "noResponsible": "Kimse",
+    "perPersonAmount": "Kişi başı {{amount}}"
   },
   "nativeJoinRoom": {
     "title": "Unirse a sala",
