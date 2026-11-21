@@ -8190,7 +8190,12 @@
       "forHonoree": "voor {{name}}",
       "loadError": "Je evenementen konden niet worden geladen",
       "loadErrorDesc": "Controleer je internetverbinding en probeer het opnieuw.",
-      "retry": "Opnieuw proberen"
+      "retry": "Opnieuw proberen",
+      "host": "Host",
+      "groupUpcoming": "Binnenkort",
+      "groupPast": "Voorbij",
+      "groupNoDate": "Zonder datum",
+      "clearSearch": "Zoekopdracht wissen"
     },
     "ideas": {
       "subtitle": "Inspiratie",
@@ -8861,7 +8866,8 @@
       "messages": "Berichten",
       "ai": "AI",
       "settings": "Instellingen",
-      "ideaboard": "Ideeënbord"
+      "ideaboard": "Ideeënbord",
+      "planning": "Planning"
     },
     "honoree": "Eregast",
     "noDate": "Geen datum",
@@ -8920,7 +8926,9 @@
       "statusPending": "In behandeling",
       "statusConfirmed": "Bevestigd",
       "statusCompleted": "Voltooid",
-      "statusCancelled": "Geannuleerd"
+      "statusCancelled": "Geannuleerd",
+      "serviceFallback": "Dienst",
+      "byAgency": "door {{name}}"
     },
     "loadError": "Evenement kon niet worden geladen",
     "loadErrorDesc": "Controleer je internetverbinding en probeer het opnieuw.",

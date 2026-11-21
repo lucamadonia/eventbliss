@@ -8140,7 +8140,12 @@
       "forHonoree": "para {{name}}",
       "loadError": "No se pudieron cargar tus eventos",
       "loadErrorDesc": "Comprueba tu conexión a internet e inténtalo de nuevo.",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "host": "Anfitrión",
+      "groupUpcoming": "Próximos",
+      "groupPast": "Pasados",
+      "groupNoDate": "Sin fecha",
+      "clearSearch": "Borrar búsqueda"
     },
     "ideas": {
       "subtitle": "Inspiración",
@@ -8844,7 +8849,8 @@
       "messages": "Mensajes",
       "ai": "IA",
       "settings": "Ajustes",
-      "ideaboard": "Tablero de ideas"
+      "ideaboard": "Tablero de ideas",
+      "planning": "Planificación"
     },
     "honoree": "Homenajeado",
     "noDate": "Sin fecha",
@@ -8903,7 +8909,9 @@
       "statusPending": "Pendiente",
       "statusConfirmed": "Confirmado",
       "statusCompleted": "Completado",
-      "statusCancelled": "Cancelado"
+      "statusCancelled": "Cancelado",
+      "serviceFallback": "Servicio",
+      "byAgency": "de {{name}}"
     },
     "loadError": "No se pudo cargar el evento",
     "loadErrorDesc": "Comprueba tu conexión a internet e inténtalo de nuevo.",

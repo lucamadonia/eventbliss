@@ -8214,7 +8214,12 @@
       "forHonoree": "dla {{name}}",
       "loadError": "Nie udało się wczytać wydarzeń",
       "loadErrorDesc": "Sprawdź połączenie z internetem i spróbuj ponownie.",
-      "retry": "Spróbuj ponownie"
+      "retry": "Spróbuj ponownie",
+      "host": "Gospodarz",
+      "groupUpcoming": "Nadchodzące",
+      "groupPast": "Minione",
+      "groupNoDate": "Bez daty",
+      "clearSearch": "Wyczyść wyszukiwanie"
     },
     "ideas": {
       "subtitle": "Inspiracja",
@@ -8885,7 +8890,8 @@
       "messages": "Wiadomości",
       "ai": "AI",
       "settings": "Ustawienia",
-      "ideaboard": "Pomysły"
+      "ideaboard": "Pomysły",
+      "planning": "Planowanie"
     },
     "honoree": "Gość honorowy",
     "noDate": "Brak daty",
@@ -8944,7 +8950,9 @@
       "statusPending": "Oczekuje",
       "statusConfirmed": "Potwierdzone",
       "statusCompleted": "Zakończone",
-      "statusCancelled": "Anulowane"
+      "statusCancelled": "Anulowane",
+      "serviceFallback": "Usługa",
+      "byAgency": "od {{name}}"
     },
     "loadError": "Nie udało się wczytać wydarzenia",
     "loadErrorDesc": "Sprawdź połączenie z internetem i spróbuj ponownie.",

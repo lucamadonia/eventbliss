@@ -8190,7 +8190,12 @@
       "forHonoree": "{{name}} için",
       "loadError": "Etkinliklerin yüklenemedi",
       "loadErrorDesc": "İnternet bağlantını kontrol edip tekrar dene.",
-      "retry": "Tekrar dene"
+      "retry": "Tekrar dene",
+      "host": "Ev sahibi",
+      "groupUpcoming": "Yaklaşan",
+      "groupPast": "Geçmiş",
+      "groupNoDate": "Tarihsiz",
+      "clearSearch": "Aramayı temizle"
     },
     "ideas": {
       "subtitle": "İlham",
@@ -8861,7 +8866,8 @@
       "messages": "Mesajlar",
       "ai": "AI",
       "settings": "Ayarlar",
-      "ideaboard": "Fikir panosu"
+      "ideaboard": "Fikir panosu",
+      "planning": "Planlama"
     },
     "honoree": "Onur konuğu",
     "noDate": "Tarih yok",
@@ -8920,7 +8926,9 @@
       "statusPending": "Bekliyor",
       "statusConfirmed": "Onaylandı",
       "statusCompleted": "Tamamlandı",
-      "statusCancelled": "İptal edildi"
+      "statusCancelled": "İptal edildi",
+      "serviceFallback": "Hizmet",
+      "byAgency": "{{name}} tarafından"
     },
     "loadError": "Etkinlik yüklenemedi",
     "loadErrorDesc": "İnternet bağlantını kontrol edip tekrar dene.",

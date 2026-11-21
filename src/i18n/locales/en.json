@@ -8116,7 +8116,12 @@
       "forHonoree": "for {{name}}",
       "loadError": "Couldn't load your events",
       "loadErrorDesc": "Check your internet connection and try again.",
-      "retry": "Try again"
+      "retry": "Try again",
+      "host": "Host",
+      "groupUpcoming": "Upcoming",
+      "groupPast": "Past",
+      "groupNoDate": "No date yet",
+      "clearSearch": "Clear search"
     },
     "ideas": {
       "subtitle": "Inspiration",
@@ -8787,7 +8792,8 @@
       "messages": "Messages",
       "ai": "AI",
       "settings": "Settings",
-      "ideaboard": "Idea board"
+      "ideaboard": "Idea board",
+      "planning": "Planning"
     },
     "honoree": "Guest of Honor",
     "noDate": "No date set",
@@ -8846,7 +8852,9 @@
       "statusPending": "Pending",
       "statusConfirmed": "Confirmed",
       "statusCompleted": "Completed",
-      "statusCancelled": "Cancelled"
+      "statusCancelled": "Cancelled",
+      "serviceFallback": "Service",
+      "byAgency": "by {{name}}"
     },
     "loadError": "Couldn't load this event",
     "loadErrorDesc": "Check your internet connection and try again.",

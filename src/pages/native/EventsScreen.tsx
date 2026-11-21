@@ -13,13 +13,14 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { usePullToRefresh } from "@/hooks/usePullToRefresh";
 import { supabase } from "@/integrations/supabase/client";
 import { spring, stagger, staggerItem } from "@/lib/motion";
+import { eventHeroImage, eventTypeMeta } from "@/lib/event-visuals";
 import { cn } from "@/lib/utils";
 import { NativeOverlayPortal } from "@/components/native/NativeOverlayPortal";
 
 type Tab = "active" | "archived";
 
 export default function EventsScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
   const { events = [], archivedEvents = [], isLoading, isError, refetch } = useMyEvents();
@@ -66,6 +67,20 @@ export default function EventsScreen() {
     e.name.toLowerCase().includes(query.toLowerCase())
   );
 
+  // Active events read like a calendar: what comes next first, then events
+  // without a date, then what is already over. The archive stays one list.
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+  const eventTime = (e: MyEvent) => new Date(e.event_date!).getTime();
+  const groups = (tab === "active"
+    ? [
+        { key: "upcoming", label: t("native.events.groupUpcoming"), items: filtered.filter((e) => e.event_date && eventTime(e) >= startOfToday.getTime()).sort((a, b) => eventTime(a) - eventTime(b)) },
+        { key: "undated", label: t("native.events.groupNoDate"), items: filtered.filter((e) => !e.event_date) },
+        { key: "past", label: t("native.events.groupPast"), items: filtered.filter((e) => e.event_date && eventTime(e) < startOfToday.getTime()).sort((a, b) => eventTime(b) - eventTime(a)) },
+      ]
+    : [{ key: "archived", label: "", items: filtered }]
+  ).filter((group) => group.items.length > 0);
+
   const switchTab = (next: Tab) => {
     haptics.select();
     setTab(next);
@@ -90,8 +105,18 @@ export default function EventsScreen() {
             placeholder={t('native.events.searchPlaceholder')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full h-11 pl-10 pr-4 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus:border-primary/50"
+            className="w-full h-11 pl-10 pr-11 rounded-2xl bg-foreground/5 border border-border text-foreground placeholder:text-muted-foreground/60 text-sm focus:outline-none focus:border-primary/50 [&::-webkit-search-cancel-button]:hidden"
           />
+          {query && (
+            <button
+              type="button"
+              aria-label={t("native.events.clearSearch")}
+              onClick={() => { haptics.light(); setQuery(""); }}
+              className="absolute right-0 top-0 grid h-11 w-11 place-items-center rounded-2xl text-muted-foreground active:bg-foreground/10"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -185,7 +210,17 @@ export default function EventsScreen() {
             initial="initial"
             animate="animate"
           >
-            {filtered.map((event) => (
+            {groups.flatMap((group) => [
+              group.label && groups.length > 1 ? (
+                <motion.h2
+                  key={"group-" + group.key}
+                  variants={staggerItem}
+                  className="pt-2 first:pt-0 text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+                >
+                  {group.label} <span className="text-muted-foreground/60 tabular-nums">· {group.items.length}</span>
+                </motion.h2>
+              ) : null,
+              ...group.items.map((event) => (
               <motion.div
                 key={event.id}
                 variants={staggerItem}
@@ -198,15 +233,28 @@ export default function EventsScreen() {
                 }}
                 className={cn(
                   "relative w-full rounded-2xl p-4 text-left bg-gradient-to-br from-foreground/[0.08] to-foreground/5 backdrop-blur border border-border cursor-pointer",
-                  "hover:border-primary/30 transition-colors"
+                  "hover:border-primary/30 transition-colors",
+                  // What is over steps back so the next event stands out.
+                  group.key === "past" && "opacity-70"
                 )}
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500/30 to-fuchsia-500/20 flex items-center justify-center flex-shrink-0">
-                    <PartyPopper className="w-6 h-6 text-violet-200" />
+                  {/* The event type's own picture; its emoji on the type colour shows until (or if never) it loads. */}
+                  <div className={cn("relative w-14 h-14 rounded-2xl overflow-hidden flex-shrink-0 bg-gradient-to-br flex items-center justify-center", eventTypeMeta(event.event_type).color)}>
+                    <span className="text-2xl" aria-hidden>{eventTypeMeta(event.event_type).emoji}</span>
+                    <img
+                      src={eventHeroImage(event.event_type)}
+                      alt=""
+                      width={56}
+                      height={56}
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => { e.currentTarget.style.display = "none"; }}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-foreground truncate">
+                    <h3 className={cn("text-base font-semibold text-foreground truncate", event.is_organizer && "pr-8")}>
                       {event.name}
                     </h3>
                     {event.honoree_name && (
@@ -218,7 +266,7 @@ export default function EventsScreen() {
                       {event.event_date && (
                         <span className="flex items-center gap-1">
                           <Calendar className="w-3 h-3" />
-                          {new Date(event.event_date).toLocaleDateString("de-DE", {
+                          {new Date(event.event_date).toLocaleDateString(i18n.language, {
                             day: "2-digit",
                             month: "short",
                             year: "numeric",
@@ -229,13 +277,13 @@ export default function EventsScreen() {
                         <Users className="w-3 h-3" />
                         {event.participant_count}
                       </span>
+                      {event.is_organizer && (
+                        <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-primary/20 text-primary font-semibold">
+                          {t("native.events.host")}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  {event.is_organizer && (
-                    <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full bg-primary/20 text-primary font-semibold">
-                      Host
-                    </span>
-                  )}
                 </div>
 
                 {event.is_organizer && (
@@ -249,7 +297,8 @@ export default function EventsScreen() {
                   </button>
                 )}
               </motion.div>
-            ))}
+              )),
+            ])}
           </motion.div>
         )}
       </div>

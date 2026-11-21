@@ -8030,7 +8030,12 @@
       "forHonoree": "لـ {{name}}",
       "loadError": "تعذّر تحميل فعالياتك",
       "loadErrorDesc": "تحقّق من اتصالك بالإنترنت وحاول مرة أخرى.",
-      "retry": "حاول مرة أخرى"
+      "retry": "حاول مرة أخرى",
+      "host": "المضيف",
+      "groupUpcoming": "القادمة",
+      "groupPast": "السابقة",
+      "groupNoDate": "بدون تاريخ",
+      "clearSearch": "مسح البحث"
     },
     "ideas": {
       "subtitle": "إلهام",
@@ -9748,7 +9753,8 @@
       "messages": "الرسائل",
       "ai": "الذكاء الاصطناعي",
       "settings": "الإعدادات",
-      "ideaboard": "لوحة الأفكار"
+      "ideaboard": "لوحة الأفكار",
+      "planning": "التخطيط"
     },
     "services": {
       "openMarketplaceSub": "اكتشف واحجز خدمات لفعاليتك",
@@ -9760,7 +9766,9 @@
       "statusPending": "في الانتظار",
       "statusConfirmed": "مؤكد",
       "statusCompleted": "مكتمل",
-      "statusCancelled": "ملغى"
+      "statusCancelled": "ملغى",
+      "serviceFallback": "خدمة",
+      "byAgency": "من {{name}}"
     },
     "status": {
       "active": "نشط",

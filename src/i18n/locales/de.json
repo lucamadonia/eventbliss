@@ -8116,7 +8116,12 @@
       "forHonoree": "für {{name}}",
       "loadError": "Events konnten nicht geladen werden",
       "loadErrorDesc": "Prüfe deine Internetverbindung und versuche es erneut.",
-      "retry": "Erneut versuchen"
+      "retry": "Erneut versuchen",
+      "host": "Host",
+      "groupUpcoming": "Bevorstehend",
+      "groupPast": "Vergangen",
+      "groupNoDate": "Ohne Datum",
+      "clearSearch": "Suche löschen"
     },
     "ideas": {
       "subtitle": "Inspiration",
@@ -8787,7 +8792,8 @@
       "messages": "Nachrichten",
       "ai": "KI",
       "settings": "Einstellungen",
-      "ideaboard": "Ideenboard"
+      "ideaboard": "Ideenboard",
+      "planning": "Planung"
     },
     "honoree": "Ehrengast",
     "noDate": "Kein Datum",
@@ -8846,7 +8852,9 @@
       "statusPending": "Ausstehend",
       "statusConfirmed": "Bestätigt",
       "statusCompleted": "Abgeschlossen",
-      "statusCancelled": "Storniert"
+      "statusCancelled": "Storniert",
+      "serviceFallback": "Dienstleistung",
+      "byAgency": "von {{name}}"
     },
     "loadError": "Event konnte nicht geladen werden",
     "loadErrorDesc": "Prüfe deine Internetverbindung und versuche es erneut.",

@@ -51,6 +51,9 @@ import {
 import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useEvent, type EventData, type Participant } from "@/hooks/useEvent";
+import { useParticipantPermissions } from "@/hooks/useParticipantPermissions";
+import { eventHeroImage, eventTypeMeta } from "@/lib/event-visuals";
+import appI18n from "@/i18n";
 import { GuestEventWarning } from "@/components/dashboard/GuestEventWarning";
 import { supabase } from "@/integrations/supabase/client";
 import { AIAssistantTab } from "@/components/dashboard/AIAssistantTab";
@@ -67,13 +70,6 @@ import {
   type MarketplaceBooking,
 } from "@/hooks/useMarketplaceBookings";
 
-const EVENT_TYPE_META: Record<string, { emoji: string; labelKey: string; color: string }> = {
-  bachelor:    { emoji: "\uD83C\uDF89", labelKey: "nativeDashboard.eventTypes.bachelor", color: "from-violet-500 to-purple-600" },
-  bachelorette:{ emoji: "\uD83D\uDC51", labelKey: "nativeDashboard.eventTypes.bachelorette", color: "from-pink-500 to-rose-600" },
-  birthday:    { emoji: "\uD83C\uDF82", labelKey: "nativeDashboard.eventTypes.birthday", color: "from-amber-500 to-orange-600" },
-  wedding:     { emoji: "\uD83D\uDC8D", labelKey: "nativeDashboard.eventTypes.wedding", color: "from-cyan-500 to-blue-600" },
-  other:       { emoji: "\uD83C\uDF1F", labelKey: "nativeDashboard.eventTypes.other", color: "from-teal-500 to-emerald-600" },
-};
 
 interface ActivityEntry {
   id: string;
@@ -180,8 +176,9 @@ const TABS: TabDef[] = [
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
 
+/** Dates follow the app language, not a fixed German format. */
 function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("de-DE", {
+  return new Date(dateStr).toLocaleDateString(appI18n.language, {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -251,7 +248,7 @@ function OverviewTab({ event, participants, activities, onSwitchTab }: { event: 
   const { t } = useTranslation();
   const haptics = useHaptics();
   const days = daysUntil(event.event_date);
-  const typeMeta = EVENT_TYPE_META[event.event_type] || EVENT_TYPE_META.other;
+  const typeMeta = eventTypeMeta(event.event_type);
   const yesCount = participants.filter(p => p.status === "confirmed").length;
   const maybeCount = participants.filter(p => p.status === "maybe").length;
   const participantCount = participants.length;
@@ -279,7 +276,7 @@ function OverviewTab({ event, participants, activities, onSwitchTab }: { event: 
         className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-foreground/[0.08] to-foreground/5 backdrop-blur border border-border"
       >
         <img
-          src={`/images/event-heroes/${["bachelor", "bachelorette", "birthday", "trip", "other"].includes(event.event_type) ? event.event_type : "other"}.webp`}
+          src={eventHeroImage(event.event_type)}
           alt=""
           loading="lazy"
           onError={(e) => { e.currentTarget.style.display = "none"; }}
@@ -659,10 +656,10 @@ function NativeServicesTab({ eventId, eventSlug }: { eventId: string; eventSlug:
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-foreground truncate">
-                        {booking.service_title || "Service"}
+                        {booking.service_title || t("nativeDashboard.services.serviceFallback")}
                       </p>
                       {booking.agency_name && (
-                        <p className="text-xs text-muted-foreground">von {booking.agency_name}</p>
+                        <p className="text-xs text-muted-foreground">{t("nativeDashboard.services.byAgency", { name: booking.agency_name })}</p>
                       )}
                     </div>
                     <span className={cn("px-2 py-0.5 rounded-full text-[10px] font-semibold border shrink-0", statusColor)}>
@@ -673,7 +670,7 @@ function NativeServicesTab({ eventId, eventSlug }: { eventId: string; eventSlug:
                   <div className="flex items-center gap-3 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
-                      {new Date(booking.booking_date).toLocaleDateString("de-DE", { day: "numeric", month: "short" })}
+                      {new Date(booking.booking_date).toLocaleDateString(appI18n.language, { day: "numeric", month: "short" })}
                     </span>
                     <span className="flex items-center gap-1">
                       <Clock className="w-3 h-3" />
@@ -684,7 +681,7 @@ function NativeServicesTab({ eventId, eventSlug }: { eventId: string; eventSlug:
                       {booking.participant_count}
                     </span>
                     <span className="font-medium text-foreground ml-auto">
-                      {(booking.total_price_cents / 100).toFixed(2).replace(".", ",")} EUR
+                      {new Intl.NumberFormat(appI18n.language, { style: "currency", currency: "EUR" }).format(booking.total_price_cents / 100)}
                     </span>
                   </div>
 
@@ -733,7 +730,7 @@ function NativeServicesTab({ eventId, eventSlug }: { eventId: string; eventSlug:
 export default function NativeEventDashboard() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const haptics = useHaptics();
   const [activeTab, setActiveTab] = useState<TabId>("uebersicht");
   // Keep-alive: once a tab has been visited it stays mounted (display:none),
@@ -748,6 +745,15 @@ export default function NativeEventDashboard() {
   const { enabled: formStudioOff } = useFeatureFlag("form_studio_off");
   const { event, participants, responseCount, isLoading, errorKind, refetch } = useEvent(slug);
   const activities = useEventActivities(event?.id, t);
+  // Same rules as the web dashboard: organiser tools only for those who may use them.
+  const { isOrganizer, permissions } = useParticipantPermissions(event, participants);
+  const visibleTabs = useMemo(() => TABS.filter(tab => {
+    if (isOrganizer) return true;
+    if (tab.id === "formular" || tab.id === "einstellungen") return permissions.can_edit_settings;
+    if (tab.id === "antworten") return permissions.can_view_responses;
+    if (tab.id === "ausgaben") return permissions.can_add_expenses || permissions.can_view_all_expenses;
+    return true;
+  }), [isOrganizer, permissions]);
 
   // Warm expenses caches once the event id is known (instant tab + picker).
   useEffect(() => {
@@ -768,6 +774,7 @@ export default function NativeEventDashboard() {
   }, [event?.status]);
 
   const switchTab = (tab: TabId) => {
+    if (!visibleTabs.some(visible => visible.id === tab)) return;
     haptics.select();
     setActiveTab(tab);
   };
@@ -910,7 +917,7 @@ export default function NativeEventDashboard() {
       {/* Tab Navigation — horizontal scrollable pill tabs */}
       <div className="pb-3">
         <div className="flex gap-2 overflow-x-auto no-scrollbar px-5">
-          {TABS.map((tab) => {
+          {visibleTabs.map((tab) => {
             const Icon = tab.icon;
             const active = activeTab === tab.id;
             return (
@@ -939,7 +946,7 @@ export default function NativeEventDashboard() {
                 )}
                 <span className="relative z-10 flex items-center gap-1.5">
                   <Icon className="w-3.5 h-3.5" />
-                  {tab.id === "ki" ? (i18n.language.startsWith("de") ? "Planung" : "Planning") : t(tab.labelKey)}
+                  {t(tab.id === "ki" ? "nativeDashboard.tabs.planning" : tab.labelKey)}
                 </span>
               </motion.button>
             );
