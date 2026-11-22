@@ -20,6 +20,10 @@ on:
       limit:
         description: 'Titel je Markt'
         default: '100'
+      backfill:
+        description: 'Bestandstiteln ohne Clip-Link den Link nachtragen'
+        type: boolean
+        default: false
 
 jobs:
   sync:
@@ -53,3 +57,10 @@ jobs:
           node scripts/charts-sync.mjs \
             ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '--dry-run' || '' }} \
             --limit ${{ inputs.limit || '100' }}
+
+      - name: Fehlende Clip-Links im Bestand nachtragen
+        # Nur auf Wunsch: eine iTunes-Einzelsuche je Titel, ~3 s Pause dazwischen.
+        if: github.event_name == 'workflow_dispatch' && inputs.backfill
+        env:
+          EB_SERVICE_KEY: ${{ secrets.EB_SERVICE_KEY }}
+        run: node scripts/backfill-previews.mjs ${{ inputs.dry_run && '--dry-run' || '' }}

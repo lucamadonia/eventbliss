@@ -5,7 +5,8 @@
  *   Phase 2  Anreichern iTunes-Sammelabfrage (200 IDs pro Aufruf)
  *   Phase 3  Verdichten nach Track-ID gruppieren, chart_markets vereinigen
  *   Phase 4  Zuordnen   languages aus chart_markets ableiten (≥4 ⇒ ['*'])
- *   Phase 5  Schreiben  upsert in 200er-Blöcken, onConflict itunes_track_id
+ *   Phase 5  Schreiben  neue Titel anlegen; im Bestand nur Chart-Märkte und
+ *                       fehlende Links (Track-ID, Clip, Cover) ergänzen
  *
  * Aufruf:
  *   node scripts/charts-sync.mjs --dry-run              # nichts schreiben
@@ -21,7 +22,9 @@ import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
 import { lookupBatch, enrich, songKey, sleep, ITUNES_DELAY_MS } from './lib/itunes.mjs';
 import { collectWikipedia, WIKI_MARKETS } from './lib/wikipedia-charts.mjs';
-import { collectAllAppleCharts, langsForMarkets, flagFor, MARKETS } from './lib/charts-sources.mjs';
+import {
+  collectAllAppleCharts, langsForMarkets, flagFor, MARKETS, indexExisting, planChartWrite,
+} from './lib/charts-sources.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PROGRESS = join(ROOT, 'scripts', '_charts-progress.json');
@@ -75,25 +78,34 @@ const log = (...a) => console.log(...a);
 
 /** Bestand laden — seitenweise, weil Supabase bei 1000 Zeilen deckelt. */
 async function loadExisting() {
-  const byTrack = new Set();
-  const byKey = new Set();
-  const manual = new Set();
+  const rows = [];
   const PAGE = 1000;
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await sb
       .from('ohrwurm_songs')
-      .select('itunes_track_id,artist,title,source')
+      .select('id,itunes_track_id,artist,title,source,preview_url,artwork_url')
+      // Feste Reihenfolge — ohne sie kann eine Zeile zwischen zwei Seiten fehlen.
+      .order('id')
       .range(from, from + PAGE - 1);
     if (error) throw new Error('Bestand laden fehlgeschlagen: ' + error.message);
-    for (const r of data) {
-      if (r.itunes_track_id) byTrack.add(Number(r.itunes_track_id));
-      const k = songKey(r.artist, r.title);
-      byKey.add(k);
-      if (r.source === 'manual') manual.add(k);
-    }
+    rows.push(...data);
     if (data.length < PAGE) break;
   }
-  return { byTrack, byKey, manual };
+  return indexExisting(rows, songKey);
+}
+
+/** Neue Titel in Blöcken anlegen. Gibt die Zahl der geschriebenen Zeilen zurück. */
+async function insertRows(rows) {
+  let written = 0;
+  for (let i = 0; i < rows.length; i += 200) {
+    const chunk = rows.slice(i, i + 200);
+    const { error } = await sb.from('ohrwurm_songs').insert(chunk);
+    if (error) throw new Error(`Anlegen fehlgeschlagen nach ${written} Zeilen: ${error.message}`);
+    written += chunk.length;
+    writeFileSync(PROGRESS, JSON.stringify({ at: new Date().toISOString(), written }, null, 2));
+    process.stdout.write(`\r  neu angelegt: ${written}/${rows.length}`);
+  }
+  return written;
 }
 
 async function main() {
@@ -124,14 +136,18 @@ async function main() {
   log(`Phase 2: ${enriched.size} von iTunes bestätigt`);
 
   // --- Bestand abgleichen -------------------------------------------------
-  const { byTrack, byKey, manual } = await loadExisting();
-  log(`Bestand: ${byTrack.size} mit Track-ID, ${byKey.size} Titel gesamt\n`);
+  const existing = await loadExisting();
+  log(`Bestand: ${existing.byTrack.size} mit Track-ID, ${existing.byKey.size} Titel gesamt\n`);
 
   // --- Phase 4: Zuordnen --------------------------------------------------
   const rows = [];
+  // Bestandszeile → Ergänzung. Zwei Fassungen desselben Songs können auf
+  // dieselbe Zeile zeigen; ihre Märkte werden dann vereinigt.
+  const updates = new Map();
   let skippedNoItunes = 0;
   let skippedManual = 0;
-  let skippedDupe = 0;
+  let linked = 0;
+  let gainedPreview = 0;
   let globalHits = 0;
 
   for (const [trackId, chart] of grouped) {
@@ -139,13 +155,35 @@ async function main() {
     // Nur schreiben, was iTunes bestätigt — sonst droht eine falsche Jahreszahl.
     if (!it) { skippedNoItunes++; continue; }
 
-    const key = songKey(it.artist, it.title);
-    // Von Hand gepflegte Songs bleiben unangetastet.
-    if (manual.has(key)) { skippedManual++; continue; }
-    // Altbestand ohne Track-ID: nicht doppelt anlegen.
-    if (!byTrack.has(trackId) && byKey.has(key)) { skippedDupe++; continue; }
-
     const markets = [...chart.markets].sort();
+    const plan = planChartWrite({
+      trackId,
+      key: songKey(it.artist, it.title),
+      markets,
+      previewUrl: it.previewUrl,
+      artworkUrl: it.artworkUrl ?? chart.artworkUrl ?? null,
+    }, existing);
+
+    // Von Hand gepflegte Songs bleiben unangetastet.
+    if (plan.kind === 'manual') { skippedManual++; continue; }
+    if (plan.kind === 'update') {
+      const earlier = updates.get(plan.id);
+      if (earlier) {
+        earlier.chart_markets = [...new Set([...earlier.chart_markets, ...markets])].sort();
+        continue;
+      }
+      updates.set(plan.id, plan.patch);
+      if (plan.linked) {
+        linked++;
+        // Die Zeile hat jetzt eine ID — eine zweite Fassung darf sie nicht überschreiben.
+        const target = existing.byKey.get(songKey(it.artist, it.title)).find((r) => r.id === plan.id);
+        target.itunes_track_id = trackId;
+        existing.byTrack.set(trackId, target);
+      }
+      if (plan.gainedPreview) gainedPreview++;
+      continue;
+    }
+
     const languages = langsForMarkets(markets);
     if (languages[0] === '*') globalHits++;
 
@@ -167,12 +205,13 @@ async function main() {
     });
   }
 
-  log(`Phase 4: ${rows.length} Datensätze bereit`);
-  log(`  davon Welthits (alle Sprachen): ${globalHits}`);
+  log(`Phase 4: ${rows.length} neue Titel, ${updates.size} Bestandstitel stehen in den Charts`);
+  log(`  neu — davon Welthits (alle Sprachen): ${globalHits}`);
+  log(`  neu — ohne Vorschau (blieben stumm): ${rows.filter((r) => !r.preview_url).length}`);
+  log(`  Bestand — Track-ID ergänzt: ${linked}`);
+  log(`  Bestand — Clip-Link ergänzt: ${gainedPreview}`);
   log(`  übersprungen — nicht bei iTunes: ${skippedNoItunes}`);
   log(`  übersprungen — von Hand gepflegt: ${skippedManual}`);
-  log(`  übersprungen — bereits im Bestand: ${skippedDupe}`);
-  log(`  ohne Vorschau (blieben stumm): ${rows.filter((r) => !r.preview_url).length}`);
 
   if (DRY) {
     log('\nBeispiele:');
@@ -185,18 +224,15 @@ async function main() {
   }
 
   // --- Phase 5: Schreiben -------------------------------------------------
-  let written = 0;
-  for (let i = 0; i < rows.length; i += 200) {
-    const chunk = rows.slice(i, i + 200);
-    const { error } = await sb
-      .from('ohrwurm_songs')
-      .upsert(chunk, { onConflict: 'itunes_track_id' });
-    if (error) { console.error('\nSchreiben fehlgeschlagen:', error.message); break; }
-    written += chunk.length;
-    writeFileSync(PROGRESS, JSON.stringify({ at: new Date().toISOString(), written }, null, 2));
-    process.stdout.write(`\r  geschrieben: ${written}/${rows.length}`);
+  const inserted = await insertRows(rows);
+  let updated = 0;
+  for (const [id, patch] of updates) {
+    const { error } = await sb.from('ohrwurm_songs').update(patch).eq('id', id);
+    if (error) throw new Error(`Ergänzen fehlgeschlagen (${id}) nach ${updated} Zeilen: ${error.message}`);
+    updated++;
+    if (updated % 25 === 0) process.stdout.write(`\r  Bestand ergänzt: ${updated}/${updates.size}`);
   }
-  log(`\n\nFertig. ${written} Datensätze geschrieben.`);
+  log(`\n\nFertig. ${inserted} neu angelegt, ${updated} Bestandstitel ergänzt.`);
 }
 
 /**
@@ -268,7 +304,8 @@ async function runHistory() {
     if (usedTrackIds.has(it.itunesTrackId)) { dupe++; continue; }
     const dbKey = songKey(it.artist, it.title);
     if (manual.has(dbKey)) { skippedManual++; continue; }
-    if (!byTrack.has(it.itunesTrackId) && byKey.has(dbKey)) { dupe++; continue; }
+    // Was der Bestand schon kennt — über ID oder Namen —, wird nicht angefasst.
+    if (byTrack.has(it.itunesTrackId) || byKey.has(dbKey)) { dupe++; continue; }
     usedTrackIds.add(it.itunesTrackId);
 
     const markets = [...c.markets].sort();
@@ -311,14 +348,7 @@ async function runHistory() {
     return;
   }
 
-  let written = 0;
-  for (let i = 0; i < rows.length; i += 200) {
-    const chunk = rows.slice(i, i + 200);
-    const { error } = await sb.from('ohrwurm_songs').upsert(chunk, { onConflict: 'itunes_track_id' });
-    if (error) { console.error('\nSchreiben fehlgeschlagen:', error.message); break; }
-    written += chunk.length;
-    process.stdout.write(`\r  geschrieben: ${written}/${rows.length}`);
-  }
+  const written = await insertRows(rows);
   log(`\n\nFertig. ${written} Datensätze geschrieben.`);
 }
 

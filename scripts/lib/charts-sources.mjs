@@ -123,3 +123,53 @@ export async function collectAllAppleCharts(markets = MARKETS, limit = 100, onPr
   }
   return out;
 }
+
+/**
+ * Bestand so aufbereiten, dass ein Chart-Titel seinem Datensatz zugeordnet
+ * werden kann: über die Track-ID, sonst über den normalisierten Namen.
+ */
+export function indexExisting(rows, keyOf) {
+  const byTrack = new Map();
+  const byKey = new Map();
+  const manual = new Set();
+  for (const r of rows) {
+    if (r.itunes_track_id) byTrack.set(Number(r.itunes_track_id), r);
+    const k = keyOf(r.artist, r.title);
+    if (byKey.has(k)) byKey.get(k).push(r);
+    else byKey.set(k, [r]);
+    if (r.source === 'manual') manual.add(k);
+  }
+  return { byTrack, byKey, manual };
+}
+
+/**
+ * Was geschieht mit einem Chart-Titel?
+ *
+ *   manual  von Hand gepflegt — bleibt unangetastet
+ *   insert  unbekannt — wird neu angelegt
+ *   update  steht schon im Bestand — nur Chart-Märkte und fehlende Links
+ *           werden ergänzt. Jahr, Sprachen, Quelle und der Aktiv-Schalter
+ *           bleiben, wie sie sind: ein vom Admin abgeschalteter Song darf
+ *           durch die Charts nicht wieder auftauchen.
+ *
+ * Bewusst kein upsert: der Unique-Index auf itunes_track_id ist partiell, und
+ * PostgREST kann einen partiellen Index nicht als Konfliktziel angeben.
+ */
+export function planChartWrite({ trackId, key, markets, previewUrl, artworkUrl }, index) {
+  if (index.manual.has(key)) return { kind: 'manual' };
+  const sameName = index.byKey.get(key) ?? [];
+  const target = index.byTrack.get(trackId)
+    ?? sameName.find((r) => !r.itunes_track_id)
+    ?? sameName[0];
+  if (!target) return { kind: 'insert' };
+
+  const patch = { chart_markets: markets };
+  // Nur ein Datensatz ohne ID bekommt eine — eine andere Fassung desselben
+  // Songs behält ihre eigene ID und ihren eigenen Clip.
+  const linked = !target.itunes_track_id;
+  if (linked) patch.itunes_track_id = trackId;
+  const sameTrack = linked || Number(target.itunes_track_id) === trackId;
+  if (previewUrl && (sameTrack || !target.preview_url)) patch.preview_url = previewUrl;
+  if (artworkUrl && (sameTrack || !target.artwork_url)) patch.artwork_url = artworkUrl;
+  return { kind: 'update', id: target.id, patch, linked, gainedPreview: !target.preview_url && !!patch.preview_url };
+}
