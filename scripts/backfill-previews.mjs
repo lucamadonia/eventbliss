@@ -27,7 +27,7 @@ import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
-import { enrich, sleep, setThrottleReporter, ThrottleError } from './lib/itunes.mjs';
+import { enrich, lookupBatch, sleep, setThrottleReporter, ThrottleError } from './lib/itunes.mjs';
 import { ITUNES_DELAY_MS } from './lib/itunes.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -35,6 +35,9 @@ const CACHE = join(ROOT, 'scripts', '_preview-backfill.json');
 
 const argv = process.argv.slice(2);
 const DRY = argv.includes('--dry-run');
+
+/** Grundsong-Nummer → iTunes-Track-Nummer, für Titel, die die Suche nicht findet. */
+const KNOWN_IDS = JSON.parse(readFileSync(join(ROOT, 'scripts', 'ohrwurm-itunes-ids.json'), 'utf8'));
 
 /** Merker für „diesmal gedrosselt" — abgrenzbar von „nirgends auffindbar". */
 const THROTTLED = 'throttled';
@@ -64,7 +67,12 @@ const sb = createClient(env.VITE_SUPABASE_URL, SERVICE_KEY, { auth: { persistSes
  */
 async function resolveOne(row) {
   try {
-    const it = await enrich({ artist: row.artist, title: row.title, market: 'DE' });
+    // Von Hand zugeordnete Titel: die Suche findet sie nicht, weil iTunes den
+    // Interpreten anders schreibt („P!nk", „2Pac") oder die Reihenfolge dreht.
+    const knownId = KNOWN_IDS[row.base_id];
+    const it = knownId
+      ? (await lookupBatch([knownId])).get(Number(knownId))
+      : await enrich({ artist: row.artist, title: row.title, market: 'DE' });
     if (!it?.previewUrl) return null;
     return {
       preview_url: it.previewUrl,
@@ -86,7 +94,7 @@ async function main() {
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await sb
       .from('ohrwurm_songs')
-      .select('id,artist,title,country,preview_url,itunes_track_id')
+      .select('id,base_id,artist,title,country,preview_url,itunes_track_id')
       .is('preview_url', null)
       .range(from, from + PAGE - 1);
     if (error) { console.error('Laden fehlgeschlagen:', error.message); process.exit(1); }
