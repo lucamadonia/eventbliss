@@ -1,7 +1,7 @@
 import { lazy, Suspense, useState, useMemo, useCallback, useEffect, useRef, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { useSEO } from "@/hooks/useSEO";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePremium } from "@/hooks/usePremium";
 import { GAME_TIERS, isGamePremium, getFreePlaysUsed, recordFreePlay } from "@/games/premium/gameConfig";
@@ -12,6 +12,8 @@ import { GameTitleBar } from "@/games/ui/GameTitleBar";
 import PremiumBadge from "@/games/premium/PremiumBadge";
 import PremiumPaywall from "@/games/premium/PremiumPaywall";
 import { playableGames, GAME_BADGE_KEY } from "@/lib/playable-games";
+import { visibleGames } from "@/lib/app-switches";
+import { useHiddenGamesState } from "@/hooks/useHiddenGames";
 import { useGameRoom, gameRoomSession, type RoomPlayer } from '@/games/multiplayer/useGameRoom';
 import { PartyNightFlow } from "@/components/native/party/PartyNightFlow";
 import { ControllerGameControls } from '@/components/native/party/ControllerGameControls';
@@ -171,9 +173,9 @@ const GAME_CATEGORIES: Record<string, string[]> = {
 };
 
 const recentGames = [
-  { nameKey: "native.gameNames.bomb", icon: Bomb, timeKey: "nativeExtra.gamesHub.hoursAgo", timeOpts: { hours: 2 } },
-  { nameKey: "native.gameNames.headup", icon: Brain, timeKey: "nativeExtra.gamesHub.hoursAgo", timeOpts: { hours: 5 } },
-  { nameKey: "native.gameNames.taboo", icon: MessageSquareOff, timeKey: "nativeExtra.gamesHub.yesterday", timeOpts: {} },
+  { id: "bomb", nameKey: "native.gameNames.bomb", icon: Bomb, timeKey: "nativeExtra.gamesHub.hoursAgo", timeOpts: { hours: 2 } },
+  { id: "headup", nameKey: "native.gameNames.headup", icon: Brain, timeKey: "nativeExtra.gamesHub.hoursAgo", timeOpts: { hours: 5 } },
+  { id: "taboo", nameKey: "native.gameNames.taboo", icon: MessageSquareOff, timeKey: "nativeExtra.gamesHub.yesterday", timeOpts: {} },
 ];
 
 const stagger = {
@@ -285,6 +287,7 @@ const GamesHubInner = () => {
   const { gameId } = useParams();
   const roomCode = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("room") : null;
   const lobbyParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("lobby") : null;
+  const partyParam = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get("party") : null;
   const [onlineGameId, setOnlineGameId] = useState<string | null>(lobbyParam);
   const { room: activeRoom, leaveRoom } = useGameRoom();
   const previousOnlineRoute = useRef({ roomCode, lobbyParam });
@@ -366,10 +369,19 @@ const GamesHubInner = () => {
   // der der Knopf haengt, wird ebenfalls von dieser Ebene gerendert.
   const [showReport, setShowReport] = useState(false);
 
+  // Games an admin has hidden. Fails open (nothing hidden) while loading or on error.
+  const { hidden: hiddenGames, settled: hiddenGamesSettled } = useHiddenGamesState();
+  const pickableGames = useMemo(() => visibleGames(allGames, hiddenGames), [hiddenGames]);
+  // A game that was let in keeps running: the list is re-read every few minutes,
+  // and a game hidden in the meantime must not throw players out of their match.
+  // Only the first settled answer after entering a game decides.
+  const admittedGameRef = useRef<string | null>(null);
+  if (!gameId) admittedGameRef.current = null;
+  else if (hiddenGamesSettled && !hiddenGames.has(gameId)) admittedGameRef.current = gameId;
   const filteredGames = useMemo(() => {
-    if (activeCategory === "alle") return allGames;
-    return allGames.filter(g => (GAME_CATEGORIES[g.id] || []).includes(activeCategory));
-  }, [activeCategory]);
+    if (activeCategory === "alle") return pickableGames;
+    return pickableGames.filter(g => (GAME_CATEGORIES[g.id] || []).includes(activeCategory));
+  }, [activeCategory, pickableGames]);
   const fallbackPlayerName = t("nativeExtra.gameLobby.defaultPlayerName");
   const [onlinePlayerName] = useState(() => {
     try { return localStorage.getItem("eventbliss_player_name") || fallbackPlayerName; } catch { return fallbackPlayerName; }
@@ -459,8 +471,8 @@ const GamesHubInner = () => {
   }, [gameId, roomCode, premiumLoading, isPremium]);
 
   const handleQuickStart = () => {
-    const playable = allGames;
-    const random = playable[Math.floor(Math.random() * playable.length)];
+    if (pickableGames.length === 0) return;
+    const random = pickableGames[Math.floor(Math.random() * pickableGames.length)];
     navigate(`/games/${random.id}`);
   };
 
@@ -564,6 +576,15 @@ const GamesHubInner = () => {
         </Suspense>
       </>
     );
+  }
+
+  // An admin has hidden this game: a direct link, a bookmark or an old shortcut
+  // lands on the overview instead. Rooms (`?room=`) and parties (`?party=true`,
+  // set by every party/setlist start) are matches that already run, so they
+  // are left alone (see the room branches above) — and so is a game that was
+  // visible when it was opened (`admittedGameRef`).
+  if (gameId && hiddenGames.has(gameId) && admittedGameRef.current !== gameId && !roomCode && partyParam !== "true") {
+    return <Navigate to="/games" replace />;
   }
 
   // Online lobby — when navigating from GameRoomSheet with ?lobby= param
@@ -708,7 +729,8 @@ const GamesHubInner = () => {
                 </motion.button>
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
                   onClick={() => {
-                    const random = allGames[Math.floor(Math.random() * allGames.length)];
+                    if (pickableGames.length === 0) return;
+                    const random = pickableGames[Math.floor(Math.random() * pickableGames.length)];
                     setOnlineGameId(random.id);
                   }}
                   className="inline-flex items-center gap-2.5 rounded-xl border border-[#df8eff]/30 bg-[#df8eff]/10 px-6 py-3 text-sm font-bold text-[#df8eff] font-game transition-all hover:bg-[#df8eff]/20 hover:shadow-[0_0_20px_rgba(223,142,255,0.2)]">
@@ -758,7 +780,7 @@ const GamesHubInner = () => {
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="mt-8">
           <h2 className="text-lg font-extrabold text-white font-game mb-3">{t("nativeExtra.gamesHub.recentlyPlayed")}</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
-            {recentGames.map((rg) => {
+            {recentGames.filter((rg) => !hiddenGames.has(rg.id)).map((rg) => {
               const RIcon = rg.icon;
               return (
                 <div key={rg.nameKey} className="flex items-center gap-3 min-w-[11rem] rounded-[1rem] bg-[#1f1f29] border border-[#484750]/10 p-3">

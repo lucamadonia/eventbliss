@@ -24,6 +24,8 @@ import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { playableGames } from '@/lib/playable-games';
+import { visibleGames } from '@/lib/app-switches';
+import { useHiddenGames } from '@/hooks/useHiddenGames';
 import { useTranslation } from 'react-i18next';
 
 // ---------------------------------------------------------------------------
@@ -209,6 +211,7 @@ function CreateTab({
   onCreate: () => void;
 }) {
   const { t } = useTranslation();
+  const hiddenGames = useHiddenGames();
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
@@ -216,7 +219,7 @@ function CreateTab({
       </p>
 
       <div className="grid grid-cols-2 gap-2">
-        {playableGames.map((game) => {
+        {visibleGames(playableGames, hiddenGames).map((game) => {
           const active = selectedGame === game.id;
           return (
             <motion.button

@@ -22,6 +22,7 @@ import {
 import type { ThemeItem } from "@/lib/theme-ideas-library";
 import { gamesLibrary } from "@/lib/games-library";
 import { ideaToPlayable } from "@/lib/playable-games";
+import { useHiddenGames } from "@/hooks/useHiddenGames";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring } from "@/lib/motion";
 
@@ -58,6 +59,8 @@ export function ThemeDetailSheet({ theme, onClose }: { theme: ThemeItem | null; 
   const { t } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
+  // No "play" shortcut for a game an admin has hidden.
+  const hiddenGames = useHiddenGames();
   const [copiedHex, setCopiedHex] = useState<string | null>(null);
 
   const activities = useMemo(() => {
@@ -280,7 +283,8 @@ export function ThemeDetailSheet({ theme, onClose }: { theme: ThemeItem | null; 
                     </SectionLabel>
                     <div className="space-y-2">
                       {activities.map((game) => {
-                        const playableId = ideaToPlayable[game.id];
+                        const mappedId = ideaToPlayable[game.id];
+                        const playableId = mappedId && !hiddenGames.has(mappedId) ? mappedId : undefined;
                         return (
                           <div
                             key={game.id}

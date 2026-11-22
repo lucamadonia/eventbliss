@@ -41,6 +41,7 @@ import { GameAudioPlayer } from "@/components/ideas/GameAudioPlayer";
 import { PlayableGamesShelf } from "@/components/ideas/PlayableGamesShelf";
 import { ThemeDetailSheet } from "@/components/ideas/ThemeDetailSheet";
 import { ideaToPlayable } from "@/lib/playable-games";
+import { useHiddenGames } from "@/hooks/useHiddenGames";
 import { spring, staggerItem } from "@/lib/motion";
 
 // Local stagger with a much tighter cadence — the shared `stagger`
@@ -402,7 +403,10 @@ function GameItemCard({
   const [expanded, setExpanded] = useState(false);
   const [showAudio, setShowAudio] = useState(false);
   const navigate = useNavigate();
-  const playableId = ideaToPlayable[game.id];
+  // No "play" shortcut for a game an admin has hidden.
+  const hiddenGames = useHiddenGames();
+  const mappedId = ideaToPlayable[game.id];
+  const playableId = mappedId && !hiddenGames.has(mappedId) ? mappedId : undefined;
 
   return (
     <motion.div

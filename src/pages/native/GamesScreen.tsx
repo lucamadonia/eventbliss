@@ -27,6 +27,8 @@ import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { playableGames, GAME_BADGE_KEY, type PlayableGame } from "@/lib/playable-games";
+import { visibleGames } from "@/lib/app-switches";
+import { useHiddenGames } from "@/hooks/useHiddenGames";
 import { PartyResumeBanner } from "@/components/native/party/PartyResumeBanner";
 import { usePartyResumeState } from "@/components/native/party/usePartyResume";
 import { usePartySession } from "@/hooks/usePartySession";
@@ -51,6 +53,7 @@ export default function GamesScreen() {
   const { isPremium } = usePremium();
   const [category, setCategory] = useState<Category>("alle");
   const party = usePartySession();
+  const hiddenGames = useHiddenGames();
   // Genau EIN Aufrufer — der Ausblend-Zustand lebt in diesem Hook.
   const partyResume = usePartyResumeState();
 
@@ -65,13 +68,12 @@ export default function GamesScreen() {
     [party, haptics, navigate]
   );
 
-  const filtered = useMemo(
-    () =>
-      category === "alle"
-        ? playableGames
-        : playableGames.filter((g) => (g.categories as string[]).includes(category)),
-    [category]
-  );
+  const filtered = useMemo(() => {
+    const pickable = visibleGames(playableGames, hiddenGames);
+    return category === "alle"
+      ? pickable
+      : pickable.filter((g) => (g.categories as string[]).includes(category));
+  }, [category, hiddenGames]);
 
   const playGame = (game: PlayableGame) => {
     haptics.medium();

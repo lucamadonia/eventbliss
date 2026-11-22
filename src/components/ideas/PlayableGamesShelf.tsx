@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Gamepad2, Play, Lock, ChevronRight } from "lucide-react";
 import { playableGames, GAME_BADGE_KEY } from "@/lib/playable-games";
+import { visibleGames } from "@/lib/app-switches";
+import { useHiddenGames } from "@/hooks/useHiddenGames";
 import { useHaptics } from "@/hooks/useHaptics";
 import { usePremium } from "@/hooks/usePremium";
 import { cn } from "@/lib/utils";
@@ -20,6 +22,8 @@ export function PlayableGamesShelf() {
   const navigate = useNavigate();
   const haptics = useHaptics();
   const { isPremium } = usePremium();
+  const hiddenGames = useHiddenGames();
+  const games = visibleGames(playableGames, hiddenGames);
 
   const play = (id: string) => {
     haptics.medium();
@@ -65,7 +69,7 @@ export function PlayableGamesShelf() {
 
         {/* Horizontal shelf */}
         <div className="relative flex gap-3 overflow-x-auto no-scrollbar px-4 pb-4 pt-1 snap-x snap-mandatory">
-          {playableGames.map((game) => {
+          {games.map((game) => {
             const locked = game.tier === "premium" && !isPremium;
             return (
               <motion.button

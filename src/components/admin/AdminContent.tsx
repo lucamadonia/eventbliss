@@ -17,6 +17,7 @@ const MarketplaceStatsTab = lazy(() => import("@/components/admin/MarketplaceSta
 const AdminAgencyManager = lazy(() => import("@/components/admin/AdminAgencyManager"));
 const AdminPackageManager = lazy(() => import("@/components/admin/AdminPackageManager"));
 const FeatureFlagsTab = lazy(() => import("@/components/admin/FeatureFlagsTab"));
+const VisibilityTab = lazy(() => import("@/components/admin/visibility/VisibilityTab"));
 const AuditLogTab = lazy(() => import("@/components/admin/AuditLogTab"));
 const SystemSettingsTab = lazy(() => import("@/components/admin/SystemSettingsTab"));
 const AdminAIAdvertisingTab = lazy(() => import("@/components/admin/AdminAIAdvertisingTab"));
@@ -70,6 +71,8 @@ export function AdminContent({ activeTab }: AdminContentProps) {
       return <Suspense fallback={<LoadingSpinner />}><AdminAgencyManager /></Suspense>;
     case "packages":
       return <Suspense fallback={<LoadingSpinner />}><AdminPackageManager /></Suspense>;
+    case "visibility":
+      return <Suspense fallback={<LoadingSpinner />}><VisibilityTab /></Suspense>;
     case "feature-flags":
       return <Suspense fallback={<LoadingSpinner />}><FeatureFlagsTab /></Suspense>;
     case "audit-log":

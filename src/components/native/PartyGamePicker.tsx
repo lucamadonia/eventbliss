@@ -35,9 +35,11 @@ import {
   type SetlistGame,
 } from "@/components/native/party/setlist";
 import { useHaptics } from "@/hooks/useHaptics";
+import { useHiddenGames } from "@/hooks/useHiddenGames";
 import { usePremium } from "@/hooks/usePremium";
 import { spring, stagger, staggerItem } from "@/lib/motion";
 import { availabilityChip, GAME_BADGE_KEY } from "@/lib/playable-games";
+import { visibleGames } from "@/lib/app-switches";
 import { AvailabilityChipView } from "@/components/native/party/AvailabilityChipView";
 import { cn } from "@/lib/utils";
 
@@ -118,13 +120,17 @@ export function PartyGamePicker({
   );
   const catalogIndex = useMemo(() => setlistCatalogIndex(catalog), [catalog]);
 
+  // Hidden games cannot be added any more. `catalog`/`catalogIndex` stay complete so
+  // entries already on the setlist (tray, gates) still resolve.
+  const hiddenGames = useHiddenGames();
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return catalog;
-    return catalog.filter(
+    const pickable = visibleGames(catalog, hiddenGames);
+    if (!q) return pickable;
+    return pickable.filter(
       (g) => t(g.nameKey).toLowerCase().includes(q) || t(g.descKey).toLowerCase().includes(q)
     );
-  }, [search, catalog, t]);
+  }, [search, catalog, hiddenGames, t]);
 
   const handleTap = (game: SetlistGame) => {
     // Party-Regel `gameAvailability`: Planen braucht `plannable` (fehlen nur

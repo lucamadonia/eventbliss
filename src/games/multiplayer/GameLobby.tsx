@@ -11,6 +11,8 @@ import { usePremium } from "@/hooks/usePremium";
 import { useAuth } from "@/hooks/useAuth";
 import { getBaseUrl } from "@/lib/platform";
 import { playableGames } from "@/lib/playable-games";
+import { visibleGames } from "@/lib/app-switches";
+import { useHiddenGames } from "@/hooks/useHiddenGames";
 import EventInvite from "./EventInvite";
 import { availabilityLabel, roomGameAvailability } from "./room-availability";
 import RoomGameTile from "./RoomGameTile";
@@ -211,9 +213,13 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
   const allReady = connection === 'connected' && selectedAvailability.startable && players.length >= minPlayers && players.length <= maxPlayers && players.every((p) => p.isReady);
 
   // Übersetzte Spielnamen, einmal je Sprachwechsel statt je Render.
+  // A hidden game stays in the list while it is the one already chosen or the
+  // room runs it, so a room that exists keeps showing its own game's name.
+  const hiddenGames = useHiddenGames();
   const gameList = useMemo(
-    () => GAME_LIST.map((g) => ({ ...g, name: t(g.nameKey) })),
-    [t]
+    () => visibleGames(GAME_LIST, hiddenGames).concat(GAME_LIST.filter((g) => hiddenGames.has(g.id) && (g.id === selectedGame || g.id === room?.gameId)))
+      .map((g) => ({ ...g, name: t(g.nameKey) })),
+    [t, hiddenGames, selectedGame, room?.gameId]
   );
 
   // Rejoin a saved room
@@ -229,12 +235,15 @@ export function GameLobby({ gameId, gameName, onStart, onBack }: GameLobbyProps)
     if (!hostName.trim()) return;
     setIsLoading(true);
     try {
-      const code = await createRoom(gameId, isPremium, hostName.trim());
+      // A NEW room never opens with a hidden game (the join screen passes a placeholder id).
+      const firstGame = hiddenGames.has(gameId) ? visibleGames(GAME_LIST, hiddenGames)[0]?.id ?? gameId : gameId;
+      if (firstGame !== gameId) { setSelectedGame(firstGame); setSelectedGames([firstGame]); }
+      const code = await createRoom(firstGame, isPremium, hostName.trim());
       setTargetRoomCode(code);
-      broadcastRoomCreated({ roomCode: code, gameId, hostName: hostName.trim(), playerCount: 1, timestamp: Date.now() });
+      broadcastRoomCreated({ roomCode: code, gameId: firstGame, hostName: hostName.trim(), playerCount: 1, timestamp: Date.now() });
       setView("lobby");
     } catch { /* Session displays error. */ } finally { setIsLoading(false); }
-  }, [createRoom, gameId, hostName, isPremium]);
+  }, [createRoom, gameId, hostName, isPremium, hiddenGames]);
 
   const handleJoin = useCallback(async () => {
     if (!joinName.trim() || !joinCode.trim()) return;

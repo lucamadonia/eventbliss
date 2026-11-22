@@ -3,7 +3,7 @@ import {
   Handshake, Coins, Banknote, TrendingUp, Building2,
   Settings, Store, ShoppingCart, PieChart, Package,
   Gamepad2, Landmark, Flag, Scroll, ServerCog, Megaphone,
-  ShieldAlert, Radio,
+  ShieldAlert, Radio, Eye,
   type LucideIcon,
 } from "lucide-react";
 
@@ -86,6 +86,7 @@ export const ADMIN_NAV_GROUPS: AdminNavGroup[] = [
     groupLabelKey: "admin.nav.system",
     defaultGroupLabel: "System",
     items: [
+      { key: "visibility", labelKey: "admin.tabs.visibility", defaultLabel: "Funktionen ein-/ausblenden", icon: Eye },
       { key: "settings", labelKey: "admin.tabs.settings", defaultLabel: "Pakete & Pläne", icon: Settings },
       { key: "system-settings", labelKey: "admin.tabs.systemSettings", defaultLabel: "System-Config", icon: ServerCog },
       { key: "feature-flags", labelKey: "admin.tabs.featureFlags", defaultLabel: "Feature Flags", icon: Flag },

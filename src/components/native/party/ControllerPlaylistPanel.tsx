@@ -4,6 +4,8 @@ import type { ControllerPartyData } from '@/games/party/controller-api';
 import { setControllerPlaylist } from '@/games/party/controller-session';
 import { availabilityStatus, chipFor, controllerGameAvailability, nextAvailableIndex, sittingOutNames } from '@/games/party/party-availability';
 import { playableGames } from '@/lib/playable-games';
+import { visibleGames } from '@/lib/app-switches';
+import { useHiddenGames } from '@/hooks/useHiddenGames';
 import { cn } from '@/lib/utils';
 import { AvailabilityChipView } from './AvailabilityChipView';
 import { movePlaylistEntry } from './useNextGame';
@@ -23,6 +25,7 @@ const nameKey = (id: string) => playableGames.find(g => g.id === id)?.nameKey ??
  */
 export function ControllerPlaylistPanel({ data, busy }: Props) {
   const { t, i18n } = useTranslation();
+  const hiddenGames = useHiddenGames();
   const locale = i18n.language;
   const playlist = data.party.playlist;
   const nextIndex = data.results.length;
@@ -57,7 +60,7 @@ export function ControllerPlaylistPanel({ data, busy }: Props) {
       })}</ol>
     </details>}
 
-    <details className="rounded-2xl border border-white/10 bg-white/5 p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.partyNight.pickTitle')}</summary><div className="mt-3 grid gap-3 sm:grid-cols-2">{playableGames.map(game => {
+    <details className="rounded-2xl border border-white/10 bg-white/5 p-4"><summary className="min-h-11 cursor-pointer py-2 font-semibold">{t('nativeExtra.partyNight.pickTitle')}</summary><div className="mt-3 grid gap-3 sm:grid-cols-2">{visibleGames(playableGames, hiddenGames).map(game => {
       const entry = availability(game.id);
       const chip = chipFor(entry, sittingOutNames(game.id, data), locale);
       // Locked tiles (premium, too many) stay visible: only image and name dim, never the chip.
