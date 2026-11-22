@@ -52,6 +52,8 @@ import { useTranslation } from "react-i18next";
 import { useHaptics } from "@/hooks/useHaptics";
 import { useEvent, type EventData, type Participant } from "@/hooks/useEvent";
 import { useParticipantPermissions } from "@/hooks/useParticipantPermissions";
+import { useAppSwitches } from "@/hooks/useAppSwitches";
+import { hiddenEventTabs } from "@/lib/app-switches";
 import { eventHeroImage, eventTypeMeta } from "@/lib/event-visuals";
 import appI18n from "@/i18n";
 import { GuestEventWarning } from "@/components/dashboard/GuestEventWarning";
@@ -244,7 +246,7 @@ function countdownLabel(days: number | null, t: (key: string, opts?: Record<stri
   return t("nativeDashboard.countdown.inDays", { count: days });
 }
 
-function OverviewTab({ event, participants, activities, onSwitchTab }: { event: EventData; participants: Participant[]; activities: ActivityEntry[]; onSwitchTab: (tab: TabId) => void }) {
+function OverviewTab({ event, participants, activities, onSwitchTab, hiddenTabs }: { event: EventData; participants: Participant[]; activities: ActivityEntry[]; onSwitchTab: (tab: TabId) => void; hiddenTabs: string[] }) {
   const { t } = useTranslation();
   const haptics = useHaptics();
   const days = daysUntil(event.event_date);
@@ -379,7 +381,7 @@ function OverviewTab({ event, participants, activities, onSwitchTab }: { event: 
 
       {/* Quick Actions Grid 2x2 */}
       <motion.div variants={staggerItem} className="grid grid-cols-2 gap-2.5">
-        {quickActions.map((action) => {
+        {quickActions.filter((action) => !hiddenTabs.includes(action.tab)).map((action) => {
           const Icon = action.icon;
           return (
             <motion.button
@@ -588,7 +590,7 @@ const STATUS_LABEL_KEYS: Record<string, string> = {
   cancelled_by_agency: "nativeDashboard.services.statusCancelled",
 };
 
-function NativeServicesTab({ eventId, eventSlug }: { eventId: string; eventSlug: string }) {
+function NativeServicesTab({ eventId, eventSlug, marketplaceOff }: { eventId: string; eventSlug: string; marketplaceOff: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const haptics = useHaptics();
@@ -603,7 +605,8 @@ function NativeServicesTab({ eventId, eventSlug }: { eventId: string; eventSlug:
       initial="initial"
       animate="animate"
     >
-      {/* Open Marketplace CTA */}
+      {/* Open Marketplace CTA — gone while the marketplace is switched off */}
+      {!marketplaceOff && (
       <motion.div variants={staggerItem}>
         <motion.button
           whileTap={{ scale: 0.96 }}
@@ -624,6 +627,7 @@ function NativeServicesTab({ eventId, eventSlug }: { eventId: string; eventSlug:
           <ChevronRight className="w-5 h-5 text-white/60" />
         </motion.button>
       </motion.div>
+      )}
 
       {/* Booked Services */}
       <motion.div variants={staggerItem} className="space-y-2">
@@ -745,15 +749,23 @@ export default function NativeEventDashboard() {
   const { enabled: formStudioOff } = useFeatureFlag("form_studio_off");
   const { event, participants, responseCount, isLoading, errorKind, refetch } = useEvent(slug);
   const activities = useEventActivities(event?.id, t);
+  // Areas an admin switched off for the whole app (no release needed).
+  const appSwitches = useAppSwitches();
+  const hiddenTabs = useMemo(() => hiddenEventTabs(appSwitches), [appSwitches]);
   // Same rules as the web dashboard: organiser tools only for those who may use them.
   const { isOrganizer, permissions, currentParticipant } = useParticipantPermissions(event, participants);
   const visibleTabs = useMemo(() => TABS.filter(tab => {
+    if (hiddenTabs.includes(tab.id)) return false;
     if (isOrganizer) return true;
     if (tab.id === "formular" || tab.id === "einstellungen") return permissions.can_edit_settings;
     if (tab.id === "antworten") return permissions.can_view_responses;
     if (tab.id === "ausgaben") return permissions.can_add_expenses || permissions.can_view_all_expenses;
     return true;
-  }), [isOrganizer, permissions]);
+  }), [isOrganizer, permissions, hiddenTabs]);
+  // A tab switched off while it is open must not stay on screen.
+  useEffect(() => {
+    if (!visibleTabs.some(tab => tab.id === activeTab)) setActiveTab("uebersicht");
+  }, [visibleTabs, activeTab]);
 
   // Warm expenses caches once the event id is known (instant tab + picker).
   useEffect(() => {
@@ -829,7 +841,7 @@ export default function NativeEventDashboard() {
   const renderTabContent = (tabId: TabId) => {
     switch (tabId) {
       case "uebersicht":
-        return event ? <OverviewTab event={event} participants={participants} activities={activities} onSwitchTab={switchTab} /> : null;
+        return event ? <OverviewTab event={event} participants={participants} activities={activities} onSwitchTab={switchTab} hiddenTabs={hiddenTabs} /> : null;
       case "gaeste":
         return <NativeEventGuests eventSlug={slug!} participants={participants} accessCode={event?.access_code} onRefetch={refetch} />;
       case "zeitplan":
@@ -842,7 +854,7 @@ export default function NativeEventDashboard() {
       case "marketplace":
         return event ? <NativeMarketplaceEmbed eventId={event.id} /> : null;
       case "dienstleister":
-        return event ? <NativeServicesTab eventId={event.id} eventSlug={slug!} /> : null;
+        return event ? <NativeServicesTab eventId={event.id} eventSlug={slug!} marketplaceOff={appSwitches.marketplaceOff} /> : null;
       case "formular":
         return event
           ? formStudioOff

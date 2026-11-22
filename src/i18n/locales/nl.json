@@ -4693,7 +4693,23 @@
       "enabled": "Actief",
       "disabled": "Inactief",
       "rollout": "Uitrol",
-      "updated": "Bijgewerkt"
+      "updated": "Bijgewerkt",
+      "appAreas": {
+        "title": "Onderdelen van de app",
+        "subtitle": "Toon of verberg hele onderdelen van de app zonder nieuwe app-release. De app neemt de wijziging over bij de volgende keer openen, uiterlijk na enkele minuten. Geldt vanaf de app-versie die deze schakelaars kent.",
+        "visible": "Zichtbaar",
+        "hidden": "Verborgen",
+        "nowVisible": "Het onderdeel is weer zichtbaar in de app",
+        "nowHidden": "Het onderdeel is verborgen in de app",
+        "marketplace": {
+          "name": "Marketplace",
+          "description": "Startscherm, het tabblad Marketplace van het evenement, onboarding en de marketplace-pagina's."
+        },
+        "services": {
+          "name": "Diensten",
+          "description": "Het tabblad Diensten met geboekte diensten op de evenementpagina."
+        }
+      }
     },
     "settings": {
       "planUpdated": "Plan bijgewerkt",

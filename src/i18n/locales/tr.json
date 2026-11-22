@@ -4693,7 +4693,23 @@
       "enabled": "Aktif",
       "disabled": "Pasif",
       "rollout": "Yayılım",
-      "updated": "Güncellendi"
+      "updated": "Güncellendi",
+      "appAreas": {
+        "title": "Uygulama alanları",
+        "subtitle": "Yeni bir uygulama sürümü olmadan uygulamanın tüm alanlarını göster veya gizle. Uygulama değişikliği bir sonraki açılışta, en geç birkaç dakika içinde uygular. Bu anahtarları tanıyan uygulama sürümünden itibaren geçerlidir.",
+        "visible": "Görünür",
+        "hidden": "Gizli",
+        "nowVisible": "Alan uygulamada yeniden görünür",
+        "nowHidden": "Alan uygulamada gizlendi",
+        "marketplace": {
+          "name": "Marketplace",
+          "description": "Ana ekran, etkinliğin Marketplace sekmesi, tanıtım ekranları ve marketplace sayfaları."
+        },
+        "services": {
+          "name": "Hizmetler",
+          "description": "Etkinlik sayfasında rezerve edilen hizmetlerin yer aldığı Hizmetler sekmesi."
+        }
+      }
     },
     "settings": {
       "planUpdated": "Plan güncellendi",

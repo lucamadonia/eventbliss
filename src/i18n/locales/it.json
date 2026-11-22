@@ -4643,7 +4643,23 @@
       "enabled": "Attivo",
       "disabled": "Inattivo",
       "rollout": "Rollout",
-      "updated": "Aggiornato"
+      "updated": "Aggiornato",
+      "appAreas": {
+        "title": "Aree dell'app",
+        "subtitle": "Mostra o nascondi intere aree dell'app senza una nuova versione. L'app applica la modifica alla prossima apertura, al più tardi dopo pochi minuti. Vale dalla versione dell'app che conosce questi interruttori.",
+        "visible": "Visibile",
+        "hidden": "Nascosta",
+        "nowVisible": "L'area è di nuovo visibile nell'app",
+        "nowHidden": "L'area è nascosta nell'app",
+        "marketplace": {
+          "name": "Marketplace",
+          "description": "Schermata iniziale, scheda Marketplace dell'evento, onboarding e pagine del marketplace."
+        },
+        "services": {
+          "name": "Servizi",
+          "description": "La scheda Servizi con i servizi prenotati nella pagina dell'evento."
+        }
+      }
     },
     "settings": {
       "planUpdated": "Piano aggiornato",

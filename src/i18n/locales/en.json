@@ -4619,7 +4619,23 @@
       "enabled": "Active",
       "disabled": "Inactive",
       "rollout": "Rollout",
-      "updated": "Updated"
+      "updated": "Updated",
+      "appAreas": {
+        "title": "Areas in the app",
+        "subtitle": "Show or hide whole areas of the app without a new app release. The app picks up the change the next time it is opened, within a few minutes at the latest. Applies from the app version that knows these switches.",
+        "visible": "Visible",
+        "hidden": "Hidden",
+        "nowVisible": "The area is visible in the app again",
+        "nowHidden": "The area is hidden in the app",
+        "marketplace": {
+          "name": "Marketplace",
+          "description": "Home screen, the event's Marketplace tab, onboarding and the marketplace pages."
+        },
+        "services": {
+          "name": "Services",
+          "description": "The Services tab with booked services on the event page."
+        }
+      }
     },
     "settings": {
       "planUpdated": "Plan updated",

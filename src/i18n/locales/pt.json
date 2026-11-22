@@ -4693,7 +4693,23 @@
       "enabled": "Ativa",
       "disabled": "Inativa",
       "rollout": "Implementação",
-      "updated": "Atualizada"
+      "updated": "Atualizada",
+      "appAreas": {
+        "title": "Áreas da app",
+        "subtitle": "Mostra ou oculta áreas inteiras da app sem uma nova versão. A app aplica a alteração na próxima abertura, no máximo após alguns minutos. Aplica-se a partir da versão da app que conhece estes interruptores.",
+        "visible": "Visível",
+        "hidden": "Oculta",
+        "nowVisible": "A área voltou a estar visível na app",
+        "nowHidden": "A área está oculta na app",
+        "marketplace": {
+          "name": "Marketplace",
+          "description": "Ecrã inicial, separador Marketplace do evento, onboarding e as páginas do marketplace."
+        },
+        "services": {
+          "name": "Serviços",
+          "description": "O separador Serviços com os serviços reservados na página do evento."
+        }
+      }
     },
     "settings": {
       "planUpdated": "Plano atualizado",

@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { SceneEventPlan } from "./onboarding/SceneEventPlan";
 import { SceneSurvey } from "./onboarding/SceneSurvey";
 import { SceneMarketplace } from "./onboarding/SceneMarketplace";
+import { useAppSwitches } from "@/hooks/useAppSwitches";
 import { SceneExpenses } from "./onboarding/SceneExpenses";
 import { ScenePartyMode } from "./onboarding/ScenePartyMode";
 import { SceneNightRoute } from "./onboarding/SceneNightRoute";
@@ -37,7 +38,7 @@ interface Slide {
   visual?: string;
 }
 
-const slides: Slide[] = [
+const ALL_SLIDES: Slide[] = [
   {
     titleKey: "native.onboarding.slide1Title",
     subtitleKey: "native.onboarding.slide1Subtitle",
@@ -90,6 +91,9 @@ const EARLY_EXIT_FROM_INDEX = 2;
 
 export function OnboardingSlides({ onComplete }: Props) {
   const { t } = useTranslation();
+  // No marketplace promise on the first screens while the marketplace is switched off.
+  const { marketplaceOff } = useAppSwitches();
+  const slides = marketplaceOff ? ALL_SLIDES.filter((slide) => slide.Scene !== SceneMarketplace) : ALL_SLIDES;
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, align: "center" });
   const [selectedIndex, setSelectedIndex] = useState(0);
   const haptics = useHaptics();

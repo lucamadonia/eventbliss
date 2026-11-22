@@ -4619,7 +4619,23 @@
       "enabled": "Aktiv",
       "disabled": "Inaktiv",
       "rollout": "Rollout",
-      "updated": "Aktualisiert"
+      "updated": "Aktualisiert",
+      "appAreas": {
+        "title": "Bereiche in der App",
+        "subtitle": "Ganze Bereiche der App ein- oder ausblenden, ohne neuen App-Release. Die App übernimmt die Änderung beim nächsten Öffnen, spätestens nach wenigen Minuten. Gilt ab der App-Version, die diese Schalter kennt.",
+        "visible": "Sichtbar",
+        "hidden": "Ausgeblendet",
+        "nowVisible": "Bereich ist in der App wieder sichtbar",
+        "nowHidden": "Bereich ist in der App ausgeblendet",
+        "marketplace": {
+          "name": "Marktplatz",
+          "description": "Startseite, Event-Reiter „Marketplace“, Onboarding und die Marktplatz-Seiten."
+        },
+        "services": {
+          "name": "Services",
+          "description": "Reiter „Services“ mit den gebuchten Dienstleistungen auf der Event-Seite."
+        }
+      }
     },
     "settings": {
       "planUpdated": "Plan aktualisiert",

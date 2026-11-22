@@ -17,6 +17,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useAppSwitches } from "@/hooks/useAppSwitches";
 import { useAuthContext } from "@/components/auth/AuthProvider";
 import { useMyEvents } from "@/hooks/useMyEvents";
 import { useHaptics } from "@/hooks/useHaptics";
@@ -43,6 +44,7 @@ function useTypewriter(text: string, speed = 40) {
 
 export default function HomeScreen() {
   const { t } = useTranslation();
+  const { marketplaceOff } = useAppSwitches();
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const { events = [], isLoading, refetch } = useMyEvents();
@@ -309,7 +311,8 @@ export default function HomeScreen() {
         </motion.button>
       </motion.div>
 
-      {/* Marketplace shortcut */}
+      {/* Marketplace shortcut — gone while an admin has switched the marketplace off */}
+      {!marketplaceOff && (
       <motion.div
         className="px-5 mb-6"
         initial={{ opacity: 0, y: 20 }}
@@ -337,6 +340,7 @@ export default function HomeScreen() {
           </div>
         </motion.button>
       </motion.div>
+      )}
 
       {/* Ideas shortcut */}
       <motion.div

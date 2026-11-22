@@ -24,6 +24,7 @@ import { PageTransition } from "./PageTransition";
 import { NativeStackPage } from "./NativeStackPage";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { useFeatureFlag } from "@/hooks/useFeatureFlag";
+import { useAppSwitches } from "@/hooks/useAppSwitches";
 import { AdminRoute } from "@/components/auth/AdminRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import PageLoader from "@/components/ui/PageLoader";
@@ -169,6 +170,12 @@ function ExpensesGate() {
   return off ? <EventExpenses /> : <EventExpensesV2 />;
 }
 
+/** Marketplace pages lead home while an admin has switched the marketplace off in the app. */
+function MarketplaceGate({ children }: { children: JSX.Element }) {
+  const { marketplaceOff } = useAppSwitches();
+  return marketplaceOff ? <Navigate to="/" replace /> : children;
+}
+
 const TAB_PATHS = TABS.map((t) => t.to);
 
 /**
@@ -233,18 +240,18 @@ export function NativeApp() {
                   are handled by TabsLayer above. */}
               <Route
                 path="/marketplace"
-                element={<Suspense fallback={<PageLoader />}><NativeMarketplaceScreen /></Suspense>}
+                element={<MarketplaceGate><Suspense fallback={<PageLoader />}><NativeMarketplaceScreen /></Suspense></MarketplaceGate>}
               />
               <Route
                 path="/marketplace/service/:slug"
-                element={<Suspense fallback={<PageLoader />}><NativeServiceDetailScreen /></Suspense>}
+                element={<MarketplaceGate><Suspense fallback={<PageLoader />}><NativeServiceDetailScreen /></Suspense></MarketplaceGate>}
               />
               <Route
                 path="/marketplace/agency/:slug"
-                element={wrap(
+                element={<MarketplaceGate>{wrap(
                   <Suspense fallback={<PageLoader />}><MarketplaceAgency /></Suspense>,
                   "Agentur"
-                )}
+                )}</MarketplaceGate>}
               />
               {/* Settings is a separate stack page (not a tab) */}
               <Route

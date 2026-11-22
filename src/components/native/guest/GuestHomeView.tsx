@@ -16,6 +16,7 @@
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useAppSwitches } from "@/hooks/useAppSwitches";
 import { Calendar, Store, LogIn } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, sceneStagger, sceneItem } from "@/lib/motion";
@@ -31,6 +32,7 @@ const itemStill: Variants = { initial: { opacity: 1 }, animate: { opacity: 1 } }
 
 export function GuestHomeView() {
   const { t } = useTranslation();
+  const { marketplaceOff } = useAppSwitches();
   const navigate = useNavigate();
   const haptics = useHaptics();
   const reduce = useReducedMotion();
@@ -100,6 +102,7 @@ export function GuestHomeView() {
           />
         </motion.div>
 
+        {!marketplaceOff && (
         <motion.div variants={reduce ? itemStill : sceneItem}>
           <GuestOfferCard
             onClick={() => go("/marketplace")}
@@ -111,6 +114,7 @@ export function GuestHomeView() {
             iconGradient="bg-white/20 backdrop-blur"
           />
         </motion.div>
+        )}
       </motion.div>
 
       {/* Ruhiger Hinweis statt Anmelde-Huerde */}

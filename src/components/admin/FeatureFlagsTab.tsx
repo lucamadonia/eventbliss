@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Flag, Plus, Percent, Loader2, Users as UsersIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { APP_SWITCHES, isSwitchedOff, type AppSwitch } from "@/lib/app-switches";
 
 interface FeatureFlag {
   id: string;
@@ -67,6 +68,35 @@ export default function FeatureFlagsTab() {
         p_metadata: { key: flag.key, new_state: !flag.is_enabled },
       });
       toast.success(t("admin.flags.toggled", "Flag aktualisiert"));
+      await load();
+    }
+    setToggling(null);
+  };
+
+  /**
+   * Show or hide an area of the app. Creates the kill-switch row on first use,
+   * always at full rollout: an area is either visible for everyone or hidden for everyone.
+   */
+  const setAppArea = async (entry: AppSwitch, visible: boolean) => {
+    setToggling(entry.key);
+    const { error } = await supabase.from("feature_flags").upsert({
+      key: entry.key,
+      name: entry.name,
+      description: entry.description,
+      is_enabled: !visible,
+      rollout_percentage: 100,
+    }, { onConflict: "key" });
+    if (error) {
+      toast.error(`${t("common.error", "Fehler")}: ${error.message}`);
+    } else {
+      await supabase.rpc("log_admin_action", {
+        p_action: "feature_flag.toggle",
+        p_target_type: "feature_flag",
+        p_metadata: { key: entry.key, new_state: !visible },
+      });
+      toast.success(visible
+        ? t("admin.flags.appAreas.nowVisible", "Bereich ist in der App wieder sichtbar")
+        : t("admin.flags.appAreas.nowHidden", "Bereich ist in der App ausgeblendet"));
       await load();
     }
     setToggling(null);
@@ -159,6 +189,40 @@ export default function FeatureFlagsTab() {
           </DialogContent>
         </Dialog>
       </div>
+
+      {/* App areas: plain on/off switches for whole parts of the app, no release needed. */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg">{t("admin.flags.appAreas.title", "Bereiche in der App")}</CardTitle>
+          <CardDescription>
+            {t("admin.flags.appAreas.subtitle", "Ganze Bereiche der App ein- oder ausblenden, ohne neuen App-Release. Die App übernimmt die Änderung beim nächsten Öffnen, spätestens nach wenigen Minuten. Gilt ab der App-Version, die diese Schalter kennt.")}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {APP_SWITCHES.map((entry) => {
+            const off = isSwitchedOff(flags.find((flag) => flag.key === entry.key));
+            return (
+              <div key={entry.key} className="flex items-center justify-between gap-4 rounded-xl border border-white/10 p-4">
+                <div className="min-w-0">
+                  <p className="font-semibold">{t(`admin.flags.appAreas.${entry.area}.name`, entry.area)}</p>
+                  <p className="text-sm text-muted-foreground">{t(`admin.flags.appAreas.${entry.area}.description`, entry.description)}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-3">
+                  <Badge className={cn(off ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30" : "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30")}>
+                    {off ? t("admin.flags.appAreas.hidden", "Ausgeblendet") : t("admin.flags.appAreas.visible", "Sichtbar")}
+                  </Badge>
+                  <Switch
+                    checked={!off}
+                    disabled={isLoading || toggling === entry.key}
+                    onCheckedChange={(visible) => setAppArea(entry, visible)}
+                    aria-label={t(`admin.flags.appAreas.${entry.area}.name`, entry.area)}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </CardContent>
+      </Card>
 
       {isLoading ? (
         <div className="space-y-3">

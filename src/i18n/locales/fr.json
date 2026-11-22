@@ -4643,7 +4643,23 @@
       "enabled": "Actif",
       "disabled": "Inactif",
       "rollout": "Déploiement",
-      "updated": "Mis à jour"
+      "updated": "Mis à jour",
+      "appAreas": {
+        "title": "Zones de l'app",
+        "subtitle": "Afficher ou masquer des zones entières de l'app sans nouvelle version. L'app applique le changement à la prochaine ouverture, au plus tard après quelques minutes. Valable à partir de la version de l'app qui connaît ces interrupteurs.",
+        "visible": "Visible",
+        "hidden": "Masquée",
+        "nowVisible": "La zone est de nouveau visible dans l'app",
+        "nowHidden": "La zone est masquée dans l'app",
+        "marketplace": {
+          "name": "Marketplace",
+          "description": "Écran d'accueil, onglet Marketplace de l'événement, onboarding et pages du marketplace."
+        },
+        "services": {
+          "name": "Services",
+          "description": "L'onglet Services avec les prestations réservées sur la page de l'événement."
+        }
+      }
     },
     "settings": {
       "planUpdated": "Forfait mis à jour",

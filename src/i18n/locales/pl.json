@@ -4693,7 +4693,23 @@
       "enabled": "Aktywna",
       "disabled": "Nieaktywna",
       "rollout": "Wdrożenie",
-      "updated": "Zaktualizowano"
+      "updated": "Zaktualizowano",
+      "appAreas": {
+        "title": "Obszary aplikacji",
+        "subtitle": "Pokazuj lub ukrywaj całe obszary aplikacji bez nowego wydania. Aplikacja uwzględni zmianę przy następnym otwarciu, najpóźniej po kilku minutach. Działa od wersji aplikacji, która zna te przełączniki.",
+        "visible": "Widoczny",
+        "hidden": "Ukryty",
+        "nowVisible": "Obszar jest znów widoczny w aplikacji",
+        "nowHidden": "Obszar jest ukryty w aplikacji",
+        "marketplace": {
+          "name": "Marketplace",
+          "description": "Ekran główny, karta Marketplace wydarzenia, onboarding i strony marketplace."
+        },
+        "services": {
+          "name": "Usługi",
+          "description": "Karta Usługi z zarezerwowanymi usługami na stronie wydarzenia."
+        }
+      }
     },
     "settings": {
       "planUpdated": "Plan zaktualizowany",
