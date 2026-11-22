@@ -9,6 +9,7 @@ import { Loader2, Trash2, X } from "lucide-react";
 import { useHaptics } from "@/hooks/useHaptics";
 import { spring, duration, ease } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { NativeOverlayPortal } from "@/components/native/NativeOverlayPortal";
 import { ACTIVITY_CATEGORIES, CATEGORY_META, isFarFromEvent, parseCost, type ActivityCategory } from "@/lib/schedule-utils";
 
 /** One row of `schedule_activities`, as the schedule tab shows it. */
@@ -122,6 +123,9 @@ export default function NativeScheduleActivityForm({ open, activity, defaultDate
   };
 
   return (
+    // The event page sits in a transformed page-transition wrapper: a fixed
+    // sheet inside it is trapped below the tab row. The portal lifts it out.
+    <NativeOverlayPortal>
     <AnimatePresence>
       {open && (
         <>
@@ -363,5 +367,6 @@ export default function NativeScheduleActivityForm({ open, activity, defaultDate
         </>
       )}
     </AnimatePresence>
+    </NativeOverlayPortal>
   );
 }
