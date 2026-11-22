@@ -85,6 +85,7 @@ export const OHRWURM_MODE_ASSETS = {
 } as const;
 
 export const OHRWURM_GENRE_ASSETS: Record<string, string> = {
+  Charts: `${ROOT}/music-gpt.webp`,
   Pop: `${ROOT}/ohrwurm-mix-gpt.webp`,
   Rock: `${ROOT}/music-gpt.webp`,
   'Hip-Hop': `${ROOT}/ohrwurm-group-gpt.webp`,

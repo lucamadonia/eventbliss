@@ -19,6 +19,8 @@ interface Row {
   spotify_uri: string | null;
   /** Vorab aufgelöste iTunes-Vorschau (Chart-Pipeline). */
   preview_url: string | null;
+  /** Märkte, in deren Charts der Titel stand. Leer bei den Grundsongs. */
+  chart_markets?: string[] | null;
 }
 
 /**
@@ -61,6 +63,7 @@ export async function loadExtraSongs(language?: string): Promise<number> {
       qrPayload: r.spotify_uri ? spotifyTrackUrl(r.spotify_uri) : spotifySearchUrl(r.artist, r.title),
       spotifyUri: r.spotify_uri || undefined,
       previewUrl: r.preview_url || undefined,
+      charts: !!r.chart_markets?.length || undefined,
     });
 
     // Zeilen mit base_id sind die importierten Grundsongs — sie ERSETZEN die

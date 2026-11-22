@@ -217,7 +217,9 @@ export default function OhrwurmGame({ online }: { online?: OnlineGameProps } = {
     gameTasks.clear();
     setWinner(null);
     recordedRef.current = false;
-    const fresh = createFreshMatch(roster, buildDeck(selectedGenre));
+    // A selection with too few songs (e.g. charts not loaded) plays the full pool instead of failing.
+    const selected = buildDeck(selectedGenre);
+    const fresh = createFreshMatch(roster, selected.length > roster.length ? selected : buildDeck(null));
     beginTurn(fresh.participants, fresh.deck, 0);
   }, [gameTasks, beginTurn]);
 

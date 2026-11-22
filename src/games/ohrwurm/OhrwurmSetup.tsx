@@ -10,7 +10,8 @@ import { PlayerSetup } from '../ui/PlayerSetup';
 import { GameSetupBackLink } from '../ui/GameSetupBackLink';
 import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
 import { OHRWURM_GENRE_ASSETS, OHRWURM_MODE_ASSETS } from '../ui/premium-game-assets';
-import { OHRWURM_GENRES } from './ohrwurm-content';
+import { OHRWURM_CHARTS, OHRWURM_GENRES } from './ohrwurm-content';
+import { useChartSongCount } from './useChartSongs';
 import { type PlaybackMode, spotifyModePossible } from './playback';
 import { OW, OW_STYLE, PLAYER_COLORS, type OhrwurmConfig, type SetupPlayer } from './ohrwurm-theme';
 import { buildOhrwurmTeams, MAX_OHRWURM_PEOPLE, MAX_OHRWURM_TEAMS } from './teams';
@@ -34,6 +35,7 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
   const [mode, setMode] = useState<'solo' | 'group'>(initialPlayers && initialPlayers.length > 4 ? 'group' : 'solo');
   const [winTarget, setWinTarget] = useState(10);
   const [genre, setGenre] = useState<string | null>(null);
+  const chartCount = useChartSongCount();
   const [playback, setPlayback] = useState<PlaybackMode>('preview');
   const [players, setPlayers] = useState<SetupPlayer[]>(
     initialPlayers && initialPlayers.length >= 2
@@ -270,7 +272,7 @@ export function OhrwurmSetup({ onStart, haptics, initialPlayers, lockRoster = fa
             className="mb-3"
           />
           <div className="-mx-6 flex snap-x gap-3 overflow-x-auto px-6 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {OHRWURM_GENRES.map((g) => (
+            {(chartCount > 0 ? [OHRWURM_CHARTS, ...OHRWURM_GENRES] : OHRWURM_GENRES).map((g) => (
               <PremiumImageChoiceCard
                 key={g}
                 title={g}

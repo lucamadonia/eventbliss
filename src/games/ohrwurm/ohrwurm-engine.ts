@@ -6,7 +6,7 @@
 // Karte i. Der linke Rand von Slot 0 ist -Infinity, der rechte Rand von
 // Slot N ist +Infinity (Spec §2.6).
 
-import { getAllSongs, type Song } from './ohrwurm-content';
+import { getAllSongs, songMatchesGenre, type Song } from './ohrwurm-content';
 
 export type { Song };
 
@@ -93,7 +93,7 @@ export function shuffle<T>(arr: readonly T[]): T[] {
 /** Stapel bauen — optional auf ein Genre gefiltert (Genre-Battle). */
 export function buildDeck(genre?: string | null): Song[] {
   const all = getAllSongs();
-  const pool = genre ? all.filter((s) => s.genre === genre) : all;
+  const pool = genre ? all.filter((s) => songMatchesGenre(s, genre)) : all;
   return shuffle(pool);
 }
 

@@ -3,7 +3,8 @@ import { BookOpen, Disc3, Mic2, Music2, Play, SlidersHorizontal } from 'lucide-r
 import { PlayerSetup, type PlayerSetupPlayer } from '../ui/PlayerSetup';
 import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
 import { OHRWURM_GENRE_ASSETS, OHRWURM_MODE_ASSETS } from '../ui/premium-game-assets';
-import { OHRWURM_GENRES } from '../ohrwurm/ohrwurm-content';
+import { OHRWURM_CHARTS, OHRWURM_GENRES } from '../ohrwurm/ohrwurm-content';
+import { useChartSongCount } from '../ohrwurm/useChartSongs';
 import { StageAction } from '../ui/GameStage';
 import { TeamFormation } from '../ui/TeamFormation';
 import { randomTeamAssignments } from '../ui/random-teams';
@@ -46,6 +47,7 @@ const teamColors = ['#df8eff', '#8ff5ff', '#ff2e88', '#f9ca24'];
 export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd, onRemove, onRename, onImportNames, teamMode, setTeamMode, teams, setTeams, teamCount, setTeamCount, teamNames, setTeamNames, onStart, onOpenRules, busy }: HitBuzzerSetupProps) {
   const { t, i18n } = useTranslation();
   const flowText = roundFlowText(i18n.language);
+  const chartCount = useChartSongCount({ load: true });
   const assignedTeam = (playerId: string, index: number) => teamForPlayer(playerId, index, teams, teamCount);
   const formedTeams = HIT_TEAM_IDS.slice(0, teamCount).map((teamId, index) => ({
     id: teamId, name: teamNames[teamId] ?? `${text.team} ${teamId}`, color: teamColors[index],
@@ -194,7 +196,7 @@ export function HitBuzzerSetup({ text, config, setConfig, players, locked, onAdd
       <PremiumImageChoiceCard title={text.allGenres} image={OHRWURM_MODE_ASSETS.solo} selected={config.genre === null}
         onClick={() => setConfig(previous => ({ ...previous, genre: null }))} accent="#8ff5ff" layout="wide" className="mb-3 !min-h-[142px]" />
       <div className="-mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4">
-        {OHRWURM_GENRES.map(genre => <PremiumImageChoiceCard key={genre} title={genre} image={OHRWURM_GENRE_ASSETS[genre]}
+        {(chartCount > 0 ? [OHRWURM_CHARTS, ...OHRWURM_GENRES] : OHRWURM_GENRES).map(genre =><PremiumImageChoiceCard key={genre} title={genre} image={OHRWURM_GENRE_ASSETS[genre]}
           selected={config.genre === genre} onClick={() => setConfig(previous => ({ ...previous, genre }))}
           accent="#8ff5ff" className="!w-[148px] min-w-[148px] shrink-0 snap-start sm:!w-full sm:min-w-0" />)}
       </div>

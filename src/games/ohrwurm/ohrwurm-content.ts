@@ -34,6 +34,20 @@ export interface Song {
    * IP drosselt und alle Nutzer sich die Egress-IP teilen.
    */
   previewUrl?: string;
+  /** Stammt aus einer Chart-Quelle (aktuelle Länder-Charts) → Bereich „Charts". */
+  charts?: boolean;
+}
+
+/**
+ * Der Bereich „Charts" steht in der Genre-Auswahl, ist aber kein Genre: er
+ * umfasst alle Titel aus den Chart-Quellen, quer durch alle Genres.
+ */
+export const OHRWURM_CHARTS = 'Charts';
+
+/** Gehört ein Song zur Auswahl? `null` = alles, „Charts" = Chart-Titel. */
+export function songMatchesGenre(song: Song, genre: string | null | undefined): boolean {
+  if (!genre) return true;
+  return genre === OHRWURM_CHARTS ? !!song.charts : song.genre === genre;
 }
 
 /** Spotify-Such-URL bauen — Fallback-QR-Inhalt, wenn keine Track-URI vorliegt. */
@@ -1453,6 +1467,24 @@ export function getAllSongs(): Song[] {
  */
 export function setBaseSongs(songs: Song[] | null): void {
   _dbBase = songs;
+  notifySongs();
+}
+
+// Die Setup-Seiten zeigen „Charts" erst, wenn Chart-Titel geladen sind — die
+// Datenbank antwortet aber erst nach dem ersten Zeichnen. Deshalb abonnierbar.
+const _songListeners = new Set<() => void>();
+function notifySongs(): void {
+  for (const listener of _songListeners) listener();
+}
+
+export function subscribeSongs(listener: () => void): () => void {
+  _songListeners.add(listener);
+  return () => { _songListeners.delete(listener); };
+}
+
+/** Wie viele Chart-Titel stehen in der aktuellen Sprachfassung bereit? */
+export function chartSongCount(): number {
+  return _extra.reduce((n, s) => n + (s.charts ? 1 : 0), 0);
 }
 
 /** Nur für Diagnose/Admin: wie viele Songs stecken im Code-Bestand? */
@@ -1468,4 +1500,5 @@ export function getPackedSongCount(): number {
  */
 export function setExtraSongs(songs: Song[]): void {
   _extra = songs;
+  notifySongs();
 }

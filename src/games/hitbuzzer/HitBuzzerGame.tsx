@@ -20,6 +20,7 @@ import { useTvPresence } from '../ohrwurm/useTvPresence';
 import { ConfirmExitDialog, useConfirmExit } from '../ui/useConfirmExit';
 import { clearSnapshot, loadSnapshot, saveSnapshot } from '../ui/useGameSnapshot';
 import type { Song } from '../ohrwurm/ohrwurm-engine';
+import { songMatchesGenre } from '../ohrwurm/ohrwurm-content';
 import { loadHitBuzzerDeck } from './song-pool';
 import {
   acceptBuzz, advanceRound, ANSWER_NETWORK_GRACE_MS, canFinishAnswer, canJudgeClaim, createMatch, DEFAULT_CONFIG, extendAnswerDeadline, judgeBuzz, pauseListening, removePlayer,
@@ -208,7 +209,7 @@ export default function HitBuzzerGame({ online, onOpenRules }: { online?: Online
     setBusy(true); setError(null);
     try {
       const deck = await loadHitBuzzerDeck();
-      const filtered = config.genre ? deck.filter(s => s.genre === config.genre) : deck;
+      const filtered = deck.filter(s => songMatchesGenre(s, config.genre));
       if (filtered.length === 0) { setError(text.noSongs); return; }
       const players = entrants.map((p, index) => ({
         id: p.id, name: p.name.trim(), color: p.color || getPlayerColor(index), avatar: p.avatar || p.name.trim().charAt(0),
