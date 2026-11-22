@@ -65,13 +65,23 @@ const sb = createClient(env.VITE_SUPABASE_URL, SERVICE_KEY, { auth: { persistSes
  * Eine dauerhaft gültige Hörprobe beschaffen.
  * Liefert ein Patch-Objekt, `THROTTLED` oder `null` (endgültig nicht gefunden).
  */
+/** Eine bekannte Track-Nummer steht nicht in jedem Länderkatalog — der Reihe nach probieren. */
+async function lookupKnown(id) {
+  for (const country of ['DE', 'US', 'GB']) {
+    const hit = (await lookupBatch([id], country)).get(Number(id));
+    if (hit?.previewUrl) return hit;
+    await sleep(ITUNES_DELAY_MS);
+  }
+  return null;
+}
+
 async function resolveOne(row) {
   try {
     // Von Hand zugeordnete Titel: die Suche findet sie nicht, weil iTunes den
     // Interpreten anders schreibt („P!nk", „2Pac") oder die Reihenfolge dreht.
     const knownId = KNOWN_IDS[row.base_id];
     const it = knownId
-      ? (await lookupBatch([knownId])).get(Number(knownId))
+      ? await lookupKnown(knownId)
       : await enrich({ artist: row.artist, title: row.title, market: 'DE' });
     if (!it?.previewUrl) return null;
     return {

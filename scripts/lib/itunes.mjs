@@ -113,16 +113,18 @@ async function query(params, attempt = 0, endpoint = 'search') {
  * (Wikipedia-Historik) nötig.
  *
  * @param {Array<number|string>} ids
+ * @param {string} [country] Länderkatalog, z. B. "DE"
  * @returns {Promise<Map<number, object>>} trackId → angereicherte Felder
  */
-export async function lookupBatch(ids) {
+export async function lookupBatch(ids, country) {
   const out = new Map();
   const list = [...new Set(ids.filter(Boolean).map(String))];
 
   for (let i = 0; i < list.length; i += 200) {
     if (i > 0) await sleep(ITUNES_DELAY_MS);
     const chunk = list.slice(i, i + 200);
-    const data = await query({ id: chunk.join(','), entity: 'song' }, 0, 'lookup');
+    // Ohne Länderangabe sucht Apple im US-Katalog — Titel anderer Kataloge fehlen dann.
+    const data = await query({ id: chunk.join(','), entity: 'song', ...(country ? { country } : {}) }, 0, 'lookup');
     for (const hit of data?.results ?? []) {
       if (hit.wrapperType !== 'track' || !hit.trackId) continue;
       out.set(hit.trackId, {
