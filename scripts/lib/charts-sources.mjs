@@ -72,25 +72,32 @@ export function langsForMarkets(markets) {
   return [...set].sort();
 }
 
+const FEED_ATTEMPTS = 5;
+const FEED_TIMEOUT_MS = 20000;
+
 /**
  * Aktuelle Charts eines Marktes.
  * Liefert `{ itunesTrackId, artist, title, market, year, releaseDate, genre, artworkUrl }`.
  */
 export async function collectAppleChart(market, limit = 100) {
   const url = `https://rss.marketingtools.apple.com/api/v2/${market.toLowerCase()}/music/most-played/${limit}/songs.json`;
-  let res;
-  try {
-    res = await fetch(url, { headers: { 'User-Agent': 'eventbliss-ohrwurm-charts' } });
-  } catch {
-    return [];
+  // Apples Feeds antworten zeitweise mit 504 oder hängen. Ohne Wiederholung
+  // fällt ein ganzer Markt still aus — im Trockenlauf fehlten so 9 von 24
+  // Märkten, darunter alle spanischen.
+  let json = null;
+  for (let attempt = 0; attempt < FEED_ATTEMPTS && !json; attempt++) {
+    if (attempt) await new Promise((r) => setTimeout(r, 2000 * attempt));
+    try {
+      const res = await fetch(url, {
+        headers: { 'User-Agent': 'eventbliss-ohrwurm-charts' },
+        signal: AbortSignal.timeout(FEED_TIMEOUT_MS),
+      });
+      if (res.ok) json = await res.json();
+    } catch {
+      // nächster Versuch
+    }
   }
-  if (!res.ok) return [];
-  let json;
-  try {
-    json = await res.json();
-  } catch {
-    return [];
-  }
+  if (!json) return [];
   return (json?.feed?.results ?? [])
     .filter((r) => r.id && r.artistName && r.name)
     .map((r) => ({
