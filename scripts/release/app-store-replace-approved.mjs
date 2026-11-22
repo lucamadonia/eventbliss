@@ -5,7 +5,7 @@
 import { createPrivateKey, sign } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.6.json', import.meta.url), 'utf8'));
+const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.7.json', import.meta.url), 'utf8'));
 const { bundleId, version: targetVersion, buildNumber, supersededVersion, supersededBuildNumber, releaseType } = release;
 if (!bundleId || !/^\d+\.\d+\.\d+$/.test(targetVersion) || !/^\d+$/.test(buildNumber)) {
   throw new Error('Invalid App Store release configuration.');

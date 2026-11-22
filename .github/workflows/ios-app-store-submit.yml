@@ -1,6 +1,6 @@
 name: Submit iOS App Store release
 
-# Submits the release described in release/app-store-1.6.6.json for App Review:
+# Submits the release described in release/app-store-1.6.7.json for App Review:
 # withdraws a superseded approved-but-unreleased version (if configured), prepares
 # the store draft (build, release type, localized What's New) and submits it.
 
