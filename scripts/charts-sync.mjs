@@ -83,7 +83,7 @@ async function loadExisting() {
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await sb
       .from('ohrwurm_songs')
-      .select('id,itunes_track_id,artist,title,source,preview_url,artwork_url')
+      .select('id,itunes_track_id,artist,title,source,preview_url,artwork_url,chart_markets')
       // Feste Reihenfolge — ohne sie kann eine Zeile zwischen zwei Seiten fehlen.
       .order('id')
       .range(from, from + PAGE - 1);
@@ -91,7 +91,7 @@ async function loadExisting() {
     rows.push(...data);
     if (data.length < PAGE) break;
   }
-  return indexExisting(rows, songKey);
+  return { ...indexExisting(rows, songKey), rows };
 }
 
 /** Neue Titel in Blöcken anlegen. Gibt die Zahl der geschriebenen Zeilen zurück. */
@@ -213,6 +213,17 @@ async function main() {
   log(`  übersprungen — nicht bei iTunes: ${skippedNoItunes}`);
   log(`  übersprungen — von Hand gepflegt: ${skippedManual}`);
 
+  // Wer aus den Charts gefallen ist, verlässt den Bereich „Charts" — der Song
+  // selbst bleibt im Spiel. Nur nach einem vollständigen Lauf: fehlen Märkte
+  // (Teilauswahl, Feed-Ausfall), würde sonst der halbe Bereich geleert.
+  const complete = MARKET_LIST.length === MARKETS.length && raw.length >= MARKETS.length * LIMIT * 0.9;
+  const stale = complete
+    ? existing.rows.filter((r) => r.chart_markets?.length && !updates.has(r.id)).map((r) => r.id)
+    : [];
+  log(complete
+    ? `  aus den Charts gefallen: ${stale.length}`
+    : '  aus den Charts gefallen: nicht geprüft (Lauf unvollständig)');
+
   if (DRY) {
     log('\nBeispiele:');
     for (const r of rows.slice(0, 8)) {
@@ -232,7 +243,16 @@ async function main() {
     updated++;
     if (updated % 25 === 0) process.stdout.write(`\r  Bestand ergänzt: ${updated}/${updates.size}`);
   }
-  log(`\n\nFertig. ${inserted} neu angelegt, ${updated} Bestandstitel ergänzt.`);
+  let cleared = 0;
+  for (let i = 0; i < stale.length; i += 100) {
+    const ids = stale.slice(i, i + 100);
+    const { error } = await sb.from('ohrwurm_songs').update({ chart_markets: [] }).in('id', ids);
+    if (error) throw new Error(`Austragen fehlgeschlagen nach ${cleared} Zeilen: ${error.message}`);
+    cleared += ids.length;
+  }
+  log(`
+
+Fertig. ${inserted} neu angelegt, ${updated} Bestandstitel ergänzt, ${cleared} aus den Charts ausgetragen.`);
 }
 
 /**
