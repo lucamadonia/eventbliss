@@ -5077,10 +5077,10 @@
         "totalFiltered": "Wyniki: {{n}}"
       },
       "notice": {
+        "additive": "Zestaw podstawowy jest częścią aplikacji i nie można go tutaj usunąć. Te wpisy są do niego dodawane; to, co już jest w zestawie podstawowym, liczy się tylko raz. Wpis pojawia się tylko w językach, w których jest wypełniony.",
+        "headup": "Jeśli wpis ma nazwę wbudowanej kategorii, jego słowa są do niej dodawane. Nowa kategoria pojawia się od 10 słów.",
         "legacyId": "Zapisano pod starym identyfikatorem „{{id}}”.",
-        "live": "Aplikacja ładuje te wpisy. Na urządzeniach zmiany pojawią się po wygaśnięciu ich pamięci podręcznej – najpóźniej po 24 godzinach.",
-        "pantomime": "Podstawowy zasób haseł jest w aplikacji. Tutaj zarządzasz dodatkowymi hasłami; są domieszane w każdej kategorii.",
-        "prepared": "Kod ładujący jest przygotowany, ale gra jeszcze go nie wywołuje – działa na swojej wbudowanej treści. Zarządzanie treścią ma sens dopiero po podłączeniu gry.",
+        "live": "Aplikacja wczytuje te wpisy. Zmiany pojawiają się na urządzeniach przy następnym otwarciu gry, najpóźniej po około pięciu minutach. Bez internetu aplikacja gra z ostatnio wczytanym stanem.",
         "static": "Gra dostarcza treść razem z aplikacją. Edycja nic nie zmienia w aplikacji, dlatego nie można tu tworzyć nowych wpisów.",
         "unused": "Aplikacja obecnie nie ładuje tych wpisów."
       },

@@ -5,7 +5,7 @@
 import { useTranslation } from 'react-i18next';
 import { Info, TriangleAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { isLivePair, isPreparedPair } from './game-registry';
+import { isLivePair } from './game-registry';
 
 interface Props {
   appId: string;
@@ -16,19 +16,17 @@ interface Props {
 export function StatusNotice({ appId, dbId, contentType }: Props) {
   const { t } = useTranslation();
   const live = isLivePair(appId, contentType);
-  const prepared = isPreparedPair(appId, contentType);
 
   const lines: string[] = [];
   if (live) {
-    lines.push(t('admin.games.notice.live', 'Die App lädt diese Einträge. Auf Geräten erscheinen Änderungen, sobald deren Zwischenspeicher abläuft – spätestens nach 24 Stunden.'));
-    if (contentType === 'pantomime_word') {
-      lines.push(t('admin.games.notice.pantomime', 'Der Grundstock an Begriffen steckt in der App. Hier pflegst du zusätzliche Begriffe; sie werden je Kategorie dazugemischt.'));
+    lines.push(t('admin.games.notice.live', 'Die App lädt diese Einträge. Änderungen erscheinen auf Geräten beim nächsten Öffnen des Spiels, spätestens nach etwa fünf Minuten. Ohne Internet spielt die App mit dem zuletzt geladenen Stand.'));
+    lines.push(t('admin.games.notice.additive', 'Der Grundstock steckt in der App und lässt sich hier nicht entfernen. Diese Einträge kommen dazu; was es im Grundstock schon gibt, zählt nur einmal. Ein Eintrag erscheint nur in den Sprachen, in denen er ausgefüllt ist.'));
+    if (contentType === 'headup_word') {
+      lines.push(t('admin.games.notice.headup', 'Trägt ein Eintrag den Namen einer eingebauten Kategorie, kommen seine Wörter dort dazu. Eine neue Kategorie erscheint ab 10 Wörtern.'));
     }
   } else {
     lines.push(t('admin.games.notice.unused', 'Diese Einträge werden von der App derzeit nicht geladen.'));
-    lines.push(prepared
-      ? t('admin.games.notice.prepared', 'Der Lade-Code ist vorbereitet, das Spiel ruft ihn aber noch nicht auf – es spielt mit seinen fest eingebauten Inhalten. Pflegen lohnt sich erst, wenn das Spiel angeschlossen ist.')
-      : t('admin.games.notice.static', 'Das Spiel liefert seine Inhalte mit der App aus. Bearbeiten ändert in der App nichts; neue Einträge lassen sich hier deshalb nicht anlegen.'));
+    lines.push(t('admin.games.notice.static', 'Das Spiel liefert seine Inhalte mit der App aus. Bearbeiten ändert in der App nichts; neue Einträge lassen sich hier deshalb nicht anlegen.'));
     if (dbId !== appId) {
       lines.push(t('admin.games.notice.legacyId', 'Gespeichert unter der alten Kennung „{{id}}“.', { id: dbId }));
     }

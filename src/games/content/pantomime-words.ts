@@ -1,14 +1,10 @@
 /**
  * OHNE WORTE — Begriffe je Sprache, plus die per Admin gepflegten.
  *
- * Aufbau wie `taboo-words.ts`, mit EINEM bewussten Unterschied: Dort ersetzt
- * Datenbank-Inhalt die Sprachdateien vollständig (`getTabooCards()` liefert
- * `_dbCards`, sobald welche da sind). Eine einzige gepflegte Karte würde damit
- * den gesamten Grundstock aller zehn Sprachen verdrängen — und niemand merkt
- * es, das Spiel läuft ja weiter, nur mit einer Karte.
- *
- * Hier wird stattdessen ZUSAMMENGEFÜHRT: Grundstock aus der Sprachdatei plus
- * das, was im Admin dazugekommen ist. Muster von `pixeljagd-extra.ts`.
+ * Wie bei Bombe, Tabu und Stirnraten wird ZUSAMMENGEFÜHRT: Grundstock aus der
+ * Sprachdatei plus das, was im Admin dazugekommen ist. Datenbank-Inhalt
+ * ersetzt nie etwas — sonst würde eine einzige gepflegte Zeile den gesamten
+ * Grundstock verdrängen, und niemand merkt es.
  */
 import i18n from 'i18next';
 import type { PantomimeCategory, PantomimeCategoryId } from './pantomime-words-de';
@@ -22,7 +18,7 @@ import * as pl from './pantomime-words-pl';
 import * as pt from './pantomime-words-pt';
 import * as tr from './pantomime-words-tr';
 import * as ar from './pantomime-words-ar';
-import { loadFromDB, loadFromCacheSync } from './dynamicLoader';
+import { loadExtraRows } from './dynamicLoader';
 
 export type { PantomimeCategory, PantomimeCategoryId };
 
@@ -45,20 +41,21 @@ interface ExtraWord {
   word: string;
 }
 
-let _extra: ExtraWord[] | null = null;
-let _loaded = false;
+const currentLang = (): string => i18n.language?.split('-')[0] || 'de';
 
-/** Zusatzbegriffe vorladen. Einmal beim Spielstart aufrufen. */
+// Gilt nur für die Sprache, in der geladen wurde.
+let _extra: { lang: string; words: ExtraWord[] } | null = null;
+
+/** Zusatzbegriffe vorladen. Beim Öffnen des Spiels aufrufen; offline bleibt es beim Grundstock. */
 export async function preloadPantomimeWords(): Promise<void> {
-  if (_loaded) return;
-  _loaded = true;
-  const cached = loadFromCacheSync<ExtraWord>('pantomime', 'pantomime_word');
-  if (cached && cached.length > 0) {
-    _extra = cached;
-    return;
-  }
-  const db = await loadFromDB<ExtraWord>('pantomime', 'pantomime_word');
-  if (db && db.length > 0) _extra = db;
+  const lang = currentLang();
+  const rows = await loadExtraRows('pantomime', 'pantomime_word', lang);
+  _extra = {
+    lang,
+    words: rows
+      .map((r) => ({ category: (r.category ?? '') as PantomimeCategoryId, word: String(r.data.word ?? '').trim() }))
+      .filter((e) => !!e.word),
+  };
 }
 
 /**
@@ -70,12 +67,13 @@ export async function preloadPantomimeWords(): Promise<void> {
  *   der Auswahl, ihre Begriffe kämen aber trotzdem in die Mischung.
  */
 export function getPantomimeCategories(includeAdult = false): PantomimeCategory[] {
-  const lang = i18n.language?.split('-')[0] || 'de';
+  const lang = currentLang();
   const base = byLang[lang] || byLang.de;
+  const extraWords = _extra && _extra.lang === lang ? _extra.words : [];
 
   const merged = base.map((c) => {
-    const extras = (_extra ?? [])
-      .filter((e) => e.category === c.id && !!e.word)
+    const extras = extraWords
+      .filter((e) => e.category === c.id)
       .map((e) => e.word);
     // Dubletten fallen raus: Ein Begriff, der zweimal im Stapel liegt, kommt
     // im selben Spiel zweimal dran und sieht nach einem Fehler aus.

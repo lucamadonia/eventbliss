@@ -10,7 +10,8 @@ import * as pl from './taboo-words-pl';
 import * as pt from './taboo-words-pt';
 import * as tr from './taboo-words-tr';
 import * as ar from './taboo-words-ar';
-import { loadFromDB, loadFromCacheSync } from './dynamicLoader';
+import { loadExtraRows } from './dynamicLoader';
+import { mergeTabooDeck, tabooCardsFromRows } from './db-extras';
 
 export type { TabooCard };
 
@@ -27,23 +28,24 @@ const cardsByLang: Record<string, TabooCard[]> = {
   ar: ar.TABOO_CARDS_AR,
 };
 
-let _dbCards: TabooCard[] | null = null;
-let _dbLoaded = false;
+const currentLang = (): string => i18n.language?.split('-')[0] || 'de';
 
-/** Pre-load DB taboo cards. Call once at game start. */
+// Im Admin gepflegte Karten. Sie ERGÄNZEN den Grundstock (siehe db-extras.ts)
+// und gelten nur für die Sprache, in der sie geladen wurden.
+let _extra: { lang: string; items: TabooCard[] } | null = null;
+
+/** Zusatzkarten vorladen. Beim Öffnen des Spiels aufrufen; offline bleibt es beim Grundstock. */
 export async function preloadTabooCards(): Promise<void> {
-  if (_dbLoaded) return;
-  _dbLoaded = true;
-  const cached = loadFromCacheSync<TabooCard>('taboo', 'taboo_card');
-  if (cached && cached.length > 0) { _dbCards = cached; return; }
-  const db = await loadFromDB<TabooCard>('taboo', 'taboo_card');
-  if (db && db.length > 0) _dbCards = db;
+  const lang = currentLang();
+  const rows = await loadExtraRows('taboo', 'taboo_card', lang);
+  _extra = { lang, items: tabooCardsFromRows(rows) };
 }
 
 export function getTabooCards(): TabooCard[] {
-  if (_dbCards && _dbCards.length > 0) return _dbCards;
-  const lang = i18n.language?.split('-')[0] || 'de';
-  return cardsByLang[lang] || cardsByLang.de;
+  const lang = currentLang();
+  const base = cardsByLang[lang] || cardsByLang.de;
+  const extras = _extra && _extra.lang === lang ? _extra.items : [];
+  return extras.length > 0 ? mergeTabooDeck(base, extras) : base;
 }
 
 /** Default export for backward compatibility */

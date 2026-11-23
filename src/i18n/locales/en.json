@@ -5003,10 +5003,10 @@
         "totalFiltered": "{{n}} matches"
       },
       "notice": {
+        "additive": "The built-in stock is part of the app and cannot be removed here. These entries are added to it; anything already in the stock counts only once. An entry only appears in the languages it is filled in for.",
+        "headup": "If an entry has the name of a built-in category, its words are added there. A new category appears once it has 10 words.",
         "legacyId": "Saved under the old ID “{{id}}”.",
-        "live": "The app loads these entries. On devices, changes appear once their cache expires – after 24 hours at the latest.",
-        "pantomime": "The built-in stock of words is in the app. Here you manage additional words; they are mixed in per category.",
-        "prepared": "The loading code is prepared, but the game doesn't call it yet – it plays with its built-in content. Managing content is only worthwhile once the game is connected.",
+        "live": "The app loads these entries. Changes appear on devices the next time the game is opened, after about five minutes at the latest. Without internet the app plays with the last loaded state.",
         "static": "The game ships its content with the app. Editing changes nothing in the app, so new entries can't be created here.",
         "unused": "The app currently doesn't load these entries."
       },

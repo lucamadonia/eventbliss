@@ -5077,10 +5077,10 @@
         "totalFiltered": "{{n}} resultaten"
       },
       "notice": {
+        "additive": "De basisinhoud zit in de app en kan hier niet worden verwijderd. Deze items komen erbij; wat al in de basisinhoud staat, telt maar één keer. Een item verschijnt alleen in de talen waarin het is ingevuld.",
+        "headup": "Heeft een item de naam van een ingebouwde categorie, dan komen de woorden daar bij. Een nieuwe categorie verschijnt vanaf 10 woorden.",
         "legacyId": "Opgeslagen onder de oude id „{{id}}”.",
-        "live": "De app laadt deze items. Op apparaten verschijnen wijzigingen zodra hun cache verloopt – uiterlijk na 24 uur.",
-        "pantomime": "De basisvoorraad aan woorden zit in de app. Hier beheer je extra woorden; ze worden per categorie erbij gemixt.",
-        "prepared": "De laadcode is klaar, maar het spel roept hem nog niet aan – het speelt met zijn vast ingebouwde inhoud. Beheren loont pas als het spel is aangesloten.",
+        "live": "De app laadt deze items. Wijzigingen verschijnen op apparaten bij de volgende keer dat het spel wordt geopend, uiterlijk na ongeveer vijf minuten. Zonder internet speelt de app met de laatst geladen stand.",
         "static": "Het spel levert zijn inhoud mee met de app. Bewerken verandert niets in de app; nieuwe items kunnen hier daarom niet worden aangemaakt.",
         "unused": "Deze items worden momenteel niet door de app geladen."
       },

@@ -5027,10 +5027,10 @@
         "totalFiltered": "{{n}} resultados"
       },
       "notice": {
+        "additive": "El contenido base forma parte de la app y no se puede eliminar aquí. Estas entradas se añaden; lo que ya existe en el contenido base solo cuenta una vez. Una entrada solo aparece en los idiomas en los que está rellenada.",
+        "headup": "Si una entrada lleva el nombre de una categoría incorporada, sus palabras se añaden allí. Una categoría nueva aparece a partir de 10 palabras.",
         "legacyId": "Guardada con el identificador antiguo «{{id}}».",
-        "live": "La app carga estas entradas. En los dispositivos, los cambios aparecen cuando caduca su caché – como máximo tras 24 horas.",
-        "pantomime": "El fondo base de palabras está en la app. Aquí gestionas palabras adicionales; se mezclan por categoría.",
-        "prepared": "El código de carga está preparado, pero el juego aún no lo llama – juega con su contenido integrado. Gestionar el contenido solo merece la pena cuando el juego esté conectado.",
+        "live": "La app carga estas entradas. Los cambios aparecen en los dispositivos la próxima vez que se abre el juego, como muy tarde tras unos cinco minutos. Sin internet, la app juega con el último estado cargado.",
         "static": "El juego incluye su contenido en la app. Editar no cambia nada en la app, por eso aquí no se pueden crear entradas nuevas.",
         "unused": "Actualmente la app no carga estas entradas."
       },

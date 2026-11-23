@@ -4,7 +4,7 @@ import { useRemovedPlayers } from '../multiplayer/useRemovedPlayers';
 import OnlineWaiting from '../multiplayer/OnlineWaiting';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { resetQuestions, type QuizQuestion } from '../content/questions';
+import { preloadQuestions, resetQuestions, type QuizQuestion } from '../content/questions';
 import BombSetupScreen from './BombSetupScreen';
 import BombPlayingScreen from './BombPlayingScreen';
 import BombExplosionScreen from './BombExplosionScreen';
@@ -252,6 +252,10 @@ export default function BombGame({ online }: { online?: OnlineGameProps }) {
     currentTask: state.currentTask, explodedPlayerIndex: state.explodedPlayerIndex,
     timeLeft: bombTimeLeft, timeTotal: bombAvgSec, randomTimer: state.randomTimer,
   }, [state.phase, state.phaseStartsAt, state.mode, state.round, state.currentPlayerIndex, state.explodedPlayerIndex, state.players.length, bombTimeLeft], !online || online.isHost);
+
+  // Im Admin gepflegte Zusatzfragen holen. Gespielt wird sofort mit dem
+  // Grundstock; was bis zum Start da ist, kommt dazu. Offline passiert nichts.
+  useEffect(() => { void preloadQuestions(); }, []);
 
   const update = (partial: Partial<GameState>) => setState((prev) => ({ ...prev, ...partial }));
 

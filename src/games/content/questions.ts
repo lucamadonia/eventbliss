@@ -10,7 +10,8 @@ import * as pl from './questions-pl';
 import * as pt from './questions-pt';
 import * as tr from './questions-tr';
 import * as ar from './questions-ar';
-import { loadFromDB, loadFromCacheSync } from './dynamicLoader';
+import { loadExtraRows } from './dynamicLoader';
+import { mergeQuestionPool, questionsFromRows } from './db-extras';
 
 export type { QuizQuestion };
 
@@ -19,30 +20,39 @@ type LangModule = Pick<typeof de, 'getRandomQuestion' | 'resetQuestions'>
 
 const modules: Record<string, LangModule> = { de, en, es, fr, it, nl, pl, pt, tr, ar };
 
+const currentLang = (): string => i18n.language?.split('-')[0] || 'de';
+
 function getModule(): LangModule {
-  const lang = i18n.language?.split('-')[0] || 'de';
-  return modules[lang] || modules.de;
+  return modules[currentLang()] || modules.de;
 }
 
-// Dynamic DB content (populated async, used sync after first load)
-let _dbQuestions: QuizQuestion[] | null = null;
-let _dbLoaded = false;
-
-/** Pre-load DB questions. Call once at game start. */
-export async function preloadQuestions(): Promise<void> {
-  if (_dbLoaded) return;
-  _dbLoaded = true;
-  const cached = loadFromCacheSync<QuizQuestion>('bomb', 'question');
-  if (cached && cached.length > 0) { _dbQuestions = cached; return; }
-  const db = await loadFromDB<QuizQuestion>('bomb', 'question');
-  if (db && db.length > 0) _dbQuestions = db;
-}
-
-function getPool(): QuizQuestion[] {
-  if (_dbQuestions && _dbQuestions.length > 0) return _dbQuestions;
+function staticPool(): QuizQuestion[] {
   const mod = getModule();
   const key = Object.keys(mod).find(k => k.startsWith('QUIZ_QUESTIONS_'));
   return key ? (mod as Record<string, unknown>)[key] as QuizQuestion[] : de.QUIZ_QUESTIONS_DE;
+}
+
+// Im Admin gepflegte Fragen. Sie ERGÄNZEN den Grundstock (siehe db-extras.ts)
+// und gelten nur für die Sprache, in der sie geladen wurden.
+let _extra: { lang: string; items: QuizQuestion[] } | null = null;
+let _pool: { lang: string; extra: typeof _extra; list: QuizQuestion[] } | null = null;
+
+/** Zusatzfragen vorladen. Beim Öffnen des Spiels aufrufen; offline bleibt es beim Grundstock. */
+export async function preloadQuestions(): Promise<void> {
+  const lang = currentLang();
+  const rows = await loadExtraRows('bomb', 'question', lang);
+  _extra = { lang, items: questionsFromRows(rows) };
+}
+
+function getPool(): QuizQuestion[] {
+  const lang = currentLang();
+  // Die Liste muss zwischen zwei Zügen dieselbe bleiben, sonst zeigen die
+  // gemerkten Positionen in `_usedIndices` auf andere Fragen.
+  if (_pool && _pool.lang === lang && _pool.extra === _extra) return _pool.list;
+  const extras = _extra && _extra.lang === lang ? _extra.items : [];
+  const list = extras.length > 0 ? mergeQuestionPool(staticPool(), extras) : staticPool();
+  _pool = { lang, extra: _extra, list };
+  return list;
 }
 
 const _usedIndices = new Set<number>();

@@ -12,12 +12,12 @@ import { Haptics } from '@capacitor/haptics';
 import { Capacitor } from '@capacitor/core';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
-import { getHeadUpCategories, type HeadUpCategory } from '../content/headup-words';
+import { getHeadUpCategories, preloadHeadUpCategories, type HeadUpCategory } from '../content/headup-words';
 import { useGameTimer } from '../engine/TimerSystem';
 import { ActivePlayerBanner } from '@/games/ui/ActivePlayerBanner';
 import { PlayerSetup } from '../ui/PlayerSetup';
 import { PremiumImageChoiceCard } from '../ui/PremiumImageChoiceCard';
-import { HEADUP_THEME_ASSETS } from '../ui/premium-game-assets';
+import { HEADUP_THEME_ASSETS, STORY_MODE_ASSETS } from '../ui/premium-game-assets';
 import type { OnlineGameProps } from '../multiplayer/OnlineGameTypes';
 import { useTVGameBridge } from "@/hooks/useTVGameBridge";
 import { useInitialRoster } from "@/games/ui/useInitialRoster";
@@ -87,6 +87,10 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
       : [t('games.headup.playerFallback', { n: 1 }), t('games.headup.playerFallback', { n: 2 })];
   const [screen, setScreen] = useState<GameScreen>('setup');
   const [selectedCategory, setSelectedCategory] = useState<HeadUpCategory | null>(null);
+  // Im Admin gepflegte Zusatzwörter/-kategorien holen; danach einmal neu
+  // rendern, damit die Auswahl sie zeigt. Offline bleibt es beim Grundstock.
+  const [, setContentTick] = useState(0);
+  useEffect(() => { void preloadHeadUpCategories().then(() => setContentTick((n) => n + 1)); }, []);
   const [timerDuration, setTimerDuration] = useState(60);
   const [playerNames, setPlayerNames] = useState<string[]>(initialPlayers);
   const isOnlineOrParty = onlinePlayerNames.length >= 2 || partyPlayerNames.length >= 2;
@@ -405,7 +409,7 @@ export default function HeadUpGame({ online }: { online?: OnlineGameProps }) {
                   key={cat.id}
                   title={cat.name}
                   subtitle={t('games.headup.wordCount', { count: cat.words.length })}
-                  image={HEADUP_THEME_ASSETS[cat.id]}
+                  image={HEADUP_THEME_ASSETS[cat.id] ?? STORY_MODE_ASSETS.classic}
                   selected={selectedCategory?.id === cat.id}
                   onClick={() => setSelectedCategory(cat)}
 

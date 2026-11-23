@@ -8,14 +8,13 @@
  * umgeschrieben; diese Datei übersetzt nur.
  *
  * Was die App wirklich aus `game_content` liest — geprüft an allen Lesern von
- * `loadFromDB` / `loadFromCacheSync` (src/games/content/*) UND an deren
- * Aufrufern:
- *   - pantomime/pantomime_word: `preloadPantomimeWords()` wird in
- *     PantomimeGame.tsx aufgerufen → LIVE.
- *   - bomb/question, taboo/taboo_card, headup/headup_word: der Lade-Code
- *     existiert (`preloadQuestions` usw.), wird aber von KEINEM Spiel
- *     aufgerufen → die App liest diese Zeilen derzeit nicht ("vorbereitet").
- * Alles andere liegt fest im Code der App.
+ * `loadExtraRows` (src/games/content/*) UND an deren Aufrufern:
+ *   - pantomime/pantomime_word → `preloadPantomimeWords()` in PantomimeGame.tsx
+ *   - bomb/question            → `preloadQuestions()` in BombGame.tsx
+ *   - taboo/taboo_card         → `preloadTabooCards()` in TabooGame.tsx
+ *   - headup/headup_word       → `preloadHeadUpCategories()` in HeadUpGame.tsx
+ * In allen vier Fällen ERGÄNZEN die Zeilen den Grundstock im App-Code; sie
+ * ersetzen ihn nicht. Alles andere liegt fest im Code der App.
  */
 import { playableGames, type PlayableGame } from '@/lib/playable-games';
 
@@ -38,15 +37,6 @@ export const LEGACY_ID_MAP: Readonly<Record<string, string>> = {
 /** App-Spiel → Inhaltstypen, die die App aus der Datenbank liest. */
 export const LIVE_PAIRS: Readonly<Record<string, readonly string[]>> = {
   pantomime: ['pantomime_word'],
-};
-
-/**
- * Lade-Code vorhanden, aber nicht angeschlossen. Sobald ein Spiel sein
- * `preload…()` aufruft, wandert das Paar nach `LIVE_PAIRS`. Bis dahin darf man
- * hier pflegen und Standardinhalte ergänzen — mit dem Hinweis, dass die App es
- * noch nicht lädt.
- */
-export const PREPARED_PAIRS: Readonly<Record<string, readonly string[]>> = {
   bomb: ['question'],
   taboo: ['taboo_card'],
   headup: ['headup_word'],
@@ -111,13 +101,9 @@ export function isLivePair(appId: string, contentType: string): boolean {
   return LIVE_PAIRS[appId]?.includes(contentType) ?? false;
 }
 
-export function isPreparedPair(appId: string, contentType: string): boolean {
-  return PREPARED_PAIRS[appId]?.includes(contentType) ?? false;
-}
-
-/** Neue Einträge anlegen/importieren ist nur sinnvoll, wo die App liest oder lesen kann. */
+/** Neue Einträge anlegen/importieren ist nur sinnvoll, wo die App liest. */
 export function canCreateContent(appId: string, contentType: string): boolean {
-  return isLivePair(appId, contentType) || isPreparedPair(appId, contentType);
+  return isLivePair(appId, contentType);
 }
 
 export interface ContentPair { appId: string; dbId: string; contentType: string }

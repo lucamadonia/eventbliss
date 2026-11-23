@@ -5027,10 +5027,10 @@
         "totalFiltered": "{{n}} résultats"
       },
       "notice": {
+        "additive": "Le contenu de base fait partie de l'app et ne peut pas être supprimé ici. Ces entrées s'y ajoutent ; ce qui existe déjà dans le contenu de base ne compte qu'une fois. Une entrée n'apparaît que dans les langues où elle est remplie.",
+        "headup": "Si une entrée porte le nom d'une catégorie intégrée, ses mots y sont ajoutés. Une nouvelle catégorie apparaît à partir de 10 mots.",
         "legacyId": "Enregistrée sous l'ancien identifiant « {{id}} ».",
-        "live": "L'application charge ces entrées. Sur les appareils, les modifications apparaissent à l'expiration de leur cache – au plus tard après 24 heures.",
-        "pantomime": "Le fonds de base de mots est dans l'application. Ici, tu gères des mots supplémentaires ; ils sont mélangés par catégorie.",
-        "prepared": "Le code de chargement est prêt, mais le jeu ne l'appelle pas encore – il joue avec son contenu intégré. Gérer le contenu n'a de sens qu'une fois le jeu connecté.",
+        "live": "L'app charge ces entrées. Les modifications apparaissent sur les appareils à la prochaine ouverture du jeu, au plus tard après environ cinq minutes. Sans internet, l'app joue avec le dernier état chargé.",
         "static": "Le jeu livre son contenu avec l'application. Modifier ne change rien dans l'application ; on ne peut donc pas créer de nouvelles entrées ici.",
         "unused": "L'application ne charge actuellement pas ces entrées."
       },

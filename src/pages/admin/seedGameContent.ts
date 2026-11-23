@@ -18,6 +18,7 @@ import type { QuizQuestion } from '@/games/content/questions-de';
 import type { TabooCard } from '@/games/content/taboo-words-de';
 import type { HeadUpCategory } from '@/games/content/headup-words-de';
 import { primaryKey } from '@/components/admin/games/import-rows';
+import { isLivePair } from '@/components/admin/games/game-registry';
 import type { LangCode } from '@/components/admin/games/field-configs';
 
 export interface SeedItem {
@@ -147,8 +148,15 @@ const BUILDERS: Record<string, Record<string, () => Promise<SeedItem[]>>> = {
   headup: { headup_word: async () => mergeHeadup(await loadAll(HEADUP)) },
 };
 
+/**
+ * Ob der Admin "Standardinhalte ergänzen" anbietet. Derzeit nie: Alle Spiele,
+ * die `game_content` lesen, FÜHREN Grundstock (im App-Code) und Datenbank
+ * ZUSAMMEN — den Grundstock zusätzlich in die Datenbank zu kopieren wäre reine
+ * Dublette, die das Spiel ohnehin wieder herausfiltert. Die Zusammenbau-
+ * Funktionen bleiben für den Abgleich mit dem Altbestand in der Datenbank.
+ */
 export function hasDefaultContent(appId: string, contentType: string): boolean {
-  return Boolean(BUILDERS[appId]?.[contentType]);
+  return Boolean(BUILDERS[appId]?.[contentType]) && !isLivePair(appId, contentType);
 }
 
 /** Der Grundstock der App für dieses Paar, als flache Admin-Zeilen. */

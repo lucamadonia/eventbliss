@@ -5027,10 +5027,10 @@
         "totalFiltered": "{{n}} risultati"
       },
       "notice": {
+        "additive": "Il contenuto di base fa parte dell'app e qui non si può rimuovere. Queste voci si aggiungono; ciò che esiste già nel contenuto di base conta una sola volta. Una voce compare solo nelle lingue in cui è compilata.",
+        "headup": "Se una voce ha il nome di una categoria integrata, le sue parole vengono aggiunte lì. Una nuova categoria compare a partire da 10 parole.",
         "legacyId": "Salvata con il vecchio identificativo «{{id}}».",
-        "live": "L'app carica queste voci. Sui dispositivi le modifiche compaiono alla scadenza della loro cache – al più tardi dopo 24 ore.",
-        "pantomime": "Il fondo base di parole è nell'app. Qui gestisci parole aggiuntive; vengono mescolate per categoria.",
-        "prepared": "Il codice di caricamento è pronto, ma il gioco non lo richiama ancora – gioca con i suoi contenuti integrati. Gestire i contenuti ha senso solo quando il gioco sarà collegato.",
+        "live": "L'app carica queste voci. Le modifiche compaiono sui dispositivi alla prossima apertura del gioco, al più tardi dopo circa cinque minuti. Senza internet l'app gioca con l'ultimo stato caricato.",
         "static": "Il gioco include i suoi contenuti nell'app. Modificare non cambia nulla nell'app; per questo qui non si possono creare nuove voci.",
         "unused": "Al momento l'app non carica queste voci."
       },

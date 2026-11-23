@@ -6,7 +6,7 @@ import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GameRulesModal, useAutoShowRules, RulesHelpButton } from '../ui/GameRulesModal';
 import { useGameTimer } from '../engine/TimerSystem';
-import { getTabooCards, type TabooCard } from '../content/taboo-words';
+import { getTabooCards, preloadTabooCards, type TabooCard } from '../content/taboo-words';
 import { Play, RotateCcw, ArrowRight, Shuffle } from 'lucide-react';
 import { useGameEnd } from '../social/useGameEnd';
 import { GameEndOverlay } from '../social/GameEndOverlay';
@@ -118,6 +118,13 @@ export default function TabooGame({ players = [], onClose, online }: TabooGamePr
   const [currentRound, setCurrentRound] = useState(1);
   const deck = useRef<TabooCard[]>(shuffle(getTabooCards()));
   const deckPos = useRef(0);
+  // Im Admin gepflegte Zusatzkarten holen. Der Stapel wird nur neu gemischt,
+  // solange noch keine Karte gezogen ist — ein laufendes Spiel bleibt unberührt.
+  useEffect(() => {
+    void preloadTabooCards().then(() => {
+      if (deckPos.current === 0) deck.current = shuffle(getTabooCards());
+    });
+  }, []);
   const [currentCard, setCurrentCard] = useState<TabooCard | null>(null);
   const [turnResults, setTurnResults] = useState<CardResult[]>([]);
   const [cardKey, setCardKey] = useState(0);

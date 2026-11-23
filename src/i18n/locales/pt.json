@@ -5077,10 +5077,10 @@
         "totalFiltered": "{{n}} resultados"
       },
       "notice": {
+        "additive": "O conteúdo base faz parte da app e não pode ser removido aqui. Estas entradas são acrescentadas; o que já existe no conteúdo base conta apenas uma vez. Uma entrada só aparece nos idiomas em que está preenchida.",
+        "headup": "Se uma entrada tiver o nome de uma categoria incorporada, as suas palavras são acrescentadas aí. Uma nova categoria aparece a partir de 10 palavras.",
         "legacyId": "Salva com o identificador antigo “{{id}}”.",
-        "live": "O app carrega estas entradas. Nos dispositivos, as alterações aparecem quando o cache expira – no máximo após 24 horas.",
-        "pantomime": "O acervo básico de palavras está no app. Aqui você gerencia palavras adicionais; elas são misturadas por categoria.",
-        "prepared": "O código de carregamento está pronto, mas o jogo ainda não o chama – ele joga com o conteúdo embutido. Só vale a pena gerenciar depois que o jogo estiver conectado.",
+        "live": "A app carrega estas entradas. As alterações aparecem nos dispositivos na próxima vez que o jogo é aberto, o mais tardar após cerca de cinco minutos. Sem internet, a app joga com o último estado carregado.",
         "static": "O jogo traz seu conteúdo dentro do app. Editar não muda nada no app; por isso, novas entradas não podem ser criadas aqui.",
         "unused": "No momento, o app não carrega estas entradas."
       },

@@ -5077,10 +5077,10 @@
         "totalFiltered": "{{n}} sonuç"
       },
       "notice": {
+        "additive": "Temel içerik uygulamanın parçasıdır ve buradan kaldırılamaz. Bu kayıtlar ona eklenir; temel içerikte zaten bulunanlar yalnızca bir kez sayılır. Bir kayıt yalnızca doldurulduğu dillerde görünür.",
+        "headup": "Bir kayıt yerleşik bir kategorinin adını taşıyorsa kelimeleri oraya eklenir. Yeni bir kategori 10 kelimeden itibaren görünür.",
         "legacyId": "Eski “{{id}}” kimliğiyle kaydedildi.",
-        "live": "Uygulama bu kayıtları yükler. Cihazlarda değişiklikler, önbellekleri dolunca görünür – en geç 24 saat sonra.",
-        "pantomime": "Temel kelime havuzu uygulamanın içinde. Burada ek kelimeleri yönetirsin; bunlar kategori başına karışıma eklenir.",
-        "prepared": "Yükleme kodu hazır ama oyun henüz onu çağırmıyor – kendi gömülü içeriğiyle oynuyor. İçeriği yönetmek, ancak oyun bağlandıktan sonra anlamlı olur.",
+        "live": "Uygulama bu kayıtları yükler. Değişiklikler cihazlarda oyun bir sonraki açılışında, en geç yaklaşık beş dakika sonra görünür. İnternet yokken uygulama son yüklenen durumla oynar.",
         "static": "Oyun içeriğini uygulamayla birlikte sunar. Düzenlemek uygulamada hiçbir şeyi değiştirmez; bu yüzden burada yeni kayıt oluşturulamaz.",
         "unused": "Uygulama şu anda bu kayıtları yüklemiyor."
       },

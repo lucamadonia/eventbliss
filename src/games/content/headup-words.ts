@@ -10,7 +10,8 @@ import * as pl from './headup-words-pl';
 import * as pt from './headup-words-pt';
 import * as tr from './headup-words-tr';
 import * as ar from './headup-words-ar';
-import { loadFromDB, loadFromCacheSync } from './dynamicLoader';
+import { loadExtraRows, type ExtraRow } from './dynamicLoader';
+import { mergeHeadupCategories } from './db-extras';
 
 export type { HeadUpCategory };
 
@@ -27,23 +28,28 @@ const categoriesByLang: Record<string, HeadUpCategory[]> = {
   ar: ar.HEADUP_CATEGORIES_AR,
 };
 
-let _dbCategories: HeadUpCategory[] | null = null;
-let _dbLoaded = false;
+const currentLang = (): string => i18n.language?.split('-')[0] || 'de';
 
-/** Pre-load DB headup categories. Call once at game start. */
+// Im Admin gepflegte Kategorien/Wörter. Sie ERGÄNZEN den Grundstock (siehe
+// db-extras.ts) und gelten nur für die Sprache, in der sie geladen wurden.
+let _extra: { lang: string; rows: ExtraRow[] } | null = null;
+let _merged: { lang: string; extra: typeof _extra; list: HeadUpCategory[] } | null = null;
+
+/** Zusatzinhalte vorladen. Beim Öffnen des Spiels aufrufen; offline bleibt es beim Grundstock. */
 export async function preloadHeadUpCategories(): Promise<void> {
-  if (_dbLoaded) return;
-  _dbLoaded = true;
-  const cached = loadFromCacheSync<HeadUpCategory>('headup', 'headup_word');
-  if (cached && cached.length > 0) { _dbCategories = cached; return; }
-  const db = await loadFromDB<HeadUpCategory>('headup', 'headup_word');
-  if (db && db.length > 0) _dbCategories = db;
+  const lang = currentLang();
+  _extra = { lang, rows: await loadExtraRows('headup', 'headup_word', lang) };
 }
 
 export function getHeadUpCategories(): HeadUpCategory[] {
-  if (_dbCategories && _dbCategories.length > 0) return _dbCategories;
-  const lang = i18n.language?.split('-')[0] || 'de';
-  return categoriesByLang[lang] || categoriesByLang.de;
+  const lang = currentLang();
+  // Wird bei jedem Rendern aufgerufen — die Zusammenführung nur einmal rechnen.
+  if (_merged && _merged.lang === lang && _merged.extra === _extra) return _merged.list;
+  const base = categoriesByLang[lang] || categoriesByLang.de;
+  const rows = _extra && _extra.lang === lang ? _extra.rows : [];
+  const list = rows.length > 0 ? mergeHeadupCategories(base, rows) : base;
+  _merged = { lang, extra: _extra, list };
+  return list;
 }
 
 /** Default export for backward compatibility */

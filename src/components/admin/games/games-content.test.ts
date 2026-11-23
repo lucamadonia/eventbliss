@@ -5,7 +5,7 @@ import {
   buildFilterOps, buildMissingLangExpr, buildSearchExpr, pageCount, pageRange, sanitizeSearchTerm,
 } from './query-builder';
 import {
-  CONTENT_TYPES_BY_DB_ID, EDITOR_ROUTES, LEGACY_ID_MAP, LIVE_PAIRS, PREPARED_PAIRS, allContentPairs, appIdForDbId,
+  CONTENT_TYPES_BY_DB_ID, EDITOR_ROUTES, LEGACY_ID_MAP, LIVE_PAIRS, allContentPairs, appIdForDbId,
   buildHubGames, canCreateContent, contentTypesForApp, dbIdForAppId, filterHubGames, isLivePair, resolveGameStatus,
 } from './game-registry';
 import { buildImportPreview, buildTemplateCsv, detectFormat, primaryKey } from './import-rows';
@@ -127,21 +127,22 @@ describe('game-registry', () => {
     }
   });
 
-  it('Live-, vorbereitete und Editor-Spiele existieren in der App und überschneiden sich nicht', () => {
-    const groups = [Object.keys(LIVE_PAIRS), Object.keys(PREPARED_PAIRS), Object.keys(EDITOR_ROUTES)];
+  it('Live- und Editor-Spiele existieren in der App und überschneiden sich nicht', () => {
+    const groups = [Object.keys(LIVE_PAIRS), Object.keys(EDITOR_ROUTES)];
     const all = groups.flat();
     for (const id of all) expect(appIds.has(id), id).toBe(true);
     expect(new Set(all).size).toBe(all.length);
   });
 
-  it('nur Pantomime ist live; Bombe/Tabu/Stirnraten sind vorbereitet, nicht live', () => {
-    expect(resolveGameStatus('pantomime')).toBe('live');
-    expect(isLivePair('pantomime', 'pantomime_word')).toBe(true);
-    for (const id of ['bomb', 'taboo', 'headup']) {
-      expect(resolveGameStatus(id), id).toBe('static');
-      expect(canCreateContent(id, contentTypesForApp(id)[0]), id).toBe(true);
+  it('Pantomime, Bombe, Tabu und Stirnraten sind live — aber nur mit ihrem angeschlossenen Inhaltstyp', () => {
+    expect(Object.keys(LIVE_PAIRS).sort()).toEqual(['bomb', 'headup', 'pantomime', 'taboo']);
+    for (const id of ['pantomime', 'bomb', 'taboo', 'headup']) {
+      expect(resolveGameStatus(id), id).toBe('live');
+      expect(canCreateContent(id, LIVE_PAIRS[id][0]), id).toBe(true);
     }
-    expect(isLivePair('bomb', 'question')).toBe(false);
+    expect(isLivePair('bomb', 'question')).toBe(true);
+    // Die Bomben-Kategorien liest die App nicht aus der Datenbank.
+    expect(isLivePair('bomb', 'category')).toBe(false);
     expect(canCreateContent('bomb', 'category')).toBe(false);
   });
 
@@ -166,7 +167,8 @@ describe('game-registry', () => {
     const hub = buildHubGames();
     const nameOf = (g: { id: string }) => (g.id === 'bomb' ? 'Tickende Bombe' : g.id);
     expect(filterHubGames(hub, { query: 'tick', status: 'all', tier: 'all' }, nameOf).map((h) => h.game.id)).toEqual(['bomb']);
-    expect(filterHubGames(hub, { query: '', status: 'live', tier: 'all' }, nameOf).map((h) => h.game.id)).toEqual(['pantomime']);
+    expect(filterHubGames(hub, { query: '', status: 'live', tier: 'all' }, nameOf).map((h) => h.game.id).sort())
+      .toEqual(['bomb', 'headup', 'pantomime', 'taboo']);
     const premium = filterHubGames(hub, { query: '', status: 'all', tier: 'premium' }, nameOf);
     expect(premium.length).toBeGreaterThan(0);
     expect(premium.every((h) => h.game.tier === 'premium')).toBe(true);
@@ -280,10 +282,10 @@ describe('import-rows', () => {
 });
 
 describe('seedGameContent', () => {
-  it('kennt Standardinhalte nur für Paare mit Lade-Pfad und echten App-Kennungen', () => {
-    expect(hasDefaultContent('bomb', 'question')).toBe(true);
-    expect(hasDefaultContent('taboo', 'taboo_card')).toBe(true);
-    expect(hasDefaultContent('headup', 'headup_word')).toBe(true);
+  it('bietet für angeschlossene Spiele kein Kopieren des Grundstocks an (wäre reine Dublette)', () => {
+    expect(hasDefaultContent('bomb', 'question')).toBe(false);
+    expect(hasDefaultContent('taboo', 'taboo_card')).toBe(false);
+    expect(hasDefaultContent('headup', 'headup_word')).toBe(false);
     expect(hasDefaultContent('pantomime', 'pantomime_word')).toBe(false);
     expect(hasDefaultContent('truthdare', 'truth')).toBe(false);
     expect(hasDefaultContent('wahrheit-pflicht', 'truth')).toBe(false);
