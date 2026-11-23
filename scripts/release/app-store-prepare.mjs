@@ -1,7 +1,7 @@
 import { createPrivateKey, sign } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
-const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.2.json', import.meta.url), 'utf8'));
+const release = JSON.parse(readFileSync(new URL('../../release/app-store-1.6.6.json', import.meta.url), 'utf8'));
 if (!/^\d+\.\d+\.\d+$/.test(release.version) || !/^\d+$/.test(release.buildNumber) || !release.bundleId) {
   throw new Error('Invalid App Store release configuration.');
 }
@@ -70,7 +70,7 @@ const matches = iosVersions.filter((entry) => entry.attributes?.versionString ==
 if (matches.length > 1) throw new Error(`More than one iOS ${release.version} App Store version exists.`);
 let version = matches[0];
 if (!version) {
-  const attributes = { platform: 'IOS', versionString: release.version, releaseType: 'MANUAL' };
+  const attributes = { platform: 'IOS', versionString: release.version, releaseType: release.releaseType ?? 'MANUAL' };
   if (previous.attributes?.copyright) attributes.copyright = previous.attributes.copyright;
   const created = await api('appStoreVersions', 'POST', {
     data: { type: 'appStoreVersions', attributes, relationships: { app: { data: { type: 'apps', id: appId } } } },
@@ -80,6 +80,41 @@ if (!version) {
 }
 if (!['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED'].includes(version.attributes?.appVersionState ?? version.attributes?.appStoreState)) {
   throw new Error(`iOS ${release.version} is not editable: ${version.attributes?.appVersionState ?? version.attributes?.appStoreState}.`);
+}
+
+if (release.releaseType && version.attributes?.releaseType !== release.releaseType) {
+  await api(`appStoreVersions/${version.id}`, 'PATCH', {
+    data: { type: 'appStoreVersions', id: version.id, attributes: { releaseType: release.releaseType } },
+  });
+  const refreshed = await api(`appStoreVersions/${version.id}`);
+  if (refreshed.data?.attributes?.releaseType !== release.releaseType) throw new Error(`Could not verify release type ${release.releaseType}.`);
+  console.log(`Release type set to ${release.releaseType}.`);
+}
+
+// Answer age rating questions Apple added since the last release. Only fills
+// unanswered (null) questions; existing answers are never overwritten.
+if (release.ageRating && Object.keys(release.ageRating).length) {
+  const appInfos = await api(`apps/${appId}/appInfos?limit=10`);
+  const editableInfos = (appInfos.data ?? []).filter(({ attributes }) => ['PREPARE_FOR_SUBMISSION', 'DEVELOPER_REJECTED', 'REJECTED'].includes(attributes?.state ?? attributes?.appStoreState));
+  if (editableInfos.length !== 1) throw new Error(`Expected one editable app info, found ${editableInfos.length}.`);
+  const declaration = await api(`appInfos/${editableInfos[0].id}/ageRatingDeclaration`);
+  const current = declaration.data?.attributes ?? {};
+  const missing = {};
+  for (const [key, value] of Object.entries(release.ageRating)) {
+    if (!(key in current)) throw new Error(`Unknown age rating question ${key}.`);
+    if (current[key] == null) missing[key] = value;
+    else if (current[key] !== value) throw new Error(`Age rating ${key} is already ${current[key]}; refusing to change it to ${value}.`);
+  }
+  if (Object.keys(missing).length) {
+    await api(`ageRatingDeclarations/${declaration.data.id}`, 'PATCH', {
+      data: { type: 'ageRatingDeclarations', id: declaration.data.id, attributes: missing },
+    });
+    const verified = await api(`appInfos/${editableInfos[0].id}/ageRatingDeclaration`);
+    for (const [key, value] of Object.entries(missing)) {
+      if (verified.data?.attributes?.[key] !== value) throw new Error(`Could not verify age rating ${key}.`);
+    }
+    console.log(`Age rating answered: ${Object.entries(missing).map(([key, value]) => `${key}=${value}`).join(', ')}.`);
+  }
 }
 
 const attached = await api(`appStoreVersions/${version.id}/build`);

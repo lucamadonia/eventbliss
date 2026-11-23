@@ -1,4 +1,8 @@
-name: Submit iOS App Store 1.6.2
+name: Submit iOS App Store release
+
+# Submits the release described in release/app-store-1.6.6.json for App Review:
+# withdraws a superseded approved-but-unreleased version (if configured), prepares
+# the store draft (build, release type, localized What's New) and submits it.
 
 on:
   workflow_dispatch:
@@ -6,18 +10,36 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ios-app-store-submit
+  cancel-in-progress: false
+
 jobs:
   submit:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    env:
+      APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+      APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+      APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Submit and verify iOS 1.6.2 for App Review
-        env:
-          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
-          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
-          APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+      - name: Replace superseded approved version
+        run: node scripts/release/app-store-replace-approved.mjs
+      - name: Prepare App Store release draft
+        run: node scripts/release/app-store-prepare.mjs
+      - name: Submit and verify for App Review
         run: node scripts/release/app-store-submit.mjs
+      - name: Audit App Store version state
+        if: always()
+        run: node scripts/release/app-store-status.mjs
+      - name: Upload App Store status report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-status
+          path: artifacts/app-store/status.json
+          if-no-files-found: warn
